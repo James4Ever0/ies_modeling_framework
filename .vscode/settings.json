@@ -1,0 +1,14 @@
+{
+    "python.pythonPath": "C:\\Users\\ss\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+ 
+    
+    "python.analysis.extraPaths":[
+        
+        "E:\\myfolder\\homework\\one\\Person_reID_baseline_pytorch-master",
+        "E:\\...\\...\\...\\..."
+
+    ]
+
+
+    
+}
