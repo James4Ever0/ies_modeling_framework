@@ -195,11 +195,12 @@ with context('动态热力计算'):
 
 with context('可视化'):
     vis = 1
-    if vis:
-        plt.figure(1)
-        plt.plot(TD_Tf.T)
-        plt.figure(2)
-        plt.plot(TD_Tt.T)
-        # sel = [0, 2, 7, 5]  # 仅查看部分管道
-        # plt.figure(3)
-        # plt.plot(TD_Tt[sel, :].T)
+    # if vis:
+    plt.figure(1)
+    plt.plot(TD_Tf.T)
+    plt.figure(2)
+    plt.plot(TD_Tt.T)
+    # sel = [0, 2, 7, 5]  # 仅查看部分管道
+    # plt.figure(3)
+    # plt.plot(TD_Tt[sel, :].T)
+    plt.show()
