@@ -237,10 +237,10 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.num_h = num_h
         self.pcs_set = mdl.continuous_var(name="pcs_set{0}".format(EnergyStorageSystem.index))  # pcs
         self.ch_flag = mdl.binary_var_list(
-            [i for i in range(0, num_h)], name="bess_ch_flag{0}".format(EnergyStorageSystem.index)
+            [i for i in range(0, num_h)], name="batteryEnergyStorageSystem_ch_flag{0}".format(EnergyStorageSystem.index)
         )  # 充电
         self.dis_flag = mdl.binary_var_list(
-            [i for i in range(0, num_h)], name="bess_dis_flag{0}".format(EnergyStorageSystem.index)
+            [i for i in range(0, num_h)], name="batteryEnergyStorageSystem_dis_flag{0}".format(EnergyStorageSystem.index)
         )  # 放电
         # 效率
         self.eff = eff
@@ -300,7 +300,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         if regester_period_constraints == 1:
             mdl.add_constraints(
                 self.ess[i] == self.ess[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_h:int, day_node)
+                for i in range(day_node - 1, self.num_h, day_node)
             )
         else:
             # 初始值
@@ -377,11 +377,11 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )  # pcs
         self.ch_flag = mdl.binary_var_list(
             [i for i in range(0, num_h)],
-            name="bessVariable_ch_flag{0}".format(EnergyStorageSystemVariable.index),
+            name="batteryEnergyStorageSystemVariable_ch_flag{0}".format(EnergyStorageSystemVariable.index),
         )  # 充电
         self.dis_flag = mdl.binary_var_list(
             [i for i in range(0, num_h)],
-            name="bessVariable_dis_flag{0}".format(EnergyStorageSystemVariable.index),
+            name="batteryEnergyStorageSystemVariable_dis_flag{0}".format(EnergyStorageSystemVariable.index),
         )  # 放电
         # 效率
         self.eff = eff
@@ -1465,7 +1465,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.mdl = mdl
         # 对于水蓄能，优化的变量为水罐的体积
         self.sx = EnergyStorageSystemVariable(
-            num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
+            num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff, ess_init, soc_min, soc_max
         )
         self.index = EnergyStorageSystemVariable.index
         self.sx_set_cool = mdl.continuous_var_list(
@@ -1720,9 +1720,9 @@ class ResourceGet(object):
         gas_price = np.ones(num_h, dtype=float) * 2.77
         return gas_price
 
-    def get_cityrs_price(self, num_h: int):
-        cityrs_price = np.ones(num_h, dtype=float) * 0.3
-        return cityrs_price
+    def get_市政热水_price(self, num_h: int):
+        市政热水_price = np.ones(num_h, dtype=float) * 0.3
+        return 市政热水_price
 
     def get_citysteam_price(self, num_h: int):
         citysteam = np.ones(num_h, dtype=float) * 0.3
@@ -2027,14 +2027,14 @@ if __name__ == "__main__":
 
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
-    cityrs_price0 = resource.get_cityrs_price(num_h0)
+    市政热水_price0 = resource.get_市政热水_price(num_h0)
     citysteam_price0 = resource.get_citysteam_price(num_h0)
 
     diesel = Diesel(num_h0, mdl1, 320, 750, 2)  # 柴油机
     diesel.cons_register(mdl1)
     pv = PhotoVoltaic(num_h0, mdl1, 5000, 4500, ha0, 0.8, "PhotoVoltaic")  # 光伏
     pv.cons_register(mdl1)
-    bess = EnergyStorageSystem(
+    batteryEnergyStorageSystem = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2046,7 +2046,7 @@ if __name__ == "__main__":
         soc_min=0,  # state of charge
         soc_max=1,
     )
-    bess.cons_register(mdl1, 1, day_node)
+    battery.cons_register(mdl1, 1, day_node)
     # 高温蒸汽
     槽式光热 = TroughPhotoThermal(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
     槽式光热.cons_register(mdl1)
@@ -2142,7 +2142,7 @@ if __name__ == "__main__":
         mdl1,
         citysupply_set_max=10000,
         set_price=3000,
-        run_price=cityrs_price0,
+        run_price=市政热水_price0,
         eff=0.9,
     )
     szrs.cons_register(mdl1)
@@ -2369,7 +2369,7 @@ if __name__ == "__main__":
         num_h0, mdl1, p_xheat, lin.add(num_h0, mdl1, sx.p_sx_heat, lowxbxr.p_ess)
     )
     # 电量平衡
-    # ele_dire[h] + ele_slj[h] + ele_rb[h] - p_bess[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
+    # ele_dire[h] + ele_slj[h] + ele_rb[h] - p_batteryEnergyStorageSystem[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
     # p_地源蒸汽发生器[h] + p_dgl[h] + ele_sangk[h] + ele_doublegk[h] == total_power[h]
     # 市政电力电流是双向的，其余市政是单向的。
 
@@ -2386,7 +2386,7 @@ if __name__ == "__main__":
         dire.ele_dire[h]
         + slj.ele_slj[h]
         + rb.ele_sy[h]
-        - bess.p_ess[h]
+        - batteryEnergyStorageSystem.p_ess[h]
         - pv.p_pv[h]
         + sy.ele_sy[h]
         + power_load[h]
@@ -2403,7 +2403,7 @@ if __name__ == "__main__":
     iges_set = [ # all constrains in IES/IntegratedEnergySystem system
         diesel,
         pv,
-        bess,
+        batteryEnergyStorageSystem,
         槽式光热,
         地源蒸汽发生器,
         chp,
@@ -2494,8 +2494,8 @@ if __name__ == "__main__":
 
         value = Value(sol_run1)
 
-        plt.plot(value.value(bess.p_ess))
-        print(value.value(bess.ess_set))
+        plt.plot(value.value(batteryEnergyStorageSystem.p_ess))
+        print(value.value(batteryEnergyStorageSystem.ess_set))
 
         plt.figure()
         pllist = IntegratedEnergySystemPlot(sol_run1)
@@ -2507,7 +2507,7 @@ if __name__ == "__main__":
                 dire.ele_dire,
                 slj.ele_slj,
                 rb.ele_sy,
-                bess.p_ess,
+                batteryEnergyStorageSystem.p_ess,
                 pv.p_pv,
                 sy.ele_sy,
                 power_load,
@@ -2523,7 +2523,7 @@ if __name__ == "__main__":
                 "dire.ele_dire",
                 "slj.ele_slj",
                 "rb.ele_sy",
-                "bess.p_ess",
+                "batteryEnergyStorageSystem.p_ess",
                 "pv.p_pv",
                 "sy.ele_sy",
                 "power_load",
