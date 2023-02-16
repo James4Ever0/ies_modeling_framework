@@ -68,7 +68,7 @@ class PV(IGES):  # Photovoltaic
         mdl: Model,
         pv_set_max: int,
         set_price: int, # float?
-        ha0,
+        ha0:np.ndarray,
         eff: float, # efficiency
         set_name="PV",
     ):
@@ -147,7 +147,7 @@ class Diesel(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl, diesel_set_max, set_price, run_price, set_name="diesel"
+        self, num_h:int, mdl:Model, diesel_set_max, set_price, run_price, set_name="diesel"
     ):
         IGES(set_name)
         Diesel.index += 1
@@ -180,21 +180,21 @@ class Diesel(IGES):
 
 # 储能系统基类
 class ESS(IGES):
-    index = 0
+    index:int= 0
 
     def __init__(
         self,
-        num_h,
-        mdl,
-        ess_set_max,
-        ess_price,
-        pcs_price,
-        c_rate_max,
-        eff,
-        ess_init,
-        soc_min,
-        soc_max,
-        set_name="ess",
+        num_h:int,
+        mdl:Model,
+        ess_set_max:int,
+        ess_price:int,
+        pcs_price:int,
+        c_rate_max:int,
+        eff:float,
+        ess_init:int,
+        soc_min:float,
+        soc_max:float,
+        set_name:str="ess",
     ):
         IGES(set_name)
         ESS.index += 1
@@ -2026,7 +2026,7 @@ if __name__ == "__main__":
         c_rate_max=2,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
+        soc_min=0, # state of charge
         soc_max=1,
     )
     bess.cons_register(mdl1, 1, day_node)
