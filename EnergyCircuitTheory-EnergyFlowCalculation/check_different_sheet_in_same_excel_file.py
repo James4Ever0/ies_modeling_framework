@@ -1,6 +1,6 @@
 import pandas
 
-excel_name = ""
+excel_name = "6节点热网动态潮流.py"
 
 sheet_names = []
 
