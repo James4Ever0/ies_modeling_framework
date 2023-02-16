@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 
-import docplex # modeling with ibm cplex
+import docplex  # modeling with ibm cplex
 from docplex.mp.model import Model
 import pandas as pd
 import numpy as np
@@ -17,11 +17,11 @@ from plot_arr import IGESPlot
 
 localtime1 = time.time()
 
-#create main model
+# create main model
 mdl1 = Model(name="buses")
 
 
-ma = 0 # not using? moving average?
+ma = 0  # not using? moving average?
 debug = 1
 run = 0
 year = 1
@@ -42,23 +42,38 @@ simulationT = 3600
 # every hour of one day?
 ha = np.ones(num_h0)
 
+
 # another name for IES?
 class IGES(object):
-    set_count:int = 0
+    set_count: int = 0
 
-    def __init__(self, set_name):
+    def __init__(self, set_name: str):
         self.set_name = set_name
         IGES.set_count += 1
-        print("IGES Define a set named:", set_name, ", total set count/set number is:", IGES.set_count)
+        print(
+            "IGES Define a set named:",
+            set_name,
+            ", total set count/set number is:",
+            IGES.set_count,
+        )
 
 
 # 适用于光伏及平板式光热
 class PV(IGES):  # Photovoltaic
     index = 0
 
-    def __init__(self, num_h:int, mdl:Model, pv_set_max, set_price, ha0, eff, set_name="PV"):
+    def __init__(
+        self,
+        num_h: int,
+        mdl: Model,
+        pv_set_max: int,
+        set_price: int, # float?
+        ha0,
+        eff: float, # efficiency
+        set_name="PV",
+    ):
         IGES(set_name)
-        PV.index += 1 # increase the index whenever another PV system is created.
+        PV.index += 1  # increase the index whenever another PV system is created.
 
         self.pv_set = mdl.continuous_var(name="pv_set{0}".format(PV.index))
         self.p_pv = mdl.continuous_var_list(
@@ -1667,9 +1682,9 @@ class Dyzqfsq(IGES):
 
 class ResourceGet(object):
     # 光照资源，超过一年的，将一年数据进行重复
-    def get_radiation(self, path, num_h):
+    def get_radiation(self, path:str, num_h:int):
         if os.path.exists(path):
-            raw_file = np.loadtxt(path, dtype=float)
+            raw_file :np.ndarray= np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
             ha1 = radiation
             for loop in range(1, math.ceil(num_h / 8760)):
@@ -1680,19 +1695,19 @@ class ResourceGet(object):
         else:
             print("File not extists.")
 
-    def get_ele_price(self, num_h):
+    def get_ele_price(self, num_h:int):
         ele_price = np.ones(num_h, dtype=float) * 0.5
         return ele_price
 
-    def get_gas_price(self, num_h):
+    def get_gas_price(self, num_h:int):
         gas_price = np.ones(num_h, dtype=float) * 2.77
         return gas_price
 
-    def get_cityrs_price(self, num_h):
+    def get_cityrs_price(self, num_h:int):
         cityrs_price = np.ones(num_h, dtype=float) * 0.3
         return cityrs_price
 
-    def get_citysteam_price(self, num_h):
+    def get_citysteam_price(self, num_h:int):
         citysteam = np.ones(num_h, dtype=float) * 0.3
         return citysteam
 
@@ -1991,7 +2006,7 @@ if __name__ == "__main__":
     resource = ResourceGet()
     ha0 = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
     # what is the output?
-    
+
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
     cityrs_price0 = resource.get_cityrs_price(num_h0)
