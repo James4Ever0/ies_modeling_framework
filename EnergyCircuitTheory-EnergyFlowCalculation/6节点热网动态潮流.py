@@ -155,13 +155,16 @@ with context('时域激励分解'):
 with context('动态热力计算'):
     m = list(Gb.reshape(-1))  # 各支路流量，由稳态水路计算获得
     A = Ah  # 水力、热力共享一个节点支路关联矩阵
+    #将其中的元素大于0的位置置为1，小于0的位置置为0
     Af = np.zeros(A.shape)
     Af[A>0] = 1
     At_ = np.zeros(A.shape)
     At_[A<0] = 1
+    #根据各支路流量和支路关联矩阵计算出传递矩阵At_，其中At_[i,j]表示第i个节点到第j个节点的热量传递系数
     for i in range(A.shape[1]):
         for j in range(A.shape[0]):
             At_[j,i] *= m[i]
+    #对传递矩阵At_进行归一化，使每个节点的所有出口热量传递系数之和为1
     for i in range(A.shape[0]):
         if sum(At_[i,:])==0:
             continue
