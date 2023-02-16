@@ -96,6 +96,7 @@ with context('稳态水力计算'):
 with context('时域激励分解'):
     # 时域激励
     # 10s一个点，共（x+12）*360个点，x为历史边界小时数
+    #构造时域激励TD_Tin和TD_E：根据历史边界数据，生成节点温度和管道温差的时域激励，其中每个点为10s一个，共有(x+12)*360个点，x为历史边界小时数。
     x = 12
     TD_Tin = np.zeros([nnodes, (x+12)*360])
     for i, supply in enumerate(tb1['T(Celsius)'].values):
@@ -112,6 +113,7 @@ with context('时域激励分解'):
                                                   np.linspace(300, 3600*15, 12*15),
                                                   tb4[load].values)))
     # 转换为频域激励
+    #将时域激励转换为频域激励FD_Tin和FD_E：使用FFT将时域激励转换为频域激励，取前nf个频率分量，其中nf=100*3表示取前300个频率分量，nt为时域激励的总点数。转换后的频域激励FD_Tin和FD_E为复数，分别包含节点温度和管道温差的频域激励。
     nf = 100*3
     nt = TD_E.shape[1]
     fr = 1/(12+x)/3600
