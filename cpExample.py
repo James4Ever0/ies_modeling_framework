@@ -87,7 +87,7 @@ class PV(IGES):  # Photovoltaic
         self.eff = eff
         self.nianhua = mdl.continuous_var(name="pv_nianhua{0}".format(PV.index))
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         mdl.add_constraint(self.pv_set <= self.pv_set_max)
         mdl.add_constraint(self.pv_set >= 0)
         mdl.add_constraints(
@@ -130,7 +130,7 @@ class LiBrRefrigeration(IGES):
             name="xhl_nianhua{0}".format(LiBrRefrigeration.index)
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.xhl_set >= 0)
         mdl.add_constraint(self.xhl_set <= self.xhl_set_max)
@@ -162,7 +162,7 @@ class Diesel(IGES):
         self.p_sum = mdl.sum(self.p_diesel[i] for i in range(0, self.num_h))
         self.nianhua = mdl.continuous_var(name="diesel_nianhua{0}".format(Diesel.index))
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         mdl.add_constraint(self.diesel_set <= self.diesel_set_max)
         mdl.add_constraint(self.diesel_set >= 0)
         mdl.add_constraints(
@@ -485,7 +485,7 @@ class Csgr(IGES):
             soc_max=1,
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         self.csgrgtxr_set.cons_register(mdl)
         mdl.add_constraint(self.csgr_set >= 0)
@@ -564,7 +564,7 @@ class CHP(IGES):
             self.num_h, mdl, self.chp_set * 0.5, set_price=300, k=0
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.chp_num >= 0)
         mdl.add_constraint(self.chp_num <= self.chp_num_max)
@@ -648,7 +648,7 @@ class Gasgl(IGES):
         self.gas_cost = mdl.continuous_var(name="gasgl_gas_cost{0}".format(Gasgl.index))
         self.nianhua = mdl.continuous_var(name="gasgl_nianhua{0}".format(Gasgl.index))
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.gasgl_set >= 0)
         mdl.add_constraint(self.gasgl_set <= self.gasgl_set_max)
@@ -691,7 +691,7 @@ class Dgl(IGES):
         self.ele_cost = mdl.continuous_var(name="ele_cost{0}".format(Dgl.index))
         self.nianhua = mdl.continuous_var(name="dgl_nianhua{0}".format(Dgl.index))
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.dgl_set >= 0)
         mdl.add_constraint(self.dgl_set <= self.gas_set_max)
@@ -726,7 +726,7 @@ class Exchanger(IGES):
             name="h_exchanger{0}".format(Exchanger.index),
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.exch_set >= 0)
         mdl.add_constraint(self.exch_set <= self.exch_set_max)
@@ -817,7 +817,7 @@ class AirHeatPump(IGES):
         self.cop_rb_heat = 3
         self.cop_rb_xheat = 3
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.rb_set)
         mdl.add_constraint(self.rb_set <= self.set_max)
@@ -969,7 +969,7 @@ class WaterHeatPump(IGES):
         self.cop_sy_heat = 5
         self.cop_sy_xheat = 5
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.sy_set)
         mdl.add_constraint(self.sy_set <= self.set_max)
@@ -1100,7 +1100,7 @@ class WaterCooledScrew(IGES):
         self.cop_slj_cool = 5
         self.cop_slj_xcool = 5
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.slj_set)
         mdl.add_constraint(self.slj_set <= self.set_max)
@@ -1198,7 +1198,7 @@ class DoubleGK(IGES):
 
     # 三工况机组
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.doublegk_set)
         mdl.add_constraint(self.doublegk_set <= self.set_max)
@@ -1310,7 +1310,7 @@ class ThreeGK(IGES):
         self.cop_threegk_ice = 4
         self.cop_threegk_heat = 5
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.threegk_set)
         mdl.add_constraint(self.threegk_set <= self.set_max)
@@ -1403,7 +1403,7 @@ class GeothermalHeatPump(IGES):
         )
         self.cop_dire = 5
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
 
         mdl.add_constraint(0 <= self.dire_set)
@@ -1655,7 +1655,7 @@ class Dyzqfsq(IGES):
             name="dyzqfsq_ele_cost{0}".format(Dyzqfsq.index)
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         self.dyzqfsqgtxr_set.cons_register(mdl)
         mdl.add_constraint(self.dyzqfsq_set >= 0)
@@ -1755,7 +1755,7 @@ class Linear_abs(object):
         self.irange = irange
         self.x = x
 
-    def abs_add_constraints(self, mdl):
+    def abs_add_constraints(self, mdl:Model):
         mdl.add_constraints(self.b_posi[i] + self.b_neg[i] == 1 for i in self.irange)
         mdl.add_constraints(self.x_posi[i] >= 0 for i in self.irange)
         mdl.add_constraints(
@@ -1814,7 +1814,7 @@ class CitySupply(IGES):
             name="citysupply_nianhua{0}".format(CitySupply.index)
         )
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.citysupply_set >= 0)
         mdl.add_constraint(self.citysupply_set <= self.citysupply_set_max)
