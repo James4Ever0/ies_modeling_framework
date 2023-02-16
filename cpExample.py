@@ -46,22 +46,22 @@ ha = np.ones(num_h0)
 
 
 # another name for IES?
-class IGES(object):
+class IntegratedEnergySystem(object):
     set_count: int = 0
 
     def __init__(self, set_name: str):
         self.set_name = set_name
-        IGES.set_count += 1
+        IntegratedEnergySystem.set_count += 1
         print(
-            "IGES Define a set named:",
+            "IntegratedEnergySystem Define a set named:",
             set_name,
             ", total set count/set number is:",
-            IGES.set_count,
+            IntegratedEnergySystem.set_count,
         )
 
 
 # 适用于光伏及平板式光热
-class PV(IGES):  # Photovoltaic
+class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
     index = 0
 
     def __init__(
@@ -72,14 +72,14 @@ class PV(IGES):  # Photovoltaic
         set_price: int,  # float?
         ha0: np.ndarray,
         eff: float,  # efficiency
-        set_name="PV",
+        set_name="PhotoVoltaic",
     ):
-        IGES(set_name)
-        PV.index += 1  # increase the index whenever another PV system is created.
+        IntegratedEnergySystem(set_name)
+        PhotoVoltaic.index += 1  # increase the index whenever another PhotoVoltaic system is created.
 
-        self.pv_set = mdl.continuous_var(name="pv_set{0}".format(PV.index))
+        self.pv_set = mdl.continuous_var(name="pv_set{0}".format(PhotoVoltaic.index))
         self.p_pv = mdl.continuous_var_list(
-            [i for i in range(0, num_h)], name="p_pv{0}".format(PV.index)
+            [i for i in range(0, num_h)], name="p_pv{0}".format(PhotoVoltaic.index)
         )
         self.pv_set_max = pv_set_max
         self.set_price = set_price
@@ -87,7 +87,7 @@ class PV(IGES):  # Photovoltaic
         # 光照强度
         self.ha = ha0
         self.eff = eff
-        self.nianhua = mdl.continuous_var(name="pv_nianhua{0}".format(PV.index))
+        self.nianhua = mdl.continuous_var(name="pv_nianhua{0}".format(PhotoVoltaic.index))
 
     def cons_register(self, mdl: Model):
         mdl.add_constraint(self.pv_set <= self.pv_set_max)
@@ -103,7 +103,7 @@ class PV(IGES):  # Photovoltaic
 
 
 # 溴化锂
-class LiBrRefrigeration(IGES):
+class LiBrRefrigeration(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -115,18 +115,18 @@ class LiBrRefrigeration(IGES):
         eff: float,
         set_name: str = "LiBrRefrigeration",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         LiBrRefrigeration.index += 1
         self.num_h = num_h
         self.xhl_set = mdl.continuous_var(
             name="xhl_set{0}".format(LiBrRefrigeration.index)
         )
 
-        self.h_xhl_from = mdl.continuous_var_list( # 
+        self.h_xhl_from = mdl.continuous_var_list( # iterate through hours in a day?
             [i for i in range(0, self.num_h)],
             name="h_xhl_from{0}".format(LiBrRefrigeration.index),
         )
-        self.c_xhl = mdl.continuous_var_list(
+        self.c_xhl = mdl.continuous_var_list( # the same?
             [i for i in range(0, self.num_h)],
             name="h_xhl{0}".format(LiBrRefrigeration.index),
         )
@@ -152,7 +152,7 @@ class LiBrRefrigeration(IGES):
 
 
 # 柴油
-class Diesel(IGES):
+class Diesel(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -164,7 +164,7 @@ class Diesel(IGES):
         run_price: int,
         set_name="diesel",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         Diesel.index += 1
         self.num_h = num_h
         self.diesel_set = mdl.continuous_var(name="diesel_set{0}".format(Diesel.index))
@@ -195,7 +195,7 @@ class Diesel(IGES):
 
 
 # 储能系统基类
-class ESS(IGES):
+class EnergyStorageSystem(IntegratedEnergySystem):
     index: int = 0
 
     def __init__(
@@ -205,42 +205,42 @@ class ESS(IGES):
         ess_set_max: int,
         ess_price: int,
         pcs_price: int,
-        c_rate_max: int,
+        c_rate_max: float,
         eff: float,
         ess_init: int,
         soc_min: float,
         soc_max: float,
         set_name: str = "ess",
     ):
-        IGES(set_name)
-        ESS.index += 1
+        IntegratedEnergySystem(set_name)
+        EnergyStorageSystem.index += 1
 
-        self.ess_set = mdl.continuous_var(name="ess_set{0}".format(ESS.index))
+        self.ess_set = mdl.continuous_var(name="ess_set{0}".format(EnergyStorageSystem.index))
         self.p_ess = mdl.continuous_var_list(
-            [i for i in range(0, num_h)], lb=-bigM, name="p_ess{0}".format(ESS.index)
+            [i for i in range(0, num_h)], lb=-bigM, name="p_ess{0}".format(EnergyStorageSystem.index)
         )
         # 充电功率
         self.p_ess_ch = mdl.continuous_var_list(
-            [i for i in range(0, num_h)], name="p_ess_ch{0}".format(ESS.index)
+            [i for i in range(0, num_h)], name="p_ess_ch{0}".format(EnergyStorageSystem.index)
         )
         # 放电功率
         self.p_ess_dis = mdl.continuous_var_list(
-            [i for i in range(0, num_h)], name="p_ess_dis{0}".format(ESS.index)
+            [i for i in range(0, num_h)], name="p_ess_dis{0}".format(EnergyStorageSystem.index)
         )
         # 能量
         self.ess = mdl.continuous_var_list(
-            [i for i in range(0, num_h)], name="ess{0}".format(ESS.index)
+            [i for i in range(0, num_h)], name="ess{0}".format(EnergyStorageSystem.index)
         )
         self.ess_set_max = ess_set_max
         self.ess_price = ess_price
         self.pcs_price = pcs_price
         self.num_h = num_h
-        self.pcs_set = mdl.continuous_var(name="pcs_set{0}".format(ESS.index))  # pcs
+        self.pcs_set = mdl.continuous_var(name="pcs_set{0}".format(EnergyStorageSystem.index))  # pcs
         self.ch_flag = mdl.binary_var_list(
-            [i for i in range(0, num_h)], name="bess_ch_flag{0}".format(ESS.index)
+            [i for i in range(0, num_h)], name="bess_ch_flag{0}".format(EnergyStorageSystem.index)
         )  # 充电
         self.dis_flag = mdl.binary_var_list(
-            [i for i in range(0, num_h)], name="bess_dis_flag{0}".format(ESS.index)
+            [i for i in range(0, num_h)], name="bess_dis_flag{0}".format(EnergyStorageSystem.index)
         )  # 放电
         # 效率
         self.eff = eff
@@ -248,7 +248,7 @@ class ESS(IGES):
         self.ess_init = ess_init
         self.soc_min = soc_min
         self.soc_max = soc_max
-        self.nianhua = mdl.continuous_var(name="ess_nianhua{0}".format(ESS.index))
+        self.nianhua = mdl.continuous_var(name="ess_nianhua{0}".format(EnergyStorageSystem.index))
 
     def cons_register(self, mdl:Model, regester_period_constraints=1, day_node=24):
         bigM = 1e10
@@ -312,7 +312,7 @@ class ESS(IGES):
                 + (self.p_ess_ch[i] * self.eff - self.p_ess_dis[i] / self.eff)
                 * simulationT
                 / 3600
-                for i in range(day_node, self.num_h:int, day_node)
+                for i in range(day_node, self.num_h, day_node)
             )
 
     def total_cost(self, sol:SolveSolution):
@@ -323,7 +323,7 @@ class ESS(IGES):
 
 
 # 可变容量储能
-class ESSVariable(IGES):
+class EnergyStorageSystemVariable(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -340,32 +340,32 @@ class ESSVariable(IGES):
         soc_max:float,
         set_name:str="ess_variable",
     ):
-        IGES(set_name)
-        ESSVariable.index += 1
+        IntegratedEnergySystem(set_name)
+        EnergyStorageSystemVariable.index += 1
 
         self.ess_set = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
-            name="essVariable_set{0}".format(ESSVariable.index),
+            name="essVariable_set{0}".format(EnergyStorageSystemVariable.index),
         )
         self.p_ess = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
             lb=-bigM,
-            name="p_essVariable{0}".format(ESSVariable.index),
+            name="p_essVariable{0}".format(EnergyStorageSystemVariable.index),
         )
         # 充电功率
         self.p_ess_ch = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
-            name="p_essVariable_ch{0}".format(ESSVariable.index),
+            name="p_essVariable_ch{0}".format(EnergyStorageSystemVariable.index),
         )
         # 放电功率
         self.p_ess_dis = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
-            name="p_essVariable_dis{0}".format(ESSVariable.index),
+            name="p_essVariable_dis{0}".format(EnergyStorageSystemVariable.index),
         )
         # 能量
         self.ess = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
-            name="essVariable{0}".format(ESSVariable.index),
+            name="essVariable{0}".format(EnergyStorageSystemVariable.index),
         )
         self.ess_set_max = ess_set_max
         self.ess_price = ess_price
@@ -373,15 +373,15 @@ class ESSVariable(IGES):
         self.num_h = num_h
         self.pcs_set = mdl.continuous_var_list(
             [i for i in range(0, num_h)],
-            name="pcs_setVariable{0}".format(ESSVariable.index),
+            name="pcs_setVariable{0}".format(EnergyStorageSystemVariable.index),
         )  # pcs
         self.ch_flag = mdl.binary_var_list(
             [i for i in range(0, num_h)],
-            name="bessVariable_ch_flag{0}".format(ESSVariable.index),
+            name="bessVariable_ch_flag{0}".format(EnergyStorageSystemVariable.index),
         )  # 充电
         self.dis_flag = mdl.binary_var_list(
             [i for i in range(0, num_h)],
-            name="bessVariable_dis_flag{0}".format(ESSVariable.index),
+            name="bessVariable_dis_flag{0}".format(EnergyStorageSystemVariable.index),
         )  # 放电
         # 效率
         self.eff = eff
@@ -439,7 +439,7 @@ class ESSVariable(IGES):
         if regester_period_constraints == 1:
             mdl.add_constraints(
                 self.ess[i] == self.ess[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_h:int, day_node)
+                for i in range(day_node - 1, self.num_h, day_node)
             )
         else:
             # 初始值
@@ -451,12 +451,12 @@ class ESSVariable(IGES):
                 + (self.p_ess_ch[i] * self.eff - self.p_ess_dis[i] / self.eff)
                 * simulationT
                 / 3600
-                for i in range(day_node, self.num_h:int, day_node)
+                for i in range(day_node, self.num_h, day_node)
             )
 
 
 # 槽式光热
-class Csgr(IGES):
+class Csgr(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -470,7 +470,7 @@ class Csgr(IGES):
         eff:float,
         set_name="csgr",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         Csgr.index += 1
         self.num_h = num_h
         self.csgr_set = mdl.continuous_var(name="csgr_set{0}".format(Csgr.index))
@@ -488,7 +488,7 @@ class Csgr(IGES):
         self.nianhua = mdl.continuous_var(name="csgr_nianhua{0}".format(Csgr.index))
         self.eff = eff
 
-        self.csgrgtxr_set = ESS(
+        self.csgrgtxr_set = EnergyStorageSystem(
             num_h,
             mdl,
             self.csgrgtxr_set_max,
@@ -521,9 +521,9 @@ class Csgr(IGES):
         )
 
 
-# CHP设备
+# CombinedHeatAndPower设备
 # 输入：
-class CHP(IGES):
+class CombinedHeatAndPower(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -537,34 +537,34 @@ class CHP(IGES):
         drratio,
         set_name="chp",
     ):
-        IGES(set_name)
-        CHP.index += 1
+        IntegratedEnergySystem(set_name)
+        CombinedHeatAndPower.index += 1
         self.num_h = num_h
-        self.chp_set = mdl.continuous_var(name="chp_set{0}".format(CHP.index))
+        self.chp_set = mdl.continuous_var(name="chp_set{0}".format(CombinedHeatAndPower.index))
         self.p_chp = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_chp{0}".format(CHP.index)
+            [i for i in range(0, self.num_h)], name="p_chp{0}".format(CombinedHeatAndPower.index)
         )
         self.h_chp = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="h_chp{0}".format(CHP.index)
+            [i for i in range(0, self.num_h)], name="h_chp{0}".format(CombinedHeatAndPower.index)
         )
         self.gas_chp = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="gas_chp{0}".format(CHP.index)
+            [i for i in range(0, self.num_h)], name="gas_chp{0}".format(CombinedHeatAndPower.index)
         )  # 时时耗气量
         self.chp_price = chp_price
         self.gas_price = gas_price
         self.chp_open_flag = mdl.binary_var_list(
-            [i for i in range(0, self.num_h)], name="chp_open_flag{0}".format(CHP.index)
+            [i for i in range(0, self.num_h)], name="chp_open_flag{0}".format(CombinedHeatAndPower.index)
         )
-        self.yqyrwater_flag = mdl.binary_var(name="yqyrwater_flag{0}".format(CHP.index))
-        self.yqyrsteam_flag = mdl.binary_var(name="yqyrsteam_flag{0}".format(CHP.index))
+        self.yqyrwater_flag = mdl.binary_var(name="yqyrwater_flag{0}".format(CombinedHeatAndPower.index))
+        self.yqyrsteam_flag = mdl.binary_var(name="yqyrsteam_flag{0}".format(CombinedHeatAndPower.index))
         # 机组数量
         self.chp_run_num = mdl.integer_var_list(
-            [i for i in range(0, self.num_h)], name="chp_run_num{0}".format(CHP.index)
+            [i for i in range(0, self.num_h)], name="chp_run_num{0}".format(CombinedHeatAndPower.index)
         )
-        self.chp_num = mdl.integer_var(name="chp_num{0}".format(CHP.index))
-        self.nianhua = mdl.continuous_var(name="chp_nianhua{0}".format(CHP.index))
+        self.chp_num = mdl.integer_var(name="chp_num{0}".format(CombinedHeatAndPower.index))
+        self.nianhua = mdl.continuous_var(name="chp_nianhua{0}".format(CombinedHeatAndPower.index))
         self.gas_cost = mdl.continuous_var(
-            name="CHP_gas_cost{0}".format(CHP.index)
+            name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
         )  # 燃气费用统计
         self.chp_num_max = chp_num_max
         self.chp_single_set = chp_single_set
@@ -599,12 +599,12 @@ class CHP(IGES):
         # p_chp(1, h) >= chp_set - (1 - chp_open_flag[h]) * bigM
         mdl.add_constraints(
             self.chp_run_num[h] * self.chp_single_set >= self.p_chp[h] for h in hrange
-        )  # 确定CHP开启台数
+        )  # 确定CombinedHeatAndPower开启台数
         mdl.add_constraints(
             self.chp_run_num[h] * self.chp_single_set
             <= self.p_chp[h] + self.chp_single_set + 1
             for h in hrange
-        )  # 确定CHP开启台数
+        )  # 确定CombinedHeatAndPower开启台数
         mdl.add_constraints(0 <= self.chp_run_num[h] for h in hrange)
         mdl.add_constraints(self.chp_run_num[h] <= self.chp_num for h in hrange)
         mdl.add_constraints(
@@ -640,29 +640,29 @@ class CHP(IGES):
 
 
 # 燃气锅炉：蒸汽，热水
-class Gasgl(IGES):
+class GasBoiler(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, gasgl_set_max, gasgl_price, gas_price, eff:float, set_name="gasgl"
     ):
-        IGES(set_name)
-        Gasgl.index += 1
+        IntegratedEnergySystem(set_name)
+        GasBoiler.index += 1
         self.num_h = num_h
-        self.gasgl_set = mdl.continuous_var(name="gasgl_set{0}".format(Gasgl.index))
+        self.gasgl_set = mdl.continuous_var(name="gasgl_set{0}".format(GasBoiler.index))
 
         self.h_gasgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="h_gasgl{0}".format(Gasgl.index)
+            [i for i in range(0, self.num_h)], name="h_gasgl{0}".format(GasBoiler.index)
         )
         self.gas_gasgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="gas_gasgl{0}".format(Gasgl.index)
+            [i for i in range(0, self.num_h)], name="gas_gasgl{0}".format(GasBoiler.index)
         )  # 时时耗气量
         self.gasgl_set_max = gasgl_set_max
         self.gasgl_price = gasgl_price
         self.gas_price = gas_price
         self.eff = eff
-        self.gas_cost = mdl.continuous_var(name="gasgl_gas_cost{0}".format(Gasgl.index))
-        self.nianhua = mdl.continuous_var(name="gasgl_nianhua{0}".format(Gasgl.index))
+        self.gas_cost = mdl.continuous_var(name="gasgl_gas_cost{0}".format(GasBoiler.index))
+        self.nianhua = mdl.continuous_var(name="gasgl_nianhua{0}".format(GasBoiler.index))
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
@@ -684,13 +684,13 @@ class Gasgl(IGES):
 
 
 # 电锅炉
-class Dgl(IGES):
+class Dgl(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, dgl_set_max, dgl_price, ele_price, eff:float, set_name="dgl"
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         Dgl.index += 1
         self.num_h = num_h
         self.dgl_set = mdl.continuous_var(name="dgl_set{0}".format(Dgl.index))
@@ -721,11 +721,11 @@ class Dgl(IGES):
         )
 
 
-class Exchanger(IGES):
+class Exchanger(IntegratedEnergySystem):
     index = 0
 
     def __init__(self, num_h:int, mdl:Model, set_max, set_price, k, set_name="exchanger"):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         # k 传热系数
         Exchanger.index += 1
         self.num_h = num_h
@@ -751,13 +751,13 @@ class Exchanger(IGES):
         mdl.add_constraint(self.nianhua == self.exch_set * self.set_price / 15)
 
 
-class AirHeatPump(IGES):
+class AirHeatPump(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, set_max, set_price, ele_price, set_name="air_heat_pump"
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
         AirHeatPump.index += 1
         self.ele_price = ele_price
@@ -906,7 +906,7 @@ class AirHeatPump(IGES):
 
 
 # 水源热泵
-class WaterHeatPump(IGES):
+class WaterHeatPump(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -919,7 +919,7 @@ class WaterHeatPump(IGES):
         case_ratio,
         set_name="water_heat_pump",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         # case_ratio 不同工况下制热量/制冷量的比值
         self.num_h = num_h
         WaterHeatPump.index += 1
@@ -1056,7 +1056,7 @@ class WaterHeatPump(IGES):
 
 
 # 水冷螺杆机
-class WaterCooledScrew(IGES):
+class WaterCooledScrew(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1069,7 +1069,7 @@ class WaterCooledScrew(IGES):
         case_ratio,
         set_name="water_cooled_screw",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
         WaterCooledScrew.index += 1
         self.ele_price = ele_price
@@ -1159,13 +1159,13 @@ class WaterCooledScrew(IGES):
 
 
 # 双工况机组
-class DoubleGK(IGES):
+class DoubleGK(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="doublegk"
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
         DoubleGK.index += 1
         self.ele_price = ele_price
@@ -1262,13 +1262,13 @@ class DoubleGK(IGES):
         )
 
 
-class ThreeGK(IGES):
+class ThreeGK(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="threegk"
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
 
         ThreeGK.index += 1
@@ -1387,13 +1387,13 @@ class ThreeGK(IGES):
         )
 
 
-class GeothermalHeatPump(IGES):
+class GeothermalHeatPump(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, set_max, set_price, ele_price, set_name="geothermal_heat_pump"
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
         GeothermalHeatPump.index += 1
         self.ele_price = ele_price
@@ -1441,7 +1441,7 @@ class GeothermalHeatPump(IGES):
 
 # 水蓄能，可续蓄高温，可以蓄低温
 # 水蓄能罐，可变容量的储能体
-class WaterEnergyStorage(IGES):
+class WaterEnergyStorage(IntegratedEnergySystem):
     # index=0
     def __init__(
         self,
@@ -1460,14 +1460,14 @@ class WaterEnergyStorage(IGES):
         ratio_gheat:int,
         set_name:str="water_energy_storage",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         self.num_h = num_h
         self.mdl = mdl
         # 对于水蓄能，优化的变量为水罐的体积
-        self.sx = ESSVariable(
+        self.sx = EnergyStorageSystemVariable(
             num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
         )
-        self.index = ESSVariable.index
+        self.index = EnergyStorageSystemVariable.index
         self.sx_set_cool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)], name="sx_set_cool{0}".format(self.index)
         )
@@ -1615,7 +1615,7 @@ class WaterEnergyStorage(IGES):
         mdl.add_constraint(self.nianhua == self.sx_V * self.v_price / 20)
 
 
-class Dyzqfsq(IGES):
+class Dyzqfsq(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1629,7 +1629,7 @@ class Dyzqfsq(IGES):
         eff:float,
         set_name="dyzqfsq",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         Dyzqfsq.index += 1
         self.num_h = num_h
         self.dyzqfsq_set = mdl.continuous_var(
@@ -1655,7 +1655,7 @@ class Dyzqfsq(IGES):
         )
         self.eff = eff
 
-        self.dyzqfsqgtxr_set = ESS(
+        self.dyzqfsqgtxr_set = EnergyStorageSystem(
             num_h,
             mdl,
             self.dyzqfsqgtxr_set_max,
@@ -1790,7 +1790,7 @@ class Linear_abs(object):
 
 
 # 适用于市政蒸汽，市政热水
-class CitySupply(IGES):
+class CitySupply(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1803,7 +1803,7 @@ class CitySupply(IGES):
         eff:float,
         set_name="city_supply",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         CitySupply.index += 1
         self.num_h = num_h # hours in a day
         self.citysupply_set = mdl.continuous_var(
@@ -1849,7 +1849,7 @@ class CitySupply(IGES):
         )
 
 
-class GridNet(IGES):
+class GridNet(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1862,7 +1862,7 @@ class GridNet(IGES):
         ele_price_to,
         set_name="grid_net",
     ):
-        IGES(set_name)
+        IntegratedEnergySystem(set_name)
         GridNet.index += 1
         self.num_h = num_h
         self.mdl = mdl
@@ -2032,9 +2032,9 @@ if __name__ == "__main__":
 
     diesel = Diesel(num_h0, mdl1, 320, 750, 2)  # 柴油机
     diesel.cons_register(mdl1)
-    pv = PV(num_h0, mdl1, 5000, 4500, ha0, 0.8, "PV")  # 光伏
+    pv = PhotoVoltaic(num_h0, mdl1, 5000, 4500, ha0, 0.8, "PhotoVoltaic")  # 光伏
     pv.cons_register(mdl1)
-    bess = ESS(
+    bess = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2060,7 +2060,7 @@ if __name__ == "__main__":
         eff=0.9,
     )
     dyzqfsq.cons_register(mdl1)
-    chp = CHP(
+    chp = CombinedHeatAndPower(
         num_h0,
         mdl1,
         chp_num_max=5,
@@ -2070,7 +2070,7 @@ if __name__ == "__main__":
         drratio=1.2,
     )
     chp.cons_register(mdl1)
-    gasgl = Gasgl(
+    gasgl = GasBoiler(
         num_h0, mdl1, gasgl_set_max=5000, gasgl_price=200, gas_price=gas_price0, eff=0.9
     )
     gasgl.cons_register(mdl1)
@@ -2120,10 +2120,10 @@ if __name__ == "__main__":
     # 1) chp gts
     # 2) chp yqyr_to_water
     # 3
-    pbgr = PV(num_h0, mdl1, 10000, 500, ha0, 0.8, "pbgr")  # 平板光热
+    pbgr = PhotoVoltaic(num_h0, mdl1, 10000, 500, ha0, 0.8, "pbgr")  # 平板光热
     pbgr.cons_register(mdl1)
     # 4
-    xbxr = ESS(
+    xbxr = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=10000,
@@ -2152,7 +2152,7 @@ if __name__ == "__main__":
     )
     rsdgl.cons_register(mdl1)
     # 7
-    gasgl_rs = Gasgl(
+    gasgl_rs = GasBoiler(
         num_h0,
         mdl1,
         gasgl_set_max=20000,
@@ -2266,7 +2266,7 @@ if __name__ == "__main__":
         num_h0, mdl1, set_max=20000, set_price=40000, ele_price=ele_price0
     )
     dire.cons_register(mdl1)
-    bx = ESS(
+    bx = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2280,7 +2280,7 @@ if __name__ == "__main__":
     )
     bx.cons_register(mdl1)
 
-    xbxl = ESS(
+    xbxl = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2294,7 +2294,7 @@ if __name__ == "__main__":
     )
     xbxl.cons_register(mdl1)
 
-    lowxbxr = ESS(
+    lowxbxr = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2400,7 +2400,7 @@ if __name__ == "__main__":
         for h in range(0, num_h0)
     )
 
-    iges_set = [ # all constrains in IES/IGES system
+    iges_set = [ # all constrains in IES/IntegratedEnergySystem system
         diesel,
         pv,
         bess,
@@ -2498,7 +2498,7 @@ if __name__ == "__main__":
         print(value.value(bess.ess_set))
 
         plt.figure()
-        pllist = IGESPlot(sol_run1)
+        pllist = IntegratedEnergySystemPlot(sol_run1)
 
         # pllist.plot_list(  [dire.ele_dire, slj.ele_slj], ['dire.ele_dire', 'slj.ele_slj'], "ele balance")
 
