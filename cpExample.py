@@ -2395,7 +2395,7 @@ if __name__ == "__main__":
         for h in range(0, num_h0)
     )
 
-    iges_set = [
+    iges_set = [ # all constrains in IES/IGES system
         diesel,
         pv,
         bess,
@@ -2442,8 +2442,12 @@ if __name__ == "__main__":
     # docplex.mp.solution.SolveSolution or None
     
     if sol_run1 is None:
+        from docplex.mp.sdetails import SolveDetails
         print("SOLUTION IS NONE.")
-        solution_detail = mdl1.
+        solution_detail:SolveDetails = mdl1.solve_details
+        print()
+        print("SOLVE DETAILS?")
+        print(solution_detail)
     else:
         # now we have solution.
         
