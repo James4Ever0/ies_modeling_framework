@@ -208,8 +208,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         c_rate_max: float,
         eff: float,
         ess_init: int,
-        soc_min: float,
-        soc_max: float,
+        stateOfCharge_min: float,
+        stateOfCharge_max: float,
         set_name: str = "ess",
     ):
         IntegratedEnergySystem(set_name)
@@ -246,8 +246,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.eff = eff
         self.c_rate_max = c_rate_max
         self.ess_init = ess_init
-        self.soc_min = soc_min
-        self.soc_max = soc_max
+        self.stateOfCharge_min = stateOfCharge_min
+        self.stateOfCharge_max = stateOfCharge_max
         self.annualized = mdl.continuous_var(name="ess_annualized{0}".format(EnergyStorageSystem.index))
 
     def cons_register(self, mdl:Model, regester_period_constraints=1, day_node=24):
@@ -286,10 +286,10 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             )
 
         mdl.add_constraints(
-            self.ess[i] <= self.ess_set * self.soc_max for i in range(1, self.num_h)
+            self.ess[i] <= self.ess_set * self.stateOfCharge_max for i in range(1, self.num_h)
         )
         mdl.add_constraints(
-            self.ess[i] >= self.ess_set * self.soc_min for i in range(1, self.num_h)
+            self.ess[i] >= self.ess_set * self.stateOfCharge_min for i in range(1, self.num_h)
         )
         mdl.add_constraint(
             self.annualized
@@ -336,8 +336,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         c_rate_max:float,
         eff:float,
         ess_init:int,
-        soc_min:float,
-        soc_max:float,
+        stateOfCharge_min:float,
+        stateOfCharge_max:float,
         set_name:str="ess_variable",
     ):
         IntegratedEnergySystem(set_name)
@@ -387,8 +387,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         self.eff = eff
         self.c_rate_max = c_rate_max
         self.ess_init = ess_init
-        self.soc_min = soc_min
-        self.soc_max = soc_max
+        self.stateOfCharge_min = stateOfCharge_min
+        self.stateOfCharge_max = stateOfCharge_max
 
     def cons_register(self, mdl:Model, regester_period_constraints=1, day_node=24):
         bigM = 1e10
@@ -429,10 +429,10 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )
 
         mdl.add_constraints(
-            self.ess[i] <= self.ess_set[i] * self.soc_max for i in range(1, self.num_h)
+            self.ess[i] <= self.ess_set[i] * self.stateOfCharge_max for i in range(1, self.num_h)
         )
         mdl.add_constraints(
-            self.ess[i] >= self.ess_set[i] * self.soc_min for i in range(1, self.num_h)
+            self.ess[i] >= self.ess_set[i] * self.stateOfCharge_min for i in range(1, self.num_h)
         )
 
         # 两天之间直接割裂，没有啥关系
@@ -497,8 +497,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             c_rate_max=2,
             eff=0.9,
             ess_init=1,
-            soc_min=0,
-            soc_max=1,
+            stateOfCharge_min=0,
+            stateOfCharge_max=1,
         )
 
     def cons_register(self, mdl: Model):
@@ -1453,8 +1453,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         c_rate_max:float,
         eff:float,
         ess_init,
-        soc_min:float,
-        soc_max:float,
+        stateOfCharge_min:float,
+        stateOfCharge_max:float,
         ratio_cool:int,
         ratio_heat:int,
         ratio_gheat:int,
@@ -1465,7 +1465,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.mdl = mdl
         # 对于水蓄能，优化的变量为水罐的体积
         self.sx = EnergyStorageSystemVariable(
-            num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff, ess_init, soc_min, soc_max
+            num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff, ess_init, stateOfCharge_min, stateOfCharge_max
         )
         self.index = EnergyStorageSystemVariable.index
         self.sx_set_cool = mdl.continuous_var_list(
@@ -1664,8 +1664,8 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             c_rate_max=2,
             eff=0.9,
             ess_init=1,
-            soc_min=0,
-            soc_max=1,
+            stateOfCharge_min=0,
+            stateOfCharge_max=1,
         )
         self.ele_cost = mdl.continuous_var(
             name="地源蒸汽发生器_ele_cost{0}".format(GroundSourceSteamGenerator.index)
@@ -2043,8 +2043,8 @@ if __name__ == "__main__":
         c_rate_max=2,
         eff=0.9,
         ess_init=1,
-        soc_min=0,  # state of charge
-        soc_max=1,
+        stateOfCharge_min=0,  # state of charge
+        stateOfCharge_max=1,
     )
     # original: battery
     batteryEnergyStorageSystem.cons_register(mdl1, 1, day_node)
@@ -2124,7 +2124,7 @@ if __name__ == "__main__":
     平板光热 = PhotoVoltaic(num_h0, mdl1, 10000, 500, ha0, 0.8, "平板光热")  # 平板光热
     平板光热.cons_register(mdl1)
     # 4
-    xbxr = EnergyStorageSystem(
+    相变蓄热 = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=10000,
@@ -2133,10 +2133,10 @@ if __name__ == "__main__":
         c_rate_max=0.5,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
-        soc_max=1,
+        stateOfCharge_min=0,
+        stateOfCharge_max=1,
     )
-    xbxr.cons_register(mdl1)
+    相变蓄热.cons_register(mdl1)
     # 5
     市政热水 = CitySupply(
         num_h0,
@@ -2171,8 +2171,8 @@ if __name__ == "__main__":
         c_rate_max=0.5,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
-        soc_max=1,
+        stateOfCharge_min=0,
+        stateOfCharge_max=1,
         ratio_cool=10,
         ratio_heat=10,
         ratio_gheat=20,
@@ -2180,15 +2180,15 @@ if __name__ == "__main__":
 
     sx.cons_regester(mdl1, 1, day_node)
     # 高温热水合计
-    p_gws_sum = mdl1.continuous_var_list(
-        [i for i in range(0, num_h0)], name="p_gws_sum "
+    p_高温热水_sum = mdl1.continuous_var_list(
+        [i for i in range(0, num_h0)], name="p_高温热水_sum "
     )
     mdl1.add_constraints(
-        p_gws_sum[h]
+        p_高温热水_sum[h]
         == chp.gts_set.h_exch[h]
         + chp.yqyrwater_set.h_exch[h]
         + 平板光热.p_pv[h]
-        + xbxr.p_ess[h]
+        + 相变蓄热.p_ess[h]
         + 市政热水.h_citysupply[h]
         + gasBoiler_rs.h_gasBoiler[h]
         + 热水电锅炉.h_电锅炉[h]
@@ -2204,10 +2204,10 @@ if __name__ == "__main__":
     热水换热器.cons_register(mdl1)
     # 高温热水去向
     mdl1.add_constraints(
-        p_gws_sum[h] >= 热水溴化锂.h_溴化锂_from[h] + 热水换热器.h_exch[h]
+        p_高温热水_sum[h] >= 热水溴化锂.h_溴化锂_from[h] + 热水换热器.h_exch[h]
         for h in range(0, num_h0)
     )
-    mdl1.add_constraints(p_gws_sum[h] >= 0 for h in range(0, num_h0))
+    mdl1.add_constraints(p_高温热水_sum[h] >= 0 for h in range(0, num_h0))
 
     # p_rb[h]*rb_flag[h]+p_sx[h]*sx_flag[h]+p_水冷螺杆机[h]*sy_flag[h]+p_溴化锂[h]+p_水冷螺杆机[h]+p_bx[h]==cool_load[h]%冷量需求
     # p_rb[h]*(1-rb_flag[h])+p_sx[h]*(1-sx_flag[h])+p_sy[h]*(1-sy_flag[h])+p_gas[h]+p_dire[h]==heat_load[h]%热量需求
@@ -2276,12 +2276,12 @@ if __name__ == "__main__":
         c_rate_max=0.5,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
-        soc_max=1,
+        stateOfCharge_min=0,
+        stateOfCharge_max=1,
     )
     bx.cons_register(mdl1)
 
-    xbxl = EnergyStorageSystem(
+    相变蓄冷 = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2290,12 +2290,12 @@ if __name__ == "__main__":
         c_rate_max=0.5,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
-        soc_max=1,
+        stateOfCharge_min=0,
+        stateOfCharge_max=1,
     )
-    xbxl.cons_register(mdl1)
+    相变蓄冷.cons_register(mdl1)
 
-    lowxbxr = EnergyStorageSystem(
+    low相变蓄热 = EnergyStorageSystem(
         num_h0,
         mdl1,
         ess_set_max=20000,
@@ -2304,10 +2304,10 @@ if __name__ == "__main__":
         c_rate_max=0.5,
         eff=0.9,
         ess_init=1,
-        soc_min=0,
-        soc_max=1,
+        stateOfCharge_min=0,
+        stateOfCharge_max=1,
     )
-    lowxbxr.cons_register(mdl1)
+    low相变蓄热.cons_register(mdl1)
 
     p_xcool = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xcool ")
     p_xheat = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xheat ")
@@ -2353,21 +2353,21 @@ if __name__ == "__main__":
         + sy.p_sy_xcool[h]
         + 水冷螺杆机.p_水冷螺杆机_xcool[h]
         + sx.p_sx_cool[h]
-        + xbxl.p_ess[h]
+        + 相变蓄冷.p_ess[h]
         == p_xcool[h]
         for h in range(0, num_h0)
     )
     lin.max_zeros(
-        num_h0, mdl1, p_xcool, lin.add(num_h0, mdl1, sx.p_sx_cool, xbxl.p_ess)
+        num_h0, mdl1, p_xcool, lin.add(num_h0, mdl1, sx.p_sx_cool, 相变蓄冷.p_ess)
     )
     # 蓄热逻辑组合
     mdl1.add_constraints(
-        rb.p_sy_xheat[h] + sy.p_sy_xheat[h] + sx.p_sx_heat[h] + lowxbxr.p_ess[h]
+        rb.p_sy_xheat[h] + sy.p_sy_xheat[h] + sx.p_sx_heat[h] + low相变蓄热.p_ess[h]
         == p_xheat[h]
         for h in range(0, num_h0)
     )
     lin.max_zeros(
-        num_h0, mdl1, p_xheat, lin.add(num_h0, mdl1, sx.p_sx_heat, lowxbxr.p_ess)
+        num_h0, mdl1, p_xheat, lin.add(num_h0, mdl1, sx.p_sx_heat, low相变蓄热.p_ess)
     )
     # 电量平衡
     # ele_dire[h] + ele_水冷螺杆机[h] + ele_rb[h] - p_batteryEnergyStorageSystem[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
@@ -2412,7 +2412,7 @@ if __name__ == "__main__":
         qs_exchanger,
         zq_溴化锂,
         平板光热,
-        xbxr,
+        相变蓄热,
         市政热水,
         热水电锅炉,
         gasBoiler_rs,
@@ -2427,8 +2427,8 @@ if __name__ == "__main__":
         doubleWorkingConditionUnit,
         dire,
         bx,
-        xbxl,
-        lowxbxr,
+        相变蓄冷,
+        low相变蓄热,
         gridnet,
     ]
     obj = iges_set[0].annualized
@@ -2595,7 +2595,7 @@ if __name__ == "__main__":
                 chp.gts_set.h_exch,
                 chp.yqyrwater_set.h_exch,
                 平板光热.p_pv,
-                xbxr.p_ess, # 相变蓄热？
+                相变蓄热.p_ess, # 相变蓄热？
                 市政热水.h_citysupply,
                 gasBoiler_rs.h_gasBoiler,
                 热水电锅炉.h_电锅炉,
@@ -2605,7 +2605,7 @@ if __name__ == "__main__":
                 "chp.gts_set.h_exchh, chp",
                 "yqyrwater_set.h_exch",
                 "平板光热.p_pv",
-                "xbxr.p_ess",
+                "相变蓄热.p_ess",
                 "市政热水.h_citysupply",
                 "gasBoiler_rs.h_gasBoiler",
                 "热水电锅炉.h_电锅炉",
