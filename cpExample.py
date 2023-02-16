@@ -109,7 +109,7 @@ class LiBrRefrigeration(IGES):
         num_h: int,
         mdl: Model,
         xhl_set_max: int,
-        set_price: int,
+        set_price: int,# what is this set? 
         eff: float,
         set_name: str = "LiBrRefrigeration",
     ):
@@ -137,6 +137,7 @@ class LiBrRefrigeration(IGES):
         )
 
     def cons_register(self, mdl: Model):
+        # register constraints
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.xhl_set >= 0)
         mdl.add_constraint(self.xhl_set <= self.xhl_set_max)
