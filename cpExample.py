@@ -2595,7 +2595,7 @@ if __name__ == "__main__":
                 chp.gts_set.h_exch,
                 chp.yqyrwater_set.h_exch,
                 平板光热.p_pv,
-                xbxr.p_ess, # xiang bian蓄热
+                xbxr.p_ess, # 相变蓄热？
                 市政热水.h_citysupply,
                 gasBoiler_rs.h_gasBoiler,
                 热水电锅炉.h_电锅炉,
