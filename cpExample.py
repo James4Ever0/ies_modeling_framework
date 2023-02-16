@@ -15,7 +15,7 @@ from result_processlib import Value
 from docplex.mp.dvar import Var
 from typing import List
 
-from plot_arr import IGESPlot
+from plot_arr import IGESPlot as IntegratedEnergySystemPlot
 
 localtime1 = time.time()
 
@@ -1615,7 +1615,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         mdl.add_constraint(self.nianhua == self.sx_V * self.v_price / 20)
 
 # 地源蒸汽发生器
-class Dyzqfsq(IntegratedEnergySystem):
+class GroundSourceSteamGenerator(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1630,13 +1630,13 @@ class Dyzqfsq(IntegratedEnergySystem):
         set_name="dyzqfsq",
     ):
         IntegratedEnergySystem(set_name)
-        Dyzqfsq.index += 1
+        GroundSourceSteamGenerator.index += 1
         self.num_h = num_h
         self.dyzqfsq_set = mdl.continuous_var(
-            name="dyzqfsq_set{0}".format(Dyzqfsq.index)
+            name="dyzqfsq_set{0}".format(GroundSourceSteamGenerator.index)
         )
         self.p_dyzqfsq = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_dyzqfsq{0}".format(Dyzqfsq.index)
+            [i for i in range(0, self.num_h)], name="p_dyzqfsq{0}".format(GroundSourceSteamGenerator.index)
         )
 
         self.p_dyzqfsq_steam = mdl.continuous_var_list(
@@ -1651,7 +1651,7 @@ class Dyzqfsq(IntegratedEnergySystem):
         self.ele_price = ele_price
 
         self.nianhua = mdl.continuous_var(
-            name="Dyzqfsq_nianhua{0}".format(Dyzqfsq.index)
+            name="GroundSourceSteamGenerator_nianhua{0}".format(GroundSourceSteamGenerator.index)
         )
         self.eff = eff
 
@@ -1668,7 +1668,7 @@ class Dyzqfsq(IntegratedEnergySystem):
             soc_max=1,
         )
         self.ele_cost = mdl.continuous_var(
-            name="dyzqfsq_ele_cost{0}".format(Dyzqfsq.index)
+            name="dyzqfsq_ele_cost{0}".format(GroundSourceSteamGenerator.index)
         )
 
     def cons_register(self, mdl: Model):
@@ -1713,37 +1713,37 @@ class ResourceGet(object):
             raise Exception("File not extists.")
 
     def get_ele_price(self, num_h: int):
-        ele_price = np.ones(num_h:int, dtype=float) * 0.5
+        ele_price = np.ones(num_h, dtype=float) * 0.5
         return ele_price
 
     def get_gas_price(self, num_h: int):
-        gas_price = np.ones(num_h:int, dtype=float) * 2.77
+        gas_price = np.ones(num_h, dtype=float) * 2.77
         return gas_price
 
     def get_cityrs_price(self, num_h: int):
-        cityrs_price = np.ones(num_h:int, dtype=float) * 0.3
+        cityrs_price = np.ones(num_h, dtype=float) * 0.3
         return cityrs_price
 
     def get_citysteam_price(self, num_h: int):
-        citysteam = np.ones(num_h:int, dtype=float) * 0.3
+        citysteam = np.ones(num_h, dtype=float) * 0.3
         return citysteam
 
 
 class LoadGet(object):
     def get_cool_load(self, num_h):
-        cool_load = np.ones(num_h:int, dtype=float) * 10000
+        cool_load = np.ones(num_h, dtype=float) * 10000
         return cool_load
 
     def get_heat_load(self, num_h):
-        heat_load = np.ones(num_h:int, dtype=float) * 10000
+        heat_load = np.ones(num_h, dtype=float) * 10000
         return heat_load
 
     def get_power_load(self, num_h):
-        power_load = np.ones(num_h:int, dtype=float) * 10000
+        power_load = np.ones(num_h, dtype=float) * 10000
         return power_load
 
     def get_steam_load(self, num_h):
-        steam_load = np.ones(num_h:int, dtype=float) * 10000
+        steam_load = np.ones(num_h, dtype=float) * 10000
         return steam_load
 
 
@@ -2050,7 +2050,7 @@ if __name__ == "__main__":
     # 高温蒸汽
     csgr = TroughPhotoThermal(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
     csgr.cons_register(mdl1)
-    dyzqfsq = Dyzqfsq(
+    dyzqfsq = GroundSourceSteamGenerator(
         num_h0,
         mdl1,
         dyzqfsq_set_max=20000,
