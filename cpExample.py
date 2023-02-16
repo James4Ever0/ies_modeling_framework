@@ -21,38 +21,44 @@ localtime1 = time.time()
 mdl1 = Model(name="buses")
 
 
-ma = 0
+ma = 0 # not using? moving average?
 debug = 1
 run = 0
 year = 1
 day_node = 24
+
 node = day_node * 1 * 1
 if debug == 0:
     num_h0 = node
 else:
     num_h0 = node * year
+
+# a big number
 bigM = 10e10
 
+# total simulation rounds?
 simulationT = 3600
+
+# every hour of one day?
 ha = np.ones(num_h0)
 
-
+# another name for IES?
 class IGES(object):
     set_count = 0
 
-    def __init__(self, set_name):
+    def __init__(self, set_name:str):
         self.set_name = set_name
         IGES.set_count += 1
-        print("Define a set named:", set_name, ",set num is:", IGES.set_count)
+        print("IGES Define a set named:", set_name, ", total set count/set number is:", IGES.set_count)
 
 
 # 适用于光伏及平板式光热
 class PV(IGES):  # Photovoltaic
     index = 0
 
-    def __init__(self, num_h, mdl, pv_set_max, set_price, ha0, eff, set_name="PV"):
+    def __init__(self, num_h:int, mdl:Model, pv_set_max, set_price, ha0, eff, set_name="PV"):
         IGES(set_name)
-        PV.index += 1
+        PV.index += 1 # increase the index whenever another PV system is created.
 
         self.pv_set = mdl.continuous_var(name="pv_set{0}".format(PV.index))
         self.p_pv = mdl.continuous_var_list(
@@ -1984,6 +1990,8 @@ steam_load = load.get_power_load(num_h0)
 if __name__ == "__main__":
     resource = ResourceGet()
     ha0 = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
+    # what is the output?
+    
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
     cityrs_price0 = resource.get_cityrs_price(num_h0)
