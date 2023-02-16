@@ -70,8 +70,9 @@ with context('稳态水力计算'):
                 E[i] -= -kv*mb[i]**2
         #对于带有阀门的管路，需要考虑阀门的影响，其中 kv 表示阀门的流量系数，因此可根据公式计算阀门的影响并加入到相应的管路中。
         E = np.array(E).reshape([-1,1]) #E被重塑为[-1,1]的列向量
-        yb = np.diag([1/Ri for Ri in R])
-        Y = np.matmul(np.matmul(Ah, yb), Ah.T)
+        yb = np.diag([1/Ri for Ri in R]) #用对角线上R值的倒数创建一个对角矩阵yb
+        Y = np.matmul(np.matmul(Ah, yb), Ah.T) #导纳矩阵Y的计算公式为np.matmul( np.matmul ( Ah , yb)，Ah.T )，其中Ah为液压网络的关联矩阵。
+        #通过索引提取Y的子矩阵，生成Ygg、Ygp、Ypg和Ypp
         Ygg = Y[fix_G][:,fix_G]
         Ygp = Y[fix_G][:,fix_p]
         Ypg = Y[fix_p][:,fix_G]
