@@ -20,7 +20,7 @@ from cplex.exceptions import CplexError
 # 用来在之后方便地添加到优化器里面
 
 # obj 指的是objective 意为目标，
-# 也就是要优化的目标（函数x1 + 2 x2 + 3 x3 + x4 的最小值）的系数
+# 也就是要优化的目标（函数x1 + 2 * x2 + 3 * x3 + x4 的最小值）的系数
 my_obj = [1.0, 2.0, 3.0, 1.0]
 
 #ub Upper Bound，上界，分别表示x1,x2,x3,x4的上界，infinity就是无穷大
