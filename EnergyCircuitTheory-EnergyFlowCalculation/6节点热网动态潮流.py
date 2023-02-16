@@ -78,10 +78,10 @@ with context('稳态水力计算'):
         Ypg = Y[fix_p][:,fix_G]
         Ypp = Y[fix_p][:,fix_p]
         pp = tb1['pressure(MPa)'].values[fix_p].reshape([1,1]) * 1e6 #从tb1中提取与固定压力管道相连的节点处的压力，并将其整形为1x1阵列，单位为Pa
-        G = tb1['injection(kg/s)'].values.reshape([-1,1]) + np.matmul(np.matmul(Ah, yb), E)
+        G = tb1['injection(kg/s)'].values.reshape([-1,1]) + np.matmul(np.matmul(Ah, yb), E)#从tb1中提取所有节点处的注入，并将其整形为以kg/s为单位的列向量。通过导纳矩阵Y和能量损失向量E相乘，再加上注入向量，计算出通过每根管道的液压流量。
         Gg = G[fix_G,:]
         assert np.linalg.cond(Ygg)<1e5  # 确认导纳矩阵非奇异
-        pg = np.matmul(np.linalg.inv(Ygg), (Gg - np.matmul(Ygp, pp)))
+        pg = np.matmul(np.linalg.inv(Ygg), (Gg - np.matmul(Ygp, pp))) 
         pn = np.concatenate((pp, pg), axis=0)
         Gb = np.matmul(yb, (np.matmul(Ah.T, pn) - E))
         err.append(np.linalg.norm(Gb.reshape(-1) - mb))
