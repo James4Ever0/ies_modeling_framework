@@ -122,7 +122,7 @@ class LiBrRefrigeration(IGES):
             name="xhl_set{0}".format(LiBrRefrigeration.index)
         )
 
-        self.h_xhl_from = mdl.continuous_var_list(
+        self.h_xhl_from = mdl.continuous_var_list( # 
             [i for i in range(0, self.num_h)],
             name="h_xhl_from{0}".format(LiBrRefrigeration.index),
         )
@@ -489,8 +489,8 @@ class Csgr(IGES):
         self.eff = eff
 
         self.csgrgtxr_set = ESS(
-            num_h:int,
-            mdl:Model,
+            num_h,
+            mdl,
             self.csgrgtxr_set_max,
             self.csgrgtxr_price,
             pcs_price=100,
@@ -571,13 +571,13 @@ class CHP(IGES):
         self.chp_limit_down_ratio = 0.2
         self.drratio = drratio
         self.gts_set = Exchanger(
-            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h, mdl, self.chp_set * 0.5, set_price=300, k=0
         )
         self.yqyrwater_set = Exchanger(
-            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h, mdl, self.chp_set * 0.5, set_price=300, k=0
         )
         self.yqyrsteam_set = Exchanger(
-            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h, mdl, self.chp_set * 0.5, set_price=300, k=0
         )
 
     def cons_register(self, mdl: Model):
@@ -1907,7 +1907,7 @@ class GridNet(IGES):
         hrange = range(0, self.num_h)
         lin = Linearization()
         lin.posi_neg_cons_regester(
-            self.num_h:int, mdl:Model, self.total_power, self.powerfrom, self.powerto
+            self.num_h, mdl, self.total_power, self.powerfrom, self.powerto
         )
         mdl.add_constraint(self.gridnet_set >= 0)
         mdl.add_constraint(self.gridnet_set <= self.gridnet_set_max)
