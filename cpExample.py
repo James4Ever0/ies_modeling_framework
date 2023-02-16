@@ -12,7 +12,7 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 import matplotlib.pyplot as plt
 from matplotlib import style
 from result_processlib import Value
-from docplex.mp.vartype import VarType
+from docplex.mp.dvar import Var
 from typing import List
 
 from plot_arr import IGESPlot
@@ -1465,7 +1465,7 @@ class WaterEnergyStorage(IGES):
         self.mdl = mdl
         # 对于水蓄能，优化的变量为水罐的体积
         self.sx = ESSVariable(
-            num_h:int, mdl:Model, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
+            num_h, mdl, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
         )
         self.index = ESSVariable.index
         self.sx_set_cool = mdl.continuous_var_list(
@@ -1507,7 +1507,7 @@ class WaterEnergyStorage(IGES):
     def cons_regester(self, mdl:Model, regester_period_constraints, day_node):
         bigM = 1e10
         hrange = range(0, self.num_h)
-        self.sx.cons_register(mdl:Model, regester_period_constraints, day_node)
+        self.sx.cons_register(mdl, regester_period_constraints, day_node)
         # sx_set[h] == sx_cool_flag[h] * sx_V * ratio_cool + sx_heat_flag[h] * sx_V * ratio_heat + sx_gheat_flag[
         #   h] * sx_V * ratio_gheat
         # 用下面的式子进行线性化
@@ -1985,7 +1985,7 @@ class Linearization(object):
         mdl.add_constraints(x[h] <= y_flag[h] * bigM for h in range(0, num_h))
         mdl.add_constraints(y[h] >= 0 for h in range(0, num_h))
 
-    def add(self, num_h:int, mdl:Model, x1:List[VarType], x2:List[VarType]):
+    def add(self, num_h:int, mdl:Model, x1:List[Var], x2:List[Var]):
         # looks like two lists.
         Linearization.index += 1
         add_y = mdl1.continuous_var_list(
@@ -1994,7 +1994,7 @@ class Linearization(object):
         mdl.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_h))
         return add_y
 
-    def posi_neg_cons_regester(self, num_h:int, mdl:Model, x, xposi, xneg):
+    def posi_neg_cons_regester(self, num_h:int, mdl:Model, x:List[Var], xposi:List[Var], xneg:List[Var]):
         Linearization.index += 1
         bigM = 1e10
         posi_flag = mdl1.binary_var_list(
