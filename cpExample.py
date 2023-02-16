@@ -297,7 +297,7 @@ class ESS(IGES):
         if regester_period_constraints == 1:
             mdl.add_constraints(
                 self.ess[i] == self.ess[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_h, day_node)
+                for i in range(day_node - 1, self.num_h:int, day_node)
             )
         else:
             # 初始值
@@ -309,7 +309,7 @@ class ESS(IGES):
                 + (self.p_ess_ch[i] * self.eff - self.p_ess_dis[i] / self.eff)
                 * simulationT
                 / 3600
-                for i in range(day_node, self.num_h, day_node)
+                for i in range(day_node, self.num_h:int, day_node)
             )
 
     def total_cost(self, sol:SolveSolution):
@@ -436,7 +436,7 @@ class ESSVariable(IGES):
         if regester_period_constraints == 1:
             mdl.add_constraints(
                 self.ess[i] == self.ess[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_h, day_node)
+                for i in range(day_node - 1, self.num_h:int, day_node)
             )
         else:
             # 初始值
@@ -448,7 +448,7 @@ class ESSVariable(IGES):
                 + (self.p_ess_ch[i] * self.eff - self.p_ess_dis[i] / self.eff)
                 * simulationT
                 / 3600
-                for i in range(day_node, self.num_h, day_node)
+                for i in range(day_node, self.num_h:int, day_node)
             )
 
 
@@ -458,7 +458,7 @@ class Csgr(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         csgr_set_max,
         csgr_price,
@@ -486,7 +486,7 @@ class Csgr(IGES):
         self.eff = eff
 
         self.csgrgtxr_set = ESS(
-            num_h,
+            num_h:int,
             mdl:Model,
             self.csgrgtxr_set_max,
             self.csgrgtxr_price,
@@ -525,7 +525,7 @@ class CHP(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         chp_num_max,
         chp_price,
@@ -568,13 +568,13 @@ class CHP(IGES):
         self.chp_limit_down_ratio = 0.2
         self.drratio = drratio
         self.gts_set = Exchanger(
-            self.num_h, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
         )
         self.yqyrwater_set = Exchanger(
-            self.num_h, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
         )
         self.yqyrsteam_set = Exchanger(
-            self.num_h, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
+            self.num_h:int, mdl:Model, self.chp_set * 0.5, set_price=300, k=0
         )
 
     def cons_register(self, mdl: Model):
@@ -641,7 +641,7 @@ class Gasgl(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, gasgl_set_max, gasgl_price, gas_price, eff:float, set_name="gasgl"
+        self, num_h:int, mdl:Model, gasgl_set_max, gasgl_price, gas_price, eff:float, set_name="gasgl"
     ):
         IGES(set_name)
         Gasgl.index += 1
@@ -685,7 +685,7 @@ class Dgl(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, dgl_set_max, dgl_price, ele_price, eff:float, set_name="dgl"
+        self, num_h:int, mdl:Model, dgl_set_max, dgl_price, ele_price, eff:float, set_name="dgl"
     ):
         IGES(set_name)
         Dgl.index += 1
@@ -721,7 +721,7 @@ class Dgl(IGES):
 class Exchanger(IGES):
     index = 0
 
-    def __init__(self, num_h, mdl:Model, set_max, set_price, k, set_name="exchanger"):
+    def __init__(self, num_h:int, mdl:Model, set_max, set_price, k, set_name="exchanger"):
         IGES(set_name)
         # k 传热系数
         Exchanger.index += 1
@@ -752,7 +752,7 @@ class AirHeatPump(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, set_max, set_price, ele_price, set_name="air_heat_pump"
+        self, num_h:int, mdl:Model, set_max, set_price, ele_price, set_name="air_heat_pump"
     ):
         IGES(set_name)
         self.num_h = num_h
@@ -908,7 +908,7 @@ class WaterHeatPump(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         set_max,
         set_price,
@@ -1058,7 +1058,7 @@ class WaterCooledScrew(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         set_max,
         set_price,
@@ -1160,7 +1160,7 @@ class DoubleGK(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="doublegk"
+        self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="doublegk"
     ):
         IGES(set_name)
         self.num_h = num_h
@@ -1263,7 +1263,7 @@ class ThreeGK(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="threegk"
+        self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="threegk"
     ):
         IGES(set_name)
         self.num_h = num_h
@@ -1388,7 +1388,7 @@ class GeothermalHeatPump(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl:Model, set_max, set_price, ele_price, set_name="geothermal_heat_pump"
+        self, num_h:int, mdl:Model, set_max, set_price, ele_price, set_name="geothermal_heat_pump"
     ):
         IGES(set_name)
         self.num_h = num_h
@@ -1462,7 +1462,7 @@ class WaterEnergyStorage(IGES):
         self.mdl = mdl
         # 对于水蓄能，优化的变量为水罐的体积
         self.sx = ESSVariable(
-            num_h, mdl:Model, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
+            num_h:int, mdl:Model, bigM, 0, pcs_price, c_rate_max, eff:float, ess_init, soc_min, soc_max
         )
         self.index = ESSVariable.index
         self.sx_set_cool = mdl.continuous_var_list(
@@ -1617,7 +1617,7 @@ class Dyzqfsq(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         dyzqfsq_set_max,
         dyzqfsq_price,
@@ -1653,7 +1653,7 @@ class Dyzqfsq(IGES):
         self.eff = eff
 
         self.dyzqfsqgtxr_set = ESS(
-            num_h,
+            num_h:int,
             mdl:Model,
             self.dyzqfsqgtxr_set_max,
             self.dyzqfsqgtxr_price,
@@ -1710,37 +1710,37 @@ class ResourceGet(object):
             raise Exception("File not extists.")
 
     def get_ele_price(self, num_h: int):
-        ele_price = np.ones(num_h, dtype=float) * 0.5
+        ele_price = np.ones(num_h:int, dtype=float) * 0.5
         return ele_price
 
     def get_gas_price(self, num_h: int):
-        gas_price = np.ones(num_h, dtype=float) * 2.77
+        gas_price = np.ones(num_h:int, dtype=float) * 2.77
         return gas_price
 
     def get_cityrs_price(self, num_h: int):
-        cityrs_price = np.ones(num_h, dtype=float) * 0.3
+        cityrs_price = np.ones(num_h:int, dtype=float) * 0.3
         return cityrs_price
 
     def get_citysteam_price(self, num_h: int):
-        citysteam = np.ones(num_h, dtype=float) * 0.3
+        citysteam = np.ones(num_h:int, dtype=float) * 0.3
         return citysteam
 
 
 class LoadGet(object):
     def get_cool_load(self, num_h):
-        cool_load = np.ones(num_h, dtype=float) * 10000
+        cool_load = np.ones(num_h:int, dtype=float) * 10000
         return cool_load
 
     def get_heat_load(self, num_h):
-        heat_load = np.ones(num_h, dtype=float) * 10000
+        heat_load = np.ones(num_h:int, dtype=float) * 10000
         return heat_load
 
     def get_power_load(self, num_h):
-        power_load = np.ones(num_h, dtype=float) * 10000
+        power_load = np.ones(num_h:int, dtype=float) * 10000
         return power_load
 
     def get_steam_load(self, num_h):
-        steam_load = np.ones(num_h, dtype=float) * 10000
+        steam_load = np.ones(num_h:int, dtype=float) * 10000
         return steam_load
 
 
@@ -1792,7 +1792,7 @@ class CitySupply(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         citysupply_set_max,
         set_price,
@@ -1851,7 +1851,7 @@ class GridNet(IGES):
 
     def __init__(
         self,
-        num_h,
+        num_h:int,
         mdl:Model,
         gridnet_set_max,
         set_price,
@@ -1904,7 +1904,7 @@ class GridNet(IGES):
         hrange = range(0, self.num_h)
         lin = Linearization()
         lin.posi_neg_cons_regester(
-            self.num_h, mdl:Model, self.total_power, self.powerfrom, self.powerto
+            self.num_h:int, mdl:Model, self.total_power, self.powerfrom, self.powerto
         )
         mdl.add_constraint(self.gridnet_set >= 0)
         mdl.add_constraint(self.gridnet_set <= self.gridnet_set_max)
@@ -1967,7 +1967,7 @@ class Linearization(object):
         mdl.add_constraints(var_bin[i] <= var[i - 1] for i in irangeback)
         mdl.add_constraints(var_bin[i] <= bin0[i] * self.bigM0 for i in irangeback)
 
-    def max_zeros(self, num_h, mdl:Model, x, y):
+    def max_zeros(self, num_h:int, mdl:Model, x, y):
         Linearization.index += 1
         y_flag = mdl1.binary_var_list(
             [i for i in range(0, num_h)], name="y_flag{0}".format(Linearization.index)
@@ -1982,7 +1982,7 @@ class Linearization(object):
         mdl.add_constraints(x[h] <= y_flag[h] * bigM for h in range(0, num_h))
         mdl.add_constraints(y[h] >= 0 for h in range(0, num_h))
 
-    def add(self, num_h, mdl:Model, x1, x2):
+    def add(self, num_h:int, mdl:Model, x1, x2):
         Linearization.index += 1
         add_y = mdl1.continuous_var_list(
             [i for i in range(0, num_h)], name="add_y{0}".format(Linearization.index)
@@ -1990,7 +1990,7 @@ class Linearization(object):
         mdl.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_h))
         return add_y
 
-    def posi_neg_cons_regester(self, num_h, mdl:Model, x, xposi, xneg):
+    def posi_neg_cons_regester(self, num_h:int, mdl:Model, x, xposi, xneg):
         Linearization.index += 1
         bigM = 1e10
         posi_flag = mdl1.binary_var_list(
