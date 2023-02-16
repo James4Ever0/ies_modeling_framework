@@ -6,7 +6,9 @@
         "E:\\...\\...\\...\\..."
 
     ],
-    "window.zoomLevel": 1.5
+    "window.zoomLevel": 1.5,
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "/opt/homebrew/bin/black"
 
 
     
