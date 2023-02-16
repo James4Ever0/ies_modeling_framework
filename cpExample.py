@@ -456,7 +456,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
 
 
 # 槽式光热
-class Csgr(IntegratedEnergySystem):
+class TroughPhotoThermal(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -471,21 +471,21 @@ class Csgr(IntegratedEnergySystem):
         set_name="csgr",
     ):
         IntegratedEnergySystem(set_name)
-        Csgr.index += 1
+        TroughPhotoThermal.index += 1
         self.num_h = num_h
-        self.csgr_set = mdl.continuous_var(name="csgr_set{0}".format(Csgr.index))
+        self.csgr_set = mdl.continuous_var(name="csgr_set{0}".format(TroughPhotoThermal.index))
         self.p_csgr = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_csgr{0}".format(Csgr.index)
+            [i for i in range(0, self.num_h)], name="p_csgr{0}".format(TroughPhotoThermal.index)
         )
         self.p_csgr_steam = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_csgr_steam{0}".format(Csgr.index)
+            [i for i in range(0, self.num_h)], name="p_csgr_steam{0}".format(TroughPhotoThermal.index)
         )
         self.csgr_set_max = csgr_set_max
         self.csgrgtxr_set_max = csgr_set_max * 6
         self.csgr_price = csgr_price
         self.csgrgtxr_price = csgrgtxr_price
         self.ha = ha0  # 光照强度
-        self.nianhua = mdl.continuous_var(name="csgr_nianhua{0}".format(Csgr.index))
+        self.nianhua = mdl.continuous_var(name="csgr_nianhua{0}".format(TroughPhotoThermal.index))
         self.eff = eff
 
         self.csgrgtxr_set = EnergyStorageSystem(
@@ -684,28 +684,28 @@ class GasBoiler(IntegratedEnergySystem):
 
 
 # 电锅炉
-class Dgl(IntegratedEnergySystem):
+class ElectricBoiler(IntegratedEnergySystem):
     index = 0
 
     def __init__(
         self, num_h:int, mdl:Model, dgl_set_max, dgl_price, ele_price, eff:float, set_name="dgl"
     ):
         IntegratedEnergySystem(set_name)
-        Dgl.index += 1
+        ElectricBoiler.index += 1
         self.num_h = num_h
-        self.dgl_set = mdl.continuous_var(name="dgl_set{0}".format(Dgl.index))
+        self.dgl_set = mdl.continuous_var(name="dgl_set{0}".format(ElectricBoiler.index))
         self.h_dgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="h_dgl{0}".format(Dgl.index)
+            [i for i in range(0, self.num_h)], name="h_dgl{0}".format(ElectricBoiler.index)
         )
         self.ele_dgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="ele_dgl{0}".format(Dgl.index)
+            [i for i in range(0, self.num_h)], name="ele_dgl{0}".format(ElectricBoiler.index)
         )  # 时时耗气量
         self.gas_set_max = dgl_set_max
         self.dgl_price = dgl_price
         self.ele_price = ele_price
         self.eff = eff
-        self.ele_cost = mdl.continuous_var(name="ele_cost{0}".format(Dgl.index))
-        self.nianhua = mdl.continuous_var(name="dgl_nianhua{0}".format(Dgl.index))
+        self.ele_cost = mdl.continuous_var(name="ele_cost{0}".format(ElectricBoiler.index))
+        self.nianhua = mdl.continuous_var(name="dgl_nianhua{0}".format(ElectricBoiler.index))
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
@@ -1159,7 +1159,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
 
 
 # 双工况机组
-class DoubleGK(IntegratedEnergySystem):
+class DoubleWorkingConditionUnit(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1167,47 +1167,47 @@ class DoubleGK(IntegratedEnergySystem):
     ):
         IntegratedEnergySystem(set_name)
         self.num_h = num_h
-        DoubleGK.index += 1
+        DoubleWorkingConditionUnit.index += 1
         self.ele_price = ele_price
         self.doublegk_set = mdl.continuous_var(
-            name="doublegk_set{0}".format(DoubleGK.index)
+            name="doublegk_set{0}".format(DoubleWorkingConditionUnit.index)
         )
         self.nianhua = mdl.continuous_var(
-            name="DoubleGK_nianhua{0}".format(DoubleGK.index)
+            name="DoubleWorkingConditionUnit_nianhua{0}".format(DoubleWorkingConditionUnit.index)
         )
         self.ele_cost = mdl.continuous_var(
-            name="DoubleGK_ele_sum{0}".format(DoubleGK.index)
+            name="DoubleWorkingConditionUnit_ele_sum{0}".format(DoubleWorkingConditionUnit.index)
         )
         self.set_price = set_price
         self.set_max = set_max
         self.case_ratio = case_ratio
         self.p_doublegk_cool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_doublegk_cool{0}".format(DoubleGK.index),
+            name="p_doublegk_cool{0}".format(DoubleWorkingConditionUnit.index),
         )
 
         self.doublegk_cool_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="doublegk_cool_flag{0}".format(DoubleGK.index),
+            name="doublegk_cool_flag{0}".format(DoubleWorkingConditionUnit.index),
         )
 
         self.p_doublegk_ice = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_doublegk_ice{0}".format(DoubleGK.index),
+            name="p_doublegk_ice{0}".format(DoubleWorkingConditionUnit.index),
         )
 
         self.doublegk_ice_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="doublegk_ice_flag{0}".format(DoubleGK.index),
+            name="doublegk_ice_flag{0}".format(DoubleWorkingConditionUnit.index),
         )
 
         self.ele_doublegk = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="ele_doublegk{0}".format(DoubleGK.index),
+            name="ele_doublegk{0}".format(DoubleWorkingConditionUnit.index),
         )
         self.p_doublegk = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_doublegk{0}".format(DoubleGK.index),
+            name="p_doublegk{0}".format(DoubleWorkingConditionUnit.index),
         )
         self.cop_doublegk_cool = 5
         self.cop_doublegk_ice = 5
@@ -1262,7 +1262,7 @@ class DoubleGK(IntegratedEnergySystem):
         )
 
 
-class ThreeGK(IntegratedEnergySystem):
+class TripleWorkingConditionUnit(IntegratedEnergySystem):
     index = 0
 
     def __init__(
@@ -1271,56 +1271,56 @@ class ThreeGK(IntegratedEnergySystem):
         IntegratedEnergySystem(set_name)
         self.num_h = num_h
 
-        ThreeGK.index += 1
+        TripleWorkingConditionUnit.index += 1
         self.ele_price = ele_price
         self.threegk_set = mdl.continuous_var(
-            name="threegk_set{0}".format(ThreeGK.index)
+            name="threegk_set{0}".format(TripleWorkingConditionUnit.index)
         )
         self.nianhua = mdl.continuous_var(
-            name="ThreeGK_nianhua{0}".format(ThreeGK.index)
+            name="TripleWorkingConditionUnit_nianhua{0}".format(TripleWorkingConditionUnit.index)
         )
         self.ele_cost = mdl.continuous_var(
-            name="ThreeGK_ele_sum{0}".format(ThreeGK.index)
+            name="TripleWorkingConditionUnit_ele_sum{0}".format(TripleWorkingConditionUnit.index)
         )
         self.set_price = set_price
         self.set_max = set_max
         self.case_ratio = case_ratio
         self.p_threegk_cool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_cool{0}".format(ThreeGK.index),
+            name="p_threegk_cool{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.threegk_cool_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_cool_flag{0}".format(ThreeGK.index),
+            name="threegk_cool_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.p_threegk_ice = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_ice{0}".format(ThreeGK.index),
+            name="p_threegk_ice{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.threegk_ice_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_ice_flag{0}".format(ThreeGK.index),
+            name="threegk_ice_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.p_threegk_heat = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_heat{0}".format(ThreeGK.index),
+            name="p_threegk_heat{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.threegk_heat_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_heat_flag{0}".format(ThreeGK.index),
+            name="threegk_heat_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
         self.ele_threegk = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="ele_threegk{0}".format(ThreeGK.index),
+            name="ele_threegk{0}".format(TripleWorkingConditionUnit.index),
         )
         self.p_threegk = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_threegk{0}".format(ThreeGK.index)
+            [i for i in range(0, self.num_h)], name="p_threegk{0}".format(TripleWorkingConditionUnit.index)
         )
         self.cop_threegk_cool = 5
         self.cop_threegk_ice = 4
@@ -1614,7 +1614,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
         mdl.add_constraint(self.nianhua == self.sx_V * self.v_price / 20)
 
-
+# 地源蒸汽发生器
 class Dyzqfsq(IntegratedEnergySystem):
     index = 0
 
@@ -1641,7 +1641,7 @@ class Dyzqfsq(IntegratedEnergySystem):
 
         self.p_dyzqfsq_steam = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_dyzqfsq_steam{0}".format(Csgr.index),
+            name="p_dyzqfsq_steam{0}".format(TroughPhotoThermal.index),
         )
 
         self.dyzqfsq_set_max = dyzqfsq_set_max
@@ -2048,7 +2048,7 @@ if __name__ == "__main__":
     )
     bess.cons_register(mdl1, 1, day_node)
     # 高温蒸汽
-    csgr = Csgr(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
+    csgr = TroughPhotoThermal(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
     csgr.cons_register(mdl1)
     dyzqfsq = Dyzqfsq(
         num_h0,
@@ -2147,7 +2147,7 @@ if __name__ == "__main__":
     )
     szrs.cons_register(mdl1)
     # 6
-    rsdgl = Dgl(
+    rsdgl = ElectricBoiler(
         num_h0, mdl1, dgl_set_max=10000, dgl_price=200, ele_price=ele_price0, eff=0.9
     )
     rsdgl.cons_register(mdl1)
@@ -2244,7 +2244,7 @@ if __name__ == "__main__":
         case_ratio=np.array([1, 0.8]),
     )
     slj.cons_register(mdl1)
-    sangk = ThreeGK(
+    sangk = TripleWorkingConditionUnit(
         num_h0,
         mdl1,
         set_max=20000,
@@ -2253,7 +2253,7 @@ if __name__ == "__main__":
         case_ratio=[1, 0.8, 0.8],
     )
     sangk.cons_register(mdl1)
-    doublegk = DoubleGK(
+    doublegk = DoubleWorkingConditionUnit(
         num_h0,
         mdl1,
         set_max=20000,
