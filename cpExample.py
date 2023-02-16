@@ -2441,161 +2441,167 @@ if __name__ == "__main__":
     sol_run1 = mdl1.solve(log_output=True) # output some solution.
     # docplex.mp.solution.SolveSolution or None
     
-    # not mdl1.solve_details, which always return:
-    # docplex.mp.sdetails.SolveDetails
-    
-    # print('abs2 value:')
-    # print(sol_run1.get_value(abs1.abs_x[1]))
-    print(sol_run1.solve_details)
+    if sol_run1 is None:
+        print("SOLUTION IS NONE.")
+        solution_detail = mdl1.
+    else:
+        # now we have solution.
+        
+        # not mdl1.solve_details, which always return:
+        # docplex.mp.sdetails.SolveDetails
+        
+        # print('abs2 value:')
+        # print(sol_run1.get_value(abs1.abs_x[1]))
+        print(sol_run1.solve_details)
 
-    ii = 0
-    print("obj:{0}".format(ii), sol_run1.get_value(obj))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].pv_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].ess_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].csgr_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].dyzqfsq_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].chp_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].gasgl_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].exch_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].xhl_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].pv_set))
-    ii += 1
-    print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].ess_set))
-    ii += 1
+        ii = 0
+        print("obj:{0}".format(ii), sol_run1.get_value(obj))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].pv_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].ess_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].csgr_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].dyzqfsq_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].chp_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].gasgl_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].exch_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].xhl_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].pv_set))
+        ii += 1
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].ess_set))
+        ii += 1
 
-    for v in mdl1.iter_integer_vars():
-        print(v, " = ", v.solution_value)
-    # for v in mdl1.iter_continuous_vars():
-    #     print(v, " = ", v.solution_value)
+        for v in mdl1.iter_integer_vars():
+            print(v, " = ", v.solution_value)
+        # for v in mdl1.iter_continuous_vars():
+        #     print(v, " = ", v.solution_value)
 
-    value = Value(sol_run1)
+        value = Value(sol_run1)
 
-    plt.plot(value.value(bess.p_ess))
-    print(value.value(bess.ess_set))
+        plt.plot(value.value(bess.p_ess))
+        print(value.value(bess.ess_set))
 
-    plt.figure()
-    pllist = IGESPlot(sol_run1)
+        plt.figure()
+        pllist = IGESPlot(sol_run1)
 
-    # pllist.plot_list(  [dire.ele_dire, slj.ele_slj], ['dire.ele_dire', 'slj.ele_slj'], "ele balance")
+        # pllist.plot_list(  [dire.ele_dire, slj.ele_slj], ['dire.ele_dire', 'slj.ele_slj'], "ele balance")
 
-    pllist.plot_list(
-        [
-            dire.ele_dire,
-            slj.ele_slj,
-            rb.ele_sy,
-            bess.p_ess,
-            pv.p_pv,
-            sy.ele_sy,
-            power_load,
-            chp.p_chp,
-            diesel.p_diesel,
-            dyzqfsq.p_dyzqfsq,
-            rsdgl.ele_dgl,
-            sangk.ele_threegk,
-            doublegk.ele_doublegk,
-            gridnet.total_power,
-        ],
-        [
-            "dire.ele_dire",
-            "slj.ele_slj",
-            "rb.ele_sy",
-            "bess.p_ess",
-            "pv.p_pv",
-            "sy.ele_sy",
-            "power_load",
-            "chp.p_chp",
-            "diesel.p_diesel",
-            "dyzqfsq.p_dyzqfsq",
-            "rsdgl.ele_dgl",
-            "sangk.ele_threegk",
-            "doublegk.ele_doublegk",
-            "gridnet.total_power",
-        ],
-        "ele balance",
-    )
-    plt.figure()
-    pllist.plot_list(
-        [
-            rb.p_sy_cool,
-            p_xcool,
-            sy.p_sy_cool,
-            zq_xhl.c_xhl,
-            rs_xhl.c_xhl,
-            slj.p_slj_cool,
-            p_xice,
-            sangk.p_threegk_cool,
-            doublegk.p_doublegk_cool,
-        ],
-        [
-            "rb.p_sy_cool",
-            "p_xcool",
-            "sy.p_sy_cool",
-            "zq_xhl.c_xhl",
-            "rs_xhl.c_xhl",
-            "slj.p_slj_cool",
-            "p_xice",
-            "sangk.p_threegk_cool",
-            "doublegk.p_doublegk_cool",
-        ],
-        "cool_balance",
-    )
+        pllist.plot_list(
+            [
+                dire.ele_dire,
+                slj.ele_slj,
+                rb.ele_sy,
+                bess.p_ess,
+                pv.p_pv,
+                sy.ele_sy,
+                power_load,
+                chp.p_chp,
+                diesel.p_diesel,
+                dyzqfsq.p_dyzqfsq,
+                rsdgl.ele_dgl,
+                sangk.ele_threegk,
+                doublegk.ele_doublegk,
+                gridnet.total_power,
+            ],
+            [
+                "dire.ele_dire",
+                "slj.ele_slj",
+                "rb.ele_sy",
+                "bess.p_ess",
+                "pv.p_pv",
+                "sy.ele_sy",
+                "power_load",
+                "chp.p_chp",
+                "diesel.p_diesel",
+                "dyzqfsq.p_dyzqfsq",
+                "rsdgl.ele_dgl",
+                "sangk.ele_threegk",
+                "doublegk.ele_doublegk",
+                "gridnet.total_power",
+            ],
+            "ele balance",
+        )
+        plt.figure()
+        pllist.plot_list(
+            [
+                rb.p_sy_cool,
+                p_xcool,
+                sy.p_sy_cool,
+                zq_xhl.c_xhl,
+                rs_xhl.c_xhl,
+                slj.p_slj_cool,
+                p_xice,
+                sangk.p_threegk_cool,
+                doublegk.p_doublegk_cool,
+            ],
+            [
+                "rb.p_sy_cool",
+                "p_xcool",
+                "sy.p_sy_cool",
+                "zq_xhl.c_xhl",
+                "rs_xhl.c_xhl",
+                "slj.p_slj_cool",
+                "p_xice",
+                "sangk.p_threegk_cool",
+                "doublegk.p_doublegk_cool",
+            ],
+            "cool_balance",
+        )
 
-    plt.figure()
-    pllist.plot_list(
-        [
-            rb.p_sy_heat,
-            p_xheat,
-            sy.p_sy_heat,
-            qs_exchanger.h_exch,
-            ss_exchanger.h_exch,
-            sangk.p_threegk_heat,
-            dire.p_dire,
-            heat_load,
-        ],
-        [
-            "rb.p_sy_heat",
-            "p_xheat",
-            "sy.p_sy_heat",
-            "qs_exchanger.h_exch",
-            "ss_exchanger.h_exch",
-            " sangk.p_threegk_heat",
-            "dire.p_dire",
-            "heat_load",
-        ],
-        "heat_balance",
-    )
-    plt.figure()
-    pllist.plot_list(
-        [
-            chp.gts_set.h_exch,
-            chp.yqyrwater_set.h_exch,
-            pbgr.p_pv,
-            xbxr.p_ess,
-            szrs.h_citysupply,
-            gasgl_rs.h_gasgl,
-            rsdgl.h_dgl,
-            sx.p_sx_gheat,
-        ],
-        [
-            "chp.gts_set.h_exchh, chp",
-            "yqyrwater_set.h_exch",
-            "pbgr.p_pv",
-            "xbxr.p_ess",
-            "szrs.h_citysupply",
-            "gasgl_rs.h_gasgl",
-            "rsdgl.h_dgl",
-            "sx.p_sx_gheat",
-        ],
-        "gwheat_balance",
-    )
+        plt.figure()
+        pllist.plot_list(
+            [
+                rb.p_sy_heat,
+                p_xheat,
+                sy.p_sy_heat,
+                qs_exchanger.h_exch,
+                ss_exchanger.h_exch,
+                sangk.p_threegk_heat,
+                dire.p_dire,
+                heat_load,
+            ],
+            [
+                "rb.p_sy_heat",
+                "p_xheat",
+                "sy.p_sy_heat",
+                "qs_exchanger.h_exch",
+                "ss_exchanger.h_exch",
+                " sangk.p_threegk_heat",
+                "dire.p_dire",
+                "heat_load",
+            ],
+            "heat_balance",
+        )
+        plt.figure()
+        pllist.plot_list(
+            [
+                chp.gts_set.h_exch,
+                chp.yqyrwater_set.h_exch,
+                pbgr.p_pv,
+                xbxr.p_ess,
+                szrs.h_citysupply,
+                gasgl_rs.h_gasgl,
+                rsdgl.h_dgl,
+                sx.p_sx_gheat,
+            ],
+            [
+                "chp.gts_set.h_exchh, chp",
+                "yqyrwater_set.h_exch",
+                "pbgr.p_pv",
+                "xbxr.p_ess",
+                "szrs.h_citysupply",
+                "gasgl_rs.h_gasgl",
+                "rsdgl.h_dgl",
+                "sx.p_sx_gheat",
+            ],
+            "gwheat_balance",
+        )
 
-    plt.show()
+        plt.show()
