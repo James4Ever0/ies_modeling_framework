@@ -44,9 +44,9 @@ ha = np.ones(num_h0)
 
 # another name for IES?
 class IGES(object):
-    set_count = 0
+    set_count:int = 0
 
-    def __init__(self, set_name:str):
+    def __init__(self, set_name):
         self.set_name = set_name
         IGES.set_count += 1
         print("IGES Define a set named:", set_name, ", total set count/set number is:", IGES.set_count)

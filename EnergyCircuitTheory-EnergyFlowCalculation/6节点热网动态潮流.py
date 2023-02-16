@@ -9,6 +9,26 @@ confirmed
 
 # method("1","2")
 
+# def method2(a,b,c):
+#     d = a+b+c
+#     d+=20
+#     d/=a
+#     return d
+
+# a,b,c = 1,2,3
+# # d = a+b+c
+# # d+=20
+# # d/=a
+# d = method2(a,b,c)
+# print(d)
+
+# a,b,c = 4,5,6
+# # d = a+b+c
+# # d+=20
+# # d/=a
+# d = method2(a,b,c)
+# print(d)
+
 __author__ = 'Chen Binbin'
 
 import time
