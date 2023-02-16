@@ -44,7 +44,7 @@ class IGES(object):
 
 
 # 适用于光伏及平板式光热
-class PV(IGES):
+class PV(IGES): # Photovoltaic
     index = 0
 
     def __init__(self, num_h, mdl, pv_set_max, set_price, ha0, eff, set_name='PV'):
