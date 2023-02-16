@@ -77,7 +77,7 @@ with context('稳态水力计算'):
         Ygp = Y[fix_G][:,fix_p]
         Ypg = Y[fix_p][:,fix_G]
         Ypp = Y[fix_p][:,fix_p]
-        pp = tb1['pressure(MPa)'].values[fix_p].reshape([1,1]) * 1e6
+        pp = tb1['pressure(MPa)'].values[fix_p].reshape([1,1]) * 1e6 #从tb1中提取与固定压力管道相连的节点处的压力，并将其整形为1x1阵列，单位为Pa
         G = tb1['injection(kg/s)'].values.reshape([-1,1]) + np.matmul(np.matmul(Ah, yb), E)
         Gg = G[fix_G,:]
         assert np.linalg.cond(Ygg)<1e5  # 确认导纳矩阵非奇异
