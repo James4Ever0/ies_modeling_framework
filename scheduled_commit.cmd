@@ -1,3 +1,3 @@
 D:
 cd D:\project\xianxing
-commit.md
+commit.cmd >> run.log

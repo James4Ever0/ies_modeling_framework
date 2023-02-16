@@ -55,17 +55,21 @@ with context('稳态水力计算'):
         # 更新支路参数
         R = [lam[i]*mb[i]/rho/As[i]**2/D[i]*L[i] for i in range(npipes)]
         E = [-lam[i]*mb[i]**2/2/rho/As[i]**2/D[i]*L[i] for i in range(npipes)]
+        #R 是各支路的导纳（reciprocal impedance），它是支路的电导 G（conductance）的倒数，因此有 R = 1/G。在这里，导纳是通过每根管道的基准流量 mb[i]，以及管道的长度 L[i]、横截面积 As[i]、摩擦阻力系数 D[i] 和流体密度 rho 来计算的。
+        #E 是各支路的电位能，它是流体在支路中的动能和重力势能的和，通常用 J（焦耳）表示。在这里，电位能是通过每根管道的基准流量 mb[i]，以及管道的长度 L[i]、横截面积 As[i]、摩擦阻力系数 D[i] 和流体密度 rho 来计算的。
         # 追加各支路阀、泵的参数
         for i,row in tb2.iterrows():
             if row.pump > 0:
                 kp1, kp2, kp3, w = tb3.loc['pump-%d'%int(row.pump),:]
                 R[i] += -(2*kp1*mb[i]+kp2*w)
                 E[i] += (kp1*mb[i]**2-kp3*w**2)
+        #对于带有泵的管路，需要考虑泵的影响，其中 kp1、kp2、kp3 分别表示泵的一次、二次和三次效率，w表示泵的转速，因此可根据公式计算泵的影响并加入到相应的管路中。
             if row.valve > 0:
                 kv, _, _, _ = tb3.loc['valve-%d'%int(row.valve),:]
                 R[i] += 2*kv*mb[i]**2
                 E[i] -= -kv*mb[i]**2
-        E = np.array(E).reshape([-1,1])
+        #对于带有阀门的管路，需要考虑阀门的影响，其中 kv 表示阀门的流量系数，因此可根据公式计算阀门的影响并加入到相应的管路中。
+        E = np.array(E).reshape([-1,1]) #E被重塑为[-1,1]的列向量
         yb = np.diag([1/Ri for Ri in R])
         Y = np.matmul(np.matmul(Ah, yb), Ah.T)
         Ygg = Y[fix_G][:,fix_G]
