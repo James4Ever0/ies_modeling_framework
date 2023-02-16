@@ -16,22 +16,23 @@ from contextlib import contextmanager
 @contextmanager
 def context(event):
     t0 = time.time()
-    print('[{}] {} starts ...'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event))
+    print('[{}] {} starts ...'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event)) #开始时间
     yield
-    print('[{}] {} ends ...'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event))
-    print('[{}] {} runs for {:.2f} s'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event, time.time()-t0))
+    print('[{}] {} ends ...'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event)) #结束时间
+    print('[{}] {} runs for {:.2f} s'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event, time.time()-t0)) #运行时间
 
 
 with context('数据读取与处理'):
-    tb1 = pd.read_excel('./6节点热网稳态data.xls', sheet_name='Node').fillna(0)
+    #将其中的节点、管道、设备和动态信息读入 pandas 数据帧（sheets）
+    tb1 = pd.read_excel('./6节点热网稳态data.xls', sheet_name='Node').fillna(0)  
     tb2 = pd.read_excel('./6节点热网稳态data.xls', sheet_name='Branch')
     tb3 = pd.read_excel('./6节点热网稳态data.xls', sheet_name='Device', header=None, index_col=0)
     # 水力参数
-    L = tb2['length'].values * 1e3
-    D = tb2['diameter'].values
-    lam = tb2['fraction'].values
-    npipes, nnodes = len(tb2), len(tb1)
-    As = np.array([np.pi*d**2/4 for d in D])
+    L = tb2['length'].values * 1e3 #长度
+    D = tb2['diameter'].values #直径
+    lam = tb2['fraction'].values #流量分数
+    npipes, nnodes = len(tb2), len(tb1) 
+    As = np.array([np.pi*d**2/4 for d in D]) #管道截面积
     mb = np.ones(npipes) * 50  # 基值平启动
     rho = 1000
     Ah = np.zeros([nnodes, npipes], dtype=np.int32)

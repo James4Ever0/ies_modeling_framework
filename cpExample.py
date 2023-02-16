@@ -1682,7 +1682,8 @@ class Dyzqfsq(IGES):
 
 class ResourceGet(object):
     # 光照资源，超过一年的，将一年数据进行重复
-    def get_radiation(self, path:str, num_h:int):
+    # light intensity ranging from 0 to 1? not even reaching 0.3
+    def get_radiation(self, path:str, num_h:int) -> np.ndarray:
         if os.path.exists(path):
             raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
@@ -1691,9 +1692,9 @@ class ResourceGet(object):
                 ha1 = np.concatenate((ha1, radiation), axis=0)
 
             ha2 = ha1[0:num_h] / 1000  # 转化为kW
-            return ha2
+            return ha2 # shape: 1d array.
         else:
-            print("File not extists.")
+            raise Exception("File not extists.")
 
     def get_ele_price(self, num_h:int):
         ele_price = np.ones(num_h, dtype=float) * 0.5
@@ -2004,9 +2005,8 @@ steam_load = load.get_power_load(num_h0)
 
 if __name__ == "__main__":
     resource = ResourceGet()
-    ha0 = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
+    ha0:np.ndarray = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
     # what is the output? break here.
-    breakpoint()
 
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
