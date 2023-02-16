@@ -2006,7 +2006,7 @@ if __name__ == "__main__":
     resource = ResourceGet()
     ha0 = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
     # what is the output? break here.
-    
+    breakpoint()
 
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
