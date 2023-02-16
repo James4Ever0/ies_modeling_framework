@@ -87,7 +87,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         # 光照强度
         self.ha = ha0
         self.eff = eff
-        self.nianhua = mdl.continuous_var(name="pv_nianhua{0}".format(PhotoVoltaic.index))
+        self.annualized = mdl.continuous_var(name="pv_annualized{0}".format(PhotoVoltaic.index))
 
     def cons_register(self, mdl: Model):
         mdl.add_constraint(self.pv_set <= self.pv_set_max)
@@ -96,7 +96,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             self.p_pv[i] <= self.pv_set * self.eff * self.ha[i]
             for i in range(self.num_h)
         )
-        mdl.add_constraint(self.nianhua == self.pv_set * self.set_price / 15)
+        mdl.add_constraint(self.annualized == self.pv_set * self.set_price / 15)
 
     def total_cost(self, sol:SolveSolution):
         return sol.get_value(self.pv_set) * self.set_price
@@ -134,8 +134,8 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         self.溴化锂_set_max = 溴化锂_set_max
         self.set_price = set_price
         self.eff = eff
-        self.nianhua = mdl.continuous_var(
-            name="溴化锂_nianhua{0}".format(LiBrRefrigeration.index)
+        self.annualized = mdl.continuous_var(
+            name="溴化锂_annualized{0}".format(LiBrRefrigeration.index)
         )
 
     def cons_register(self, mdl: Model):
@@ -148,7 +148,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         mdl.add_constraints(
             self.c_溴化锂[h] == self.h_溴化锂_from[h] / self.eff for h in hrange
         )
-        mdl.add_constraint(self.nianhua == self.溴化锂_set * self.set_price / 15)
+        mdl.add_constraint(self.annualized == self.溴化锂_set * self.set_price / 15)
 
 
 # 柴油
@@ -175,7 +175,7 @@ class Diesel(IntegratedEnergySystem):
         self.set_price = set_price
         self.run_price = run_price
         self.p_sum = mdl.sum(self.p_diesel[i] for i in range(0, self.num_h))
-        self.nianhua = mdl.continuous_var(name="diesel_nianhua{0}".format(Diesel.index))
+        self.annualized = mdl.continuous_var(name="diesel_annualized{0}".format(Diesel.index))
 
     def cons_register(self, mdl: Model):
         mdl.add_constraint(self.diesel_set <= self.diesel_set_max)
@@ -184,7 +184,7 @@ class Diesel(IntegratedEnergySystem):
             self.p_diesel[i] <= self.diesel_set for i in range(0, self.num_h)
         )
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.diesel_set * self.set_price / 15
             + self.p_sum * self.run_price * 8760 / self.num_h
         )
@@ -248,7 +248,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.ess_init = ess_init
         self.soc_min = soc_min
         self.soc_max = soc_max
-        self.nianhua = mdl.continuous_var(name="ess_nianhua{0}".format(EnergyStorageSystem.index))
+        self.annualized = mdl.continuous_var(name="ess_annualized{0}".format(EnergyStorageSystem.index))
 
     def cons_register(self, mdl:Model, regester_period_constraints=1, day_node=24):
         bigM = 1e10
@@ -292,7 +292,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             self.ess[i] >= self.ess_set * self.soc_min for i in range(1, self.num_h)
         )
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == (self.ess_set * self.ess_price + self.pcs_set * self.pcs_price) / 15
         )
 
@@ -485,7 +485,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.槽式光热_price = 槽式光热_price
         self.槽式光热gtxr_price = 槽式光热gtxr_price
         self.ha = ha0  # 光照强度
-        self.nianhua = mdl.continuous_var(name="槽式光热_nianhua{0}".format(TroughPhotoThermal.index))
+        self.annualized = mdl.continuous_var(name="槽式光热_annualized{0}".format(TroughPhotoThermal.index))
         self.eff = eff
 
         self.槽式光热gtxr_set = EnergyStorageSystem(
@@ -516,8 +516,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         )  # 槽式光热系统产生的高温
         mdl.add_constraints(0 <= self.p_槽式光热_steam[h] for h in hrange)  # 约束能量不能倒流
         mdl.add_constraint(
-            self.nianhua
-            == self.槽式光热_set * self.槽式光热_price / 15 + self.槽式光热gtxr_set.nianhua
+            self.annualized
+            == self.槽式光热_set * self.槽式光热_price / 15 + self.槽式光热gtxr_set.annualized
         )
 
 
@@ -562,7 +562,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             [i for i in range(0, self.num_h)], name="chp_run_num{0}".format(CombinedHeatAndPower.index)
         )
         self.chp_num = mdl.integer_var(name="chp_num{0}".format(CombinedHeatAndPower.index))
-        self.nianhua = mdl.continuous_var(name="chp_nianhua{0}".format(CombinedHeatAndPower.index))
+        self.annualized = mdl.continuous_var(name="chp_annualized{0}".format(CombinedHeatAndPower.index))
         self.gas_cost = mdl.continuous_var(
             name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
         )  # 燃气费用统计
@@ -630,11 +630,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.chp_num * self.chp_single_set * self.chp_price / 15
-            + self.gts_set.nianhua
-            + self.yqyrwater_set.nianhua
-            + self.yqyrsteam_set.nianhua
+            + self.gts_set.annualized
+            + self.yqyrwater_set.annualized
+            + self.yqyrsteam_set.annualized
             + self.gas_cost * 8760 / self.num_h
         )
 
@@ -662,7 +662,7 @@ class GasBoiler(IntegratedEnergySystem):
         self.gas_price = gas_price
         self.eff = eff
         self.gas_cost = mdl.continuous_var(name="gasBoiler_gas_cost{0}".format(GasBoiler.index))
-        self.nianhua = mdl.continuous_var(name="gasBoiler_nianhua{0}".format(GasBoiler.index))
+        self.annualized = mdl.continuous_var(name="gasBoiler_annualized{0}".format(GasBoiler.index))
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
@@ -677,7 +677,7 @@ class GasBoiler(IntegratedEnergySystem):
         )
         self.gas_cost = mdl.sum(self.gas_gasBoiler[h] * self.gas_price[h] for h in hrange)
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.gasBoiler_set * self.gasBoiler_price / 15
             + self.gas_cost * 8760 / self.num_h
         )
@@ -688,36 +688,36 @@ class ElectricBoiler(IntegratedEnergySystem):
     index = 0
 
     def __init__(
-        self, num_h:int, mdl:Model, dgl_set_max, dgl_price, ele_price, eff:float, set_name="dgl"
+        self, num_h:int, mdl:Model, 电锅炉_set_max, 电锅炉_price, ele_price, eff:float, set_name="电锅炉"
     ):
         IntegratedEnergySystem(set_name)
         ElectricBoiler.index += 1
         self.num_h = num_h
-        self.dgl_set = mdl.continuous_var(name="dgl_set{0}".format(ElectricBoiler.index))
-        self.h_dgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="h_dgl{0}".format(ElectricBoiler.index)
+        self.电锅炉_set = mdl.continuous_var(name="电锅炉_set{0}".format(ElectricBoiler.index))
+        self.h_电锅炉 = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="h_电锅炉{0}".format(ElectricBoiler.index)
         )
-        self.ele_dgl = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="ele_dgl{0}".format(ElectricBoiler.index)
+        self.ele_电锅炉 = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="ele_电锅炉{0}".format(ElectricBoiler.index)
         )  # 时时耗气量
-        self.gas_set_max = dgl_set_max
-        self.dgl_price = dgl_price
+        self.gas_set_max = 电锅炉_set_max
+        self.电锅炉_price = 电锅炉_price
         self.ele_price = ele_price
         self.eff = eff
         self.ele_cost = mdl.continuous_var(name="ele_cost{0}".format(ElectricBoiler.index))
-        self.nianhua = mdl.continuous_var(name="dgl_nianhua{0}".format(ElectricBoiler.index))
+        self.annualized = mdl.continuous_var(name="电锅炉_annualized{0}".format(ElectricBoiler.index))
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
-        mdl.add_constraint(self.dgl_set >= 0)
-        mdl.add_constraint(self.dgl_set <= self.gas_set_max)
-        mdl.add_constraints(self.h_dgl[h] >= 0 for h in hrange)
-        mdl.add_constraints(self.h_dgl[h] <= self.dgl_set for h in hrange)  # 天然气蒸汽锅炉
-        mdl.add_constraints(self.ele_dgl[h] == self.h_dgl[h] / self.eff for h in hrange)
-        self.ele_cost = mdl.sum(self.ele_dgl[h] * self.ele_price[h] for h in hrange)
+        mdl.add_constraint(self.电锅炉_set >= 0)
+        mdl.add_constraint(self.电锅炉_set <= self.gas_set_max)
+        mdl.add_constraints(self.h_电锅炉[h] >= 0 for h in hrange)
+        mdl.add_constraints(self.h_电锅炉[h] <= self.电锅炉_set for h in hrange)  # 天然气蒸汽锅炉
+        mdl.add_constraints(self.ele_电锅炉[h] == self.h_电锅炉[h] / self.eff for h in hrange)
+        self.ele_cost = mdl.sum(self.ele_电锅炉[h] * self.ele_price[h] for h in hrange)
         mdl.add_constraint(
-            self.nianhua
-            == self.dgl_set * self.dgl_price / 15 + self.ele_cost * 8760 / self.num_h
+            self.annualized
+            == self.电锅炉_set * self.电锅炉_price / 15 + self.ele_cost * 8760 / self.num_h
         )
 
 
@@ -732,8 +732,8 @@ class Exchanger(IntegratedEnergySystem):
         self.exch_set = mdl.continuous_var(
             name="exchanger_set{0}".format(Exchanger.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="exchanger_nianhua{0}".format(Exchanger.index)
+        self.annualized = mdl.continuous_var(
+            name="exchanger_annualized{0}".format(Exchanger.index)
         )
         self.set_price = set_price
         self.exch_set_max = set_max
@@ -748,7 +748,7 @@ class Exchanger(IntegratedEnergySystem):
         mdl.add_constraint(self.exch_set <= self.exch_set_max)
         mdl.add_constraints(self.h_exch[h] >= 0 for h in hrange)
         mdl.add_constraints(self.h_exch[h] <= self.exch_set for h in hrange)  # 天然气蒸汽锅炉
-        mdl.add_constraint(self.nianhua == self.exch_set * self.set_price / 15)
+        mdl.add_constraint(self.annualized == self.exch_set * self.set_price / 15)
 
 
 class AirHeatPump(IntegratedEnergySystem):
@@ -762,8 +762,8 @@ class AirHeatPump(IntegratedEnergySystem):
         AirHeatPump.index += 1
         self.ele_price = ele_price
         self.rb_set = mdl.continuous_var(name="rb_set{0}".format(AirHeatPump.index))
-        self.nianhua = mdl.continuous_var(
-            name="AirHeatPump_nianhua{0}".format(AirHeatPump.index)
+        self.annualized = mdl.continuous_var(
+            name="AirHeatPump_annualized{0}".format(AirHeatPump.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="AirHeatPump_ele_cost{0}".format(AirHeatPump.index)
@@ -900,7 +900,7 @@ class AirHeatPump(IntegratedEnergySystem):
         self.ele_cost = mdl.sum(self.ele_rb[h] * self.ele_price[h] for h in hrange)
         # 年化
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.rb_set * self.set_price / 15 + self.ele_cost * 8760 / self.num_h
         )
 
@@ -925,8 +925,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         WaterHeatPump.index += 1
         self.ele_price = ele_price
         self.sy_set = mdl.continuous_var(name="sy_set{0}".format(WaterHeatPump.index))
-        self.nianhua = mdl.continuous_var(
-            name="WaterHeatPump_nianhua{0}".format(WaterHeatPump.index)
+        self.annualized = mdl.continuous_var(
+            name="WaterHeatPump_annualized{0}".format(WaterHeatPump.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="WaterHeatPump_ele_sum{0}".format(WaterHeatPump.index)
@@ -1050,7 +1050,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         self.ele_cost = mdl.sum(self.ele_sy[h] * self.ele_price[h] for h in hrange)
         # 年化
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.sy_set * self.set_price / 15 + self.ele_cost * 8760 / self.num_h
         )
 
@@ -1073,11 +1073,11 @@ class WaterCooledScrew(IntegratedEnergySystem):
         self.num_h = num_h
         WaterCooledScrew.index += 1
         self.ele_price = ele_price
-        self.slj_set = mdl.continuous_var(
-            name="slj_set{0}".format(WaterCooledScrew.index)
+        self.水冷螺杆机_set = mdl.continuous_var(
+            name="水冷螺杆机_set{0}".format(WaterCooledScrew.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="WaterCooledScrew_nianhua{0}".format(WaterCooledScrew.index)
+        self.annualized = mdl.continuous_var(
+            name="WaterCooledScrew_annualized{0}".format(WaterCooledScrew.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="WaterCooledScrew_ele_sum{0}".format(WaterCooledScrew.index)
@@ -1085,76 +1085,76 @@ class WaterCooledScrew(IntegratedEnergySystem):
         self.set_price = set_price
         self.set_max = set_max
         self.case_ratio = case_ratio
-        self.p_slj_cool = mdl.continuous_var_list(
+        self.p_水冷螺杆机_cool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_slj_cool{0}".format(WaterCooledScrew.index),
+            name="p_水冷螺杆机_cool{0}".format(WaterCooledScrew.index),
         )
 
-        self.slj_cool_flag = mdl.binary_var_list(
+        self.水冷螺杆机_cool_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="slj_cool_flag{0}".format(WaterCooledScrew.index),
+            name="水冷螺杆机_cool_flag{0}".format(WaterCooledScrew.index),
         )
 
-        self.p_slj_xcool = mdl.continuous_var_list(
+        self.p_水冷螺杆机_xcool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_slj_xcool{0}".format(WaterCooledScrew.index),
+            name="p_水冷螺杆机_xcool{0}".format(WaterCooledScrew.index),
         )
 
-        self.slj_xcool_flag = mdl.binary_var_list(
+        self.水冷螺杆机_xcool_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="slj_xcool_flag{0}".format(WaterCooledScrew.index),
+            name="水冷螺杆机_xcool_flag{0}".format(WaterCooledScrew.index),
         )
 
-        self.ele_slj = mdl.continuous_var_list(
+        self.ele_水冷螺杆机 = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="ele_slj{0}".format(WaterCooledScrew.index),
+            name="ele_水冷螺杆机{0}".format(WaterCooledScrew.index),
         )
-        self.p_slj = mdl.continuous_var_list(
+        self.p_水冷螺杆机 = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_slj{0}".format(WaterCooledScrew.index),
+            name="p_水冷螺杆机{0}".format(WaterCooledScrew.index),
         )
-        self.cop_slj_cool = 5
-        self.cop_slj_xcool = 5
+        self.cop_水冷螺杆机_cool = 5
+        self.cop_水冷螺杆机_xcool = 5
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
-        mdl.add_constraint(0 <= self.slj_set)
-        mdl.add_constraint(self.slj_set <= self.set_max)
+        mdl.add_constraint(0 <= self.水冷螺杆机_set)
+        mdl.add_constraint(self.水冷螺杆机_set <= self.set_max)
 
-        mdl.add_constraints(0 <= self.p_slj_cool[h] for h in hrange)
+        mdl.add_constraints(0 <= self.p_水冷螺杆机_cool[h] for h in hrange)
         mdl.add_constraints(
-            self.p_slj_cool[h] <= self.slj_set * self.case_ratio[0] for h in hrange
+            self.p_水冷螺杆机_cool[h] <= self.水冷螺杆机_set * self.case_ratio[0] for h in hrange
         )
         mdl.add_constraints(
-            self.p_slj_cool[h] <= bigM * self.slj_cool_flag[h] for h in hrange
-        )
-
-        mdl.add_constraints(0 <= self.p_slj_xcool[h] for h in hrange)
-        mdl.add_constraints(
-            self.p_slj_xcool[h] <= self.slj_set * self.case_ratio[1] for h in hrange
-        )
-        mdl.add_constraints(
-            self.p_slj_xcool[h] <= bigM * self.slj_xcool_flag[h] for h in hrange
+            self.p_水冷螺杆机_cool[h] <= bigM * self.水冷螺杆机_cool_flag[h] for h in hrange
         )
 
+        mdl.add_constraints(0 <= self.p_水冷螺杆机_xcool[h] for h in hrange)
         mdl.add_constraints(
-            self.slj_cool_flag[h] + self.slj_xcool_flag[h] == 1 for h in hrange
+            self.p_水冷螺杆机_xcool[h] <= self.水冷螺杆机_set * self.case_ratio[1] for h in hrange
         )
         mdl.add_constraints(
-            self.ele_slj[h]
-            == self.p_slj_cool[h] / self.cop_slj_cool
-            + self.p_slj_xcool[h] / self.cop_slj_xcool
+            self.p_水冷螺杆机_xcool[h] <= bigM * self.水冷螺杆机_xcool_flag[h] for h in hrange
+        )
+
+        mdl.add_constraints(
+            self.水冷螺杆机_cool_flag[h] + self.水冷螺杆机_xcool_flag[h] == 1 for h in hrange
+        )
+        mdl.add_constraints(
+            self.ele_水冷螺杆机[h]
+            == self.p_水冷螺杆机_cool[h] / self.cop_水冷螺杆机_cool
+            + self.p_水冷螺杆机_xcool[h] / self.cop_水冷螺杆机_xcool
             for h in hrange
         )
         mdl.add_constraints(
-            self.p_slj[h] == self.p_slj_cool[h] + self.p_slj_xcool[h] for h in hrange
+            self.p_水冷螺杆机[h] == self.p_水冷螺杆机_cool[h] + self.p_水冷螺杆机_xcool[h] for h in hrange
         )
 
-        self.ele_cost = mdl.sum(self.ele_slj[h] * self.ele_price[h] for h in hrange)
+        self.ele_cost = mdl.sum(self.ele_水冷螺杆机[h] * self.ele_price[h] for h in hrange)
         # 年化
         mdl.add_constraint(
-            self.nianhua
-            == self.slj_set * self.set_price / 15 + self.ele_cost * 8760 / self.num_h
+            self.annualized
+            == self.水冷螺杆机_set * self.set_price / 15 + self.ele_cost * 8760 / self.num_h
         )
 
 
@@ -1172,8 +1172,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         self.doubleWorkingConditionUnit_set = mdl.continuous_var(
             name="doubleWorkingConditionUnit_set{0}".format(DoubleWorkingConditionUnit.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="DoubleWorkingConditionUnit_nianhua{0}".format(DoubleWorkingConditionUnit.index)
+        self.annualized = mdl.continuous_var(
+            name="DoubleWorkingConditionUnit_annualized{0}".format(DoubleWorkingConditionUnit.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="DoubleWorkingConditionUnit_ele_sum{0}".format(DoubleWorkingConditionUnit.index)
@@ -1256,7 +1256,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         )
         # 年化
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.doubleWorkingConditionUnit_set * self.set_price / 15
             + self.ele_cost * 8760 / self.num_h
         )
@@ -1266,18 +1266,18 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
     index = 0
 
     def __init__(
-        self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="threegk"
+        self, num_h:int, mdl:Model, set_max, set_price, ele_price, case_ratio, set_name="tripleWorkingConditionUnit"
     ):
         IntegratedEnergySystem(set_name)
         self.num_h = num_h
 
         TripleWorkingConditionUnit.index += 1
         self.ele_price = ele_price
-        self.threegk_set = mdl.continuous_var(
-            name="threegk_set{0}".format(TripleWorkingConditionUnit.index)
+        self.tripleWorkingConditionUnit_set = mdl.continuous_var(
+            name="tripleWorkingConditionUnit_set{0}".format(TripleWorkingConditionUnit.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="TripleWorkingConditionUnit_nianhua{0}".format(TripleWorkingConditionUnit.index)
+        self.annualized = mdl.continuous_var(
+            name="TripleWorkingConditionUnit_annualized{0}".format(TripleWorkingConditionUnit.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="TripleWorkingConditionUnit_ele_sum{0}".format(TripleWorkingConditionUnit.index)
@@ -1285,104 +1285,104 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self.set_price = set_price
         self.set_max = set_max
         self.case_ratio = case_ratio
-        self.p_threegk_cool = mdl.continuous_var_list(
+        self.p_tripleWorkingConditionUnit_cool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_cool{0}".format(TripleWorkingConditionUnit.index),
+            name="p_tripleWorkingConditionUnit_cool{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.threegk_cool_flag = mdl.binary_var_list(
+        self.tripleWorkingConditionUnit_cool_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_cool_flag{0}".format(TripleWorkingConditionUnit.index),
+            name="tripleWorkingConditionUnit_cool_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.p_threegk_ice = mdl.continuous_var_list(
+        self.p_tripleWorkingConditionUnit_ice = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_ice{0}".format(TripleWorkingConditionUnit.index),
+            name="p_tripleWorkingConditionUnit_ice{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.threegk_ice_flag = mdl.binary_var_list(
+        self.tripleWorkingConditionUnit_ice_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_ice_flag{0}".format(TripleWorkingConditionUnit.index),
+            name="tripleWorkingConditionUnit_ice_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.p_threegk_heat = mdl.continuous_var_list(
+        self.p_tripleWorkingConditionUnit_heat = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_threegk_heat{0}".format(TripleWorkingConditionUnit.index),
+            name="p_tripleWorkingConditionUnit_heat{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.threegk_heat_flag = mdl.binary_var_list(
+        self.tripleWorkingConditionUnit_heat_flag = mdl.binary_var_list(
             [i for i in range(0, self.num_h)],
-            name="threegk_heat_flag{0}".format(TripleWorkingConditionUnit.index),
+            name="tripleWorkingConditionUnit_heat_flag{0}".format(TripleWorkingConditionUnit.index),
         )
 
-        self.ele_threegk = mdl.continuous_var_list(
+        self.ele_tripleWorkingConditionUnit = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="ele_threegk{0}".format(TripleWorkingConditionUnit.index),
+            name="ele_tripleWorkingConditionUnit{0}".format(TripleWorkingConditionUnit.index),
         )
-        self.p_threegk = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_threegk{0}".format(TripleWorkingConditionUnit.index)
+        self.p_tripleWorkingConditionUnit = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="p_tripleWorkingConditionUnit{0}".format(TripleWorkingConditionUnit.index)
         )
-        self.cop_threegk_cool = 5
-        self.cop_threegk_ice = 4
-        self.cop_threegk_heat = 5
+        self.cop_tripleWorkingConditionUnit_cool = 5
+        self.cop_tripleWorkingConditionUnit_ice = 4
+        self.cop_tripleWorkingConditionUnit_heat = 5
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
-        mdl.add_constraint(0 <= self.threegk_set)
-        mdl.add_constraint(self.threegk_set <= self.set_max)
+        mdl.add_constraint(0 <= self.tripleWorkingConditionUnit_set)
+        mdl.add_constraint(self.tripleWorkingConditionUnit_set <= self.set_max)
 
-        mdl.add_constraints(0 <= self.p_threegk_cool[h] for h in hrange)
+        mdl.add_constraints(0 <= self.p_tripleWorkingConditionUnit_cool[h] for h in hrange)
         mdl.add_constraints(
-            self.p_threegk_cool[h] <= self.threegk_set * self.case_ratio[0]
+            self.p_tripleWorkingConditionUnit_cool[h] <= self.tripleWorkingConditionUnit_set * self.case_ratio[0]
             for h in hrange
         )
         mdl.add_constraints(
-            self.p_threegk_cool[h] <= bigM * self.threegk_cool_flag[h] for h in hrange
+            self.p_tripleWorkingConditionUnit_cool[h] <= bigM * self.tripleWorkingConditionUnit_cool_flag[h] for h in hrange
         )
 
-        mdl.add_constraints(0 <= self.p_threegk_ice[h] for h in hrange)
+        mdl.add_constraints(0 <= self.p_tripleWorkingConditionUnit_ice[h] for h in hrange)
         mdl.add_constraints(
-            self.p_threegk_ice[h] <= self.threegk_set * self.case_ratio[1]
+            self.p_tripleWorkingConditionUnit_ice[h] <= self.tripleWorkingConditionUnit_set * self.case_ratio[1]
             for h in hrange
         )
         mdl.add_constraints(
-            self.p_threegk_ice[h] <= bigM * self.threegk_ice_flag[h] for h in hrange
+            self.p_tripleWorkingConditionUnit_ice[h] <= bigM * self.tripleWorkingConditionUnit_ice_flag[h] for h in hrange
         )
 
-        mdl.add_constraints(0 <= self.p_threegk_heat[h] for h in hrange)
+        mdl.add_constraints(0 <= self.p_tripleWorkingConditionUnit_heat[h] for h in hrange)
         mdl.add_constraints(
-            self.p_threegk_heat[h] <= self.threegk_set * self.case_ratio[2]
+            self.p_tripleWorkingConditionUnit_heat[h] <= self.tripleWorkingConditionUnit_set * self.case_ratio[2]
             for h in hrange
         )
         mdl.add_constraints(
-            self.p_threegk_heat[h] <= bigM * self.threegk_heat_flag[h] for h in hrange
+            self.p_tripleWorkingConditionUnit_heat[h] <= bigM * self.tripleWorkingConditionUnit_heat_flag[h] for h in hrange
         )
 
         mdl.add_constraints(
-            self.threegk_cool_flag[h]
-            + self.threegk_ice_flag[h]
-            + self.threegk_heat_flag[h]
+            self.tripleWorkingConditionUnit_cool_flag[h]
+            + self.tripleWorkingConditionUnit_ice_flag[h]
+            + self.tripleWorkingConditionUnit_heat_flag[h]
             == 1
             for h in hrange
         )
         mdl.add_constraints(
-            self.ele_threegk[h]
-            == self.p_threegk_cool[h] / self.cop_threegk_cool
-            + self.p_threegk_ice[h] / self.cop_threegk_ice
-            + self.p_threegk_heat[h] / self.cop_threegk_heat
+            self.ele_tripleWorkingConditionUnit[h]
+            == self.p_tripleWorkingConditionUnit_cool[h] / self.cop_tripleWorkingConditionUnit_cool
+            + self.p_tripleWorkingConditionUnit_ice[h] / self.cop_tripleWorkingConditionUnit_ice
+            + self.p_tripleWorkingConditionUnit_heat[h] / self.cop_tripleWorkingConditionUnit_heat
             for h in hrange
         )
         mdl.add_constraints(
-            self.p_threegk[h]
-            == self.p_threegk_cool[h] + self.p_threegk_ice[h] + self.p_threegk_heat[h]
+            self.p_tripleWorkingConditionUnit[h]
+            == self.p_tripleWorkingConditionUnit_cool[h] + self.p_tripleWorkingConditionUnit_ice[h] + self.p_tripleWorkingConditionUnit_heat[h]
             for h in hrange
         )
 
-        self.ele_cost = mdl.sum(self.ele_threegk[h] * self.ele_price[h] for h in hrange)
+        self.ele_cost = mdl.sum(self.ele_tripleWorkingConditionUnit[h] * self.ele_price[h] for h in hrange)
         # 年化
         mdl.add_constraint(
-            self.nianhua
-            == self.threegk_set * self.set_price / 15
+            self.annualized
+            == self.tripleWorkingConditionUnit_set * self.set_price / 15
             + self.ele_cost * 8760 / self.num_h
         )
 
@@ -1400,8 +1400,8 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self.dire_set = mdl.continuous_var(
             name="dire_set{0}".format(GeothermalHeatPump.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="GeothermalHeatPump_nianhua{0}".format(GeothermalHeatPump.index)
+        self.annualized = mdl.continuous_var(
+            name="GeothermalHeatPump_annualized{0}".format(GeothermalHeatPump.index)
         )
         self.ele_cost = mdl.continuous_var(
             name="GeothermalHeatPump_ele_sum{0}".format(GeothermalHeatPump.index)
@@ -1434,7 +1434,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self.ele_cost = mdl.sum(self.ele_dire[h] * self.ele_price[h] for h in hrange)
         # 年化
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.dire_set * self.set_price / 15 + self.ele_cost * 8760 / self.num_h
         )
 
@@ -1502,7 +1502,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.p_sx_gheat = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)], name="p_sx_gheat{0}".format(self.index)
         )
-        self.nianhua = mdl.continuous_var(name="p_sx_nianhua{0}".format(self.index))
+        self.annualized = mdl.continuous_var(name="p_sx_annualized{0}".format(self.index))
 
     def cons_regester(self, mdl:Model, regester_period_constraints, day_node):
         bigM = 1e10
@@ -1612,7 +1612,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             self.p_sx_gheat[h] <= self.sx.p_ess[h] + (1 - self.sx_gheat_flag[h]) * bigM
             for h in hrange
         )
-        mdl.add_constraint(self.nianhua == self.sx_V * self.v_price / 20)
+        mdl.add_constraint(self.annualized == self.sx_V * self.v_price / 20)
 
 # 地源蒸汽发生器
 class GroundSourceSteamGenerator(IntegratedEnergySystem):
@@ -1650,8 +1650,8 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         self.地源蒸汽发生器gtxr_price = 地源蒸汽发生器gtxr_price
         self.ele_price = ele_price
 
-        self.nianhua = mdl.continuous_var(
-            name="GroundSourceSteamGenerator_nianhua{0}".format(GroundSourceSteamGenerator.index)
+        self.annualized = mdl.continuous_var(
+            name="GroundSourceSteamGenerator_annualized{0}".format(GroundSourceSteamGenerator.index)
         )
         self.eff = eff
 
@@ -1689,9 +1689,9 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             self.ele_cost == self.p_地源蒸汽发生器[h] * self.ele_price[h] for h in hrange
         )
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.地源蒸汽发生器_set * self.地源蒸汽发生器_price / 15
-            + self.地源蒸汽发生器gtxr_set.nianhua
+            + self.地源蒸汽发生器gtxr_set.annualized
             + self.ele_cost
         )
 
@@ -1826,8 +1826,8 @@ class CitySupply(IntegratedEnergySystem):
         self.citysupply_cost = mdl.continuous_var(
             name="citysupply_cost{0}".format(CitySupply.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="citysupply_nianhua{0}".format(CitySupply.index)
+        self.annualized = mdl.continuous_var(
+            name="citysupply_annualized{0}".format(CitySupply.index)
         )
 
     def cons_register(self, mdl: Model):
@@ -1843,7 +1843,7 @@ class CitySupply(IntegratedEnergySystem):
             self.h_citysupply_from[h] * self.run_price[h] for h in hrange
         )
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.citysupply_set * self.set_price / 15
             + self.citysupply_cost * 8760 / self.num_h
         )
@@ -1879,8 +1879,8 @@ class GridNet(IntegratedEnergySystem):
         self.gridnet_cost = mdl.continuous_var(
             name="gridnet_cost{0}".format(GridNet.index)
         )
-        self.nianhua = mdl.continuous_var(
-            name="gridnet_nianhua{0}".format(GridNet.index)
+        self.annualized = mdl.continuous_var(
+            name="gridnet_annualized{0}".format(GridNet.index)
         )
 
         self.total_power = mdl1.continuous_var_list(
@@ -1935,7 +1935,7 @@ class GridNet(IntegratedEnergySystem):
             + self.basecost
         )
         mdl.add_constraint(
-            self.nianhua
+            self.annualized
             == self.gridnet_set * self.set_price / 15
             + self.gridnet_cost * 8760 / self.num_h
         )
@@ -2138,7 +2138,7 @@ if __name__ == "__main__":
     )
     xbxr.cons_register(mdl1)
     # 5
-    szrs = CitySupply(
+    市政热水 = CitySupply(
         num_h0,
         mdl1,
         citysupply_set_max=10000,
@@ -2146,12 +2146,12 @@ if __name__ == "__main__":
         run_price=市政热水_price0,
         eff=0.9,
     )
-    szrs.cons_register(mdl1)
+    市政热水.cons_register(mdl1)
     # 6
-    rsdgl = ElectricBoiler(
-        num_h0, mdl1, dgl_set_max=10000, dgl_price=200, ele_price=ele_price0, eff=0.9
+    热水电锅炉 = ElectricBoiler(
+        num_h0, mdl1, 电锅炉_set_max=10000, 电锅炉_price=200, ele_price=ele_price0, eff=0.9
     )
-    rsdgl.cons_register(mdl1)
+    热水电锅炉.cons_register(mdl1)
     # 7
     gasBoiler_rs = GasBoiler(
         num_h0,
@@ -2189,9 +2189,9 @@ if __name__ == "__main__":
         + chp.yqyrwater_set.h_exch[h]
         + 平板光热.p_pv[h]
         + xbxr.p_ess[h]
-        + szrs.h_citysupply[h]
+        + 市政热水.h_citysupply[h]
         + gasBoiler_rs.h_gasBoiler[h]
-        + rsdgl.h_dgl[h]
+        + 热水电锅炉.h_电锅炉[h]
         + sx.p_sx_gheat[h]
         for h in range(0, num_h0)
     )
@@ -2209,7 +2209,7 @@ if __name__ == "__main__":
     )
     mdl1.add_constraints(p_gws_sum[h] >= 0 for h in range(0, num_h0))
 
-    # p_rb[h]*rb_flag[h]+p_sx[h]*sx_flag[h]+p_slj[h]*sy_flag[h]+p_溴化锂[h]+p_slj[h]+p_bx[h]==cool_load[h]%冷量需求
+    # p_rb[h]*rb_flag[h]+p_sx[h]*sx_flag[h]+p_水冷螺杆机[h]*sy_flag[h]+p_溴化锂[h]+p_水冷螺杆机[h]+p_bx[h]==cool_load[h]%冷量需求
     # p_rb[h]*(1-rb_flag[h])+p_sx[h]*(1-sx_flag[h])+p_sy[h]*(1-sy_flag[h])+p_gas[h]+p_dire[h]==heat_load[h]%热量需求
     # 采用线性化技巧，处理为下面的约束.基于每种设备要么制热,要么制冷。
     # 供冷：风冷热泵 地源热泵 蓄能水罐 热水溴化锂机组 蒸汽溴化锂机组 相变蓄冷
@@ -2236,7 +2236,7 @@ if __name__ == "__main__":
         case_ratio=np.ones(4),
     )
     sy.cons_register(mdl1)
-    slj = WaterCooledScrew(
+    水冷螺杆机 = WaterCooledScrew(
         num_h0,
         mdl1,
         set_max=2000,
@@ -2244,7 +2244,7 @@ if __name__ == "__main__":
         ele_price=ele_price0,
         case_ratio=np.array([1, 0.8]),
     )
-    slj.cons_register(mdl1)
+    水冷螺杆机.cons_register(mdl1)
     tripleWorkingConditionUnit = TripleWorkingConditionUnit(
         num_h0,
         mdl1,
@@ -2312,7 +2312,7 @@ if __name__ == "__main__":
     p_xcool = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xcool ")
     p_xheat = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xheat ")
     p_xice = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xice ")
-    # p_rb_cool[h]+p_xcool[h]+p_sy_cool[h]+p_zq溴化锂[h]+p_rs溴化锂[h]+p_slj_cool[h]+p_ice[h]+p_tripleWorkingConditionUnit_cool[h]+p_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
+    # p_rb_cool[h]+p_xcool[h]+p_sy_cool[h]+p_zq溴化锂[h]+p_rs溴化锂[h]+p_水冷螺杆机_cool[h]+p_ice[h]+p_tripleWorkingConditionUnit_cool[h]+p_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
     mdl1.add_constraints(
         rb.p_sy_cool[h]
@@ -2320,9 +2320,9 @@ if __name__ == "__main__":
         + sy.p_sy_cool[h]
         + zq_溴化锂.c_溴化锂[h]
         + 热水溴化锂.c_溴化锂[h]
-        + slj.p_slj_cool[h]
+        + 水冷螺杆机.p_水冷螺杆机_cool[h]
         + p_xice[h]
-        + tripleWorkingConditionUnit.p_threegk_cool[h]
+        + tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_cool[h]
         + doubleWorkingConditionUnit.p_doubleWorkingConditionUnit_cool[h]
         == cool_load[h]
         for h in range(0, num_h0)
@@ -2334,14 +2334,14 @@ if __name__ == "__main__":
         + sy.p_sy_heat[h]
         + qs_exchanger.h_exch[h]
         + 热水换热器.h_exch[h]
-        + tripleWorkingConditionUnit.p_threegk_heat[h]
+        + tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_heat[h]
         + dire.p_dire[h]
         == heat_load[h]
         for h in range(0, num_h0)
     )
     # 冰蓄冷逻辑组合
     mdl1.add_constraints(
-        tripleWorkingConditionUnit.p_threegk_ice[h] + doubleWorkingConditionUnit.p_doubleWorkingConditionUnit_ice[h] + bx.p_ess[h] == p_xice[h]
+        tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_ice[h] + doubleWorkingConditionUnit.p_doubleWorkingConditionUnit_ice[h] + bx.p_ess[h] == p_xice[h]
         for h in range(0, num_h0)
     )
     lin = Linearization()
@@ -2351,7 +2351,7 @@ if __name__ == "__main__":
     mdl1.add_constraints(
         rb.p_sy_xcool[h]
         + sy.p_sy_xcool[h]
-        + slj.p_slj_xcool[h]
+        + 水冷螺杆机.p_水冷螺杆机_xcool[h]
         + sx.p_sx_cool[h]
         + xbxl.p_ess[h]
         == p_xcool[h]
@@ -2370,8 +2370,8 @@ if __name__ == "__main__":
         num_h0, mdl1, p_xheat, lin.add(num_h0, mdl1, sx.p_sx_heat, lowxbxr.p_ess)
     )
     # 电量平衡
-    # ele_dire[h] + ele_slj[h] + ele_rb[h] - p_batteryEnergyStorageSystem[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
-    # p_地源蒸汽发生器[h] + p_dgl[h] + ele_tripleWorkingConditionUnit[h] + ele_doubleWorkingConditionUnit[h] == total_power[h]
+    # ele_dire[h] + ele_水冷螺杆机[h] + ele_rb[h] - p_batteryEnergyStorageSystem[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
+    # p_地源蒸汽发生器[h] + p_电锅炉[h] + ele_tripleWorkingConditionUnit[h] + ele_doubleWorkingConditionUnit[h] == total_power[h]
     # 市政电力电流是双向的，其余市政是单向的。
 
     gridnet = GridNet(
@@ -2385,7 +2385,7 @@ if __name__ == "__main__":
     gridnet.cons_register(mdl1, 2000)
     mdl1.add_constraints(
         dire.ele_dire[h]
-        + slj.ele_slj[h]
+        + 水冷螺杆机.ele_水冷螺杆机[h]
         + rb.ele_sy[h]
         - batteryEnergyStorageSystem.p_ess[h]
         - pv.p_pv[h]
@@ -2394,8 +2394,8 @@ if __name__ == "__main__":
         - chp.p_chp[h]
         - diesel.p_diesel[h]
         + 地源蒸汽发生器.p_地源蒸汽发生器[h]
-        + rsdgl.ele_dgl[h]
-        + tripleWorkingConditionUnit.ele_threegk[h]
+        + 热水电锅炉.ele_电锅炉[h]
+        + tripleWorkingConditionUnit.ele_tripleWorkingConditionUnit[h]
         + doubleWorkingConditionUnit.ele_doubleWorkingConditionUnit[h]
         == gridnet.total_power[h]
         for h in range(0, num_h0)
@@ -2413,8 +2413,8 @@ if __name__ == "__main__":
         zq_溴化锂,
         平板光热,
         xbxr,
-        szrs,
-        rsdgl,
+        市政热水,
+        热水电锅炉,
         gasBoiler_rs,
         sx,
         市政蒸汽,
@@ -2422,7 +2422,7 @@ if __name__ == "__main__":
         热水换热器,
         rb,
         sy,
-        slj,
+        水冷螺杆机,
         tripleWorkingConditionUnit,
         doubleWorkingConditionUnit,
         dire,
@@ -2431,9 +2431,9 @@ if __name__ == "__main__":
         lowxbxr,
         gridnet,
     ]
-    obj = iges_set[0].nianhua
+    obj = iges_set[0].annualized
     for ii in range(1, len(iges_set)):
-        obj = obj + iges_set[ii].nianhua
+        obj = obj + iges_set[ii].annualized
 
     mdl1.minimize(obj)
     mdl1.print_information()
@@ -2501,12 +2501,12 @@ if __name__ == "__main__":
         plt.figure()
         pllist = IntegratedEnergySystemPlot(sol_run1)
 
-        # pllist.plot_list(  [dire.ele_dire, slj.ele_slj], ['dire.ele_dire', 'slj.ele_slj'], "ele balance")
+        # pllist.plot_list(  [dire.ele_dire, 水冷螺杆机.ele_水冷螺杆机], ['dire.ele_dire', '水冷螺杆机.ele_水冷螺杆机'], "ele balance")
 
         pllist.plot_list(
             [
                 dire.ele_dire,
-                slj.ele_slj,
+                水冷螺杆机.ele_水冷螺杆机,
                 rb.ele_sy,
                 batteryEnergyStorageSystem.p_ess,
                 pv.p_pv,
@@ -2515,14 +2515,14 @@ if __name__ == "__main__":
                 chp.p_chp,
                 diesel.p_diesel,
                 地源蒸汽发生器.p_地源蒸汽发生器,
-                rsdgl.ele_dgl,
-                tripleWorkingConditionUnit.ele_threegk,
+                热水电锅炉.ele_电锅炉,
+                tripleWorkingConditionUnit.ele_tripleWorkingConditionUnit,
                 doubleWorkingConditionUnit.ele_doubleWorkingConditionUnit,
                 gridnet.total_power,
             ],
             [
                 "dire.ele_dire",
-                "slj.ele_slj",
+                "水冷螺杆机.ele_水冷螺杆机",
                 "rb.ele_sy",
                 "batteryEnergyStorageSystem.p_ess",
                 "pv.p_pv",
@@ -2531,8 +2531,8 @@ if __name__ == "__main__":
                 "chp.p_chp",
                 "diesel.p_diesel",
                 "地源蒸汽发生器.p_地源蒸汽发生器",
-                "rsdgl.ele_dgl",
-                "tripleWorkingConditionUnit.ele_threegk",
+                "热水电锅炉.ele_电锅炉",
+                "tripleWorkingConditionUnit.ele_tripleWorkingConditionUnit",
                 "doubleWorkingConditionUnit.ele_doubleWorkingConditionUnit",
                 "gridnet.total_power",
             ],
@@ -2546,9 +2546,9 @@ if __name__ == "__main__":
                 sy.p_sy_cool,
                 zq_溴化锂.c_溴化锂,
                 热水溴化锂.c_溴化锂,
-                slj.p_slj_cool,
+                水冷螺杆机.p_水冷螺杆机_cool,
                 p_xice,
-                tripleWorkingConditionUnit.p_threegk_cool,
+                tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_cool,
                 doubleWorkingConditionUnit.p_doubleWorkingConditionUnit_cool,
             ],
             [
@@ -2557,9 +2557,9 @@ if __name__ == "__main__":
                 "sy.p_sy_cool",
                 "zq_溴化锂.c_溴化锂",
                 "热水溴化锂.c_溴化锂",
-                "slj.p_slj_cool",
+                "水冷螺杆机.p_水冷螺杆机_cool",
                 "p_xice",
-                "tripleWorkingConditionUnit.p_threegk_cool",
+                "tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_cool",
                 "doubleWorkingConditionUnit.p_doubleWorkingConditionUnit_cool",
             ],
             "cool_balance",
@@ -2573,7 +2573,7 @@ if __name__ == "__main__":
                 sy.p_sy_heat,
                 qs_exchanger.h_exch,
                 热水换热器.h_exch,
-                tripleWorkingConditionUnit.p_threegk_heat,
+                tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_heat,
                 dire.p_dire,
                 heat_load,
             ],
@@ -2583,7 +2583,7 @@ if __name__ == "__main__":
                 "sy.p_sy_heat",
                 "qs_exchanger.h_exch",
                 "热水换热器.h_exch",
-                " tripleWorkingConditionUnit.p_threegk_heat",
+                " tripleWorkingConditionUnit.p_tripleWorkingConditionUnit_heat",
                 "dire.p_dire",
                 "heat_load",
             ],
@@ -2595,10 +2595,10 @@ if __name__ == "__main__":
                 chp.gts_set.h_exch,
                 chp.yqyrwater_set.h_exch,
                 平板光热.p_pv,
-                xbxr.p_ess,
-                szrs.h_citysupply,
+                xbxr.p_ess, # xiang bian蓄热
+                市政热水.h_citysupply,
                 gasBoiler_rs.h_gasBoiler,
-                rsdgl.h_dgl,
+                热水电锅炉.h_电锅炉,
                 sx.p_sx_gheat,
             ],
             [
@@ -2606,9 +2606,9 @@ if __name__ == "__main__":
                 "yqyrwater_set.h_exch",
                 "平板光热.p_pv",
                 "xbxr.p_ess",
-                "szrs.h_citysupply",
+                "市政热水.h_citysupply",
                 "gasBoiler_rs.h_gasBoiler",
-                "rsdgl.h_dgl",
+                "热水电锅炉.h_电锅炉",
                 "sx.p_sx_gheat",
             ],
             "gwheat_balance",
