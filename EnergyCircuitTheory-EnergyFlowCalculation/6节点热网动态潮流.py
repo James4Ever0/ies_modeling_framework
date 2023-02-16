@@ -139,7 +139,7 @@ with context('时域激励分解'):
                                                   tb4[load].values)))
     # 转换为频域激励
     #将时域激励转换为频域激励FD_Tin和FD_E：使用FFT将时域激励转换为频域激励，取前nf个频率分量，其中nf=100*3表示取前300个频率分量，nt为时域激励的总点数。转换后的频域激励FD_Tin和FD_E为复数，分别包含节点温度和管道温差的频域激励。
-    nf = 100*3
+    nf = 100*3 #频率分量
     nt = TD_E.shape[1]
     fr = 1/(12+x)/3600
     FD_Tin = np.zeros([nnodes, nf], dtype='complex_')
