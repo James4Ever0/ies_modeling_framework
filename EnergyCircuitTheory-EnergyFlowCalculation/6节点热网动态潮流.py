@@ -41,7 +41,7 @@ from contextlib import contextmanager
 
 # benchmark
 @contextmanager #用于将函数转化为上下文管理器
-def context(event:str):#用于计算某个事件的开始、结束时间以及运行时间，并将其打印出来
+def context(event):#用于计算某个事件的开始、结束时间以及运行时间，并将其打印出来
     t0 = time.time()
     print('[{}] {} starts ...'.format(time.strftime('%Y-%m-%d %H:%M:%S'), event)) #事件开始时间
     yield #yield语句之前的代码在with语句执行之前运行，yield语句后的代码在with语句执行结束后运行

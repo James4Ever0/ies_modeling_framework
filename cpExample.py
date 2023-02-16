@@ -1684,7 +1684,7 @@ class ResourceGet(object):
     # 光照资源，超过一年的，将一年数据进行重复
     def get_radiation(self, path:str, num_h:int):
         if os.path.exists(path):
-            raw_file :np.ndarray= np.loadtxt(path, dtype=float)
+            raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
             ha1 = radiation
             for loop in range(1, math.ceil(num_h / 8760)):
@@ -2005,7 +2005,8 @@ steam_load = load.get_power_load(num_h0)
 if __name__ == "__main__":
     resource = ResourceGet()
     ha0 = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
-    # what is the output?
+    # what is the output? break here.
+    
 
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
