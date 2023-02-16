@@ -67,9 +67,9 @@ class PV(IGES):  # Photovoltaic
         num_h: int,
         mdl: Model,
         pv_set_max: int,
-        set_price: int, # float?
-        ha0:np.ndarray,
-        eff: float, # efficiency
+        set_price: int,  # float?
+        ha0: np.ndarray,
+        eff: float,  # efficiency
         set_name="PV",
     ):
         IGES(set_name)
@@ -87,7 +87,7 @@ class PV(IGES):  # Photovoltaic
         self.eff = eff
         self.nianhua = mdl.continuous_var(name="pv_nianhua{0}".format(PV.index))
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         mdl.add_constraint(self.pv_set <= self.pv_set_max)
         mdl.add_constraint(self.pv_set >= 0)
         mdl.add_constraints(
@@ -105,7 +105,13 @@ class LiBrRefrigeration(IGES):
     index = 0
 
     def __init__(
-        self, num_h, mdl, xhl_set_max, set_price, eff, set_name="LiBrRefrigeration"
+        self,
+        num_h: int,
+        mdl: Model,
+        xhl_set_max: int,
+        set_price: int,
+        eff: float,
+        set_name: str = "LiBrRefrigeration",
     ):
         IGES(set_name)
         LiBrRefrigeration.index += 1
@@ -130,7 +136,7 @@ class LiBrRefrigeration(IGES):
             name="xhl_nianhua{0}".format(LiBrRefrigeration.index)
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.xhl_set >= 0)
         mdl.add_constraint(self.xhl_set <= self.xhl_set_max)
@@ -147,7 +153,13 @@ class Diesel(IGES):
     index = 0
 
     def __init__(
-        self, num_h:int, mdl:Model, diesel_set_max, set_price, run_price, set_name="diesel"
+        self,
+        num_h: int,
+        mdl: Model,
+        diesel_set_max: int,
+        set_price: int,
+        run_price: int,
+        set_name="diesel",
     ):
         IGES(set_name)
         Diesel.index += 1
@@ -162,7 +174,7 @@ class Diesel(IGES):
         self.p_sum = mdl.sum(self.p_diesel[i] for i in range(0, self.num_h))
         self.nianhua = mdl.continuous_var(name="diesel_nianhua{0}".format(Diesel.index))
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         mdl.add_constraint(self.diesel_set <= self.diesel_set_max)
         mdl.add_constraint(self.diesel_set >= 0)
         mdl.add_constraints(
@@ -180,21 +192,21 @@ class Diesel(IGES):
 
 # 储能系统基类
 class ESS(IGES):
-    index:int= 0
+    index: int = 0
 
     def __init__(
         self,
-        num_h:int,
-        mdl:Model,
-        ess_set_max:int,
-        ess_price:int,
-        pcs_price:int,
-        c_rate_max:int,
-        eff:float,
-        ess_init:int,
-        soc_min:float,
-        soc_max:float,
-        set_name:str="ess",
+        num_h: int,
+        mdl: Model,
+        ess_set_max: int,
+        ess_price: int,
+        pcs_price: int,
+        c_rate_max: int,
+        eff: float,
+        ess_init: int,
+        soc_min: float,
+        soc_max: float,
+        set_name: str = "ess",
     ):
         IGES(set_name)
         ESS.index += 1
@@ -485,7 +497,7 @@ class Csgr(IGES):
             soc_max=1,
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         self.csgrgtxr_set.cons_register(mdl)
         mdl.add_constraint(self.csgr_set >= 0)
@@ -564,7 +576,7 @@ class CHP(IGES):
             self.num_h, mdl, self.chp_set * 0.5, set_price=300, k=0
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.chp_num >= 0)
         mdl.add_constraint(self.chp_num <= self.chp_num_max)
@@ -648,7 +660,7 @@ class Gasgl(IGES):
         self.gas_cost = mdl.continuous_var(name="gasgl_gas_cost{0}".format(Gasgl.index))
         self.nianhua = mdl.continuous_var(name="gasgl_nianhua{0}".format(Gasgl.index))
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.gasgl_set >= 0)
         mdl.add_constraint(self.gasgl_set <= self.gasgl_set_max)
@@ -691,7 +703,7 @@ class Dgl(IGES):
         self.ele_cost = mdl.continuous_var(name="ele_cost{0}".format(Dgl.index))
         self.nianhua = mdl.continuous_var(name="dgl_nianhua{0}".format(Dgl.index))
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.dgl_set >= 0)
         mdl.add_constraint(self.dgl_set <= self.gas_set_max)
@@ -726,7 +738,7 @@ class Exchanger(IGES):
             name="h_exchanger{0}".format(Exchanger.index),
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.exch_set >= 0)
         mdl.add_constraint(self.exch_set <= self.exch_set_max)
@@ -817,7 +829,7 @@ class AirHeatPump(IGES):
         self.cop_rb_heat = 3
         self.cop_rb_xheat = 3
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.rb_set)
         mdl.add_constraint(self.rb_set <= self.set_max)
@@ -969,7 +981,7 @@ class WaterHeatPump(IGES):
         self.cop_sy_heat = 5
         self.cop_sy_xheat = 5
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.sy_set)
         mdl.add_constraint(self.sy_set <= self.set_max)
@@ -1100,7 +1112,7 @@ class WaterCooledScrew(IGES):
         self.cop_slj_cool = 5
         self.cop_slj_xcool = 5
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.slj_set)
         mdl.add_constraint(self.slj_set <= self.set_max)
@@ -1198,7 +1210,7 @@ class DoubleGK(IGES):
 
     # 三工况机组
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.doublegk_set)
         mdl.add_constraint(self.doublegk_set <= self.set_max)
@@ -1310,7 +1322,7 @@ class ThreeGK(IGES):
         self.cop_threegk_ice = 4
         self.cop_threegk_heat = 5
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(0 <= self.threegk_set)
         mdl.add_constraint(self.threegk_set <= self.set_max)
@@ -1403,7 +1415,7 @@ class GeothermalHeatPump(IGES):
         )
         self.cop_dire = 5
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
 
         mdl.add_constraint(0 <= self.dire_set)
@@ -1655,7 +1667,7 @@ class Dyzqfsq(IGES):
             name="dyzqfsq_ele_cost{0}".format(Dyzqfsq.index)
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         self.dyzqfsqgtxr_set.cons_register(mdl)
         mdl.add_constraint(self.dyzqfsq_set >= 0)
@@ -1683,7 +1695,7 @@ class Dyzqfsq(IGES):
 class ResourceGet(object):
     # 光照资源，超过一年的，将一年数据进行重复
     # light intensity ranging from 0 to 1? not even reaching 0.3
-    def get_radiation(self, path:str, num_h:int) -> np.ndarray:
+    def get_radiation(self, path: str, num_h: int) -> np.ndarray:
         if os.path.exists(path):
             raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
@@ -1692,23 +1704,23 @@ class ResourceGet(object):
                 ha1 = np.concatenate((ha1, radiation), axis=0)
 
             ha2 = ha1[0:num_h] / 1000  # 转化为kW
-            return ha2 # shape: 1d array.
+            return ha2  # shape: 1d array.
         else:
             raise Exception("File not extists.")
 
-    def get_ele_price(self, num_h:int):
+    def get_ele_price(self, num_h: int):
         ele_price = np.ones(num_h, dtype=float) * 0.5
         return ele_price
 
-    def get_gas_price(self, num_h:int):
+    def get_gas_price(self, num_h: int):
         gas_price = np.ones(num_h, dtype=float) * 2.77
         return gas_price
 
-    def get_cityrs_price(self, num_h:int):
+    def get_cityrs_price(self, num_h: int):
         cityrs_price = np.ones(num_h, dtype=float) * 0.3
         return cityrs_price
 
-    def get_citysteam_price(self, num_h:int):
+    def get_citysteam_price(self, num_h: int):
         citysteam = np.ones(num_h, dtype=float) * 0.3
         return citysteam
 
@@ -1755,7 +1767,7 @@ class Linear_abs(object):
         self.irange = irange
         self.x = x
 
-    def abs_add_constraints(self, mdl:Model):
+    def abs_add_constraints(self, mdl: Model):
         mdl.add_constraints(self.b_posi[i] + self.b_neg[i] == 1 for i in self.irange)
         mdl.add_constraints(self.x_posi[i] >= 0 for i in self.irange)
         mdl.add_constraints(
@@ -1814,7 +1826,7 @@ class CitySupply(IGES):
             name="citysupply_nianhua{0}".format(CitySupply.index)
         )
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.citysupply_set >= 0)
         mdl.add_constraint(self.citysupply_set <= self.citysupply_set_max)
@@ -2005,7 +2017,7 @@ steam_load = load.get_power_load(num_h0)
 
 if __name__ == "__main__":
     resource = ResourceGet()
-    ha0:np.ndarray = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
+    ha0: np.ndarray = resource.get_radiation("jinan_changqing-hour.dat", num_h0)
     # what is the output? break here.
 
     ele_price0 = resource.get_ele_price(num_h0)
@@ -2026,7 +2038,7 @@ if __name__ == "__main__":
         c_rate_max=2,
         eff=0.9,
         ess_init=1,
-        soc_min=0, # state of charge
+        soc_min=0,  # state of charge
         soc_max=1,
     )
     bess.cons_register(mdl1, 1, day_node)
@@ -2426,7 +2438,12 @@ if __name__ == "__main__":
 
     mdl1.set_time_limit(1000)
 
-    sol_run1 = mdl1.solve(log_output=True)
+    sol_run1 = mdl1.solve(log_output=True) # output some solution.
+    # docplex.mp.solution.SolveSolution or None
+    
+    # not mdl1.solve_details, which always return:
+    # docplex.mp.sdetails.SolveDetails
+    
     # print('abs2 value:')
     # print(sol_run1.get_value(abs1.abs_x[1]))
     print(sol_run1.solve_details)
