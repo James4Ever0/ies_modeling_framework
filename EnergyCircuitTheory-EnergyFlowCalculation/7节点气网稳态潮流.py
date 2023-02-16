@@ -119,11 +119,12 @@ with context('基于能路的潮流计算'):
 
 with context('可视化'):
     vis = 0
-    if vis:
-        plt.figure(1)
-        plt.plot(np.array(vb))
-        plt.figure(2)
-        plt.plot(err)
-        plt.yscale('log')
-        print(p)
-        print(Gn_2)
+    # if vis:
+    plt.figure(1)
+    plt.plot(np.array(vb))
+    plt.figure(2)
+    plt.plot(err)
+    plt.yscale('log')
+    plt.show()
+    print(p)
+    print(Gn_2)
