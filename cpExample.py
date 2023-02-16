@@ -110,7 +110,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         self,
         num_h: int,
         mdl: Model,
-        xhl_set_max: int,
+        溴化锂_set_max: int,
         set_price: int,# what is this set? 
         eff: float,
         set_name: str = "LiBrRefrigeration",
@@ -118,37 +118,37 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         IntegratedEnergySystem(set_name)
         LiBrRefrigeration.index += 1
         self.num_h = num_h
-        self.xhl_set = mdl.continuous_var(
-            name="xhl_set{0}".format(LiBrRefrigeration.index)
+        self.溴化锂_set = mdl.continuous_var(
+            name="溴化锂_set{0}".format(LiBrRefrigeration.index)
         )
 
-        self.h_xhl_from = mdl.continuous_var_list( # iterate through hours in a day?
+        self.h_溴化锂_from = mdl.continuous_var_list( # iterate through hours in a day?
             [i for i in range(0, self.num_h)],
-            name="h_xhl_from{0}".format(LiBrRefrigeration.index),
+            name="h_溴化锂_from{0}".format(LiBrRefrigeration.index),
         )
-        self.c_xhl = mdl.continuous_var_list( # the same?
+        self.c_溴化锂 = mdl.continuous_var_list( # the same?
             [i for i in range(0, self.num_h)],
-            name="h_xhl{0}".format(LiBrRefrigeration.index),
+            name="h_溴化锂{0}".format(LiBrRefrigeration.index),
         )
 
-        self.xhl_set_max = xhl_set_max
+        self.溴化锂_set_max = 溴化锂_set_max
         self.set_price = set_price
         self.eff = eff
         self.nianhua = mdl.continuous_var(
-            name="xhl_nianhua{0}".format(LiBrRefrigeration.index)
+            name="溴化锂_nianhua{0}".format(LiBrRefrigeration.index)
         )
 
     def cons_register(self, mdl: Model):
         # register constraints
         hrange = range(0, self.num_h)
-        mdl.add_constraint(self.xhl_set >= 0)
-        mdl.add_constraint(self.xhl_set <= self.xhl_set_max)
-        mdl.add_constraints(self.h_xhl_from[h] >= 0 for h in hrange)
-        mdl.add_constraints(self.h_xhl_from[h] <= self.xhl_set for h in hrange)
+        mdl.add_constraint(self.溴化锂_set >= 0)
+        mdl.add_constraint(self.溴化锂_set <= self.溴化锂_set_max)
+        mdl.add_constraints(self.h_溴化锂_from[h] >= 0 for h in hrange)
+        mdl.add_constraints(self.h_溴化锂_from[h] <= self.溴化锂_set for h in hrange)
         mdl.add_constraints(
-            self.c_xhl[h] == self.h_xhl_from[h] / self.eff for h in hrange
+            self.c_溴化锂[h] == self.h_溴化锂_from[h] / self.eff for h in hrange
         )
-        mdl.add_constraint(self.nianhua == self.xhl_set * self.set_price / 15)
+        mdl.add_constraint(self.nianhua == self.溴化锂_set * self.set_price / 15)
 
 
 # 柴油
@@ -463,36 +463,36 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self,
         num_h:int,
         mdl:Model,
-        csgr_set_max,
-        csgr_price,
-        csgrgtxr_price,
+        槽式光热_set_max,
+        槽式光热_price,
+        槽式光热gtxr_price,
         ha0,
         eff:float,
-        set_name="csgr",
+        set_name="槽式光热",
     ):
         IntegratedEnergySystem(set_name)
         TroughPhotoThermal.index += 1
         self.num_h = num_h
-        self.csgr_set = mdl.continuous_var(name="csgr_set{0}".format(TroughPhotoThermal.index))
-        self.p_csgr = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_csgr{0}".format(TroughPhotoThermal.index)
+        self.槽式光热_set = mdl.continuous_var(name="槽式光热_set{0}".format(TroughPhotoThermal.index))
+        self.p_槽式光热 = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="p_槽式光热{0}".format(TroughPhotoThermal.index)
         )
-        self.p_csgr_steam = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_csgr_steam{0}".format(TroughPhotoThermal.index)
+        self.p_槽式光热_steam = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="p_槽式光热_steam{0}".format(TroughPhotoThermal.index)
         )
-        self.csgr_set_max = csgr_set_max
-        self.csgrgtxr_set_max = csgr_set_max * 6
-        self.csgr_price = csgr_price
-        self.csgrgtxr_price = csgrgtxr_price
+        self.槽式光热_set_max = 槽式光热_set_max
+        self.槽式光热gtxr_set_max = 槽式光热_set_max * 6
+        self.槽式光热_price = 槽式光热_price
+        self.槽式光热gtxr_price = 槽式光热gtxr_price
         self.ha = ha0  # 光照强度
-        self.nianhua = mdl.continuous_var(name="csgr_nianhua{0}".format(TroughPhotoThermal.index))
+        self.nianhua = mdl.continuous_var(name="槽式光热_nianhua{0}".format(TroughPhotoThermal.index))
         self.eff = eff
 
-        self.csgrgtxr_set = EnergyStorageSystem(
+        self.槽式光热gtxr_set = EnergyStorageSystem(
             num_h,
             mdl,
-            self.csgrgtxr_set_max,
-            self.csgrgtxr_price,
+            self.槽式光热gtxr_set_max,
+            self.槽式光热gtxr_price,
             pcs_price=100,
             c_rate_max=2,
             eff=0.9,
@@ -503,21 +503,21 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
-        self.csgrgtxr_set.cons_register(mdl)
-        mdl.add_constraint(self.csgr_set >= 0)
-        mdl.add_constraint(self.csgr_set <= self.csgr_set_max)
-        mdl.add_constraints(self.p_csgr[h] >= 0 for h in hrange)
+        self.槽式光热gtxr_set.cons_register(mdl)
+        mdl.add_constraint(self.槽式光热_set >= 0)
+        mdl.add_constraint(self.槽式光热_set <= self.槽式光热_set_max)
+        mdl.add_constraints(self.p_槽式光热[h] >= 0 for h in hrange)
         mdl.add_constraints(
-            self.p_csgr[h] <= self.csgr_set * self.ha[h] * self.eff for h in hrange
+            self.p_槽式光热[h] <= self.槽式光热_set * self.ha[h] * self.eff for h in hrange
         )  # 与天气相关
         mdl.add_constraints(
-            self.p_csgr[h] + self.csgrgtxr_set.p_ess[h] == self.p_csgr_steam[h]
+            self.p_槽式光热[h] + self.槽式光热gtxr_set.p_ess[h] == self.p_槽式光热_steam[h]
             for h in hrange
         )  # 槽式光热系统产生的高温
-        mdl.add_constraints(0 <= self.p_csgr_steam[h] for h in hrange)  # 约束能量不能倒流
+        mdl.add_constraints(0 <= self.p_槽式光热_steam[h] for h in hrange)  # 约束能量不能倒流
         mdl.add_constraint(
             self.nianhua
-            == self.csgr_set * self.csgr_price / 15 + self.csgrgtxr_set.nianhua
+            == self.槽式光热_set * self.槽式光热_price / 15 + self.槽式光热gtxr_set.nianhua
         )
 
 
@@ -1622,32 +1622,32 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         self,
         num_h:int,
         mdl:Model,
-        dyzqfsq_set_max,
-        dyzqfsq_price,
-        dyzqfsqgtxr_price,
+        地源蒸汽发生器_set_max,
+        地源蒸汽发生器_price,
+        地源蒸汽发生器gtxr_price,
         ele_price,
         eff:float,
-        set_name="dyzqfsq",
+        set_name="地源蒸汽发生器",
     ):
         IntegratedEnergySystem(set_name)
         GroundSourceSteamGenerator.index += 1
         self.num_h = num_h
-        self.dyzqfsq_set = mdl.continuous_var(
-            name="dyzqfsq_set{0}".format(GroundSourceSteamGenerator.index)
+        self.地源蒸汽发生器_set = mdl.continuous_var(
+            name="地源蒸汽发生器_set{0}".format(GroundSourceSteamGenerator.index)
         )
-        self.p_dyzqfsq = mdl.continuous_var_list(
-            [i for i in range(0, self.num_h)], name="p_dyzqfsq{0}".format(GroundSourceSteamGenerator.index)
+        self.p_地源蒸汽发生器 = mdl.continuous_var_list(
+            [i for i in range(0, self.num_h)], name="p_地源蒸汽发生器{0}".format(GroundSourceSteamGenerator.index)
         )
 
-        self.p_dyzqfsq_steam = mdl.continuous_var_list(
+        self.p_地源蒸汽发生器_steam = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)],
-            name="p_dyzqfsq_steam{0}".format(TroughPhotoThermal.index),
+            name="p_地源蒸汽发生器_steam{0}".format(TroughPhotoThermal.index),
         )
 
-        self.dyzqfsq_set_max = dyzqfsq_set_max
-        self.dyzqfsqgtxr_set_max = dyzqfsq_set_max * 6
-        self.dyzqfsq_price = dyzqfsq_price
-        self.dyzqfsqgtxr_price = dyzqfsqgtxr_price
+        self.地源蒸汽发生器_set_max = 地源蒸汽发生器_set_max
+        self.地源蒸汽发生器gtxr_set_max = 地源蒸汽发生器_set_max * 6
+        self.地源蒸汽发生器_price = 地源蒸汽发生器_price
+        self.地源蒸汽发生器gtxr_price = 地源蒸汽发生器gtxr_price
         self.ele_price = ele_price
 
         self.nianhua = mdl.continuous_var(
@@ -1655,11 +1655,11 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
         self.eff = eff
 
-        self.dyzqfsqgtxr_set = EnergyStorageSystem(
+        self.地源蒸汽发生器gtxr_set = EnergyStorageSystem(
             num_h,
             mdl,
-            self.dyzqfsqgtxr_set_max,
-            self.dyzqfsqgtxr_price,
+            self.地源蒸汽发生器gtxr_set_max,
+            self.地源蒸汽发生器gtxr_price,
             pcs_price=0,
             c_rate_max=2,
             eff=0.9,
@@ -1668,30 +1668,30 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             soc_max=1,
         )
         self.ele_cost = mdl.continuous_var(
-            name="dyzqfsq_ele_cost{0}".format(GroundSourceSteamGenerator.index)
+            name="地源蒸汽发生器_ele_cost{0}".format(GroundSourceSteamGenerator.index)
         )
 
     def cons_register(self, mdl: Model):
         hrange = range(0, self.num_h)
-        self.dyzqfsqgtxr_set.cons_register(mdl)
-        mdl.add_constraint(self.dyzqfsq_set >= 0)
-        mdl.add_constraint(self.dyzqfsq_set <= self.dyzqfsq_set_max)
-        mdl.add_constraints(self.p_dyzqfsq[h] >= 0 for h in hrange)
+        self.地源蒸汽发生器gtxr_set.cons_register(mdl)
+        mdl.add_constraint(self.地源蒸汽发生器_set >= 0)
+        mdl.add_constraint(self.地源蒸汽发生器_set <= self.地源蒸汽发生器_set_max)
+        mdl.add_constraints(self.p_地源蒸汽发生器[h] >= 0 for h in hrange)
         mdl.add_constraints(
-            self.p_dyzqfsq[h] <= self.dyzqfsq_set for h in hrange
+            self.p_地源蒸汽发生器[h] <= self.地源蒸汽发生器_set for h in hrange
         )  # 与天气相关
         mdl.add_constraints(
-            self.p_dyzqfsq[h] + self.dyzqfsqgtxr_set.p_ess[h] == self.p_dyzqfsq_steam[h]
+            self.p_地源蒸汽发生器[h] + self.地源蒸汽发生器gtxr_set.p_ess[h] == self.p_地源蒸汽发生器_steam[h]
             for h in hrange
         )  # 槽式光热系统产生的高温
-        mdl.add_constraints(0 <= self.p_dyzqfsq_steam[h] for h in hrange)  # 约束能量不能倒流
+        mdl.add_constraints(0 <= self.p_地源蒸汽发生器_steam[h] for h in hrange)  # 约束能量不能倒流
         mdl.add_constraints(
-            self.ele_cost == self.p_dyzqfsq[h] * self.ele_price[h] for h in hrange
+            self.ele_cost == self.p_地源蒸汽发生器[h] * self.ele_price[h] for h in hrange
         )
         mdl.add_constraint(
             self.nianhua
-            == self.dyzqfsq_set * self.dyzqfsq_price / 15
-            + self.dyzqfsqgtxr_set.nianhua
+            == self.地源蒸汽发生器_set * self.地源蒸汽发生器_price / 15
+            + self.地源蒸汽发生器gtxr_set.nianhua
             + self.ele_cost
         )
 
@@ -2048,18 +2048,18 @@ if __name__ == "__main__":
     )
     bess.cons_register(mdl1, 1, day_node)
     # 高温蒸汽
-    csgr = TroughPhotoThermal(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
-    csgr.cons_register(mdl1)
-    dyzqfsq = GroundSourceSteamGenerator(
+    槽式光热 = TroughPhotoThermal(num_h0, mdl1, 5000, 2000, 1000, ha0, 0.8)
+    槽式光热.cons_register(mdl1)
+    地源蒸汽发生器 = GroundSourceSteamGenerator(
         num_h0,
         mdl1,
-        dyzqfsq_set_max=20000,
-        dyzqfsq_price=200,
-        dyzqfsqgtxr_price=200,
+        地源蒸汽发生器_set_max=20000,
+        地源蒸汽发生器_price=200,
+        地源蒸汽发生器gtxr_price=200,
         ele_price=ele_price0,
         eff=0.9,
     )
-    dyzqfsq.cons_register(mdl1)
+    地源蒸汽发生器.cons_register(mdl1)
     chp = CombinedHeatAndPower(
         num_h0,
         mdl1,
@@ -2074,7 +2074,7 @@ if __name__ == "__main__":
         num_h0, mdl1, gasgl_set_max=5000, gasgl_price=200, gas_price=gas_price0, eff=0.9
     )
     gasgl.cons_register(mdl1)
-    shizheng_steam = CitySupply(
+    市政蒸汽 = CitySupply(
         num_h0,
         mdl1,
         citysupply_set_max=5000,
@@ -2082,7 +2082,7 @@ if __name__ == "__main__":
         run_price=0.3 * np.ones(num_h0),
         eff=0.9,
     )
-    shizheng_steam.cons_register(mdl1)
+    市政蒸汽.cons_register(mdl1)
     # 以上为蒸汽发生装置
     p_steam_used_product = mdl1.continuous_var_list(
         [i for i in range(0, num_h0)], name="p_steam_used_product"
@@ -2095,10 +2095,10 @@ if __name__ == "__main__":
     )
     mdl1.add_constraints(
         p_steam_sum[h]
-        == shizheng_steam.h_citysupply[h]
+        == 市政蒸汽.h_citysupply[h]
         + chp.yqyrsteam_set.h_exch[h]
-        + csgr.p_csgr_steam[h]
-        + dyzqfsq.p_dyzqfsq_steam[h]
+        + 槽式光热.p_槽式光热_steam[h]
+        + 地源蒸汽发生器.p_地源蒸汽发生器_steam[h]
         + gasgl.h_gasgl[h]
         for h in range(0, num_h0)
     )
@@ -2109,19 +2109,19 @@ if __name__ == "__main__":
     )
     qs_exchanger = Exchanger(num_h0, mdl1, set_max=20000, set_price=400, k=50)
     qs_exchanger.cons_register(mdl1)
-    zq_xhl = LiBrRefrigeration(num_h0, mdl1, xhl_set_max=10000, set_price=1000, eff=0.9)
-    zq_xhl.cons_register(mdl1)
+    zq_溴化锂 = LiBrRefrigeration(num_h0, mdl1, 溴化锂_set_max=10000, set_price=1000, eff=0.9)
+    zq_溴化锂.cons_register(mdl1)
 
     mdl1.add_constraints(
-        p_steam_used_heatcool[h] >= qs_exchanger.h_exch[h] + zq_xhl.h_xhl_from[h]
+        p_steam_used_heatcool[h] >= qs_exchanger.h_exch[h] + zq_溴化锂.h_溴化锂_from[h]
         for h in range(0, num_h0)
     )
     # 高温热水
     # 1) chp gts
     # 2) chp yqyr_to_water
     # 3
-    pbgr = PhotoVoltaic(num_h0, mdl1, 10000, 500, ha0, 0.8, "pbgr")  # 平板光热
-    pbgr.cons_register(mdl1)
+    平板光热 = PhotoVoltaic(num_h0, mdl1, 10000, 500, ha0, 0.8, "平板光热")  # 平板光热
+    平板光热.cons_register(mdl1)
     # 4
     xbxr = EnergyStorageSystem(
         num_h0,
@@ -2186,7 +2186,7 @@ if __name__ == "__main__":
         p_gws_sum[h]
         == chp.gts_set.h_exch[h]
         + chp.yqyrwater_set.h_exch[h]
-        + pbgr.p_pv[h]
+        + 平板光热.p_pv[h]
         + xbxr.p_ess[h]
         + szrs.h_citysupply[h]
         + gasgl_rs.h_gasgl[h]
@@ -2196,19 +2196,19 @@ if __name__ == "__main__":
     )
 
     # 热水溴化锂
-    rs_xhl = LiBrRefrigeration(num_h0, mdl1, xhl_set_max=10000, set_price=1000, eff=0.9)
-    rs_xhl.cons_register(mdl1)
+    热水溴化锂 = LiBrRefrigeration(num_h0, mdl1, 溴化锂_set_max=10000, set_price=1000, eff=0.9)
+    热水溴化锂.cons_register(mdl1)
     # 热水换热器
-    ss_exchanger = Exchanger(num_h0, mdl1, set_max=20000, set_price=400, k=50)
-    ss_exchanger.cons_register(mdl1)
+    热水换热器 = Exchanger(num_h0, mdl1, set_max=20000, set_price=400, k=50)
+    热水换热器.cons_register(mdl1)
     # 高温热水去向
     mdl1.add_constraints(
-        p_gws_sum[h] >= rs_xhl.h_xhl_from[h] + ss_exchanger.h_exch[h]
+        p_gws_sum[h] >= 热水溴化锂.h_溴化锂_from[h] + 热水换热器.h_exch[h]
         for h in range(0, num_h0)
     )
     mdl1.add_constraints(p_gws_sum[h] >= 0 for h in range(0, num_h0))
 
-    # p_rb[h]*rb_flag[h]+p_sx[h]*sx_flag[h]+p_slj[h]*sy_flag[h]+p_xhl[h]+p_slj[h]+p_bx[h]==cool_load[h]%冷量需求
+    # p_rb[h]*rb_flag[h]+p_sx[h]*sx_flag[h]+p_slj[h]*sy_flag[h]+p_溴化锂[h]+p_slj[h]+p_bx[h]==cool_load[h]%冷量需求
     # p_rb[h]*(1-rb_flag[h])+p_sx[h]*(1-sx_flag[h])+p_sy[h]*(1-sy_flag[h])+p_gas[h]+p_dire[h]==heat_load[h]%热量需求
     # 采用线性化技巧，处理为下面的约束.基于每种设备要么制热,要么制冷。
     # 供冷：风冷热泵 地源热泵 蓄能水罐 热水溴化锂机组 蒸汽溴化锂机组 相变蓄冷
@@ -2311,14 +2311,14 @@ if __name__ == "__main__":
     p_xcool = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xcool ")
     p_xheat = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xheat ")
     p_xice = mdl1.continuous_var_list([i for i in range(0, num_h0)], name="p_xice ")
-    # p_rb_cool[h]+p_xcool[h]+p_sy_cool[h]+p_zqxhl[h]+p_rsxhl[h]+p_slj_cool[h]+p_ice[h]+p_sangk_cool[h]+p_doublegk_cool[h]==cool_load[h]%冷量需求
+    # p_rb_cool[h]+p_xcool[h]+p_sy_cool[h]+p_zq溴化锂[h]+p_rs溴化锂[h]+p_slj_cool[h]+p_ice[h]+p_sangk_cool[h]+p_doublegk_cool[h]==cool_load[h]%冷量需求
 
     mdl1.add_constraints(
         rb.p_sy_cool[h]
         + p_xcool[h]
         + sy.p_sy_cool[h]
-        + zq_xhl.c_xhl[h]
-        + rs_xhl.c_xhl[h]
+        + zq_溴化锂.c_溴化锂[h]
+        + 热水溴化锂.c_溴化锂[h]
         + slj.p_slj_cool[h]
         + p_xice[h]
         + sangk.p_threegk_cool[h]
@@ -2332,7 +2332,7 @@ if __name__ == "__main__":
         + p_xheat[h]
         + sy.p_sy_heat[h]
         + qs_exchanger.h_exch[h]
-        + ss_exchanger.h_exch[h]
+        + 热水换热器.h_exch[h]
         + sangk.p_threegk_heat[h]
         + dire.p_dire[h]
         == heat_load[h]
@@ -2370,7 +2370,7 @@ if __name__ == "__main__":
     )
     # 电量平衡
     # ele_dire[h] + ele_slj[h] + ele_rb[h] - p_bess[h] - p_pv[h] + ele_sy[h] + power_load[h] - p_chp[h] - p_chaifa[h] + \
-    # p_dyzqfsq[h] + p_dgl[h] + ele_sangk[h] + ele_doublegk[h] == total_power[h]
+    # p_地源蒸汽发生器[h] + p_dgl[h] + ele_sangk[h] + ele_doublegk[h] == total_power[h]
     # 市政电力电流是双向的，其余市政是单向的。
 
     gridnet = GridNet(
@@ -2392,7 +2392,7 @@ if __name__ == "__main__":
         + power_load[h]
         - chp.p_chp[h]
         - diesel.p_diesel[h]
-        + dyzqfsq.p_dyzqfsq[h]
+        + 地源蒸汽发生器.p_地源蒸汽发生器[h]
         + rsdgl.ele_dgl[h]
         + sangk.ele_threegk[h]
         + doublegk.ele_doublegk[h]
@@ -2404,21 +2404,21 @@ if __name__ == "__main__":
         diesel,
         pv,
         bess,
-        csgr,
-        dyzqfsq,
+        槽式光热,
+        地源蒸汽发生器,
         chp,
         gasgl,
         qs_exchanger,
-        zq_xhl,
-        pbgr,
+        zq_溴化锂,
+        平板光热,
         xbxr,
         szrs,
         rsdgl,
         gasgl_rs,
         sx,
-        shizheng_steam,
-        rs_xhl,
-        ss_exchanger,
+        市政蒸汽,
+        热水溴化锂,
+        热水换热器,
         rb,
         sy,
         slj,
@@ -2470,9 +2470,9 @@ if __name__ == "__main__":
         ii += 1
         print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].ess_set))
         ii += 1
-        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].csgr_set))
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].槽式光热_set))
         ii += 1
-        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].dyzqfsq_set))
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].地源蒸汽发生器_set))
         ii += 1
         print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].chp_set))
         ii += 1
@@ -2480,7 +2480,7 @@ if __name__ == "__main__":
         ii += 1
         print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].exch_set))
         ii += 1
-        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].xhl_set))
+        print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].溴化锂_set))
         ii += 1
         print("obj:{0}".format(ii), sol_run1.get_value(iges_set[ii].pv_set))
         ii += 1
@@ -2513,7 +2513,7 @@ if __name__ == "__main__":
                 power_load,
                 chp.p_chp,
                 diesel.p_diesel,
-                dyzqfsq.p_dyzqfsq,
+                地源蒸汽发生器.p_地源蒸汽发生器,
                 rsdgl.ele_dgl,
                 sangk.ele_threegk,
                 doublegk.ele_doublegk,
@@ -2529,7 +2529,7 @@ if __name__ == "__main__":
                 "power_load",
                 "chp.p_chp",
                 "diesel.p_diesel",
-                "dyzqfsq.p_dyzqfsq",
+                "地源蒸汽发生器.p_地源蒸汽发生器",
                 "rsdgl.ele_dgl",
                 "sangk.ele_threegk",
                 "doublegk.ele_doublegk",
@@ -2543,8 +2543,8 @@ if __name__ == "__main__":
                 rb.p_sy_cool,
                 p_xcool,
                 sy.p_sy_cool,
-                zq_xhl.c_xhl,
-                rs_xhl.c_xhl,
+                zq_溴化锂.c_溴化锂,
+                热水溴化锂.c_溴化锂,
                 slj.p_slj_cool,
                 p_xice,
                 sangk.p_threegk_cool,
@@ -2554,8 +2554,8 @@ if __name__ == "__main__":
                 "rb.p_sy_cool",
                 "p_xcool",
                 "sy.p_sy_cool",
-                "zq_xhl.c_xhl",
-                "rs_xhl.c_xhl",
+                "zq_溴化锂.c_溴化锂",
+                "热水溴化锂.c_溴化锂",
                 "slj.p_slj_cool",
                 "p_xice",
                 "sangk.p_threegk_cool",
@@ -2571,7 +2571,7 @@ if __name__ == "__main__":
                 p_xheat,
                 sy.p_sy_heat,
                 qs_exchanger.h_exch,
-                ss_exchanger.h_exch,
+                热水换热器.h_exch,
                 sangk.p_threegk_heat,
                 dire.p_dire,
                 heat_load,
@@ -2581,7 +2581,7 @@ if __name__ == "__main__":
                 "p_xheat",
                 "sy.p_sy_heat",
                 "qs_exchanger.h_exch",
-                "ss_exchanger.h_exch",
+                "热水换热器.h_exch",
                 " sangk.p_threegk_heat",
                 "dire.p_dire",
                 "heat_load",
@@ -2593,7 +2593,7 @@ if __name__ == "__main__":
             [
                 chp.gts_set.h_exch,
                 chp.yqyrwater_set.h_exch,
-                pbgr.p_pv,
+                平板光热.p_pv,
                 xbxr.p_ess,
                 szrs.h_citysupply,
                 gasgl_rs.h_gasgl,
@@ -2603,7 +2603,7 @@ if __name__ == "__main__":
             [
                 "chp.gts_set.h_exchh, chp",
                 "yqyrwater_set.h_exch",
-                "pbgr.p_pv",
+                "平板光热.p_pv",
                 "xbxr.p_ess",
                 "szrs.h_citysupply",
                 "gasgl_rs.h_gasgl",
