@@ -12,6 +12,8 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 import matplotlib.pyplot as plt
 from matplotlib import style
 from result_processlib import Value
+from docplex.mp.vartype import VarType
+from typing import List
 
 from plot_arr import IGESPlot
 
@@ -1654,8 +1656,8 @@ class Dyzqfsq(IGES):
         self.eff = eff
 
         self.dyzqfsqgtxr_set = ESS(
-            num_h:int,
-            mdl:Model,
+            num_h,
+            mdl,
             self.dyzqfsqgtxr_set_max,
             self.dyzqfsqgtxr_price,
             pcs_price=0,
@@ -1803,7 +1805,7 @@ class CitySupply(IGES):
     ):
         IGES(set_name)
         CitySupply.index += 1
-        self.num_h = num_h
+        self.num_h = num_h # hours in a day
         self.citysupply_set = mdl.continuous_var(
             name="citysupply_set{0}".format(CitySupply.index)
         )
@@ -1944,14 +1946,14 @@ class Linearization(object):
     index = 0
 
     def product_var_bin(self, mdl:Model, var_bin, var, bin):
-        Linearization.inxex += 1
+        Linearization.index += 1
         mdl.add_constraint(var_bin >= 0)
         mdl.add_constraint(var_bin >= var - (1 - bin) * self.bigM0)
         mdl.add_constraint(var_bin <= var)
         mdl.add_constraint(var_bin <= bin * self.bigM0)
 
     def product_var_bins(self, mdl:Model, var_bin, var, bin0, irange):
-        Linearization.inxex += 1
+        Linearization.index += 1
         mdl.add_constraints(var_bin[i] >= 0 for i in irange)
         mdl.add_constraints(
             var_bin[i] >= var[i] - (1 - bin0[i]) * self.bigM0 for i in irange
@@ -1960,7 +1962,7 @@ class Linearization(object):
         mdl.add_constraints(var_bin[i] <= bin0[i] * self.bigM0 for i in irange)
 
     def product_var_back_bins(self, mdl:Model, var_bin, var, bin0, irangeback):
-        Linearization.inxex += 1
+        Linearization.index += 1
         mdl.add_constraints(var_bin[i] >= 0 for i in irangeback)
         mdl.add_constraints(
             var_bin[i] >= var[i - 1] - (1 - bin0[i]) * self.bigM0 for i in irangeback
@@ -1983,7 +1985,8 @@ class Linearization(object):
         mdl.add_constraints(x[h] <= y_flag[h] * bigM for h in range(0, num_h))
         mdl.add_constraints(y[h] >= 0 for h in range(0, num_h))
 
-    def add(self, num_h:int, mdl:Model, x1, x2):
+    def add(self, num_h:int, mdl:Model, x1:List[VarType], x2:List[VarType]):
+        # looks like two lists.
         Linearization.index += 1
         add_y = mdl1.continuous_var_list(
             [i for i in range(0, num_h)], name="add_y{0}".format(Linearization.index)
