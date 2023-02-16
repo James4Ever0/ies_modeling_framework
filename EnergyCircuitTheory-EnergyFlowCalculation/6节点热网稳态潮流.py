@@ -34,8 +34,8 @@ with context('数据读取与处理'):
     npipes, nnodes = len(tb2), len(tb1) 
     As = np.array([np.pi*d**2/4 for d in D]) #管道截面积
     mb = np.ones(npipes) * 50  # 基值平启动
-    rho = 1000
-    Ah = np.zeros([nnodes, npipes], dtype=np.int32)
+    rho = 1000 #密度
+    Ah = np.zeros([nnodes, npipes], dtype=np.int32) #节点-管道关联矩阵
     for i,row in tb2.iterrows():
         Ah[row['from node']-1, i] = 1
         Ah[row['to node']-1, i] = -1
@@ -43,7 +43,7 @@ with context('数据读取与处理'):
     fix_G = np.where(tb1.type1.values=='定注入')[0]
     # 热力参数
     c = 4200
-    miu = tb2.disspation.values
+    miu = tb2.disspation.values #将 tb2 这个表格中的 disspation 列提取出来，并赋值给变量 miu
     
     
 with context('稳态水力计算'):
@@ -51,7 +51,9 @@ with context('稳态水力计算'):
     mbs = [mb.copy()]  # 流量基值的迭代过程记录
     for itera in range(100):  # 最大迭代次数
         # 更新支路参数
+        #R 是各支路的导纳（reciprocal impedance），它是支路的电导 G（conductance）的倒数，因此有 R = 1/G。在这里，导纳是通过每根管道的基准流量 mb[i]，以及管道的长度 L[i]、横截面积 As[i]、摩擦阻力系数 D[i] 和流体密度 rho 来计算的。
         R = [lam[i]*mb[i]/rho/As[i]**2/D[i]*L[i] for i in range(npipes)]
+        #E 是各支路的电位能，它是流体在支路中的动能和重力势能的和，通常用 J（焦耳）表示。在这里，电位能是通过每根管道的基准流量 mb[i]，以及管道的长度 L[i]、横截面积 As[i]、摩擦阻力系数 D[i] 和流体密度 rho 来计算的。
         E = [-lam[i]*mb[i]**2/2/rho/As[i]**2/D[i]*L[i] for i in range(npipes)]
         # 追加各支路阀、泵的参数
         for i,row in tb2.iterrows():
