@@ -250,3 +250,8 @@ mdl.add_constraints(self.p_rb_heat[h] <= bigM * self.rb_heat_flag[h] for h in hr
 mdl.add_constraints(0 <= self.p_rb_xheat[h] for h in hrange): similar to above, but for the power output of the extra heating unit.
 mdl.add_constraints(self.p_rb_xheat[h] <= self.xheat_rb_out[h] * self.rb_set / 100 for h in hrange): similar to above, but for the power output of the extra heating unit.
 mdl.add_constraints(self.p_rb_xheat[h] <= bigM * self.rb_xheat_flag[h] for h in hrange): similar to above, but for the power output of the extra heating unit.
+
+
+WaterHeatPump:
+属性：
+
