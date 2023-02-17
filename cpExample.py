@@ -511,13 +511,13 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # paradox? redundancy? both charge and discharge?
         self.charge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystemVariabl_flag{0}".format(
+            name="batteryEnergyStorageSystemVariable_charge_flag{0}".format(
                 EnergyStorageSystemVariable.index
             ),
         )  # 充电
         self.discharge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystemVariable_dischargecharge_flag{0}".format(
+            name="batteryEnergyStorageSystemVariable_discharge_flag{0}".format(
                 EnergyStorageSystemVariable.index
             ),
         )  # 放电
