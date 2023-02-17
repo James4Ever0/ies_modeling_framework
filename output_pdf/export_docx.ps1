@@ -1,1 +1,3 @@
-pandoc --metadata=title:"MyProject Documentation"  --from=markdown+abbreviations+tex_math_single_backslash  --pdf-engine=xelatex --variable=mainfont:"DejaVu Sans"   --toc --toc-depth=4 --output=example_docstring.docx example_docstring.md
+rm example_docstring.docx
+python covert_utf8.py
+pandoc example_docstring_utf8.md -o example_docstring.docx 

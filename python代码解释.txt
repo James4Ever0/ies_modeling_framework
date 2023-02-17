@@ -467,3 +467,37 @@ self.abs_x[i] == self.x_posi[i] + self.x_neg[i]：对于每个输入变量 i，�
 
 CitySupply:
 属性：
+num_h: int型变量，表示每天小时数。
+mdl: docplex.mp.Model对象，表示一个数学规划模型。
+citysupply_set_max: float型变量，表示热力站供暖量最大值。
+set_price: float型变量，表示单位供暖量的设置费用。
+run_price: float型变量，表示单位供暖量的运行费用。
+eff: float型变量，表示热力站的效率。
+set_name: str型变量，表示热力站的名称。
+CitySupply.index: int型静态变量，表示热力站的个数，每实例化一个热力站，该变量加1。
+citysupply_set: 表示一个决策变量，表示热力站的供暖量。
+h_citysupply: 表示一个决策变量列表，表示每个小时热力站的供暖量。
+h_citysupply_from: 表示一个决策变量列表，表示从其他热力站获得的热力供应。
+citysupply_cost: 表示一个决策变量，表示热力站供热的总费用。
+nianhua: 表示一个决策变量，表示热力站的年化费用。
+
+
+GridNet：
+属性：
+num_h: 表示小时数。
+mdl: 表示优化模型。
+gridnet_set_max: 表示电网运行能力的最大值。
+set_price: 表示电网的购电价格。
+ele_price_from: 表示购电价格的下限。
+ele_price_to: 表示购电价格的上限。
+total_power: 表示总用电量，是一个连续变量列表，表示在每个小时的总用电量。
+powerfrom: 表示从电网购电的电量，是一个连续变量列表，表示在每个小时从电网购电的电量。
+powerto: 表示卖给电网的电量，是一个连续变量列表，表示在每个小时卖给电网的电量。
+powerpeak: 表示电网的峰值负荷，是一个连续变量。
+basecost: 表示电网的基础成本，是一个连续变量。
+powerfrom_max: 表示从电网购电的电量的最大值，是一个连续变量。
+powerto_max: 表示卖给电网的电量的最大值，是一个连续变量。
+set_name: 表示电网的名称，为可选参数，默认值为'grid_net'。
+
+
+
