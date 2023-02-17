@@ -1,7 +1,14 @@
-#!/usr/bin/python3
-
+#coding: utf-8
 # 整理完所有缩写的全称之后，绘制拓扑图
 # 可以把代码转化成图
+
+# chinese display issue
+import matplotlib
+import os
+
+# os.system("chcp 65001") # not working?
+
+matplotlib.rc("font", family="YouYuan")
 
 from docplex.mp.solution import SolveSolution
 
@@ -52,9 +59,10 @@ simulationTime = 3600
 光照强度 = np.ones(num_hour0)
 # what is this "ha"? just sunlight stats per hour in a day?
 
+
 # another name for IES?
 class IntegratedEnergySystem(object):
-    device_count: int = 0  # what is this "device"? device?
+    device_count: int = 0  # what is this "SET"? device?
 
     def __init__(self, device_name: str):
         self.device_name = device_name
@@ -78,7 +86,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         photoVoltaic_device_max: int,
         device_price: int,  # float?
         光照强度0: np.ndarray,
-        efficiency: float,  # efficiencyiciency
+        efficiency: float,  # efficiency
         device_name="PhotoVoltaic",
     ):
         IntegratedEnergySystem(device_name)
@@ -104,18 +112,20 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         )
 
     def constraints_register(self, model: Model):
-        model.add_constraint(self.photoVoltaic_device <= self.photoVoltaic_device_max)
+        model.add_constraint(
+            self.photoVoltaic_device <= self.photoVoltaic_device_max
+        )  # 最大装机量
         model.add_constraint(self.photoVoltaic_device >= 0)
         model.add_constraints(
-            self.power_photoVoltaic[i]
+            self.power_photoVoltaic[i]  # 输出发电量不得超过最大发电量
             <= self.photoVoltaic_device * self.efficiency * self.光照强度[i]
             for i in range(self.num_hour)
         )
         model.add_constraint(
             self.annualized == self.photoVoltaic_device * self.device_price / 15
-        )
+        )  # 每年维护费用？折价？回收成本？利润？
 
-    def total_cost(self, solution: SolveSolution):
+    def total_cost(self, solution: SolveSolution):  # 购买设备总费用
         return solution.get_value(self.photoVoltaic_device) * self.device_price
 
 
@@ -162,20 +172,22 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.溴化锂_device >= 0)
         model.add_constraint(self.溴化锂_device <= self.溴化锂_device_max)
-        model.add_constraints(self.heat_溴化锂_from[h] >= 0 for h in hourRange)
+        model.add_constraints(
+            self.heat_溴化锂_from[h] >= 0 for h in hourRange
+        )  # adding multiple constraints, passed as arguments
         model.add_constraints(
             self.heat_溴化锂_from[h] <= self.溴化锂_device for h in hourRange
-        )
+        )  # avaliable/active device count?
         model.add_constraints(
             self.cool_溴化锂[h] == self.heat_溴化锂_from[h] / self.efficiency
-            for h in hourRange
+            for h in hourRange  # how does this work out? what is the meaning of this?
         )
         model.add_constraint(
             self.annualized == self.溴化锂_device * self.device_price / 15
         )
 
 
-# 柴油
+# 柴油发电机
 class DieselEngine(IntegratedEnergySystem):
     index = 0
 
@@ -195,7 +207,7 @@ class DieselEngine(IntegratedEnergySystem):
             name="dieselEngine_device{0}".format(DieselEngine.index)
         )
         self.power_dieselEngine = model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
+            [i for i in range(0, self.num_hour)],  # keys, not values.
             name="power_dieselEngine{0}".format(DieselEngine.index),
         )
         self.dieselEngine_device_max = dieselEngine_device_max
@@ -212,17 +224,18 @@ class DieselEngine(IntegratedEnergySystem):
         model.add_constraint(self.dieselEngine_device <= self.dieselEngine_device_max)
         model.add_constraint(self.dieselEngine_device >= 0)
         model.add_constraints(
-            self.power_dieselEngine[i] <= self.dieselEngine_device
+            self.power_dieselEngine[i]
+            <= self.dieselEngine_device  # does this make sense? again active device count per hour?
             for i in range(0, self.num_hour)
         )
         model.add_constraint(
-            self.annualized
+            self.annualized  # 年运行成本?
             == self.dieselEngine_device * self.device_price / 15
             + self.power_sum * self.run_price * 8760 / self.num_hour
         )
 
     def total_cost(self, solution: SolveSolution):
-        # guenergyStorageSystem you will have it?
+        # energyStorageSystem you will have it?
         return solution.get_value(self.dieselEngine_device) * self.device_price
 
 
@@ -281,15 +294,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.powerConversionSystem_device = model.continuous_var(
             name="powerConversionSystem_device{0}".format(EnergyStorageSystem.index)
         )  # powerConversionSystem
-        self.charge_flag = model.binary_var_list(
+        self.charge_flag = model.binary_var_list(  # is charging?
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystem_chargearge_flag{0}".format(
+            name="batteryEnergyStorageSystem_charge_flag{0}".format(
                 EnergyStorageSystem.index
             ),
         )  # 充电
         self.discharge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystem_dischargecharge_flag{0}".format(
+            name="batteryEnergyStorageSystem_discharge_flag{0}".format(
                 EnergyStorageSystem.index
             ),
         )  # 放电
@@ -314,7 +327,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         model.add_constraint(self.energyStorageSystem_device >= 0)
         model.add_constraint(
             self.energyStorageSystem_device * self.conversion_rate_max
-            >= self.powerConversionSystem_device
+            >= self.powerConversionSystem_device  # satisfying the need of power conversion system? power per unit?
         )
         model.add_constraint(self.powerConversionSystem_device >= 0)
         # 功率拆分
@@ -329,7 +342,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             self.power_energyStorageSystem_charge[i] >= 0 for i in irange
         )
         model.add_constraints(
-            self.power_energyStorageSystem_charge[i] <= self.charge_flag[i] * bigNumber
+            self.power_energyStorageSystem_charge[i]
+            <= self.charge_flag[i] * bigNumber  # smaller than infinity?
             for i in irange
         )
         model.add_constraints(
@@ -360,7 +374,9 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         for day in range(1, int(self.num_hour / day_node) + 1):
             model.add_constraints(
                 self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - 1]
+                == self.energyStorageSystem[
+                    i - 1
+                ]  # previous state, previous level/state of charge
                 + (
                     self.power_energyStorageSystem_charge[i] * self.efficiency
                     - self.power_energyStorageSystem_discharge[i] / self.efficiency
@@ -390,13 +406,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         )
 
         # 两天之间直接割裂，没有啥关系
-        if register_period_constraints == 1:
+        if register_period_constraints == 1:  # this is a flag, not a numeric value
             model.add_constraints(
                 self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_hour, day_node)
+                == self.energyStorageSystem[i - (day_node - 1)]  # 1+i-day_node
+                for i in range(
+                    day_node - 1, self.num_hour, day_node
+                )  # what is the day_node? # start, stop, step (23, 24, 24)?
             )
-        else:
+        else:  # what else?
             # 初始值
             model.add_constraint(
                 self.energyStorageSystem[0]
@@ -489,6 +507,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )  # powerConversionSystem
+
+        # paradox? redundancy? both charge and discharge?
         self.charge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="batteryEnergyStorageSystemVariable_chargearge_flag{0}".format(
@@ -707,7 +727,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         combinedHeatAndPower_price,
         gas_price,
         combinedHeatAndPower_single_device,
-        drratio,  # dr?
+        power_to_heat_ratio,  # dr?
         device_name="combinedHeatAndPower",
     ):
         IntegratedEnergySystem(device_name)
@@ -727,7 +747,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.gas_combinedHeatAndPower = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
-        )  # 时时耗气量
+        )  # 时时耗气量? 时时是什么意思 实时？
         self.combinedHeatAndPower_price = combinedHeatAndPower_price
         self.gas_price = gas_price
         self.combinedHeatAndPower_open_flag = model.binary_var_list(
@@ -756,8 +776,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )  # 燃气费用统计
         self.combinedHeatAndPower_num_max = combinedHeatAndPower_num_max
         self.combinedHeatAndPower_single_device = combinedHeatAndPower_single_device
-        self.combinedHeatAndPower_limit_down_ratio = 0.2
-        self.drratio = drratio
+        self.combinedHeatAndPower_limit_down_ratio = (
+            0.2  # ? devices cannot be turned down more than 20% ? what is this?
+        )
+        self.power_to_heat_ratio = power_to_heat_ratio
+
+        # arbitrary settings
         self.gasTurbineSystem_device = Exchanger(
             self.num_hour,
             model,
@@ -831,7 +855,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             for h in hourRange
         )
         model.add_constraints(
-            self.power_combinedHeatAndPower[h] * self.drratio
+            self.power_combinedHeatAndPower[h]
+            * self.power_to_heat_ratio  # power * power_to_heat_coefficient = heat
             == self.heat_combinedHeatAndPower[h]
             for h in hourRange
         )
@@ -1880,7 +1905,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         )
 
 
-# 水蓄能，可续蓄高温，可以蓄低温
+# 水蓄能，可蓄高温，可以蓄低温
 # 水蓄能罐，可变容量的储能体
 class WaterEnergyStorage(IntegratedEnergySystem):
     # index=0
@@ -1898,7 +1923,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         stateOfCharge_max: float,
         ratio_cool: int,
         ratio_heat: int,
-        ratio_gheat: int,
+        ratio_gheat: int,  # gheat? 工作热量？
         device_name: str = "water_energy_storage",
     ):
         IntegratedEnergySystem(device_name)
@@ -2561,15 +2586,15 @@ steam_load = load.get_power_load(num_hour0)
 
 if __name__ == "__main__":
     resource = ResourceGet()
-    光照强度0: np.ndarray = resource.get_radiation(
-        "jinan_chargeangqing-hour.dat", num_hour0
-    )
+    # model_input
+    光照强度0: np.ndarray = resource.get_radiation("jinan_changqing-hour.dat", num_hour0)
     # what is the output? break here.
 
     electricity_price0 = resource.get_electricity_price(num_hour0)
     gas_price0 = resource.get_gas_price(num_hour0)
     市政热水_price0 = resource.get_市政热水_price(num_hour0)
-    citySteam_price0 = resource.get_citySteam_price(num_hour0)
+    市政蒸汽_price0 = resource.get_市政蒸汽_price(num_hour0)
+    ####################
 
     dieselEngine = DieselEngine(num_hour0, model1, 320, 750, 2)  # 柴油机
     dieselEngine.constraints_register(model1)
@@ -2611,7 +2636,7 @@ if __name__ == "__main__":
         combinedHeatAndPower_price=2000,
         gas_price=gas_price0,
         combinedHeatAndPower_single_device=2000,
-        drratio=1.2,  # dr?
+        power_to_heat_ratio=1.2,  # dr? 电热?
     )
     combinedHeatAndPower.constraints_register(model1)
     gasBoiler = GasBoiler(
@@ -2640,7 +2665,7 @@ if __name__ == "__main__":
         [i for i in range(0, num_hour0)], name="power_steam_used_heatcool"
     )
     power_steam_sum = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_steam_sum "
+        [i for i in range(0, num_hour0)], name="power_steam_sum"
     )
     model1.add_constraints(
         power_steam_sum[h]
@@ -2656,18 +2681,18 @@ if __name__ == "__main__":
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour0)
     )
-    qs_exchanger = Exchanger(
+    汽水_exchanger = Exchanger(
         num_hour0, model1, device_max=20000, device_price=400, k=50
     )
-    qs_exchanger.constraints_register(model1)
-    zq_溴化锂 = LiBrRefrigeration(
+    汽水_exchanger.constraints_register(model1)  # qs - 泉水？ 汽水热交换器？
+    蒸汽_溴化锂 = LiBrRefrigeration(  # 蒸汽？
         num_hour0, model1, 溴化锂_device_max=10000, device_price=1000, efficiency=0.9
     )
-    zq_溴化锂.constraints_register(model1)
+    蒸汽_溴化锂.constraints_register(model1)
 
     model1.add_constraints(
         power_steam_used_heatcool[h]
-        >= qs_exchanger.heat_exchange[h] + zq_溴化锂.heat_溴化锂_from[h]
+        >= 汽水_exchanger.heat_exchange[h] + 蒸汽_溴化锂.heat_溴化锂_from[h]
         for h in range(0, num_hour0)
     )
     # 高温热水
@@ -2682,7 +2707,7 @@ if __name__ == "__main__":
         model1,
         energyStorageSystem_device_max=10000,
         energyStorageSystem_price=350,
-        powerConversionSystem_price=0,
+        powerConversionSystem_price=0,  # free conversion?
         conversion_rate_max=0.5,
         efficiency=0.9,
         energyStorageSystem_init=1,
@@ -2739,7 +2764,7 @@ if __name__ == "__main__":
     水蓄能罐.constraints_register(model1, 1, day_node)
     # 高温热水合计
     power_高温热水_sum = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_高温热水_sum "
+        [i for i in range(0, num_hour0)], name="power_高温热水_sum"
     )
     model1.add_constraints(
         power_高温热水_sum[h]
@@ -2783,7 +2808,7 @@ if __name__ == "__main__":
         device_max=20000,
         device_price=1000,
         electricity_price=electricity_price0,
-        case_ratio=np.array([1, 1, 1, 1]),
+        case_ratio=np.array([1, 1, 1, 1]),  # total four cases?
     )
     热泵.constraints_register(model1)
 
@@ -2874,13 +2899,13 @@ if __name__ == "__main__":
     low相变蓄热.constraints_register(model1)
 
     power_xcool = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_xcool "
+        [i for i in range(0, num_hour0)], name="power_xcool"
     )
     power_xheat = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_xheat "
+        [i for i in range(0, num_hour0)], name="power_xheat"
     )
     power_xice = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_xice "
+        [i for i in range(0, num_hour0)], name="power_xice"
     )
     # power_热泵_cool[h]+power_xcool[h]+power_水源热泵_cool[h]+power_zq溴化锂[h]+power_热水溴化锂[h]+power_水冷螺杆机_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
@@ -2889,7 +2914,7 @@ if __name__ == "__main__":
         热泵.power_水源热泵_cool[h]
         + power_xcool[h]
         + 水源热泵.power_水源热泵_cool[h]
-        + zq_溴化锂.cool_溴化锂[h]
+        + 蒸汽_溴化锂.cool_溴化锂[h]
         + 热水溴化锂.cool_溴化锂[h]
         + 水冷螺杆机.power_水冷螺杆机_cool[h]
         + power_xice[h]
@@ -2903,7 +2928,7 @@ if __name__ == "__main__":
         热泵.power_水源热泵_heat[h]
         + power_xheat[h]
         + 水源热泵.power_水源热泵_heat[h]
-        + qs_exchanger.heat_exchange[h]
+        + 汽水_exchanger.heat_exchange[h]
         + 热水换热器.heat_exchange[h]
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
         + 地源热泵.power_地源热泵[h]
@@ -2999,8 +3024,8 @@ if __name__ == "__main__":
             地源蒸汽发生器,
             combinedHeatAndPower,
             gasBoiler,
-            qs_exchanger,  # qs? 气水？
-            zq_溴化锂,  # zq? 制取？
+            汽水_exchanger,  # qs? 气水？
+            蒸汽_溴化锂,  # zq? 制取？
             平板光热,
             相变蓄热,
             市政热水,
@@ -3056,196 +3081,261 @@ if __name__ == "__main__":
 
         # print('absolute2 value:')
         # print(solution_run1.get_value(absolute1.absolute_x[1]))
+        print("__SOLVE_DETAILS__")
         print(solution_run1.solve_details)
+        print("__SOLVE_DETAILS__")
 
-        ii = 0
-        print("objective:{0}".format(ii), solution_run1.get_value(objective))
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(
-                integratedEnergySystem_device[ii].photoVoltaic_device
-            ),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(
-                integratedEnergySystem_device[ii].energyStorageSystem_device
-            ),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(integratedEnergySystem_device[ii].槽式光热_device),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(integratedEnergySystem_device[ii].地源蒸汽发生器_device),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(
-                integratedEnergySystem_device[ii].combinedHeatAndPower_device
-            ),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(integratedEnergySystem_device[ii].gasBoiler_device),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(integratedEnergySystem_device[ii].exchanger_device),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(integratedEnergySystem_device[ii].溴化锂_device),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(
-                integratedEnergySystem_device[ii].photoVoltaic_device
-            ),
-        )
-        ii += 1
-        print(
-            "objective:{0}".format(ii),
-            solution_run1.get_value(
-                integratedEnergySystem_device[ii].energyStorageSystem_device
-            ),
-        )
-        ii += 1
+        # ii = 0
 
+        print("objective: annual", solution_run1.get_value(objective))
+        for index, item in enumerate(integratedEnergySystem_device):
+            subitems = dir(item)
+            print(f"objective index： {index}")
+            print(f"objective class: {type(item).__name__}")
+            for subitem in subitems:
+                if subitem.endswith("_device"):
+                    val = item.__dict__[subitem]
+                    print("value name:", subitem)
+                    print("value:", val)
+            print("_____")
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(
+        #         integratedEnergySystem_device[ii].photoVoltaic_device # 1
+        #     ),
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(
+        #         integratedEnergySystem_device[ii].energyStorageSystem_device #2
+        #     ),
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(integratedEnergySystem_device[ii].槽式光热_device),#3
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(integratedEnergySystem_device[ii].地源蒸汽发生器_device),#4
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(
+        #         integratedEnergySystem_device[ii].combinedHeatAndPower_device
+        #     ),#5
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(integratedEnergySystem_device[ii].gasBoiler_device),#6
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(integratedEnergySystem_device[ii].exchanger_device),#7
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(integratedEnergySystem_device[ii].溴化锂_device),#8
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(
+        #         integratedEnergySystem_device[ii].photoVoltaic_device #9
+        #     ),
+        # )
+        # ii += 1
+        # print(
+        #     "objective:{0}".format(ii),
+        #     solution_run1.get_value(
+        #         integratedEnergySystem_device[ii].energyStorageSystem_device
+        #     ),#10
+        # )
+        # ii += 1
+        print()
+        print("___INTEGER DECISION VARIABLES___")
         for variable in model1.iter_integer_vars():
-            print(variable, " = ", variable.solution_value)
+            print("INT", variable, "=", variable.solution_value)
+        print("___INTEGER DECISION VARIABLES___")
+        print()
+
+        print()
+        print("___CONTINUOUS DECISION VARIABLES___")
+        for variable in model1.iter_continuous_vars():
+            print("CONT", variable, "=", variable.solution_value)
+        print("___CONTINUOUS DECISION VARIABLES___")
+        print()
+
+        print()
+        print("___BINARY DECISION VARIABLES___")
+        for variable in model1.iter_binary_vars():
+            print("BIN", variable, "=", variable.solution_value)
+        print("___BINARY DECISION VARIABLES___")
+        print()
+
         # for v in model1.iter_continuous_vars():
-        #     print(v, " = ", v.solution_value)
+        #     print(v, "=", v.solution_value)
 
         value = Value(solution_run1)
 
-        plt.plot(value.value(batteryEnergyStorageSystem.power_energyStorageSystem))
-        print(value.value(batteryEnergyStorageSystem.energyStorageSystem_device))
+        # plt.plot(value.value(batteryEnergyStorageSystem.power_energyStorageSystem))
+        # print(value.value(batteryEnergyStorageSystem.energyStorageSystem_device))
 
-        plt.figure()
-        pllist = IntegratedEnergySystemPlot(solution_run1)
+        # plt.figure()
 
-        # pllist.plot_list(  [地源热泵.electricity_地源热泵, 水冷螺杆机.electricity_水冷螺杆机], ['地源热泵.electricity_地源热泵', '水冷螺杆机.electricity_水冷螺杆机'], "ele balance")
+        def plotSingle(data, title_content):
+            fig = plt.figure()
+            plt.plot(data)
+            plt.xlabel("Time/h")
+            plt.ylabel("Power/kW")
+            plt.title(title_content)
+            plt.savefig("fig/" + title_content + ".png")
+            plt.close(fig=fig)
 
-        pllist.plot_list(
-            [
-                地源热泵.electricity_地源热泵,
-                水冷螺杆机.electricity_水冷螺杆机,
-                热泵.electricity_水源热泵,
-                batteryEnergyStorageSystem.power_energyStorageSystem,
-                photoVoltaic.power_photoVoltaic,
-                水源热泵.electricity_水源热泵,
-                power_load,
-                combinedHeatAndPower.power_combinedHeatAndPower,
-                dieselEngine.power_dieselEngine,
-                地源蒸汽发生器.power_地源蒸汽发生器,
-                热水电锅炉.electricity_电锅炉,
-                tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
-                doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
-                gridNet.total_power,
-            ],
-            [
-                "地源热泵.electricity_地源热泵",
-                "水冷螺杆机.electricity_水冷螺杆机",
-                "热泵.electricity_水源热泵",
-                "batteryEnergyStorageSystem.power_energyStorageSystem",
-                "photoVoltaic.power_photoVoltaic",
-                "水源热泵.electricity_水源热泵",
-                "power_load",
-                "combinedHeatAndPower.power_combinedHeatAndPower",
-                "dieselEngine.power_dieselEngine",
-                "地源蒸汽发生器.power_地源蒸汽发生器",
-                "热水电锅炉.electricity_电锅炉",
-                "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
-                "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
-                "gridNet.total_power",
-            ],
-            "ele balance",
-        )
-        plt.figure()
-        pllist.plot_list(
-            [
-                热泵.power_水源热泵_cool,
-                power_xcool,
-                水源热泵.power_水源热泵_cool,
-                zq_溴化锂.cool_溴化锂,  # cooling? 直取？
-                热水溴化锂.cool_溴化锂,
-                水冷螺杆机.power_水冷螺杆机_cool,
-                power_xice,  # consume?
-                tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
-                doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
-            ],
-            [
-                "热泵.power_水源热泵_cool",
-                "power_xcool",
-                "水源热泵.power_水源热泵_cool",
-                "zq_溴化锂.cool_溴化锂",
-                "热水溴化锂.cool_溴化锂",
-                "水冷螺杆机.power_水冷螺杆机_cool",
-                "power_xice",
-                "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
-                "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
-            ],
-            "cool_balance",
+        plotSingle(
+            value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
+            "BatteryEnergyStorageSystem",
         )
 
-        plt.figure()
-        pllist.plot_list(
-            [
-                热泵.power_水源热泵_heat,
-                power_xheat,
-                水源热泵.power_水源热泵_heat,
-                qs_exchanger.heat_exchange,
-                热水换热器.heat_exchange,
-                tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat,
-                地源热泵.power_地源热泵,
-                heat_load,
-            ],
-            [
-                "热泵.power_水源热泵_heat",
-                "power_xheat",
-                "水源热泵.power_水源热泵_heat",
-                "qs_exchanger.heat_exchange",
-                "热水换热器.heat_exchange",
-                "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat",
-                "地源热泵.power_地源热泵",
-                "heat_load",
-            ],
-            "heat_balance",
-        )
-        plt.figure()
-        pllist.plot_list(
-            [
-                combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
-                combinedHeatAndPower.余气余热water_device.heat_exchange,
-                平板光热.power_photoVoltaic,
-                相变蓄热.power_energyStorageSystem,  # 相变蓄热？
-                市政热水.heat_citySupplied,
-                gasBoiler_热水.heat_gasBoiler,
-                热水电锅炉.heat_电锅炉,
-                水蓄能罐.power_水蓄能罐_gheat,
-            ],
-            [
-                "combinedHeatAndPower.gasTurbineSystem_device.heat_exchangeh",
-                "余气余热water_device.heat_exchange",
-                "平板光热.power_photoVoltaic",
-                "相变蓄热.power_energyStorageSystem",
-                "市政热水.heat_citySupplied",
-                "gasBoiler_热水.heat_gasBoiler",
-                "热水电锅炉.heat_电锅炉",
-                "水蓄能罐.power_水蓄能罐_gheat",
-            ],
-            "gwheat_balance",  # gw?
-        )
+        database = {
+            "electricity": {
+                "list": [
+                    地源热泵.electricity_地源热泵,
+                    水冷螺杆机.electricity_水冷螺杆机,
+                    热泵.electricity_水源热泵,
+                    batteryEnergyStorageSystem.power_energyStorageSystem,
+                    photoVoltaic.power_photoVoltaic,
+                    水源热泵.electricity_水源热泵,
+                    power_load,
+                    combinedHeatAndPower.power_combinedHeatAndPower,
+                    dieselEngine.power_dieselEngine,
+                    地源蒸汽发生器.power_地源蒸汽发生器,
+                    热水电锅炉.electricity_电锅炉,
+                    tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
+                    doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
+                    gridNet.total_power,
+                ],
+                "name": [
+                    "地源热泵.electricity_地源热泵",
+                    "水冷螺杆机.electricity_水冷螺杆机",
+                    "热泵.electricity_水源热泵",
+                    "batteryEnergyStorageSystem.power_energyStorageSystem",
+                    "photoVoltaic.power_photoVoltaic",
+                    "水源热泵.electricity_水源热泵",
+                    "power_load",
+                    "combinedHeatAndPower.power_combinedHeatAndPower",
+                    "dieselEngine.power_dieselEngine",
+                    "地源蒸汽发生器.power_地源蒸汽发生器",
+                    "热水电锅炉.electricity_电锅炉",
+                    "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
+                    "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
+                    "gridNet.total_power",
+                ],
+            },
+            "cool": {
+                "list": [
+                    热泵.power_水源热泵_cool,
+                    power_xcool,
+                    水源热泵.power_水源热泵_cool,
+                    蒸汽_溴化锂.cool_溴化锂,  # cooling? 直取？
+                    热水溴化锂.cool_溴化锂,
+                    水冷螺杆机.power_水冷螺杆机_cool,
+                    power_xice,  # consume?
+                    tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
+                    doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
+                ],
+                "name": [
+                    "热泵.power_水源热泵_cool",
+                    "power_xcool",
+                    "水源热泵.power_水源热泵_cool",
+                    "蒸汽_溴化锂.cool_溴化锂",
+                    "热水溴化锂.cool_溴化锂",
+                    "水冷螺杆机.power_水冷螺杆机_cool",
+                    "power_xice",
+                    "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
+                    "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
+                ],
+            },
+            "heat": {
+                "list": [
+                    热泵.power_水源热泵_heat,
+                    power_xheat,
+                    水源热泵.power_水源热泵_heat,
+                    汽水_exchanger.heat_exchange,
+                    热水换热器.heat_exchange,
+                    tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat,
+                    地源热泵.power_地源热泵,
+                    heat_load,
+                ],
+                "name": [
+                    "热泵.power_水源热泵_heat",
+                    "power_xheat",
+                    "水源热泵.power_水源热泵_heat",
+                    "汽水_exchanger.heat_exchange",
+                    "热水换热器.heat_exchange",
+                    "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat",
+                    "地源热泵.power_地源热泵",
+                    "heat_load",
+                ],
+            },
+            "gwheat": {
+                "list": [
+                    combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
+                    combinedHeatAndPower.余气余热water_device.heat_exchange,
+                    平板光热.power_photoVoltaic,
+                    相变蓄热.power_energyStorageSystem,  # 相变蓄热？
+                    市政热水.heat_citySupplied,
+                    gasBoiler_热水.heat_gasBoiler,
+                    热水电锅炉.heat_电锅炉,
+                    水蓄能罐.power_水蓄能罐_gheat,
+                ],
+                "name": [
+                    "combinedHeatAndPower.gasTurbineSystem_device.heat_exchangeh",
+                    "余气余热water_device.heat_exchange",
+                    "平板光热.power_photoVoltaic",
+                    "相变蓄热.power_energyStorageSystem",
+                    "市政热水.heat_citySupplied",
+                    "gasBoiler_热水.heat_gasBoiler",
+                    "热水电锅炉.heat_电锅炉",
+                    "水蓄能罐.power_水蓄能罐_gheat",
+                ],
+            },
+        }
 
-        plt.show()
+        for key, value in database.items():
+            datalist, names = value["list"], value["name"]
+            for data, name in zip(datalist, names):
+                plotSingle(data, name)
+
+        # pllist = IntegratedEnergySystemPlot(solution_run1)
+
+        # # pllist.plot_list(  [地源热泵.electricity_地源热泵, 水冷螺杆机.electricity_水冷螺杆机], ['地源热泵.electricity_地源热泵', '水冷螺杆机.electricity_水冷螺杆机'], "ele balance")
+
+        # pllist.plot_list(
+        #     database["electricity"]["list"],
+        #     database["electricity"]["name"],
+        #     "ele balance",
+        # )
+        # plt.figure()
+        # pllist.plot_list(database['cool']['list'],database['cool']['name'],
+        #     "cool_balance",
+        # )
+
+        # plt.figure()
+        # pllist.plot_list(database['heat']['list'],database['heat']['name'],
+        #     "heat_balance",
+        # )
+        # plt.figure()
+        # pllist.plot_list(database['gwheat']['list'],database['gwheat']['name'],
+        #     "gwheat_balance",  # gw?
+        # )
+
+        # plt.show()
+        # let's not show.
