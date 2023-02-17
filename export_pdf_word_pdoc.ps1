@@ -1,0 +1,1 @@
+env PYTHONIOENCODING=utf-8 pdoc --pdf .\example_docstring.py | tee .\output_pdf\example_docstring.md
