@@ -7,12 +7,17 @@ from typing import List
 # where's the search box?
 
 
-global_var = None
+global_var2 = None
 """
-some global variable _Default to None_
+some other global variable
 """
 
-def some_random_method(param_1,param_2, kw_param_1=None) -> None:
+global_var = None
+"""
+some global variable2 _Default to None_
+"""
+
+def some_random_method(param_1:str,param_2, kw_param_1=None) -> None:
     #: Documentation comment for class_variable
     #: spanning over three lines.
     """_just a random method_
