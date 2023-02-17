@@ -502,19 +502,15 @@ set_name: 表示电网的名称，为可选参数，默认值为'grid_net'。
 
 Linearization：
 这个代码是用 Python 写的，它定义了一个名为 Linearization 的类。这个类包含了几个函数，用于对线性约束进行线性化处理。这些函数可以用来帮助解决优化问题。
-
 这个类的第一个属性是 bigM0，它的值为 1e10。第二个属性是 index，初始值为 0。这两个属性在类中用于计数。
-
 product_var_bin 函数接受四个参数，分别为 mdl、var_bin、var 和 bin。这个函数可以用于将一个二进制变量 bin 与一个连续变量 var 相乘，并将结果保存在一个新的变量 var_bin 中。在进行线性化时，这个函数会引入四个线性约束条件。
-
 product_var_bins 函数与 product_var_bin 函数类似，但它可以对一组连续变量和一组二进制变量进行操作。这个函数接受四个参数，分别为 mdl、var_bin、var、bin0 和 irange，其中 irange 是一个整数列表，用于指定要处理的变量的下标范围。
-
 product_var_back_bins 函数也与 product_var_bin 函数类似，但它将结果保存在 var_bin 中的变量与它前面的连续变量相关。这个函数接受四个参数，分别为 mdl、var_bin、var、bin0 和 irangeback，其中 irangeback 是一个整数列表，用于指定要处理的变量的下标范围。
-
 max_zeros 函数接受三个参数，分别为 num_h、mdl、x 和 y。它用于将一个连续变量 x 的值限制为非负数，并引入一组二进制变量 y，这些变量的值等于 x 是否为 0。这个函数会引入五个线性约束条件。
-
 add 函数接受三个参数，分别为 num_h、mdl、x1 和 x2。它用于将两个连续变量 x1 和 x2 相加，并将结果保存在一个新的变量 add_y 中。这个函数会返回 add_y。
-
 posi_neg_cons_regester 函数接受四个参数，分别为 num_h、mdl、x、xposi 和 xneg。它用于将一个连续变量 x 分解为正数部分 xposi 和负数部分 xneg。这个函数会引入五个线性约束条件。
+
+
+
 
 
