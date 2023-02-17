@@ -1724,9 +1724,9 @@ class ResourceGet(object):
         市政热水_price = np.ones(num_h, dtype=float) * 0.3
         return 市政热水_price
 
-    def get_citysteam_price(self, num_h: int):
-        citysteam = np.ones(num_h, dtype=float) * 0.3
-        return citysteam
+    def get_市政蒸汽_price(self, num_h: int):
+        市政蒸汽 = np.ones(num_h, dtype=float) * 0.3
+        return 市政蒸汽
 
 
 class LoadGet(object):
@@ -2028,7 +2028,7 @@ if __name__ == "__main__":
     ele_price0 = resource.get_ele_price(num_h0)
     gas_price0 = resource.get_gas_price(num_h0)
     市政热水_price0 = resource.get_市政热水_price(num_h0)
-    citysteam_price0 = resource.get_citysteam_price(num_h0)
+    市政蒸汽_price0 = resource.get_市政蒸汽_price(num_h0)
 
     diesel = Diesel(num_h0, mdl1, 320, 750, 2)  # 柴油机
     diesel.cons_register(mdl1)
