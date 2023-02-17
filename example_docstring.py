@@ -12,12 +12,12 @@ some global variable
 def some_random_method(param_1,param_2, kw_param_1=None) -> None:
     """_just a random method_
 
-    Args:
-        param_1 (_str_): _parameter at position 1_
-        param_2 (_str_): _parameter at position 2_
-        kw_param_1 (_Any_, optional): _keyword parameter 1_. Defaults to None.
+    参数:
+        param_1 (str): _parameter at position 1_
+        param_2 (str): _parameter at position 2_
+        kw_param_1 (Any, optional): _keyword parameter 1_. Defaults to None.
     
-    Return:
+    输出:
         Nothing returned.
     """
 

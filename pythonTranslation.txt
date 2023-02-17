@@ -1,2 +1,6 @@
 光照强度：intensity of illumination
 溴化锂：LiBrRe
+槽式光热：Trough photothermal
+槽式光热固体蓄热:Trough photothermal solid heat storage
+余气余热:Waste gas waste heat
+电锅炉：electric boiler
