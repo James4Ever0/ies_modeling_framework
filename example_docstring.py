@@ -9,6 +9,8 @@ global_var = None
 some global variable
 """
 
+def some_random_method()
+
 class Dog:
     """🐕"""
     name: str
