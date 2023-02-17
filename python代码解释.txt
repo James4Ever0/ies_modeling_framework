@@ -407,6 +407,38 @@ self.nianhua：连续变量，表示水蓄能的年化成本。
 
 
 Dyzqfsq：
+属性：
+num_h: 一个整数，表示优化问题中考虑的时间段数量。
+mdl: 一个 docplex.mp.model.Model 对象，表示要创建的优化模型。
+dyzqfsq_set_max: 一个实数，表示允许的制冷系统的最大制冷量。
+dyzqfsq_price: 一个实数，表示制冷系统的价格。
+dyzqfsqgtxr_price: 一个实数，表示制热系统的价格。
+ele_price: 一个实数，表示电能的价格。
+eff: 一个实数，表示热能和电能之间的转换效率。
+set_name: 一个字符串，表示当前对象的名称。
+Dyzqfsq: 一个类变量，表示当前类的对象数量。
+dyzqfsq_set: 一个 docplex.mp.Var 对象，表示制冷系统的制冷量。
+p_dyzqfsq: 一个 docplex.mp.Var 对象列表，表示制冷系统在每个时间段的电功率。
+p_dyzqfsq_steam: 一个 docplex.mp.Var 对象列表，表示制冷系统在每个时间段的蒸汽功率。
+dyzqfsq_set_max: 一个实数，表示允许的制冷系统的最大制冷量。
+dyzqfsqgtxr_set_max: 一个实数，表示允许的制热系统的最大制热量。
+dyzqfsq_price: 一个实数，表示制冷系统的价格。
+dyzqfsqgtxr_price: 一个实数，表示制热系统的价格。
+ele_price: 一个实数，表示电能的价格。
+nianhua: 一个 docplex.mp.Var 对象，表示制冷系统的年化成本。
+eff: 一个实数，表示热能和电能之间的转换效率。
+dyzqfsqgtxr_set: 一个 ESS 类的对象，表示一个电蓄热系统。
+ele_cost: 一个 docplex.mp.Var 对象，表示制冷系统的电费用。
+
+
+ResourceGet：
+get_radiation(self, path, num_h)：获取光照资源数据的方法，参数包括文件路径path和总小时数num_h。如果路径存在，将读取该路径下的文件并将数据转化为kW为单位，如果总小时数超过一年，将一年的数据进行重复。最后返回kW为单位的光照资源数据。
+get_ele_price(self, num_h)：获取电能价格数据的方法，参数为总小时数num_h。将返回总小时数个电能单价为0.5元的一维数组。
+get_gas_price(self, num_h)：获取天然气价格数据的方法，参数为总小时数num_h。将返回总小时数个天然气单价为2.77元的一维数组。
+get_cityrs_price(self, num_h)：获取城市燃气价格数据的方法，参数为总小时数num_h。将返回总小时数个城市燃气单价为0.3元的一维数组。
+get_citysteam_price(self, num_h)：获取城市蒸汽价格数据的方法，参数为总小时数num_h。将返回总小时数个城市蒸汽单价为0.3元的一维数组。
+
+
 
 
 
