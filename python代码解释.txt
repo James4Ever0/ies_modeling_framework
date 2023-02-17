@@ -439,6 +439,11 @@ get_cityrs_price(self, num_h)：获取城市燃气价格数据的方法，参数
 get_citysteam_price(self, num_h)：获取城市蒸汽价格数据的方法，参数为总小时数num_h。将返回总小时数个城市蒸汽单价为0.3元的一维数组。
 
 
+LoadGet：
+get_cool_load(num_h) 函数返回一个由num_h个值为10000的浮点数组成的一维numpy数组，用于表示冷负荷。
+get_heat_load(num_h) 函数返回一个由num_h个值为10000的浮点数组成的一维numpy数组，用于表示热负荷。
+get_power_load(num_h) 函数返回一个由num_h个值为10000的浮点数组成的一维numpy数组，用于表示电负荷。
+get_steam_load(num_h) 函数返回一个由num_h个值为10000的浮点数组成的一维numpy数组，用于表示蒸汽负荷。
 
 
 
