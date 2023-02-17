@@ -39,7 +39,7 @@ def some_random_method(param_1:str,param_2, kw_param_1=None) -> None:
     """
 
 class Dog:
-    """🐕 class"""
+    """dog class"""
     name: str
     """The name of our dog."""
     friends: List["Dog"]

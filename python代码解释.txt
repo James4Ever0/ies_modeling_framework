@@ -307,7 +307,7 @@ cop_slj_xcool：实数，表示水泵制热时的制冷系数。
 DoubleGK（双工况机组）：
 属性：
 self: 指向当前对象的引用，类中的方法需要将其作为第一个参数
-num_h: 整数类型，表示设备数量
+num_h: 整数类型，表示系统中的时间步数
 mdl: 表示一个数学优化模型，该模型用于定义和求解问题的目标函数和约束条件
 set_max: 数值类型，表示设备的最大容量
 set_price: 数值类型，表示设备的单价
@@ -329,4 +329,30 @@ cop_doublegk_cool: 数值类型，表示设备在制冷模式下的能效比
 cop_doublegk_ice: 数值类型，表示设备在制冰模式下的能效比
 
 
+ThreeGK(IGES):
+属性：
+num_h: 整数，表示系统中的时间步数。
+mdl: 优化模型。
+set_max: 设备的最大容量，也就是能够承载的最大热负荷。
+set_price: 设备的价格。
+ele_price: 电价。
+case_ratio: 机箱比率。
+set_name: 设备名称，默认为'threegk'。
+threegk_set: 连续变量，表示三效热泵的工作量。
+nianhua: 连续变量，表示能耗年化值。
+ele_cost: 连续变量，表示电费总额。
+p_threegk_cool: 连续变量列表，表示三效热泵制冷的功率。
+threegk_cool_flag: 二进制变量列表，表示三效热泵制冷的工作状态。
+p_threegk_ice: 连续变量列表，表示三效热泵制冰的功率。
+threegk_ice_flag: 二进制变量列表，表示三效热泵制冰的工作状态。
+p_threegk_heat: 连续变量列表，表示三效热泵供热的功率。
+threegk_heat_flag: 二进制变量列表，表示三效热泵供热的工作状态。
+ele_threegk: 连续变量列表，表示三效热泵的电耗。
+p_threegk: 连续变量列表，表示三效热泵的功率。
+cop_threegk_cool: 三效热泵制冷的冷量系数。
+cop_threegk_ice: 三效热泵制冰的冷量系数。
+cop_threegk_heat: 三效热泵供热的热量系数。
+
+
+GeothermalHeatPump：
 
