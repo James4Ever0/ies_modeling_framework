@@ -355,4 +355,30 @@ cop_threegk_heat: 三效热泵供热的热量系数。
 
 
 GeothermalHeatPump：
+属性：
+num_h: int类型，表示需要考虑的时间段数。
+mdl: docplex.mp.model类型，表示要解决的优化模型。
+set_max: float类型，表示可以使用的最大功率。
+set_price: float类型，表示装置的总成本。
+ele_price: float类型的列表，长度为num_h，表示每个时间段的电价。
+set_name: str类型，表示该设备的名称。
+dire_set: docplex.mp.Var型，表示设备的功率。
+nianhua: docplex.mp.Var型，表示设备的年化成本。
+ele_cost: docplex.mp.Var型，表示设备的电费成本。
+ele_dire: docplex.mp.VarList型，长度为num_h，表示每个时间段的电力需求。
+p_dire: docplex.mp.VarList型，长度为num_h，表示每个时间段的功率需求。
+cop_dire: float类型，表示设备的功率因数。
+
+约束条件：
+dire_set的取值范围在0和set_max之间。
+p_dire[h]的取值范围在0和dire_set之间，其中h是0到num_h-1之间的整数。
+ele_dire[h]等于p_dire[h]除以cop_dire，其中h是0到num_h-1之间的整数。
+ele_cost是ele_dire[h] * ele_price[h]的总和，其中h是0到num_h-1之间的整数。
+nianhua等于dire_set * set_price / 15加上ele_cost * 8760 / num_h。
+
+
+WaterEnergyStorage（水储能）：
+属性：
+
+
 
