@@ -9,4 +9,4 @@ ipconfig | rg 192.168
 # pdoc --http 0.0.0.0:8001 .\example_docstring.py
 
 # pdoc syntax
-pdoc --host 0.0.0.0 --port 8001 .\example_docstring.py
+pdoc --port 8001 --search .\example_docstring.py
