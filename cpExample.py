@@ -511,7 +511,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # paradox? redundancy? both charge and discharge?
         self.charge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystemVariable_chargearge_flag{0}".format(
+            name="batteryEnergyStorageSystemVariabl_flag{0}".format(
                 EnergyStorageSystemVariable.index
             ),
         )  # 充电
