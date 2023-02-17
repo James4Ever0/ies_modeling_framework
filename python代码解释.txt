@@ -252,6 +252,35 @@ mdl.add_constraints(self.p_rb_xheat[h] <= self.xheat_rb_out[h] * self.rb_set / 1
 mdl.add_constraints(self.p_rb_xheat[h] <= bigM * self.rb_xheat_flag[h] for h in hrange): similar to above, but for the power output of the extra heating unit.
 
 
-WaterHeatPump:
+WaterHeatPump（水源热泵）:
 属性：
+num_h：整数，表示模型中的时间步数；
+mdl：求解器模型对象；
+set_max：实数，表示水源热泵的最大功率；
+set_price：实数，表示水源热泵的单价；
+ele_price：长度为num_h的列表，表示每个时间步的电价；
+case_ratio：实数，表示不同工况下制热量和制冷量的比值；
+set_name：字符串，表示该对象的名称。
+index：类属性，用于为每个WaterHeatPump对象分配唯一的索引号；
+ele_price：长度为num_h的列表，表示每个时间步的电价；
+sy_set：连续变量，表示水源热泵的设定功率；
+nianhua：连续变量，表示水源热泵的能源年化成本；
+ele_cost：连续变量，表示水源热泵的电费；
+set_price：实数，表示水源热泵的单价；
+set_max：实数，表示水源热泵的最大功率；
+case_ratio：实数，表示不同工况下制热量和制冷量的比值；
+p_sy_cool：长度为num_h的连续变量列表，表示水源热泵制冷时的功率；
+sy_cool_flag：长度为num_h的二元变量列表，表示水源热泵是否制冷；
+p_sy_xcool：长度为num_h的连续变量列表，表示额外的水源热泵制冷时的功率；
+sy_xcool_flag：长度为num_h的二元变量列表，表示额外的水源热泵是否制冷；
+p_sy_heat：长度为num_h的连续变量列表，表示水源热泵制热时的功率；
+sy_heat_flag：长度为num_h的二元变量列表，表示水源热泵是否制热；
+p_sy_xheat：长度为num_h的连续变量列表，表示额外的水源热泵制热时的功率；
+sy_xheat_flag：长度为num_h的二元变量列表，表示额外的水源热泵是否制热；
+ele_sy：长度为num_h的连续变量列表，表示水源热泵的用电量；
+p_sy：长度为num_h的连续变量列表，表示水源热泵在每个小时的功率输出；
+cop_sy_cool、cop_sy_xcool、cop_sy_heat、cop_sy_xheat，它们表示水源热泵在制冷模式、二次侧换热器制冷模式、制热模式和二次侧换热器制热模式下的制冷（热）系数。
 
+
+WaterCooledScrew(水冷螺旋机)：
+属性：
