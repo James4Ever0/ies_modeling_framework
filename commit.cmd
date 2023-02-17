@@ -1,6 +1,6 @@
 D:
 cd D:\project\xianxing
-date
+date /T
 git pull
 git add .
 git commit -m 'update'
