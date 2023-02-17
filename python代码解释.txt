@@ -284,3 +284,26 @@ cop_sy_cool、cop_sy_xcool、cop_sy_heat、cop_sy_xheat，它们表示水源热�
 
 WaterCooledScrew(水冷螺旋机)：
 属性：
+num_h：整数，表示系统中的时间步数。
+mdl：数学优化模型对象，表示优化问题的模型。
+set_max：实数，表示该水源热泵系统的制冷/制热最大容量。
+set_price：实数，表示该水源热泵系统的单价。
+ele_price：实数，表示电价。
+case_ratio：实数，表示制冷和制热的比例。
+set_name：字符串，表示该水源热泵系统的名称。
+slj_set：连续变量，表示水泵的额定功率。
+nianhua：连续变量，表示年化总费用。
+ele_cost：连续变量，表示电费总费用。
+p_slj_cool：连续变量列表，长度为 num_h，表示水泵的制冷功率。
+slj_cool_flag：二进制变量列表，长度为 num_h，表示是否在时间步 t 开启水泵制冷。
+p_slj_xcool：连续变量列表，长度为 num_h，表示水泵的制热功率。
+slj_xcool_flag：二进制变量列表，长度为 num_h，表示是否在时间步 t 开启水泵制热。
+ele_slj：连续变量列表，长度为 num_h，表示水泵的电能消耗。
+p_slj：连续变量列表，长度为 num_h，表示水泵的功率。
+cop_slj_cool：实数，表示水泵制冷时的制冷系数。
+cop_slj_xcool：实数，表示水泵制热时的制冷系数。
+
+
+DoubleGK（双工况机组）：
+属性：
+

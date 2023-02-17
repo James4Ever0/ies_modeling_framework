@@ -1,12 +1,19 @@
 """
-A small `pdoc` example.
+a dog that will bark.
+"""
+from typing import List
+
+
+global_var = None
+"""
+some global variable
 """
 
 class Dog:
     """🐕"""
     name: str
     """The name of our dog."""
-    friends: list["Dog"]
+    friends: List["Dog"]
     """The friends of our dog."""
 
     def __init__(self, name: str):
