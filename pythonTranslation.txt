@@ -4,3 +4,7 @@
 槽式光热固体蓄热:Trough photothermal solid heat storage
 余气余热:Waste gas waste heat
 电锅炉：electric boiler
+热泵：heat pump 
+水源热泵:water-source heat pumps
+水冷螺杆机:Water-cooled screw machine
+地源热泵

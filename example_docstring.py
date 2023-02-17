@@ -6,19 +6,22 @@ from typing import List
 
 global_var = None
 """
-some global variable
+some global variable _Default to None_
 """
 
 def some_random_method(param_1,param_2, kw_param_1=None) -> None:
     """_just a random method_
 
-    参数:
+    Args:
         param_1 (str): _parameter at position 1_
         param_2 (str): _parameter at position 2_
         kw_param_1 (Any, optional): _keyword parameter 1_. Defaults to None.
     
-    输出:
+    Return:
         Nothing returned.
+        
+    Note:
+        Extra Notes?
     """
 
 class Dog:
