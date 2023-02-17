@@ -22,7 +22,7 @@ def some_random_method(param_1,param_2, kw_param_1=None) -> None:
     """
 
 class Dog:
-    """🐕"""
+    """🐕 class"""
     name: str
     """The name of our dog."""
     friends: List["Dog"]

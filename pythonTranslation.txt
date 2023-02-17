@@ -1,0 +1,2 @@
+光照强度：intensity of illumination
+溴化锂：LiBrRe
