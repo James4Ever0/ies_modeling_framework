@@ -379,6 +379,35 @@ nianhua等于dire_set * set_price / 15加上ele_cost * 8760 / num_h。
 
 WaterEnergyStorage（水储能）：
 属性：
+num_h：整型，表示优化问题的时间步数，即一个时间段内的离散化时间数。
+mdl：求解器模型。
+sx_V_max：水蓄能罐的最大容量。
+v_price：水蓄能罐单位容积电价。
+pcs_price：电力转换系统（PCS）的电价。
+c_rate_max：PCS的最大充放电倍率。
+eff：PCS的充放电效率。
+ess_init：水蓄能罐的初始电量。
+soc_min：水蓄能罐的最小电量。
+soc_max：水蓄能罐的最大电量。
+ratio_cool：制冷模式下水蓄能罐的利用率。
+ratio_heat：供暖模式下水蓄能罐的利用率。
+ratio_gheat：地源热泵模式下水蓄能罐的利用率。
+set_name：字符串，表示水蓄能的名称。
+self.sx_set_cool：长度为num_h的连续变量列表，表示水蓄能在制冷模式下的充放电量。
+self.sx_set_heat：长度为num_h的连续变量列表，表示水蓄能在供暖模式下的充放电量。
+self.sx_set_gheat：长度为num_h的连续变量列表，表示水蓄能在地源热泵模式下的充放电量。
+self.sx_V：连续变量，表示水蓄能罐的容量。
+self.sx_cool_flag：长度为num_h的二进制变量列表，表示水蓄能在制冷模式下是否充电。
+self.sx_heat_flag：长度为num_h的二进制变量列表，表示水蓄能在供暖模式下是否充电。
+self.sx_gheat_flag：长度为num_h的二进制变量列表，表示水蓄能在地源热泵模式下是否充电。
+self.p_sx_cool：长度为num_h的连续变量列表，表示水蓄能在制冷模式下的充电功率。
+self.p_sx_heat：长度为num_h的连续变量列表，表示水蓄能在供暖模式下的充电功率。
+self.p_sx_gheat：长度为num_h的连续变量列表，表示水蓄能在地源热泵模式下的充电功率。
+self.nianhua：连续变量，表示水蓄能的年化成本。
+
+
+Dyzqfsq：
+
 
 
 

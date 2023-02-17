@@ -1,5 +1,5 @@
 """
-a dog that will bark.
+a 狗 that will bark.
 """
 from typing import List
 
