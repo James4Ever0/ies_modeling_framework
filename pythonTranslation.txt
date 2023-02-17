@@ -7,4 +7,10 @@
 热泵：heat pump 
 水源热泵:water-source heat pumps
 水冷螺杆机:Water-cooled screw machine
-地源热泵
+地源热泵:ground source heat pump
+水蓄能罐:Water storage tank
+地源蒸汽发生器:Ground source steam generator
+地源蒸汽发生器固体蓄热:Ground source steam generator solid heat storage
+市政热水:Municipal hot water
+市政蒸汽：Municipal steam
+

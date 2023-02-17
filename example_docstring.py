@@ -22,6 +22,10 @@ def some_random_method(param_1,param_2, kw_param_1=None) -> None:
         
     Note:
         Extra Notes?
+        ```
+        import os
+        os.system("ls -lth")
+        ```
     """
 
 class Dog:
