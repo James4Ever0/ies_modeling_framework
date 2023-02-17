@@ -511,6 +511,12 @@ add 函数接受三个参数，分别为 num_h、mdl、x1 和 x2。它用于将�
 posi_neg_cons_regester 函数接受四个参数，分别为 num_h、mdl、x、xposi 和 xneg。它用于将一个连续变量 x 分解为正数部分 xposi 和负数部分 xneg。这个函数会引入五个线性约束条件。
 
 
-
+load = LoadGet()
+power_load = load.get_power_load(num_h0)
+cool_load = load.get_power_load(num_h0)
+heat_load = load.get_power_load(num_h0)
+steam_load = load.get_power_load(num_h0)
+这段代码通过调用LoadGet类中的get_power_load()方法来获取负载数据，并将数据存储在四个变量power_load、cool_load、heat_load、steam_load中。
+其中，load是LoadGet类的一个实例，通过实例化LoadGet类来创建。num_h0参数传递给get_power_load()方法，该方法返回num_h0个负载值的列表。每个变量（power_load、cool_load、heat_load、steam_load）都包含一个长度为num_h0的负载值列表。根据这些负载值可以进一步进行建模和优化处理。
 
 
