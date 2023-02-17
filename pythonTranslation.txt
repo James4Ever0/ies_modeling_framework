@@ -13,4 +13,8 @@
 地源蒸汽发生器固体蓄热:Ground source steam generator solid heat storage
 市政热水:Municipal hot water
 市政蒸汽：Municipal steam
-
+汽水：air water
+蒸汽_溴化锂:steam_LiBrRe
+平板光热:Plate photothermal
+相变蓄热：phase change heat storage
+热水电锅炉：heat water electric boiler

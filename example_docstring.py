@@ -3,6 +3,9 @@ a dog that will bark.
 """
 from typing import List
 
+# pdoc is different than pdoc3.
+# where's the search box?
+
 
 global_var = None
 """
