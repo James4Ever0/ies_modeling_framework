@@ -17,4 +17,8 @@
 蒸汽_溴化锂:steam_LiBrRe
 平板光热:Plate photothermal
 相变蓄热：phase change heat storage
-热水电锅炉：heat water electric boiler
+热水电锅炉：hot water electric boiler
+热水：hot water
+高温热水：high temperature hot water
+热水溴化锂：hot water LiBrRe
+热水换热器：hot water Exchanger
