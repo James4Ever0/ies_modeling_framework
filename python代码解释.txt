@@ -236,3 +236,17 @@ cop_rb_heat: 表示该组件供热时的性能系数
 cop_rb_xheat: 表示该组件加湿时的性能系数
 
 约束条件：
+mdl.add_constraint(0 <= self.rb_set): the chiller's refrigeration capacity (in kW) should be greater than or equal to 0.
+mdl.add_constraint(self.rb_set <= self.set_max): the chiller's refrigeration capacity should be less than or equal to a pre-defined maximum value (set_max).
+mdl.add_constraints(0 <= self.p_rb_cool[h] for h in hrange): the cooling power output of the chiller (in kW) should be greater than or equal to 0 for each time period (h).
+mdl.add_constraints(self.p_rb_cool[h] <= self.cool_rb_out[h] * self.rb_set / 100 for h in hrange): the cooling power output of the chiller (in kW) should be less than or equal to a percentage of its refrigeration capacity (calculated as cool_rb_out[h] * self.rb_set / 100) for each time period (h).
+mdl.add_constraints(self.p_rb_cool[h] <= bigM * self.rb_cool_flag[h] for h in hrange): the cooling power output of the chiller should be 0 if the corresponding binary variable (rb_cool_flag[h]) is 0. Otherwise, it can take any value up to a very large number (bigM).
+mdl.add_constraints(0 <= self.p_rb_xcool[h] for h in hrange): similar to above, but for the power output of the extra cooling unit.
+mdl.add_constraints(self.p_rb_xcool[h] <= self.xcool_rb_out[h] * self.rb_set / 100 for h in hrange): similar to above, but for the power output of the extra cooling unit.
+mdl.add_constraints(self.p_rb_xcool[h] <= bigM * self.rb_xcool_flag[h] for h in hrange): similar to above, but for the power output of the extra cooling unit.
+mdl.add_constraints(0 <= self.p_rb_heat[h] for h in hrange): the heating power output of the chiller (in kW) should be greater than or equal to 0 for each time period (h).
+mdl.add_constraints(self.p_rb_heat[h] <= self.heat_rb_out[h] * self.rb_set / 100 for h in hrange): the heating power output of the chiller (in kW) should be less than or equal to a percentage of its refrigeration capacity (calculated as heat_rb_out[h] * self.rb_set / 100) for each time period (h).
+mdl.add_constraints(self.p_rb_heat[h] <= bigM * self.rb_heat_flag[h] for h in hrange): the heating power output of the chiller should be 0 if the corresponding binary variable (rb_heat_flag[h]) is 0. Otherwise, it can take any value up to a very large number (bigM).
+mdl.add_constraints(0 <= self.p_rb_xheat[h] for h in hrange): similar to above, but for the power output of the extra heating unit.
+mdl.add_constraints(self.p_rb_xheat[h] <= self.xheat_rb_out[h] * self.rb_set / 100 for h in hrange): similar to above, but for the power output of the extra heating unit.
+mdl.add_constraints(self.p_rb_xheat[h] <= bigM * self.rb_xheat_flag[h] for h in hrange): similar to above, but for the power output of the extra heating unit.
