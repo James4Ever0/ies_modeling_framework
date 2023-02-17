@@ -4,9 +4,15 @@
 !*/
 
 !*.py
+!*.md
 !*.sh
 !*.cmd
+!*.bat
+!*.reg
 !*.ps1
+!*.vbs
+!*.txt
+# !*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,238 @@
+docplex.mp.solution: 用于解决模型的解决方案。
+docplex: 使用IBM CPLEX进行建模。
+docplex.mp.model: 建模的模块。
+pandas: 用于数据处理和分析。
+numpy: 用于数学计算。
+time: 用于操作时间。
+os.path: 用于操作文件路径。
+math: 用于数学计算。
+ConflictRefiner: 用于处理冲突约束的模块。
+matplotlib.pyplot: 用于数据可视化。
+style: 用于控制图形的样式。
+Value: 用于记录结果的数据结构。
+Var: 用于定义变量的类。
+List: 用于定义列表类型。
+IntegratedEnergySystemPlot: 用于绘制集成能源系统的图形。
+
+这些代码定义了一个名为Integrated EnergySystem的类，表示一个综合能源系统。类有一个类变量set _ count，它保留了创建类的实例数。_ _ init _ _方法用给定的set _ name初始化IntegratedEnergySystem类的实例，增量set _ count，并输出count和set name。
+这些变量的定义是：
+localtime1: the current time in seconds since the Epoch (January 1, 1970)
+mdl1: an instance of the docplex.mp.model.Model class that represents a mathematical optimization model
+ma: an integer variable that is initialized to 0
+debug: a boolean variable that indicates whether debugging mode is on or off
+run: an integer variable
+year: an integer variable that represents the number of years
+day_node: an integer variable that represents the number of nodes in a day
+node: an integer variable that represents the total number of nodes
+bigM: a large constant used in the optimization model to represent an upper bound
+simulationT: an integer variable that represents the total simulation time
+ha: a 1D numpy array of ones with a length of num_h0, where num_h0 represents the total number of hours in the simulation
+set_name: a string variable that represents the name of the set of the integrated energy system instance.
+
+
+
+
+
+
+ESS(储能系统基类)：
+属性：
+index：类属性，用于记录 ESS 类的实例数。
+ess_set：模型中的连续变量，表示储能装置的额定容量。
+p_ess：模型中的连续变量列表，长度为 num_h，表示每小时储能装置的充放电功率。
+p_ess_ch：模型中的连续变量列表，长度为 num_h，表示每小时储能装置的充电功率。
+p_ess_dis：模型中的连续变量列表，长度为 num_h，表示每小时储能装置的放电功率。
+ess：模型中的连续变量列表，长度为 num_h，表示每小时储能装置的能量。
+ess_set_max：储能装置的最大容量。
+ess_price：储能装置的购置价格。
+pcs_price：储能装置与电网之间的 PCS 转换价格。
+num_h：时间段数。
+pcs_set：模型中的连续变量，表示 PCS 的容量。
+ch_flag：模型中的二元变量列表，长度为 num_h，表示每小时储能装置是否处于充电状态。
+dis_flag：模型中的二元变量列表，长度为 num_h，表示每小时储能装置是否处于放电状态。
+eff：储能装置的充放电效率。
+c_rate_max：储能装置的最大倍率。
+ess_init：储能装置的初始能量。
+soc_min：储能装置的最小储能量百分比。
+soc_max：储能装置的最大储能量百分比。
+nianhua：模型中的连续变量，表示储能装置的年化成本。
+
+方法：
+方法 __init__(self, num_h, mdl, ess_set_max, ess_price, pcs_price, c_rate_max, eff, ess_init, soc_min, soc_max, set_name='ess') 是 ESS 类的构造函数，用于初始化类的属性。其中，num_h 表示时间段数，mdl 是数学优化模型，ess_set_max 是储能装置的最大容量，ess_price 是储能装置的购置价格，pcs_price 是储能装置与电网之间的 PCS 转换价格，c_rate_max 是储能装置的最大倍率，eff 是储能装置的充放电效率，ess_init 是储能装置的初始能量，soc_min 是储能装置的最小储能量百分比，soc_max 是储能装置的最大储能量百分比，set_name 是该储能装置的名称，默认为 'ess'。
+
+约束条件：
+cons_register 方法是 ESS 类的一个成员方法，用于在数学优化模型中添加约束条件。其参数包括优化模型 mdl，注册周期约束标志 regester_period_constraints 和一天的时间节点数 day_node。在该方法中，首先定义了一个非常大的数 bigM。然后，将储能装置的容量和功率转化率之间的关系作为一个约束条件添加到模型中。接下来，定义了电池充电功率和放电功率，以及它们之间的关系。同时，还添加了储能系统的最大和最小储能量约束，以及储能系统在相邻时间段之间的能量守恒约束。最后，将储能装置和 PCS 转换设备的年化成本作为目标函数。
+
+约束条件：
+储能装置容量约束： $\text{ess_set} \leq \text{ess_set_max}$, $\text{ess_set} \geq 0$
+储能装置功率转化率约束： $\text{ess_set} \times \text{c_rate_max} \geq \text{pcs_set}$, $\text{pcs_set} \geq 0$
+充电功率和放电功率之间的关系：$\text{p_ess}[i] = -\text{p_ess_ch}[i] + \text{p_ess_dis}[i]$, $i \in \text{irange}$
+充电功率约束：$\text{p_ess_ch}[i] \geq 0$, $\text{p_ess_ch}[i] \leq \text{ch_flag}[i] \times \text{bigM}$, $\text{p_ess_ch}[i] \leq \text{pcs_set}$, $i \in \text{irange}$
+放电功率约束：$\text{p_ess_dis}[i] \geq 0$, $\text{p_ess_dis}[i] \leq \text{dis_flag}[i] \times \text{bigM}$, $\text{p_ess_dis}[i] \leq \text{pcs_set}$, $i \in \text{irange}$
+充电功率和放电功率二选一的约束：$\text{ch_flag}[i] + \text{dis_flag}[i] = 1$, $i \in \text{irange}$
+储能量守恒约束：$\text{ess}[i] = \text{ess}[i-1] + (\text{p_ess_ch}[i] \times \text{eff} - \text{p_ess_dis}[i] / \text{eff}) \times \text{simulationT} / 3600$, $i \in \text{range}(1+day_node \times (day-1), day_node \times day)$
+最大和最小储能量约束：$\text{ess}[i] \leq \text{ess_set} \times \text{soc_max}$, $i \in \text{range}(1, \text{num_h})$，$\text{ess}[i] \geq \text{ess_set} \times \text{soc_min}$, $i \in \text{range}(1, \text{num_h})$
+年化成本约束：$\text{nianhua} = (\text{ess_set} \times \text{ess_price} + \text{pcs_set} \times \text{pcs_price}) / 15$
+如果regester_period_constraints参数为1，表示将两天之间的储能量连接约束为切断，即$\text{ess}[i] = \text{ess}[i - (day_node - 1)]$，其中$i \in \text{range}(day_node - 1, \text{num_h}, day_node)$；如果regester_period_constraints参数不为1，表示将两天之间的储能量连接约束为连续，即$\text{ess}[i] = \text{ess}[i-1] + (\text{p_ess_ch}[i] \times \text{eff} - \text{p_ess_dis}[i] / \text{eff}) \times \text{simulationT} / 3600$，其中$i \in \text{range}(day_node, \text{num_h}, day_node)$，并且添加初始值约束$\text{ess}[0] = \text{ess_init} \times \text{ess_set}$。
+
+
+CSgr(槽式光热)：
+属性：
+num_h：整数，表示模型中考虑的时间段数量。
+csgr_set：docplex.mp.Var对象，表示CHP系统的电功率输出。
+p_csgr：docplex.mp.Var对象的列表，表示CHP系统的燃气功率输入。
+p_csgr_steam：docplex.mp.Var对象的列表，表示CHP系统的蒸汽功率输出。
+csgr_set_max：整数，表示CHP系统的最大电功率输出。
+csgrgtxr_set_max：整数，表示连接到CHP系统的储能设备的最大容量。
+csgr_price：浮点数，表示CHP系统的电价。
+csgrgtxr_price：浮点数，表示连接到CHP系统的储能设备的电价。
+ha：浮点数，表示光照强度。
+nianhua：docplex.mp.Var对象，表示CHP系统的年化成本。
+eff：浮点数，表示CHP系统的效率。
+csgrgtxr_set：ESS类的实例，表示连接到CHP系统的储能设备的对象。
+
+
+CHP设备（燃气轮机）：
+属性：
+属性 "index"：类属性，用于记录当前创建了多少个 "CHP" 对象。
+方法 "init"：类的构造函数，接受多个参数，用于创建一个 "CHP" 对象。具体参数和作用如下：
+"num_h"：整数型，表示模型中的时段数。
+"mdl"：CPLEX 模型对象，用于定义和求解优化问题。
+"chp_num_max"：整数型，表示燃气轮机的最大数量。
+"chp_price"：实数型，表示燃气轮机的单价。
+"gas_price"：实数型，表示燃气的单价。
+"chp_single_set"：实数型，表示每台燃气轮机的装机容量。
+"drratio"：实数型，表示燃气轮机的日供暖热水占比。
+"set_name"：字符串型，表示该对象在模型中的名称，默认为 "chp"。
+方法内部创建了多个决策变量，包括：
+"chp_set"：实数型，表示燃气轮机的总装机容量。
+"p_chp"：实数型列表，表示燃气轮机在每个时段的发电量。
+"h_chp"：实数型列表，表示燃气轮机在每个时段的供暖热水量。
+"gas_chp"：实数型列表，表示燃气轮机在每个时段的耗气量。
+"chp_open_flag"：二元变量列表，表示燃气轮机在每个时段是否启动。
+"yqyrwater_flag"：二元变量，表示燃气轮机是否用于供暖热水。
+"yqyrsteam_flag"：二元变量，表示燃气轮机是否用于供热蒸汽。
+"chp_run_num"：整数型列表，表示每个时段启动的燃气轮机数量。
+"chp_num"：整数型，表示燃气轮机的数量。
+"nianhua"：实数型，表示燃气轮机的年化投资成本。
+"gas_cost"：实数型，表示燃气费用。
+方法内部还创建了三个 "Exchanger" 对象，分别用于模拟燃气轮机的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部，它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+这些 "Exchanger" 对象用于模拟燃气轮机的余热利用，对于不同的应用方式，其可利用的余热热量也不同。例如，对于供暖热水，需要将燃气轮机的余热通过热交换器传递给暖气或热水系统，从而提高热水或空气的温度；对于供暖蒸汽，需要将燃气轮机的余热通过热交换器传递给蒸汽系统，从而提高蒸汽的温度和压力；对于烟气余热回收，需要将燃气轮机的烟气通过热交换器传递给水系统，从而提高水的温度。
+通过这些 "Exchanger" 对象的定义，可以更加准确地模拟燃气轮机的余热利用过程，从而更加精确地评估系统的性能和经济效益。
+
+约束条件：
+mdl.add_constraint(self.chp_num >= 0)和mdl.add_constraint(self.chp_num <= self.chp_num_max)表示燃气轮机数量chp_num必须在0到最大值chp_num_max之间。
+mdl.add_constraint(self.chp_set == self.chp_num * self.chp_single_set)表示燃气轮机总热功率为每台燃气轮机的热功率与燃气轮机数量的乘积。
+mdl.add_constraints(self.chp_open_flag[h] * self.chp_single_set * self.chp_limit_down_ratio <= self.p_chp[h] for h in hrange)表示每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率，其中chp_open_flag[h]表示燃气轮机h是否开启，chp_limit_down_ratio表示燃气轮机最小热功率与额定热功率之比。
+mdl.add_constraints(self.p_chp[h] <= self.chp_set for h in hrange)和mdl.add_constraints(self.p_chp[h] <= self.chp_open_flag[h] * bigM for h in hrange)表示每个燃气轮机的热功率必须小于等于燃气轮机的总热功率（即满载功率）和燃气轮机开启时的热功率（即满载功率）。
+
+mdl.add_constraints(self.chp_run_num[h] * self.chp_single_set >= self.p_chp[h] for h in hrange)和mdl.add_constraints(self.chp_run_num[h] * self.chp_single_set <= self.p_chp[h] + self.chp_single_set + 1 for h in hrange)表示确定每个时段燃气轮机开启的台数，并且每个时段燃气轮机开启的总功率必须等于燃气轮机的总热功率。
+mdl.add_constraints(0 <= self.chp_run_num[h] for h in hrange)和mdl.add_constraints(self.chp_run_num[h] <= self.chp_num for h in hrange)表示燃气轮机的运行台数必须在0到总台数之间。
+mdl.add_constraints(self.p_chp[h] * self.drratio == self.h_chp[h] for h in hrange)表示燃气轮机的热功率必须等于燃气轮机的电功率乘以热电比。
+mdl.add_constraints(self.gas_chp[h] == self.p_chp[h] / 3.5 for h in hrange) 表示燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5。
+self.gas_cost = mdl.sum(self.gas_chp[h] * self.gas_price[h] for h in hrange): This constraint calculates the total gas cost by summing the product of gas consumption and gas price for all time periods.
+mdl.add_constraint(self.yqyrwater_flag + self.yqyrsteam_flag == 1): This constraint ensures that only one type of heat exchange with the YQYR system (either hot water or steam) is used.
+mdl.add_constraint(self.yqyrwater_set.exch_set <= self.yqyrwater_flag * bigM): This constraint sets the maximum heat exchange capacity for hot water with the YQYR system based on the binary decision variable yqyrwater_flag and a large constant bigM. If yqyrwater_flag is 0, the constraint becomes inactive.
+mdl.add_constraint(self.yqyrsteam_set.exch_set <= self.yqyrsteam_flag * bigM): This constraint sets the maximum heat exchange capacity for steam with the YQYR system based on the binary decision variable yqyrsteam_flag and a large constant bigM. If yqyrsteam_flag is 0, the constraint becomes inactive.
+mdl.add_constraints(self.gts_set.h_exch[h] <= self.h_chp[h] * 0.5 for h in hrange): This constraint limits the maximum heat exchange capacity with the GTS system to 50% of the rated heat output of the CHP units for all time periods.
+mdl.add_constraints(self.yqyrwater_set.h_exch[h] <= self.h_chp[h] * 0.5 for h in hrange): This constraint limits the maximum heat exchange capacity with the YQYR hot water system to 50% of the rated heat output of the CHP units for all time periods.
+mdl.add_constraints(self.yqyrsteam_set.h_exch[h] <= self.h_chp[h] * 0.5 for h in hrange): This constraint limits the maximum heat exchange capacity with the YQYR steam system to 50% of the rated heat output of the CHP units for all time periods.
+mdl.add_constraint(self.nianhua == self.chp_num * self.chp_single_set * self.chp_price / 15 + self.gts_set.nianhua + self.yqyrwater_set.nianhua + self.yqyrsteam_set.nianhua + self.gas_cost * 8760 / self.num_h): This constraint calculates the total annual cost, which includes the cost of operating the CHP units, the GTS system, and the YQYR systems, as well as the gas cost. The calculation is based on the number of CHP units, their rated power output, the unit cost of CHP, the number of hours in a year, and other relevant parameters.
+
+
+Gasgl(燃气锅炉)
+属性：
+num_h：整数，表示时段数。
+mdl：DOcplex 模型对象，表示一个待求解的问题。
+gasgl_set：DOcplex 连续变量，表示燃气锅炉的运行功率，单位为 kW。
+h_gasgl：DOcplex 连续变量列表，表示燃气锅炉在每个时段的热功率，单位为 kW。
+gas_gasgl：DOcplex 连续变量列表，表示燃气锅炉在每个时段的燃气消耗量，单位为 Nm³/h。
+gasgl_set_max：浮点数，表示燃气锅炉的最大运行功率，单位为 kW。
+gasgl_price：浮点数，表示燃气锅炉的单价，单位为元/kWh。
+gas_price：浮点数，表示燃气的单价，单位为元/Nm³。
+eff：浮点数，表示燃气锅炉的热效率。
+gas_cost：DOcplex 连续变量，表示燃气费用，单位为元。
+nianhua：DOcplex 连续变量，表示燃气锅炉的年化费用，单位为元/年。
+约束条件：
+mdl.add_constraint(self.gasgl_set >= 0) 表示天然气锅炉的运行量不能小于零。
+mdl.add_constraint(self.gasgl_set <= self.gasgl_set_max) 表示天然气锅炉的运行量不能大于其最大运行量。
+mdl.add_constraints(self.h_gasgl[h] >= 0 for h in hrange) 表示天然气锅炉的热功率不能小于零。
+mdl.add_constraints(self.h_gasgl[h] <= self.gasgl_set for h in hrange) 表示天然气锅炉的热功率不能大于其运行量。
+mdl.add_constraints(self.gas_gasgl[h] == self.h_gasgl[h] / (10 * self.eff) for h in hrange) 表示天然气锅炉的燃气消耗量等于热功率除以热效率乘以一个常数（这个常数是热功率和燃气消耗量之间的转化系数）。
+self.gas_cost = mdl.sum(self.gas_gasgl[h] * self.gas_price[h] for h in hrange) 表示天然气锅炉的总燃气成本等于燃气消耗量乘以燃气价格之和。
+mdl.add_constraint(self.nianhua == self.gasgl_set * self.gasgl_price / 15 + self.gas_cost * 8760 / self.num_h) 表示天然气锅炉的总年化成本等于投资成本和燃气成本之和。其中，self.nianhua 表示天然气锅炉的总年化成本，self.gasgl_price 表示天然气锅炉的投资成本，8760是一年中的小时数，self.num_h是优化模型中时间段的数量。通过将燃气成本乘以8760/self.num_h，可以将每个时间段内的燃气成本转化为全年的燃气成本，从而与投资成本相加计算总年化成本。
+
+
+Dgl(电锅炉)
+属性：
+num_h：整数类型，表示时间段的数量。
+mdl：一个docplex.mp.model.Model实例，表示数学规划模型。
+dgl_set_max：浮点数类型，表示天然气蒸汽锅炉的最大耗气量。
+dgl_price：浮点数类型，表示天然气蒸汽锅炉的单位投资成本。
+ele_price：浮点数类型的列表，表示每个时间段的电价。
+eff：浮点数类型，表示天然气蒸汽锅炉的热效率。
+set_name：字符串类型，表示天然气蒸汽锅炉的名称。
+dgl_set：表示天然气蒸汽锅炉的耗气量。
+h_dgl：长度为num_h的列表，表示天然气蒸汽锅炉在每个时间段的耗气量。
+ele_dgl：长度为num_h的列表，表示天然气蒸汽锅炉在每个时间段的耗电量。
+ele_cost：表示天然气蒸汽锅炉在所有时间段的总电费。
+nianhua：表示天然气蒸汽锅炉的总年化成本。
+
+约束条件：
+mdl.add_constraint(self.dgl_set >= 0): dgl_set 必须大于等于 0，即 dgl_set 不能为负数。
+mdl.add_constraint(self.dgl_set <= self.gas_set_max): dgl_set 不能大于 gas_set_max，即 dgl_set 不能超过所允许的最大天然气用量。
+mdl.add_constraints(self.h_dgl[h] >= 0 for h in hrange): 对于所有的 h，h_dgl[h] 必须大于等于 0，即 h_dgl[h] 不能为负数。
+mdl.add_constraints(self.h_dgl[h] <= self.dgl_set for h in hrange): 对于所有的 h，h_dgl[h] 不能大于 dgl_set，即 h_dgl[h] 不能超过所允许的最大天然气用量。
+mdl.add_constraints(self.ele_dgl[h] == self.h_dgl[h] / self.eff for h in hrange): 对于所有的 h，ele_dgl[h] 必须等于 h_dgl[h] 除以效率 eff，即 ele_dgl[h] = h_dgl[h] / eff。
+self.ele_cost = mdl.sum(self.ele_dgl[h] * self.ele_price[h] for h in hrange): 计算电费 ele_cost，它等于对所有 h 的 ele_dgl[h] * ele_price[h] 求和。
+mdl.add_constraint(self.nianhua == self.dgl_set * self.dgl_price / 15 + self.ele_cost * 8760 / self.num_h): 年化成本 nianhua 等于 (dgl_set * dgl_price) / 15 加上 (ele_cost * 8760) / num_h。
+
+
+Exchanger（热交换器）:
+属性：
+num_h: 表示小时数的整数变量；
+mdl: 表示建模实例的对象；
+set_max: 表示热交换器最大设置量的变量；
+set_price: 表示每单位热交换器设置量价格的变量；
+k: 表示传热系数的变量；
+set_name: 表示热交换器名称的字符串变量；
+exch_set: 表示热交换器设置量的决策变量；
+nianhua: 表示年化成本的决策变量；
+h_exch: 表示每小时热交换量的决策变量。
+
+约束条件：
+exch_set 的取值范围在 0 到 set_max 之间；
+h_exch 的取值范围在 0 到 exch_set 之间；
+nianhua 表示年化成本，等于 exch_set 乘以 set_price 再除以 15；
+注：这里并没有给出关于传热系数 k 的约束条件，需要根据具体问题再进行添加。
+
+
+AirHeatPump：
+属性：
+num_h: 表示时段数目
+mdl: 表示建立的决策变量和约束条件的数学模型
+set_max: 表示该组件能力上限，例如最大产能或最大供热量
+set_price: 表示该组件的单位产能费用或单位供热费用
+ele_price: 表示电价
+rb_set: 表示该组件在该时段内的产能或供热量
+nianhua: 表示该组件在该时段内的能耗
+ele_cost: 表示该组件在该时段内的电费
+p_rb_cool: 表示该组件在该时段内制冷功率
+cool_rb_out: 表示该组件在该时段内制冷出口温度
+rb_cool_flag: 表示该组件在该时段内是否选择制冷
+p_rb_xcool: 表示该组件在该时段内除湿功率
+xcool_rb_out: 表示该组件在该时段内除湿出口温度
+rb_xcool_flag: 表示该组件在该时段内是否选择除湿
+p_rb_heat: 表示该组件在该时段内供热功率
+heat_rb_out: 表示该组件在该时段内供热出口温度
+rb_heat_flag: 表示该组件在该时段内是否选择供热
+p_rb_xheat: 表示该组件在该时段内加湿功率
+xheat_rb_out: 表示该组件在该时段内加湿出口温度
+rb_xheat_flag: 表示该组件在该时段内是否选择加湿
+ele_rb: 表示该组件在该时段内的用电量
+p_rb: 表示该组件在该时段内的总功率
+cop_rb_cool: 表示该组件制冷时的性能系数
+cop_rb_xcool: 表示该组件除湿时的性能系数
+cop_rb_heat: 表示该组件供热时的性能系数
+cop_rb_xheat: 表示该组件加湿时的性能系数
+
+约束条件：

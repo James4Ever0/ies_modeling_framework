@@ -10,3 +10,4 @@
 
 @REM echo check output at test_log.log
 
+powershell test_cpexample.ps1
