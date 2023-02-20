@@ -524,7 +524,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11.如果regester_period_constraints参数为1，表示将两天之间的储能量连接约束为切断，即
+        11.如果regester_period_constraints参数为1，表示将两天之间的储能量连接约束为切断；如果regester_period_constraints参数不为1，表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2902,15 +2903,29 @@ class Linearization(object):
     index = 0
 
     # bin?
+    # never used.
 
     def product_var_bin(self, model: Model, var_bin, var, bin):
         """
+        
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin ():
+            var ():
+            bin ():
         """
         Linearization.index += 1
         model.add_constraint(var_bin >= 0)
+        # var_bin 大于等于 0
         model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber0)
-        model.add_constraint(var_bin <= var)
+        # 如果bin == 0, var_bin 大于等于 (var - 1*bigNumber0)
+        # 如果bin == 1, var_bin 大于等于 var
+        model.add_constraint(var_bin <= var) # var_bin 小于等于 var
         model.add_constraint(var_bin <= bin * self.bigNumber0)
+        
+        # 如果bin == 0, var_bin 小于等于 0
+        # 如果bin == 1, var_bin 小于等于 var
 
     def product_var_bins(self, model: Model, var_bin, var, bin0, irange):  # bins?
         """
