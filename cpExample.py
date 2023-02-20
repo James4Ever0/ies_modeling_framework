@@ -520,7 +520,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         4.充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
         5.充电功率约束:充电功率大于等于0，小于等于功率转化系统设备，小于等于充电电状态*bigNumber
         6.放电功率约束：放电功率大于等于0，小于等于功率转化系统设备，小于等于放电状态*bigNumber
-        7.
+        7.充电功率和放电功率二选一
+        8.储能量守恒约束：
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
@@ -2897,6 +2898,8 @@ class Linearization(object):
     # bin?
 
     def product_var_bin(self, model: Model, var_bin, var, bin):
+        """
+        """
         Linearization.index += 1
         model.add_constraint(var_bin >= 0)
         model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber0)
