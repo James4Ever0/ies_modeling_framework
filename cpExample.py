@@ -1096,31 +1096,53 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="combinedHeatAndPower_open_flag{0}".format(CombinedHeatAndPower.index),
         )
+        """
+        二元变量列表，表示燃气轮机在每个时段是否启动
+        """
         self.wasteGasAndHeat_water_flag = model.binary_var(
             name="wasteGasAndHeat_water_flag{0}".format(CombinedHeatAndPower.index)
         )
+        """
+        二元变量列表，表示燃气轮机是否用于供暖热水
+        """
         self.wasteGasAndHeat_steam_flag = model.binary_var(
             name="wasteGasAndHeat_steam_flag{0}".format(CombinedHeatAndPower.index)
         )
+        """
+        二元变量列表，表示燃气轮机是否用于供热蒸汽
+        """
         # 机组数量
         self.combinedHeatAndPower_run_num = model.integer_var_list(
             [i for i in range(0, self.num_hour)],
             name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
         )
+        """
+        整数型列表，表示每个时段启动的燃气轮机数量
+        """
         self.combinedHeatAndPower_num = model.integer_var(
             name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
         )
+        """
+        整数型，表示燃气轮机数量
+        """
         self.annualized = model.continuous_var(
             name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
         )
+        """
+        实数型，表示燃气轮机年化投资成本
+        """
         self.gas_cost = model.continuous_var(
             name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
         )  # 燃气费用统计
+        """
+        实数型，表示燃气费用
+        """
         self.combinedHeatAndPower_num_max = combinedHeatAndPower_num_max
         self.combinedHeatAndPower_single_device = combinedHeatAndPower_single_device
         self.combinedHeatAndPower_limit_down_ratio = (
             0.2  # ? devices cannot be turned down more than 20% ? what is this?
         )
+
         self.power_to_heat_ratio = power_to_heat_ratio
 
         # arbitrary settings
@@ -1131,6 +1153,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
+
         self.wasteGasAndHeat_water_device = Exchanger(
             self.num_hour,
             model,
@@ -1138,6 +1161,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
+
         self.wasteGasAndHeat_steam_device = Exchanger(
             self.num_hour,
             model,
@@ -3174,11 +3198,14 @@ class Linearization(object):
         model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
         )
+        # 两变量组在区间内逐元素相减 没有利用的元素组
         model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
         model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
+        # 两变量组在区间内元素都是非负数
         model.add_constraints(
             xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
         )
+        # 当positive_flag[h] == 0，xpositive[h]<=0
         model.add_constraints(
             xnegitive[h] <= bigNumber * (1 - positive_flag[h])
             for h in range(0, num_hour)
