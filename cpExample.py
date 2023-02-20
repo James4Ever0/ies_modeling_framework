@@ -967,7 +967,7 @@ class GasBoiler(IntegratedEnergySystem):
         )
 
 
-# 电锅炉
+# electricBoiler
 class ElectricBoiler(IntegratedEnergySystem):
     index = 0
 
@@ -975,55 +975,55 @@ class ElectricBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        电锅炉_device_max,
-        电锅炉_price,
+        electricBoiler_device_max,
+        electricBoiler_price,
         electricity_price,
         efficiency: float,
-        device_name="电锅炉",
+        device_name="electricBoiler",
     ):
         IntegratedEnergySystem(device_name)
         ElectricBoiler.index += 1
         self.num_hour = num_hour
-        self.电锅炉_device = model.continuous_var(
-            name="电锅炉_device{0}".format(ElectricBoiler.index)
+        self.electricBoiler_device = model.continuous_var(
+            name="electricBoiler_device{0}".format(ElectricBoiler.index)
         )
-        self.heat_电锅炉 = model.continuous_var_list(  # h? heat?
+        self.heat_electricBoiler = model.continuous_var_list(  # h? heat?
             [i for i in range(0, self.num_hour)],
-            name="heat_电锅炉{0}".format(ElectricBoiler.index),
+            name="heat_electricBoiler{0}".format(ElectricBoiler.index),
         )
-        self.electricity_电锅炉 = model.continuous_var_list(
+        self.electricity_electricBoiler = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="electricity_电锅炉{0}".format(ElectricBoiler.index),
+            name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
         )  # 时时耗气量
-        self.gas_device_max = 电锅炉_device_max
-        self.电锅炉_price = 电锅炉_price
+        self.gas_device_max = electricBoiler_device_max
+        self.electricBoiler_price = electricBoiler_price
         self.electricity_price = electricity_price
         self.efficiency = efficiency
         self.electricity_cost = model.continuous_var(
             name="electricity_cost{0}".format(ElectricBoiler.index)
         )
         self.annualized = model.continuous_var(
-            name="电锅炉_annualized{0}".format(ElectricBoiler.index)
+            name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
         )
 
     def constraints_register(self, model: Model):
         hourRange = range(0, self.num_hour)
-        model.add_constraint(self.电锅炉_device >= 0)
-        model.add_constraint(self.电锅炉_device <= self.gas_device_max)
-        model.add_constraints(self.heat_电锅炉[h] >= 0 for h in hourRange)
+        model.add_constraint(self.electricBoiler_device >= 0)
+        model.add_constraint(self.electricBoiler_device <= self.gas_device_max)
+        model.add_constraints(self.heat_electricBoiler[h] >= 0 for h in hourRange)
         model.add_constraints(
-            self.heat_电锅炉[h] <= self.电锅炉_device for h in hourRange
+            self.heat_electricBoiler[h] <= self.electricBoiler_device for h in hourRange
         )  # 天然气蒸汽锅炉
         model.add_constraints(
-            self.electricity_电锅炉[h] == self.heat_电锅炉[h] / self.efficiency
+            self.electricity_electricBoiler[h] == self.heat_electricBoiler[h] / self.efficiency
             for h in hourRange
         )
         self.electricity_cost = model.sum(
-            self.electricity_电锅炉[h] * self.electricity_price[h] for h in hourRange
+            self.electricity_electricBoiler[h] * self.electricity_price[h] for h in hourRange
         )
         model.add_constraint(
             self.annualized
-            == self.电锅炉_device * self.电锅炉_price / 15
+            == self.electricBoiler_device * self.electricBoiler_price / 15
             + self.electricity_cost * 8760 / self.num_hour
         )
 
@@ -2729,8 +2729,8 @@ if __name__ == "__main__":
     hotWaterElectricBoiler = ElectricBoiler(
         num_hour0,
         model1,
-        电锅炉_device_max=10000,
-        电锅炉_price=200,
+        electricBoiler_device_max=10000,
+        electricBoiler_price=200,
         electricity_price=electricity_price0,
         efficiency=0.9,
     )
@@ -2774,7 +2774,7 @@ if __name__ == "__main__":
         + phaseChangeHeatStorage.power_energyStorageSystem[h]
         + municipalHotWater.heat_citySupplied[h]
         + gasBoiler_hotWater.heat_gasBoiler[h]
-        + hotWaterElectricBoiler.heat_电锅炉[h]
+        + hotWaterElectricBoiler.heat_electricBoiler[h]
         + waterStorageTank.power_waterStorageTank_gheat[h]
         for h in range(0, num_hour0)
     )
@@ -2797,7 +2797,7 @@ if __name__ == "__main__":
     # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCooledScrewMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCooledScrewMachine[h]+power_bx[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求
     # 采用线性化技巧，处理为下面的约束.基于每种设备要么制热,要么制冷。
-    # 供冷：风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 相变蓄冷
+    # 供冷：风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
     # 供热：风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
     # heatPump = AirHeatPump(num_hour0, model1, device_max=10000, device_price=1000, electricity_price=electricity_price0)
     # heatPump.constraints_register(model1)
@@ -2870,7 +2870,7 @@ if __name__ == "__main__":
     )
     bx.constraints_register(model1)
 
-    相变蓄冷 = EnergyStorageSystem(
+    phaseChangeRefrigerantStorage = EnergyStorageSystem(
         num_hour0,
         model1,
         energyStorageSystem_device_max=20000,
@@ -2882,7 +2882,7 @@ if __name__ == "__main__":
         stateOfCharge_min=0,
         stateOfCharge_max=1,
     )
-    相变蓄冷.constraints_register(model1)
+    phaseChangeRefrigerantStorage.constraints_register(model1)
 
     lowphaseChangeHeatStorage = EnergyStorageSystem(
         num_hour0,
@@ -2952,7 +2952,7 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_xcool[h]
         + waterCooledScrewMachine.power_waterCooledScrewMachine_xcool[h]
         + waterStorageTank.power_waterStorageTank_cool[h]
-        + 相变蓄冷.power_energyStorageSystem[h]
+        + phaseChangeRefrigerantStorage.power_energyStorageSystem[h]
         == power_xcool[h]
         for h in range(0, num_hour0)
     )
@@ -2961,7 +2961,7 @@ if __name__ == "__main__":
         model1,
         power_xcool,
         linearization.add(
-            num_hour0, model1, waterStorageTank.power_waterStorageTank_cool, 相变蓄冷.power_energyStorageSystem
+            num_hour0, model1, waterStorageTank.power_waterStorageTank_cool, phaseChangeRefrigerantStorage.power_energyStorageSystem
         ),
     )
     # 蓄热逻辑组合
@@ -2983,7 +2983,7 @@ if __name__ == "__main__":
     )
     # 电量平衡
     # electricity_groundSourceHeatPump[h] + electricity_waterCooledScrewMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
-    # power_groundSourceSteamGenerator[h] + power_电锅炉[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
+    # power_groundSourceSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
     # 市政电力电流是双向的，其余市政是单向的。
 
     # what is "chargeaifa" ??
@@ -3008,7 +3008,7 @@ if __name__ == "__main__":
         - combinedHeatAndPower.power_combinedHeatAndPower[h]
         - dieselEngine.power_dieselEngine[h]
         + groundSourceSteamGenerator.power_groundSourceSteamGenerator[h]
-        + hotWaterElectricBoiler.electricity_电锅炉[h]
+        + hotWaterElectricBoiler.electricity_electricBoiler[h]
         + tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit[h]
         + doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit[h]
         == gridNet.total_power[h]
@@ -3042,7 +3042,7 @@ if __name__ == "__main__":
             doubleWorkingConditionUnit,
             groundSourceHeatPump,
             bx,  # ?
-            相变蓄冷,
+            phaseChangeR e,
             lowphaseChangeHeatStorage,
             gridNet,
         ]
@@ -3217,7 +3217,7 @@ if __name__ == "__main__":
                     combinedHeatAndPower.power_combinedHeatAndPower,
                     dieselEngine.power_dieselEngine,
                     groundSourceSteamGenerator.power_groundSourceSteamGenerator,
-                    hotWaterElectricBoiler.electricity_电锅炉,
+                    hotWaterElectricBoiler.electricity_electricBoiler,
                     tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
                     doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
                     gridNet.total_power,
@@ -3233,7 +3233,7 @@ if __name__ == "__main__":
                     "combinedHeatAndPower.power_combinedHeatAndPower",
                     "dieselEngine.power_dieselEngine",
                     "groundSourceSteamGenerator.power_groundSourceSteamGenerator",
-                    "hotWaterElectricBoiler.electricity_电锅炉",
+                    "hotWaterElectricBoiler.electricity_electricBoiler",
                     "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
                     "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
                     "gridNet.total_power",
@@ -3293,7 +3293,7 @@ if __name__ == "__main__":
                     phaseChangeHeatStorage.power_energyStorageSystem,  # phaseChangeHeatStorage？
                     municipalHotWater.heat_citySupplied,
                     gasBoiler_hotWater.heat_gasBoiler,
-                    hotWaterElectricBoiler.heat_电锅炉,
+                    hotWaterElectricBoiler.heat_electricBoiler,
                     waterStorageTank.power_waterStorageTank_gheat,
                 ],
                 "name": [
@@ -3303,7 +3303,7 @@ if __name__ == "__main__":
                     "phaseChangeHeatStorage.power_energyStorageSystem",
                     "municipalHotWater.heat_citySupplied",
                     "gasBoiler_hotWater.heat_gasBoiler",
-                    "hotWaterElectricBoiler.heat_电锅炉",
+                    "hotWaterElectricBoiler.heat_electricBoiler",
                     "waterStorageTank.power_waterStorageTank_gheat",
                 ],
             },
