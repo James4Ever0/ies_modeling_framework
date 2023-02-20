@@ -6,7 +6,6 @@ from typing import List
 # pdoc is different than pdoc3.
 # where's the search box?
 
-
 global_var2 = None
 """
 some other global variable
