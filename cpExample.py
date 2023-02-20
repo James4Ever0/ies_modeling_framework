@@ -516,12 +516,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 每个小时内，设备发电量小于等于装机设备实际值
+        3.储能装置功率转化率约束：
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            register_period_constraints(int):zhu'ce'zho
+            register_period_constraints(int):注册周期约束为1
+            day_node(int):一天时间节点为24
         """
         bigNumber = 1e10
         irange = range(0, self.num_hour)
