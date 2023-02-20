@@ -54,7 +54,7 @@ model1 = Model(name="buses")
 
 debug = 1
 """
-作用：如果设置为1，将把num_hour0乘以year（1）
+作用:如果设置为1,将把num_hour0乘以year(1)
 """
 
 run = 0
@@ -943,7 +943,17 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         efficiency: float,
         device_name="troughPhotoThermal",
     ):
-        
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            troughPhotoThermal_device_max(float): 储能系统设备机组最大装机量
+            troughPhotoThermal_price(float): 储能装置的购置价格。
+            troughPhotoThermalSolidHeatStorage_price(float): 储能装置与电网之间的 PCS 转换价格。
+            intensityOfIllumination0:光照强度
+            eff(float)：储能装置的充放电效率。
+            device_name (str): 可变容量储能系统机组名称，默认为"energyStorageSystem_variable"
+        """
         IntegratedEnergySystem(device_name)
         TroughPhotoThermal.index += 1
         self.num_hour = num_hour
@@ -3067,13 +3077,22 @@ class Linearization(object):
         )
         model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
-        ) # 当y_flag[h] == 0, y[h] 小于等于 x[h]
+        )
+        # 当y_flag[h] == 0, y[h] 小于等于 x[h] + bigNumber
+        # 当y_flag[h] == 1, y[h] 小于等于 x[h]
         model.add_constraints(
             y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
+        # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber
+        # 当y_flag[h] == 1, y[h] 大于等于 x[h]
         model.add_constraints(y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
+        # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
         model.add_constraints(x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        # 当y_flag[h] == 0, x[h] 小于等于 0
+        # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
         model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
+        # y[h] 是非负数
 
     def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]):
         """
