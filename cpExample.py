@@ -1188,6 +1188,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         9.燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5
         10.所有时间段的天然气消费和天然气价格的乘积相加来计算总的天然气成本
         11.确保了与余气余热系统的热交换只使用一种类型(热水或蒸汽)
+        12.根据二元决策变量yqyrwater_flag和一个大常数bigM来设定与余气余热系统的最大热交换能力。如果yqyrwater_flag为0，该约束就会失去作用。
+        13.
         
 
         Args:
