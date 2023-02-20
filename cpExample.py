@@ -1193,9 +1193,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         14.GTS系统的最大热交换能力限制在所有时间段内热电联产机组额定热输出的50%
         15.余气余热热水系统的最大换热量限制为所有时段热电联产机组额定热出力的50%
         16.余气余热蒸汽系统的最大换热能力限制为所有时段热电联产机组额定热出力的50%
-        17.
+        17.计算年总成本,包括运行CHP机组、GTS系统和YQYR系统的成本以及燃气成本。计算的依据是CHP机组的数量、其额定功率出力、CHP的单位成本、一年中的小时数等相关参数
         
-
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
@@ -1308,6 +1307,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
 # 燃气锅炉：蒸汽，hotWater
 class GasBoiler(IntegratedEnergySystem):
+    """
+    燃气锅炉类
+    """
     index = 0
 
     def __init__(
@@ -1320,6 +1322,17 @@ class GasBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name="gasBoiler",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            gasBoiler_num_max(int)：表示燃气锅炉的最大数量。
+            gasBoiler_price(float)：表示燃气锅炉的单价。
+            gas_price(float)：表示燃气的单价。
+            combinedHeatAndPower_single_set(float)：表示每台燃气轮机的装机容量。
+            drratio(float)：表示燃气轮机的热电比。
+            device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
+        """
         IntegratedEnergySystem(device_name)
         GasBoiler.index += 1
         self.num_hour = num_hour
@@ -2779,7 +2792,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数电价数组 数组形状是(num_hour,) 元su0.5
+            常数电价数组 数组形状是`(num_hour,)` 元素全为`0.5`
         """
         electricity_price = np.ones(num_hour, dtype=float) * 0.5
         return electricity_price
@@ -2792,7 +2805,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数燃气价格数组 数组形状是(num_hour,) 元 2.77
+            常数燃气价格数组 数组形状是`(num_hour,)` 元 元素全为`2.77`
         """
         gas_price = np.ones(num_hour, dtype=float) * 2.77
         return gas_price
@@ -2805,7 +2818,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数燃气价格数组 数组形状是(num_hour,) 元素全为2.77
+            常数燃气价格数组 数组形状是`(num_hour,)` 元素全为`2.77`
         """
         municipalHotWater_price = np.ones(num_hour, dtype=float) * 0.3
         return municipalHotWater_price
@@ -2818,7 +2831,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数蒸气价格 0.3
+            常数蒸气价格数组 数组形状是`(num_hour,)` 元素全为`0.3`
         """
         municipalSteam = np.ones(num_h, dtype=float) * 0.3
         return municipalSteam
@@ -2836,6 +2849,8 @@ class LoadGet(object):
         Args:
             num_hour (int): 一天小时数
         
+        Return:
+            常数冷负荷数组 数组形状是`(num_hour,)` 元素全为`10000`
         """
         cool_load = np.ones(num_hour, dtype=float) * 10000
         return cool_load
@@ -2843,6 +2858,12 @@ class LoadGet(object):
     def get_heat_load(self, num_hour:int):
         """
         获取逐小时热负荷数据
+        
+        Args:
+            num_hour (int): 一天小时数
+        
+        Return:
+            常数热负荷数组 数组形状是`(num_hour,)` 元素全为`10000`
         """
         heat_load = np.ones(num_hour, dtype=float) * 10000
         return heat_load
@@ -2850,6 +2871,12 @@ class LoadGet(object):
     def get_power_load(self, num_hour:int):
         """
         获取逐小时电负荷数据
+        
+        Args:
+            num_hour (int): 一天小时数
+        
+        Return:
+            常数电负荷数组 数组形状是`(num_hour,)` 元素全为`10000`
         """
         power_load = np.ones(num_hour, dtype=float) * 10000
         return power_load
@@ -2857,6 +2884,12 @@ class LoadGet(object):
     def get_steam_load(self, num_hour:int):
         """
         获取逐小时蒸汽负荷数据
+        
+        Args:
+            num_hour (int): 一天小时数
+        
+        Return:
+            常数蒸汽负荷数组 数组形状是`(num_hour,)` 元素全为`10000`
         """
         steam_load = np.ones(num_hour, dtype=float) * 10000
         return steam_load
