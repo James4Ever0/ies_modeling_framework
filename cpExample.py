@@ -784,7 +784,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )  # 放电
-        
+        """
+        模型中的二元变量列表，长度为 num_h,表示每小时储能装置是否处于放电状态。
+        """
         # 效率
         self.efficiency = efficiency
         self.conversion_rate_max = conversion_rate_max  # conversion rate? charge rate?
@@ -795,6 +797,27 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
     def constraints_register(
         self, model: Model, register_period_constraints=1, day_node=24
     ):
+        """
+        定义机组内部约束
+
+        1. 机组设备数大于等于0
+        2. 机组设备总数不得大于最大装机量
+        3.可变容量储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
+        4.充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
+        5.充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
+        6.放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
+        7.充电功率和放电功率二选一
+        8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
+        9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
+        10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
+        11.如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            register_period_constraints(int):注册周期约束为1
+            day_node(int):一天时间节点为24
+        """
         bigNumber = 1e10
         irange = range(0, self.num_hour)
         model.add_constraints(
@@ -2991,6 +3014,7 @@ class Linearization(object):
             var_bin (List[Var]): 受控变量组
             var (List[Var]): 原变量组
             bin (List[BinaryVarType]): 控制变量组
+            irange (Iterable): 整数区间
         """
         Linearization.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in irange)
@@ -3001,9 +3025,19 @@ class Linearization(object):
         model.add_constraints(var_bin[i] <= bin0[i] * self.bigNumber0 for i in irange)
 
     def product_var_back_bins(
-        self, model: Model, var_bin, var, bin0, irangeback
+        self, model: Model, var_bin:List[Var], var:List[Var], bin0:List[BinaryVarType], irangeback:Iterable
     ):  # back?
         """
+        对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`，则`var_bin[i - 1] == 0`
+        
+        每添加一个约束组，编号加一
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin (List[Var]): 受控变量组
+            var (List[Var]): 原变量组
+            bin (List[BinaryVarType]): 控制变量组
+            irange (Iterable): 整数区间
         """
         Linearization.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in irangeback)
