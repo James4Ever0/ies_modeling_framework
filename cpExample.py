@@ -647,6 +647,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             )
 
     def total_cost(self, solution: SolveSolution):
+        """
+        Args：
+            solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
+
+        Return:
+            购买设备总费用 = 储能系统设备数*储能设备设备价格+功率转化设备数*功率转化设备价格
+        """
         return (
             solution.get_value(self.energyStorageSystem_device)
             * self.energyStorageSystem_price
@@ -658,7 +665,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 # 可变容量储能
 class EnergyStorageSystemVariable(IntegratedEnergySystem):
     """
-    可变容量储能
+    可变容量储能类，适用于储能机组
     """
     index = 0
 
@@ -676,6 +683,20 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem_variable",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
+            energyStorageSystem_price(float)：储能装置的购置价格。
+            powerConversionSystem_price：储能装置与电网之间的 PCS 转换价格。
+            eff：储能装置的充放电效率。
+            conversion_rate_max：储能装置的最大倍率。
+            energyStorageSystem_init：储能装置的初始能量。
+            stateOfCharge_min：储能装置的最小储能量百分比。
+            stateOfCharge_max：储能装置的最大储能量百分比。
+            device_name (str): 储能系统机组名称，默认为"energyStorageSystem"
+        """
         IntegratedEnergySystem(device_name)
         EnergyStorageSystemVariable.index += 1
 
@@ -2907,7 +2928,7 @@ class Linearization(object):
 
     def product_var_bin(self, model: Model, var_bin, var, bin):
         """
-        
+        通过`bin`的控制，
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2923,9 +2944,8 @@ class Linearization(object):
         # 如果bin == 1, var_bin 大于等于 var
         model.add_constraint(var_bin <= var) # var_bin 小于等于 var
         model.add_constraint(var_bin <= bin * self.bigNumber0)
-        
         # 如果bin == 0, var_bin 小于等于 0
-        # 如果bin == 1, var_bin 小于等于 var
+        # 如果bin == 1, var_bin 小于等于 1*bigNumber0
 
     def product_var_bins(self, model: Model, var_bin, var, bin0, irange):  # bins?
         """
