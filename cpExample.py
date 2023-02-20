@@ -1408,7 +1408,7 @@ class GasBoiler(IntegratedEnergySystem):
 # electricBoiler
 class ElectricBoiler(IntegratedEnergySystem):
     """
-        连续变量，表示燃气锅炉的年化费用
+    电锅炉类
     """
     index = 0
 
@@ -1422,6 +1422,16 @@ class ElectricBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name="electricBoiler",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            electricBoiler_num_max(int)：表示电锅炉的最大数量。
+            electricBoiler_price(float)：表示电锅炉的单价。
+            electricity_price(float)：表示电的单价。
+            efficiency(float):电锅炉的热效率
+            device_name (str): 电锅炉机组名称，默认为"electricBoiler"
+        """
         IntegratedEnergySystem(device_name)
         ElectricBoiler.index += 1
         self.num_hour = num_hour
@@ -2924,6 +2934,7 @@ class LoadGet(object):
 
 class Linear_absolute(object):  # absolute?
     """
+    带绝对值的线性约束类
     """
     bigNumber0 = 1e10
     index = 0
@@ -2933,7 +2944,7 @@ class Linear_absolute(object):  # absolute?
         Args:
             model (docplex.mp.model.Model): 求解模型实例
             x ():
-            irange (Iterable):
+            irange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
         self.b_positive = model.binary_var_list(
@@ -3001,11 +3012,15 @@ class Linear_absolute(object):  # absolute?
         )
         # x[i] == x_positive[i] - x_negitive[i] 
         # 也就是说，如果b_positive[i]==1，x[i] == x_positive[i]
-        # 如果b_positive[i]==0，x[i] == x_negitive[i]
+        # 如果b_positive[i]==0，x[i] == -x_negitive[i]
         model.add_constraints(
             self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
             for i in self.irange
         )
+        
+        # absolute_x[i] == x_positive[i] + x_negitive[i] 
+        # 也就是说，如果b_positive[i]==1，absolute_x[i] == x_positive[i]
+        # 如果b_positive[i]==0，absolute_x[i] == x_negitive[i]
 
 
 # 适用于municipalSteam，municipalHotWater
@@ -3174,6 +3189,7 @@ class GridNet(IntegratedEnergySystem):
 
 class Linearization(object):
     """
+    线性化约束类
     """
     bigNumber0 = 1e10
     """
@@ -3336,8 +3352,8 @@ class Linearization(object):
         """
         对于区间`range(0, num_hour)`的每个数`h`，`x[h] == xpositive[h] - xnegitive[h]`，`positive_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
         
-        1. `xpositive[h] == 0`，`0 <= xnegitive[h] <= bigNumber`，此时`positive_flag[h] == 0`
-        2. `0 <= xpositive[h] <= bigNumber`，`xnegitive[h] == 0`，此时`positive_flag[h] == 1`
+        1. `xpositive[h] == 0`，`0 <= xnegitive[h] <= bigNumber`，此时`positive_flag[h] == 0`，`x[h] == -xnegitive[h]`
+        2. `0 <= xpositive[h] <= bigNumber`，`xnegitive[h] == 0`，此时`positive_flag[h] == 1`，`x[h] == xpositive[h]`
         
         每添加一个约束组，编号加一
         
