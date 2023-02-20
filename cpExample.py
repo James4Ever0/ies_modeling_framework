@@ -522,8 +522,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         6.放电功率约束：放电功率大于等于0，小于等于功率转化系统设备，小于等于放电状态*bigNumber
         7.充电功率和放电功率二选一
         8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
-        9.最大和最小储能量约束:
-        4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
+        9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
+        10. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -690,6 +690,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )
+        """
+        """
         # 充电功率
         self.power_energyStorageSystem_charge = model.continuous_var_list(
             [i for i in range(0, num_hour)],
