@@ -1186,17 +1186,20 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         7.燃气轮机的运行台数必须在0到总台数之间
         8.燃气轮机的热功率必须等于燃气轮机的电功率乘以热电比
         9.燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5
-        10.
+        10.所有时间段的天然气消费和天然气价格的乘积相加来计算总的天然气成本
+        11.确保了与余气余热系统的热交换只使用一种类型(热水或蒸汽)
         
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
+        
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.combinedHeatAndPower_num >= 0)
         model.add_constraint(
             self.combinedHeatAndPower_num <= self.combinedHeatAndPower_num_max
         )
+        
         model.add_constraint(
             self.combinedHeatAndPower_device
             == self.combinedHeatAndPower_num * self.combinedHeatAndPower_single_device
@@ -2815,6 +2818,8 @@ class ResourceGet(object):
         return municipalSteam
 
 
+
+"""""""""
 class LoadGet(object):
     """
     获取
