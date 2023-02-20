@@ -1053,12 +1053,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            "combinedHeatAndPower_num_max"(int)：表示燃气轮机的最大数量。
-            "combinedHeatAndPower_price"：表示燃气轮机的单价。
-            "gas_price"：实数型，表示燃气的单价。
-            "combinedHeatAndPower_single_set"：实数型，表示每台燃气轮机的装机容量。
-            "drratio"：实数型，表示燃气轮机的日供暖热水占比。
-            device_name (str): 槽式光热机组名称，默认为"troughPhotoThermal"
+            combinedHeatAndPower_num_max(int)：表示燃气轮机的最大数量。
+            combinedHeatAndPower_price(float)：表示燃气轮机的单价。
+            gas_price(float)：表示燃气的单价。
+            combinedHeatAndPower_single_set(float)：表示每台燃气轮机的装机容量。
+            drratio(float)：表示燃气轮机的日供暖热水占比。
+            device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
         CombinedHeatAndPower.index += 1
@@ -1066,18 +1066,30 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.combinedHeatAndPower_device = model.continuous_var(
             name="combinedHeatAndPower_device{0}".format(CombinedHeatAndPower.index)
         )
+        """
+        实数型，表示燃气轮机的总装机容量
+        """
         self.power_combinedHeatAndPower = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
+        """
+        实数型列表，表示燃气轮机在每个时段的发电量
+        """
         self.heat_combinedHeatAndPower = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
+        """
+        实数型列表，表示燃气轮机在每个时段的供暖热水量
+        """
         self.gas_combinedHeatAndPower = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )  # 时时耗气量? 时时是什么意思 实时？
+        """
+        实数型列表，表示燃气轮机在每个时段的耗气量
+        """
         self.combinedHeatAndPower_price = combinedHeatAndPower_price
         self.gas_price = gas_price
         self.combinedHeatAndPower_open_flag = model.binary_var_list(
@@ -3083,7 +3095,7 @@ class Linearization(object):
 
     def max_zeros(self, num_hour: int, model: Model, x:List[Var], y:List[Var]):  # max?
         """
-        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，`y_flag[h]`是约定以下两种情况有且只有一种出现：
+        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，`y_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
         
         1. `y[h] == 0`，`-bigNumber <= x[h] <= 0`，此时`y_flag[h] == 0`
         2. `y[h] == x[h]`，此时`y_flag[h] == 1`
@@ -3122,6 +3134,18 @@ class Linearization(object):
 
     def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]):
         """
+        对于区间`range(0, num_hour)`的每个数`h`，将两个变量`x1[h]`，`x2[h]`组合为一个变量`add_y[h]`
+        
+        每添加一个约束组，编号加一
+        
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x1 (List[Var]): 变量组x1
+            x2 (List[Var]): 变量组x2
+            
+        Return:
+            add_y (List[Var]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
         """
         # looks like two lists.
         Linearization.index += 1
