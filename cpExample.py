@@ -1446,12 +1446,15 @@ class ElectricBoiler(IntegratedEnergySystem):
             name="heat_electricBoiler{0}".format(ElectricBoiler.index),
         )
         """
-        电锅炉机组等效单位设备数 大于零的实数
+        连续变量列表，表示电锅炉在每个时段的热功率
         """
         self.electricity_electricBoiler = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
         )  # 时时耗气量
+        """
+        连续变量列表，表示电锅炉在每个时段的电消耗量
+        """
         self.gas_device_max = electricBoiler_device_max
         self.electricBoiler_price = electricBoiler_price
         self.electricity_price = electricity_price
@@ -1459,6 +1462,9 @@ class ElectricBoiler(IntegratedEnergySystem):
         self.electricity_cost = model.continuous_var(
             name="electricity_cost{0}".format(ElectricBoiler.index)
         )
+        """
+        连续变量列表，表示电锅炉在每个时段的电消耗量
+        """
         self.annualized = model.continuous_var(
             name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
         )
@@ -2951,7 +2957,7 @@ class Linear_absolute(object):  # absolute?
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]):
+            x (List[Var]): `xpositive`和`xnegitive`在区间`irange`内逐元素相减得到的变量组`x`
             irange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
