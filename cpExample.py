@@ -36,7 +36,8 @@ from result_processlib import Value
 from docplex.mp.dvar import Var
 from typing import List
 
-from plot_arr import IGESPlot as IntegratedEnergySystemPlot
+# we prefer not to plot this.
+# from plot_arr import IGESPlot as IntegratedEnergySystemPlot
 
 localtime1 = time.time()
 
@@ -673,9 +674,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        energyStorageSystem_device_max: int,
-        energyStorageSystem_price: int,
-        powerConversionSystem_price: int,
+        energyStorageSystem_device_max: float,
+        energyStorageSystem_price: float,
+        powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
         energyStorageSystem_init: int,
@@ -689,13 +690,13 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
             energyStorageSystem_price(float)：储能装置的购置价格。
-            powerConversionSystem_price：储能装置与电网之间的 PCS 转换价格。
-            eff：储能装置的充放电效率。
-            conversion_rate_max：储能装置的最大倍率。
+            powerConversionSystem_price(float)：储能装置与电网之间的 PCS 转换价格。
+            eff(float)：储能装置的充放电效率。
+            conversion_rate_max(float)：储能装置的最大倍率。
             energyStorageSystem_init：储能装置的初始能量。
-            stateOfCharge_min：储能装置的最小储能量百分比。
-            stateOfCharge_max：储能装置的最大储能量百分比。
-            device_name (str): 储能系统机组名称，默认为"energyStorageSystem"
+            stateOfCharge_min(float)：储能装置的最小储能量百分比。
+            stateOfCharge_max(float)：储能装置的最大储能量百分比。
+            device_name (str): 可变容量储能系统机组名称，默认为"energyStorageSystem_variable"
         """
         IntegratedEnergySystem(device_name)
         EnergyStorageSystemVariable.index += 1
@@ -2928,7 +2929,7 @@ class Linearization(object):
 
     def product_var_bin(self, model: Model, var_bin, var, bin):
         """
-        通过`bin`的控制，
+        通过二进制变量`bin`的控制，当`bin == 1`，则`var_bin == var`；当`bin == 0`，则`var_bin == 0`
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
