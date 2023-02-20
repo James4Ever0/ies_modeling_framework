@@ -32,9 +32,12 @@ import math
 import matplotlib.pyplot as plt
 
 # from matplotlib import style
-from result_processlib import Value
+from result_processlib import Value #?
 from docplex.mp.dvar import Var
 from typing import List
+
+from docplex.mp.vartype import VarType, BinaryVarType, IntegerVarType, \
+    ContinuousVarType, SemiContinuousVarType, SemiIntegerVarType
 
 # we prefer not to plot this.
 # from plot_arr import IGESPlot as IntegratedEnergySystemPlot
@@ -415,12 +418,12 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
             energyStorageSystem_price(float)：储能装置的购置价格。
-            powerConversionSystem_price：储能装置与电网之间的 PCS 转换价格。
-            eff：储能装置的充放电效率。
-            conversion_rate_max：储能装置的最大倍率。
-            energyStorageSystem_init：储能装置的初始能量。
-            stateOfCharge_min：储能装置的最小储能量百分比。
-            stateOfCharge_max：储能装置的最大储能量百分比。
+            powerConversionSystem_price(float)：储能装置与电网之间的 PCS 转换价格。
+            eff(float)：储能装置的充放电效率。
+            conversion_rate_max(float)：储能装置的最大倍率。
+            energyStorageSystem_init(int)：储能装置的初始能量。
+            stateOfCharge_min(float)：储能装置的最小储能量百分比。
+            stateOfCharge_max(float)：储能装置的最大储能量百分比。
             device_name (str): 储能系统机组名称，默认为"energyStorageSystem"
         """
         IntegratedEnergySystem(device_name)
@@ -485,7 +488,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )  # 充电
         """
-        模型中的二元变量列表，长度为 num_hour，表示每小时储能装置是否处于充电状态。
+        模型中的二元变量列表，长度为 num_hour,表示每小时储能装置是否处于充电状态。
         """
         self.discharge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -494,7 +497,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )  # 放电
         """
-        模型中的二元变量列表，长度为 num_hour，表示每小时储能装置是否处于放电状态。
+        模型中的二元变量列表，长度为 num_hour,表示每小时储能装置是否处于放电状态。
         """
         # 效率
         self.efficiency = efficiency
@@ -519,13 +522,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         2. 机组设备总数不得大于最大装机量
         3.储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备，且功率转化系统设备大于等于0
         4.充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
-        5.充电功率约束:充电功率大于等于0，小于等于功率转化系统设备，小于等于充电电状态*bigNumber
-        6.放电功率约束：放电功率大于等于0，小于等于功率转化系统设备，小于等于放电状态*bigNumber
+        5.充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
+        6.放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
         7.充电功率和放电功率二选一
         8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11.如果regester_period_constraints参数为1，表示将两天之间的储能量连接约束为切断；如果regester_period_constraints参数不为1，表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        11.如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
         
 
         Args:
@@ -649,7 +652,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
     def total_cost(self, solution: SolveSolution):
         """
-        Args：
+        Args:
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
 
         Return:
@@ -689,11 +692,11 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price(float)：储能装置的购置价格。
-            powerConversionSystem_price(float)：储能装置与电网之间的 PCS 转换价格。
+            energyStorageSystem_price(float): 储能装置的购置价格。
+            powerConversionSystem_price(float): 储能装置与电网之间的 PCS 转换价格。
             eff(float)：储能装置的充放电效率。
-            conversion_rate_max(float)：储能装置的最大倍率。
-            energyStorageSystem_init：储能装置的初始能量。
+            conversion_rate_max(float): 储能装置的最大倍率。
+            energyStorageSystem_init: 储能装置的初始能量。
             stateOfCharge_min(float)：储能装置的最小储能量百分比。
             stateOfCharge_max(float)：储能装置的最大储能量百分比。
             device_name (str): 可变容量储能系统机组名称，默认为"energyStorageSystem_variable"
@@ -707,6 +710,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )
+        """
+        可变容量储能系统机组等效单位设备数 大于零的实数
+        """
         self.power_energyStorageSystem = model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,
@@ -2922,20 +2928,25 @@ class Linearization(object):
     """
     """
     bigNumber0 = 1e10
-    index = 0
+    """
+    """
+    index:int = 0
+    """
+    线性约束条件编号
+    """
 
     # bin?
     # never used.
 
-    def product_var_bin(self, model: Model, var_bin, var, bin):
+    def product_var_bin(self, model: Model, var_bin:Var, var:Var, bin:BinaryVarType):
         """
         通过二进制变量`bin`的控制，当`bin == 1`，则`var_bin == var`；当`bin == 0`，则`var_bin == 0`
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            var_bin ():
-            var ():
-            bin ():
+            var_bin (Var): 受控变量
+            var (Var): 原变量
+            bin (BinaryVarType): 控制变量
         """
         Linearization.index += 1
         model.add_constraint(var_bin >= 0)
