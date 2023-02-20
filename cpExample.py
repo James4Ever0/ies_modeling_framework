@@ -1177,9 +1177,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         定义机组内部约束
 
-        1. 0≦机组设备数≦最大装机量
-        2. 燃气轮机装机量=燃气轮机机组数
-        3.
+        1. 0≦机组设备数≦最大设备量
+        2. 燃气轮机装机量=燃气轮机机组数*燃气轮机的装机容量
+        3.每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率
         
 
         Args:
@@ -2808,19 +2808,30 @@ class ResourceGet(object):
 
 
 class LoadGet(object):
+    """
+    获取
+    """
     def get_cool_load(self, num_hour):
+        """
+        """
         cool_load = np.ones(num_hour, dtype=float) * 10000
         return cool_load
 
     def get_heat_load(self, num_hour):
+        """
+        """
         heat_load = np.ones(num_hour, dtype=float) * 10000
         return heat_load
 
     def get_power_load(self, num_hour):
+        """
+        """
         power_load = np.ones(num_hour, dtype=float) * 10000
         return power_load
 
     def get_steam_load(self, num_hour):
+        """
+        """
         steam_load = np.ones(num_hour, dtype=float) * 10000
         return steam_load
 
@@ -3203,6 +3214,9 @@ class Linearization(object):
     ):
         """
         对于区间`range(0, num_hour)`的每个数`h`，`x[h] == xpositive[h] - xnegitive[h]`，`positive_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        
+        1. `xpositive[h] == 0`，`0 <= xnegitive[h] <= bigNumber`，此时`positive_flag[h] == 0`
+        2. `0 <= xpositive[h] <= bigNumber`，`xnegitive[h] == 0`，此时`positive_flag[h] == 1`
         
         每添加一个约束组，编号加一
         
