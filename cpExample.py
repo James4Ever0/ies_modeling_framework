@@ -523,7 +523,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         7.充电功率和放电功率二选一
         8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
-        10. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
+        10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
+        11.如果regester_period_constraints参数为1，表示将两天之间的储能量连接约束为切断，即
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2895,6 +2896,8 @@ class GridNet(IntegratedEnergySystem):
 
 
 class Linearization(object):
+    """
+    """
     bigNumber0 = 1e10
     index = 0
 
@@ -2910,6 +2913,8 @@ class Linearization(object):
         model.add_constraint(var_bin <= bin * self.bigNumber0)
 
     def product_var_bins(self, model: Model, var_bin, var, bin0, irange):  # bins?
+        """
+        """
         Linearization.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in irange)
         model.add_constraints(
@@ -2921,6 +2926,8 @@ class Linearization(object):
     def product_var_back_bins(
         self, model: Model, var_bin, var, bin0, irangeback
     ):  # back?
+        """
+        """
         Linearization.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in irangeback)
         model.add_constraints(
@@ -2933,6 +2940,8 @@ class Linearization(object):
         )
 
     def max_zeros(self, num_hour: int, model: Model, x, y):  # max?
+        """
+        """
         Linearization.index += 1
         y_flag = model1.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -2949,6 +2958,8 @@ class Linearization(object):
         model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
 
     def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]):
+        """
+        """
         # looks like two lists.
         Linearization.index += 1
         add_y = model1.continuous_var_list(
@@ -2965,6 +2976,8 @@ class Linearization(object):
         xpositive: List[Var],
         xnegitive: List[Var],
     ):
+        """
+        """
         Linearization.index += 1
         bigNumber = 1e10
         positive_flag = model1.binary_var_list(
