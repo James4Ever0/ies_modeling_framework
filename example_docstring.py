@@ -24,7 +24,7 @@ def some_random_method(param_1:str,param_2, kw_param_1=None) -> None:
     Args:
         param_1 (str): _parameter at position 1_
         param_2 (str): _parameter at position 2_
-        kw_param_1 (Any, optional): _keyword parameter 1_. Defaults to None.
+        kw_param_1 (Any, optional): _keyword parameter 1_.  $$\\text{ess_set} \leq \\text{ess_set_max}$$, $$\\text{ess_set} \geq 0$$
     
     Return:
         Nothing returned.
