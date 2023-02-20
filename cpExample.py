@@ -518,8 +518,9 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         2. 机组设备总数不得大于最大装机量
         3.储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备，且功率转化系统设备大于等于0
         4.充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
-        5.充电功率约束:充电功率大于等于0，小于等于功率转化系统设备
-        6.放电功率约束：
+        5.充电功率约束:充电功率大于等于0，小于等于功率转化系统设备，小于等于充电电状态*bigNumber
+        6.放电功率约束：放电功率大于等于0，小于等于功率转化系统设备，小于等于放电状态*bigNumber
+        7.
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
@@ -2577,27 +2578,28 @@ class ResourceGet(object):
     # light intensity ranging from 0 to 1? not even reaching 0.3
     def get_radiation(self, path: str, num_hour: int) -> np.ndarray:
         """
-        从numpy二维数列文件加载光照资源，超过一年的，将一年数据进行重复
+        从numpy二维数列文件加载每小时光照资源，如果需要超过一年光照资源数据，将第一年数据进行重复堆叠
         
         Args:
             path (str): 用于给出完整的文件路径
             num_hour (int): 一天小时数
         
         Return:
-            
+            intensityOfIllumination (np.array): 逐小时光照强度数据，数组形状为`(num_hour,)`
         """
         if os.path.exists(path):
             raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
             intensityOfIllumination1 = radiation
             for loop in range(1, math.ceil(num_hour / 8760)): # if num_hour=24, then this is 1/365, we are not undergoing this process.
-                intensityOfIllumination1 = np.concatenate( # repeating the intensity of illumination if needed.
+                intensityOfIllumination1 = np.concatenate( # repeating the intensity of illumination if num_hour is longer than 8760
                     (intensityOfIllumination1, radiation), axis=0
                 )
 
             intensityOfIllumination2 = (
                 intensityOfIllumination1[0:num_hour] / 1000
             )  # 转化为kW, divide by one thousand
+            # also strip redundant data.
             return intensityOfIllumination2  # shape: 1d array.
         else:
             raise Exception("File not extists.")
