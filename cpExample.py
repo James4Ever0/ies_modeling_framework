@@ -1329,9 +1329,8 @@ class GasBoiler(IntegratedEnergySystem):
             gasBoiler_num_max(int)：表示燃气锅炉的最大数量。
             gasBoiler_price(float)：表示燃气锅炉的单价。
             gas_price(float)：表示燃气的单价。
-            combinedHeatAndPower_single_set(float)：表示每台燃气轮机的装机容量。
-            drratio(float)：表示燃气轮机的热电比。
-            device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
+            efficiency(float):燃气锅炉的热效率
+            device_name (str): 燃气锅炉机组名称，默认为"gasBoiler"
         """
         IntegratedEnergySystem(device_name)
         GasBoiler.index += 1
@@ -1339,15 +1338,23 @@ class GasBoiler(IntegratedEnergySystem):
         self.gasBoiler_device = model.continuous_var(
             name="gasBoiler_device{0}".format(GasBoiler.index)
         )
-
+        """
+        燃气锅炉机组等效单位设备数 大于零的实数
+        """
         self.heat_gasBoiler = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_gasBoiler{0}".format(GasBoiler.index),
         )
+        """
+        连续变量列表，表示燃气锅炉在每个时段的热功率
+        """
         self.gas_gasBoiler = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_gasBoiler{0}".format(GasBoiler.index),
         )  # 时时耗气量
+        """
+        连续变量列表，表示燃气锅炉在每个时段的燃气消耗量
+        """
         self.gasBoiler_device_max = gasBoiler_device_max
         self.gasBoiler_price = gasBoiler_price
         self.gas_price = gas_price
@@ -1355,6 +1362,7 @@ class GasBoiler(IntegratedEnergySystem):
         self.gas_cost = model.continuous_var(
             name="gasBoiler_gas_cost{0}".format(GasBoiler.index)
         )
+        
         self.annualized = model.continuous_var(
             name="gasBoiler_annualized{0}".format(GasBoiler.index)
         )
@@ -2812,13 +2820,13 @@ class ResourceGet(object):
 
     def get_municipalHotWater_price(self, num_hour: int):
         """
-        一天不同小时的燃气价格
+        一天不同小时的热水价格
         
         Args:
             num_hour (int): 一天小时数
         
         Return:
-            常数燃气价格数组 数组形状是`(num_hour,)` 元素全为`2.77`
+            常数热水价格数组 数组形状是`(num_hour,)` 元素全为`0.3`
         """
         municipalHotWater_price = np.ones(num_hour, dtype=float) * 0.3
         return municipalHotWater_price
@@ -2896,34 +2904,57 @@ class LoadGet(object):
 
 
 class Linear_absolute(object):  # absolute?
+    """
+    """
     bigNumber0 = 1e10
     index = 0
 
-    def __init__(self, model: Model, x, irange):  # irange?
+    def __init__(self, model: Model, x, irange:Iterable):  # irange?
+        """
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            x ():
+            irange (Iterable):
+        """
         Linearization.index += 1  # 要增加变量
         self.b_positive = model.binary_var_list(
             [i for i in irange],
             name="b_positive_absolute{0}".format(Linear_absolute.index),
         )
+        """
+        """
         self.b_negitive = model.binary_var_list(
             [i for i in irange],
             name="b_negitive_absolute{0}".format(Linear_absolute.index),
         )
+        """
+        """
         self.x_positive = model.continuous_var_list(
             [i for i in irange],
             name="x_positive_absolute{0}".format(Linear_absolute.index),
         )
+        """
+        """
         self.x_negitive = model.continuous_var_list(
             [i for i in irange],
             name="x_negitive_absolute{0}".format(Linear_absolute.index),
         )
+        """
+        """
         self.absolute_x = model.continuous_var_list(
             [i for i in irange], name="absolute_x{0}".format(Linear_absolute.index)
         )
+        """
+        """
         self.irange = irange
         self.x = x
 
     def absolute_add_constraints(self, model: Model):
+        """
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         model.add_constraints(
             self.b_positive[i] + self.b_negitive[i] == 1 for i in self.irange
         )
