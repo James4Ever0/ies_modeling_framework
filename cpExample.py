@@ -1180,6 +1180,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         1. 0≦机组设备数≦最大设备量
         2. 燃气轮机装机量=燃气轮机机组数*燃气轮机的装机容量
         3.每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率
+        4.每个燃气轮机的热功率必须小于等于燃气轮机的总热功率
+        5.每个燃气轮机的热功率必须小于等于燃气轮机开启时的热功率
         
 
         Args:
@@ -1206,6 +1208,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.power_combinedHeatAndPower[h] <= self.combinedHeatAndPower_device
             for h in hourRange
         )
+
         model.add_constraints(
             self.power_combinedHeatAndPower[h]
             <= self.combinedHeatAndPower_open_flag[h] * bigNumber
