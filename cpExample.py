@@ -504,10 +504,25 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.annualized = model.continuous_var(
             name="energyStorageSystem_annualized{0}".format(EnergyStorageSystem.index)
         )
+        """
+        每年消耗的运维成本 大于零的实数
+        """
 
     def constraints_register(
         self, model: Model, register_period_constraints=1, day_node=24
     ):
+        """
+        定义机组内部约束
+
+        1. 机组设备数大于等于0
+        2. 机组设备总数不得大于最大装机量
+        3. 每个小时内，设备发电量小于等于装机设备实际值
+        4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            register_period_constraints(int):zhu'ce'zho
+        """
         bigNumber = 1e10
         irange = range(0, self.num_hour)
         model.add_constraint(
@@ -633,6 +648,9 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
 # 可变容量储能
 class EnergyStorageSystemVariable(IntegratedEnergySystem):
+    """
+    可变容量储能
+    """
     index = 0
 
     def __init__(
@@ -829,6 +847,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
 
 # troughPhotoThermal
 class TroughPhotoThermal(IntegratedEnergySystem):
+    """
+    槽式光热类
+    """
     index = 0
 
     def __init__(
@@ -2545,6 +2566,9 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
 
 
 class ResourceGet(object):
+    """
+    获取光照资源、电价、燃气价格、蒸汽价格
+    """
     # 光照资源，超过一年的，将一年数据进行重复
     # light intensity ranging from 0 to 1? not even reaching 0.3
     def get_radiation(self, path: str, num_hour: int) -> np.ndarray:
