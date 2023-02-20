@@ -516,7 +516,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3.储能装置功率转化率约束：
+        3.储能装置功率转化率约束：储能系统设备*储能装置的最大倍率大于等于功率转化系统设备，且功率转化系统设备大于等于0
+        4.充电功率和放电功率之间的关系：
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
@@ -2587,14 +2588,14 @@ class ResourceGet(object):
             raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
             intensityOfIllumination1 = radiation
-            for loop in range(1, math.ceil(num_hour / 8760)):
-                intensityOfIllumination1 = np.concatenate(
+            for loop in range(1, math.ceil(num_hour / 8760)): # 365, days in a year
+                intensityOfIllumination1 = np.concatenate( # what does this concatenate do?
                     (intensityOfIllumination1, radiation), axis=0
                 )
 
             intensityOfIllumination2 = (
                 intensityOfIllumination1[0:num_hour] / 1000
-            )  # 转化为kW
+            )  # 转化为kW, divide by one thousand
             return intensityOfIllumination2  # shape: 1d array.
         else:
             raise Exception("File not extists.")
