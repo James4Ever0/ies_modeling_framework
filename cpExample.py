@@ -1191,7 +1191,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         12.根据二元决策变量wasteGasAndHeat_water_flag和一个大常数bigM来设定与余气余热系统的最大热交换能力。如果wasteGasAndHeat_water_flag为0,该约束就会失去作用。
         13.根据二元决策变量wasteGasAndHeat_steam_flag和一个大常数bigM来设定蒸汽与余气余热系统的最大热交换能力。如果wasteGasAndHeat_steam_flag为0,该约束就会失去作用。
         14.GTS系统的最大热交换能力限制在所有时间段内热电联产机组额定热输出的50%
-        15.
+        15.余气余热热水系统的最大换热量限制为所有时段热电联产机组额定热出力的50%
+        16.余气余热蒸汽系统的最大换热能力限制为所有时段热电联产机组额定热出力的50%
+        17.
         
 
         Args:
@@ -2777,7 +2779,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数电价 0.5
+            常数电价数组 数组形状是(num_hour,) 元su0.5
         """
         electricity_price = np.ones(num_hour, dtype=float) * 0.5
         return electricity_price
@@ -2790,7 +2792,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数燃气价格 2.77
+            常数燃气价格数组 数组形状是(num_hour,) 元 2.77
         """
         gas_price = np.ones(num_hour, dtype=float) * 2.77
         return gas_price
@@ -2803,7 +2805,7 @@ class ResourceGet(object):
             num_hour (int): 一天小时数
         
         Return:
-            常数燃气价格 2.77
+            常数燃气价格数组 数组形状是(num_hour,) 元素全为2.77
         """
         municipalHotWater_price = np.ones(num_hour, dtype=float) * 0.3
         return municipalHotWater_price
@@ -2823,31 +2825,38 @@ class ResourceGet(object):
 
 
 
-"""""""""
 class LoadGet(object):
     """
-    获取
+    获取逐小时冷、热、电、蒸汽负荷数据
     """
-    def get_cool_load(self, num_hour):
+    def get_cool_load(self, num_hour:int):
         """
+        获取逐小时冷负荷数据
+        
+        Args:
+            num_hour (int): 一天小时数
+        
         """
         cool_load = np.ones(num_hour, dtype=float) * 10000
         return cool_load
 
-    def get_heat_load(self, num_hour):
+    def get_heat_load(self, num_hour:int):
         """
+        获取逐小时热负荷数据
         """
         heat_load = np.ones(num_hour, dtype=float) * 10000
         return heat_load
 
-    def get_power_load(self, num_hour):
+    def get_power_load(self, num_hour:int):
         """
+        获取逐小时电负荷数据
         """
         power_load = np.ones(num_hour, dtype=float) * 10000
         return power_load
 
-    def get_steam_load(self, num_hour):
+    def get_steam_load(self, num_hour:int):
         """
+        获取逐小时蒸汽负荷数据
         """
         steam_load = np.ones(num_hour, dtype=float) * 10000
         return steam_load
