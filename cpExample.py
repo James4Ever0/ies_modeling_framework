@@ -1326,7 +1326,7 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gasBoiler_num_max(int)：表示燃气锅炉的最大数量。
+            gasBoiler_device_max(int)：表示燃气锅炉的最大数量。
             gasBoiler_price(float)：表示燃气锅炉的单价。
             gas_price(float)：表示燃气的单价。
             efficiency(float):燃气锅炉的热效率
@@ -1426,10 +1426,10 @@ class ElectricBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricBoiler_num_max(int)：表示电锅炉的最大数量。
+            electricBoiler_device_max(int)：表示电锅炉的最大数量。
             electricBoiler_price(float)：表示电锅炉的单价。
-            electricity_price(float)：表示电的单价。
-            efficiency(float):电锅炉的热效率
+            electricity_price(float): 表示电的单价。
+            efficiency(float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称，默认为"electricBoiler"
         """
         IntegratedEnergySystem(device_name)
@@ -1475,7 +1475,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         定义机组内部约束
 
-        1. 0≦机组设备数≦最大设备量
+        1.0≦机组设备数≦最大设备量
         2.0≦电锅炉的热功率≦电锅炉运行量
         3.然气锅炉的电消耗量等于热功率除以热效率
         4.然气锅炉的总耗电成本等于电消耗量乘以电价格之和
@@ -1522,7 +1522,16 @@ class Exchanger(IntegratedEnergySystem):
         k,  # 传热系数
         device_name="exchanger",
     ):
-    
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            electricBoiler_num_max(int)：表示电锅炉的最大数量。
+            electricBoiler_price(float)：表示电锅炉的单价。
+            electricity_price(float)：表示电的单价。
+            efficiency(float):电锅炉的热效率
+            device_name (str): 电锅炉机组名称，默认为"electricBoiler"
+        """
         IntegratedEnergySystem(device_name)
         # k 传热系数
         Exchanger.index += 1
@@ -2984,6 +2993,13 @@ class Linear_absolute(object):  # absolute?
             name="b_positive_absolute{0}".format(Linear_absolute.index),
         )
         """
+        对于 有：
+        b_positive[i]==1时，b_negitive[i]==0
+        b_positive[i]==0时，b_negitive[i]==1
+        
+        
+        b_positive[i]==1时，x_positive[i]>=0
+        b_positive[i]==0时，x_positive[i]==0
         """
         self.b_negitive = model.binary_var_list(
             [i for i in irange],
@@ -3015,8 +3031,8 @@ class Linear_absolute(object):  # absolute?
         """
         对于区间`irange`的每个数`i`，`x_positive[i]`、`x_negitive[i]`是非负实数，`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
         
-        1. 此时
-        2.
+        1. `bigNumber0 >= x_negitive[i] >= 0`，`x_positive[i] == 0`，此时`b_positive[i] == 0`，`b_negitive[i] == 1`，`x[i] == -x_negitive[i]`，`absolute_x[i] == x_negitive[i]`
+        2. `bigNumber0 >= x_positive[i] >= 0`，`x_negative[i] == 0`，此时`b_positive[i] == 1`，`b_negitive[i] == 0`，`x[i] == x_positive[i]`，`absolute_x[i] == x_positive[i]`
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
