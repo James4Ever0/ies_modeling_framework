@@ -28,6 +28,8 @@ import time
 import os.path
 import math
 
+from typing import Iterable
+
 # from docplex.mp.conflict_refiner import ConflictRefiner
 import matplotlib.pyplot as plt
 
@@ -721,6 +723,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
+        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的充放电功率
         """
         # 充电功率
         self.power_energyStorageSystem_charge = model.continuous_var_list(
@@ -729,6 +732,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )
+        """
+        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的充电功率
+        """
         # 放电功率
         self.power_energyStorageSystem_discharge = model.continuous_var_list(
             [i for i in range(0, num_hour)],
@@ -736,6 +742,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )
+        """
+        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的放电功率
+        """
         # 能量
         self.energyStorageSystem = model.continuous_var_list(
             [i for i in range(0, num_hour)],
@@ -743,6 +752,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )
+        """
+        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的能量
+        """
         self.energyStorageSystem_device_max = energyStorageSystem_device_max
         self.energyStorageSystem_price = energyStorageSystem_price
         self.powerConversionSystem_price = powerConversionSystem_price
@@ -753,7 +765,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )  # powerConversionSystem
-
+        """
+        模型中的连续变量，表示 PCS 的容量
+        """
         # paradox? redundancy? both charge and discharge?
         self.charge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -761,12 +775,16 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 EnergyStorageSystemVariable.index
             ),
         )  # 充电
+        """
+        模型中的二元变量列表，长度为 num_h,表示每小时储能装置是否处于充电状态。
+        """
         self.discharge_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="batteryEnergyStorageSystemVariable_discharge_flag{0}".format(
                 EnergyStorageSystemVariable.index
             ),
         )  # 放电
+        
         # 效率
         self.efficiency = efficiency
         self.conversion_rate_max = conversion_rate_max  # conversion rate? charge rate?
@@ -2929,6 +2947,7 @@ class Linearization(object):
     """
     bigNumber0 = 1e10
     """
+    一个非常大的数，默认为10的10次方
     """
     index:int = 0
     """
@@ -2941,6 +2960,8 @@ class Linearization(object):
     def product_var_bin(self, model: Model, var_bin:Var, var:Var, bin:BinaryVarType):
         """
         通过二进制变量`bin`的控制，当`bin == 1`，则`var_bin == var`；当`bin == 0`，则`var_bin == 0`
+        
+        每添加一个约束组，编号加一
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2959,8 +2980,17 @@ class Linearization(object):
         # 如果bin == 0, var_bin 小于等于 0
         # 如果bin == 1, var_bin 小于等于 1*bigNumber0
 
-    def product_var_bins(self, model: Model, var_bin, var, bin0, irange):  # bins?
+    def product_var_bins(self, model: Model, var_bin:List[Var], var:List[Var], bin0:List[BinaryVarType], irange:Iterable):  # bins?
         """
+        对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i]`；当`bin[i] == 0`，则`var_bin[i] == 0`
+        
+        每添加一个约束组，编号加一
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin (List[Var]): 受控变量组
+            var (List[Var]): 原变量组
+            bin (List[BinaryVarType]): 控制变量组
         """
         Linearization.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in irange)
