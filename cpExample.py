@@ -1174,7 +1174,17 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大装机量
+        2. 燃气轮机装机量=燃气轮机机组数
+        3.
         
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.combinedHeatAndPower_num >= 0)
         model.add_constraint(
@@ -3192,6 +3202,10 @@ class Linearization(object):
         xnegitive: List[Var],
     ):
         """
+        对于区间`range(0, num_hour)`的每个数`h`，`x[h] == xpositive[h] - xnegitive[h]`，`positive_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        
+        每添加一个约束组，编号加一
+        
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
@@ -3208,7 +3222,7 @@ class Linearization(object):
         model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
         )
-        # 两变量组在区间内逐元素相减 传入的元素组
+        # 两变量组在区间内逐元素相减 存在传入的元素组x中
         model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
         model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
         # 两变量组在区间内元素都是非负数
