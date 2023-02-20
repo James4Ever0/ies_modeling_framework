@@ -1362,12 +1362,28 @@ class GasBoiler(IntegratedEnergySystem):
         self.gas_cost = model.continuous_var(
             name="gasBoiler_gas_cost{0}".format(GasBoiler.index)
         )
-        
+        """
+        连续变量，表示燃气费用
+        """
         self.annualized = model.continuous_var(
             name="gasBoiler_annualized{0}".format(GasBoiler.index)
         )
-
+        """
+        连续变量，表示燃气锅炉的年化费用
+        """
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大设备量
+        2.0≦然气锅炉的热功率≦燃气锅炉运行量
+        3.然气锅炉的燃气消耗量等于热功率除以热效率乘以一个常数（这个常数是热功率和燃气消耗量之间的转化系数）
+        4.然气锅炉的总燃气成本等于燃气消耗量乘以燃气价格之和
+        5.然气锅炉的总年化成本等于投资成本和燃气成本之和
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.gasBoiler_device >= 0)
         model.add_constraint(self.gasBoiler_device <= self.gasBoiler_device_max)
@@ -1391,6 +1407,9 @@ class GasBoiler(IntegratedEnergySystem):
 
 # electricBoiler
 class ElectricBoiler(IntegratedEnergySystem):
+    """
+        连续变量，表示燃气锅炉的年化费用
+    """
     index = 0
 
     def __init__(
@@ -2958,19 +2977,31 @@ class Linear_absolute(object):  # absolute?
         model.add_constraints(
             self.b_positive[i] + self.b_negitive[i] == 1 for i in self.irange
         )
-        model.add_constraints(self.x_positive[i] >= 0 for i in self.irange)
+        # b_positive[i]==1时，b_negitive[i]==0
+        # b_positive[i]==0时，b_negitive[i]==1
+        model.add_constraints(self.x_positive[i] >= 0 for i in self.irange) # x_positive[i]是非负数
         model.add_constraints(
             self.x_positive[i] <= self.bigNumber0 * self.b_positive[i]
             for i in self.irange
         )
+        # 当b_positive[i]==1时，x_positive[i]>=0
+        # 当b_positive[i]==0时，x_positive[i]==0
+
         model.add_constraints(self.x_negitive[i] >= 0 for i in self.irange)
+         # x_negitive[i]是非负数
         model.add_constraints(
             self.x_negitive[i] <= self.bigNumber0 * self.b_negitive[i]
             for i in self.irange
         )
+        
+        # 当b_negitive[i]==1时，x_negitive[i]>=0
+        # 当b_negitive[i]==0时，x_negitive[i]==0
         model.add_constraints(
             self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.irange
         )
+        # x[i] == x_positive[i] - x_negitive[i] 
+        # 也就是说，如果b_positive[i]==1，x[i] == x_positive[i]
+        # 如果b_positive[i]==0，x[i] == x_negitive[i]
         model.add_constraints(
             self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
             for i in self.irange
