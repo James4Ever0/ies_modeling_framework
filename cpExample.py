@@ -809,8 +809,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         7.充电功率和放电功率二选一
         8.储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9.最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
-        10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11.如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        10.如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        11.这里面有两个初始化搞不懂
         
 
         Args:
@@ -943,6 +943,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         efficiency: float,
         device_name="troughPhotoThermal",
     ):
+        
         IntegratedEnergySystem(device_name)
         TroughPhotoThermal.index += 1
         self.num_hour = num_hour
@@ -2984,6 +2985,8 @@ class Linearization(object):
         """
         通过二进制变量`bin`的控制，当`bin == 1`，则`var_bin == var`；当`bin == 0`，则`var_bin == 0`
         
+        其中`var`是一个大于0的实数
+        
         每添加一个约束组，编号加一
         
         Args:
@@ -3006,6 +3009,8 @@ class Linearization(object):
     def product_var_bins(self, model: Model, var_bin:List[Var], var:List[Var], bin0:List[BinaryVarType], irange:Iterable):  # bins?
         """
         对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i]`；当`bin[i] == 0`，则`var_bin[i] == 0`
+        
+        其中`var[i]`是一个大于0的实数
         
         每添加一个约束组，编号加一
         
@@ -3030,6 +3035,8 @@ class Linearization(object):
         """
         对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`，则`var_bin[i - 1] == 0`
         
+        其中`var[i - 1]`是一个大于0的实数
+        
         每添加一个约束组，编号加一
         
         Args:
@@ -3050,7 +3057,7 @@ class Linearization(object):
             var_bin[i] <= bin0[i] * self.bigNumber0 for i in irangeback
         )
 
-    def max_zeros(self, num_hour: int, model: Model, x, y):  # max?
+    def max_zeros(self, num_hour: int, model: Model, x:List[Var], y:List[Var]):  # max?
         """
         """
         Linearization.index += 1
@@ -3060,7 +3067,7 @@ class Linearization(object):
         )
         model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
-        )
+        ) # 当y_flag[h] == 0, y[h] 小于等于 x[h]
         model.add_constraints(
             y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
