@@ -1463,13 +1463,27 @@ class ElectricBoiler(IntegratedEnergySystem):
             name="electricity_cost{0}".format(ElectricBoiler.index)
         )
         """
-        连续变量列表，表示电锅炉在每个时段的电消耗量
+        连续变量，表示用电费用
         """
         self.annualized = model.continuous_var(
             name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
         )
-
+        """
+        连续变量，表示电锅炉的年化费用
+        """
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大设备量
+        2.0≦电锅炉的热功率≦电锅炉运行量
+        3.然气锅炉的电消耗量等于热功率除以热效率
+        4.然气锅炉的总耗电成本等于电消耗量乘以电价格之和
+        5.然气锅炉的总年化成本等于投资成本和用电成本之和
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.electricBoiler_device >= 0)
         model.add_constraint(self.electricBoiler_device <= self.gas_device_max)
@@ -1494,6 +1508,9 @@ class ElectricBoiler(IntegratedEnergySystem):
 
 
 class Exchanger(IntegratedEnergySystem):
+    """
+    热交换器类
+    """
     index = 0
 
     def __init__(
@@ -1505,6 +1522,7 @@ class Exchanger(IntegratedEnergySystem):
         k,  # 传热系数
         device_name="exchanger",
     ):
+    
         IntegratedEnergySystem(device_name)
         # k 传热系数
         Exchanger.index += 1
@@ -2957,7 +2975,7 @@ class Linear_absolute(object):  # absolute?
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): `xpositive`和`xnegitive`在区间`irange`内逐元素相减得到的变量组`x`
+            x (List[Var]): 存放`xpositive`和`xnegitive`在区间`irange`内逐元素相减结果约束得到的变量组`x`
             irange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
@@ -2995,6 +3013,10 @@ class Linear_absolute(object):  # absolute?
 
     def absolute_add_constraints(self, model: Model):
         """
+        对于区间`irange`的每个数`i`，`x_positive[i]`、`x_negitive[i]`是非负实数，`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        
+        1. 此时
+        2.
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3374,7 +3396,7 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): `xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减得到的变量组`x`
+            x (List[Var]): 存放`xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减结果约束得到的变量组`x`
             xpositive (List[Var]): 变量组`xpositive`
             xnegitive (List[Var]): 变量组`xnegitive`
         """
