@@ -1046,9 +1046,20 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         combinedHeatAndPower_price,
         gas_price,
         combinedHeatAndPower_single_device,
-        power_to_heat_ratio,  # dr?
+        power_to_heat_ratio,  # drratio?
         device_name="combinedHeatAndPower",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            "combinedHeatAndPower_num_max"(int)：表示燃气轮机的最大数量。
+            "combinedHeatAndPower_price"：表示燃气轮机的单价。
+            "gas_price"：实数型，表示燃气的单价。
+            "combinedHeatAndPower_single_set"：实数型，表示每台燃气轮机的装机容量。
+            "drratio"：实数型，表示燃气轮机的日供暖热水占比。
+            device_name (str): 槽式光热机组名称，默认为"troughPhotoThermal"
+        """
         IntegratedEnergySystem(device_name)
         CombinedHeatAndPower.index += 1
         self.num_hour = num_hour
@@ -3072,10 +3083,18 @@ class Linearization(object):
 
     def max_zeros(self, num_hour: int, model: Model, x:List[Var], y:List[Var]):  # max?
         """
-        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，约定以下两种情况有且只有一种出现：
+        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，`y_flag[h]`是约定以下两种情况有且只有一种出现：
         
         1. `y[h] == 0`，`-bigNumber <= x[h] <= 0`，此时`y_flag[h] == 0`
         2. `y[h] == x[h]`，此时`y_flag[h] == 1`
+        
+        每添加一个约束组，编号加一
+        
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x (List[Var]): 变量组x
+            y (List[Var]): 变量组y
         """
         Linearization.index += 1
         y_flag = model1.binary_var_list(
