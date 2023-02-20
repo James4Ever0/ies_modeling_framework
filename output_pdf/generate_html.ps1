@@ -1,0 +1,1 @@
+pdoc --html ..\example_docstring.py
