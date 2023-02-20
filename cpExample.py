@@ -938,7 +938,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         model: Model,
         troughPhotoThermal_device_max,
         troughPhotoThermal_price,
-        troughPhotoThermalSolidHeatStorage_price,
+        troughPhotoThermalSolidHeatStorage_price,#(csgrgtxr是啥)
         intensityOfIllumination0,
         efficiency: float,
         device_name="troughPhotoThermal",
@@ -949,9 +949,9 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             troughPhotoThermal_device_max(float): 槽式光热设备机组最大装机量
             troughPhotoThermal_price(float): 槽式光热设备的购置价格。
-            troughPhotoThermalSolidHeatStorage_price(float): 
+            troughPhotoThermalSolidHeatStorage_price(float): 槽式光热储能设备价格
             intensityOfIllumination0:24小时光照强度
-            eff(float)：效率。
+            eff(float)：效率
             device_name (str): 槽式光热机组名称，默认为"troughPhotoThermal"
         """
         IntegratedEnergySystem(device_name)
@@ -1033,6 +1033,9 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 # CombinedHeatAndPower设备
 # 输入：
 class CombinedHeatAndPower(IntegratedEnergySystem):
+    """
+    燃气轮机类
+    """
     index = 0
 
     def __init__(
@@ -3069,6 +3072,10 @@ class Linearization(object):
 
     def max_zeros(self, num_hour: int, model: Model, x:List[Var], y:List[Var]):  # max?
         """
+        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，约定以下两种情况有且只有一种出现：
+        
+        1. `y[h] == 0`，`-bigNumber <= x[h] <= 0`，此时`y_flag[h] == 0`
+        2. `y[h] == x[h]`，此时`y_flag[h] == 1`
         """
         Linearization.index += 1
         y_flag = model1.binary_var_list(
