@@ -1057,7 +1057,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             combinedHeatAndPower_price(float)：表示燃气轮机的单价。
             gas_price(float)：表示燃气的单价。
             combinedHeatAndPower_single_set(float)：表示每台燃气轮机的装机容量。
-            drratio(float)：表示燃气轮机的日供暖热水占比。
+            drratio(float)：表示燃气轮机的热电比。
             device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
@@ -1182,6 +1182,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         3.每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率
         4.每个燃气轮机的热功率必须小于等于燃气轮机的总热功率
         5.每个燃气轮机的热功率必须小于等于燃气轮机开启时的热功率
+        6.确定每个时段燃气轮机开启的台数，并且每个时段燃气轮机开启的总功率必须等于燃气轮机的总热功率
+        7.燃气轮机的运行台数必须在0到总台数之间
+        8.燃气轮机的热功率必须等于燃气轮机的电功率乘以热电比
+        9.燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5
+        10.
         
 
         Args:
