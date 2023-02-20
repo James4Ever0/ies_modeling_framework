@@ -1153,6 +1153,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
+        """
+        方法内部还创建了三个 "Exchanger" 对象，分别用于模拟燃气轮机的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部，它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        """
 
         self.wasteGasAndHeat_water_device = Exchanger(
             self.num_hour,
@@ -1171,6 +1174,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
     def constraints_register(self, model: Model):
+        
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.combinedHeatAndPower_num >= 0)
         model.add_constraint(
@@ -3129,8 +3133,8 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): 变量组x
-            y (List[Var]): 变量组y
+            x (List[Var]): 变量组`x`
+            y (List[Var]): 变量组`y`
         """
         Linearization.index += 1
         y_flag = model1.binary_var_list(
@@ -3165,8 +3169,8 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x1 (List[Var]): 变量组x1
-            x2 (List[Var]): 变量组x2
+            x1 (List[Var]): 变量组`x1`
+            x2 (List[Var]): 变量组`x2`
             
         Return:
             add_y (List[Var]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
@@ -3188,6 +3192,12 @@ class Linearization(object):
         xnegitive: List[Var],
     ):
         """
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x (List[Var]): `xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减得到的变量组`x`
+            xpositive (List[Var]): 变量组`xpositive`
+            xnegitive (List[Var]): 变量组`xnegitive`
         """
         Linearization.index += 1
         bigNumber = 1e10
@@ -3198,18 +3208,21 @@ class Linearization(object):
         model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
         )
-        # 两变量组在区间内逐元素相减 没有利用的元素组
+        # 两变量组在区间内逐元素相减 传入的元素组
         model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
         model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
         # 两变量组在区间内元素都是非负数
         model.add_constraints(
             xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
         )
-        # 当positive_flag[h] == 0，xpositive[h]<=0
+        # 当positive_flag[h] == 0，xpositive[h] <= 0 (xpositive[h] == 0)
+        # 当positive_flag[h] == 1，xpositive[h] <= bigNumber 
         model.add_constraints(
             xnegitive[h] <= bigNumber * (1 - positive_flag[h])
             for h in range(0, num_hour)
         )
+        # 当positive_flag[h] == 0，xnegitive[h] <= bigNumber
+        # 当positive_flag[h] == 1，xnegitive[h] <= 0 (xnegitive[h] == 0)
 
 
 load = LoadGet()
