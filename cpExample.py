@@ -1438,10 +1438,16 @@ class ElectricBoiler(IntegratedEnergySystem):
         self.electricBoiler_device = model.continuous_var(
             name="electricBoiler_device{0}".format(ElectricBoiler.index)
         )
+        """
+        电锅炉机组等效单位设备数 大于零的实数
+        """
         self.heat_electricBoiler = model.continuous_var_list(  # h? heat?
             [i for i in range(0, self.num_hour)],
             name="heat_electricBoiler{0}".format(ElectricBoiler.index),
         )
+        """
+        电锅炉机组等效单位设备数 大于零的实数
+        """
         self.electricity_electricBoiler = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
@@ -2939,11 +2945,13 @@ class Linear_absolute(object):  # absolute?
     bigNumber0 = 1e10
     index = 0
 
-    def __init__(self, model: Model, x, irange:Iterable):  # irange?
+    def __init__(self, model: Model, x:List[Var], irange:Iterable):  # irange?
         """
+        初始化带绝对值的线性约束类
+        
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            x ():
+            x (List[Var]):
             irange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
