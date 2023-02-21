@@ -1918,6 +1918,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         case_ratio,
         device_name="water_heat_pump",
     ):
+        
+        
         """
         Args:
             num_hour (int): 一天的小时数
@@ -2057,7 +2059,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦热泵的制冷功率≦热泵制冷出口温度*热泵设备数/100,0≦热泵的制冷功率≦热泵制冷状态*bigNumber
+        2. 0≦水源热泵的制冷功率≦水源热泵设备数*况1制冷量,0≦热泵的制冷功率≦热泵制冷状态*bigNumber
         3. 0≦热泵的除湿功率≦热泵除湿出口温度*热泵设备数/100,0≦热泵的除湿功率≦热泵除湿状态*bigNumber
         4. 0≦热泵的制热功率≦热泵制热出口温度*热泵设备数/100,0≦热泵的制热功率≦热泵制热状态*bigNumber
         5. 0≦热泵的加湿功率≦热泵加湿出口温度*热泵设备数/100,0≦热泵的加湿功率≦热泵加湿状态*bigNumber
