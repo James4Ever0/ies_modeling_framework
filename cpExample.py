@@ -738,7 +738,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        可变容量储能系统机组等效单位设备数 大于零的实数
+        可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
         self.power_energyStorageSystem: List[
             ContinuousVarType
@@ -914,6 +914,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
+        # TODO: figure out init
         model.add_constraints(
             self.energyStorageSystem[0]
             == self.energyStorageSystem_init * self.energyStorageSystem_device[i]
@@ -940,6 +941,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             )
         else:
             # 初始值
+            # TODO: figure out init
             model.add_constraint(
                 self.energyStorageSystem[0]
                 == self.energyStorageSystem_init * self.energyStorageSystem_device
