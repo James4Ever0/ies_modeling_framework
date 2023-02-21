@@ -1091,11 +1091,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max(int)：表示燃气轮机的最大数量。
-            combinedHeatAndPower_price(float)：表示燃气轮机的单价。
-            gas_price(float)：表示燃气的单价。
-            combinedHeatAndPower_single_set(float)：表示每台燃气轮机的装机容量。
-            drratio(float)：表示燃气轮机的热电比。
+            combinedHeatAndPower_num_max (int)：表示燃气轮机的最大数量。
+            combinedHeatAndPower_price (float)：表示燃气轮机的单价。
+            gas_price (float)：表示燃气的单价。
+            combinedHeatAndPower_single_set (float)：表示每台燃气轮机的装机容量。
+            drratio (float)：表示燃气轮机的热电比。
             device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
@@ -2059,10 +2059,10 @@ class WaterHeatPump(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水源热泵的制冷功率≦水源热泵设备数*况1制冷量,0≦热泵的制冷功率≦热泵制冷状态*bigNumber
-        3. 0≦热泵的除湿功率≦热泵除湿出口温度*热泵设备数/100,0≦热泵的除湿功率≦热泵除湿状态*bigNumber
-        4. 0≦热泵的制热功率≦热泵制热出口温度*热泵设备数/100,0≦热泵的制热功率≦热泵制热状态*bigNumber
-        5. 0≦热泵的加湿功率≦热泵加湿出口温度*热泵设备数/100,0≦热泵的加湿功率≦热泵加湿状态*bigNumber
+        2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1)制热量/制冷量,0≦水源热泵的制冷功率≦水源热泵制冷状态*bigNumber
+        3. 0≦水源热泵的额外制冷功率≦水源热泵设备数* (况2)制热量/制冷量,0≦水源热泵的额外制冷功率≦水源热泵额外制冷状态*bigNumber
+        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)制热量/制冷量,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
+        5. 0≦水源热泵的额外制热功率≦水源热泵设备数* (况4)制热量/制冷量,0≦水源热泵的额外制热功率≦水源热泵额外制热状态*bigNumber
         6. 制冷状态+除湿状态+制热状态+加湿状态=1
         7. 热泵用电量=设备制冷功率/制冷性能系数+设备除湿功率/除湿性能系数+设备制热功率/制热性能系数+设备加湿功率/加湿性能系数
         8. 热泵总功率=制冷功率+除湿功率+制热功率+加湿功率
@@ -3565,7 +3565,7 @@ class GridNet(IntegratedEnergySystem):
             name="powerPeak{0}".format(GridNet.index)
         )
         """
-        电网净用电峰值 实数
+        电网用电或者发电峰值 实数
         """
         self.baseCost = model1.continuous_var(name="baseCost{0}".format(GridNet.index))
         """
@@ -3590,10 +3590,16 @@ class GridNet(IntegratedEnergySystem):
         
         1. 电网要么发电 要么用电 用电时发电量为0 发电时用电量为0 净用电量=用电量-发电量
         2. 电网最大设备数>=电网设备数>=0
+        3. 每小时用电量小于电网设备数
+        4. 每小时电网发电量小于电网设备数
+        5. 电网基础消费 = 
+            min(
+                max(用电或者发电峰值, 预估用电峰值) * 31,
+                电网设备数 * 22)
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            powerPeak_pre (float): 
+            powerPeak_pre (float): 预估用电峰值
         """
         hourRange = range(0, self.num_hour)
         linearization = Linearization()
@@ -3607,11 +3613,13 @@ class GridNet(IntegratedEnergySystem):
         )
         model.add_constraints(self.powerTo[h] <= self.gridNet_device for h in hourRange)
 
-        model.add_constraints(self.powerFrom[h] <= self.powerPeak for h in hourRange)
+        # these are always true, not constraints.
+        model.add_constraints(self.powerFrom[h] <= self.powerPeak for h in hourRange) 
         model.add_constraints(self.powerTo[h] <= self.powerPeak for h in hourRange)
         self.powerFrom_max = model1.max(self.powerFrom)
         self.powerTo_max = model1.max(self.powerFrom)
         self.powerPeak = model1.max(self.powerFrom_max, self.powerTo_max)
+        
         self.baseCost = (
             model1.min(
                 model.max([self.powerPeak, powerPeak_pre]) * 31,
