@@ -2063,11 +2063,11 @@ class WaterHeatPump(IntegratedEnergySystem):
         3. 0≦水源热泵的额外制冷功率≦水源热泵设备数* (况2)制热量/制冷量,0≦水源热泵的额外制冷功率≦水源热泵额外制冷状态*bigNumber
         4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)制热量/制冷量,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
         5. 0≦水源热泵的额外制热功率≦水源热泵设备数* (况4)制热量/制冷量,0≦水源热泵的额外制热功率≦水源热泵额外制热状态*bigNumber
-        6. 制冷状态+除湿状态+制热状态+加湿状态=1
-        7. 热泵用电量=设备制冷功率/制冷性能系数+设备除湿功率/除湿性能系数+设备制热功率/制热性能系数+设备加湿功率/加湿性能系数
-        8. 热泵总功率=制冷功率+除湿功率+制热功率+加湿功率
+        6. 制冷状态+额外制冷状态+制热状态+额外制热状态=1
+        7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数+设备制热功率/制热性能系数+设备额外制热功率/额外制热性能系数
+        8. 热泵总功率=制冷功率+额外制冷功率+制热功率+额外制热功率
         9. 用电成本=每个时刻(设备用电量*电价)的总和
-        3. 热泵的总年化成本=热泵设备数*设备价格/15+用电成本*8760/小时数
+        3. 水源热泵的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2175,6 +2175,9 @@ class WaterHeatPump(IntegratedEnergySystem):
 
 # waterCooledScrewMachine
 class WaterCooledScrew(IntegratedEnergySystem):
+    """
+    水冷螺旋机 
+    """
     index = 0
 
     def __init__(
@@ -2187,6 +2190,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
         case_ratio,
         device_name="water_cooled_screw",
     ):
+        
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         WaterCooledScrew.index += 1
@@ -3592,10 +3596,10 @@ class GridNet(IntegratedEnergySystem):
         2. 电网最大设备数>=电网设备数>=0
         3. 每小时用电量小于电网设备数
         4. 每小时电网发电量小于电网设备数
-        5. 电网基础消费 = 
-            min(
-                max(用电或者发电峰值, 预估用电峰值) * 31,
-                电网设备数 * 22)
+        5. 电网基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
+        6. 电网总消费 = sum(每小时用电量*用电电价+每小时发电量*发电消费)+电网基础消费
+        7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15
+            + 电网总消费 * 8760 / self.num_hour
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
