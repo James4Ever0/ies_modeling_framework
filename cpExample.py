@@ -4938,9 +4938,10 @@ if __name__ == "__main__":
 
         # print('absolute2 value:')
         # print(solution_run1.get_value(absolute1.absolute_x[1]))
-        print("__SOLVE_DETAILS__")
-        print(solution_run1.solve_details)
-        print("__SOLVE_DETAILS__")
+        
+        # print("__SOLVE_DETAILS__")
+        # print(solution_run1.solve_details)
+        # print("__SOLVE_DETAILS__")
 
         # ii = 0
 
