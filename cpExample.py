@@ -4657,6 +4657,8 @@ if __name__ == "__main__":
         case_ratio=np.array([1, 0.8]),
     )
     waterCoolingSpiralMachine.constraints_register(model1)
+    
+    # 三工况机组
     tripleWorkingConditionUnit = TripleWorkingConditionUnit(
         num_hour0,
         model1,
@@ -4666,6 +4668,8 @@ if __name__ == "__main__":
         case_ratio=[1, 0.8, 0.8],
     )
     tripleWorkingConditionUnit.constraints_register(model1)
+    
+    # 双工况机组
     doubleWorkingConditionUnit = DoubleWorkingConditionUnit(
         num_hour0,
         model1,
@@ -4675,6 +4679,8 @@ if __name__ == "__main__":
         case_ratio=[1, 0.8],
     )
     doubleWorkingConditionUnit.constraints_register(model1)
+    
+    # 地源热泵
     groundSourceHeatPump = GeothermalHeatPump(
         num_hour0,
         model1,
@@ -4683,6 +4689,8 @@ if __name__ == "__main__":
         electricity_price=electricity_price0,
     )
     groundSourceHeatPump.constraints_register(model1)
+    
+    # 电池？
     bx = EnergyStorageSystem(  # what is this?
         num_hour0,
         model1,
@@ -4697,6 +4705,7 @@ if __name__ == "__main__":
     )
     bx.constraints_register(model1)
 
+    # 相变蓄冷
     phaseChangeRefrigerantStorage = EnergyStorageSystem(
         num_hour0,
         model1,
@@ -4711,6 +4720,7 @@ if __name__ == "__main__":
     )
     phaseChangeRefrigerantStorage.constraints_register(model1)
 
+    # 相变蓄热
     lowphaseChangeHeatStorage = EnergyStorageSystem(
         num_hour0,
         model1,
@@ -4823,6 +4833,7 @@ if __name__ == "__main__":
 
     # what is "chargeaifa" ??
 
+    # 电网
     gridNet = GridNet(
         num_hour0,
         model1,
@@ -4832,6 +4843,7 @@ if __name__ == "__main__":
         electricity_price_to=0.35,
     )
     gridNet.constraints_register(model1, powerPeak_pre=2000)
+    
     model1.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
@@ -4850,6 +4862,7 @@ if __name__ == "__main__":
         for h in range(0, num_hour0)
     )
 
+    # 综合能源系统 所有设备集合
     integratedEnergySystem_device = (
         [  # all constrains in IES/IntegratedEnergySystem system
             dieselEngine,
@@ -4882,17 +4895,22 @@ if __name__ == "__main__":
             gridNet,
         ]
     )
+    
+    # 目标值 = 所有设备年运行成本总和
     objective = integratedEnergySystem_device[0].annualized
     for ii in range(1, len(integratedEnergySystem_device)):
         objective = objective + integratedEnergySystem_device[ii].annualized
 
+    # 使得目标值最小
     model1.minimize(objective)
+    
     model1.print_information()
     # refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
     # res = refiner.refine_conflict(model1)  # 将模型导入该类,调用方法
     # res.display()  # 显示冲突约束
     print("start calculation:")
 
+    #
     model1.set_time_limit(time_limit=1000)
 
     solution_run1: Union[None, SolveSolution] = model1.solve(
