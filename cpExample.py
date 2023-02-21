@@ -3050,8 +3050,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             energyStorageSystem_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
-            ratio_cool (float): 制冷模式下水蓄能罐的利用率
-            ratio_heat (float): 供暖模式下水蓄能罐的利用率
+            ratio_cool (float): 蓄冷模式下水蓄能罐的利用率
+            ratio_heat (float): 蓄热模式下水蓄能罐的利用率
             ratio_gheat (float): 地源热泵模式下水蓄能罐的利用率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
@@ -3082,7 +3082,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能在制冷模式下的储水量
+        每小时水蓄能在蓄冷模式下的储水量
         """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
@@ -3091,7 +3091,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能在供暖模式下的储水量
+        每小时水蓄能在蓄热模式下的储水量
         """
         self.waterStorageTank_device_gheat: List[  # generate?
             ContinuousVarType
@@ -3115,14 +3115,14 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_cool_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备是否处在制冷状态下
+        每小时水蓄能设备是否处在蓄冷状态下
         """
         self.waterStorageTank_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_heat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备是否处在制热状态下
+        每小时水蓄能设备是否处在蓄热状态下
         """
         self.waterStorageTank_gheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
@@ -3141,7 +3141,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储能功率 制冷状态下
+        每小时水蓄能设备储能功率 蓄冷状态下
         """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
@@ -3150,7 +3150,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储能功率 制热状态下
+        每小时水蓄能设备储能功率 蓄热状态下
         """
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
@@ -3168,38 +3168,38 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         水蓄能设备年运维费用
         """
 
-    def constraints_register(self, model: Model, register_period_constraints, day_node):
+    def constraints_register(self, model: Model, register_period_constraints:int, day_node:int):
         """
         定义水蓄能类的约束条件:
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+地源热泵状态下设备数
-        4. 制冷下设备数≦水蓄能机组总体积*制冷模式下水蓄能罐的利用率
-           制冷下设备数≦水储能罐在制冷状态下*bigNumber
-           制冷下设备数≧0
-           制冷下设备数≧水蓄能机组总体积*制冷模式下水蓄能罐的利用率-(1-水储能罐在制冷状态量)*bigNumber
-        5. 制热下设备数≦水蓄能机组总体积*制热模式下水蓄能罐的利用率
-           制热下设备数≦水储能罐在制热状态下*bigNumber
-           制热下设备数≧0
-           制热下设备数≧水蓄能机组总体积*制热模式下水蓄能罐的利用率-(1-水储能罐在制热状态量)*bigNumber
+        4. 蓄冷下设备数≦水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率
+           蓄冷下设备数≦水储能罐在蓄冷状态下*bigNumber
+           蓄冷下设备数≧0
+           蓄冷下设备数≧水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率-(1-水储能罐在蓄冷状态量)*bigNumber
+        5. 蓄热下设备数≦水蓄能机组总体积*蓄热模式下水蓄能罐的利用率
+           蓄热下设备数≦水储能罐在蓄热状态下*bigNumber
+           蓄热下设备数≧0
+           蓄热下设备数≧水蓄能机组总体积*制热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量)*bigNumber
         6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
            地源热泵下设备数≦水储能罐在地源热泵状态下*bigNumber
            地源热泵下设备数≧0
            地源热泵下设备数≧水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率-(1-水储能罐在地源热泵状态冷量)*bigNumber
         7. 水储能罐在制冷状态+水储能罐在制热状态+水储能罐在地源热泵状态=1
-        8. -bigNumber*水储能罐在制冷状态量≦水储能罐在制冷状态下功率≦bigNumber*水储能罐在制冷状态量
-           -(1-水储能罐在制冷状态量)*bigNumber≦水储能罐在制冷状态下功率≦(1-水储能罐在制冷状态量)*bigNumber
-        9. -bigNumber*水储能罐在制热状态量≦水储能罐在制热状态下功率≦bigNumber*水储能罐在制热状态量
-           -(1-水储能罐在制热状态量)*bigNumber≦水储能罐在制热状态下功率≦(1-水储能罐在制热状态量)*bigNumber
+        8. -bigNumber*水储能罐在蓄冷状态量≦水储能罐在蓄冷状态下功率≦bigNumber*水储能罐在蓄冷状态量
+           -(1-水储能罐在蓄冷状态量)*bigNumber≦水储能罐在蓄冷状态下功率≦(1-水储能罐在蓄冷状态量)*bigNumber
+        9. -bigNumber*水储能罐在蓄热状态量≦水储能罐在蓄热状态下功率≦bigNumber*水储能罐在蓄热状态量
+           -(1-水储能罐在蓄热状态量)*bigNumber≦水储能罐在蓄热状态下功率≦(1-水储能罐在蓄热状态量)*bigNumber
         10. -bigNumber*水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber*水储能罐在地源热泵状态量
            -(1-水储能罐在地源热泵状态量)*bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量)*bigNumber
         11. 水储能机组年化成本=水储能罐总体积*单位体积价格/20
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            register_period_constraints ():
-            day_node ():
+            register_period_constraints (int): 注册周期约束为1
+            day_node (int): 一天时间节点为24
         """
         bigNumber = 1e10
         hourRange = range(0, self.num_hour)
@@ -3391,11 +3391,11 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             groundSourceSteamGenerator_device_max (int)：表示地热蒸汽发生器的最大数量
-            groundSourceSteamGenerator_price (float)：表示地热蒸汽发生器的单价
-            groundSourceSteamGeneratorSolidHeatStorage_price:
-            electricity_price (float): 电价
-            case_ratio: 不同工况下制热量和制冷量的比值
-            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+            groundSourceSteamGenerator_price (float): 表示地热蒸汽发生器的单价
+            groundSourceSteamGeneratorSolidHeatStorage_price (float): 
+            electricity_price (np.ndarray): 电价
+            efficiency (float): 效率参数
+            device_name (str): 地缘蒸汽发生器机组名称，默认为"groundSourceSteamGenerator"
         """
         IntegratedEnergySystem(device_name)
         GroundSourceSteamGenerator.index += 1
@@ -3409,6 +3409,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        电锅炉机组等效单位设备数 大于零的实数
         """
         self.power_groundSourceSteamGenerator: List[
             ContinuousVarType
