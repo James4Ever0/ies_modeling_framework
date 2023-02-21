@@ -1010,12 +1010,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             name="power_troughPhotoThermal_steam{0}".format(TroughPhotoThermal.index),
         )
         """
+        槽式光热机组每小时产蒸汽功率 实数变量列表
         """
         self.troughPhotoThermal_device_max = troughPhotoThermal_device_max
-        self.troughPhotoThermalSolidHeatStorage_device_max = (
+        self.troughPhotoThermalSolidHeatStorage_device_max :float= (
             troughPhotoThermal_device_max * 6
         )
         """
+        固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
         self.troughPhotoThermal_price = troughPhotoThermal_price
         self.troughPhotoThermalSolidHeatStorage_price = (
@@ -1028,6 +1030,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
         )
         """
+        槽式光热年运维成本
         """
         self.efficiency = efficiency
 
@@ -1044,10 +1047,19 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             stateOfCharge_max=1,
         )
         """
+        固态储热设备初始化为`EnergyStorageSystem`
         """
 
     def constraints_register(self, model: Model):
         """
+        定义槽式光热机组约束条件：
+        
+        1. 0 <= 槽式光热装机量 <= 最大装机量
+        2. 0 <= <= 
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+
         """
         hourRange = range(0, self.num_hour)
         self.troughPhotoThermalSolidHeatStorage_device.constraints_register(model)
@@ -3136,9 +3148,10 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         定义水蓄能类的约束条件:
         
         1. 0≦机组设备数≦最大设备量
-        2. 
-        3. 
-        
+        2. 0≦水蓄能机组总体积≦最大体积量
+        3. 水储能罐储能系统设备数=制冷下设备数+制热下设备数+地源热泵下设备数
+        4. 制冷下设备数≦水蓄能机组总体积
+
         Args:
             model (docplex.mp.model.Model): 求解模型实例
             register_period_constraints ():
