@@ -550,7 +550,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11. 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`self.energyStorageSystem[i] == self.energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
+        11. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
 
 
         Args:
@@ -809,7 +809,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )  # 充电
         """
-        模型中的二元变量列表,长度为 num_h,表示每小时储能装置是否处于充电状态。
+        模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于充电状态。
         """
         self.discharge_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -818,7 +818,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )  # 放电
         """
-        模型中的二元变量列表,长度为 num_h,表示每小时储能装置是否处于放电状态。
+        模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于放电状态。
         """
         # 效率
         self.efficiency = efficiency
@@ -842,7 +842,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         7. 充电功率和放电功率二选一
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
-        10. 如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        10. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
         11. 这里面有两个初始化搞不懂
 
 
@@ -2994,8 +2994,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             waterStorageTank_Volume_max (float): 单个水罐的最大体积
             volume_price (float): 单位体积储水费用
-            powerConversionSystem_price (float): 能源转换系统设备价格
-            conversion_rate_max (float): 最大输入输出速率
+            powerConversionSystem_price (float): 电力转换系统设备价格
+            conversion_rate_max (float): 最大充放电倍率
             efficiency (float): 水罐储水效率参数
             energyStorageSystem_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
