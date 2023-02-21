@@ -843,7 +843,6 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
-        11. 这里面有两个初始化搞不懂
 
 
         Args:
@@ -914,7 +913,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
-        # TODO: figure out init
+        # TODO: figure out init (fixing init error)
         model.add_constraints(
             self.energyStorageSystem[0]
             == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
@@ -989,7 +988,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             troughPhotoThermal_price (float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price (float): 槽式光热储能设备价格
             intensityOfIllumination0 (np.ndarray): 24小时光照强度
-            eff (float): 效率
+            efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
         IntegratedEnergySystem(device_name)
@@ -1010,10 +1009,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="power_troughPhotoThermal_steam{0}".format(TroughPhotoThermal.index),
         )
+        """
+        """
         self.troughPhotoThermal_device_max = troughPhotoThermal_device_max
         self.troughPhotoThermalSolidHeatStorage_device_max = (
             troughPhotoThermal_device_max * 6
         )
+        """
+        """
         self.troughPhotoThermal_price = troughPhotoThermal_price
         self.troughPhotoThermalSolidHeatStorage_price = (
             troughPhotoThermalSolidHeatStorage_price
@@ -1024,6 +1027,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.annualized: ContinuousVarType = model.continuous_var(
             name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
         )
+        """
+        """
         self.efficiency = efficiency
 
         self.troughPhotoThermalSolidHeatStorage_device = EnergyStorageSystem(
@@ -1038,8 +1043,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             stateOfCharge_min=0,
             stateOfCharge_max=1,
         )
+        """
+        """
 
     def constraints_register(self, model: Model):
+        """
+        """
         hourRange = range(0, self.num_hour)
         self.troughPhotoThermalSolidHeatStorage_device.constraints_register(model)
         model.add_constraint(self.troughPhotoThermal_device >= 0)
@@ -1077,7 +1086,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 # TODO: fix the name issue of CHP devices
 class CombinedHeatAndPower(IntegratedEnergySystem):
     """
-    燃气轮机类
+    热电联产类
     """
 
     index = 0
@@ -1097,12 +1106,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max (float): 表示燃气轮机的最大数量
-            combinedHeatAndPower_price (float): 表示燃气轮机的单价
+            combinedHeatAndPower_num_max (float): 表示热电联产机组的最大设备数量
+            combinedHeatAndPower_price (float): 表示热电联产设备的单价
             gas_price (np.ndarray): 表示燃气的单价
-            combinedHeatAndPower_single_set (float): 表示每台燃气轮机的装机容量
-            drratio (float): 表示燃气轮机的热电比。
-            device_name (str): 燃气轮机机组名称,默认为"combinedHeatAndPower"
+            combinedHeatAndPower_single_set (float): 表示每台热电联产设备的装机容量
+            drratio (float): 表示热电联产设备的电热比。
+            device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
         CombinedHeatAndPower.index += 1
@@ -1111,7 +1120,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_device{0}".format(CombinedHeatAndPower.index)
         )
         """
-        实数型,表示燃气轮机的总装机容量
+        实数型,表示热电联产的总装机容量
         """
         self.power_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1120,7 +1129,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
         """
-        实数型列表,表示燃气轮机在每个时段的发电量
+        实数型列表,表示热电联产在每个时段的发电量
         """
         self.heat_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1129,7 +1138,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
         """
-        实数型列表,表示燃气轮机在每个时段的供暖热水量
+        实数型列表,表示热电联产在每个时段的供暖热水量
         """
         self.gas_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1138,7 +1147,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )  # 时时耗气量? 时时是什么意思 实时？
         """
-        实数型列表,表示燃气轮机在每个时段的耗气量
+        实数型列表,表示热电联产在每个时段的耗气量
         """
         self.combinedHeatAndPower_price = combinedHeatAndPower_price
         self.gas_price = gas_price
@@ -1149,19 +1158,19 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_open_flag{0}".format(CombinedHeatAndPower.index),
         )
         """
-        二元变量列表,表示燃气轮机在每个时段是否启动
+        二元变量列表,表示热电联产在每个时段是否启动
         """
         self.wasteGasAndHeat_water_flag: BinaryVarType = model.binary_var(
             name="wasteGasAndHeat_water_flag{0}".format(CombinedHeatAndPower.index)
         )
         """
-        二元变量,表示燃气轮机是否用于供暖热水
+        二元变量,表示热电联产是否用于供暖热水
         """
         self.wasteGasAndHeat_steam_flag: BinaryVarType = model.binary_var(
             name="wasteGasAndHeat_steam_flag{0}".format(CombinedHeatAndPower.index)
         )
         """
-        二元变量,表示燃气轮机是否用于供热蒸汽
+        二元变量,表示热电联产是否用于供热蒸汽
         """
         # 机组数量
         self.combinedHeatAndPower_run_num: List[
@@ -1171,19 +1180,19 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
         )
         """
-        整数型列表,表示每个时段启动的燃气轮机数量
+        整数型列表,表示每个时段启动的热电联产数量
         """
         self.combinedHeatAndPower_num: IntegerVarType = model.integer_var(
             name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
         )
         """
-        整数型,表示燃气轮机数量
+        整数型,表示热电联产数量
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
         )
         """
-        实数型,表示燃气轮机年化投资成本
+        实数型,表示热电联产年化投资成本
         """
         self.gas_cost: ContinuousVarType = model.continuous_var(
             name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
@@ -1208,7 +1217,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
         """
-        方法内部还创建了三个 "Exchanger" 对象,分别用于模拟燃气轮机的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部,它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        方法内部还创建了三个 "Exchanger" 对象,分别用于模拟热电联产的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部,它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
         self.wasteGasAndHeat_water_device = Exchanger(
@@ -1232,14 +1241,14 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 燃气轮机装机量=燃气轮机机组数*燃气轮机的装机容量
-        3. 每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率
-        4. 每个燃气轮机的热功率必须小于等于燃气轮机的总热功率
-        5. 每个燃气轮机的热功率必须小于等于燃气轮机开启时的热功率
-        6. 确定每个时段燃气轮机开启的台数,并且每个时段燃气轮机开启的总功率必须等于燃气轮机的总热功率
-        7. 燃气轮机的运行台数必须在0到总台数之间
-        8. 燃气轮机的热功率必须等于燃气轮机的电功率乘以热电比
-        9. 燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5
+        2. 热电联产装机量=热电联产机组数*热电联产的装机容量
+        3. 每个热电联产的热功率必须大于等于热电联产的最小热功率
+        4. 每个热电联产的热功率必须小于等于热电联产的总热功率
+        5. 每个热电联产的热功率必须小于等于热电联产开启时的热功率
+        6. 确定每个时段热电联产开启的台数,并且每个时段热电联产开启的总功率必须等于热电联产的总热功率
+        7. 热电联产的运行台数必须在0到总台数之间
+        8. 热电联产的热功率必须等于热电联产的电功率乘以热电比
+        9. 热电联产的燃气消耗量必须等于热电联产的总热功率除以燃气发电机组的热效率 3.5
         10. 所有时间段的天燃气消费和天燃气价格的乘积相加来计算总的天燃气成本
         11. 确保了与余气余热系统的热交换只使用一种类型(热水或蒸汽)
         12. 根据二元决策变量wasteGasAndHeat_water_flag和一个大常数bigM来设定与余气余热系统的最大热交换能力。如果wasteGasAndHeat_water_flag为0,该约束就会失去作用。
@@ -3069,21 +3078,21 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_cool_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储冷状态
+        每小时水蓄能设备是否处在制冷状态下
         """
         self.waterStorageTank_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_heat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储热状态
+        每小时水蓄能设备是否处在制热状态下
         """
         self.waterStorageTank_gheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_gheat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储温状态
+        每小时水蓄能设备是否处在地源热泵状态下
         """
         self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
@@ -3095,7 +3104,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储冷功率
+        每小时水蓄能设备储能功率 制冷状态下
         """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
@@ -3104,8 +3113,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能设备储热功率
-        """
+        每小时水蓄能设备储能功率 制热状态下
+        """ 
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -3113,7 +3122,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
         """
-        每小时水蓄能设备储温功率
+        每小时水蓄能设备储能功率 地源热泵状态下
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
