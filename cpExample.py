@@ -3830,13 +3830,17 @@ class CitySupply(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        citySupplied_device_max,
-        device_price,
-        run_price,
+        citySupplied_device_max:float,
+        device_price:float,
+        run_price:float,
         efficiency: float,
         device_name: str = "city_supply",
     ):
         """
+        创建一个市政能源类
+        
+        Args:
+
         """
         IntegratedEnergySystem(device_name)
         CitySupply.index += 1
