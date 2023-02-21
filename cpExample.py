@@ -997,12 +997,18 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.troughPhotoThermal_device: ContinuousVarType = model.continuous_var(
             name="troughPhotoThermal_device{0}".format(TroughPhotoThermal.index)
         )
+        """
+        槽式光热机组设备数 实数变量
+        """
         self.power_troughPhotoThermal: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
         )
+        """
+        槽式光热机组每小时产电功率 实数变量列表
+        """
         self.power_troughPhotoThermal_steam: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -1055,7 +1061,11 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         定义槽式光热机组约束条件：
         
         1. 0 <= 槽式光热装机量 <= 最大装机量
-        2. 0 <= <= 
+        2. 0 <= 槽式光热机组每小时发电功率 <= 槽式光热装机量 * 每小时光照强度 * 机组效率
+        3. 槽式光热机组每小时发电功率 + 固体储能机组每小时充放电功率 == 槽式光热机组每小时产蒸汽功率
+        4. 槽式光热机组每小时产蒸汽功率 >= 0
+        5. 槽式光热年运维成本 ==  self.troughPhotoThermal_device * self.troughPhotoThermal_price / 15
+            +固体储能机组年运维成本
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3150,7 +3160,11 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷下设备数+制热下设备数+地源热泵下设备数
-        4. 制冷下设备数≦水蓄能机组总体积
+        4. 制冷下设备数≦水蓄能机组总体积*制冷模式下水蓄能罐的利用率
+           制冷下设备数≦
+        5. 制热下设备数≦水蓄能机组总体积*制热模式下水蓄能罐的利用率
+        6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
+        
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
