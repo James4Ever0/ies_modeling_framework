@@ -1201,7 +1201,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
         )
         """
-        整数型列表,表示每个时段启动的热电联产数量
+        整数型列表,表示每个时段启动的热电联产设备数量
         """
         self.combinedHeatAndPower_num: IntegerVarType = model.integer_var(
             name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
@@ -1219,13 +1219,15 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
         )  # 燃气费用统计
         """
-        实数型,表示燃气费用
+        实数型,表示总燃气费用
         """
         self.combinedHeatAndPower_num_max = combinedHeatAndPower_num_max
         self.combinedHeatAndPower_single_device = combinedHeatAndPower_single_device
         self.combinedHeatAndPower_limit_down_ratio = (
             0.2  # ? devices cannot be turned down more than 20% ? what is this?
         )
+        """
+        """
 
         self.power_to_heat_ratio = power_to_heat_ratio
 
@@ -1238,7 +1240,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
         """
-        方法内部还创建了三个 "Exchanger" 对象,分别用于模拟热电联产的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部,它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        烟气余热回收热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
         self.wasteGasAndHeat_water_device = Exchanger(
@@ -1249,6 +1251,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
 
+        """
+        供暖热水热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        """
+
         self.wasteGasAndHeat_steam_device = Exchanger(
             self.num_hour,
             model,
@@ -1256,6 +1262,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
+        
+        """
+        供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        """
+
 
     def constraints_register(self, model: Model):
         """
