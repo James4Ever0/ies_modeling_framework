@@ -550,7 +550,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11. 如果register_period_constraints参数为1,表示将两天之间的储能量连接约束为仅考虑;如果register_period_constraints参数不为1,表示将两天之间的储能量连接约束为小时级别根据充放电量的连续约束。
+        11. 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`self.energyStorageSystem[i] == self.energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
 
 
         Args:
@@ -661,7 +661,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 == self.energyStorageSystem_init * self.energyStorageSystem_device
             )
             # 两天之间的连接
-            # 昨天的电量加上今天的变化 得到今天的电量
+            # 上一小时的电量加上这一小时的变化 得到此时的电量
             model.add_constraints(
                 self.energyStorageSystem[i]
                 == self.energyStorageSystem[i - 1]
@@ -2197,7 +2197,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             device_max (float): 表示水冷螺旋机的最大数量。
             device_price (float): 表示水冷螺旋机的单价。
             electricity_price (np.ndarray): 电价
-            case_ratio (float): 不同工况下制热量和制冷量的比值
+            case_ratio (float): 不同工况下水冷螺旋机利用率
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_screw"
         """
         IntegratedEnergySystem(device_name)
