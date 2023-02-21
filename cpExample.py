@@ -2261,7 +2261,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             name="waterCooledScrewMachine_xcool_flag{0}".format(WaterCooledScrew.index),
         )
         """
-        二元变量列表,表示水冷螺旋机的制冷制冷状态
+        二元变量列表,表示水冷螺旋机的额外制冷制冷状态
         """
 
         self.electricity_waterCooledScrewMachine: List[
@@ -2272,16 +2272,39 @@ class WaterCooledScrew(IntegratedEnergySystem):
                 WaterCooledScrew.index
             ),
         )
+        """
+        连续变量列表,表示水冷螺旋机的用电量
+        """
         self.power_waterCooledScrewMachine: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterCooledScrewMachine{0}".format(WaterCooledScrew.index),
         )
+        """
+        连续变量列表,表示水冷螺旋机的功率
+        """
         self.coefficientOfPerformance_waterCooledScrewMachine_cool = 5
         self.coefficientOfPerformance_waterCooledScrewMachine_xcool = 5
 
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大设备量
+        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制热量/制冷量,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态*bigNumber
+        3. 0≦水冷螺旋机的额外制冷功率≦水冷螺旋机设备数* (况2)制热量/制冷量,0≦水冷螺旋机的额外制冷功率≦水冷螺旋机制冷状态*bigNumber
+        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)制热量/制冷量,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
+        5. 0≦水源热泵的额外制热功率≦水源热泵设备数* (况4)制热量/制冷量,0≦水源热泵的额外制热功率≦水源热泵额外制热状态*bigNumber
+        6. 制冷状态+额外制冷状态+制热状态+额外制热状态=1
+        7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数+设备制热功率/制热性能系数+设备额外制热功率/额外制热性能系数
+        8. 热泵总功率=制冷功率+额外制冷功率+制热功率+额外制热功率
+        9. 用电成本=每个时刻(设备用电量*电价)的总和
+        10. 水源热泵的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(0 <= self.waterCooledScrewMachine_device)
         model.add_constraint(self.waterCooledScrewMachine_device <= self.device_max)
@@ -2723,10 +2746,10 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 地源热泵设备机组最大装机量
+            device_max (float): 地源热泵机组最大装机量
             device_price (float): 设备单价
             electricity_price (np.ndarray): 24小时用电价格
-            device_name (str): 光伏机组名称，默认为"geothermal_heat_pump"
+            device_name (str): 地源热泵机组名称，默认为"geothermal_heat_pump"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -2735,14 +2758,23 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self.groundSourceHeatPump_device: ContinuousVarType = model.continuous_var(
             name="groundSourceHeatPump_device{0}".format(GeothermalHeatPump.index)
         )
+        """
+        地源热泵机组设备数量
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="GeothermalHeatPumpower_annualized{0}".format(GeothermalHeatPump.index)
         )
+        """
+        地源热泵机组年运维成本
+        """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="GeothermalHeatPumpower_electricity_sum{0}".format(
                 GeothermalHeatPump.index
             )
         )
+        """
+        地源热泵每小时耗电费用
+        """
         self.device_price = device_price
         self.device_max = device_max
 
@@ -2752,15 +2784,33 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="electricity_groundSourceHeatPump{0}".format(GeothermalHeatPump.index),
         )
+        """
+        地源热泵每小时耗电量
+        """
         self.power_groundSourceHeatPump: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_groundSourceHeatPump{0}".format(GeothermalHeatPump.index),
         )
+        """
+        地源热泵每小时输出功率
+        """
         self.coefficientOfPerformance_groundSourceHeatPump = 5
+        """
+        地源热泵设备运行效率参数 默认为5
+        """
 
     def constraints_register(self, model: Model):
+        """
+        定义地源热泵机组约束条件：
+        
+        1. 0 <= 机组设备数量 <= 最大装机量
+        2. 
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
 
         model.add_constraint(0 <= self.groundSourceHeatPump_device)
