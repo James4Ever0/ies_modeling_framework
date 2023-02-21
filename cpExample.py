@@ -3390,10 +3390,10 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            groundSourceSteamGenerator_device_max (int)：表示地热蒸汽发生器的最大数量
+            groundSourceSteamGenerator_device_max (int): 表示地热蒸汽发生器的最大数量
             groundSourceSteamGenerator_price (float): 表示地热蒸汽发生器的单价
-            groundSourceSteamGeneratorSolidHeatStorage_price (float): 
-            electricity_price (np.ndarray): 电价
+            groundSourceSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器固态储热设备单价
+            electricity_price (np.ndarray): 每小时电价
             efficiency (float): 效率参数
             device_name (str): 地源蒸汽发生器机组名称，默认为"groundSourceSteamGenerator"
         """
@@ -3493,7 +3493,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2.
+        2.0≦每个时段的地源蒸汽发生器的功率≦地源蒸汽发生器设备
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
