@@ -3836,23 +3836,30 @@ class CitySupply(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "city_supply",
     ):
+        """
+        """
         IntegratedEnergySystem(device_name)
         CitySupply.index += 1
         self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = model.continuous_var(
             name="citySupplied_device{0}".format(CitySupply.index)
         )
-
+        """
+        """
         self.heat_citySupplied: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_citySupplied{0}".format(CitySupply.index),
         )
+        """
+        """
         self.heat_citySupplied_from: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_citySupplied_from{0}".format(CitySupply.index),
         )
+        """
+        """
         self.citySupplied_device_max = citySupplied_device_max
         self.run_price = run_price
         self.device_price = device_price
@@ -3861,11 +3868,17 @@ class CitySupply(IntegratedEnergySystem):
         self.citySupplied_cost: ContinuousVarType = model.continuous_var(
             name="citySupplied_cost{0}".format(CitySupply.index)
         )
+        """
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="citySupplied_annualized{0}".format(CitySupply.index)
         )
+        """
+        """
 
     def constraints_register(self, model: Model):
+        """
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.citySupplied_device >= 0)
         model.add_constraint(self.citySupplied_device <= self.citySupplied_device_max)
@@ -4289,7 +4302,7 @@ steam_load = load.get_power_load(num_hour0)
 
 
 if __name__ == "__main__":
-    # 光照、能源价格
+    # 获取光照、能源价格
     ##########################################
     
     resource = ResourceGet()
@@ -4486,7 +4499,7 @@ if __name__ == "__main__":
         ratio_gheat=20,
     )
 
-    waterStorageTank.constraints_register(model1, 1, day_node)
+    waterStorageTank.constraints_register(model1, register_period_constraints=1, day_node=day_node)
     # highTemperaturehotWater合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_highTemperaturehotWater_sum"
