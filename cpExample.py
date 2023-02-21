@@ -2389,11 +2389,11 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (int): 表示水冷螺旋机的最大数量。
-            device_price (float): 表示水冷螺旋机的单价。
+            device_max (float): 表示双工况机组的最大数量。
+            device_price (float): 表示双工况机组的单价。
             electricity_price (float): 电价
             case_ratio: 不同工况下制热量和制冷量的比值
-            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+            device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -2406,16 +2406,25 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 )
             )
         )
+        """
+        双工况机组等效单位设备数 大于零的实数
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="DoubleWorkingConditionUnit_annualized{0}".format(
                 DoubleWorkingConditionUnit.index
             )
         )
+        """
+        连续变量，表示双工况机组的年化费用
+        """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="DoubleWorkingConditionUnit_electricity_sum{0}".format(
                 DoubleWorkingConditionUnit.index
             )
         )
+        """
+        连续变量，表示双工况机组的用电成本
+        """
         self.device_price = device_price
         self.device_max = device_max
         self.case_ratio = case_ratio
@@ -2427,6 +2436,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表，表示双工况机组的制冷功率
+        """
 
         self.doubleWorkingConditionUnit_cool_flag: List[
             BinaryVarType
@@ -2436,6 +2448,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        二元变量列表，表示热交换器的年化费用
+        """
 
         self.power_doubleWorkingConditionUnit_ice: List[
             ContinuousVarType
@@ -2872,7 +2887,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init,
+        energyStorageSystem_init:float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         ratio_cool: float,
@@ -2886,18 +2901,18 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            waterStorageTank_Volume_max: (float):
-            volume_price: (float):
-            powerConversionSystem_price: (float):
-            conversion_rate_max: (float):
-            efficiency: (float):
-            (energyStorageSystem_init):
-            stateOfCharge_min: (float):
-            stateOfCharge_max: (float):
-            ratio_cool: (float):
-            ratio_heat: (float):
-            ratio_gheat: (float):
-            device_name: (str): "water_energy_storage",
+            waterStorageTank_Volume_max (float): 单个水罐的最大体积
+            volume_price (float):
+            powerConversionSystem_price (float):
+            conversion_rate_max (float):
+            efficiency (float):
+            energyStorageSystem_init ():
+            stateOfCharge_min (float):
+            stateOfCharge_max (float):
+            ratio_cool (float):
+            ratio_heat (float):
+            ratio_gheat (float):
+            device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -2915,6 +2930,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             stateOfCharge_min,
             stateOfCharge_max,
         )
+        """
+        水蓄能罐，由可变储能设备`EnergyStorageSystemVariable`创建而来
+        """
         self.index = EnergyStorageSystemVariable.index
         self.waterStorageTank_device_cool: List[
             ContinuousVarType
@@ -2922,35 +2940,49 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
+        """
+        """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
+        """
+        """
         self.waterStorageTank_device_gheat: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_gheat{0}".format(self.index),
         )
+        """
+        """
         self.volume_price = volume_price
         self.waterStorageTank_Volume_max = waterStorageTank_Volume_max
         self.waterStorageTank_Volume: ContinuousVarType = model.continuous_var(
             name="waterStorageTank_V{0}".format(self.index)
         )
+        """
+        """
         self.waterStorageTank_cool_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_cool_flag{0}".format(self.index),
         )
+        """
+        """
         self.waterStorageTank_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_heat_flag{0}".format(self.index),
         )
+        """
+        """
         self.waterStorageTank_gheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_gheat_flag{0}".format(self.index),
         )
+        """
+        """
         self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
         self.ratio_gheat = ratio_gheat
@@ -2960,23 +2992,39 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
+        """
+        """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
+        """
+        """
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
+        """
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
         )
+        """
+        """
 
     def constraints_register(self, model: Model, register_period_constraints, day_node):
+        """
+        
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            register_period_constraints ():
+            day_node ():
+        """
         bigNumber = 1e10
         hourRange = range(0, self.num_hour)
         self.waterStorageTank.constraints_register(
