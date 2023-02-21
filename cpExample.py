@@ -4386,7 +4386,7 @@ if __name__ == "__main__":
 
     #蒸汽发生装置及参数配置
     ##########################################
-    # highTemperature蒸汽
+    # 槽式光热设备
     troughPhotoThermal = TroughPhotoThermal(
         num_hour0,
         model1,
@@ -4397,6 +4397,8 @@ if __name__ == "__main__":
         efficiency=0.8,
     )
     troughPhotoThermal.constraints_register(model1)
+    
+    # 地热蒸汽发生器
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
         num_hour0,
         model1,
@@ -4407,6 +4409,8 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     groundSourceSteamGenerator.constraints_register(model1)
+    
+    # 热电联产机组
     combinedHeatAndPower = CombinedHeatAndPower(
         num_hour0,
         model1,
@@ -4417,6 +4421,8 @@ if __name__ == "__main__":
         power_to_heat_ratio=1.2,  # dr? 电热?
     )
     combinedHeatAndPower.constraints_register(model1)
+    
+    # 燃气锅炉
     gasBoiler = GasBoiler(
         num_hour0,
         model1,
@@ -4426,6 +4432,8 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     gasBoiler.constraints_register(model1)
+    
+    
     municipalSteam = CitySupply(
         num_hour0,
         model1,
@@ -4495,7 +4503,8 @@ if __name__ == "__main__":
         device_name="platePhotothermal",
     )  # platePhotothermal
     platePhotothermal.constraints_register(model1)
-    # 4
+    
+    # 相变蓄热
     phaseChangeHeatStorage = EnergyStorageSystem(
         num_hour0,
         model1,
@@ -4509,7 +4518,8 @@ if __name__ == "__main__":
         stateOfCharge_max=1,
     )
     phaseChangeHeatStorage.constraints_register(model1)
-    # 5
+    
+    # 市政热水
     municipalHotWater = CitySupply(
         num_hour0,
         model1,
