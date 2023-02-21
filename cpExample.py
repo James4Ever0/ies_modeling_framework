@@ -550,7 +550,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11. 如果register_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果register_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        11. 如果register_period_constraints参数为1,表示将两天之间的储能量连接约束为仅考虑;如果register_period_constraints参数不为1,表示将两天之间的储能量连接约束为小时级别根据充放电量的连续约束。
 
 
         Args:
@@ -646,6 +646,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # this is a flag, not a numeric value
+            # 今天的电量等于daynode-1天以前的电量, 当day_node== 24时只考虑i== 23的情况
             model.add_constraints(
                 self.energyStorageSystem[i]
                 == self.energyStorageSystem[i - (day_node - 1)]  # 1+i-day_node
@@ -660,6 +661,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 == self.energyStorageSystem_init * self.energyStorageSystem_device
             )
             # 两天之间的连接
+            # 昨天的电量加上今天的变化 得到今天的电量
             model.add_constraints(
                 self.energyStorageSystem[i]
                 == self.energyStorageSystem[i - 1]
@@ -2292,8 +2294,8 @@ class WaterCooledScrew(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制热量/制冷量,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态*bigNumber
-        3. 0≦水冷螺旋机的额外制冷功率≦水冷螺旋机设备数* (况2)制热量/制冷量,0≦水冷螺旋机的额外制冷功率≦水冷螺旋机额外制冷状态*bigNumber
+        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态*bigNumber
+        3. 0≦水冷螺旋机的额外制冷功率≦水冷螺旋机设备数* (况2)额外制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的额外制冷功率≦水冷螺旋机额外制冷状态*bigNumber
         4. 制冷状态+额外制冷状态=1
         5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数
         6. 热泵总功率=制冷功率+额外制冷功率
@@ -2392,7 +2394,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             device_max (float): 表示双工况机组的最大数量。
             device_price (float): 表示双工况机组的单价。
             electricity_price (np.ndarray): 电价
-            case_ratio (float): 不同工况下制冰量和制冷量的比值
+            case_ratio (float): 不同工况下双工况机组利用率
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2508,8 +2510,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制冰量/制冷量,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
-        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制冰量/制冷量,0≦双工况机组的制冰功率≦双工况机组制冰状态*bigNumber
+        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制冷情况下双工况机组利用率,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
+        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制冰情况下双工况机组利用率,0≦双工况机组的制冰功率≦双工况机组制冰状态*bigNumber
         4. 制冷状态+制冰状态=1
         5. 双工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数
         6. 热泵总功率=制冷功率+制冰功率
@@ -2607,7 +2609,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             device_max (float): 表示三工况机组的最大数量
             device_price (float): 表示三工况机组的单价
             electricity_price (np.ndarray): 电价
-            case_ratio (float): 不同工况下制热量和制冷量的比值
+            case_ratio (float): 不同工况下三工况机组利用率
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2747,9 +2749,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦三工况机组的制冷功率≦三工况机组设备数* (况1)制热量/制冷量,0≦三工况机组的制冷功率≦三工况机组制冷状态*bigNumber
-        3. 0≦三工况机组的制冰功率≦三工况机组设备数* (况2)制热量/制冷量,0≦三工况机组的制冰功率≦三工况机组制冰状态*bigNumber
-        4. 0≦三工况机组的制热功率≦三工况机组设备数* (况3)制热量/制冷量,0≦三工况机组的制热功率≦三工况机组制热状态*bigNumber
+        2. 0≦三工况机组的制冷功率≦三工况机组设备数* (况1)制冷情况下三工况机组利用率,0≦三工况机组的制冷功率≦三工况机组制冷状态*bigNumber
+        3. 0≦三工况机组的制冰功率≦三工况机组设备数* (况2)制冰情况下三工况机组利用率,0≦三工况机组的制冰功率≦三工况机组制冰状态*bigNumber
+        4. 0≦三工况机组的制热功率≦三工况机组设备数* (况3)制热情况下三工况机组利用率,0≦三工况机组的制热功率≦三工况机组制热状态*bigNumber
         5. 制冷状态+制冰状态+制热状态=1
         6. 三工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数+设备制热功率/制热性能系数
         7. 热泵总功率=制冷功率+制冰功率+制热功率
