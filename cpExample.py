@@ -705,7 +705,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init: int,
+        energyStorageSystem_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem_variable",
@@ -715,13 +715,13 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price(float): 储能装置的购置价格。
-            powerConversionSystem_price(float): 储能装置与电网之间的 PCS 转换价格。
-            eff(float):储能装置的充放电效率。
-            conversion_rate_max(float): 储能装置的最大倍率。
-            energyStorageSystem_init: 储能装置的初始能量。
-            stateOfCharge_min(float):储能装置的最小储能量百分比。
-            stateOfCharge_max(float):储能装置的最大储能量百分比。
+            energyStorageSystem_price (float): 储能装置的购置价格。
+            powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
+            eff (float):储能装置的充放电效率。
+            conversion_rate_max (float): 储能装置的最大倍率。
+            energyStorageSystem_init (float): 储能装置的初始能量。
+            stateOfCharge_min (float):储能装置的最小储能量百分比。
+            stateOfCharge_max (float):储能装置的最大储能量百分比。
             device_name (str): 可变容量储能系统机组名称,默认为"energyStorageSystem_variable"
         """
         IntegratedEnergySystem(device_name)
@@ -2585,7 +2585,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
 
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
-    
+    """
+    三工况机组类
+    """
     index = 0
 
     def __init__(
@@ -2598,6 +2600,16 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         case_ratio,
         device_name="tripleWorkingConditionUnit",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            device_max (float): 表示三工况机组的最大数量
+            device_price (float): 表示三工况机组的单价
+            electricity_price (float): 电价
+            case_ratio: 不同工况下制热量和制冷量的比值
+            device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
+        """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
 
@@ -2610,16 +2622,25 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 )
             )
         )
+        """
+        三工况机组等效单位设备数 大于零的实数
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="TripleWorkingConditionUnit_annualized{0}".format(
                 TripleWorkingConditionUnit.index
             )
         )
+        """
+        连续变量,表示三工况机组的年化费用
+        """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="TripleWorkingConditionUnit_electricity_sum{0}".format(
                 TripleWorkingConditionUnit.index
             )
         )
+        """
+        连续变量,表示三工况机组的用电成本
+        """
         self.device_price = device_price
         self.device_max = device_max
         self.case_ratio = case_ratio
@@ -2631,6 +2652,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示三工况机组的年化费用
+        """
 
         self.tripleWorkingConditionUnit_cool_flag: List[
             BinaryVarType
@@ -2934,7 +2958,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             powerConversionSystem_price (float): 能源转换系统设备价格
             conversion_rate_max (float): 最大输入输出速率
             efficiency (float): 水罐储水效率参数
-            energyStorageSystem_init (): 
+            energyStorageSystem_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
             ratio_cool (float): 机组储藏冷量比例
@@ -2969,7 +2993,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能机组储藏冷水量
         """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
@@ -2978,7 +3002,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能机组储藏热水量
         """
         self.waterStorageTank_device_gheat: List[ # generate?
             ContinuousVarType
@@ -2987,7 +3011,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_gheat{0}".format(self.index),
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能机组储藏温水量
         """
         self.volume_price = volume_price
         self.waterStorageTank_Volume_max = waterStorageTank_Volume_max
@@ -2995,27 +3019,28 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_V{0}".format(self.index)
         )
         """
+        水蓄能机组总体积
         """
         self.waterStorageTank_cool_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_cool_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备状态
+        每小时水蓄能设备储冷状态
         """
         self.waterStorageTank_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_heat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备状态
+        每小时水蓄能设备储热状态
         """
         self.waterStorageTank_gheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_gheat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备状态
+        每小时水蓄能设备储温状态
         """
         self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
@@ -3027,7 +3052,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能设备储冷功率
         """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
@@ -3036,7 +3061,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能设备储热功率
         """
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
@@ -3045,7 +3070,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
         """
-        每小时水蓄能设备
+        每小时水蓄能设备储温功率
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
