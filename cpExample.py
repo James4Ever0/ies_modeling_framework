@@ -917,8 +917,9 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # TODO: figure out init
         model.add_constraints(
             self.energyStorageSystem[0]
-            == self.energyStorageSystem_init * self.energyStorageSystem_device[i]
-            for i in range(1, self.num_hour)
+            == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
+            # for i in range(1, self.num_hour)
+            # since it is init we should not iterate through all variables.
         )
 
         model.add_constraints(
@@ -944,7 +945,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             # TODO: figure out init
             model.add_constraint(
                 self.energyStorageSystem[0]
-                == self.energyStorageSystem_init * self.energyStorageSystem_device
+                == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
+                # since it is init we should not iterate through all variables.
             )
             # 两天之间的连接
             model.add_constraints(
@@ -3002,9 +3004,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             energyStorageSystem_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
-            ratio_cool (float): 机组储藏冷量比例
-            ratio_heat (float): 机组储藏热量比例
-            ratio_gheat (float): 机组储藏温水比例
+            ratio_cool (float): 制冷模式下水蓄能罐的利用率
+            ratio_heat (float): 供暖模式下水蓄能罐的利用率
+            ratio_gheat (float): 地源热泵模式下水蓄能罐的利用率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         IntegratedEnergySystem(device_name)
@@ -3034,7 +3036,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
         """
-        每小时水蓄能机组储藏冷水量
+        每小时水蓄能在制冷模式下的储水量
         """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
@@ -3043,7 +3045,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
         """
-        每小时水蓄能机组储藏热水量
+        每小时水蓄能在供暖模式下的储水量
         """
         self.waterStorageTank_device_gheat: List[ # generate?
             ContinuousVarType
@@ -3052,7 +3054,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_gheat{0}".format(self.index),
         )
         """
-        每小时水蓄能机组储藏温水量
+        每小时水蓄能在地源热泵模式下的储水量
         """
         self.volume_price = volume_price
         self.waterStorageTank_Volume_max = waterStorageTank_Volume_max
