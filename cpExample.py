@@ -4306,12 +4306,12 @@ if __name__ == "__main__":
     
     
     # 柴油发电机
-    dieselEngine = DieselEngine(num_hour0, model1, 320, 750, 2)  
+    dieselEngine = DieselEngine(num_hour0, model1, dieselEngine_device_max=320, device_price=750, run_price=2)
     dieselEngine.constraints_register(model1)
     
     # 光伏
     photoVoltaic = PhotoVoltaic(
-        num_hour0, model1, 5000, 4500, intensityOfIllumination0, 0.8, "PhotoVoltaic"
+        num_hour0, model1, photoVoltaic_device_max=5000,device_price=4500, intensityOfIllumination0=intensityOfIllumination0, efficiency=0.8, device_name="PhotoVoltaic"
     )  
     photoVoltaic.constraints_register(model1)
     
@@ -4329,10 +4329,10 @@ if __name__ == "__main__":
         stateOfCharge_max=1,
     )
     # original: battery
-    batteryEnergyStorageSystem.constraints_register(model1, 1, day_node)
+    batteryEnergyStorageSystem.constraints_register(model1,register_period_constraints= 1,day_node= day_node)
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
-        num_hour0, model1, 5000, 2000, 1000, intensityOfIllumination0, 0.8
+        num_hour0, model1, troughPhotoThermal_device_max=5000, 2000, 1000, intensityOfIllumination0, 0.8
     )
     troughPhotoThermal.constraints_register(model1)
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
