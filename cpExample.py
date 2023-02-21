@@ -3865,7 +3865,7 @@ class CitySupply(IntegratedEnergySystem):
             name="heat_citySupplied{0}".format(CitySupply.index),
         )
         """
-        每小时市政能源热量消耗 实数变量列表
+        每小时市政能源热量实际消耗 实数变量列表
         """
         self.heat_citySupplied_from: List[
             ContinuousVarType
@@ -3874,7 +3874,7 @@ class CitySupply(IntegratedEnergySystem):
             name="heat_citySupplied_from{0}".format(CitySupply.index),
         )
         """
-        每小时市政能源热量输出 实数变量列表
+        每小时市政能源热量输入 实数变量列表
         """
         self.citySupplied_device_max = citySupplied_device_max
         self.run_price = run_price
@@ -3899,7 +3899,9 @@ class CitySupply(IntegratedEnergySystem):
         定义市政能源类内部约束条件：
         
         1. 机组最大装机量 >= 市政能源设备装机量 >= 0
-        2. 每小时市政能源热量消耗
+        2. 市政能源设备装机量 >= 每小时市政能源热量消耗 >= 0
+        3. 每小时市政能源热量消耗 <= 每小时市政能源热量输入 / 能源传输效率
+        4. 市政能源消耗总费用 = sum( 每小时市政能源热量输入)
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4380,8 +4382,8 @@ if __name__ == "__main__":
     batteryEnergyStorageSystem.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
-
     ##########################################
+    
     
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
