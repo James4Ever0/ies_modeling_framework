@@ -3174,7 +3174,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
-        3. 水储能罐储能系统设备数=制冷下设备数+制热下设备数+地源热泵下设备数
+        3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+地源热泵状态下设备数
         4. 制冷下设备数≦水蓄能机组总体积*制冷模式下水蓄能罐的利用率
            制冷下设备数≦水储能罐在制冷状态下*bigNumber
            制冷下设备数≧0
@@ -3192,8 +3192,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
            -(1-水储能罐在制冷状态量)*bigNumber≦水储能罐在制冷状态下功率≦(1-水储能罐在制冷状态量)*bigNumber
         9. -bigNumber*水储能罐在制热状态量≦水储能罐在制热状态下功率≦bigNumber*水储能罐在制热状态量
            -(1-水储能罐在制热状态量)*bigNumber≦水储能罐在制热状态下功率≦(1-水储能罐在制热状态量)*bigNumber
-        10. -bigNumber*水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber*水储能罐在地源
-           热泵状态量
+        10. -bigNumber*水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber*水储能罐在地源热泵状态量
            -(1-水储能罐在地源热泵状态量)*bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量)*bigNumber
         11. 水储能机组年化成本=水储能罐总体积*单位体积价格/20
 
@@ -3368,7 +3367,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
 
 
-# groundSourceSteamGenerator
+# groundSourceSteamGenerator?
 class GroundSourceSteamGenerator(IntegratedEnergySystem):
     """
     
