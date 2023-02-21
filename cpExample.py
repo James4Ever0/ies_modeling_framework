@@ -326,7 +326,7 @@ class DieselEngine(IntegratedEnergySystem):
         dieselEngine_device_max: int,
         device_price: int,
         run_price: int,
-        device_name="dieselEngine",
+        device_name:str="dieselEngine",
     ):
         """
         Args:
@@ -1651,7 +1651,7 @@ class AirHeatPump(IntegratedEnergySystem):
         device_max:float,
         device_price:float,
         electricity_price:np.ndarray,
-        device_name="air_heat_pump",
+        device_name:str="air_heat_pump",
     ):
         """
         Args:
@@ -2186,7 +2186,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
         device_price:float,
         electricity_price:np.ndarray,
         case_ratio:float,
-        device_name="water_cooled_screw",
+        device_name:str="water_cooled_screw",
     ):
         """
         Args:
@@ -2415,7 +2415,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             )
         )
         """
-        连续变量，表示双工况机组的年化费用
+        连续变量,表示双工况机组的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="DoubleWorkingConditionUnit_electricity_sum{0}".format(
@@ -2423,7 +2423,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             )
         )
         """
-        连续变量，表示双工况机组的用电成本
+        连续变量,表示双工况机组的用电成本
         """
         self.device_price = device_price
         self.device_max = device_max
@@ -3020,7 +3020,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             stateOfCharge_max,
         )
         """
-        水蓄能罐，由可变储能设备`EnergyStorageSystemVariable`创建而来
+        水蓄能罐,由可变储能设备`EnergyStorageSystemVariable`创建而来
         """
         self.index = EnergyStorageSystemVariable.index
         self.waterStorageTank_device_cool: List[
@@ -3118,9 +3118,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
     def constraints_register(self, model: Model, register_period_constraints, day_node):
         """
-        定义水蓄能类的约束条件：
+        定义水蓄能类的约束条件:
         
-        1. 
+        1. 0≦机组设备数≦最大设备量
         2. 
         3. 
         
@@ -3733,7 +3733,7 @@ class CitySupply(IntegratedEnergySystem):
         device_price,
         run_price,
         efficiency: float,
-        device_name="city_supply",
+        device_name:str="city_supply",
     ):
         IntegratedEnergySystem(device_name)
         CitySupply.index += 1
