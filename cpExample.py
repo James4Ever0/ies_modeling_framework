@@ -433,13 +433,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price(float):储能装置的购置价格。
-            powerConversionSystem_price(float):储能装置与电网之间的 PCS 转换价格。
-            eff(float):储能装置的充放电效率。
-            conversion_rate_max(float):储能装置的最大倍率。
-            energyStorageSystem_init(int):储能装置的初始能量。
-            stateOfCharge_min(float):储能装置的最小储能量百分比。
-            stateOfCharge_max(float):储能装置的最大储能量百分比。
+            energyStorageSystem_price (float):储能装置的购置价格。
+            powerConversionSystem_price (float):储能装置与电网之间的 PCS 转换价格。
+            eff (float):储能装置的充放电效率。
+            conversion_rate_max (float):储能装置的最大倍率。
+            energyStorageSystem_init (int):储能装置的初始能量。
+            stateOfCharge_min (float):储能装置的最小储能量百分比。
+            stateOfCharge_max (float):储能装置的最大储能量百分比。
             device_name (str): 储能系统机组名称,默认为"energyStorageSystem"
         """
         IntegratedEnergySystem(device_name)
@@ -555,8 +555,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            register_period_constraints(int):注册周期约束为1
-            day_node(int):一天时间节点为24
+            register_period_constraints (int): 注册周期约束为1
+            day_node (int): 一天时间节点为24
         """
         bigNumber = 1e10
         irange = range(0, self.num_hour)
@@ -846,8 +846,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            register_period_constraints(int):注册周期约束为1
-            day_node(int):一天时间节点为24
+            register_period_constraints (int):注册周期约束为1
+            day_node (int):一天时间节点为24
         """
         bigNumber = 1e10
         irange = range(0, self.num_hour)
@@ -971,7 +971,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         troughPhotoThermal_device_max,
         troughPhotoThermal_price,
         troughPhotoThermalSolidHeatStorage_price,  # (csgrgtxr是啥)
-        intensityOfIllumination0,
+        intensityOfIllumination0 np.ndarray,
         efficiency: float,
         device_name="troughPhotoThermal",
     ):
@@ -982,7 +982,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             troughPhotoThermal_device_max(float): 槽式光热设备机组最大装机量
             troughPhotoThermal_price(float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price(float): 槽式光热储能设备价格
-            intensityOfIllumination0:24小时光照强度
+            intensityOfIllumination0 np.ndarray:24小时光照强度
             eff(float):效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
@@ -1365,20 +1365,20 @@ class GasBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        gasBoiler_device_max,
-        gasBoiler_price,
-        gas_price,
+        gasBoiler_device_max:float,
+        gasBoiler_price:float,
+        gas_price:np.ndarray,
         efficiency: float,
-        device_name="gasBoiler",
+        device_name:str="gasBoiler",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gasBoiler_device_max(int):表示燃气锅炉的最大数量。
-            gasBoiler_price(float):表示燃气锅炉的单价。
-            gas_price(float):表示燃气的单价。
-            efficiency(float):燃气锅炉的热效率
+            gasBoiler_device_max (float): 表示燃气锅炉的最大数量。
+            gasBoiler_price (float): 表示燃气锅炉的单价。
+            gas_price (np.ndarray): 表示燃气的单价。
+            efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
         """
         IntegratedEnergySystem(device_name)
@@ -1467,20 +1467,20 @@ class ElectricBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricBoiler_device_max,
-        electricBoiler_price,
-        electricity_price,
+        electricBoiler_device_max:float,
+        electricBoiler_price:float,
+        electricity_price:np.ndarray,
         efficiency: float,
-        device_name="electricBoiler",
+        device_name:str="electricBoiler",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricBoiler_device_max(int):表示电锅炉的最大数量。
-            electricBoiler_price(float):表示电锅炉的单价。
-            electricity_price(float): 表示电的单价。
-            efficiency(float): 电锅炉的热效率
+            electricBoiler_device_max (float): 表示电锅炉的最大数量。
+            electricBoiler_price (float): 表示电锅炉的单价。
+            electricity_price (np.ndarray): 表示电的单价。
+            efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
         """
         IntegratedEnergySystem(device_name)
@@ -1574,18 +1574,18 @@ class Exchanger(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        k,  # 传热系数
-        device_name="exchanger",
+        device_max:float,
+        device_price:float,
+        k:float,  # 传热系数
+        device_name:str="exchanger",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max(int):表示热交换器的最大数量。
-            device_price(float):表示热交换器的单价。
-            k:传热系数
+            device_max (float): 表示热交换器的最大数量。
+            device_price (float): 表示热交换器的单价。
+            k (float): 传热系数
             device_name (str): 热交换器机组名称,默认为"exchanger"
         """
         IntegratedEnergySystem(device_name)
@@ -1648,18 +1648,18 @@ class AirHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
+        device_max:float,
+        device_price:float,
+        electricity_price:np.array,
         device_name="air_heat_pump",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max(int):表示热泵的最大数量。
-            device_price(float):表示热泵的单价。
-            electricity_price(float): 电价
+            device_max (float): 表示热泵的最大数量。
+            device_price (float): 表示热泵的单价。
+            electricity_price (np.array): 电价
             device_name (str): 热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -2653,7 +2653,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             ),
         )
         """
-        连续变量列表,表示三工况机组的年化费用
+        连续变量列表,表示三工况机组的制冷功率
         """
 
         self.tripleWorkingConditionUnit_cool_flag: List[
@@ -2664,6 +2664,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        二元变量列表,表示三工况机组的制冷状态
+        """
 
         self.power_tripleWorkingConditionUnit_ice: List[
             ContinuousVarType
@@ -2673,6 +2676,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示三工况机组的制冰功率
+        """
 
         self.tripleWorkingConditionUnit_ice_flag: List[
             BinaryVarType
@@ -2682,6 +2688,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        二元变量列表,表示三工况机组的制冰状态
+        """
 
         self.power_tripleWorkingConditionUnit_heat: List[
             ContinuousVarType
@@ -2691,6 +2700,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示三工况机组的制热功率
+        """
 
         self.tripleWorkingConditionUnit_heat_flag: List[
             BinaryVarType
@@ -2700,6 +2712,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        二元变量列表,表示三工况机组的制热状态
+        """
 
         self.electricity_tripleWorkingConditionUnit: List[
             ContinuousVarType
@@ -2709,6 +2724,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示三工况机组的用电量
+        """
         self.power_tripleWorkingConditionUnit: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -2717,11 +2735,29 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 TripleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示三工况机组的功率
+        """
         self.coefficientOfPerformance_tripleWorkingConditionUnit_cool = 5
         self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
         self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
 
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大设备量
+        2. 0≦三工况机组的制冷功率≦三工况机组设备数* (况1)制热量/制冷量,0≦三工况机组的制冷功率≦三工况机组制冷状态*bigNumber
+        3. 0≦三工况机组的制冰功率≦三工况机组设备数* (况2)制热量/制冷量,0≦三工况机组的制冰功率≦三工况机组制冰状态*bigNumber
+        4. 制冷状态+制冰状态=1
+        5. 双工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数
+        6. 热泵总功率=制冷功率+制冰功率
+        7. 用电成本=每个时刻(设备用电量*电价)的总和
+        8. 双工况机组的总年化成本=双工况机组设备数*设备价格/15+用电成本*8760/小时数
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(0 <= self.tripleWorkingConditionUnit_device)
         model.add_constraint(self.tripleWorkingConditionUnit_device <= self.device_max)
