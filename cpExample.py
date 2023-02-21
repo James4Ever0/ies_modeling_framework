@@ -202,7 +202,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             self.annualized == self.photoVoltaic_device * self.device_price / 15
         )  # 每年维护费用？折价？回收成本？利润？
 
-    def total_cost(self, solution: SolveSolution):  # 购买设备总费用
+    def total_cost(self, solution: SolveSolution) -> float:  # 购买设备总费用
         """
         Args：
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
@@ -394,7 +394,7 @@ class DieselEngine(IntegratedEnergySystem):
             + self.power_sum * self.run_price * 8760 / self.num_hour
         )
 
-    def total_cost(self, solution: SolveSolution):
+    def total_cost(self, solution: SolveSolution) -> float:
         """
         Args：
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
@@ -672,7 +672,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 for i in range(day_node, self.num_hour, day_node)
             )
 
-    def total_cost(self, solution: SolveSolution):
+    def total_cost(self, solution: SolveSolution) -> float:
         """
         Args:
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
@@ -1918,13 +1918,11 @@ class WaterHeatPump(IntegratedEnergySystem):
         case_ratio,
         device_name="water_heat_pump",
     ):
-        
-        
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (int)：表示水源热泵的最大数量。
+            device_max (float)：表示水源热泵的最大数量。
             device_price (float)：表示水源热泵的单价。
             electricity_price (float): 电价
             case_ratio: 不同工况下制热量和制冷量的比值
@@ -2190,7 +2188,16 @@ class WaterCooledScrew(IntegratedEnergySystem):
         case_ratio,
         device_name="water_cooled_screw",
     ):
-        
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            device_max (int)：表示水冷螺旋机的最大数量。
+            device_price (float)：表示水冷螺旋机的单价。
+            electricity_price (float): 电价
+            case_ratio: 不同工况下制热量和制冷量的比值
+            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+        """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         WaterCooledScrew.index += 1
@@ -2198,9 +2205,15 @@ class WaterCooledScrew(IntegratedEnergySystem):
         self.waterCooledScrewMachine_device: ContinuousVarType = model.continuous_var(
             name="waterCooledScrewMachine_device{0}".format(WaterCooledScrew.index)
         )
+        """
+        水冷螺旋机机组等效单位设备数 大于零的实数
+        """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="WaterCooledScrew_annualized{0}".format(WaterCooledScrew.index)
         )
+        """
+        连续变量，表示s的年化费用
+        """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="WaterCooledScrew_electricity_sum{0}".format(WaterCooledScrew.index)
         )
@@ -2678,6 +2691,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
 
 class GeothermalHeatPump(IntegratedEnergySystem):
+
     index = 0
 
     def __init__(
@@ -3179,7 +3193,7 @@ class ResourceGet(object):
         else:
             raise Exception("File not extists.")
 
-    def get_electricity_price(self, num_hour: int):
+    def get_electricity_price(self, num_hour: int) -> np.ndarray:
         """
         一天不同小时的电价
 
@@ -3192,7 +3206,7 @@ class ResourceGet(object):
         electricity_price = np.ones(num_hour, dtype=float) * 0.5
         return electricity_price
 
-    def get_gas_price(self, num_hour: int):
+    def get_gas_price(self, num_hour: int) -> np.ndarray:
         """
         一天不同小时的燃气价格
 
@@ -3205,7 +3219,7 @@ class ResourceGet(object):
         gas_price = np.ones(num_hour, dtype=float) * 2.77
         return gas_price
 
-    def get_municipalHotWater_price(self, num_hour: int):
+    def get_municipalHotWater_price(self, num_hour: int) -> np.ndarray:
         """
         一天不同小时的热水价格
 
@@ -3218,7 +3232,7 @@ class ResourceGet(object):
         municipalHotWater_price = np.ones(num_hour, dtype=float) * 0.3
         return municipalHotWater_price
 
-    def get_municipalSteam_price(self, num_h: int):
+    def get_municipalSteam_price(self, num_h: int) -> np.ndarray:
         """
         一天不同小时的蒸汽价格
 
@@ -3237,7 +3251,7 @@ class LoadGet(object):
     获取逐小时冷、热、电、蒸汽负荷数据
     """
 
-    def get_cool_load(self, num_hour: int):
+    def get_cool_load(self, num_hour: int) -> np.ndarray:
         """
         获取逐小时冷负荷数据
 
@@ -3250,7 +3264,7 @@ class LoadGet(object):
         cool_load = np.ones(num_hour, dtype=float) * 10000
         return cool_load
 
-    def get_heat_load(self, num_hour: int):
+    def get_heat_load(self, num_hour: int) -> np.ndarray:
         """
         获取逐小时热负荷数据
 
@@ -3263,7 +3277,7 @@ class LoadGet(object):
         heat_load = np.ones(num_hour, dtype=float) * 10000
         return heat_load
 
-    def get_power_load(self, num_hour: int):
+    def get_power_load(self, num_hour: int) -> np.ndarray:
         """
         获取逐小时电负荷数据
 
@@ -3276,7 +3290,7 @@ class LoadGet(object):
         power_load = np.ones(num_hour, dtype=float) * 10000
         return power_load
 
-    def get_steam_load(self, num_hour: int):
+    def get_steam_load(self, num_hour: int) -> np.ndarray:
         """
         获取逐小时蒸汽负荷数据
 
@@ -3593,13 +3607,12 @@ class GridNet(IntegratedEnergySystem):
         创建电网的约束条件到模型中
         
         1. 电网要么发电 要么用电 用电时发电量为0 发电时用电量为0 净用电量=用电量-发电量
-        2. 电网最大设备数>=电网设备数>=0
+        2. 电网最大设备数 >= 电网设备数 >= 0
         3. 每小时用电量小于电网设备数
         4. 每小时电网发电量小于电网设备数
-        5. 电网基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
-        6. 电网总消费 = sum(每小时用电量*用电电价+每小时发电量*发电消费)+电网基础消费
-        7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15
-            + 电网总消费 * 8760 / self.num_hour
+        5. 电网一天基础消费 = min( max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
+        6. 电网一天总消费 = sum(每小时用电量 * 用电电价 + 每小时发电量 * 发电消费) + 电网基础消费
+        7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15 + 电网一天总消费 * 8760 / 一天小时数
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3793,7 +3806,7 @@ class Linearization(object):
         model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
         # y[h] 是非负数
 
-    def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]):
+    def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]) -> List[Var]:
         """
         对于区间`range(0, num_hour)`的每个数`h`，将两个变量`x1[h]`，`x2[h]`组合为一个变量`add_y[h]`
 
