@@ -2392,7 +2392,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             device_max (float): 表示双工况机组的最大数量。
             device_price (float): 表示双工况机组的单价。
             electricity_price (float): 电价
-            case_ratio: 不同工况下制热量和制冷量的比值
+            case_ratio: 不同工况下制冰量和制冷量的比值
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2508,13 +2508,13 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制热量/制冷量,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
-        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制热量/制冷量,0≦双工况机组的制冰功率≦双工况机组制冰状态*bigNumber
+        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制冰量/制冷量,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
+        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制冰量/制冷量,0≦双工况机组的制冰功率≦双工况机组制冰状态*bigNumber
         4. 制冷状态+制冰状态=1
-        5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数
-        6. 热泵总功率=制冷功率+额外制冷功率
+        5. 双工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数
+        6. 热泵总功率=制冷功率+制冰功率
         7. 用电成本=每个时刻(设备用电量*电价)的总和
-        8. 水冷螺旋机的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
+        8. 双工况机组的总年化成本=双工况机组设备数*设备价格/15+用电成本*8760/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2585,6 +2585,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
 
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
+    
     index = 0
 
     def __init__(
@@ -2929,16 +2930,16 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             waterStorageTank_Volume_max (float): 单个水罐的最大体积
-            volume_price (float):
-            powerConversionSystem_price (float):
-            conversion_rate_max (float):
-            efficiency (float):
-            energyStorageSystem_init ():
-            stateOfCharge_min (float):
-            stateOfCharge_max (float):
-            ratio_cool (float):
-            ratio_heat (float):
-            ratio_gheat (float):
+            volume_price (float): 单位体积储水费用
+            powerConversionSystem_price (float): 能源转换系统设备价格
+            conversion_rate_max (float): 最大输入输出速率
+            efficiency (float): 水罐储水效率参数
+            energyStorageSystem_init (): 
+            stateOfCharge_min (float): 最小储能量
+            stateOfCharge_max (float): 最大储能量
+            ratio_cool (float): 机组储藏冷量比例
+            ratio_heat (float): 机组储藏热量比例
+            ratio_gheat (float): 机组储藏温水比例
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         IntegratedEnergySystem(device_name)
