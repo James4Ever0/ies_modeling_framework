@@ -3053,9 +3053,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             energyStorageSystem_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
-            ratio_cool (float): 蓄冷模式下水蓄能罐的利用率
-            ratio_heat (float): 蓄热模式下水蓄能罐的利用率
-            ratio_gheat (float): 地源热泵模式下水蓄能罐的利用率
+            ratio_cool (float): 蓄冷模式下水蓄能罐单位体积的蓄冷效率
+            ratio_heat (float): 蓄热模式下水蓄能罐单位体积的蓄热效率
+            ratio_gheat (float): 地源热泵模式下水蓄能罐单位体积的蓄热效率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         IntegratedEnergySystem(device_name)
@@ -4493,6 +4493,8 @@ if __name__ == "__main__":
     # 1) combinedHeatAndPower gasTurbineSystem?
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
     # 3
+    
+    # 平板光热
     platePhotothermal = PhotoVoltaic(
         num_hour0,
         model1,
@@ -4529,7 +4531,8 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     municipalHotWater.constraints_register(model1)
-    # 6
+    
+    # 热水电锅炉
     hotWaterElectricBoiler = ElectricBoiler(
         num_hour0,
         model1,
@@ -4539,7 +4542,9 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     hotWaterElectricBoiler.constraints_register(model1)
-    # 7
+    
+    
+    # 燃气热水器
     gasBoiler_hotWater = GasBoiler(
         num_hour0,
         model1,
@@ -4549,6 +4554,8 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     gasBoiler_hotWater.constraints_register(model1)
+    
+    # 水储能罐
     waterStorageTank = WaterEnergyStorage(
         num_hour0,
         model1,
@@ -4568,7 +4575,8 @@ if __name__ == "__main__":
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
-    # highTemperaturehotWater合计
+    
+    # 高温热水合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_highTemperaturehotWater_sum"
     )
