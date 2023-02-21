@@ -80,7 +80,7 @@ else:
 # a big number
 bigNumber = 10e10
 """
-设置一个大的数,默认值为10的10次
+设置一个大的数,默认值为10的10次方
 """
 # total simulation rounds?
 simulationTime = 3600
@@ -1244,7 +1244,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
         """
-        烟气余热回收热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        余气余热回收热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
         self.wasteGasAndHeat_water_device = Exchanger(
@@ -1689,7 +1689,7 @@ class Exchanger(IntegratedEnergySystem):
 
 class AirHeatPump(IntegratedEnergySystem):
     """
-    热泵类
+    空气源热泵类
     """
 
     index = 0
@@ -1707,10 +1707,10 @@ class AirHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示热泵的最大数量。
-            device_price (float): 表示热泵的单价。
+            device_max (float): 表示空气热泵的最大数量。
+            device_price (float): 表示空气热泵的单价。
             electricity_price (np.ndarray): 每小时的电价
-            device_name (str): 热泵机组名称,默认为"air_heat_pump"
+            device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -1720,19 +1720,19 @@ class AirHeatPump(IntegratedEnergySystem):
             name="heatPump_device{0}".format(AirHeatPump.index)
         )
         """
-        热泵机组等效单位设备数 大于零的实数
+        空气热泵机组等效单位设备数 大于零的实数
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="AirHeatPumpower_annualized{0}".format(AirHeatPump.index)
         )
         """
-        连续变量,表示热泵的年化费用
+        连续变量,表示空气热泵的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="AirHeatPumpower_electricity_cost{0}".format(AirHeatPump.index)
         )
         """
-        连续变量,表示热泵的电价成本
+        连续变量,表示空气热泵的电价成本
         """
         self.device_price = device_price
         self.device_max = device_max
@@ -1741,21 +1741,21 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_cool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的制冷功率
+        连续变量列表,表示空气热泵在每个时段的制冷功率
         """
         self.cool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="cool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的制冷出口温度
+        连续变量列表,表示空气热泵在每个时段的制冷出口温度
         """
         self.heatPump_cool_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_cool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的制冷状态
+        二元变量列表,表示空气热泵在每个时段的制冷状态
         """
 
         self.power_heatPump_xcool: List[ContinuousVarType] = model.continuous_var_list(
@@ -1763,14 +1763,14 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xcool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的循环制冷功率
+        连续变量列表,表示空气热泵在每个时段的循环制冷功率
         """
         self.xcool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xcool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的循环制冷出口温度
+        连续变量列表,表示空气热泵在每个时段的循环制冷出口温度
         """
 
         self.heatPump_xcool_flag: List[BinaryVarType] = model.binary_var_list(
@@ -1778,63 +1778,63 @@ class AirHeatPump(IntegratedEnergySystem):
             name="heatPump_xcool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的循环制冷状态
+        二元变量列表,表示空气热泵在每个时段的循环制冷状态
         """
         self.power_heatPump_heat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_heat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的制热功率
+        连续变量列表,表示空气热泵在每个时段的制热功率
         """
         self.heat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的制热出口温度
+        连续变量列表,表示空气热泵在每个时段的制热出口温度
         """
         self.heatPump_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_heat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的制热状态
+        二元变量列表,表示空气热泵在每个时段的制热状态
         """
         self.power_heatPump_xheat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_xheat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的循环制热功率
+        连续变量列表,表示空气热泵在每个时段的循环制热功率
         """
         self.xheat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xheat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的循环制热出口温度
+        连续变量列表,表示空气热泵在每个时段的循环制热出口温度
         """
         self.heatPump_xheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_xheat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的循环制热状态
+        二元变量列表,表示空气热泵在每个时段的循环制热状态
         """
         self.electricity_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_heatPump{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的用电量
+        连续变量列表,表示空气热泵在每个时段的用电量
         """
         self.power_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的总功率
+        连续变量列表,表示空气热泵在每个时段的总功率
         """
 
         # TODO: unclear meaning of "xcool" and "xheat"
@@ -1845,7 +1845,7 @@ class AirHeatPump(IntegratedEnergySystem):
 
     def constraints_register(self, model: Model):
         """
-        定义机组内部约束
+        定义空气热泵机组内部约束
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦热泵的制冷功率≦热泵制冷出口温度 * 热泵设备数 / 100,0≦热泵的制冷功率≦热泵制冷状态 * bigNumber
@@ -4385,6 +4385,8 @@ if __name__ == "__main__":
     )
     ##########################################
 
+    #蒸汽发生装置及参数配置
+    ##########################################
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
         num_hour0,
@@ -4435,6 +4437,9 @@ if __name__ == "__main__":
     )
     municipalSteam.constraints_register(model1)
     # 以上为蒸汽发生装置
+    ##########################################
+
+
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
     )
@@ -4453,7 +4458,7 @@ if __name__ == "__main__":
         + gasBoiler.heat_gasBoiler[h]
         for h in range(0, num_hour0)
     )
-    # highTemperature蒸汽去处
+    # 高温蒸汽去处
     model1.add_constraints(
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour0)
