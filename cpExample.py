@@ -4332,7 +4332,7 @@ if __name__ == "__main__":
     batteryEnergyStorageSystem.constraints_register(model1,register_period_constraints= 1,day_node= day_node)
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
-        num_hour0, model1, troughPhotoThermal_device_max=5000, 2000, 1000, intensityOfIllumination0, 0.8
+        num_hour0, model1, troughPhotoThermal_device_max=5000, troughPhotoThermal_price=2000, troughPhotoThermalSolidHeatStorage_price=1000, intensityOfIllumination0=intensityOfIllumination0, efficiency=0.8
     )
     troughPhotoThermal.constraints_register(model1)
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
@@ -4419,11 +4419,11 @@ if __name__ == "__main__":
     platePhotothermal = PhotoVoltaic(
         num_hour0,
         model1,
-        10000,
-        500,
-        intensityOfIllumination0,
-        0.8,
-        "platePhotothermal",
+        photoVoltaic_device_max=10000,
+        device_price=500,
+        intensityOfIllumination0=intensityOfIllumination0,
+        efficiency=0.8,
+        device_name="platePhotothermal",
     )  # platePhotothermal
     platePhotothermal.constraints_register(model1)
     # 4
@@ -4677,7 +4677,7 @@ if __name__ == "__main__":
     )
     linearization = Linearization()
     #
-    linearization.max_zeros(num_hour0, model1, power_xice, bx.power_energyStorageSystem)
+    linearization.max_zeros(num_hour0, model1, x=power_xice, y=bx.power_energyStorageSystem)
     # 蓄冷逻辑组合
     model1.add_constraints(
         heatPump.power_waterSourceHeatPumps_xcool[h]
@@ -4691,8 +4691,8 @@ if __name__ == "__main__":
     linearization.max_zeros(
         num_hour0,
         model1,
-        power_xcool,
-        linearization.add(
+        x=power_xcool,
+        y=linearization.add(
             num_hour0,
             model1,
             waterStorageTank.power_waterStorageTank_cool,
@@ -4711,8 +4711,8 @@ if __name__ == "__main__":
     linearization.max_zeros(
         num_hour0,
         model1,
-        power_xheat,
-        linearization.add(
+        x=power_xheat,
+        y=linearization.add(
             num_hour0,
             model1,
             waterStorageTank.power_waterStorageTank_heat,
@@ -4734,7 +4734,7 @@ if __name__ == "__main__":
         electricity_price_from=electricity_price0,
         electricity_price_to=0.35,
     )
-    gridNet.constraints_register(model1, 2000)
+    gridNet.constraints_register(model1,powerPeak_pre= 2000)
     model1.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCooledScrewMachine.electricity_waterCooledScrewMachine[h]
@@ -4796,7 +4796,7 @@ if __name__ == "__main__":
     # res.display()  # 显示冲突约束
     print("start calculation:")
 
-    model1.set_time_limit(1000)
+    model1.set_time_limit(time_limit=1000)
 
     solution_run1: Union[None, SolveSolution] = model1.solve(
         log_output=True
