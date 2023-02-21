@@ -15,7 +15,7 @@ import os
 # os.system("chcp 65001") # not working?
 
 # ensure we can display chinese characters
-matplotlib.rc("font", family="YouYuan")
+matplotlib.rc(group="font", family="YouYuan")
 
 from docplex.mp.solution import SolveSolution
 
@@ -86,12 +86,14 @@ bigNumber = 10e10
 simulationTime = 3600
 
 # every hour of one day?
-intensityOfIllumination = np.ones(num_hour0)
+intensityOfIllumination = np.ones(shape=num_hour0)
 """
 24小时光照强度数组,数组形状为`(num_hour0,)`,所有元素初始化为1
 """
 # what is this "ha"? just sunlight stats per hour in a day?
 
+
+### BEGIN COMPONENTS DEFINITION ###
 
 # another name for IES?
 class IntegratedEnergySystem(object):
@@ -144,7 +146,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
-        IntegratedEnergySystem(device_name)
+        IntegratedEnergySystem(device_name=device_name)
         PhotoVoltaic.index += (
             1  # increase the index whenever another PhotoVoltaic system is created.
         )
@@ -812,7 +814,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于充电状态。
         """
         self.discharge_flag: List[BinaryVarType] = model.binary_var_list(
-            [i for i in range(0, num_hour)],
+            keys=[i for i in range(0, num_hour)],
             name="batteryEnergyStorageSystemVariable_discharge_flag{0}".format(
                 EnergyStorageSystemVariable.index
             ),
@@ -3497,7 +3499,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         3. 每个时段地源蒸汽发生器产生蒸汽功率=每个时段地源蒸汽发生器功率+每个时段储能系统中地源蒸汽发
            生器固态储能设备功率,且大于等于0
         4. 用电成本=每个时段的功率 * 每个时段的电价
-        5. 年化成本=地源蒸汽发生器设备数 * 设备单价+地源蒸汽发生器固态储能年hua成本
+        5. 年化成本=地源蒸汽发生器设备数 * 设备单价/15+地源蒸汽发生器固态储能设备年化成本+用电成本
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4268,6 +4270,7 @@ class Linearization(object):
         # 当positive_flag[h] == 0,xnegitive[h] <= bigNumber
         # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
 
+### END COMPONENTS DEFINITION ###
 
 # 获取能源负荷信息 都是生成的常数数据
 ##########################################
@@ -4278,6 +4281,9 @@ heat_load = load.get_power_load(num_hour0)
 steam_load = load.get_power_load(num_hour0)
 
 ##########################################
+
+# is this a test on class `Linear_absolute`?
+
 # absolute1 = Linear_absolute(model1, [-5, 6], [0, 1])
 # absolute1.absolute_add_constraints(model1)
 
