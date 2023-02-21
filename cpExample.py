@@ -1764,14 +1764,14 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xcool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示空气热泵在每个时段的循环制冷功率
+        连续变量列表,表示空气热泵在每个时段的蓄冷功率
         """
         self.xcool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xcool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示空气热泵在每个时段的循环制冷出口温度
+        连续变量列表,表示空气热泵在每个时段的蓄冷出口温度
         """
 
         self.heatPump_xcool_flag: List[BinaryVarType] = model.binary_var_list(
@@ -1779,7 +1779,7 @@ class AirHeatPump(IntegratedEnergySystem):
             name="heatPump_xcool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示空气热泵在每个时段的循环制冷状态
+        二元变量列表,表示空气热泵在每个时段的蓄冷状态
         """
         self.power_heatPump_heat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
@@ -1807,21 +1807,21 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xheat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示空气热泵在每个时段的循环制热功率
+        连续变量列表,表示空气热泵在每个时段的蓄热功率
         """
         self.xheat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xheat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示空气热泵在每个时段的循环制热出口温度
+        连续变量列表,表示空气热泵在每个时段的蓄热出口温度
         """
         self.heatPump_xheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_xheat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示空气热泵在每个时段的循环制热状态
+        二元变量列表,表示空气热泵在每个时段的蓄热状态
         """
         self.electricity_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
@@ -1840,9 +1840,9 @@ class AirHeatPump(IntegratedEnergySystem):
 
         # TODO: unclear meaning of "xcool" and "xheat"
         self.coefficientOfPerformance_heatPump_cool = 3  # 表示该组件制冷时的性能系数
-        self.coefficientOfPerformance_heatPump_xcool = 3  # 表示该组件循环制冷时的性能系数
+        self.coefficientOfPerformance_heatPump_xcool = 3  # 表示该组件蓄冷时的性能系数
         self.coefficientOfPerformance_heatPump_heat = 3  # 表示该组件供热时的性能系数
-        self.coefficientOfPerformance_heatPump_xheat = 3  # 表示该组件循环制热时的性能系数
+        self.coefficientOfPerformance_heatPump_xheat = 3  # 表示该组件蓄热时的性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -1850,12 +1850,12 @@ class AirHeatPump(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦空气热泵的制冷功率≦空气热泵制冷出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的制冷功率≦空气热泵制冷状态 * bigNumber
-        3. 0≦空气热泵的循环制冷功率≦空气热泵循环制冷出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的循环制冷功率≦空气热泵循环制冷状态 * bigNumber
+        3. 0≦空气热泵的蓄冷功率≦空气热泵蓄冷出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的蓄冷功率≦空气热泵蓄冷状态 * bigNumber
         4. 0≦空气热泵的制热功率≦空气热泵制热出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的制热功率≦空气热泵制热状态 * bigNumber
-        5. 空气0≦热泵的循环制热功率≦空气热泵循环制热出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的循环制热功率≦空气热泵循环制热状态 * bigNumber
-        6. 制冷状态+循环制冷状态+制热状态+循环制热状态=1
-        7. 空气热泵用电量 = 设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数+设备制热功率/制热性能系数+设备循环制热功率/循环制热性能系数
-        8. 空气热泵总功率 = 制冷功率+循环制冷功率+制热功率+循环制热功率
+        5. 空气0≦热泵的蓄热功率≦空气热泵蓄热出口温度 * 空气热泵设备数 / 100<br>0≦空气热泵的蓄热功率≦空气热泵蓄热状态 * bigNumber
+        6. 制冷状态+蓄冷状态+制热状态+蓄热状态=1
+        7. 空气热泵用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数+设备制热功率/制热性能系数+设备蓄热功率/蓄热性能系数
+        8. 空气热泵总功率 = 制冷功率+蓄冷功率+制热功率+蓄热功率
         9. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
         10. 空气热泵的总年化成本 = 空气热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
 
@@ -2034,7 +2034,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="power_waterSourceHeatPumps_xcool{0}".format(WaterHeatPump.index),
         )
         """
-        连续变量列表,表示每个时刻水源热泵循环制冷功率
+        连续变量列表,表示每个时刻水源热泵蓄冷功率
         """
         self.waterSourceHeatPumps_xcool_flag: List[
             BinaryVarType
@@ -2043,7 +2043,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="waterSourceHeatPumps_xcool_flag{0}".format(WaterHeatPump.index),
         )
         """
-        二元变量列表,表示每个时刻水源热泵循环制冷状态
+        二元变量列表,表示每个时刻水源热泵蓄冷状态
         """
         self.power_waterSourceHeatPumps_heat: List[
             ContinuousVarType
@@ -2070,7 +2070,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="power_waterSourceHeatPumps_xheat{0}".format(WaterHeatPump.index),
         )
         """
-        连续变量列表,表示每个时刻水源热泵循环制热功率
+        连续变量列表,表示每个时刻水源热泵蓄热功率
         """
         self.waterSourceHeatPumps_xheat_flag: List[
             BinaryVarType
@@ -2079,7 +2079,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="waterSourceHeatPumps_xheat_flag{0}".format(WaterHeatPump.index),
         )
         """
-        二元变量列表,表示每个时刻水源热泵循环制热状态
+        二元变量列表,表示每个时刻水源热泵蓄热状态
         """
         self.electricity_waterSourceHeatPumps: List[
             ContinuousVarType
@@ -2100,9 +2100,9 @@ class WaterHeatPump(IntegratedEnergySystem):
         连续变量列表,表示每个时刻水源热泵总功率
         """
         self.coefficientOfPerformance_waterSourceHeatPumps_cool = 5  # 制冷性能系数
-        self.coefficientOfPerformance_waterSourceHeatPumps_xcool = 5  # 循环制冷性能系数
+        self.coefficientOfPerformance_waterSourceHeatPumps_xcool = 5  # 蓄冷性能系数
         self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
-        self.coefficientOfPerformance_waterSourceHeatPumps_xheat = 5  # 循环制热性能系数
+        self.coefficientOfPerformance_waterSourceHeatPumps_xheat = 5  # 蓄热性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -2110,12 +2110,12 @@ class WaterHeatPump(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水源热泵的制冷功率≦水源热泵设备数 *  (况1)热冷效率,0≦水源热泵的制冷功率≦水源热泵制冷状态 * bigNumber
-        3. 0≦水源热泵的循环制冷功率≦水源热泵设备数 *  (况2)热冷效率,0≦水源热泵的循环制冷功率≦水源热泵循环制冷状态 * bigNumber
+        3. 0≦水源热泵的蓄冷功率≦水源热泵设备数 *  (况2)热冷效率,0≦水源热泵的蓄冷功率≦水源热泵蓄冷状态 * bigNumber
         4. 0≦水源热泵的制热功率≦水源热泵设备数 *  (况3)热冷效率,0≦水源热泵的制热功率≦水源热泵制热状态 * bigNumber
-        5. 0≦水源热泵的循环制热功率≦水源热泵设备数 *  (况4)热冷效率,0≦水源热泵的循环制热功率≦水源热泵循环制热状态 * bigNumber
-        6. 制冷状态+循环制冷状态+制热状态+循环制热状态=1
-        7. 水源热泵用电量 = 设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数+设备制热功率/制热性能系数+设备循环制热功率/循环制热性能系数
-        8. 热泵总功率 = 制冷功率+循环制冷功率+制热功率+循环制热功率
+        5. 0≦水源热泵的蓄热功率≦水源热泵设备数 *  (况4)热冷效率,0≦水源热泵的蓄热功率≦水源热泵蓄热状态 * bigNumber
+        6. 制冷状态+蓄冷状态+制热状态+蓄热状态=1
+        7. 水源热泵用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数+设备制热功率/制热性能系数+设备蓄热功率/蓄热性能系数
+        8. 热泵总功率 = 制冷功率+蓄冷功率+制热功率+蓄热功率
         9. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
         10. 水源热泵的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
 
@@ -2304,7 +2304,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             ),
         )
         """
-        连续变量列表,表示水冷螺旋机的循环制冷功率
+        连续变量列表,表示水冷螺旋机的蓄冷功率
         """
 
         self.waterCoolingSpiralMachine_xcool_flag: List[
@@ -2314,7 +2314,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             name="waterCoolingSpiralMachine_xcool_flag{0}".format(WaterCoolingSpiral.index),
         )
         """
-        二元变量列表,表示水冷螺旋机的循环制冷状态
+        二元变量列表,表示水冷螺旋机的蓄冷状态
         """
 
         self.electricity_waterCoolingSpiralMachine: List[
@@ -2346,10 +2346,10 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数 * (况1)制冷情况下水冷螺旋机利用率<br>0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态 * bigNumber
-        3. 0≦水冷螺旋机的循环制冷功率≦水冷螺旋机设备数 * (况2)循环制冷情况下水冷螺旋机利用率<br>0≦水冷螺旋机的循环制冷功率≦水冷螺旋机循环制冷状态 * bigNumber
-        4. 制冷状态+循环制冷状态=1
-        5. 水冷螺旋机用电量 = 设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数
-        6. 热泵总功率 = 制冷功率+循环制冷功率
+        3. 0≦水冷螺旋机的蓄冷功率≦水冷螺旋机设备数 * (况2)蓄冷情况下水冷螺旋机利用率<br>0≦水冷螺旋机的蓄冷功率≦水冷螺旋机蓄冷状态 * bigNumber
+        4. 制冷状态+蓄冷状态=1
+        5. 水冷螺旋机用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数
+        6. 热泵总功率 = 制冷功率+蓄冷功率
         7. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
         8. 水冷螺旋机的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
 
@@ -4491,7 +4491,7 @@ if __name__ == "__main__":
 
     #高温热水发生装置及水储能装置
     ##########################################
-    # highTemperaturehotWater
+    # highTemperatureHotWater
     # 1) combinedHeatAndPower gasTurbineSystem?
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
     # 3
@@ -4580,11 +4580,11 @@ if __name__ == "__main__":
     ##########################################
 
     # 高温热水合计
-    power_highTemperaturehotWater_sum = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_highTemperaturehotWater_sum"
+    power_highTemperatureHotWater_sum = model1.continuous_var_list(
+        [i for i in range(0, num_hour0)], name="power_highTemperatureHotWater_sum"
     )
     model1.add_constraints(
-        power_highTemperaturehotWater_sum[h]
+        power_highTemperatureHotWater_sum[h]
         == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
         + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
             h
@@ -4612,12 +4612,12 @@ if __name__ == "__main__":
     
     # 高温热水去向
     model1.add_constraints(
-        power_highTemperaturehotWater_sum[h]
+        power_highTemperatureHotWater_sum[h]
         >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
         for h in range(0, num_hour0)
     )
     model1.add_constraints(
-        power_highTemperaturehotWater_sum[h] >= 0 for h in range(0, num_hour0)
+        power_highTemperatureHotWater_sum[h] >= 0 for h in range(0, num_hour0)
     )
 
     # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCoolingSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCoolingSpiralMachine[h]+power_bx[h]==cool_load[h]%冷量需求
@@ -4851,17 +4851,17 @@ if __name__ == "__main__":
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
         + heatPump.electricity_waterSourceHeatPumps[h]
-        - batteryEnergyStorageSystem.power_energyStorageSystem[h]
-        - photoVoltaic.power_photoVoltaic[h]
         + waterSourceHeatPumps.electricity_waterSourceHeatPumps[h]
         + power_load[h]
-        - combinedHeatAndPower.power_combinedHeatAndPower[h]
-        - dieselEngine.power_dieselEngine[h]
         + groundSourceSteamGenerator.power_groundSourceSteamGenerator[h]
         + hotWaterElectricBoiler.electricity_electricBoiler[h]
         + tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit[h]
         + doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit[h]
-        == gridNet.total_power[h]
+        - batteryEnergyStorageSystem.power_energyStorageSystem[h]
+        - photoVoltaic.power_photoVoltaic[h]
+        - combinedHeatAndPower.power_combinedHeatAndPower[h]
+        - dieselEngine.power_dieselEngine[h]
+        == gridNet.total_power[h] # 总的耗电量 = 用电量 - 发电量
         for h in range(0, num_hour0)
     )
 
