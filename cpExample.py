@@ -1127,10 +1127,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max (float): 表示热电联产机组的最大设备数量
-            combinedHeatAndPower_price (float): 表示热电联产设备的单价
+            combinedHeatAndPower_num_max (float): 表示热电联产机组的最大等效设备数量
+            combinedHeatAndPower_price (float): 表示热电联产等效设备的单价
             gas_price (np.ndarray): 表示燃气的单价
-            combinedHeatAndPower_single_device (float): 表示每台热电联产设备的装机容量
+            combinedHeatAndPower_single_device (float): 表示每台热电联产设备的等效设备数量
             power_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
@@ -1141,7 +1141,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_device{0}".format(CombinedHeatAndPower.index)
         )
         """
-        实数型,表示热电联产的总装机容量
+        实数型,表示热电联产的等效设备数量
         """
         self.power_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1201,13 +1201,13 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
         )
         """
-        整数型列表,表示每个时段启动的热电联产设备数量
+        整数型列表,表示每个时段启动的热电联产等效设备数量
         """
         self.combinedHeatAndPower_num: IntegerVarType = model.integer_var(
             name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
         )
         """
-        整数型,表示热电联产数量
+        整数型,表示热电联产实际装机数量
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
@@ -3171,8 +3171,11 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷下设备数+制热下设备数+地源热泵下设备数
         4. 制冷下设备数≦水蓄能机组总体积*制冷模式下水蓄能罐的利用率
-           制冷下设备数≦制冷状态
+           制冷下设备数≦水储能罐在制冷状态下*bigNumber
+           制冷下设备数≧0
+           制冷下设备数≧水蓄能机组总体积*制冷模式下水蓄能罐的利用率-(1-水储能罐在制冷状态下)*bigNumber
         5. 制热下设备数≦水蓄能机组总体积*制热模式下水蓄能罐的利用率
+        
         6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
         
 
