@@ -5,6 +5,11 @@ from cpExample import IntegratedEnergySystem,Model
 
 def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动保存图片
     """
+    Plot a single graph with `data` as data and `title_content` as title
+    
+    Args:
+        data (Iterable): a list of values to be plotted on the x axis
+        title_content (str): title to plot on the graph
     """
     fig = plt.figure()
     plt.plot(data)
@@ -16,6 +21,10 @@ def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动
 
 def printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device:List[IntegratedEnergySystem]):
     """
+    Print all device counts in all kinds of `IntegratedEnergySystem` device sets.
+    
+    Args:
+        integratedEnergySystem_device (List[IntegratedEnergySystem]): a list of `IntegratedEnergySystem` instances
     """
     print("_________DEVICE_COUNT__________")
     for index, item in enumerate(integratedEnergySystem_device):

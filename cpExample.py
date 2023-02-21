@@ -4923,27 +4923,19 @@ if __name__ == "__main__":
     # docplex.mp.solution.SolveSolution or None
 
     if solution_run1 is None: # 没有解出来
-        from docplex.mp.sdetails import SolveDetails
+        # from docplex.mp.sdetails import SolveDetails
 
-        print("SOLUTION IS NONE.")
-        solution_detail: SolveDetails = model1.solve_details
-        print()
-        print("SOLVE DETAILS?")
-        print(solution_detail)
+        print("NO SOLUTION.")
+        # it is the only thing we can print right now.
+        # solution_detail: SolveDetails = model1.solve_details
+        # print()
+        # print("SOLVE DETAILS?")
+        # print(solution_detail)
     else: # 解出来了
         # now we have solution.
 
         # not model1.solve_details, which always return:
         # docplex.mp.sdetails.SolveDetails
-
-        # print('absolute2 value:')
-        # print(solution_run1.get_value(absolute1.absolute_x[1]))
-        
-        # print("__SOLVE_DETAILS__")
-        # print(solution_run1.solve_details)
-        # print("__SOLVE_DETAILS__")
-
-        # ii = 0
 
         print("objective: annual", solution_run1.get_value(objective)) # 所有设备年运行成本总和
         print()
