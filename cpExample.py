@@ -3840,7 +3840,12 @@ class CitySupply(IntegratedEnergySystem):
         创建一个市政能源类
         
         Args:
-
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            citySupplied_device_max (float): 市政能源设备机组最大装机量
+            device_price (float): 设备单价
+            run_price (float): 运维价格
+            device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
         IntegratedEnergySystem(device_name)
         CitySupply.index += 1
@@ -3849,12 +3854,14 @@ class CitySupply(IntegratedEnergySystem):
             name="citySupplied_device{0}".format(CitySupply.index)
         )
         """
+        市政能源设备装机量 非负实数变量
         """
         self.heat_citySupplied: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_citySupplied{0}".format(CitySupply.index),
         )
         """
+        每小时市政能源热量消耗 实数变量列表
         """
         self.heat_citySupplied_from: List[
             ContinuousVarType
@@ -3863,6 +3870,7 @@ class CitySupply(IntegratedEnergySystem):
             name="heat_citySupplied_from{0}".format(CitySupply.index),
         )
         """
+        每小时市政能源热量输出 实数变量列表
         """
         self.citySupplied_device_max = citySupplied_device_max
         self.run_price = run_price
