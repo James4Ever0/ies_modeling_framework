@@ -1244,7 +1244,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
         """
-        余气余热回收热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        燃气轮机热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
         self.wasteGasAndHeat_water_device = Exchanger(
@@ -4576,7 +4576,6 @@ if __name__ == "__main__":
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
-    ##########################################
     
     # 高温热水合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
@@ -5002,10 +5001,10 @@ if __name__ == "__main__":
         plotSingle(
             value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
             "BatteryEnergyStorageSystem",
-        )
+        ) #  绘制电池每小时的充放电功率
 
         database = {
-            "electricity": {
+            "electricity": { # 发电、用电、功率相关数据
                 "list": [
                     groundSourceHeatPump.electricity_groundSourceHeatPump,
                     waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine,
@@ -5039,7 +5038,7 @@ if __name__ == "__main__":
                     "gridNet.total_power",
                 ],
             },
-            "cool": {
+            "cool": { #  制冷相关数据
                 "list": [
                     heatPump.power_waterSourceHeatPumps_cool,
                     power_xcool,
@@ -5063,7 +5062,7 @@ if __name__ == "__main__":
                     "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
                 ],
             },
-            "heat": {
+            "heat": {#  制热相关数据
                 "list": [
                     heatPump.power_waterSourceHeatPumps_heat,
                     power_xheat,
@@ -5109,33 +5108,8 @@ if __name__ == "__main__":
             },
         }
 
+        # 绘制所有相关数据
         for key, value in database.items():
             datalist, names = value["list"], value["name"]
             for data, name in zip(datalist, names):
                 plotSingle(data, name)
-
-        # pllist = IntegratedEnergySystemPlot(solution_run1)
-
-        # # pllist.plot_list(  [groundSourceHeatPump.electricity_groundSourceHeatPump, waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine], ['groundSourceHeatPump.electricity_groundSourceHeatPump', 'waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine'], "ele balance")
-
-        # pllist.plot_list(
-        #     database["electricity"]["list"],
-        #     database["electricity"]["name"],
-        #     "ele balance",
-        # )
-        # plt.figure()
-        # pllist.plot_list(database['cool']['list'],database['cool']['name'],
-        #     "cool_balance",
-        # )
-
-        # plt.figure()
-        # pllist.plot_list(database['heat']['list'],database['heat']['name'],
-        #     "heat_balance",
-        # )
-        # plt.figure()
-        # pllist.plot_list(database['gwheat']['list'],database['gwheat']['name'],
-        #     "gwheat_balance",  # gw?
-        # )
-
-        # plt.show()
-        # let's not show.
