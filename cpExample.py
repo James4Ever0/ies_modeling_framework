@@ -545,15 +545,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 储能装置功率转化率约束:储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
-        4. 充电功率和放电功率之间的关系:储能系统功率 = -充电功率+放电功率
-        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
-        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
+        3. 储能装置功率转化率约束:<br>储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
+        4. 充电功率和放电功率之间的关系:<br>储能系统功率 = -充电功率+放电功率
+        5. 充电功率约束:<br>充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
+        6. 放电功率约束:<br>放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束:储能系统能量 = 上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率) * simulationTime/3600
-        9. 最大和最小储能量约束:储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
+        8. 储能量守恒约束:<br>储能系统能量 = 上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率) * simulationTime/3600
+        9. 最大和最小储能量约束:<br>储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数 * 储能设备价格+功率转化系统设备数 * 功率转化系统价格)/15
-        11. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
+        11. 两天之间充放电关系约束: <br>对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
 
 
         Args:
@@ -838,14 +838,14 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 可变容量储能装置功率转化率约束:储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
-        4. 充电功率和放电功率之间的关系:储能系统功率 = -充电功率+放电功率
-        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
-        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
+        3. 可变容量储能装置功率转化率约束:<br>储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
+        4. 充电功率和放电功率之间的关系:<br>储能系统功率 = -充电功率+放电功率
+        5. 充电功率约束:<br>充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
+        6. 放电功率约束:<br>放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束:储能系统能量 = 上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率) * simulationTime/3600
-        9. 最大和最小储能量约束:储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
-        10. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
+        8. 储能量守恒约束:<br>储能系统能量 = 上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率) * simulationTime/3600
+        9. 最大和最小储能量约束:<br>储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
+        10. 两天之间充放电关系约束:<br>对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
 
 
         Args:
@@ -3499,8 +3499,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦每个时段的地源蒸汽发生器的功率≦地源蒸汽发生器设备
-        3. 每个时段地源蒸汽发生器产生蒸汽功率 = 每个时段地源蒸汽发生器功率+每个时段储能系统中地源蒸汽发
-           生器固态储能设备功率,且大于等于0
+        3. 每个时段地源蒸汽发生器产生蒸汽功率 = 每个时段地源蒸汽发生器功率+每个时段储能系统中地源蒸汽发生器固态储能设备功率,且大于等于0
         4. 用电成本=每个时段的功率 * 每个时段的电价
         5. 年化成本=地源蒸汽发生器设备数 * 设备单价/15+地源蒸汽发生器固态储能设备年化成本+用电成本
 
@@ -4439,7 +4438,8 @@ if __name__ == "__main__":
     # 以上为蒸汽发生装置
     ##########################################
 
-
+    
+    ##########################################
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
     )
@@ -4478,6 +4478,9 @@ if __name__ == "__main__":
         + steamPowered_LiBr.heat_LiBr_from[h]
         for h in range(0, num_hour0)
     )
+    ##########################################
+
+
     # highTemperaturehotWater
     # 1) combinedHeatAndPower gasTurbineSystem?
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
