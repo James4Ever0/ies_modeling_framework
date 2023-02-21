@@ -1064,8 +1064,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         2. 0 <= 槽式光热机组每小时发电功率 <= 槽式光热装机量 * 每小时光照强度 * 机组效率
         3. 槽式光热机组每小时发电功率 + 固体储能机组每小时充放电功率 == 槽式光热机组每小时产蒸汽功率
         4. 槽式光热机组每小时产蒸汽功率 >= 0
-        5. 槽式光热年运维成本 ==  self.troughPhotoThermal_device * self.troughPhotoThermal_price / 15
-            +固体储能机组年运维成本
+        5. 槽式光热年运维成本 == 槽式光热设备数 * 槽式光热设备单价 / 15 + 固体储能机组年运维成本
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -1131,8 +1130,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             combinedHeatAndPower_num_max (float): 表示热电联产机组的最大设备数量
             combinedHeatAndPower_price (float): 表示热电联产设备的单价
             gas_price (np.ndarray): 表示燃气的单价
-            combinedHeatAndPower_single_set (float): 表示每台热电联产设备的装机容量
-            drratio (float): 表示热电联产设备的电热比。
+            combinedHeatAndPower_single_device (float): 表示每台热电联产设备的装机容量
+            power_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
@@ -3161,7 +3160,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷下设备数+制热下设备数+地源热泵下设备数
         4. 制冷下设备数≦水蓄能机组总体积*制冷模式下水蓄能罐的利用率
-           制冷下设备数≦
+           制冷下设备数≦制冷状态
         5. 制热下设备数≦水蓄能机组总体积*制热模式下水蓄能罐的利用率
         6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
         
