@@ -4798,7 +4798,7 @@ if __name__ == "__main__":
         == power_xcool[h]
         for h in range(0, num_hour0)
     )
-    linearization.max_zeros(
+    linearization.max_zeros( #要么向蓄冷设备储藏冷，储存冷的功率等于要么消耗冷，蓄冷设备不储藏冷
         num_hour0,
         model1,
         x=power_xcool,
@@ -4936,15 +4936,7 @@ if __name__ == "__main__":
         printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device)
         printDecisionVariablesFromSolution(model1)
 
-        # for v in model1.iter_continuous_vars():
-        #     print(v, "=", v.solution_value)
-
         value = Value(solution_run1)
-
-        # plt.plot(value.value(batteryEnergyStorageSystem.power_energyStorageSystem))
-        # print(value.value(batteryEnergyStorageSystem.energyStorageSystem_device))
-
-        # plt.figure()
 
         plotSingle(
             value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
