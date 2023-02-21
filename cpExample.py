@@ -181,8 +181,8 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
 
         1. 机组设备总数不得大于最大装机量
         2. 机组设备数大于等于0
-        3. 每个小时内,输出发电量小于等于机组等效单位设备数*效率*光照强度
-        4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15
+        3. 每个小时内,输出发电量小于等于机组等效单位设备数 * 效率 * 光照强度
+        4. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -208,7 +208,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
 
         Return:
-            购买设备总费用 = 机组等效单位设备数*单位设备价格
+            购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
         return solution.get_value(self.photoVoltaic_device) * self.device_price
 
@@ -287,7 +287,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         2. 机组设备总数不得大于最大装机量
         3. 每个小时内,制热设备大于等于0,且不超过溴化锂机组设备数
         4. 每个小时内,制冷量 = 制热等效单位设备数/效率
-        5. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15
+        5. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -376,7 +376,7 @@ class DieselEngine(IntegratedEnergySystem):
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
         3. 每个小时内,设备发电量小于等于装机设备实际值
-        4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
+        4. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -400,7 +400,7 @@ class DieselEngine(IntegratedEnergySystem):
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
 
         Return:
-            购买设备总费用 = 机组等效单位设备数*单位设备价格
+            购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
         # energyStorageSystem you will have it?
         return solution.get_value(self.dieselEngine_device) * self.device_price
@@ -544,10 +544,10 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         2. 机组设备总数不得大于最大装机量
         3. 储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
         4. 充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
-        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
-        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
+        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
+        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
+        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
         11. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
@@ -837,10 +837,10 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         2. 机组设备总数不得大于最大装机量
         3. 可变容量储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
         4. 充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
-        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
-        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
+        5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态 * bigNumber
+        6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态 * bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
+        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电 * 效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 两天之间充放电关系约束: 对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放电变化电量`
 
@@ -1845,10 +1845,10 @@ class AirHeatPump(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦热泵的制冷功率≦热泵制冷出口温度*热泵设备数/100,0≦热泵的制冷功率≦热泵制冷状态*bigNumber
-        3. 0≦热泵的循环制冷功率≦热泵循环制冷出口温度*热泵设备数/100,0≦热泵的循环制冷功率≦热泵循环制冷状态*bigNumber
-        4. 0≦热泵的制热功率≦热泵制热出口温度*热泵设备数/100,0≦热泵的制热功率≦热泵制热状态*bigNumber
-        5. 0≦热泵的循环制热功率≦热泵循环制热出口温度*热泵设备数/100,0≦热泵的循环制热功率≦热泵循环制热状态*bigNumber
+        2. 0≦热泵的制冷功率≦热泵制冷出口温度*热泵设备数/100,0≦热泵的制冷功率≦热泵制冷状态 * bigNumber
+        3. 0≦热泵的循环制冷功率≦热泵循环制冷出口温度*热泵设备数/100,0≦热泵的循环制冷功率≦热泵循环制冷状态 * bigNumber
+        4. 0≦热泵的制热功率≦热泵制热出口温度*热泵设备数/100,0≦热泵的制热功率≦热泵制热状态 * bigNumber
+        5. 0≦热泵的循环制热功率≦热泵循环制热出口温度*热泵设备数/100,0≦热泵的循环制热功率≦热泵循环制热状态 * bigNumber
         6. 制冷状态+循环制冷状态+制热状态+循环制热状态=1
         7. 热泵用电量=设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数+设备制热功率/制热性能系数+设备循环制热功率/循环制热性能系数
         8. 热泵总功率=制冷功率+循环制冷功率+制热功率+循环制热功率
@@ -2105,10 +2105,10 @@ class WaterHeatPump(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1)热冷效率,0≦水源热泵的制冷功率≦水源热泵制冷状态*bigNumber
-        3. 0≦水源热泵的循环制冷功率≦水源热泵设备数* (况2)热冷效率,0≦水源热泵的循环制冷功率≦水源热泵循环制冷状态*bigNumber
-        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)热冷效率,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
-        5. 0≦水源热泵的循环制热功率≦水源热泵设备数* (况4)热冷效率,0≦水源热泵的循环制热功率≦水源热泵循环制热状态*bigNumber
+        2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1)热冷效率,0≦水源热泵的制冷功率≦水源热泵制冷状态 * bigNumber
+        3. 0≦水源热泵的循环制冷功率≦水源热泵设备数* (况2)热冷效率,0≦水源热泵的循环制冷功率≦水源热泵循环制冷状态 * bigNumber
+        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)热冷效率,0≦水源热泵的制热功率≦水源热泵制热状态 * bigNumber
+        5. 0≦水源热泵的循环制热功率≦水源热泵设备数* (况4)热冷效率,0≦水源热泵的循环制热功率≦水源热泵循环制热状态 * bigNumber
         6. 制冷状态+循环制冷状态+制热状态+循环制热状态=1
         7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数+设备制热功率/制热性能系数+设备循环制热功率/循环制热性能系数
         8. 热泵总功率=制冷功率+循环制冷功率+制热功率+循环制热功率
@@ -2341,8 +2341,8 @@ class WaterCooledScrew(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态*bigNumber
-        3. 0≦水冷螺旋机的循环制冷功率≦水冷螺旋机设备数* (况2)循环制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的循环制冷功率≦水冷螺旋机循环制冷状态*bigNumber
+        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态 * bigNumber
+        3. 0≦水冷螺旋机的循环制冷功率≦水冷螺旋机设备数* (况2)循环制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的循环制冷功率≦水冷螺旋机循环制冷状态 * bigNumber
         4. 制冷状态+循环制冷状态=1
         5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数
         6. 热泵总功率=制冷功率+循环制冷功率
@@ -2558,8 +2558,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制冷情况下双工况机组利用率,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
-        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制冰情况下双工况机组利用率,0≦双工况机组的制冰功率≦双工况机组制冰状态*bigNumber
+        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制冷情况下双工况机组利用率,0≦双工况机组的制冷功率≦双工况机组制冷状态 * bigNumber
+        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制冰情况下双工况机组利用率,0≦双工况机组的制冰功率≦双工况机组制冰状态 * bigNumber
         4. 制冷状态+制冰状态=1
         5. 双工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数
         6. 热泵总功率=制冷功率+制冰功率
@@ -2798,9 +2798,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦三工况机组的制冷功率≦三工况机组设备数* (况1)制冷情况下三工况机组利用率,0≦三工况机组的制冷功率≦三工况机组制冷状态*bigNumber
-        3. 0≦三工况机组的制冰功率≦三工况机组设备数* (况2)制冰情况下三工况机组利用率,0≦三工况机组的制冰功率≦三工况机组制冰状态*bigNumber
-        4. 0≦三工况机组的制热功率≦三工况机组设备数* (况3)制热情况下三工况机组利用率,0≦三工况机组的制热功率≦三工况机组制热状态*bigNumber
+        2. 0≦三工况机组的制冷功率≦三工况机组设备数* (况1)制冷情况下三工况机组利用率,0≦三工况机组的制冷功率≦三工况机组制冷状态 * bigNumber
+        3. 0≦三工况机组的制冰功率≦三工况机组设备数* (况2)制冰情况下三工况机组利用率,0≦三工况机组的制冰功率≦三工况机组制冰状态 * bigNumber
+        4. 0≦三工况机组的制热功率≦三工况机组设备数* (况3)制热情况下三工况机组利用率,0≦三工况机组的制热功率≦三工况机组制热状态 * bigNumber
         5. 制冷状态+制冰状态+制热状态=1
         6. 三工况机组用电量=设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数+设备制热功率/制热性能系数
         7. 热泵总功率=制冷功率+制冰功率+制热功率
@@ -3175,26 +3175,26 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+地源热泵状态下设备数
-        4. <p>蓄冷下设备数≦水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率<br>
-           蓄冷下设备数≦水储能罐在蓄冷状态下*bigNumber<br>
+        4. <p>蓄冷下设备数≦水蓄能机组总体积 * 蓄冷模式下水蓄能罐的利用率<br>
+           蓄冷下设备数≦水储能罐在蓄冷状态下 * bigNumber<br>
            蓄冷下设备数≧0<br>
-           蓄冷下设备数≧水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率-(1-水储能罐在蓄冷状态量)*bigNumber</p>
-        5. 蓄热下设备数≦水蓄能机组总体积*蓄热模式下水蓄能罐的利用率
-           蓄热下设备数≦水储能罐在蓄热状态下*bigNumber
-           蓄热下设备数≧0
-           蓄热下设备数≧水蓄能机组总体积*蓄热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量)*bigNumber
-        6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
-           地源热泵下设备数≦水储能罐在地源热泵状态下*bigNumber
-           地源热泵下设备数≧0
-           地源热泵下设备数≧水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率-(1-水储能罐在地源热泵状态冷量)*bigNumber
+           蓄冷下设备数≧水蓄能机组总体积 * 蓄冷模式下水蓄能罐的利用率-(1-水储能罐在蓄冷状态量) * bigNumber</p>
+        5. <p>蓄热下设备数≦水蓄能机组总体积 * 蓄热模式下水蓄能罐的利用率<br>
+           蓄热下设备数≦水储能罐在蓄热状态下 * bigNumber<br>
+           蓄热下设备数≧0<br>
+           蓄热下设备数≧水蓄能机组总体积 * 蓄热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量) * bigNumber</p>
+        6. <p>地源热泵下设备数≦水蓄能机组总体积 * 地源热泵模式下水蓄能罐的利用率<br>
+           地源热泵下设备数≦水储能罐在地源热泵状态下 * bigNumber<br>
+           地源热泵下设备数≧0<br>
+           地源热泵下设备数≧水蓄能机组总体积 * 地源热泵模式下水蓄能罐的利用率-(1-水储能罐在地源热泵状态冷量) * bigNumber</p>
         7. 水储能罐在制冷状态+水储能罐在制热状态+水储能罐在地源热泵状态=1
-        8. -bigNumber*水储能罐在蓄冷状态量≦水储能罐在蓄冷状态下功率≦bigNumber*水储能罐在蓄冷状态量
-           -(1-水储能罐在蓄冷状态量)*bigNumber≦水储能罐在蓄冷状态下功率≦(1-水储能罐在蓄冷状态量)*bigNumber
-        9. -bigNumber*水储能罐在蓄热状态量≦水储能罐在蓄热状态下功率≦bigNumber*水储能罐在蓄热状态量
-           -(1-水储能罐在蓄热状态量)*bigNumber≦水储能罐在蓄热状态下功率≦(1-水储能罐在蓄热状态量)*bigNumber
-        10. -bigNumber*水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber*水储能罐在地源热泵状态量
-           -(1-水储能罐在地源热泵状态量)*bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量)*bigNumber
-        11. 水储能机组年化成本=水储能罐总体积*单位体积价格/20
+        8. <p>-bigNumber * 水储能罐在蓄冷状态量≦水储能罐在蓄冷状态下功率≦bigNumber * 水储能罐在蓄冷状态量<br>
+           -(1-水储能罐在蓄冷状态量) * bigNumber≦水储能罐在蓄冷状态下功率≦(1-水储能罐在蓄冷状态量) * bigNumber</p>
+        9. <p>-bigNumber * 水储能罐在蓄热状态量≦水储能罐在蓄热状态下功率≦bigNumber * 水储能罐在蓄热状态量<br>
+           -(1-水储能罐在蓄热状态量) * bigNumber≦水储能罐在蓄热状态下功率≦(1-水储能罐在蓄热状态量) * bigNumber</p>
+        10.<p>-bigNumber * 水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber * 水储能罐在地源热泵状态量<br>
+           -(1-水储能罐在地源热泵状态量) * bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量) * bigNumber</p>
+        11. 水储能机组年化成本=水储能罐总体积 * 单位体积价格/20
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3443,7 +3443,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
-        地源蒸汽发生器蓄热系统设备=地缘整齐发生器*6
+        地源蒸汽发生器蓄热系统最大设备数=地源蒸汽发生器最大设备数*6
         """
         self.groundSourceSteamGenerator_price = groundSourceSteamGenerator_price
         self.groundSourceSteamGeneratorSolidHeatStorage_price = (
@@ -3458,6 +3458,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        地源蒸汽发生器年化运维成本
         """
         self.efficiency = efficiency
 
@@ -3475,6 +3476,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="groundSourceSteamGenerator_electricity_cost{0}".format(
@@ -4071,12 +4073,12 @@ class Linearization(object):
         model.add_constraint(var_bin >= 0)
         # var_bin 大于等于 0
         model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber0)
-        # 如果bin == 0, var_bin 大于等于 (var - 1*bigNumber0)
+        # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber0)
         # 如果bin == 1, var_bin 大于等于 var
         model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
         model.add_constraint(var_bin <= bin * self.bigNumber0)
         # 如果bin == 0, var_bin 小于等于 0
-        # 如果bin == 1, var_bin 小于等于 1*bigNumber0
+        # 如果bin == 1, var_bin 小于等于 1 * bigNumber0
 
     def product_var_bins(
         self,
