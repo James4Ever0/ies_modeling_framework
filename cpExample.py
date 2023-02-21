@@ -3835,7 +3835,7 @@ class CitySupply(IntegratedEnergySystem):
         model: Model,
         citySupplied_device_max: float,
         device_price: float,
-        run_price: float,
+        run_price: np.ndarray,
         efficiency: float,
         device_name: str = "city_supply",
     ):
@@ -3847,7 +3847,7 @@ class CitySupply(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             citySupplied_device_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
-            run_price (float): 运维价格
+            run_price (np.ndarray): 每小时运维价格
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
@@ -3897,12 +3897,13 @@ class CitySupply(IntegratedEnergySystem):
     def constraints_register(self, model: Model):
         """
         定义市政能源类内部约束条件：
-        
+
         1. 机组最大装机量 >= 市政能源设备装机量 >= 0
         2. 市政能源设备装机量 >= 每小时市政能源热量消耗 >= 0
         3. 每小时市政能源热量消耗 <= 每小时市政能源热量输入 / 能源传输效率
-        4. 市政能源消耗总费用 = sum( 每小时市政能源热量输入)
-        
+        4. 市政能源消耗总费用 = sum(每小时市政能源热量输入 * 每小时市政能源价格)
+        5. 市政能源年运维费用 = 市政能源设备装机量 * 设备单价 / 15 + 市政能源消耗总费用 * 8760 / 一天小时数
+
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
@@ -4041,7 +4042,7 @@ class GridNet(IntegratedEnergySystem):
         2. 电网最大设备数 >= 电网设备数 >= 0
         3. 每小时用电量小于电网设备数
         4. 每小时电网发电量小于电网设备数
-        5. 电网一天基础消费 = min( max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
+        5. 电网一天基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
         6. 电网一天总消费 = sum(每小时用电量 * 用电电价 + 每小时发电量 * 发电消费) + 电网基础消费
         7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15 + 电网一天总消费 * 8760 / 一天小时数
 
@@ -4345,7 +4346,7 @@ if __name__ == "__main__":
     municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
     ##########################################
 
-    #发电及电储能装置
+    # 发电及电储能装置
     ##########################################
     # 柴油发电机
     dieselEngine = DieselEngine(
@@ -4383,8 +4384,7 @@ if __name__ == "__main__":
         model1, register_period_constraints=1, day_node=day_node
     )
     ##########################################
-    
-    
+
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
         num_hour0,
