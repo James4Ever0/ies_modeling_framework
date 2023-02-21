@@ -2437,7 +2437,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             ),
         )
         """
-        连续变量列表，表示双工况机组的制冷功率
+        连续变量列表,表示双工况机组的制冷功率
         """
 
         self.doubleWorkingConditionUnit_cool_flag: List[
@@ -2449,7 +2449,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             ),
         )
         """
-        二元变量列表，表示热交换器的年化费用
+        二元变量列表,表示双工况机组的制冷状态
         """
 
         self.power_doubleWorkingConditionUnit_ice: List[
@@ -2460,6 +2460,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示双工况机组的制冰功率
+        """
 
         self.doubleWorkingConditionUnit_ice_flag: List[
             BinaryVarType
@@ -2469,6 +2472,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        二元变量列表,表示双工况机组的制冰状态
+        """
 
         self.electricity_doubleWorkingConditionUnit: List[
             ContinuousVarType
@@ -2478,6 +2484,9 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示双工况机组的用电量
+        """
         self.power_doubleWorkingConditionUnit: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -2486,12 +2495,30 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
                 DoubleWorkingConditionUnit.index
             ),
         )
+        """
+        连续变量列表,表示双工况机组的功率
+        """
         self.coefficientOfPerformance_doubleWorkingConditionUnit_cool = 5
         self.coefficientOfPerformance_doubleWorkingConditionUnit_ice = 5
 
     # 三工况机组
 
     def constraints_register(self, model: Model):
+        """
+        定义机组内部约束
+
+        1. 0≦机组设备数≦最大设备量
+        2. 0≦双工况机组的制冷功率≦双工况机组设备数* (况1)制热量/制冷量,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
+        3. 0≦双工况机组的制冰功率≦双工况机组设备数* (况2)制热量/制冷量,0≦双工况机组的制冷功率≦双工况机组制冷状态*bigNumber
+        4. 制冷状态+额外制冷状态=1
+        5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数
+        6. 热泵总功率=制冷功率+额外制冷功率
+        7. 用电成本=每个时刻(设备用电量*电价)的总和
+        8. 水冷螺旋机的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
         hourRange = range(0, self.num_hour)
         model.add_constraint(0 <= self.doubleWorkingConditionUnit_device)
         model.add_constraint(self.doubleWorkingConditionUnit_device <= self.device_max)
@@ -2941,6 +2968,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
         """
+        每小时水蓄能设备
         """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
@@ -2949,14 +2977,16 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
         """
+        每小时水蓄能设备
         """
-        self.waterStorageTank_device_gheat: List[
+        self.waterStorageTank_device_gheat: List[ # generate?
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_gheat{0}".format(self.index),
         )
         """
+        每小时水蓄能设备
         """
         self.volume_price = volume_price
         self.waterStorageTank_Volume_max = waterStorageTank_Volume_max
@@ -2970,18 +3000,21 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_cool_flag{0}".format(self.index),
         )
         """
+        每小时水蓄能设备状态
         """
         self.waterStorageTank_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_heat_flag{0}".format(self.index),
         )
         """
+        每小时水蓄能设备状态
         """
         self.waterStorageTank_gheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_gheat_flag{0}".format(self.index),
         )
         """
+        每小时水蓄能设备状态
         """
         self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
@@ -2993,6 +3026,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
         """
+        每小时水蓄能设备
         """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
@@ -3001,6 +3035,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
         """
+        每小时水蓄能设备
         """
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
@@ -3009,16 +3044,20 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
         """
+        每小时水蓄能设备
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
         )
         """
+        水蓄能设备年运维费用
         """
 
     def constraints_register(self, model: Model, register_period_constraints, day_node):
         """
+        定义水蓄能类的约束条件：
         
+        1. 
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3193,6 +3232,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
 # groundSourceSteamGenerator
 class GroundSourceSteamGenerator(IntegratedEnergySystem):
+    """
+    """
+    
     index = 0
 
     def __init__(
@@ -3206,6 +3248,8 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         efficiency: float,
         device_name="groundSourceSteamGenerator",
     ):
+        """
+        """
         IntegratedEnergySystem(device_name)
         GroundSourceSteamGenerator.index += 1
         self.num_hour = num_hour
@@ -3216,6 +3260,9 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
                 )
             )
         )
+        
+        """
+        """
         self.power_groundSourceSteamGenerator: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -3225,6 +3272,8 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             ),
         )
 
+        """
+        """
         self.power_groundSourceSteamGenerator_steam: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -3234,12 +3283,17 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             ),
         )
 
+        """
+        """
         self.groundSourceSteamGenerator_device_max = (
             groundSourceSteamGenerator_device_max
         )
         self.groundSourceSteamGeneratorSolidHeatStorage_device_max = (
             groundSourceSteamGenerator_device_max * 6
         )
+        
+        """
+        """
         self.groundSourceSteamGenerator_price = groundSourceSteamGenerator_price
         self.groundSourceSteamGeneratorSolidHeatStorage_price = (
             groundSourceSteamGeneratorSolidHeatStorage_price
@@ -3251,6 +3305,9 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
                 GroundSourceSteamGenerator.index
             )
         )
+        
+        """
+        """
         self.efficiency = efficiency
 
         self.groundSourceSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
@@ -3265,13 +3322,22 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             stateOfCharge_min=0,
             stateOfCharge_max=1,
         )
+        
+        """
+        """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="groundSourceSteamGenerator_electricity_cost{0}".format(
                 GroundSourceSteamGenerator.index
             )
         )
+        
+        """
+        """
 
     def constraints_register(self, model: Model):
+        
+        """
+        """
         hourRange = range(0, self.num_hour)
         self.groundSourceSteamGeneratorSolidHeatStorage_device.constraints_register(
             model
