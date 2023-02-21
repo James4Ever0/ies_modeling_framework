@@ -4926,16 +4926,7 @@ if __name__ == "__main__":
         # from docplex.mp.sdetails import SolveDetails
 
         print("NO SOLUTION.")
-        # it is the only thing we can print right now.
-        # solution_detail: SolveDetails = model1.solve_details
-        # print()
-        # print("SOLVE DETAILS?")
-        # print(solution_detail)
     else: # 解出来了
-        # now we have solution.
-
-        # not model1.solve_details, which always return:
-        # docplex.mp.sdetails.SolveDetails
 
         print("objective: annual", solution_run1.get_value(objective)) # 所有设备年运行成本总和
         print()
