@@ -2212,11 +2212,14 @@ class WaterCooledScrew(IntegratedEnergySystem):
             name="WaterCooledScrew_annualized{0}".format(WaterCooledScrew.index)
         )
         """
-        连续变量，表示s的年化费用
+        连续变量,表示水源热泵的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="WaterCooledScrew_electricity_sum{0}".format(WaterCooledScrew.index)
         )
+        """
+        连续变量,表示水源热泵的用电成本
+        """
         self.device_price = device_price
         self.device_max = device_max
         self.case_ratio = case_ratio
@@ -2226,13 +2229,18 @@ class WaterCooledScrew(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="power_waterCooledScrewMachine_cool{0}".format(WaterCooledScrew.index),
         )
-
+        """
+        连续变量列表,表示水冷螺旋机的制冷功率
+        """
         self.waterCooledScrewMachine_cool_flag: List[
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterCooledScrewMachine_cool_flag{0}".format(WaterCooledScrew.index),
         )
+        """
+        二元变量列表,表示水冷螺旋机的制冷制冷状态
+        """
 
         self.power_waterCooledScrewMachine_xcool: List[
             ContinuousVarType
@@ -2242,6 +2250,9 @@ class WaterCooledScrew(IntegratedEnergySystem):
                 WaterCooledScrew.index
             ),
         )
+        """
+        连续变量列表,表示水冷螺旋机的额外制冷功率
+        """
 
         self.waterCooledScrewMachine_xcool_flag: List[
             BinaryVarType
@@ -2249,6 +2260,9 @@ class WaterCooledScrew(IntegratedEnergySystem):
             [i for i in range(0, self.num_hour)],
             name="waterCooledScrewMachine_xcool_flag{0}".format(WaterCooledScrew.index),
         )
+        """
+        二元变量列表,表示水冷螺旋机的制冷制冷状态
+        """
 
         self.electricity_waterCooledScrewMachine: List[
             ContinuousVarType
@@ -2691,6 +2705,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
 
 class GeothermalHeatPump(IntegratedEnergySystem):
+    """地源热泵类"""
 
     index = 0
 
@@ -2698,11 +2713,21 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
-        device_name="geothermal_heat_pump",
+        device_max:float,
+        device_price:float,
+        electricity_price:np.ndarray,
+        device_name:str="geothermal_heat_pump",
     ):
+        """新建一个地源热泵类
+        
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            device_max (float): 地源热泵设备机组最大装机量
+            device_price (float): 设备单价
+            electricity_price (np.ndarray): 24小时用电价格
+            device_name (str): 光伏机组名称，默认为"geothermal_heat_pump"
+        """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         GeothermalHeatPump.index += 1
