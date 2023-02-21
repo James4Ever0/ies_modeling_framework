@@ -3370,7 +3370,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 # groundSourceSteamGenerator?
 class GroundSourceSteamGenerator(IntegratedEnergySystem):
     """
-    
+    地源蒸汽发生器类
     """
 
     index = 0
@@ -3386,7 +3386,17 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "groundSourceSteamGenerator",
     ):
-        """ """
+        """ 
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            groundSourceSteamGenerator_device_max (int)：表示地热蒸汽发生器的最大数量
+            groundSourceSteamGenerator_price (float)：表示地热蒸汽发生器的单价
+            groundSourceSteamGeneratorSolidHeatStorage_price:
+            electricity_price (float): 电价
+            case_ratio: 不同工况下制热量和制冷量的比值
+            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+        """
         IntegratedEnergySystem(device_name)
         GroundSourceSteamGenerator.index += 1
         self.num_hour = num_hour
