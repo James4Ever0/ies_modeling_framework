@@ -917,7 +917,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
         # TODO: figure out init (fixing init error)
-        model.add_constraints(
+        model.add_constraint(
+        # model.add_constraints(
             self.energyStorageSystem[0]
             == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
             # for i in range(1, self.num_hour)
@@ -4488,7 +4489,7 @@ if __name__ == "__main__":
     )
     ##########################################
 
-
+    #高温热水发生装置及水储能装置
     ##########################################
     # highTemperaturehotWater
     # 1) combinedHeatAndPower gasTurbineSystem?
@@ -4576,7 +4577,8 @@ if __name__ == "__main__":
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
-    
+    ##########################################
+
     # 高温热水合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_highTemperaturehotWater_sum"
