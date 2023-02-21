@@ -1,9 +1,9 @@
 # coding: utf-8
-# 整理完所有缩写的全称之后，绘制拓扑图
+# 整理完所有缩写的全称之后,绘制拓扑图
 # 可以把代码转化成图
 
 """
-模块简介：
+模块简介:
 
 
 """
@@ -80,7 +80,7 @@ else:
 # a big number
 bigNumber = 10e10
 """
-设置一个大的数，默认值为10的10次
+设置一个大的数,默认值为10的10次
 """
 # total simulation rounds?
 simulationTime = 3600
@@ -88,7 +88,7 @@ simulationTime = 3600
 # every hour of one day?
 intensityOfIllumination = np.ones(num_hour0)
 """
-24小时光照强度数组，数组形状为`(num_hour0,)`，所有元素初始化为1
+24小时光照强度数组,数组形状为`(num_hour0,)`,所有元素初始化为1
 """
 # what is this "ha"? just sunlight stats per hour in a day?
 
@@ -103,7 +103,7 @@ class IntegratedEnergySystem(object):
 
     def __init__(self, device_name: str):
         """
-        新建一个综合能源系统基类，设置设备名称，设备编号加一，打印设备名称和编号
+        新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
         self.device_name = device_name
         IntegratedEnergySystem.device_count += 1
@@ -117,7 +117,7 @@ class IntegratedEnergySystem(object):
 
 class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
     """
-    光伏类，适用于光伏及平板式光热
+    光伏类,适用于光伏及平板式光热
     """
 
     index = 0
@@ -142,7 +142,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             device_price (float): 设备单价
             intensityOfIllumination0 (np.ndarray): 24小时光照强度
             efficiency (float): 设备运行效率
-            device_name (str): 光伏机组名称，默认为"PhotoVoltaic"
+            device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
         IntegratedEnergySystem(device_name)
         PhotoVoltaic.index += (
@@ -181,7 +181,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
 
         1. 机组设备总数不得大于最大装机量
         2. 机组设备数大于等于0
-        3. 每个小时内，输出发电量小于等于机组等效单位设备数*效率*光照强度
+        3. 每个小时内,输出发电量小于等于机组等效单位设备数*效率*光照强度
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15
 
         Args:
@@ -204,7 +204,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
 
     def total_cost(self, solution: SolveSolution) -> float:  # 购买设备总费用
         """
-        Args：
+        Args:
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
 
         Return:
@@ -216,7 +216,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
 # LiBr制冷
 class LiBrRefrigeration(IntegratedEnergySystem):
     """
-    溴化锂制冷类，适用于制冷机组
+    溴化锂制冷类,适用于制冷机组
     """
 
     index = 0
@@ -237,7 +237,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             LiBr_device_max (float): 溴化锂制冷设备机组最大装机量
             device_price (float): 设备单价
             efficiency (float): 设备运行效率
-            device_name (str): 溴化锂制冷机组名称，默认为"LiBrRefrigeration"
+            device_name (str): 溴化锂制冷机组名称,默认为"LiBrRefrigeration"
         """
         IntegratedEnergySystem(device_name)
         LiBrRefrigeration.index += 1
@@ -285,8 +285,8 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 每个小时内，制热设备大于等于0，且不超过溴化锂机组设备数
-        4. 每个小时内，制冷量 = 制热等效单位设备数/效率
+        3. 每个小时内,制热设备大于等于0,且不超过溴化锂机组设备数
+        4. 每个小时内,制冷量 = 制热等效单位设备数/效率
         5. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15
 
         Args:
@@ -314,7 +314,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 # 柴油发电机
 class DieselEngine(IntegratedEnergySystem):
     """
-    柴油发电机类，适用于发电机组
+    柴油发电机类,适用于发电机组
     """
 
     index = 0
@@ -335,7 +335,7 @@ class DieselEngine(IntegratedEnergySystem):
             dieselEngine_device_max (float): 柴油发电机设备机组最大装机量
             device_price (float): 设备单价
             run_price (float): 运维价格
-            device_name (str): 柴油发电机机组名称，默认为"DieselEngine"
+            device_name (str): 柴油发电机机组名称,默认为"DieselEngine"
         """
         IntegratedEnergySystem(device_name)
         DieselEngine.index += 1
@@ -375,7 +375,7 @@ class DieselEngine(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 每个小时内，设备发电量小于等于装机设备实际值
+        3. 每个小时内,设备发电量小于等于装机设备实际值
         4. 每年消耗的运维成本 = 机组等效单位设备数*单位设备价格/15+设备总发电量*设备运行价格*8760/小时数
 
         Args:
@@ -396,7 +396,7 @@ class DieselEngine(IntegratedEnergySystem):
 
     def total_cost(self, solution: SolveSolution) -> float:
         """
-        Args：
+        Args:
             solution (docplex.mp.solution.SolveSolution): 求解模型的求解结果
 
         Return:
@@ -409,7 +409,7 @@ class DieselEngine(IntegratedEnergySystem):
 # 储能系统基类
 class EnergyStorageSystem(IntegratedEnergySystem):
     """
-    储能系统基类，适用于储能机组
+    储能系统基类,适用于储能机组
     """
 
     index: int = 0
@@ -433,14 +433,14 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price(float)：储能装置的购置价格。
-            powerConversionSystem_price(float)：储能装置与电网之间的 PCS 转换价格。
-            eff(float)：储能装置的充放电效率。
-            conversion_rate_max(float)：储能装置的最大倍率。
-            energyStorageSystem_init(int)：储能装置的初始能量。
-            stateOfCharge_min(float)：储能装置的最小储能量百分比。
-            stateOfCharge_max(float)：储能装置的最大储能量百分比。
-            device_name (str): 储能系统机组名称，默认为"energyStorageSystem"
+            energyStorageSystem_price(float):储能装置的购置价格。
+            powerConversionSystem_price(float):储能装置与电网之间的 PCS 转换价格。
+            eff(float):储能装置的充放电效率。
+            conversion_rate_max(float):储能装置的最大倍率。
+            energyStorageSystem_init(int):储能装置的初始能量。
+            stateOfCharge_min(float):储能装置的最小储能量百分比。
+            stateOfCharge_max(float):储能装置的最大储能量百分比。
+            device_name (str): 储能系统机组名称,默认为"energyStorageSystem"
         """
         IntegratedEnergySystem(device_name)
         EnergyStorageSystem.index += 1
@@ -459,7 +459,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             name="power_energyStorageSystem{0}".format(EnergyStorageSystem.index),
         )
         """
-        模型中的连续变量列表，长度为 num_hour，表示每小时储能装置的充放电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充放电功率
         """
         # 充电功率
         self.power_energyStorageSystem_charge: List[
@@ -471,7 +471,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour，表示每小时储能装置的充电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充电功率
         """
         # 放电功率
         self.power_energyStorageSystem_discharge: List[
@@ -483,7 +483,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour，表示每小时储能装置的放电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的放电功率
         """
         # 能量
         self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
@@ -491,7 +491,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             name="energyStorageSystem{0}".format(EnergyStorageSystem.index),
         )
         """
-        模型中的连续变量列表，长度为 num_hour，表示每小时储能装置的能量
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的能量
         """
         self.energyStorageSystem_device_max = energyStorageSystem_device_max
         self.energyStorageSystem_price = energyStorageSystem_price
@@ -501,7 +501,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             name="powerConversionSystem_device{0}".format(EnergyStorageSystem.index)
         )  # powerConversionSystem
         """
-        模型中的连续变量，表示 PCS 的容量。
+        模型中的连续变量,表示 PCS 的容量。
         """
         self.charge_flag: List[BinaryVarType] = model.binary_var_list(  # is charging?
             [i for i in range(0, num_hour)],
@@ -510,7 +510,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )  # 充电
         """
-        模型中的二元变量列表，长度为`num_hour`,表示每小时储能装置是否处于充电状态。
+        模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于充电状态。
         """
         self.discharge_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -519,7 +519,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )  # 放电
         """
-        模型中的二元变量列表，长度为`num_hour`,表示每小时储能装置是否处于放电状态。
+        模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于放电状态。
         """
         # 效率
         self.efficiency = efficiency
@@ -542,12 +542,12 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备，且功率转化系统设备大于等于0
+        3. 储能装置功率转化率约束:储能系统设备*储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
         4. 充电功率和放电功率之间的关系:储能系统功率=-充电功率+放电功率
         5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
         6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
+        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
         11. 如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
@@ -644,7 +644,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             / 15
         )
 
-        # 两天之间直接割裂，没有啥关系
+        # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # this is a flag, not a numeric value
             model.add_constraints(
                 self.energyStorageSystem[i]
@@ -691,7 +691,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 # 可变容量储能
 class EnergyStorageSystemVariable(IntegratedEnergySystem):
     """
-    可变容量储能类，适用于储能机组
+    可变容量储能类,适用于储能机组
     """
 
     index = 0
@@ -717,12 +717,12 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
             energyStorageSystem_price(float): 储能装置的购置价格。
             powerConversionSystem_price(float): 储能装置与电网之间的 PCS 转换价格。
-            eff(float)：储能装置的充放电效率。
+            eff(float):储能装置的充放电效率。
             conversion_rate_max(float): 储能装置的最大倍率。
             energyStorageSystem_init: 储能装置的初始能量。
-            stateOfCharge_min(float)：储能装置的最小储能量百分比。
-            stateOfCharge_max(float)：储能装置的最大储能量百分比。
-            device_name (str): 可变容量储能系统机组名称，默认为"energyStorageSystem_variable"
+            stateOfCharge_min(float):储能装置的最小储能量百分比。
+            stateOfCharge_max(float):储能装置的最大储能量百分比。
+            device_name (str): 可变容量储能系统机组名称,默认为"energyStorageSystem_variable"
         """
         IntegratedEnergySystem(device_name)
         EnergyStorageSystemVariable.index += 1
@@ -748,7 +748,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的充放电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充放电功率
         """
         # 充电功率
         self.power_energyStorageSystem_charge: List[
@@ -760,7 +760,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的充电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充电功率
         """
         # 放电功率
         self.power_energyStorageSystem_discharge: List[
@@ -772,7 +772,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的放电功率
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的放电功率
         """
         # 能量
         self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
@@ -782,7 +782,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表，长度为 num_hour,表示每小时储能装置的能量
+        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的能量
         """
         self.energyStorageSystem_device_max = energyStorageSystem_device_max
         self.energyStorageSystem_price = energyStorageSystem_price
@@ -797,7 +797,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )  # powerConversionSystem
         """
-        模型中的连续变量，表示 PCS 的容量
+        模型中的连续变量,表示 PCS 的容量
         """
         # paradox? redundancy? both charge and discharge?
         self.charge_flag: List[BinaryVarType] = model.binary_var_list(
@@ -807,7 +807,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )  # 充电
         """
-        模型中的二元变量列表，长度为 num_h,表示每小时储能装置是否处于充电状态。
+        模型中的二元变量列表,长度为 num_h,表示每小时储能装置是否处于充电状态。
         """
         self.discharge_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, num_hour)],
@@ -816,7 +816,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )  # 放电
         """
-        模型中的二元变量列表，长度为 num_h,表示每小时储能装置是否处于放电状态。
+        模型中的二元变量列表,长度为 num_h,表示每小时储能装置是否处于放电状态。
         """
         # 效率
         self.efficiency = efficiency
@@ -838,7 +838,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         5. 充电功率约束:充电功率大于等于0,小于等于功率转化系统设备,小于等于充电电状态*bigNumber
         6. 放电功率约束:放电功率大于等于0,于等于功率转化系统设备,小于等于放电状态*bigNumber
         7. 充电功率和放电功率二选一
-        8. 储能量守恒约束：储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
+        8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
         11. 这里面有两个初始化搞不懂
@@ -929,7 +929,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             for i in range(1, self.num_hour)
         )
 
-        # 两天之间直接割裂，没有啥关系
+        # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # register??
             model.add_constraints(
                 self.energyStorageSystem[i]
@@ -983,8 +983,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             troughPhotoThermal_price(float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price(float): 槽式光热储能设备价格
             intensityOfIllumination0:24小时光照强度
-            eff(float)：效率
-            device_name (str): 槽式光热机组名称，默认为"troughPhotoThermal"
+            eff(float):效率
+            device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
         IntegratedEnergySystem(device_name)
         TroughPhotoThermal.index += 1
@@ -1067,7 +1067,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 
 
 # CombinedHeatAndPower设备
-# 输入：
+# 输入:
 # TODO: fix the name issue of CHP devices
 class CombinedHeatAndPower(IntegratedEnergySystem):
     """
@@ -1091,12 +1091,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max (int)：表示燃气轮机的最大数量。
-            combinedHeatAndPower_price (float)：表示燃气轮机的单价。
-            gas_price (float)：表示燃气的单价。
-            combinedHeatAndPower_single_set (float)：表示每台燃气轮机的装机容量。
-            drratio (float)：表示燃气轮机的热电比。
-            device_name (str): 燃气轮机机组名称，默认为"combinedHeatAndPower"
+            combinedHeatAndPower_num_max (int):表示燃气轮机的最大数量。
+            combinedHeatAndPower_price (float):表示燃气轮机的单价。
+            gas_price (float):表示燃气的单价。
+            combinedHeatAndPower_single_set (float):表示每台燃气轮机的装机容量。
+            drratio (float):表示燃气轮机的热电比。
+            device_name (str): 燃气轮机机组名称,默认为"combinedHeatAndPower"
         """
         IntegratedEnergySystem(device_name)
         CombinedHeatAndPower.index += 1
@@ -1105,7 +1105,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_device{0}".format(CombinedHeatAndPower.index)
         )
         """
-        实数型，表示燃气轮机的总装机容量
+        实数型,表示燃气轮机的总装机容量
         """
         self.power_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1114,7 +1114,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
         """
-        实数型列表，表示燃气轮机在每个时段的发电量
+        实数型列表,表示燃气轮机在每个时段的发电量
         """
         self.heat_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1123,7 +1123,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
         """
-        实数型列表，表示燃气轮机在每个时段的供暖热水量
+        实数型列表,表示燃气轮机在每个时段的供暖热水量
         """
         self.gas_combinedHeatAndPower: List[
             ContinuousVarType
@@ -1132,7 +1132,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )  # 时时耗气量? 时时是什么意思 实时？
         """
-        实数型列表，表示燃气轮机在每个时段的耗气量
+        实数型列表,表示燃气轮机在每个时段的耗气量
         """
         self.combinedHeatAndPower_price = combinedHeatAndPower_price
         self.gas_price = gas_price
@@ -1143,19 +1143,19 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_open_flag{0}".format(CombinedHeatAndPower.index),
         )
         """
-        二元变量列表，表示燃气轮机在每个时段是否启动
+        二元变量列表,表示燃气轮机在每个时段是否启动
         """
         self.wasteGasAndHeat_water_flag: BinaryVarType = model.binary_var(
             name="wasteGasAndHeat_water_flag{0}".format(CombinedHeatAndPower.index)
         )
         """
-        二元变量，表示燃气轮机是否用于供暖热水
+        二元变量,表示燃气轮机是否用于供暖热水
         """
         self.wasteGasAndHeat_steam_flag: BinaryVarType = model.binary_var(
             name="wasteGasAndHeat_steam_flag{0}".format(CombinedHeatAndPower.index)
         )
         """
-        二元变量，表示燃气轮机是否用于供热蒸汽
+        二元变量,表示燃气轮机是否用于供热蒸汽
         """
         # 机组数量
         self.combinedHeatAndPower_run_num: List[
@@ -1165,25 +1165,25 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
         )
         """
-        整数型列表，表示每个时段启动的燃气轮机数量
+        整数型列表,表示每个时段启动的燃气轮机数量
         """
         self.combinedHeatAndPower_num: IntegerVarType = model.integer_var(
             name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
         )
         """
-        整数型，表示燃气轮机数量
+        整数型,表示燃气轮机数量
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
         )
         """
-        实数型，表示燃气轮机年化投资成本
+        实数型,表示燃气轮机年化投资成本
         """
         self.gas_cost: ContinuousVarType = model.continuous_var(
             name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
         )  # 燃气费用统计
         """
-        实数型，表示燃气费用
+        实数型,表示燃气费用
         """
         self.combinedHeatAndPower_num_max = combinedHeatAndPower_num_max
         self.combinedHeatAndPower_single_device = combinedHeatAndPower_single_device
@@ -1202,7 +1202,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             k=0,
         )
         """
-        方法内部还创建了三个 "Exchanger" 对象，分别用于模拟燃气轮机的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部，它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
+        方法内部还创建了三个 "Exchanger" 对象,分别用于模拟燃气轮机的三种应用方式（供暖热水、供暖蒸汽、烟气余热回收）。这些对象的定义在类内部,它们的参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
         self.wasteGasAndHeat_water_device = Exchanger(
@@ -1230,7 +1230,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         3. 每个燃气轮机的热功率必须大于等于燃气轮机的最小热功率
         4. 每个燃气轮机的热功率必须小于等于燃气轮机的总热功率
         5. 每个燃气轮机的热功率必须小于等于燃气轮机开启时的热功率
-        6. 确定每个时段燃气轮机开启的台数，并且每个时段燃气轮机开启的总功率必须等于燃气轮机的总热功率
+        6. 确定每个时段燃气轮机开启的台数,并且每个时段燃气轮机开启的总功率必须等于燃气轮机的总热功率
         7. 燃气轮机的运行台数必须在0到总台数之间
         8. 燃气轮机的热功率必须等于燃气轮机的电功率乘以热电比
         9. 燃气轮机的燃气消耗量必须等于燃气轮机的总热功率除以燃气发电机组的热效率 3.5
@@ -1264,7 +1264,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             <= self.power_combinedHeatAndPower[h]
             for h in hourRange
         )
-        # power_combinedHeatAndPower(1, h) <= combinedHeatAndPower_device * combinedHeatAndPower_open_flag(1, h) % combinedHeatAndPower功率限制, 采用线性化约束，有以下等效：
+        # power_combinedHeatAndPower(1, h) <= combinedHeatAndPower_device * combinedHeatAndPower_open_flag(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
         model.add_constraints(
             self.power_combinedHeatAndPower[h] <= self.combinedHeatAndPower_device
             for h in hourRange
@@ -1353,7 +1353,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
 
-# 燃气锅炉：蒸汽，hotWater
+# 燃气锅炉:蒸汽,hotWater
 class GasBoiler(IntegratedEnergySystem):
     """
     燃气锅炉类
@@ -1375,11 +1375,11 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gasBoiler_device_max(int)：表示燃气锅炉的最大数量。
-            gasBoiler_price(float)：表示燃气锅炉的单价。
-            gas_price(float)：表示燃气的单价。
+            gasBoiler_device_max(int):表示燃气锅炉的最大数量。
+            gasBoiler_price(float):表示燃气锅炉的单价。
+            gas_price(float):表示燃气的单价。
             efficiency(float):燃气锅炉的热效率
-            device_name (str): 燃气锅炉机组名称，默认为"gasBoiler"
+            device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
         """
         IntegratedEnergySystem(device_name)
         GasBoiler.index += 1
@@ -1395,14 +1395,14 @@ class GasBoiler(IntegratedEnergySystem):
             name="heat_gasBoiler{0}".format(GasBoiler.index),
         )
         """
-        连续变量列表，表示燃气锅炉在每个时段的热功率
+        连续变量列表,表示燃气锅炉在每个时段的热功率
         """
         self.gas_gasBoiler: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_gasBoiler{0}".format(GasBoiler.index),
         )  # 时时耗气量
         """
-        连续变量列表，表示燃气锅炉在每个时段的燃气消耗量
+        连续变量列表,表示燃气锅炉在每个时段的燃气消耗量
         """
         self.gasBoiler_device_max = gasBoiler_device_max
         self.gasBoiler_price = gasBoiler_price
@@ -1412,13 +1412,13 @@ class GasBoiler(IntegratedEnergySystem):
             name="gasBoiler_gas_cost{0}".format(GasBoiler.index)
         )
         """
-        连续变量，表示燃气费用
+        连续变量,表示燃气费用
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="gasBoiler_annualized{0}".format(GasBoiler.index)
         )
         """
-        连续变量，表示燃气锅炉的年化费用
+        连续变量,表示燃气锅炉的年化费用
         """
 
     def constraints_register(self, model: Model):
@@ -1477,11 +1477,11 @@ class ElectricBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricBoiler_device_max(int)：表示电锅炉的最大数量。
-            electricBoiler_price(float)：表示电锅炉的单价。
+            electricBoiler_device_max(int):表示电锅炉的最大数量。
+            electricBoiler_price(float):表示电锅炉的单价。
             electricity_price(float): 表示电的单价。
             efficiency(float): 电锅炉的热效率
-            device_name (str): 电锅炉机组名称，默认为"electricBoiler"
+            device_name (str): 电锅炉机组名称,默认为"electricBoiler"
         """
         IntegratedEnergySystem(device_name)
         ElectricBoiler.index += 1
@@ -1499,7 +1499,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             name="heat_electricBoiler{0}".format(ElectricBoiler.index),
         )
         """
-        连续变量列表，表示电锅炉在每个时段的热功率
+        连续变量列表,表示电锅炉在每个时段的热功率
         """
         self.electricity_electricBoiler: List[
             ContinuousVarType
@@ -1508,7 +1508,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
         )  # 时时耗气量
         """
-        连续变量列表，表示电锅炉在每个时段的电消耗量
+        连续变量列表,表示电锅炉在每个时段的电消耗量
         """
         self.gas_device_max = electricBoiler_device_max
         self.electricBoiler_price = electricBoiler_price
@@ -1518,13 +1518,13 @@ class ElectricBoiler(IntegratedEnergySystem):
             name="electricity_cost{0}".format(ElectricBoiler.index)
         )
         """
-        连续变量，表示用电费用
+        连续变量,表示用电费用
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
         )
         """
-        连续变量，表示电锅炉的年化费用
+        连续变量,表示电锅炉的年化费用
         """
 
     def constraints_register(self, model: Model):
@@ -1583,10 +1583,10 @@ class Exchanger(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max(int)：表示热交换器的最大数量。
-            device_price(float)：表示热交换器的单价。
+            device_max(int):表示热交换器的最大数量。
+            device_price(float):表示热交换器的单价。
             k:传热系数
-            device_name (str): 热交换器机组名称，默认为"exchanger"
+            device_name (str): 热交换器机组名称,默认为"exchanger"
         """
         IntegratedEnergySystem(device_name)
         # k 传热系数
@@ -1602,7 +1602,7 @@ class Exchanger(IntegratedEnergySystem):
             name="exchanger_annualized{0}".format(Exchanger.index)
         )
         """
-        连续变量，表示热交换器的年化费用
+        连续变量,表示热交换器的年化费用
         """
         self.device_price = device_price
         self.exchanger_device_max = device_max
@@ -1611,7 +1611,7 @@ class Exchanger(IntegratedEnergySystem):
             name="heat_exchanger{0}".format(Exchanger.index),
         )
         """
-        连续变量列表，表示热交换器的每小时热交换量
+        连续变量列表,表示热交换器的每小时热交换量
         """
 
     def constraints_register(self, model: Model):
@@ -1657,10 +1657,10 @@ class AirHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max(int)：表示热泵的最大数量。
-            device_price(float)：表示热泵的单价。
+            device_max(int):表示热泵的最大数量。
+            device_price(float):表示热泵的单价。
             electricity_price(float): 电价
-            device_name (str): 热泵机组名称，默认为"air_heat_pump"
+            device_name (str): 热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -1676,13 +1676,13 @@ class AirHeatPump(IntegratedEnergySystem):
             name="AirHeatPumpower_annualized{0}".format(AirHeatPump.index)
         )
         """
-        连续变量，表示热泵的年化费用
+        连续变量,表示热泵的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="AirHeatPumpower_electricity_cost{0}".format(AirHeatPump.index)
         )
         """
-        连续变量，表示热泵的电价成本
+        连续变量,表示热泵的电价成本
         """
         self.device_price = device_price
         self.device_max = device_max
@@ -1691,21 +1691,21 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_cool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的制冷功率
+        连续变量列表,表示热泵在每个时段的制冷功率
         """
         self.cool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="cool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的制冷出口温度
+        连续变量列表,表示热泵在每个时段的制冷出口温度
         """
         self.heatPump_cool_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_cool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表，表示热泵在每个时段的制冷状态
+        二元变量列表,表示热泵在每个时段的制冷状态
         """
 
         self.power_heatPump_xcool: List[ContinuousVarType] = model.continuous_var_list(
@@ -1713,14 +1713,14 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xcool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的除湿功率
+        连续变量列表,表示热泵在每个时段的除湿功率
         """
         self.xcool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xcool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的除湿出口温度
+        连续变量列表,表示热泵在每个时段的除湿出口温度
         """
 
         self.heatPump_xcool_flag: List[BinaryVarType] = model.binary_var_list(
@@ -1728,63 +1728,63 @@ class AirHeatPump(IntegratedEnergySystem):
             name="heatPump_xcool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表，表示热泵在每个时段的除湿状态
+        二元变量列表,表示热泵在每个时段的除湿状态
         """
         self.power_heatPump_heat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_heat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的制热功率
+        连续变量列表,表示热泵在每个时段的制热功率
         """
         self.heat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的制热出口温度
+        连续变量列表,表示热泵在每个时段的制热出口温度
         """
         self.heatPump_heat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_heat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表，表示热泵在每个时段的制热状态
+        二元变量列表,表示热泵在每个时段的制热状态
         """
         self.power_heatPump_xheat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_xheat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的加湿功率
+        连续变量列表,表示热泵在每个时段的加湿功率
         """
         self.xheat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xheat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的加湿出口温度
+        连续变量列表,表示热泵在每个时段的加湿出口温度
         """
         self.heatPump_xheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_xheat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表，表示热泵在每个时段的加湿状态
+        二元变量列表,表示热泵在每个时段的加湿状态
         """
         self.electricity_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_heatPump{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的用电量
+        连续变量列表,表示热泵在每个时段的用电量
         """
         self.power_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表，表示热泵在每个时段的总功率
+        连续变量列表,表示热泵在每个时段的总功率
         """
 
         # TODO: unclear meaning of "xcool" and "xheat"
@@ -1926,7 +1926,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             device_price (float): 表示水源热泵的单价。
             electricity_price (float): 电价
             case_ratio: 不同工况下制热量和制冷量的比值
-            device_name (str): 水源热泵机组名称，默认为"water_heat_pump"
+            device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
         IntegratedEnergySystem(device_name)
         # case_ratio 不同工况下制热量/制冷量的比值
@@ -2196,7 +2196,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             device_price (float): 表示水冷螺旋机的单价。
             electricity_price (float): 电价
             case_ratio: 不同工况下制热量和制冷量的比值
-            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+            device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_screw"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -2370,6 +2370,9 @@ class WaterCooledScrew(IntegratedEnergySystem):
 
 # 双工况机组
 class DoubleWorkingConditionUnit(IntegratedEnergySystem):
+    """
+    双工况机组类
+    """
     index = 0
 
     def __init__(
@@ -2382,6 +2385,16 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         case_ratio,
         device_name="doubleWorkingConditionUnit",
     ):
+        """
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            device_max (int): 表示水冷螺旋机的最大数量。
+            device_price (float): 表示水冷螺旋机的单价。
+            electricity_price (float): 电价
+            case_ratio: 不同工况下制热量和制冷量的比值
+            device_name (str): 水冷螺旋机机组名称，默认为"water_cooled_screw"
+        """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         DoubleWorkingConditionUnit.index += 1
@@ -2747,7 +2760,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             device_max (float): 地源热泵机组最大装机量
             device_price (float): 设备单价
             electricity_price (np.ndarray): 24小时用电价格
-            device_name (str): 地源热泵机组名称，默认为"geothermal_heat_pump"
+            device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
@@ -2801,7 +2814,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
 
     def constraints_register(self, model: Model):
         """
-        定义地源热泵机组约束条件：
+        定义地源热泵机组约束条件:
         
         1. 0 <= 机组设备数量 <= 最大装机量
         2. 0 <= 每小时输出功率 <= 机组设备数量
@@ -2843,8 +2856,8 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         )
 
 
-# 水蓄能，可蓄highTemperature，可以蓄低温
-# waterStorageTank，可变容量的储能体
+# 水蓄能,可蓄highTemperature,可以蓄低温
+# waterStorageTank,可变容量的储能体
 class WaterEnergyStorage(IntegratedEnergySystem):
     """
     水蓄能类
@@ -2867,10 +2880,29 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         ratio_gheat: float,  # gheat? 工作热量？ geothermal heat?
         device_name: str = "water_energy_storage",
     ):
+        """
+        创建一个水蓄能类
+        
+        Args:
+            num_hour (int): 一天的小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            waterStorageTank_Volume_max: (float):
+            volume_price: (float):
+            powerConversionSystem_price: (float):
+            conversion_rate_max: (float):
+            efficiency: (float):
+            (energyStorageSystem_init):
+            stateOfCharge_min: (float):
+            stateOfCharge_max: (float):
+            ratio_cool: (float):
+            ratio_heat: (float):
+            ratio_gheat: (float):
+            device_name: (str): "water_energy_storage",
+        """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         self.model = model
-        # 对于水蓄能，优化的变量为水罐的体积
+        # 对于水蓄能,优化的变量为水罐的体积
         self.waterStorageTank = EnergyStorageSystemVariable(
             num_hour,
             model,
@@ -3035,7 +3067,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # （1） power_waterStorageTank_cool[h] == power_waterStorageTank[h] * waterStorageTank_cool_flag[h]
         # （2）power_waterStorageTank_heat[h] == power_waterStorageTank[h] * waterStorageTank_heat_flag[h]
         # （3）power_waterStorageTank_gheat[h] == power_waterStorageTank[h] * waterStorageTank_gheat_flag[h]
-        # 上面的公式进行线性化后，用下面的公式替代
+        # 上面的公式进行线性化后,用下面的公式替代
         # (1)
 
         model.add_constraints(
@@ -3240,18 +3272,18 @@ class ResourceGet(object):
     获取光照资源、电价、燃气价格、蒸汽价格
     """
 
-    # 光照资源，超过一年的，将一年数据进行重复
+    # 光照资源,超过一年的,将一年数据进行重复
     # light intensity ranging from 0 to 1? not even reaching 0.3
     def get_radiation(self, path: str, num_hour: int) -> np.ndarray:
         """
-        从numpy二维数列文件加载每小时光照资源，如果需要超过一年光照资源数据，将第一年数据进行重复堆叠
+        从numpy二维数列文件加载每小时光照资源,如果需要超过一年光照资源数据,将第一年数据进行重复堆叠
 
         Args:
             path (str): 用于给出完整的文件路径
             num_hour (int): 一天小时数
 
         Return:
-            intensityOfIllumination (np.array): 逐小时光照强度数据，数组形状为`(num_hour,)`
+            intensityOfIllumination (np.array): 逐小时光照强度数据,数组形状为`(num_hour,)`
         """
         if os.path.exists(path):
             raw_file = np.loadtxt(path, dtype=float)
@@ -3406,64 +3438,64 @@ class Linear_absolute(object):  # absolute?
             name="b_positive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个二进制变量列表，长度为`len(irange)`
+        一个二进制变量列表,长度为`len(irange)`
         
-        对于`b_positive`和`b_negitive`，有：
-        `b_positive[i] == 1`时，`b_negitive[i] == 0`
-        `b_positive[i] == 0`时，`b_negitive[i] == 1`
+        对于`b_positive`和`b_negitive`,有:
+        `b_positive[i] == 1`时,`b_negitive[i] == 0`
+        `b_positive[i] == 0`时,`b_negitive[i] == 1`
         
-        对于`b_positive`和`x_positive`，有：
-        `b_positive[i]` == 1`时，`x_positive[i] >= 0`
-        `b_positive[i]` == 0`时，`x_positive[i] == 0`
+        对于`b_positive`和`x_positive`,有:
+        `b_positive[i]` == 1`时,`x_positive[i] >= 0`
+        `b_positive[i]` == 0`时,`x_positive[i] == 0`
         """
         self.b_negitive: List[BinaryVarType] = model.binary_var_list(
             [i for i in irange],
             name="b_negitive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个二进制变量列表，长度为`len(irange)`
+        一个二进制变量列表,长度为`len(irange)`
         
-        对于`b_negitive`和`x_negitive`，有：
-        `b_negitive[i]` == 1`时，`x_negitive[i] >= 0`
-        `b_negitive[i]` == 0`时，`x_negitive[i] == 0`
+        对于`b_negitive`和`x_negitive`,有:
+        `b_negitive[i]` == 1`时,`x_negitive[i] >= 0`
+        `b_negitive[i]` == 0`时,`x_negitive[i] == 0`
         """
         self.x_positive: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in irange],
             name="x_positive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个实数变量列表，长度为`len(irange)`
+        一个实数变量列表,长度为`len(irange)`
         
-        对于区间`irange`的每个数`i`，`x_positive[i]`是非负数，`x_positive[i]`和`x_negitive[i]`中必须有一个为0，另外一个大于0
+        对于区间`irange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
         self.x_negitive: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in irange],
             name="x_negitive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个实数变量列表，长度为`len(irange)`
+        一个实数变量列表,长度为`len(irange)`
         
-        对于区间`irange`的每个数`i`，`x_negitive[i]`是非负数，`x_positive[i]`和`x_negitive[i]`中必须有一个为0，另外一个大于0
+        对于区间`irange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
         self.absolute_x: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in irange], name="absolute_x{0}".format(Linear_absolute.index)
         )
         """
-        一个实数变量列表，长度为`len(irange)`
+        一个实数变量列表,长度为`len(irange)`
         
-        对于`b_positive`、`absolute_x`、`x_positive`、`x_negitive`有：
-        `b_positive[i] == 1`时，`absolute_x[i] == x_positive[i]`
-        `b_positive[i] == 0`时，`absolute_x[i] == x_negitive[i]`
+        对于`b_positive`、`absolute_x`、`x_positive`、`x_negitive`有:
+        `b_positive[i] == 1`时,`absolute_x[i] == x_positive[i]`
+        `b_positive[i] == 0`时,`absolute_x[i] == x_negitive[i]`
         """
         self.irange = irange
         self.x = x
 
     def absolute_add_constraints(self, model: Model):
         """
-        对于区间`irange`的每个数`i`，`x_positive[i]`、`x_negitive[i]`是非负实数，`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        对于区间`irange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
 
-        1. `bigNumber0 >= x_negitive[i] >= 0`，`x_positive[i] == 0`，此时`b_positive[i] == 0`，`b_negitive[i] == 1`，`x[i] == -x_negitive[i]`，`absolute_x[i] == x_negitive[i]`
-        2. `bigNumber0 >= x_positive[i] >= 0`，`x_negative[i] == 0`，此时`b_positive[i] == 1`，`b_negitive[i] == 0`，`x[i] == x_positive[i]`，`absolute_x[i] == x_positive[i]`
+        1. `bigNumber0 >= x_negitive[i] >= 0`,`x_positive[i] == 0`,此时`b_positive[i] == 0`,`b_negitive[i] == 1`,`x[i] == -x_negitive[i]`,`absolute_x[i] == x_negitive[i]`
+        2. `bigNumber0 >= x_positive[i] >= 0`,`x_negative[i] == 0`,此时`b_positive[i] == 1`,`b_negitive[i] == 0`,`x[i] == x_positive[i]`,`absolute_x[i] == x_positive[i]`
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3471,8 +3503,8 @@ class Linear_absolute(object):  # absolute?
         model.add_constraints(
             self.b_positive[i] + self.b_negitive[i] == 1 for i in self.irange
         )
-        # b_positive[i]==1时，b_negitive[i]==0
-        # b_positive[i]==0时，b_negitive[i]==1
+        # b_positive[i]==1时,b_negitive[i]==0
+        # b_positive[i]==0时,b_negitive[i]==1
         model.add_constraints(
             self.x_positive[i] >= 0 for i in self.irange
         )  # x_positive[i]是非负数
@@ -3480,8 +3512,8 @@ class Linear_absolute(object):  # absolute?
             self.x_positive[i] <= self.bigNumber0 * self.b_positive[i]
             for i in self.irange
         )
-        # 当b_positive[i]==1时，x_positive[i]>=0
-        # 当b_positive[i]==0时，x_positive[i]==0
+        # 当b_positive[i]==1时,x_positive[i]>=0
+        # 当b_positive[i]==0时,x_positive[i]==0
 
         model.add_constraints(self.x_negitive[i] >= 0 for i in self.irange)
         # x_negitive[i]是非负数
@@ -3490,27 +3522,27 @@ class Linear_absolute(object):  # absolute?
             for i in self.irange
         )
 
-        # 当b_negitive[i]==1时，x_negitive[i]>=0
-        # 当b_negitive[i]==0时，x_negitive[i]==0
+        # 当b_negitive[i]==1时,x_negitive[i]>=0
+        # 当b_negitive[i]==0时,x_negitive[i]==0
         model.add_constraints(
             self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.irange
         )
         # x[i] == x_positive[i] - x_negitive[i]
-        # 也就是说，如果b_positive[i]==1，x[i] == x_positive[i]
-        # 如果b_positive[i]==0，x[i] == -x_negitive[i]
+        # 也就是说,如果b_positive[i]==1,x[i] == x_positive[i]
+        # 如果b_positive[i]==0,x[i] == -x_negitive[i]
         model.add_constraints(
             self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
             for i in self.irange
         )
 
         # absolute_x[i] == x_positive[i] + x_negitive[i]
-        # 也就是说，如果b_positive[i]==1，absolute_x[i] == x_positive[i]
-        # 如果b_positive[i]==0，absolute_x[i] == x_negitive[i]
+        # 也就是说,如果b_positive[i]==1,absolute_x[i] == x_positive[i]
+        # 如果b_positive[i]==0,absolute_x[i] == x_negitive[i]
 
 
-# 适用于municipalSteam，municipalHotWater
+# 适用于municipalSteam,municipalHotWater
 class CitySupply(IntegratedEnergySystem):
-    """市政能源类，适用于市政蒸汽、市政热水"""
+    """市政能源类,适用于市政蒸汽、市政热水"""
 
     index = 0
 
@@ -3604,7 +3636,7 @@ class GridNet(IntegratedEnergySystem):
             device_price (float): 设备单价
             electricity_price_from (np.ndarray): 电力使用价格
             electricity_price_to (float): 电力生产报酬
-            device_name (str): 电网名称，默认为"grid_net"
+            device_name (str): 电网名称,默认为"grid_net"
         """
         IntegratedEnergySystem(device_name)
         GridNet.index += 1
@@ -3746,7 +3778,7 @@ class Linearization(object):
 
     bigNumber0 = 1e10
     """
-    一个非常大的数，默认为10的10次方
+    一个非常大的数,默认为10的10次方
     """
     index: int = 0
     """
@@ -3758,11 +3790,11 @@ class Linearization(object):
 
     def product_var_bin(self, model: Model, var_bin: Var, var: Var, bin: BinaryVarType):
         """
-        通过二进制变量`bin`的控制，当`bin == 1`，则`var_bin == var`；当`bin == 0`，则`var_bin == 0`
+        通过二进制变量`bin`的控制,当`bin == 1`,则`var_bin == var`；当`bin == 0`,则`var_bin == 0`
 
         其中`var`是一个大于0的实数
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3790,11 +3822,11 @@ class Linearization(object):
         irange: Iterable,
     ):  # bins?
         """
-        对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i]`；当`bin[i] == 0`，则`var_bin[i] == 0`
+        对于区间`irange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
 
         其中`var[i]`是一个大于0的实数
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3820,11 +3852,11 @@ class Linearization(object):
         irangeback: Iterable,
     ):  # back?
         """
-        对于区间`irange`的每个数`i`，通过二进制变量`bin[i]`的控制，当`bin[i] == 1`，则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`，则`var_bin[i - 1] == 0`
+        对于区间`irange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
 
         其中`var[i - 1]`是一个大于0的实数
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3848,12 +3880,12 @@ class Linearization(object):
         self, num_hour: int, model: Model, x: List[Var], y: List[Var]
     ):  # max?
         """
-        对于区间`range(0, num_hour)`的每个数`h`，`y[h]`是非负实数，`y_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        对于区间`range(0, num_hour)`的每个数`h`,`y[h]`是非负实数,`y_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
 
-        1. `y[h] == 0`，`-bigNumber <= x[h] <= 0`，此时`y_flag[h] == 0`
-        2. `y[h] == x[h]`，此时`y_flag[h] == 1`
+        1. `y[h] == 0`,`-bigNumber <= x[h] <= 0`,此时`y_flag[h] == 0`
+        2. `y[h] == x[h]`,此时`y_flag[h] == 1`
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             num_hour (int): 一天小时数
@@ -3887,9 +3919,9 @@ class Linearization(object):
 
     def add(self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]) -> List[Var]:
         """
-        对于区间`range(0, num_hour)`的每个数`h`，将两个变量`x1[h]`，`x2[h]`组合为一个变量`add_y[h]`
+        对于区间`range(0, num_hour)`的每个数`h`,将两个变量`x1[h]`,`x2[h]`组合为一个变量`add_y[h]`
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             num_hour (int): 一天小时数
@@ -3917,12 +3949,12 @@ class Linearization(object):
         xnegitive: List[Var],
     ):
         """
-        对于区间`range(0, num_hour)`的每个数`h`，`x[h] == xpositive[h] - xnegitive[h]`，`positive_flag[h]`是不同情况对应的二进制变量，约定以下两种情况有且只有一种出现：
+        对于区间`range(0, num_hour)`的每个数`h`,`x[h] == xpositive[h] - xnegitive[h]`,`positive_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
 
-        1. `xpositive[h] == 0`，`0 <= xnegitive[h] <= bigNumber`，此时`positive_flag[h] == 0`，`x[h] == -xnegitive[h]`
-        2. `0 <= xpositive[h] <= bigNumber`，`xnegitive[h] == 0`，此时`positive_flag[h] == 1`，`x[h] == xpositive[h]`
+        1. `xpositive[h] == 0`,`0 <= xnegitive[h] <= bigNumber`,此时`positive_flag[h] == 0`,`x[h] == -xnegitive[h]`
+        2. `0 <= xpositive[h] <= bigNumber`,`xnegitive[h] == 0`,此时`positive_flag[h] == 1`,`x[h] == xpositive[h]`
 
-        每添加一个约束组，编号加一
+        每添加一个约束组,编号加一
 
         Args:
             num_hour (int): 一天小时数
@@ -3947,14 +3979,14 @@ class Linearization(object):
         model.add_constraints(
             xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
         )
-        # 当positive_flag[h] == 0，xpositive[h] <= 0 (xpositive[h] == 0)
-        # 当positive_flag[h] == 1，xpositive[h] <= bigNumber
+        # 当positive_flag[h] == 0,xpositive[h] <= 0 (xpositive[h] == 0)
+        # 当positive_flag[h] == 1,xpositive[h] <= bigNumber
         model.add_constraints(
             xnegitive[h] <= bigNumber * (1 - positive_flag[h])
             for h in range(0, num_hour)
         )
-        # 当positive_flag[h] == 0，xnegitive[h] <= bigNumber
-        # 当positive_flag[h] == 1，xnegitive[h] <= 0 (xnegitive[h] == 0)
+        # 当positive_flag[h] == 0,xnegitive[h] <= bigNumber
+        # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
 
 
 load = LoadGet()
@@ -4199,9 +4231,9 @@ if __name__ == "__main__":
 
     # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCooledScrewMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCooledScrewMachine[h]+power_bx[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求
-    # 采用线性化技巧，处理为下面的约束.基于每种设备要么制热,要么制冷。
-    # 供冷：风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
-    # 供热：风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
+    # 采用线性化技巧,处理为下面的约束.基于每种设备要么制热,要么制冷。
+    # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
+    # 供热:风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
     # heatPump = AirHeatPump(num_hour0, model1, device_max=10000, device_price=1000, electricity_price=electricity_price0)
     # heatPump.constraints_register(model1)
 
@@ -4393,7 +4425,7 @@ if __name__ == "__main__":
     # 电量平衡
     # electricity_groundSourceHeatPump[h] + electricity_waterCooledScrewMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
     # power_groundSourceSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
-    # 市政电力电流是双向的，其余市政是单向的。
+    # 市政电力电流是双向的,其余市政是单向的。
 
     # what is "chargeaifa" ??
 
@@ -4463,7 +4495,7 @@ if __name__ == "__main__":
     model1.minimize(objective)
     model1.print_information()
     # refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
-    # res = refiner.refine_conflict(model1)  # 将模型导入该类，调用方法
+    # res = refiner.refine_conflict(model1)  # 将模型导入该类,调用方法
     # res.display()  # 显示冲突约束
     print("start calculation:")
 
@@ -4499,7 +4531,7 @@ if __name__ == "__main__":
         print("objective: annual", solution_run1.get_value(objective))
         for index, item in enumerate(integratedEnergySystem_device):
             subitems = dir(item)
-            print(f"objective index： {index}")
+            print(f"objective index: {index}")
             print(f"objective class: {type(item).__name__}")
             for subitem in subitems:
                 if subitem.endswith("_device"):
