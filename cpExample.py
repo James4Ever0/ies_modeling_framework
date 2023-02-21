@@ -2222,8 +2222,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         )
 
 
-# waterCooledScrewMachine
-class WaterCooledScrew(IntegratedEnergySystem):
+# waterCooledSpiralMachine
+class waterCooledSpiral(IntegratedEnergySystem):
     """
     水冷螺旋机
     """
@@ -2238,7 +2238,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
         device_price: float,
         electricity_price: np.ndarray,
         case_ratio: float,
-        device_name: str = "water_cooled_screw",
+        device_name: str = "water_cooled_spiral",
     ):
         """
         Args:
@@ -2248,26 +2248,26 @@ class WaterCooledScrew(IntegratedEnergySystem):
             device_price (float): 表示水冷螺旋机的单价。
             electricity_price (np.ndarray): 每小时电价
             case_ratio (float): 不同工况下水冷螺旋机利用率
-            device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_screw"
+            device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_spiral"
         """
         IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
-        WaterCooledScrew.index += 1
+        waterCooledSpiral.index += 1
         self.electricity_price = electricity_price
-        self.waterCooledScrewMachine_device: ContinuousVarType = model.continuous_var(
-            name="waterCooledScrewMachine_device{0}".format(WaterCooledScrew.index)
+        self.waterCooledSpiralMachine_device: ContinuousVarType = model.continuous_var(
+            name="waterCooledSpiralMachine_device{0}".format(waterCooledSpiral.index)
         )
         """
         水冷螺旋机机组等效单位设备数 大于零的实数
         """
         self.annualized: ContinuousVarType = model.continuous_var(
-            name="WaterCooledScrew_annualized{0}".format(WaterCooledScrew.index)
+            name="waterCooledSpiral_annualized{0}".format(waterCooledSpiral.index)
         )
         """
         连续变量,表示水冷螺旋机的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
-            name="WaterCooledScrew_electricity_sum{0}".format(WaterCooledScrew.index)
+            name="waterCooledSpiral_electricity_sum{0}".format(waterCooledSpiral.index)
         )
         """
         连续变量,表示水冷螺旋机的用电成本
@@ -2275,77 +2275,77 @@ class WaterCooledScrew(IntegratedEnergySystem):
         self.device_price = device_price
         self.device_max = device_max
         self.case_ratio = case_ratio
-        self.power_waterCooledScrewMachine_cool: List[
+        self.power_waterCooledSpiralMachine_cool: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterCooledScrewMachine_cool{0}".format(WaterCooledScrew.index),
+            name="power_waterCooledSpiralMachine_cool{0}".format(waterCooledSpiral.index),
         )
         """
         连续变量列表,表示水冷螺旋机的制冷功率
         """
-        self.waterCooledScrewMachine_cool_flag: List[
+        self.waterCooledSpiralMachine_cool_flag: List[
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterCooledScrewMachine_cool_flag{0}".format(WaterCooledScrew.index),
+            name="waterCooledSpiralMachine_cool_flag{0}".format(waterCooledSpiral.index),
         )
         """
         二元变量列表,表示水冷螺旋机的散热状态
         """
 
-        self.power_waterCooledScrewMachine_xcool: List[
+        self.power_waterCooledSpiralMachine_xcool: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterCooledScrewMachine_xcool{0}".format(
-                WaterCooledScrew.index
+            name="power_waterCooledSpiralMachine_xcool{0}".format(
+                waterCooledSpiral.index
             ),
         )
         """
         连续变量列表,表示水冷螺旋机的循环制冷功率
         """
 
-        self.waterCooledScrewMachine_xcool_flag: List[
+        self.waterCooledSpiralMachine_xcool_flag: List[
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterCooledScrewMachine_xcool_flag{0}".format(WaterCooledScrew.index),
+            name="waterCooledSpiralMachine_xcool_flag{0}".format(waterCooledSpiral.index),
         )
         """
         二元变量列表,表示水冷螺旋机的循环制冷状态
         """
 
-        self.electricity_waterCooledScrewMachine: List[
+        self.electricity_waterCooledSpiralMachine: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="electricity_waterCooledScrewMachine{0}".format(
-                WaterCooledScrew.index
+            name="electricity_waterCooledSpiralMachine{0}".format(
+                waterCooledSpiral.index
             ),
         )
         """
         连续变量列表,表示水冷螺旋机的用电量
         """
-        self.power_waterCooledScrewMachine: List[
+        self.power_waterCooledSpiralMachine: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterCooledScrewMachine{0}".format(WaterCooledScrew.index),
+            name="power_waterCooledSpiralMachine{0}".format(waterCooledSpiral.index),
         )
         """
         连续变量列表,表示水冷螺旋机的功率
         """
-        self.coefficientOfPerformance_waterCooledScrewMachine_cool = 5
-        self.coefficientOfPerformance_waterCooledScrewMachine_xcool = 5
+        self.coefficientOfPerformance_waterCooledSpiralMachine_cool = 5
+        self.coefficientOfPerformance_waterCooledSpiralMachine_xcool = 5
 
     def constraints_register(self, model: Model):
         """
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数 *  (况1)制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态 * bigNumber
-        3. 0≦水冷螺旋机的循环制冷功率≦水冷螺旋机设备数 *  (况2)循环制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的循环制冷功率≦水冷螺旋机循环制冷状态 * bigNumber
+        2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数 * (况1)制冷情况下水冷螺旋机利用率<br>0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态 * bigNumber
+        3. 0≦水冷螺旋机的循环制冷功率≦水冷螺旋机设备数 * (况2)循环制冷情况下水冷螺旋机利用率<br>0≦水冷螺旋机的循环制冷功率≦水冷螺旋机循环制冷状态 * bigNumber
         4. 制冷状态+循环制冷状态=1
         5. 水冷螺旋机用电量 = 设备制冷功率/制冷性能系数+设备循环制冷功率/循环制冷性能系数
         6. 热泵总功率 = 制冷功率+循环制冷功率
@@ -2356,66 +2356,66 @@ class WaterCooledScrew(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.waterCooledScrewMachine_device)
-        model.add_constraint(self.waterCooledScrewMachine_device <= self.device_max)
+        model.add_constraint(0 <= self.waterCooledSpiralMachine_device)
+        model.add_constraint(self.waterCooledSpiralMachine_device <= self.device_max)
 
         model.add_constraints(
-            0 <= self.power_waterCooledScrewMachine_cool[h] for h in hourRange
+            0 <= self.power_waterCooledSpiralMachine_cool[h] for h in hourRange
         )
         model.add_constraints(
-            self.power_waterCooledScrewMachine_cool[h]
-            <= self.waterCooledScrewMachine_device * self.case_ratio[0]
+            self.power_waterCooledSpiralMachine_cool[h]
+            <= self.waterCooledSpiralMachine_device * self.case_ratio[0]
             for h in hourRange
         )
         model.add_constraints(
-            self.power_waterCooledScrewMachine_cool[h]
-            <= bigNumber * self.waterCooledScrewMachine_cool_flag[h]
-            for h in hourRange
-        )
-
-        model.add_constraints(
-            0 <= self.power_waterCooledScrewMachine_xcool[h] for h in hourRange
-        )
-        model.add_constraints(
-            self.power_waterCooledScrewMachine_xcool[h]
-            <= self.waterCooledScrewMachine_device * self.case_ratio[1]
-            for h in hourRange
-        )
-        model.add_constraints(
-            self.power_waterCooledScrewMachine_xcool[h]
-            <= bigNumber * self.waterCooledScrewMachine_xcool_flag[h]
+            self.power_waterCooledSpiralMachine_cool[h]
+            <= bigNumber * self.waterCooledSpiralMachine_cool_flag[h]
             for h in hourRange
         )
 
         model.add_constraints(
-            self.waterCooledScrewMachine_cool_flag[h]
-            + self.waterCooledScrewMachine_xcool_flag[h]
+            0 <= self.power_waterCooledSpiralMachine_xcool[h] for h in hourRange
+        )
+        model.add_constraints(
+            self.power_waterCooledSpiralMachine_xcool[h]
+            <= self.waterCooledSpiralMachine_device * self.case_ratio[1]
+            for h in hourRange
+        )
+        model.add_constraints(
+            self.power_waterCooledSpiralMachine_xcool[h]
+            <= bigNumber * self.waterCooledSpiralMachine_xcool_flag[h]
+            for h in hourRange
+        )
+
+        model.add_constraints(
+            self.waterCooledSpiralMachine_cool_flag[h]
+            + self.waterCooledSpiralMachine_xcool_flag[h]
             == 1
             for h in hourRange
         )
         model.add_constraints(
-            self.electricity_waterCooledScrewMachine[h]
-            == self.power_waterCooledScrewMachine_cool[h]
-            / self.coefficientOfPerformance_waterCooledScrewMachine_cool
-            + self.power_waterCooledScrewMachine_xcool[h]
-            / self.coefficientOfPerformance_waterCooledScrewMachine_xcool
+            self.electricity_waterCooledSpiralMachine[h]
+            == self.power_waterCooledSpiralMachine_cool[h]
+            / self.coefficientOfPerformance_waterCooledSpiralMachine_cool
+            + self.power_waterCooledSpiralMachine_xcool[h]
+            / self.coefficientOfPerformance_waterCooledSpiralMachine_xcool
             for h in hourRange
         )
         model.add_constraints(
-            self.power_waterCooledScrewMachine[h]
-            == self.power_waterCooledScrewMachine_cool[h]
-            + self.power_waterCooledScrewMachine_xcool[h]
+            self.power_waterCooledSpiralMachine[h]
+            == self.power_waterCooledSpiralMachine_cool[h]
+            + self.power_waterCooledSpiralMachine_xcool[h]
             for h in hourRange
         )
 
         self.electricity_cost = model.sum(
-            self.electricity_waterCooledScrewMachine[h] * self.electricity_price[h]
+            self.electricity_waterCooledSpiralMachine[h] * self.electricity_price[h]
             for h in hourRange
         )
         # 年化
         model.add_constraint(
             self.annualized
-            == self.waterCooledScrewMachine_device * self.device_price / 15
+            == self.waterCooledSpiralMachine_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
         )
 
@@ -2801,9 +2801,9 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦三工况机组的制冷功率≦三工况机组设备数 *  (况1)制冷情况下三工况机组利用率,0≦三工况机组的制冷功率≦三工况机组制冷状态 * bigNumber
-        3. 0≦三工况机组的制冰功率≦三工况机组设备数 *  (况2)制冰情况下三工况机组利用率,0≦三工况机组的制冰功率≦三工况机组制冰状态 * bigNumber
-        4. 0≦三工况机组的制热功率≦三工况机组设备数 *  (况3)制热情况下三工况机组利用率,0≦三工况机组的制热功率≦三工况机组制热状态 * bigNumber
+        2. 0≦三工况机组的制冷功率≦三工况机组设备数 *  (况1)制冷情况下三工况机组利用率<br>0≦三工况机组的制冷功率≦三工况机组制冷状态 * bigNumber
+        3. 0≦三工况机组的制冰功率≦三工况机组设备数 *  (况2)制冰情况下三工况机组利用率<br>0≦三工况机组的制冰功率≦三工况机组制冰状态 * bigNumber
+        4. 0≦三工况机组的制热功率≦三工况机组设备数 *  (况3)制热情况下三工况机组利用率<br>0≦三工况机组的制热功率≦三工况机组制热状态 * bigNumber
         5. 制冷状态+制冰状态+制热状态=1
         6. 三工况机组用电量 = 设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数+设备制热功率/制热性能系数
         7. 热泵总功率 = 制冷功率+制冰功率+制热功率
@@ -4597,7 +4597,7 @@ if __name__ == "__main__":
         power_highTemperaturehotWater_sum[h] >= 0 for h in range(0, num_hour0)
     )
 
-    # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCooledScrewMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCooledScrewMachine[h]+power_bx[h]==cool_load[h]%冷量需求
+    # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCooledSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCooledSpiralMachine[h]+power_bx[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求
     # 采用线性化技巧,处理为下面的约束.基于每种设备要么制热,要么制冷。
     # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
@@ -4624,7 +4624,7 @@ if __name__ == "__main__":
         case_ratio=np.ones(4),
     )
     waterSourceHeatPumps.constraints_register(model1)
-    waterCooledScrewMachine = WaterCooledScrew(
+    waterCooledSpiralMachine = waterCooledSpiral(
         num_hour0,
         model1,
         device_max=2000,
@@ -4632,7 +4632,7 @@ if __name__ == "__main__":
         electricity_price=electricity_price0,
         case_ratio=np.array([1, 0.8]),
     )
-    waterCooledScrewMachine.constraints_register(model1)
+    waterCooledSpiralMachine.constraints_register(model1)
     tripleWorkingConditionUnit = TripleWorkingConditionUnit(
         num_hour0,
         model1,
@@ -4710,7 +4710,7 @@ if __name__ == "__main__":
     power_xice = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_xice"
     )
-    # power_heatPump_cool[h]+power_xcool[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCooledScrewMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
+    # power_heatPump_cool[h]+power_xcool[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCooledSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
     # what is "_x"?
     model1.add_constraints(
@@ -4719,7 +4719,7 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_cool[h]
         + steamPowered_LiBr.cool_LiBr[h]
         + hotWaterLiBr.cool_LiBr[h]
-        + waterCooledScrewMachine.power_waterCooledScrewMachine_cool[h]
+        + waterCooledSpiralMachine.power_waterCooledSpiralMachine_cool[h]
         + power_xice[h]
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
@@ -4755,7 +4755,7 @@ if __name__ == "__main__":
     model1.add_constraints(
         heatPump.power_waterSourceHeatPumps_xcool[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_xcool[h]
-        + waterCooledScrewMachine.power_waterCooledScrewMachine_xcool[h]
+        + waterCooledSpiralMachine.power_waterCooledSpiralMachine_xcool[h]
         + waterStorageTank.power_waterStorageTank_cool[h]
         + phaseChangeRefrigerantStorage.power_energyStorageSystem[h]
         == power_xcool[h]
@@ -4793,7 +4793,7 @@ if __name__ == "__main__":
         ),
     )
     # 电量平衡
-    # electricity_groundSourceHeatPump[h] + electricity_waterCooledScrewMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
+    # electricity_groundSourceHeatPump[h] + electricity_waterCooledSpiralMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
     # power_groundSourceSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
     # 市政电力电流是双向的,其余市政是单向的。
 
@@ -4810,7 +4810,7 @@ if __name__ == "__main__":
     gridNet.constraints_register(model1, powerPeak_pre=2000)
     model1.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
-        + waterCooledScrewMachine.electricity_waterCooledScrewMachine[h]
+        + waterCooledSpiralMachine.electricity_waterCooledSpiralMachine[h]
         + heatPump.electricity_waterSourceHeatPumps[h]
         - batteryEnergyStorageSystem.power_energyStorageSystem[h]
         - photoVoltaic.power_photoVoltaic[h]
@@ -4848,7 +4848,7 @@ if __name__ == "__main__":
             hotWaterExchanger,
             heatPump,
             waterSourceHeatPumps,
-            waterCooledScrewMachine,
+            waterCooledSpiralMachine,
             tripleWorkingConditionUnit,
             doubleWorkingConditionUnit,
             groundSourceHeatPump,
@@ -5019,7 +5019,7 @@ if __name__ == "__main__":
             "electricity": {
                 "list": [
                     groundSourceHeatPump.electricity_groundSourceHeatPump,
-                    waterCooledScrewMachine.electricity_waterCooledScrewMachine,
+                    waterCooledSpiralMachine.electricity_waterCooledSpiralMachine,
                     heatPump.electricity_waterSourceHeatPumps,
                     batteryEnergyStorageSystem.power_energyStorageSystem,
                     photoVoltaic.power_photoVoltaic,
@@ -5035,7 +5035,7 @@ if __name__ == "__main__":
                 ],
                 "name": [
                     "groundSourceHeatPump.electricity_groundSourceHeatPump",
-                    "waterCooledScrewMachine.electricity_waterCooledScrewMachine",
+                    "waterCooledSpiralMachine.electricity_waterCooledSpiralMachine",
                     "heatPump.electricity_waterSourceHeatPumps",
                     "batteryEnergyStorageSystem.power_energyStorageSystem",
                     "photoVoltaic.power_photoVoltaic",
@@ -5057,7 +5057,7 @@ if __name__ == "__main__":
                     waterSourceHeatPumps.power_waterSourceHeatPumps_cool,
                     steamPowered_LiBr.cool_LiBr,  # cooling? 直取？
                     hotWaterLiBr.cool_LiBr,
-                    waterCooledScrewMachine.power_waterCooledScrewMachine_cool,
+                    waterCooledSpiralMachine.power_waterCooledSpiralMachine_cool,
                     power_xice,  # consume?
                     tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
                     doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
@@ -5068,7 +5068,7 @@ if __name__ == "__main__":
                     "waterSourceHeatPumps.power_waterSourceHeatPumps_cool",
                     "steamPowered_LiBr.cool_LiBr",
                     "hotWaterLiBr.cool_LiBr",
-                    "waterCooledScrewMachine.power_waterCooledScrewMachine_cool",
+                    "waterCooledSpiralMachine.power_waterCooledSpiralMachine_cool",
                     "power_xice",
                     "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
                     "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
@@ -5127,7 +5127,7 @@ if __name__ == "__main__":
 
         # pllist = IntegratedEnergySystemPlot(solution_run1)
 
-        # # pllist.plot_list(  [groundSourceHeatPump.electricity_groundSourceHeatPump, waterCooledScrewMachine.electricity_waterCooledScrewMachine], ['groundSourceHeatPump.electricity_groundSourceHeatPump', 'waterCooledScrewMachine.electricity_waterCooledScrewMachine'], "ele balance")
+        # # pllist.plot_list(  [groundSourceHeatPump.electricity_groundSourceHeatPump, waterCooledSpiralMachine.electricity_waterCooledSpiralMachine], ['groundSourceHeatPump.electricity_groundSourceHeatPump', 'waterCooledSpiralMachine.electricity_waterCooledSpiralMachine'], "ele balance")
 
         # pllist.plot_list(
         #     database["electricity"]["list"],
