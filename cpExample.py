@@ -3443,7 +3443,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
-        地源蒸汽发生器蓄热系统最大设备数=地源蒸汽发生器最大设备数 * 6
+        地源蒸汽发生器固体蓄热最大设备数=地源蒸汽发生器最大设备数 * 6
         """
         self.groundSourceSteamGenerator_price = groundSourceSteamGenerator_price
         self.groundSourceSteamGeneratorSolidHeatStorage_price = (
@@ -3476,7 +3476,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
-        蓄热地源蒸汽发生器罐,由储能设备`EnergyStorageSystem`创建而来
+        地源蒸汽发生器固态储热,由储能设备`EnergyStorageSystem`创建而来
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
             name="groundSourceSteamGenerator_electricity_cost{0}".format(
@@ -3494,6 +3494,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦每个时段的地源蒸汽发生器的功率≦地源蒸汽发生器设备
+        3. 每个时段地源蒸汽发生器产生蒸汽功率=每个时段地源蒸汽发生器功率+每个时段地源蒸汽发生器固态储能xi
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4265,6 +4266,7 @@ class Linearization(object):
         # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
 
 
+# 获取能源负荷信息 都是生成的常数数据
 load = LoadGet()
 power_load = load.get_power_load(num_hour0)
 cool_load = load.get_power_load(num_hour0)
