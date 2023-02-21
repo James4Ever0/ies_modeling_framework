@@ -5091,7 +5091,7 @@ if __name__ == "__main__":
                     combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
                     combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange,
                     platePhotothermal.power_photoVoltaic,
-                    phaseChangeHeatStorage.power_energyStorageSystem,  # phaseChangeHeatStorage？
+                    phaseChangeHeatStorage.power_energyStorageSystem,
                     municipalHotWater.heat_citySupplied,
                     gasBoiler_hotWater.heat_gasBoiler,
                     hotWaterElectricBoiler.heat_electricBoiler,
