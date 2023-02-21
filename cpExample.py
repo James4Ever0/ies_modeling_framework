@@ -95,6 +95,7 @@ intensityOfIllumination = np.ones(shape=num_hour0)
 
 ### BEGIN COMPONENTS DEFINITION ###
 
+
 # another name for IES?
 class IntegratedEnergySystem(object):
     """
@@ -3170,7 +3171,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         水蓄能设备年运维费用
         """
 
-    def constraints_register(self, model: Model, register_period_constraints:int, day_node:int):
+    def constraints_register(
+        self, model: Model, register_period_constraints: int, day_node: int
+    ):
         """
         定义水蓄能类的约束条件:
 
@@ -3388,7 +3391,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "groundSourceSteamGenerator",
     ):
-        """ 
+        """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
@@ -3500,7 +3503,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
            生器固态储能设备功率,且大于等于0
         4. 用电成本=每个时段的功率 * 每个时段的电价
         5. 年化成本=地源蒸汽发生器设备数 * 设备单价/15+地源蒸汽发生器固态储能设备年化成本+用电成本
-        
+
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
@@ -3830,21 +3833,22 @@ class CitySupply(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        citySupplied_device_max:float,
-        device_price:float,
-        run_price:float,
+        citySupplied_device_max: float,
+        device_price: float,
+        run_price: float,
         efficiency: float,
         device_name: str = "city_supply",
     ):
         """
         创建一个市政能源类
-        
+
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             citySupplied_device_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
             run_price (float): 运维价格
+            efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
         IntegratedEnergySystem(device_name)
@@ -3881,15 +3885,24 @@ class CitySupply(IntegratedEnergySystem):
             name="citySupplied_cost{0}".format(CitySupply.index)
         )
         """
+        市政能源消耗总费用 实数变量
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="citySupplied_annualized{0}".format(CitySupply.index)
         )
         """
+        市政能源年运维费用 实数变量
         """
 
     def constraints_register(self, model: Model):
         """
+        定义市政能源类内部约束条件：
+        
+        1. 机组最大装机量 >= 市政能源设备装机量 >= 0
+        2. 每小时市政能源热量消耗
+        
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
         """
         hourRange = range(0, self.num_hour)
         model.add_constraint(self.citySupplied_device >= 0)
@@ -4295,6 +4308,7 @@ class Linearization(object):
         # 当positive_flag[h] == 0,xnegitive[h] <= bigNumber
         # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
 
+
 ### END COMPONENTS DEFINITION ###
 
 # 获取能源负荷信息 都是生成的常数数据
@@ -4316,7 +4330,7 @@ steam_load = load.get_power_load(num_hour0)
 if __name__ == "__main__":
     # 获取光照、能源价格
     ##########################################
-    
+
     resource = ResourceGet()
     # model_input
     intensityOfIllumination0: np.ndarray = resource.get_radiation(
@@ -4328,18 +4342,27 @@ if __name__ == "__main__":
     municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
     municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
     ##########################################
-    
-    
+
+    #发电及电储能装置
+    ##########################################
     # 柴油发电机
-    dieselEngine = DieselEngine(num_hour0, model1, dieselEngine_device_max=320, device_price=750, run_price=2)
+    dieselEngine = DieselEngine(
+        num_hour0, model1, dieselEngine_device_max=320, device_price=750, run_price=2
+    )
     dieselEngine.constraints_register(model1)
-    
+
     # 光伏
     photoVoltaic = PhotoVoltaic(
-        num_hour0, model1, photoVoltaic_device_max=5000,device_price=4500, intensityOfIllumination0=intensityOfIllumination0, efficiency=0.8, device_name="PhotoVoltaic"
-    )  
+        num_hour0,
+        model1,
+        photoVoltaic_device_max=5000,
+        device_price=4500,
+        intensityOfIllumination0=intensityOfIllumination0,
+        efficiency=0.8,
+        device_name="PhotoVoltaic",
+    )
     photoVoltaic.constraints_register(model1)
-    
+
     # 电池储能
     batteryEnergyStorageSystem = EnergyStorageSystem(
         num_hour0,
@@ -4354,10 +4377,21 @@ if __name__ == "__main__":
         stateOfCharge_max=1,
     )
     # original: battery
-    batteryEnergyStorageSystem.constraints_register(model1,register_period_constraints= 1,day_node= day_node)
+    batteryEnergyStorageSystem.constraints_register(
+        model1, register_period_constraints=1, day_node=day_node
+    )
+
+    ##########################################
+    
     # highTemperature蒸汽
     troughPhotoThermal = TroughPhotoThermal(
-        num_hour0, model1, troughPhotoThermal_device_max=5000, troughPhotoThermal_price=2000, troughPhotoThermalSolidHeatStorage_price=1000, intensityOfIllumination0=intensityOfIllumination0, efficiency=0.8
+        num_hour0,
+        model1,
+        troughPhotoThermal_device_max=5000,
+        troughPhotoThermal_price=2000,
+        troughPhotoThermalSolidHeatStorage_price=1000,
+        intensityOfIllumination0=intensityOfIllumination0,
+        efficiency=0.8,
     )
     troughPhotoThermal.constraints_register(model1)
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
@@ -4511,7 +4545,9 @@ if __name__ == "__main__":
         ratio_gheat=20,
     )
 
-    waterStorageTank.constraints_register(model1, register_period_constraints=1, day_node=day_node)
+    waterStorageTank.constraints_register(
+        model1, register_period_constraints=1, day_node=day_node
+    )
     # highTemperaturehotWater合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_highTemperaturehotWater_sum"
@@ -4702,7 +4738,9 @@ if __name__ == "__main__":
     )
     linearization = Linearization()
     #
-    linearization.max_zeros(num_hour0, model1, x=power_xice, y=bx.power_energyStorageSystem)
+    linearization.max_zeros(
+        num_hour0, model1, x=power_xice, y=bx.power_energyStorageSystem
+    )
     # 蓄冷逻辑组合
     model1.add_constraints(
         heatPump.power_waterSourceHeatPumps_xcool[h]
@@ -4759,7 +4797,7 @@ if __name__ == "__main__":
         electricity_price_from=electricity_price0,
         electricity_price_to=0.35,
     )
-    gridNet.constraints_register(model1,powerPeak_pre= 2000)
+    gridNet.constraints_register(model1, powerPeak_pre=2000)
     model1.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCooledScrewMachine.electricity_waterCooledScrewMachine[h]
