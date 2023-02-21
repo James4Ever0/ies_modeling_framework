@@ -1080,21 +1080,21 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        combinedHeatAndPower_num_max,
-        combinedHeatAndPower_price,
-        gas_price:,
-        combinedHeatAndPower_single_device,
-        power_to_heat_ratio,  # drratio?
-        device_name="combinedHeatAndPower",
+        combinedHeatAndPower_num_max:float,
+        combinedHeatAndPower_price:float,
+        gas_price:np.ndarray,
+        combinedHeatAndPower_single_device:float,
+        power_to_heat_ratio:float,  # drratio?
+        device_name:str="combinedHeatAndPower",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max (int): 表示燃气轮机的最大数量。
-            combinedHeatAndPower_price (float): 表示燃气轮机的单价。
-            gas_price (np.ndarray): 表示燃气的单价。
-            combinedHeatAndPower_single_set (float): 表示每台燃气轮机的装机容量。
+            combinedHeatAndPower_num_max (float): 表示燃气轮机的最大数量
+            combinedHeatAndPower_price (float): 表示燃气轮机的单价
+            gas_price (np.ndarray): 表示燃气的单价
+            combinedHeatAndPower_single_set (float): 表示每台燃气轮机的装机容量
             drratio (float): 表示燃气轮机的热电比。
             device_name (str): 燃气轮机机组名称,默认为"combinedHeatAndPower"
         """
@@ -1650,7 +1650,7 @@ class AirHeatPump(IntegratedEnergySystem):
         model: Model,
         device_max:float,
         device_price:float,
-        electricity_price:np.array,
+        electricity_price:np.ndarray,
         device_name="air_heat_pump",
     ):
         """
@@ -1659,7 +1659,7 @@ class AirHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示热泵的最大数量。
             device_price (float): 表示热泵的单价。
-            electricity_price (np.array): 电价
+            electricity_price (np.ndarray): 电价
             device_name (str): 热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -1912,11 +1912,11 @@ class WaterHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
-        case_ratio,
-        device_name="water_heat_pump",
+        device_max:float,
+        device_price:float,
+        electricity_price:np.ndarray,
+        case_ratio:float,
+        device_name:str="water_heat_pump",
     ):
         """
         Args:
@@ -1924,8 +1924,8 @@ class WaterHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示水源热泵的最大数量。
             device_price (float): 表示水源热泵的单价。
-            electricity_price (float): 电价
-            case_ratio: 不同工况下制热量和制冷量的比值
+            electricity_price (np.ndarray): 电价
+            case_ratio (float): 不同工况下制热量和制冷量的比值
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -2182,20 +2182,20 @@ class WaterCooledScrew(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
-        case_ratio,
+        device_max:float,
+        device_price:float,
+        electricity_price:np.ndarray,
+        case_ratio:float,
         device_name="water_cooled_screw",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (int): 表示水冷螺旋机的最大数量。
+            device_max (float): 表示水冷螺旋机的最大数量。
             device_price (float): 表示水冷螺旋机的单价。
-            electricity_price (float): 电价
-            case_ratio: 不同工况下制热量和制冷量的比值
+            electricity_price (np.ndarray): 电价
+            case_ratio (float): 不同工况下制热量和制冷量的比值
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_screw"
         """
         IntegratedEnergySystem(device_name)
@@ -2379,11 +2379,11 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
-        case_ratio,
-        device_name="doubleWorkingConditionUnit",
+        device_max:float,
+        device_price:float,
+        electricity_price:np.ndarray,
+        case_ratio:float,
+        device_name:str="doubleWorkingConditionUnit",
     ):
         """
         Args:
@@ -2391,8 +2391,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示双工况机组的最大数量。
             device_price (float): 表示双工况机组的单价。
-            electricity_price (float): 电价
-            case_ratio: 不同工况下制冰量和制冷量的比值
+            electricity_price (np.ndarray): 电价
+            case_ratio (float): 不同工况下制冰量和制冷量的比值
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2594,11 +2594,11 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max,
-        device_price,
-        electricity_price,
-        case_ratio,
-        device_name="tripleWorkingConditionUnit",
+        device_max:float,
+        device_price:float,
+        electricity_price:np.ndarray,
+        case_ratio:float,
+        device_name:str="tripleWorkingConditionUnit",
     ):
         """
         Args:
@@ -2606,8 +2606,8 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示三工况机组的最大数量
             device_price (float): 表示三工况机组的单价
-            electricity_price (float): 电价
-            case_ratio: 不同工况下制热量和制冷量的比值
+            electricity_price (np.ndarray): 电价
+            case_ratio (float): 不同工况下制热量和制冷量的比值
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -3306,12 +3306,12 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        groundSourceSteamGenerator_device_max,
-        groundSourceSteamGenerator_price,
-        groundSourceSteamGeneratorSolidHeatStorage_price,
-        electricity_price,
+        groundSourceSteamGenerator_device_max:float,
+        groundSourceSteamGenerator_price:float,
+        groundSourceSteamGeneratorSolidHeatStorage_price:float,
+        electricity_price:np.ndarray,
         efficiency: float,
-        device_name="groundSourceSteamGenerator",
+        device_name:str="groundSourceSteamGenerator",
     ):
         """
         """
