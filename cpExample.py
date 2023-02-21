@@ -459,7 +459,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             name="power_energyStorageSystem{0}".format(EnergyStorageSystem.index),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充放电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充放电功率
         """
         # 充电功率
         self.power_energyStorageSystem_charge: List[
@@ -471,7 +471,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充电功率
         """
         # 放电功率
         self.power_energyStorageSystem_discharge: List[
@@ -483,7 +483,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的放电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放电功率
         """
         # 能量
         self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
@@ -491,7 +491,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             name="energyStorageSystem{0}".format(EnergyStorageSystem.index),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的能量
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
         self.energyStorageSystem_device_max = energyStorageSystem_device_max
         self.energyStorageSystem_price = energyStorageSystem_price
@@ -535,7 +535,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
 
     def constraints_register(
-        self, model: Model, register_period_constraints=1, day_node=24
+        self, model: Model, register_period_constraints:int=1, day_node:int=24
     ):
         """
         定义机组内部约束
@@ -550,7 +550,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         8. 储能量守恒约束:储能系统能量=上一时段储能量+(当前时段充电*效率-当前时段放电/效率)*simulationTime/3600
         9. 最大和最小储能量约束:储能设备数*储能装置的最小储能量百分比≦储能系统能量≦储能设备数*储能装置的最大储能量百分比
         10. 每年消耗的运维成本 = (储能设备数*储能设备价格+功率转化系统设备数*功率转化系统价格)/15
-        11. 如果regester_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果regester_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
+        11. 如果register_period_constraints参数为1,表示将两天之间的储能量连接约束为切断;如果register_period_constraints参数不为1,表示将两天之间的储能量连接约束为连续。(这里搞不懂啥意思)
 
 
         Args:
@@ -748,7 +748,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充放电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充放电功率
         """
         # 充电功率
         self.power_energyStorageSystem_charge: List[
@@ -760,7 +760,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的充电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充电功率
         """
         # 放电功率
         self.power_energyStorageSystem_discharge: List[
@@ -772,7 +772,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的放电功率
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放电功率
         """
         # 能量
         self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
@@ -782,7 +782,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ),
         )
         """
-        模型中的连续变量列表,长度为 num_hour,表示每小时储能装置的能量
+        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
         self.energyStorageSystem_device_max = energyStorageSystem_device_max
         self.energyStorageSystem_price = energyStorageSystem_price
