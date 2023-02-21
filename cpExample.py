@@ -1643,7 +1643,7 @@ class Exchanger(IntegratedEnergySystem):
             name="exchanger_device{0}".format(Exchanger.index)
         )
         """
-        热交换器机组等效单位设备数 大于零的实数
+        热交换器机组等效单位设备数 大于零的实数变量
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="exchanger_annualized{0}".format(Exchanger.index)
@@ -1667,7 +1667,7 @@ class Exchanger(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦热交换器的热功率≦热交换器运行量
-        3. 热交换器的总年化成本等于热交换器设备数*设备价格/15
+        3. 热交换器的总年化成本 == 热交换器设备数*设备价格/15
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -1706,7 +1706,7 @@ class AirHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示热泵的最大数量。
             device_price (float): 表示热泵的单价。
-            electricity_price (np.ndarray): 电价
+            electricity_price (np.ndarray): 每小时的电价
             device_name (str): 热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -1760,14 +1760,14 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xcool{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的除湿功率
+        连续变量列表,表示热泵在每个时段的强效制冷功率
         """
         self.xcool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xcool_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的除湿出口温度
+        连续变量列表,表示热泵在每个时段的强效制冷出口温度
         """
 
         self.heatPump_xcool_flag: List[BinaryVarType] = model.binary_var_list(
@@ -1775,7 +1775,7 @@ class AirHeatPump(IntegratedEnergySystem):
             name="heatPump_xcool_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的除湿状态
+        二元变量列表,表示热泵在每个时段的强效制冷状态
         """
         self.power_heatPump_heat: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
@@ -1803,21 +1803,21 @@ class AirHeatPump(IntegratedEnergySystem):
             name="power_heatPump_xheat{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的加湿功率
+        连续变量列表,表示热泵在每个时段的强效制热功率
         """
         self.xheat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="xheat_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
-        连续变量列表,表示热泵在每个时段的加湿出口温度
+        连续变量列表,表示热泵在每个时段的强效制热出口温度
         """
         self.heatPump_xheat_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_xheat_flag{0}".format(AirHeatPump.index),
         )
         """
-        二元变量列表,表示热泵在每个时段的加湿状态
+        二元变量列表,表示热泵在每个时段的强效制热状态
         """
         self.electricity_heatPump: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
@@ -1836,9 +1836,9 @@ class AirHeatPump(IntegratedEnergySystem):
 
         # TODO: unclear meaning of "xcool" and "xheat"
         self.coefficientOfPerformance_heatPump_cool = 3  # 表示该组件制冷时的性能系数
-        self.coefficientOfPerformance_heatPump_xcool = 3  # 表示该组件除湿时的性能系数
+        self.coefficientOfPerformance_heatPump_xcool = 3  # 表示该组件强效制冷时的性能系数
         self.coefficientOfPerformance_heatPump_heat = 3  # 表示该组件供热时的性能系数
-        self.coefficientOfPerformance_heatPump_xheat = 3  # 表示该组件加湿时的性能系数
+        self.coefficientOfPerformance_heatPump_xheat = 3  # 表示该组件强效制热时的性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -1846,12 +1846,12 @@ class AirHeatPump(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦热泵的制冷功率≦热泵制冷出口温度*热泵设备数/100,0≦热泵的制冷功率≦热泵制冷状态*bigNumber
-        3. 0≦热泵的除湿功率≦热泵除湿出口温度*热泵设备数/100,0≦热泵的除湿功率≦热泵除湿状态*bigNumber
+        3. 0≦热泵的强效制冷功率≦热泵强效制冷出口温度*热泵设备数/100,0≦热泵的强效制冷功率≦热泵强效制冷状态*bigNumber
         4. 0≦热泵的制热功率≦热泵制热出口温度*热泵设备数/100,0≦热泵的制热功率≦热泵制热状态*bigNumber
-        5. 0≦热泵的加湿功率≦热泵加湿出口温度*热泵设备数/100,0≦热泵的加湿功率≦热泵加湿状态*bigNumber
-        6. 制冷状态+除湿状态+制热状态+加湿状态=1
-        7. 热泵用电量=设备制冷功率/制冷性能系数+设备除湿功率/除湿性能系数+设备制热功率/制热性能系数+设备加湿功率/加湿性能系数
-        8. 热泵总功率=制冷功率+除湿功率+制热功率+加湿功率
+        5. 0≦热泵的强效制热功率≦热泵强效制热出口温度*热泵设备数/100,0≦热泵的强效制热功率≦热泵强效制热状态*bigNumber
+        6. 制冷状态+强效制冷状态+制热状态+强效制热状态=1
+        7. 热泵用电量=设备制冷功率/制冷性能系数+设备强效制冷功率/强效制冷性能系数+设备制热功率/制热性能系数+设备强效制热功率/强效制热性能系数
+        8. 热泵总功率=制冷功率+强效制冷功率+制热功率+强效制热功率
         9. 用电成本=每个时刻(设备用电量*电价)的总和
         10. 热泵的总年化成本=热泵设备数*设备价格/15+用电成本*8760/小时数
 
@@ -1971,7 +1971,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示水源热泵的最大数量。
             device_price (float): 表示水源热泵的单价。
-            electricity_price (np.ndarray): 电价
+            electricity_price (np.ndarray): 每小时的电价
             case_ratio (float): 不同工况下制热量和制冷量的比值
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
@@ -2029,7 +2029,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="power_waterSourceHeatPumps_xcool{0}".format(WaterHeatPump.index),
         )
         """
-        连续变量列表,表示每个时刻水源热泵额外制冷功率
+        连续变量列表,表示每个时刻水源热泵强效制冷功率
         """
         self.waterSourceHeatPumps_xcool_flag: List[
             BinaryVarType
@@ -2038,7 +2038,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="waterSourceHeatPumps_xcool_flag{0}".format(WaterHeatPump.index),
         )
         """
-        二元变量列表,表示每个时刻水源热泵额外制冷状态
+        二元变量列表,表示每个时刻水源热泵强效制冷状态
         """
         self.power_waterSourceHeatPumps_heat: List[
             ContinuousVarType
@@ -2065,7 +2065,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="power_waterSourceHeatPumps_xheat{0}".format(WaterHeatPump.index),
         )
         """
-        连续变量列表,表示每个时刻水源热泵额外制热功率
+        连续变量列表,表示每个时刻水源热泵强效制热功率
         """
         self.waterSourceHeatPumps_xheat_flag: List[
             BinaryVarType
@@ -2074,7 +2074,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             name="waterSourceHeatPumps_xheat_flag{0}".format(WaterHeatPump.index),
         )
         """
-        二元变量列表,表示每个时刻水源热泵额外制热状态
+        二元变量列表,表示每个时刻水源热泵强效制热状态
         """
         self.electricity_waterSourceHeatPumps: List[
             ContinuousVarType
@@ -2095,9 +2095,9 @@ class WaterHeatPump(IntegratedEnergySystem):
         连续变量列表,表示每个时刻水源热泵总功率
         """
         self.coefficientOfPerformance_waterSourceHeatPumps_cool = 5  # 制冷性能系数
-        self.coefficientOfPerformance_waterSourceHeatPumps_xcool = 5  # 额外制冷性能系数
+        self.coefficientOfPerformance_waterSourceHeatPumps_xcool = 5  # 强效制冷性能系数
         self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
-        self.coefficientOfPerformance_waterSourceHeatPumps_xheat = 5  # 额外制热性能系数
+        self.coefficientOfPerformance_waterSourceHeatPumps_xheat = 5  # 强效制热性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -2105,12 +2105,12 @@ class WaterHeatPump(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1)制热量/制冷量,0≦水源热泵的制冷功率≦水源热泵制冷状态*bigNumber
-        3. 0≦水源热泵的额外制冷功率≦水源热泵设备数* (况2)制热量/制冷量,0≦水源热泵的额外制冷功率≦水源热泵额外制冷状态*bigNumber
+        3. 0≦水源热泵的强效制冷功率≦水源热泵设备数* (况2)制热量/制冷量,0≦水源热泵的强效制冷功率≦水源热泵强效制冷状态*bigNumber
         4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)制热量/制冷量,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
-        5. 0≦水源热泵的额外制热功率≦水源热泵设备数* (况4)制热量/制冷量,0≦水源热泵的额外制热功率≦水源热泵额外制热状态*bigNumber
-        6. 制冷状态+额外制冷状态+制热状态+额外制热状态=1
-        7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数+设备制热功率/制热性能系数+设备额外制热功率/额外制热性能系数
-        8. 热泵总功率=制冷功率+额外制冷功率+制热功率+额外制热功率
+        5. 0≦水源热泵的强效制热功率≦水源热泵设备数* (况4)制热量/制冷量,0≦水源热泵的强效制热功率≦水源热泵强效制热状态*bigNumber
+        6. 制冷状态+强效制冷状态+制热状态+强效制热状态=1
+        7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备强效制冷功率/强效制冷性能系数+设备制热功率/制热性能系数+设备强效制热功率/强效制热性能系数
+        8. 热泵总功率=制冷功率+强效制冷功率+制热功率+强效制热功率
         9. 用电成本=每个时刻(设备用电量*电价)的总和
         10. 水源热泵的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
 
@@ -2299,7 +2299,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             ),
         )
         """
-        连续变量列表,表示水冷螺旋机的额外制冷功率
+        连续变量列表,表示水冷螺旋机的强效制冷功率
         """
 
         self.waterCooledScrewMachine_xcool_flag: List[
@@ -2309,7 +2309,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             name="waterCooledScrewMachine_xcool_flag{0}".format(WaterCooledScrew.index),
         )
         """
-        二元变量列表,表示水冷螺旋机的额外制冷制冷状态
+        二元变量列表,表示水冷螺旋机的强效制冷制冷状态
         """
 
         self.electricity_waterCooledScrewMachine: List[
@@ -2341,10 +2341,10 @@ class WaterCooledScrew(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水冷螺旋机的制冷功率≦水冷螺旋机设备数* (况1)制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的制冷功率≦水冷螺旋机制冷状态*bigNumber
-        3. 0≦水冷螺旋机的额外制冷功率≦水冷螺旋机设备数* (况2)额外制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的额外制冷功率≦水冷螺旋机额外制冷状态*bigNumber
-        4. 制冷状态+额外制冷状态=1
-        5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备额外制冷功率/额外制冷性能系数
-        6. 热泵总功率=制冷功率+额外制冷功率
+        3. 0≦水冷螺旋机的强效制冷功率≦水冷螺旋机设备数* (况2)强效制冷情况下水冷螺旋机利用率,0≦水冷螺旋机的强效制冷功率≦水冷螺旋机强效制冷状态*bigNumber
+        4. 制冷状态+强效制冷状态=1
+        5. 水冷螺旋机用电量=设备制冷功率/制冷性能系数+设备强效制冷功率/强效制冷性能系数
+        6. 热泵总功率=制冷功率+强效制冷功率
         7. 用电成本=每个时刻(设备用电量*电价)的总和
         8. 水冷螺旋机的总年化成本=水源热泵设备数*设备价格/15+用电成本*8760/小时数
 
@@ -3187,7 +3187,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
            地源热泵下设备数≧0
            地源热泵下设备数≧水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率-(1-水储能罐在地源热泵状态下)*bigNumber
         7.水储能罐在制冷状态+水储能罐在制热状态+水储能罐在地源热泵状态=1
-        8.
+        8.≦水储能罐在制冷状态下功率≦
+        9.
+        10.
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
