@@ -4446,7 +4446,7 @@ if __name__ == "__main__":
     # 以上为蒸汽发生装置
     ##########################################
 
-    
+    #高温蒸汽去向
     ##########################################
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
@@ -4489,6 +4489,7 @@ if __name__ == "__main__":
     ##########################################
 
 
+    ##########################################
     # highTemperaturehotWater
     # 1) combinedHeatAndPower gasTurbineSystem?
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
@@ -4575,6 +4576,7 @@ if __name__ == "__main__":
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
+    ##########################################
     
     # 高温热水合计
     power_highTemperaturehotWater_sum = model1.continuous_var_list(
@@ -4910,15 +4912,16 @@ if __name__ == "__main__":
     # res.display()  # 显示冲突约束
     print("start calculation:")
 
-    #
+    # 1000秒以内解出 否则放弃
     model1.set_time_limit(time_limit=1000)
 
+    # 模型求解返回值 可为空 
     solution_run1: Union[None, SolveSolution] = model1.solve(
         log_output=True
     )  # output some solution.
     # docplex.mp.solution.SolveSolution or None
 
-    if solution_run1 is None:
+    if solution_run1 is None: # 没有解出来
         from docplex.mp.sdetails import SolveDetails
 
         print("SOLUTION IS NONE.")
@@ -4926,7 +4929,7 @@ if __name__ == "__main__":
         print()
         print("SOLVE DETAILS?")
         print(solution_detail)
-    else:
+    else: # 解出来了
         # now we have solution.
 
         # not model1.solve_details, which always return:
@@ -4940,93 +4943,37 @@ if __name__ == "__main__":
 
         # ii = 0
 
-        print("objective: annual", solution_run1.get_value(objective))
+        print("objective: annual", solution_run1.get_value(objective)) # 所有设备年运行成本总和
+        print()
+        
+        print("_________DEVICE_COUNT__________")
         for index, item in enumerate(integratedEnergySystem_device):
             subitems = dir(item)
             print(f"objective index: {index}")
             print(f"objective class: {type(item).__name__}")
             for subitem in subitems:
-                if subitem.endswith("_device"):
+                if subitem.endswith("_device"): # 打印每个类型机组里面的设备数量
                     val = item.__dict__[subitem]
                     print("value name:", subitem)
                     print("value:", val)
             print("_____")
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(
-        #         integratedEnergySystem_device[ii].photoVoltaic_device # 1
-        #     ),
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(
-        #         integratedEnergySystem_device[ii].energyStorageSystem_device #2
-        #     ),
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(integratedEnergySystem_device[ii].troughPhotoThermal_device),#3
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(integratedEnergySystem_device[ii].groundSourceSteamGenerator_device),#4
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(
-        #         integratedEnergySystem_device[ii].combinedHeatAndPower_device
-        #     ),#5
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(integratedEnergySystem_device[ii].gasBoiler_device),#6
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(integratedEnergySystem_device[ii].exchanger_device),#7
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(integratedEnergySystem_device[ii].LiBr_device),#8
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(
-        #         integratedEnergySystem_device[ii].photoVoltaic_device #9
-        #     ),
-        # )
-        # ii += 1
-        # print(
-        #     "objective:{0}".format(ii),
-        #     solution_run1.get_value(
-        #         integratedEnergySystem_device[ii].energyStorageSystem_device
-        #     ),#10
-        # )
-        # ii += 1
-        print()
+        print("_________DEVICE_COUNT__________")
+        
+        print() # 打印整数可决策变量
         print("___INTEGER DECISION VARIABLES___")
         for variable in model1.iter_integer_vars():
             print("INT", variable, "=", variable.solution_value)
         print("___INTEGER DECISION VARIABLES___")
         print()
 
-        print()
+        print() # 打印实数可决策变量
         print("___CONTINUOUS DECISION VARIABLES___")
         for variable in model1.iter_continuous_vars():
             print("CONT", variable, "=", variable.solution_value)
         print("___CONTINUOUS DECISION VARIABLES___")
         print()
 
-        print()
+        print() # 打印二进制可决策变量
         print("___BINARY DECISION VARIABLES___")
         for variable in model1.iter_binary_vars():
             print("BIN", variable, "=", variable.solution_value)
@@ -5043,7 +4990,7 @@ if __name__ == "__main__":
 
         # plt.figure()
 
-        def plotSingle(data, title_content):
+        def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动保存图片
             fig = plt.figure()
             plt.plot(data)
             plt.xlabel("Time/h")
