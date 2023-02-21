@@ -2105,10 +2105,10 @@ class WaterHeatPump(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1),0≦水源热泵的制冷功率≦水源热泵制冷状态*bigNumber
-        3. 0≦水源热泵的强效制冷功率≦水源热泵设备数* (况2),0≦水源热泵的强效制冷功率≦水源热泵强效制冷状态*bigNumber
-        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3),0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
-        5. 0≦水源热泵的强效制热功率≦水源热泵设备数* (况4),0≦水源热泵的强效制热功率≦水源热泵强效制热状态*bigNumber
+        2. 0≦水源热泵的制冷功率≦水源热泵设备数* (况1)热冷效率,0≦水源热泵的制冷功率≦水源热泵制冷状态*bigNumber
+        3. 0≦水源热泵的强效制冷功率≦水源热泵设备数* (况2)热冷效率,0≦水源热泵的强效制冷功率≦水源热泵强效制冷状态*bigNumber
+        4. 0≦水源热泵的制热功率≦水源热泵设备数* (况3)热冷效率,0≦水源热泵的制热功率≦水源热泵制热状态*bigNumber
+        5. 0≦水源热泵的强效制热功率≦水源热泵设备数* (况4)热冷效率,0≦水源热泵的强效制热功率≦水源热泵强效制热状态*bigNumber
         6. 制冷状态+强效制冷状态+制热状态+强效制热状态=1
         7. 水源热泵用电量=设备制冷功率/制冷性能系数+设备强效制冷功率/强效制冷性能系数+设备制热功率/制热性能系数+设备强效制热功率/强效制热性能系数
         8. 热泵总功率=制冷功率+强效制冷功率+制热功率+强效制热功率
@@ -2288,7 +2288,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             name="waterCooledScrewMachine_cool_flag{0}".format(WaterCooledScrew.index),
         )
         """
-        二元变量列表,表示水冷螺旋机的制冷制冷状态
+        二元变量列表,表示水冷螺旋机的散热状态
         """
 
         self.power_waterCooledScrewMachine_xcool: List[
@@ -2310,7 +2310,7 @@ class WaterCooledScrew(IntegratedEnergySystem):
             name="waterCooledScrewMachine_xcool_flag{0}".format(WaterCooledScrew.index),
         )
         """
-        二元变量列表,表示水冷螺旋机的强效制冷制冷状态
+        二元变量列表,表示水冷螺旋机的强效制冷状态
         """
 
         self.electricity_waterCooledScrewMachine: List[
@@ -3190,9 +3190,12 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         7. 水储能罐在制冷状态+水储能罐在制热状态+水储能罐在地源热泵状态=1
         8. -bigNumber*水储能罐在制冷状态量≦水储能罐在制冷状态下功率≦bigNumber*水储能罐在制冷状态量
            -(1-水储能罐在制冷状态量)*bigNumber≦水储能罐在制冷状态下功率≦(1-水储能罐在制冷状态量)*bigNumber
-        9. -bigNumber*水储能罐在制热状态量≦水储能罐在制冷状态下功率≦bigNumber*水储能罐在制冷状态量
-          
-        10.
+        9. -bigNumber*水储能罐在制热状态量≦水储能罐在制热状态下功率≦bigNumber*水储能罐在制热状态量
+           -(1-水储能罐在制热状态量)*bigNumber≦水储能罐在制热状态下功率≦(1-水储能罐在制热状态量)*bigNumber
+        10.-bigNumber*水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber*水储能罐在地源
+           热泵状态量
+           -(1-水储能罐在地源热泵状态量)*bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量)*bigNumber
+        11.水储能机组年化成本=水储能罐总体积*单位体积价格/20
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
