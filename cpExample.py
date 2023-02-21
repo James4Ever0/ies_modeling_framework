@@ -4948,39 +4948,10 @@ if __name__ == "__main__":
         print("objective: annual", solution_run1.get_value(objective)) # 所有设备年运行成本总和
         print()
         
-        print("_________DEVICE_COUNT__________")
-        for index, item in enumerate(integratedEnergySystem_device):
-            subitems = dir(item)
-            print(f"objective index: {index}")
-            print(f"objective class: {type(item).__name__}")
-            for subitem in subitems:
-                if subitem.endswith("_device"): # 打印每个类型机组里面的设备数量
-                    val = item.__dict__[subitem]
-                    print("value name:", subitem)
-                    print("value:", val)
-            print("_____")
-        print("_________DEVICE_COUNT__________")
+        from data_visualize_utils import printDecisionVariablesFromSolution, printIntegratedEnergySystemDeviceCounts, plotSingle
         
-        print() # 打印整数可决策变量
-        print("___INTEGER DECISION VARIABLES___")
-        for variable in model1.iter_integer_vars():
-            print("INT", variable, "=", variable.solution_value)
-        print("___INTEGER DECISION VARIABLES___")
-        print()
-
-        print() # 打印实数可决策变量
-        print("___CONTINUOUS DECISION VARIABLES___")
-        for variable in model1.iter_continuous_vars():
-            print("CONT", variable, "=", variable.solution_value)
-        print("___CONTINUOUS DECISION VARIABLES___")
-        print()
-
-        print() # 打印二进制可决策变量
-        print("___BINARY DECISION VARIABLES___")
-        for variable in model1.iter_binary_vars():
-            print("BIN", variable, "=", variable.solution_value)
-        print("___BINARY DECISION VARIABLES___")
-        print()
+        printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device)
+        printDecisionVariablesFromSolution(model1)
 
         # for v in model1.iter_continuous_vars():
         #     print(v, "=", v.solution_value)
@@ -4991,15 +4962,6 @@ if __name__ == "__main__":
         # print(value.value(batteryEnergyStorageSystem.energyStorageSystem_device))
 
         # plt.figure()
-
-        def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动保存图片
-            fig = plt.figure()
-            plt.plot(data)
-            plt.xlabel("Time/h")
-            plt.ylabel("Power/kW")
-            plt.title(title_content)
-            plt.savefig("fig/" + title_content + ".png")
-            plt.close(fig=fig)
 
         plotSingle(
             value.value(batteryEnergyStorageSystem.power_energyStorageSystem),

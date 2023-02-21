@@ -1,8 +1,11 @@
 
-from typing import Iterable
+from typing import Iterable,List
 import matplotlib.pyplot as plt
+from cpExample import IntegratedEnergySystem,Model
 
 def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动保存图片
+    """
+    """
     fig = plt.figure()
     plt.plot(data)
     plt.xlabel("Time/h")
@@ -11,8 +14,9 @@ def plotSingle(data:Iterable, title_content:str): # 定义画图的规范 自动
     plt.savefig("fig/" + title_content + ".png")
     plt.close(fig=fig)
 
-def printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device:List[]):
-
+def printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device:List[IntegratedEnergySystem]):
+    """
+    """
     print("_________DEVICE_COUNT__________")
     for index, item in enumerate(integratedEnergySystem_device):
         subitems = dir(item)
@@ -27,7 +31,13 @@ def printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device:List[]
     print("_________DEVICE_COUNT__________")
 
 def printDecisionVariablesFromSolution(model1:Model):
-
+    """
+    Print all decision variables, including integer, float and binary variables.
+    
+    Args:
+        model1 (Model): Model to print decision variables
+    """
+    
     print() # 打印整数可决策变量
     print("___INTEGER DECISION VARIABLES___")
     for variable in model1.iter_integer_vars():
