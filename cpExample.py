@@ -14,6 +14,7 @@ import os
 
 # os.system("chcp 65001") # not working?
 
+# ensure we can display chinese characters
 matplotlib.rc("font", family="YouYuan")
 
 from docplex.mp.solution import SolveSolution
@@ -54,7 +55,6 @@ localtime1 = time.time()
 
 # create main model
 model1 = Model(name="buses")
-
 
 # ma = 0  # not using? moving average?
 
@@ -3494,7 +3494,10 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦每个时段的地源蒸汽发生器的功率≦地源蒸汽发生器设备
-        3. 每个时段地源蒸汽发生器产生蒸汽功率=每个时段地源蒸汽发生器功率+每个时段地源蒸汽发生器固态储能xi
+        3. 每个时段地源蒸汽发生器产生蒸汽功率=每个时段地源蒸汽发生器功率+每个时段储能系统中地源蒸汽发
+           生器固态储能设备功率,且大于等于0
+        4. 用电成本=每个时段的功率 * 每个时段的电价
+        5. 年化成本=地源蒸汽发生器设备数 * 设备单价+地源蒸汽发生器固态储能年hua成本
         
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4267,36 +4270,46 @@ class Linearization(object):
 
 
 # 获取能源负荷信息 都是生成的常数数据
+##########################################
 load = LoadGet()
 power_load = load.get_power_load(num_hour0)
 cool_load = load.get_power_load(num_hour0)
 heat_load = load.get_power_load(num_hour0)
 steam_load = load.get_power_load(num_hour0)
 
+##########################################
 # absolute1 = Linear_absolute(model1, [-5, 6], [0, 1])
 # absolute1.absolute_add_constraints(model1)
 
 
 if __name__ == "__main__":
+    # 光照、能源价格
+    ##########################################
+    
     resource = ResourceGet()
     # model_input
     intensityOfIllumination0: np.ndarray = resource.get_radiation(
         "jinan_changqing-hour.dat", num_hour0
     )
     # what is the output? break here.
-
     electricity_price0 = resource.get_electricity_price(num_hour0)
     gas_price0 = resource.get_gas_price(num_hour0)
     municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
     municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
-    ####################
-
-    dieselEngine = DieselEngine(num_hour0, model1, 320, 750, 2)  # 柴油机
+    ##########################################
+    
+    
+    # 柴油发电机
+    dieselEngine = DieselEngine(num_hour0, model1, 320, 750, 2)  
     dieselEngine.constraints_register(model1)
+    
+    # 光伏
     photoVoltaic = PhotoVoltaic(
         num_hour0, model1, 5000, 4500, intensityOfIllumination0, 0.8, "PhotoVoltaic"
-    )  # 光伏
+    )  
     photoVoltaic.constraints_register(model1)
+    
+    # 电池储能
     batteryEnergyStorageSystem = EnergyStorageSystem(
         num_hour0,
         model1,
