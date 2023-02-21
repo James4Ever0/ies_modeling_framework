@@ -4798,11 +4798,11 @@ if __name__ == "__main__":
         == power_xcool[h]
         for h in range(0, num_hour0)
     )
-    linearization.max_zeros( #要么向蓄冷设备储藏冷，储存冷的功率等于要么消耗冷，蓄冷设备不储藏冷
+    linearization.max_zeros( #要么向蓄冷设备储藏冷，要么消耗冷，蓄冷设备不储藏冷
         num_hour0,
         model1,
         x=power_xcool,
-        y=linearization.add(
+        y=linearization.add( # （每小时）总蓄冷功率 = 水蓄冷功率+相变蓄冷功率
             num_hour0,
             model1,
             waterStorageTank.power_waterStorageTank_cool,
@@ -4899,7 +4899,7 @@ if __name__ == "__main__":
         ]
     )
     
-    # 目标值 = 所有设备年运行成本总和
+    # 目标值 = 所有混合能源机组年运行成本总和
     objective = integratedEnergySystem_device[0].annualized
     for ii in range(1, len(integratedEnergySystem_device)):
         objective = objective + integratedEnergySystem_device[ii].annualized
