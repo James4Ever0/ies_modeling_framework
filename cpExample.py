@@ -3175,14 +3175,14 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
         3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+地源热泵状态下设备数
-        4. 蓄冷下设备数≦水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率
-           蓄冷下设备数≦水储能罐在蓄冷状态下*bigNumber
-           蓄冷下设备数≧0
-           蓄冷下设备数≧水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率-(1-水储能罐在蓄冷状态量)*bigNumber
+        4. <p>蓄冷下设备数≦水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率<br>
+           蓄冷下设备数≦水储能罐在蓄冷状态下*bigNumber<br>
+           蓄冷下设备数≧0<br>
+           蓄冷下设备数≧水蓄能机组总体积*蓄冷模式下水蓄能罐的利用率-(1-水储能罐在蓄冷状态量)*bigNumber</p>
         5. 蓄热下设备数≦水蓄能机组总体积*蓄热模式下水蓄能罐的利用率
            蓄热下设备数≦水储能罐在蓄热状态下*bigNumber
            蓄热下设备数≧0
-           蓄热下设备数≧水蓄能机组总体积*制热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量)*bigNumber
+           蓄热下设备数≧水蓄能机组总体积*蓄热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量)*bigNumber
         6. 地源热泵下设备数≦水蓄能机组总体积*地源热泵模式下水蓄能罐的利用率
            地源热泵下设备数≦水储能罐在地源热泵状态下*bigNumber
            地源热泵下设备数≧0
@@ -3409,7 +3409,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
-        电锅炉机组等效单位设备数 大于零的实数
+        地源蒸汽发生器机组等效单位设备数 大于零的实数
         """
         self.power_groundSourceSteamGenerator: List[
             ContinuousVarType
@@ -3421,6 +3421,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        地源蒸汽发生器总功率
         """
         self.power_groundSourceSteamGenerator_steam: List[
             ContinuousVarType
@@ -3432,6 +3433,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        地源蒸汽发生器产生蒸汽功率
         """
         self.groundSourceSteamGenerator_device_max = (
             groundSourceSteamGenerator_device_max
@@ -3441,6 +3443,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         )
 
         """
+        地源蒸汽发生器蓄热系统设备=地缘整齐发生器*6
         """
         self.groundSourceSteamGenerator_price = groundSourceSteamGenerator_price
         self.groundSourceSteamGeneratorSolidHeatStorage_price = (
