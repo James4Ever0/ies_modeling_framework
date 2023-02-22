@@ -72,3 +72,8 @@ from data_visualize_utils import (
     printIntegratedEnergySystemDeviceCounts,
     plotSingle,
 )
+
+printDecisionVariablesFromSolution(model1)
+printIntegratedEnergySystemDeviceCounts(systems)
+
+extra_data = []
