@@ -229,7 +229,7 @@ if __name__ == "__main__":
     steamAndWater_exchanger = Exchanger(
         num_hour0, model1, device_max=20000, device_price=400, k=50
     )
-    steamAndWater_exchanger.constraints_register(model1)  # qs - 泉水？ steamAndWater热交换器？
+    steamAndWater_exchanger.constraints_register(model1) # qs - 泉水？ steamAndWater热交换器？
 
     # 蒸汽溴化锂
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
