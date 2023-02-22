@@ -10,6 +10,8 @@ import time
 localtime1 = time.time()
 
 debug = 1
+
+epsilon = 1e-10
 """
 作用:如果设置为1,将把num_hour0乘以year(year的默认值是1)
 """
