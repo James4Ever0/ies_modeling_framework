@@ -79,7 +79,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
-        IntegratedEnergySystem(device_name=device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name=device_name)
         PhotoVoltaic.index += (
             1  # increase the index whenever another PhotoVoltaic system is created.
         )
@@ -174,7 +174,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             efficiency (float): 设备运行效率
             device_name (str): 溴化锂制冷机组名称,默认为"LiBrRefrigeration"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         LiBrRefrigeration.index += 1
         self.num_hour = num_hour
         self.LiBr_device: ContinuousVarType = model.continuous_var(
@@ -272,7 +272,7 @@ class DieselEngine(IntegratedEnergySystem):
             run_price (float): 运维价格
             device_name (str): 柴油发电机机组名称,默认为"DieselEngine"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         DieselEngine.index += 1
         self.num_hour = num_hour
         self.dieselEngine_device: ContinuousVarType = model.continuous_var(
@@ -377,7 +377,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 储能系统机组名称,默认为"energyStorageSystem"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         EnergyStorageSystem.index += 1
 
         self.energyStorageSystem_device: ContinuousVarType = model.continuous_var(
@@ -661,7 +661,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 可变容量储能系统机组名称,默认为"energyStorageSystem_variable"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         EnergyStorageSystemVariable.index += 1
 
         self.energyStorageSystem_device: List[
@@ -927,7 +927,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         TroughPhotoThermal.index += 1
         self.num_hour = num_hour
         self.troughPhotoThermal_device: ContinuousVarType = model.continuous_var(
@@ -1070,7 +1070,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             power_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         CombinedHeatAndPower.index += 1
         self.num_hour = num_hour
         self.combinedHeatAndPower_device: ContinuousVarType = model.continuous_var(
@@ -1364,7 +1364,7 @@ class GasBoiler(IntegratedEnergySystem):
             efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         GasBoiler.index += 1
         self.num_hour = num_hour
         self.gasBoiler_device: ContinuousVarType = model.continuous_var(
@@ -1466,7 +1466,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         ElectricBoiler.index += 1
         self.num_hour = num_hour
         self.electricBoiler_device: ContinuousVarType = model.continuous_var(
@@ -1571,7 +1571,7 @@ class Exchanger(IntegratedEnergySystem):
             k (float): 传热系数(暂时没有使用)
             device_name (str): 热交换器机组名称,默认为"exchanger"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         # k 传热系数
         Exchanger.index += 1
         self.num_hour = num_hour
@@ -1645,7 +1645,7 @@ class AirHeatPump(IntegratedEnergySystem):
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         AirHeatPump.index += 1
         self.electricity_price = electricity_price
@@ -1923,7 +1923,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下热冷效率
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         # 不同工况下热冷效率
         # case_ratio 不同工况下制热量/制冷量的比值
         self.num_hour = num_hour
@@ -2199,7 +2199,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下水冷螺旋机利用率
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_spiral"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         WaterCoolingSpiral.index += 1
         self.electricity_price = electricity_price
@@ -2406,7 +2406,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下双工况机组利用率
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         DoubleWorkingConditionUnit.index += 1
         self.electricity_price = electricity_price
@@ -2622,7 +2622,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下三工况机组利用率
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
 
         TripleWorkingConditionUnit.index += 1
@@ -2878,7 +2878,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             electricity_price (Union[np.ndarray, List]): 24小时用电价格
             device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         GeothermalHeatPump.index += 1
         self.electricity_price = electricity_price
@@ -3016,7 +3016,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             ratio_gheat (float): 地源热泵模式下水蓄能罐单位体积的蓄热效率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         self.num_hour = num_hour
         self.model = model
         # 对于水蓄能,优化的变量为水罐的体积
@@ -3360,7 +3360,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             efficiency (float): 效率参数
             device_name (str): 地源蒸汽发生器机组名称，默认为"groundSourceSteamGenerator"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         GroundSourceSteamGenerator.index += 1
         self.num_hour = num_hour
         self.groundSourceSteamGenerator_device: ContinuousVarType = (
@@ -3660,7 +3660,7 @@ class CitySupply(IntegratedEnergySystem):
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         CitySupply.index += 1
         self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = model.continuous_var(
@@ -3768,7 +3768,7 @@ class GridNet(IntegratedEnergySystem):
             electricity_price_to (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
-        IntegratedEnergySystem(device_name)
+        self.integratedEnergySystem = IntegratedEnergySystem(device_name)
         GridNet.index += 1
         self.num_hour = num_hour
         self.model = model

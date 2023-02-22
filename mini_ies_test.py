@@ -93,7 +93,7 @@ else:
     # collect all types of lists.
 
     for system in systems:
-        system_name = system.__name__
+        system_name = system.integratedEnergySystem.device_name
         system_data_name_list = dir(system)
         for system_data_name in system_data_name_list:
             system_data = system.__dict__.get(system_data_name,None)
