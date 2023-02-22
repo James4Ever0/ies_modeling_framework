@@ -11,7 +11,9 @@ model1 = Model(name="microgrid")
 
 resource = ResourceGet()
 electricity_price0 = resource.get_electricity_price(num_hour0)
-intensityOfIllumination0 = resource.get_radiation(path="jinan_changqing-hour.dat",num_hour0=num_hour0)
+intensityOfIllumination0 = resource.get_radiation(
+    path="jinan_changqing-hour.dat", num_hour0=num_hour0
+)
 
 # 光伏
 photoVoltaic = PhotoVoltaic(
@@ -57,7 +59,16 @@ batteryEnergyStorageSystem.constraints_register(
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
+systems_annualized = [system.annualized for system in systems]
 
+import functools
 
-for system in systems:
-    system.annualize
+objective = functools.reduce(lambda a, b: a + b, systems_annualized)
+
+model1.minimize(objective)
+
+from data_visualize_utils import (
+    printDecisionVariablesFromSolution,
+    printIntegratedEnergySystemDeviceCounts,
+    plotSingle,
+)

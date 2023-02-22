@@ -564,7 +564,7 @@ if __name__ == "__main__":
         # from docplex.mp.sdetails import SolveDetails
 
         print("NO SOLUTION.")
-    else:  # 解出来了
+    else: # 解出来了
         print("objective: annual", solution_run1.get_value(objective))  # 所有设备年运行成本总和
         print()
 
