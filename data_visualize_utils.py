@@ -7,20 +7,23 @@ import matplotlib.pyplot as plt
 from cpExample import IntegratedEnergySystem, Model
 import os
 
-def plotSingle(data: Iterable, title_content: str,save_directory :str=):  # 定义画图的规范 自动保存图片
+def plotSingle(data: Iterable, title_content: str,save_directory :str='fig'):  # 定义画图的规范 自动保存图片
     """
     Plot a single graph with `data` as data and `title_content` as title
 
     Args:
         data (Iterable): a list of values to be plotted on the x axis
         title_content (str): title to plot on the graph
+        save_directory (str): directory to save the images
     """
+    if not os.path.exists(save_directory):
+        os.mkdir(save_directory) 
     fig = plt.figure()
     plt.plot(data)
     plt.xlabel("Time/h")
     plt.ylabel("Power/kW")
     plt.title(title_content)
-    plt.savefig("{}/" + title_content + ".png")
+    plt.savefig(f"{save_directory}/{title_content}.png")
     plt.close(fig=fig)
 
 

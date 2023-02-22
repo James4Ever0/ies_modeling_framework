@@ -7,7 +7,7 @@ from docplex.mp.model import Model
 simulation_name = "microgrid"
 
 load = LoadGet()
-power_load = load.get_power_load()
+power_load = load.get_power_load(num_hour0)
 
 model1 = Model(name=simulation_name)
 
@@ -88,4 +88,8 @@ for system in systems:
         system_data = system.__dict__[system_data_name]
         if type(system_data) == list:
             # then we plot this!
-            plotSingle(system_data,title_content=f"{system_name}_{system_data_name}")
+            plotSingle(
+                system_data,
+                title_content=f"{system_name}_{system_data_name}",
+                save_directory=f"{simulation_name}_figures",
+            )
