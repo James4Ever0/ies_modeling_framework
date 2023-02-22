@@ -1,4 +1,5 @@
-import docplex_test
+# import docplex_test
+import docplex
 # from docplex.mp.model import Model
 import numpy
 
@@ -13,9 +14,9 @@ class Value(object):
         elif isinstance(x, float):
             print('float')
             return x
-        elif isinstance(x, list) and isinstance(x[0], docplex_test.mp.dvar.Var):
+        elif isinstance(x, list) and isinstance(x[0], docplex.mp.dvar.Var):
             return self.sol.get_values(x)
-        elif isinstance(x, docplex_test.mp.dvar.Var):
+        elif isinstance(x, docplex.mp.dvar.Var):
             return self.sol.get_value(x)
         elif isinstance(x, list) and isinstance(x[0], int):
             return x
