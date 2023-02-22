@@ -14,7 +14,7 @@ model1 = Model(name=simulation_name)
 resource = ResourceGet()
 electricity_price0 = resource.get_electricity_price(num_hour0)
 intensityOfIllumination0 = resource.get_radiation(
-    path="jinan_changqing-hour.dat", num_hour0=num_hour0
+    path="jinan_changqing-hour.dat", num_hour=num_hour0
 )
 
 # 光伏
@@ -69,27 +69,38 @@ objective = functools.reduce(lambda a, b: a + b, systems_annualized)
 
 model1.minimize(objective)
 
+# 1000秒以内解出 否则放弃
+model1.set_time_limit(time_limit=1000)
+
+from typing import Union
+from docplex.mp.solution import SolveSolution
+# 模型求解返回值 可为空
+solution_run1: Union[None, SolveSolution] = model1.solve(
+    log_output=True
+)  # output some solution.
+
 from data_visualize_utils import (
     printDecisionVariablesFromSolution,
     printIntegratedEnergySystemDeviceCounts,
     plotSingle,
 )
+if solution_run1 == None:
+    print("UNABLE TO SOLVE")
+else:
+    printDecisionVariablesFromSolution(model1)
+    printIntegratedEnergySystemDeviceCounts(systems)
 
-printDecisionVariablesFromSolution(model1)
-printIntegratedEnergySystemDeviceCounts(systems)
+    # collect all types of lists.
 
-# collect all types of lists.
-
-
-for system in systems:
-    system_name = system.__name__
-    system_data_name_list = dir(system)
-    for system_data_name in system_data_name_list:
-        system_data = system.__dict__[system_data_name]
-        if type(system_data) == list:
-            # then we plot this!
-            plotSingle(
-                system_data,
-                title_content=f"{system_name}_{system_data_name}",
-                save_directory=f"{simulation_name}_figures",
-            )
+    for system in systems:
+        system_name = system.__name__
+        system_data_name_list = dir(system)
+        for system_data_name in system_data_name_list:
+            system_data = system.__dict__.get(system_data_name,None)
+            if type(system_data) == list:
+                # then we plot this!
+                plotSingle(
+                    system_data,
+                    title_content=f"{system_name}_{system_data_name}",
+                    save_directory=f"{simulation_name}_figures",
+                )
