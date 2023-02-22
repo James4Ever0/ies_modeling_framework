@@ -131,7 +131,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         model: Model,
         photoVoltaic_device_max: float,
         device_price: float,  # float?
-        intensityOfIllumination0: np.ndarray,
+        intensityOfIllumination0: Union[np.ndarray, List],
         efficiency: float,  # efficiency
         device_name: str = "PhotoVoltaic",
     ):
@@ -143,7 +143,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             model (docplex.mp.model.Model): 求解模型实例
             photoVoltaic_device_max (float): 光伏设备机组最大装机量
             device_price (float): 设备单价
-            intensityOfIllumination0 (np.ndarray): 24小时光照强度
+            intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
@@ -259,7 +259,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             name="heat_LiBr_from{0}".format(LiBrRefrigeration.index),
         )
         """
-        初始化每个小时内溴化锂机组制热设备 大于零的实数 一共`num_hour`个变量
+        初始化每个小时内溴化锂机组得到的热量 大于零的实数 一共`num_hour`个变量
         """
 
         self.cool_LiBr: List[
@@ -269,7 +269,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             name="heat_LiBr{0}".format(LiBrRefrigeration.index),
         )
         """
-        初始化每个小时内溴化锂机组制冷设备 大于零的实数 一共`num_hour`个变量
+        初始化每个小时内溴化锂机组制冷量 大于零的实数 一共`num_hour`个变量
         """
 
         self.LiBr_device_max = LiBr_device_max
@@ -288,8 +288,8 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
-        3. 每个小时内,制热设备大于等于0,且不超过溴化锂机组设备数
-        4. 每个小时内,制冷量 = 制热等效单位设备数 / 效率
+        3. 每个小时内,得到的热量大于等于0,且不超过溴化锂机组设备数
+        4. 每个小时内,制冷量 = 得到的热量 / 效率
         5. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15
 
         Args:
@@ -439,7 +439,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             energyStorageSystem_price (float): 储能装置的购置价格。
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
             eff (float): 储能装置的充放电效率。
-            conversion_rate_max (float): 储能装置的最大倍率。
+            conversion_rate_max (float): 储能装置的最大充放倍率。
             energyStorageSystem_init (int): 储能装置的初始能量。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
@@ -723,7 +723,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             energyStorageSystem_price (float): 储能装置的购置价格。
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
             eff (float): 储能装置的充放电效率。
-            conversion_rate_max (float): 储能装置的最大倍率。
+            conversion_rate_max (float): 储能装置的最大充放倍率。
             energyStorageSystem_init (float): 储能装置的初始能量。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
@@ -918,7 +918,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             )
         # TODO: figure out init (fixing init error)
         model.add_constraint(
-        # model.add_constraints(
+            # model.add_constraints(
             self.energyStorageSystem[0]
             == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
             # for i in range(1, self.num_hour)
@@ -980,7 +980,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         troughPhotoThermal_device_max: float,
         troughPhotoThermal_price: float,
         troughPhotoThermalSolidHeatStorage_price: float,  # (csgrgtxr是啥)
-        intensityOfIllumination0: np.ndarray,
+        intensityOfIllumination0: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
     ):
@@ -991,7 +991,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             troughPhotoThermal_device_max (float): 槽式光热设备机组最大装机量
             troughPhotoThermal_price (float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price (float): 槽式光热储能设备价格
-            intensityOfIllumination0 (np.ndarray): 24小时光照强度
+            intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
@@ -1122,7 +1122,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         model: Model,
         combinedHeatAndPower_num_max: float,
         combinedHeatAndPower_price: float,
-        gas_price: np.ndarray,
+        gas_price: Union[np.ndarray, List],
         combinedHeatAndPower_single_device: float,
         power_to_heat_ratio: float,  # drratio?
         device_name: str = "combinedHeatAndPower",
@@ -1133,7 +1133,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             combinedHeatAndPower_num_max (float): 表示热电联产机组的最大等效设备数量
             combinedHeatAndPower_price (float): 表示热电联产等效设备的单价
-            gas_price (np.ndarray): 表示燃气的单价
+            gas_price (Union[np.ndarray, List]): 表示燃气的单价
             combinedHeatAndPower_single_device (float): 表示每台热电联产设备的等效设备数量
             power_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
@@ -1418,7 +1418,7 @@ class GasBoiler(IntegratedEnergySystem):
         model: Model,
         gasBoiler_device_max: float,
         gasBoiler_price: float,
-        gas_price: np.ndarray,
+        gas_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "gasBoiler",
     ):
@@ -1428,7 +1428,7 @@ class GasBoiler(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             gasBoiler_device_max (float): 表示燃气锅炉的最大数量。
             gasBoiler_price (float): 表示燃气锅炉的单价。
-            gas_price (np.ndarray): 表示燃气的单价。
+            gas_price (Union[np.ndarray, List]): 表示燃气的单价。
             efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
         """
@@ -1520,7 +1520,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         model: Model,
         electricBoiler_device_max: float,
         electricBoiler_price: float,
-        electricity_price: np.ndarray,
+        electricity_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "electricBoiler",
     ):
@@ -1530,7 +1530,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             electricBoiler_device_max (float): 表示电锅炉的最大数量。
             electricBoiler_price (float): 表示电锅炉的单价。
-            electricity_price (np.ndarray): 表示电的单价。
+            electricity_price (Union[np.ndarray, List]): 表示电的单价。
             efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
         """
@@ -1701,7 +1701,7 @@ class AirHeatPump(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
+        electricity_price: Union[np.ndarray, List],
         device_name: str = "air_heat_pump",
     ):
         """
@@ -1710,7 +1710,7 @@ class AirHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示空气热泵的最大数量。
             device_price (float): 表示空气热泵的单价。
-            electricity_price (np.ndarray): 每小时的电价
+            electricity_price (Union[np.ndarray, List]): 每小时的电价
             device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -1759,14 +1759,18 @@ class AirHeatPump(IntegratedEnergySystem):
         二元变量列表,表示空气热泵在每个时段的制冷状态
         """
 
-        self.power_heatPump_cooletStorage: List[ContinuousVarType] = model.continuous_var_list(
+        self.power_heatPump_cooletStorage: List[
+            ContinuousVarType
+        ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_cooletStorage{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的蓄冷功率
         """
-        self.cooletStorage_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
+        self.cooletStorage_heatPump_out: List[
+            ContinuousVarType
+        ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="cooletStorage_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -1802,14 +1806,18 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         二元变量列表,表示空气热泵在每个时段的制热状态
         """
-        self.power_heatPump_heatStorge: List[ContinuousVarType] = model.continuous_var_list(
+        self.power_heatPump_heatStorge: List[
+            ContinuousVarType
+        ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_heatStorge{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的蓄热功率
         """
-        self.heatStorge_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
+        self.heatStorge_heatPump_out: List[
+            ContinuousVarType
+        ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatStorge_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -1877,14 +1885,17 @@ class AirHeatPump(IntegratedEnergySystem):
             for h in hourRange
         )
 
-        model.add_constraints(0 <= self.power_heatPump_cooletStorage[h] for h in hourRange)
+        model.add_constraints(
+            0 <= self.power_heatPump_cooletStorage[h] for h in hourRange
+        )
         model.add_constraints(
             self.power_heatPump_cooletStorage[h]
             <= self.cooletStorage_heatPump_out[h] * self.heatPump_device / 100
             for h in hourRange
         )
         model.add_constraints(
-            self.power_heatPump_cooletStorage[h] <= bigNumber * self.heatPump_cooletStorage_flag[h]
+            self.power_heatPump_cooletStorage[h]
+            <= bigNumber * self.heatPump_cooletStorage_flag[h]
             for h in hourRange
         )
 
@@ -1906,7 +1917,8 @@ class AirHeatPump(IntegratedEnergySystem):
             for h in hourRange
         )
         model.add_constraints(
-            self.power_heatPump_heatStorge[h] <= bigNumber * self.heatPump_heatStorge_flag[h]
+            self.power_heatPump_heatStorge[h]
+            <= bigNumber * self.heatPump_heatStorge_flag[h]
             for h in hourRange
         )
 
@@ -1965,8 +1977,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
-        case_ratio: float,
+        electricity_price: Union[np.ndarray, List],
+        case_ratio: Union[np.ndarray, List],
         device_name: str = "water_heat_pump",
     ):
         """
@@ -1975,8 +1987,8 @@ class WaterHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示水源热泵的最大数量。
             device_price (float): 表示水源热泵的单价。
-            electricity_price (np.ndarray): 每小时的电价
-            case_ratio (float): 不同工况下热冷效率
+            electricity_price (Union[np.ndarray, List]): 每小时的电价
+            case_ratio (Union[np.ndarray, List]): 不同工况下热冷效率
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -2031,7 +2043,9 @@ class WaterHeatPump(IntegratedEnergySystem):
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterSourceHeatPumps_cooletStorage{0}".format(WaterHeatPump.index),
+            name="power_waterSourceHeatPumps_cooletStorage{0}".format(
+                WaterHeatPump.index
+            ),
         )
         """
         连续变量列表,表示每个时刻水源热泵蓄冷功率
@@ -2040,7 +2054,9 @@ class WaterHeatPump(IntegratedEnergySystem):
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterSourceHeatPumps_cooletStorage_flag{0}".format(WaterHeatPump.index),
+            name="waterSourceHeatPumps_cooletStorage_flag{0}".format(
+                WaterHeatPump.index
+            ),
         )
         """
         二元变量列表,表示每个时刻水源热泵蓄冷状态
@@ -2237,8 +2253,8 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
-        case_ratio: float,
+        electricity_price: Union[np.ndarray, List],
+        case_ratio: Union[np.ndarray, List],
         device_name: str = "water_cooled_spiral",
     ):
         """
@@ -2247,8 +2263,8 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示水冷螺旋机的最大数量。
             device_price (float): 表示水冷螺旋机的单价。
-            electricity_price (np.ndarray): 每小时电价
-            case_ratio (float): 不同工况下水冷螺旋机利用率
+            electricity_price (Union[np.ndarray, List]): 每小时电价
+            case_ratio (Union[np.ndarray, List]): 不同工况下水冷螺旋机利用率
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_spiral"
         """
         IntegratedEnergySystem(device_name)
@@ -2268,7 +2284,9 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         连续变量,表示水冷螺旋机的年化费用
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
-            name="waterCoolingSpiral_electricity_sum{0}".format(WaterCoolingSpiral.index)
+            name="waterCoolingSpiral_electricity_sum{0}".format(
+                WaterCoolingSpiral.index
+            )
         )
         """
         连续变量,表示水冷螺旋机的用电成本
@@ -2280,7 +2298,9 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterCoolingSpiralMachine_cool{0}".format(WaterCoolingSpiral.index),
+            name="power_waterCoolingSpiralMachine_cool{0}".format(
+                WaterCoolingSpiral.index
+            ),
         )
         """
         连续变量列表,表示水冷螺旋机的制冷功率
@@ -2289,7 +2309,9 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterCoolingSpiralMachine_cool_flag{0}".format(WaterCoolingSpiral.index),
+            name="waterCoolingSpiralMachine_cool_flag{0}".format(
+                WaterCoolingSpiral.index
+            ),
         )
         """
         二元变量列表,表示水冷螺旋机的散热状态
@@ -2311,7 +2333,9 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterCoolingSpiralMachine_cooletStorage_flag{0}".format(WaterCoolingSpiral.index),
+            name="waterCoolingSpiralMachine_cooletStorage_flag{0}".format(
+                WaterCoolingSpiral.index
+            ),
         )
         """
         二元变量列表,表示水冷螺旋机的蓄冷状态
@@ -2375,7 +2399,8 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         )
 
         model.add_constraints(
-            0 <= self.power_waterCoolingSpiralMachine_cooletStorage[h] for h in hourRange
+            0 <= self.power_waterCoolingSpiralMachine_cooletStorage[h]
+            for h in hourRange
         )
         model.add_constraints(
             self.power_waterCoolingSpiralMachine_cooletStorage[h]
@@ -2435,8 +2460,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
-        case_ratio: float,
+        electricity_price: Union[np.ndarray, List],
+        case_ratio: Union[np.ndarray, List],
         device_name: str = "doubleWorkingConditionUnit",
     ):
         """
@@ -2445,8 +2470,8 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示双工况机组的最大数量。
             device_price (float): 表示双工况机组的单价。
-            electricity_price (np.ndarray): 每小时电价
-            case_ratio (float): 不同工况下双工况机组利用率
+            electricity_price (Union[np.ndarray, List]): 每小时电价
+            case_ratio (Union[np.ndarray, List]): 不同工况下双工况机组利用率
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2651,8 +2676,8 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
-        case_ratio: float,
+        electricity_price: Union[np.ndarray, List],
+        case_ratio: Union[np.ndarray, List],
         device_name: str = "tripleWorkingConditionUnit",
     ):
         """
@@ -2661,8 +2686,8 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 表示三工况机组的最大数量
             device_price (float): 表示三工况机组的单价
-            electricity_price (np.ndarray): 每小时电价
-            case_ratio (float): 不同工况下三工况机组利用率
+            electricity_price (Union[np.ndarray, List]): 每小时电价
+            case_ratio (Union[np.ndarray, List]): 不同工况下三工况机组利用率
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
         """
         IntegratedEnergySystem(device_name)
@@ -2908,7 +2933,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         model: Model,
         device_max: float,
         device_price: float,
-        electricity_price: np.ndarray,
+        electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
     ):
         """新建一个地源热泵类
@@ -2918,7 +2943,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_max (float): 地源热泵机组最大装机量
             device_price (float): 设备单价
-            electricity_price (np.ndarray): 24小时用电价格
+            electricity_price (Union[np.ndarray, List]): 24小时用电价格
             device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
         """
         IntegratedEnergySystem(device_name)
@@ -3133,7 +3158,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="waterStorageTank_gheat_flag{0}".format(self.index),
         )
         """
-        每小时水蓄能设备是否处在地源热泵状态下
+        每小时水蓄能设备是否处在高温热水状态下
         """
         self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
@@ -3163,7 +3188,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
         """
-        每小时水蓄能设备储能功率 地源热泵状态下
+        每小时水蓄能设备储能功率 高温热水状态下
         """
         self.annualized: ContinuousVarType = model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
@@ -3180,7 +3205,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
         1. 0≦机组设备数≦最大设备量
         2. 0≦水蓄能机组总体积≦最大体积量
-        3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+地源热泵状态下设备数
+        3. 水储能罐储能系统设备数=制冷状态下设备数+制热状态下设备数+高温热水状态下设备数
         4. <p>蓄冷下设备数≦水蓄能机组总体积 * 蓄冷模式下水蓄能罐的利用率<br>
            蓄冷下设备数≦水储能罐在蓄冷状态下 * bigNumber<br>
            蓄冷下设备数≧0<br>
@@ -3190,16 +3215,16 @@ class WaterEnergyStorage(IntegratedEnergySystem):
            蓄热下设备数≧0<br>
            蓄热下设备数≧水蓄能机组总体积 * 蓄热模式下水蓄能罐的利用率-(1-水储能罐在蓄热状态量) * bigNumber</p>
         6. <p>地源热泵下设备数≦水蓄能机组总体积 * 地源热泵模式下水蓄能罐的利用率<br>
-           地源热泵下设备数≦水储能罐在地源热泵状态下 * bigNumber<br>
+           地源热泵下设备数≦水储能罐在高温热水状态下 * bigNumber<br>
            地源热泵下设备数≧0<br>
-           地源热泵下设备数≧水蓄能机组总体积 * 地源热泵模式下水蓄能罐的利用率-(1-水储能罐在地源热泵状态冷量) * bigNumber</p>
-        7. 水储能罐在制冷状态+水储能罐在制热状态+水储能罐在地源热泵状态=1
+           地源热泵下设备数≧水蓄能机组总体积 * 地源热泵模式下水蓄能罐的利用率-(1-水储能罐在高温热水状态冷量) * bigNumber</p>
+        7. 水储能罐在制冷状态+水储能罐在制热状态+水储能罐在高温热水状态=1
         8. <p>-bigNumber * 水储能罐在蓄冷状态量≦水储能罐在蓄冷状态下功率≦bigNumber * 水储能罐在蓄冷状态量<br>
            -(1-水储能罐在蓄冷状态量) * bigNumber≦水储能罐在蓄冷状态下功率≦(1-水储能罐在蓄冷状态量) * bigNumber</p>
         9. <p>-bigNumber * 水储能罐在蓄热状态量≦水储能罐在蓄热状态下功率≦bigNumber * 水储能罐在蓄热状态量<br>
            -(1-水储能罐在蓄热状态量) * bigNumber≦水储能罐在蓄热状态下功率≦(1-水储能罐在蓄热状态量) * bigNumber</p>
-        10.<p>-bigNumber * 水储能罐在地源热泵状态量≦水储能罐在地源热泵状态下功率≦bigNumber * 水储能罐在地源热泵状态量<br>
-           -(1-水储能罐在地源热泵状态量) * bigNumber≦水储能罐在地源热泵状态下功率≦(1-水储能罐在地源热泵状态量) * bigNumber</p>
+        10.<p>-bigNumber * 水储能罐在高温热水状态量≦水储能罐在高温热水状态下功率≦bigNumber * 水储能罐在高温热水状态量<br>
+           -(1-水储能罐在高温热水状态量) * bigNumber≦水储能罐在高温热水状态下功率≦(1-水储能罐在高温热水状态量) * bigNumber</p>
         11. 水储能机组年化成本 = 水储能罐总体积 * 单位体积价格/20
 
         Args:
@@ -3388,7 +3413,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         groundSourceSteamGenerator_device_max: float,
         groundSourceSteamGenerator_price: float,
         groundSourceSteamGeneratorSolidHeatStorage_price: float,
-        electricity_price: np.ndarray,
+        electricity_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "groundSourceSteamGenerator",
     ):
@@ -3399,7 +3424,7 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
             groundSourceSteamGenerator_device_max (int): 表示地热蒸汽发生器的最大数量
             groundSourceSteamGenerator_price (float): 表示地热蒸汽发生器的单价
             groundSourceSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器机组固态储热设备单价
-            electricity_price (np.ndarray): 每小时电价
+            electricity_price (Union[np.ndarray, List]): 每小时电价
             efficiency (float): 效率参数
             device_name (str): 地源蒸汽发生器机组名称，默认为"groundSourceSteamGenerator"
         """
@@ -3706,13 +3731,13 @@ class Linear_absolute(object):  # absolute?
     bigNumber0 = 1e10
     index = 0
 
-    def __init__(self, model: Model, x: List[Var], irange: Iterable):  # irange?
+    def __init__(self, model: Model, x: List[VarType], irange: Iterable):  # irange?
         """
         初始化带绝对值的线性约束类
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): 存放`xpositive`和`xnegitive`在区间`irange`内逐元素相减结果约束得到的变量组`x`
+            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`irange`内逐元素相减结果约束得到的变量组`x`
             irange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
@@ -3835,7 +3860,7 @@ class CitySupply(IntegratedEnergySystem):
         model: Model,
         citySupplied_device_max: float,
         device_price: float,
-        run_price: np.ndarray,
+        run_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "city_supply",
     ):
@@ -3847,7 +3872,7 @@ class CitySupply(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             citySupplied_device_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
-            run_price (np.ndarray): 每小时运维价格
+            run_price (Union[np.ndarray, List]): 每小时运维价格
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
@@ -3943,7 +3968,7 @@ class GridNet(IntegratedEnergySystem):
         model: Model,
         gridNet_device_max: float,
         device_price: float,
-        electricity_price_from: np.ndarray,
+        electricity_price_from: Union[np.ndarray, List],
         electricity_price_to: float,
         device_name: str = "grid_net",
     ):
@@ -3955,7 +3980,7 @@ class GridNet(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             gridnet_device_max (float): 电网最大设备量
             device_price (float): 设备单价
-            electricity_price_from (np.ndarray): 电力使用价格
+            electricity_price_from (Union[np.ndarray, List]): 电力使用价格
             electricity_price_to (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
@@ -4109,7 +4134,9 @@ class Linearization(object):
     # bin?
     # never used.
 
-    def product_var_bin(self, model: Model, var_bin: Var, var: Var, bin: BinaryVarType):
+    def product_var_bin(
+        self, model: Model, var_bin: VarType, var: VarType, bin: BinaryVarType
+    ):
         """
         通过二进制变量`bin`的控制,当`bin == 1`,则`var_bin == var`；当`bin == 0`,则`var_bin == 0`
 
@@ -4137,8 +4164,8 @@ class Linearization(object):
     def product_var_bins(
         self,
         model: Model,
-        var_bin: List[Var],
-        var: List[Var],
+        var_bin: List[VarType],
+        var: List[VarType],
         bin0: List[BinaryVarType],
         irange: Iterable,
     ):  # bins?
@@ -4151,8 +4178,8 @@ class Linearization(object):
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            var_bin (List[Var]): 受控变量组
-            var (List[Var]): 原变量组
+            var_bin (List[VarType]): 受控变量组
+            var (List[VarType]): 原变量组
             bin (List[BinaryVarType]): 控制变量组
             irange (Iterable): 整数区间
         """
@@ -4167,8 +4194,8 @@ class Linearization(object):
     def product_var_back_bins(
         self,
         model: Model,
-        var_bin: List[Var],
-        var: List[Var],
+        var_bin: List[VarType],
+        var: List[VarType],
         bin0: List[BinaryVarType],
         irangeback: Iterable,
     ):  # back?
@@ -4181,8 +4208,8 @@ class Linearization(object):
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            var_bin (List[Var]): 受控变量组
-            var (List[Var]): 原变量组
+            var_bin (List[VarType]): 受控变量组
+            var (List[VarType]): 原变量组
             bin (List[BinaryVarType]): 控制变量组
             irange (Iterable): 整数区间
         """
@@ -4198,7 +4225,7 @@ class Linearization(object):
         )
 
     def max_zeros(
-        self, num_hour: int, model: Model, x: List[Var], y: List[Var]
+        self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
     ):  # max?
         """
         对于区间`range(0, num_hour)`的每个数`h`,`y[h]`是非负实数,`y_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
@@ -4211,8 +4238,8 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): 变量组`x`
-            y (List[Var]): 变量组`y`
+            x (List[VarType]): 变量组`x`
+            y (List[VarType]): 变量组`y`
         """
         Linearization.index += 1
         y_flag = model1.binary_var_list(
@@ -4239,8 +4266,8 @@ class Linearization(object):
         # y[h] 是非负数
 
     def add(
-        self, num_hour: int, model: Model, x1: List[Var], x2: List[Var]
-    ) -> List[Var]:
+        self, num_hour: int, model: Model, x1: List[VarType], x2: List[VarType]
+    ) -> List[VarType]:
         """
         对于区间`range(0, num_hour)`的每个数`h`,将两个变量`x1[h]`,`x2[h]`组合为一个变量`add_y[h]`
 
@@ -4249,11 +4276,11 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x1 (List[Var]): 变量组`x1`
-            x2 (List[Var]): 变量组`x2`
+            x1 (List[VarType]): 变量组`x1`
+            x2 (List[VarType]): 变量组`x2`
 
         Return:
-            add_y (List[Var]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
+            add_y (List[VarType]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
         """
         # looks like two lists.
         Linearization.index += 1
@@ -4267,9 +4294,9 @@ class Linearization(object):
         self,
         num_hour: int,
         model: Model,
-        x: List[Var],
-        xpositive: List[Var],
-        xnegitive: List[Var],
+        x: List[VarType],
+        xpositive: List[VarType],
+        xnegitive: List[VarType],
     ):
         """
         对于区间`range(0, num_hour)`的每个数`h`,`x[h] == xpositive[h] - xnegitive[h]`,`positive_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
@@ -4282,9 +4309,9 @@ class Linearization(object):
         Args:
             num_hour (int): 一天小时数
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[Var]): 存放`xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减结果约束得到的变量组`x`
-            xpositive (List[Var]): 变量组`xpositive`
-            xnegitive (List[Var]): 变量组`xnegitive`
+            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减结果约束得到的变量组`x`
+            xpositive (List[VarType]): 变量组`xpositive`
+            xnegitive (List[VarType]): 变量组`xnegitive`
         """
         Linearization.index += 1
         bigNumber = 1e10
@@ -4336,7 +4363,7 @@ if __name__ == "__main__":
 
     resource = ResourceGet()
     # model_input
-    intensityOfIllumination0: np.ndarray = resource.get_radiation(
+    intensityOfIllumination0: Union[np.ndarray, List] = resource.get_radiation(
         "jinan_changqing-hour.dat", num_hour0
     )
     # what is the output? break here.
@@ -4385,7 +4412,7 @@ if __name__ == "__main__":
     )
     ##########################################
 
-    #蒸汽发生装置及参数配置
+    # 蒸汽发生/消耗装置及参数配置
     ##########################################
     # 槽式光热设备
     troughPhotoThermal = TroughPhotoThermal(
@@ -4398,7 +4425,7 @@ if __name__ == "__main__":
         efficiency=0.8,
     )
     troughPhotoThermal.constraints_register(model1)
-    
+
     # 地热蒸汽发生器
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
         num_hour0,
@@ -4410,7 +4437,7 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     groundSourceSteamGenerator.constraints_register(model1)
-    
+
     # 热电联产机组
     combinedHeatAndPower = CombinedHeatAndPower(
         num_hour0,
@@ -4422,7 +4449,7 @@ if __name__ == "__main__":
         power_to_heat_ratio=1.2,  # dr? 电热?
     )
     combinedHeatAndPower.constraints_register(model1)
-    
+
     # 燃气锅炉
     gasBoiler = GasBoiler(
         num_hour0,
@@ -4433,8 +4460,8 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     gasBoiler.constraints_register(model1)
-    
-    
+
+    # 市政蒸汽
     municipalSteam = CitySupply(
         num_hour0,
         model1,
@@ -4447,7 +4474,7 @@ if __name__ == "__main__":
     # 以上为蒸汽发生装置
     ##########################################
 
-    #高温蒸汽去向
+    # 高温蒸汽去向
     ##########################################
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
@@ -4464,38 +4491,44 @@ if __name__ == "__main__":
         + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
         + troughPhotoThermal.power_troughPhotoThermal_steam[h]
         + groundSourceSteamGenerator.power_groundSourceSteamGenerator_steam[h]
-        + gasBoiler.heat_gasBoiler[h]
+        + gasBoiler.heat_gasBoiler[
+            h
+        ]  # （每小时）所有产生蒸汽量的总和 = 市政热量 + CHP余气余热蒸汽 + 槽式光热产蒸汽 + 燃气锅炉产生热量
         for h in range(0, num_hour0)
     )
     # 高温蒸汽去处
     model1.add_constraints(
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour0)
-    )
+    )  # 每小时蒸汽消耗 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
+
+    # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
         num_hour0, model1, device_max=20000, device_price=400, k=50
     )
     steamAndWater_exchanger.constraints_register(model1)  # qs - 泉水？ steamAndWater热交换器？
+
+    # 蒸汽溴化锂
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
         num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9
     )
     steamPowered_LiBr.constraints_register(model1)
 
     model1.add_constraints(
-        power_steam_used_heatcool[h]
-        >= steamAndWater_exchanger.heat_exchange[h]
-        + steamPowered_LiBr.heat_LiBr_from[h]
+        power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
+        >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
+        + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
         for h in range(0, num_hour0)
     )
     ##########################################
 
-    #高温热水发生装置及水储能装置
+    # 高温热水发生/消耗装置及水储能装置
     ##########################################
     # highTemperatureHotWater
     # 1) combinedHeatAndPower gasTurbineSystem?
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
     # 3
-    
+
     # 平板光热
     platePhotothermal = PhotoVoltaic(
         num_hour0,
@@ -4507,7 +4540,7 @@ if __name__ == "__main__":
         device_name="platePhotothermal",
     )  # platePhotothermal
     platePhotothermal.constraints_register(model1)
-    
+
     # 相变蓄热
     phaseChangeHeatStorage = EnergyStorageSystem(
         num_hour0,
@@ -4522,7 +4555,7 @@ if __name__ == "__main__":
         stateOfCharge_max=1,
     )
     phaseChangeHeatStorage.constraints_register(model1)
-    
+
     # 市政热水
     municipalHotWater = CitySupply(
         num_hour0,
@@ -4533,7 +4566,7 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     municipalHotWater.constraints_register(model1)
-    
+
     # 热水电锅炉
     hotWaterElectricBoiler = ElectricBoiler(
         num_hour0,
@@ -4544,8 +4577,7 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     hotWaterElectricBoiler.constraints_register(model1)
-    
-    
+
     # 燃气热水器
     gasBoiler_hotWater = GasBoiler(
         num_hour0,
@@ -4556,7 +4588,7 @@ if __name__ == "__main__":
         efficiency=0.9,
     )
     gasBoiler_hotWater.constraints_register(model1)
-    
+
     # 水储能罐
     waterStorageTank = WaterEnergyStorage(
         num_hour0,
@@ -4573,7 +4605,6 @@ if __name__ == "__main__":
         ratio_heat=10,
         ratio_gheat=20,
     )
-
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
     )
@@ -4594,8 +4625,10 @@ if __name__ == "__main__":
         + municipalHotWater.heat_citySupplied[h]
         + gasBoiler_hotWater.heat_gasBoiler[h]
         + hotWaterElectricBoiler.heat_electricBoiler[h]
-        + waterStorageTank.power_waterStorageTank_gheat[h] # 水储能设备发出的热量？
-        for h in range(0, num_hour0)
+        + waterStorageTank.power_waterStorageTank_gheat[h]  # 水储能设备发出的热量？
+        for h in range(
+            0, num_hour0
+        )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放电功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
     )
 
     # 热水溴化锂
@@ -4603,30 +4636,33 @@ if __name__ == "__main__":
         num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9
     )
     hotWaterLiBr.constraints_register(model1)
-    
+
     # 热水交换器
     hotWaterExchanger = Exchanger(
         num_hour0, model1, device_max=20000, device_price=400, k=50
     )
     hotWaterExchanger.constraints_register(model1)
-    
+
     # 高温热水去向
     model1.add_constraints(
         power_highTemperatureHotWater_sum[h]
         >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
-        for h in range(0, num_hour0)
+        for h in range(0, num_hour0)  # （每小时）高温热水总热量 >= 热水溴化锂消耗热量 + 热交换器消耗热量
     )
     model1.add_constraints(
         power_highTemperatureHotWater_sum[h] >= 0 for h in range(0, num_hour0)
-    )
+    )  # （每小时）高温热水总热量>=0
 
-    # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCoolingSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCoolingSpiralMachine[h]+power_bx[h]==cool_load[h]%冷量需求
+    # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCoolingSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCoolingSpiralMachine[h]+power_iceStorage[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求
     # 采用线性化技巧,处理为下面的约束.基于每种设备要么制热,要么制冷。
     # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
     # 供热:风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
     # heatPump = AirHeatPump(num_hour0, model1, device_max=10000, device_price=1000, electricity_price=electricity_price0)
     # heatPump.constraints_register(model1)
+
+    # 冷 热 冰 供给储存消耗平衡
+    ##########################################
 
     # 热泵
     heatPump = WaterHeatPump(
@@ -4649,7 +4685,7 @@ if __name__ == "__main__":
         case_ratio=np.ones(4),
     )
     waterSourceHeatPumps.constraints_register(model1)
-    
+
     # 水冷螺旋机
     waterCoolingSpiralMachine = WaterCoolingSpiral(
         num_hour0,
@@ -4660,7 +4696,7 @@ if __name__ == "__main__":
         case_ratio=np.array([1, 0.8]),
     )
     waterCoolingSpiralMachine.constraints_register(model1)
-    
+
     # 三工况机组
     tripleWorkingConditionUnit = TripleWorkingConditionUnit(
         num_hour0,
@@ -4671,7 +4707,7 @@ if __name__ == "__main__":
         case_ratio=[1, 0.8, 0.8],
     )
     tripleWorkingConditionUnit.constraints_register(model1)
-    
+
     # 双工况机组
     doubleWorkingConditionUnit = DoubleWorkingConditionUnit(
         num_hour0,
@@ -4682,7 +4718,7 @@ if __name__ == "__main__":
         case_ratio=[1, 0.8],
     )
     doubleWorkingConditionUnit.constraints_register(model1)
-    
+
     # 地源热泵
     groundSourceHeatPump = GeothermalHeatPump(
         num_hour0,
@@ -4692,9 +4728,9 @@ if __name__ == "__main__":
         electricity_price=electricity_price0,
     )
     groundSourceHeatPump.constraints_register(model1)
-    
-    # 电池？
-    bx = EnergyStorageSystem(  # what is this?
+
+    # 电池？保鲜？相变？冰蓄能？
+    iceStorage = EnergyStorageSystem(  # what is this?
         num_hour0,
         model1,
         energyStorageSystem_device_max=20000,
@@ -4706,7 +4742,7 @@ if __name__ == "__main__":
         stateOfCharge_min=0,
         stateOfCharge_max=1,
     )
-    bx.constraints_register(model1)
+    iceStorage.constraints_register(model1)
 
     # 相变蓄冷
     phaseChangeRefrigerantStorage = EnergyStorageSystem(
@@ -4744,8 +4780,8 @@ if __name__ == "__main__":
     power_heatStorge = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_heatStorge"
     )
-    power_xice = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_xice"
+    power_iceStorage = model1.continuous_var_list(
+        [i for i in range(0, num_hour0)], name="power_iceStorage"
     )
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
@@ -4757,10 +4793,12 @@ if __name__ == "__main__":
         + steamPowered_LiBr.cool_LiBr[h]
         + hotWaterLiBr.cool_LiBr[h]
         + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool[h]
-        + power_xice[h]
+        + power_iceStorage[h]
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
-        == cool_load[h]
+        == cool_load[
+            h
+        ]  # 冷量需求 = 热泵制冷功率 + 蓄冷机组平衡输出 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 蓄冰机组平衡输出 + 三工况机组的制冷功率 + 双工况机组的制冷功率
         for h in range(0, num_hour0)
     )
     # power_heatPump_heat[h]+power_heatStorge[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
@@ -4772,22 +4810,31 @@ if __name__ == "__main__":
         + hotWaterExchanger.heat_exchange[h]
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
         + groundSourceHeatPump.power_groundSourceHeatPump[h]
-        == heat_load[h]
+        == heat_load[
+            h
+        ]  # 热量需求 = 热泵制热功率 + 蓄热机组平衡输出 + 水源热泵制热功率 + 汽水热交换量 + 热水热交换量 + 三工况机组的制热功率 + 地源热泵输出功率
         for h in range(0, num_hour0)
     )
     # 冰蓄冷逻辑组合
     model1.add_constraints(
         tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
-        + bx.power_energyStorageSystem[h]
-        == power_xice[h]
+        + iceStorage.power_energyStorageSystem[h]
+        == power_iceStorage[h]  # 蓄冰机组平衡输出 = 三工况机组的制冰功率 + 双工况机组的制冰功率 + 冰蓄能充放电功率
         for h in range(0, num_hour0)
     )
     linearization = Linearization()
     #
     linearization.max_zeros(
-        num_hour0, model1, x=power_xice, y=bx.power_energyStorageSystem
+        # TODO: invert x/y position
+        # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
+        # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能，要么制冰用于蓄冰的功率为0，冰蓄能装置放能，蓄冰机组平衡输出全部由冰蓄能装置提供
+        num_hour0,
+        model1,
+        y=power_iceStorage,
+        x=iceStorage.power_energyStorageSystem,
     )
+
     # 蓄冷逻辑组合
     model1.add_constraints(
         heatPump.power_waterSourceHeatPumps_cooletStorage[h]
@@ -4795,14 +4842,19 @@ if __name__ == "__main__":
         + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cooletStorage[h]
         + waterStorageTank.power_waterStorageTank_cool[h]
         + phaseChangeRefrigerantStorage.power_energyStorageSystem[h]
-        == power_cooletStorage[h]
+        == power_cooletStorage[
+            h
+        ]  # 蓄冷系统平衡功率 = 热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率 + 水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率
         for h in range(0, num_hour0)
     )
-    linearization.max_zeros( #要么向蓄冷设备储藏冷，要么消耗冷，蓄冷设备不储藏冷
+    linearization.max_zeros(
         num_hour0,
         model1,
-        x=power_cooletStorage,
-        y=linearization.add( # （每小时）总蓄冷功率 = 水蓄冷功率+相变蓄冷功率
+        # TODO: invert x/y position
+        # 修改之前：要么蓄冷设备不充不放，系统不产生冷量；要么消耗冷，冷量全部由蓄冷设备提供
+        # 修改之后： 要么蓄冷机组平衡输出为0，蓄冷装置充能，要么制冷用于蓄冷的功率为0，蓄冷装置放能，蓄冷机组平衡输出全部由蓄冷装置提供
+        y=power_cooletStorage,
+        x=linearization.add(  # （每小时）总蓄冷功率 = 水蓄冷功率 + 相变蓄冷功率
             num_hour0,
             model1,
             waterStorageTank.power_waterStorageTank_cool,
@@ -4815,26 +4867,34 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorge[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
         + lowphaseChangeHeatStorage.power_energyStorageSystem[h]
-        == power_heatStorge[h]
+        == power_heatStorge[h]  # 蓄热系统功率 = 热泵蓄热功率 + 水源热泵蓄热功率 + 水蓄能设备储能功率 + 储热设备充放功率
         for h in range(0, num_hour0)
     )
     linearization.max_zeros(
         num_hour0,
         model1,
-        x=power_heatStorge,
-        y=linearization.add(
+        # TODO: invert x/y position
+        # 修改之前：要么蓄热设备不充不放，系统不产生热量；要么消耗热，热量全部由蓄热设备提供
+        # 修改之后： 要么蓄热机组平衡输出为0，蓄热装置充能，要么制热用于蓄热的功率为0，蓄热装置放能，蓄热机组平衡输出全部由蓄热装置提供
+        y=power_heatStorge,
+        x=linearization.add(
             num_hour0,
             model1,
             waterStorageTank.power_waterStorageTank_heat,
             lowphaseChangeHeatStorage.power_energyStorageSystem,
         ),
     )
+    ##########################################
+
     # 电量平衡
     # electricity_groundSourceHeatPump[h] + electricity_waterCoolingSpiralMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
     # power_groundSourceSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
     # 市政电力电流是双向的,其余市政是单向的。
 
     # what is "chargeaifa" ??
+
+    # 电 供销平衡
+    ##########################################
 
     # 电网
     gridNet = GridNet(
@@ -4846,7 +4906,7 @@ if __name__ == "__main__":
         electricity_price_to=0.35,
     )
     gridNet.constraints_register(model1, powerPeak_pre=2000)
-    
+
     model1.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
@@ -4861,9 +4921,12 @@ if __name__ == "__main__":
         - photoVoltaic.power_photoVoltaic[h]
         - combinedHeatAndPower.power_combinedHeatAndPower[h]
         - dieselEngine.power_dieselEngine[h]
-        == gridNet.total_power[h] # 总的耗电量 = 用电量 - 发电量
+        == gridNet.total_power[h]  # 总的耗电量 = 用电量 - 发电量
+        # 用电量 =
+        # 发电量 =
         for h in range(0, num_hour0)
     )
+    ##########################################
 
     # 综合能源系统 所有设备集合
     integratedEnergySystem_device = (
@@ -4892,13 +4955,13 @@ if __name__ == "__main__":
             tripleWorkingConditionUnit,
             doubleWorkingConditionUnit,
             groundSourceHeatPump,
-            bx,  # ?
+            iceStorage,  # ?
             phaseChangeRefrigerantStorage,
             lowphaseChangeHeatStorage,
             gridNet,
         ]
     )
-    
+
     # 目标值 = 所有混合能源机组年运行成本总和
     objective = integratedEnergySystem_device[0].annualized
     for ii in range(1, len(integratedEnergySystem_device)):
@@ -4906,7 +4969,7 @@ if __name__ == "__main__":
 
     # 使得目标值最小
     model1.minimize(objective)
-    
+
     model1.print_information()
     # refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
     # res = refiner.refine_conflict(model1)  # 将模型导入该类,调用方法
@@ -4916,23 +4979,26 @@ if __name__ == "__main__":
     # 1000秒以内解出 否则放弃
     model1.set_time_limit(time_limit=1000)
 
-    # 模型求解返回值 可为空 
+    # 模型求解返回值 可为空
     solution_run1: Union[None, SolveSolution] = model1.solve(
         log_output=True
     )  # output some solution.
     # docplex.mp.solution.SolveSolution or None
 
-    if solution_run1 is None: # 没有解出来
+    if solution_run1 is None:  # 没有解出来
         # from docplex.mp.sdetails import SolveDetails
 
         print("NO SOLUTION.")
-    else: # 解出来了
-
-        print("objective: annual", solution_run1.get_value(objective)) # 所有设备年运行成本总和
+    else:  # 解出来了
+        print("objective: annual", solution_run1.get_value(objective))  # 所有设备年运行成本总和
         print()
-        
-        from data_visualize_utils import printDecisionVariablesFromSolution, printIntegratedEnergySystemDeviceCounts, plotSingle
-        
+
+        from data_visualize_utils import (
+            printDecisionVariablesFromSolution,
+            printIntegratedEnergySystemDeviceCounts,
+            plotSingle,
+        )
+
         printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device)
         printDecisionVariablesFromSolution(model1)
 
@@ -4941,10 +5007,10 @@ if __name__ == "__main__":
         plotSingle(
             value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
             "BatteryEnergyStorageSystem",
-        ) #  绘制电池每小时的充放电功率
+        )  #  绘制电池每小时的充放电功率
 
         database = {
-            "electricity": { # 发电、用电、功率相关数据
+            "electricity": {  # 发电、用电、功率相关数据
                 "list": [
                     groundSourceHeatPump.electricity_groundSourceHeatPump,
                     waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine,
@@ -4978,7 +5044,7 @@ if __name__ == "__main__":
                     "gridNet.total_power",
                 ],
             },
-            "cool": { #  制冷相关数据
+            "cool": {  #  制冷相关数据
                 "list": [
                     heatPump.power_waterSourceHeatPumps_cool,
                     power_cooletStorage,
@@ -4986,7 +5052,7 @@ if __name__ == "__main__":
                     steamPowered_LiBr.cool_LiBr,  # cooling? 直取？
                     hotWaterLiBr.cool_LiBr,
                     waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool,
-                    power_xice,  # consume?
+                    power_iceStorage,  # consume?
                     tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
                     doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
                 ],
@@ -4997,12 +5063,12 @@ if __name__ == "__main__":
                     "steamPowered_LiBr.cool_LiBr",
                     "hotWaterLiBr.cool_LiBr",
                     "waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool",
-                    "power_xice",
+                    "power_iceStorage",
                     "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
                     "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
                 ],
             },
-            "heat": {#  制热相关数据
+            "heat": {  #  制热相关数据
                 "list": [
                     heatPump.power_waterSourceHeatPumps_heat,
                     power_heatStorge,
@@ -5024,7 +5090,7 @@ if __name__ == "__main__":
                     "heat_load",
                 ],
             },
-            "gwheat": { # generated or wasted heat?
+            "gwheat": {  # generated or wasted heat?
                 "list": [
                     combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
                     combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange,
