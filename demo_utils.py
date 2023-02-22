@@ -463,9 +463,9 @@ def cooletIceHeatDevicesRegistration(
     electricity_price0: np.ndarray,
     # municipalHotWater_price0: np.ndarray,
     # gas_price0: np.ndarray,
-    ):
+):
     """"""
-    
+
     # 热泵
     heatPump = WaterHeatPump(
         num_hour0,
@@ -575,5 +575,15 @@ def cooletIceHeatDevicesRegistration(
         stateOfCharge_max=1,
     )
     lowphaseChangeHeatStorage.constraints_register(model1)
-    
-    return heatPump, waterSourceHeatPumps,waterCoolingSpiralMachine, tripleWorkingConditionUnit,doubleWorkingConditionUnit,groundSourceHeatPump,iceStorage,phaseChangeRefrigerantStorage,lowphaseChangeHeatStorage
+
+    return (
+        heatPump,
+        waterSourceHeatPumps,
+        waterCoolingSpiralMachine,
+        tripleWorkingConditionUnit,
+        doubleWorkingConditionUnit,
+        groundSourceHeatPump,
+        iceStorage,
+        phaseChangeRefrigerantStorage,
+        lowphaseChangeHeatStorage,
+    )
