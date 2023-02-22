@@ -1,4 +1,9 @@
 
+"""
+仿真共享参数
+"""
+
+
 # ma = 0  # not using? moving average?
 import numpy as np
 import time

@@ -1,3 +1,7 @@
+"""
+样例模块
+"""
+
 import numpy as np
 import os
 import math

@@ -1,3 +1,6 @@
+"""
+数据显示模块
+"""
 
 from typing import Iterable,List
 import matplotlib.pyplot as plt
