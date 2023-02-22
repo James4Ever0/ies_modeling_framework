@@ -1,6 +1,6 @@
 from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic
 from demo_utils import LoadGet, ResourceGet
-from config import num_hour0
+from config import num_hour0, day_node
 
 from docplex.mp.model import Model
 
@@ -10,7 +10,7 @@ power_load = load.get_power_load()
 model1 = Model(name="microgrid")
 
 resource = ResourceGet()
-power_price = resource.get_electricity_price(num_hour0)
+electricity_price0 = resource.get_electricity_price(num_hour0)
 intensityOfIllumination0 = resource.get_radiation(path="jinan_changqing-hour.dat",num_hour0=num_hour0)
 
 # 光伏
@@ -25,3 +25,39 @@ photoVoltaic = PhotoVoltaic(
 )
 photoVoltaic.constraints_register(model1)
 
+# 电网
+gridNet = GridNet(
+    num_hour0,
+    model1,
+    gridNet_device_max=200000,
+    device_price=0,
+    electricity_price_from=electricity_price0,
+    electricity_price_to=0.35,
+)
+gridNet.constraints_register(model1, powerPeak_pre=2000)
+
+
+# 电池储能
+batteryEnergyStorageSystem = EnergyStorageSystem(
+    num_hour0,
+    model1,
+    energyStorageSystem_device_max=20000,
+    energyStorageSystem_price=1800,
+    powerConversionSystem_price=250,
+    conversion_rate_max=2,
+    efficiency=0.9,
+    energyStorageSystem_init=1,
+    stateOfCharge_min=0,  # state of charge
+    stateOfCharge_max=1,
+)
+# original: battery
+batteryEnergyStorageSystem.constraints_register(
+    model1, register_period_constraints=1, day_node=day_node
+)
+
+systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
+
+
+
+for system in systems:
+    system.annualize
