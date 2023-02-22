@@ -4,10 +4,12 @@ from config import num_hour0, day_node
 
 from docplex.mp.model import Model
 
+simulation_name = "microgrid"
+
 load = LoadGet()
 power_load = load.get_power_load()
 
-model1 = Model(name="microgrid")
+model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
 electricity_price0 = resource.get_electricity_price(num_hour0)
@@ -76,4 +78,14 @@ from data_visualize_utils import (
 printDecisionVariablesFromSolution(model1)
 printIntegratedEnergySystemDeviceCounts(systems)
 
-extra_data = []
+# collect all types of lists.
+
+
+for system in systems:
+    system_name = system.__name__
+    system_data_name_list = dir(system)
+    for system_data_name in system_data_name_list:
+        system_data = system.__dict__[system_data_name]
+        if type(system_data) == list:
+            # then we plot this!
+            plotSingle(system_data,title_content=f"{system_name}_{system_data_name}")

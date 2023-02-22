@@ -5,9 +5,9 @@
 from typing import Iterable, List
 import matplotlib.pyplot as plt
 from cpExample import IntegratedEnergySystem, Model
+import os
 
-
-def plotSingle(data: Iterable, title_content: str):  # 定义画图的规范 自动保存图片
+def plotSingle(data: Iterable, title_content: str,save_directory :str=):  # 定义画图的规范 自动保存图片
     """
     Plot a single graph with `data` as data and `title_content` as title
 
@@ -20,7 +20,7 @@ def plotSingle(data: Iterable, title_content: str):  # 定义画图的规范 自
     plt.xlabel("Time/h")
     plt.ylabel("Power/kW")
     plt.title(title_content)
-    plt.savefig("fig/" + title_content + ".png")
+    plt.savefig("{}/" + title_content + ".png")
     plt.close(fig=fig)
 
 
