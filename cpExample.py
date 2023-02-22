@@ -31,7 +31,7 @@
         - 电负荷
         - 蒸汽负荷
 - 目标函数:
-    - 综合能源系统设备所有设备的年化运维成本综合最小值,即min(初始化运维成本+各设备的年化运维成本)
+    - 综合能源系统设备所有设备的年化运维成本综合最小值,即min(sum(各设备的年化运维成本))
 - 约束条件: 
     1. 各能源系统中各自的约束条件
     2. 能源获取及负荷需求获取约束
@@ -536,7 +536,7 @@ if __name__ == "__main__":
     # 目标值 = 所有混合能源机组年运行成本总和
     objective = integratedEnergySystem_device[0].annualized
     for ii in range(1, len(integratedEnergySystem_device)):
-        objective = objective + integratedEnergySystem_device[ii].annualized
+        objective+= integratedEnergySystem_device[ii].annualized
 
     # 使得目标值最小
     model1.minimize(objective)
