@@ -51,7 +51,9 @@ import matplotlib
 # os.system("chcp 65001") # not working?
 
 # ensure we can display chinese characters
-matplotlib.rc(group="font", family="YouYuan")
+# matplotlib.rc(group="font", family="YouYuan")
+
+# Glyph 8722 (\N{MINUS SIGN}) missing from current font.
 
 from docplex.mp.solution import SolveSolution
 

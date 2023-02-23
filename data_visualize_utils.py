@@ -7,7 +7,10 @@ import matplotlib.pyplot as plt
 from cpExample import IntegratedEnergySystem, Model
 import os
 
-def plotSingle(data: Iterable, title_content: str,save_directory :str='fig'):  # 定义画图的规范 自动保存图片
+
+def plotSingle(
+    data: Iterable, title_content: str, save_directory: str = "fig"
+):  # 定义画图的规范 自动保存图片
     """
     Plot a single graph with `data` as data and `title_content` as title
 
@@ -17,7 +20,7 @@ def plotSingle(data: Iterable, title_content: str,save_directory :str='fig'):  #
         save_directory (str): directory to save the images
     """
     if not os.path.exists(save_directory):
-        os.mkdir(save_directory) 
+        os.mkdir(save_directory)
     fig = plt.figure()
     plt.plot(data)
     plt.xlabel("Time/h")
@@ -46,8 +49,11 @@ def printIntegratedEnergySystemDeviceCounts(
                 val = item.__dict__[subitem]
                 try:
                     value = float(val)
-                    print("value name:", subitem)
-                    print("value:", value)
+                    if value > 1e-2:
+                        print("value name:", subitem)
+                        print("value:", value)
+                    else:
+                        continue
                     # breakpoint()
                 except:
                     continue
