@@ -203,7 +203,7 @@ if __name__ == "__main__":
     ##########################################
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
-    )
+    ) # shall this be never used.
     power_steam_used_heatcool = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_heatcool"
     )

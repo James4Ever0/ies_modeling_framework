@@ -86,7 +86,7 @@ power_steam_used_product = model1.continuous_var_list(
     [i for i in range(0, num_hour0)], name="power_steam_used_product"
 )
 power_steam_used_heatcool = model1.continuous_var_list(
-    [i for i in range(0, num_hour0)], name="power_steam_used_heatcool"
+    [i for i in range(0, num_hour0)], name="power_steam_used_heatcool" # ? steam used for cooling ?
 )
 power_steam_sum = model1.continuous_var_list(
     [i for i in range(0, num_hour0)], name="power_steam_sum"
