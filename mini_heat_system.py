@@ -14,7 +14,7 @@ from config import num_hour0, day_node
 # num_hour0 *=3
 from docplex.mp.model import Model
 
-simulation_name = "micro_refrigeration"
+simulation_name = "micro_heat_system"
 
 load = LoadGet()
 # let's augment the load.
@@ -43,7 +43,7 @@ waterSourceHeatPumps = (
         model1,
         device_max=2000,
         device_price=3000,
-        electricity_price=electricity_price0 * 0,
+        electricity_price=electricity_price0,
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
     )
@@ -75,7 +75,7 @@ waterStorageTank.constraints_register(
 municipalSteam = CitySupply(
     num_hour0,
     model1,
-    citySupplied_device_max=5000,
+    citySupplied_device_max=5000*10000,
     device_price=3000,
     run_price=0.3 * np.ones(num_hour0),
     efficiency=0.9,
@@ -87,7 +87,7 @@ power_heat_sum = model1.continuous_var_list(
 )
 
 power_heatStorage = model1.continuous_var_list(
-    [i for i in range(0, num_hour0)], name="power_heat_sum"
+    [i for i in range(0, num_hour0)], name="power_heatStorage"
 )
 
 model1.add_constraints(
