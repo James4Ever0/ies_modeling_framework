@@ -1,9 +1,14 @@
 # from integratedEnergySystemPrototypes import Linearization
 from docplex.mp.model import Model
 from docplex.mp.vartype import VarType
+from typing import List
 
 def max_zeros_2(num_hour:int,model:Model,x:List[VarType],y:List[VarType]):
-    model.add_constraint
+    x_positive = model.binary_var([i for i in range(num_hour)],name="x_positive")
+    model.add_constraint((2*x_positive[i]-1) *x[i]>= 0 for i in range(num_hour))
+    # flag == 1 -> positive x
+    # flag == 0 -> negative x
+    model.add_constraint(y[i] == x_positive[])
 
 model_name = "max_zeros_test"
 
