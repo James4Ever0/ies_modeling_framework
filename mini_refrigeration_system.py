@@ -12,7 +12,8 @@ load = LoadGet()
 import math
 import numpy as np
 cool_load = load.get_cool_load(num_hour0)
-cool_load = np.array([math.cos(i*0.1) for i in range(len(cool_load))])
+delta = 0.3
+cool_load = np.array([(1-delta)+math.cos(i*0.1)*delta for i in range(len(cool_load))])*cool_load
 
 model1 = Model(name=simulation_name)
 
