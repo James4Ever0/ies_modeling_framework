@@ -15,6 +15,6 @@ model1 = Model(name=simulation_name)
 resource = ResourceGet()
 municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
 
-
+model1.add_constraint(power_cooletStorage[h] == ) # no loading
 # consumption and production
 model1.add_constraint(cool_load[h] == power_cooletStorage[h] for h in range(num_hour0))
