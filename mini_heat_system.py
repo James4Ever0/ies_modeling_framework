@@ -1,9 +1,10 @@
 from integratedEnergySystemPrototypes import (
     TroughPhotoThermal,
-    CombinedHeatAndPower,
-    GroundSourceSteamGenerator,
+    # CombinedHeatAndPower,
+    # GroundSourceSteamGenerator,
     CitySupply,
-    GasBoiler,
+    Linearization
+    # GasBoiler,
 )
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour0, day_node
@@ -61,8 +62,7 @@ power_steam_sum = model1.continuous_var_list(
 )
 model1.add_constraints(
     power_steam_sum[h]
-    == municipalSteam.heat_citySupplied[h]
-    + troughPhotoThermal.power_troughPhotoThermal_steam[h] + power_steamStorage[h]
+    == municipalSteam.heat_citySupplied[h] + power_heatStorage[h]
     for h in range(0, num_hour0)
 )
 # 高温蒸汽去处
@@ -73,8 +73,8 @@ model1.add_constraints(
 
 
 model1.add_constraints(
-    + steamStorage.power_energyStorageSystem[h]
-    == power_steamStorage[h]  # 蓄冰机组平衡输出 = 三工况机组的制冰功率 + 双工况机组的制冰功率 + 冰蓄能充放能功率
+    + heatStorage.power_energyStorageSystem[h]
+    == power_heatStorage[h]  # 蓄冰机组平衡输出 = 三工况机组的制冰功率 + 双工况机组的制冰功率 + 冰蓄能充放能功率
     for h in range(0, num_hour0)
 )
 linearization = Linearization()
@@ -85,6 +85,6 @@ linearization.max_zeros(
     # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能（负数），制冰机组输出（正数）全部被冰蓄能装置吸收；要么制冰机组用于蓄冰的功率为0，冰蓄能装置放能（正数），蓄冰机组平衡输出（正数）全部由冰蓄能装置提供
     num_hour0,
     model1,
-    y=power_iceStorage,
-    x=iceStorage.power_energyStorageSystem,
+    y=power_heatStorage,
+    x=heatStorage.power_energyStorageSystem,
 )
