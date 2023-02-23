@@ -584,8 +584,8 @@ def cooletIceHeatDevicesRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name ="lowphaseChangeHeatStorage"
     )
+        device_name ="lowphaseChangeHeatStorage"
     lowphaseChangeHeatStorage.constraints_register(model1)
 
     return (
