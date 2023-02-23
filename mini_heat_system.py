@@ -120,7 +120,11 @@ linearization.max_zeros(
 )
 
 
-systems = [waterSourceHeatPumps, waterStorageTank,municipalSteam,]
+systems = [
+    waterSourceHeatPumps,
+    waterStorageTank,
+    municipalSteam,
+]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 
 from mini_data_log_utils import solve_and_log
