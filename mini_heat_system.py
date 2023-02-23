@@ -118,3 +118,11 @@ linearization.max_zeros(
     y=power_heatStorage,
     x=waterStorageTank.power_waterStorageTank_heat,
 )
+
+
+systems = [waterSourceHeatPumps, waterStorageTank,municipalSteam,]
+# systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
+
+from mini_data_log_utils import solve_and_log
+
+solve_and_log(systems, model1, simulation_name)
