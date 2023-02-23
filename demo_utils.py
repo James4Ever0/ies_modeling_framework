@@ -270,6 +270,7 @@ def electricSystemRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,  # state of charge
         stateOfCharge_max=1,
+        device_name ="batteryEnergyStorageSystem"
     )
     # original: battery
     batteryEnergyStorageSystem.constraints_register(
@@ -343,6 +344,7 @@ def steamSourcesRegistration(
         device_price=3000,
         run_price=0.3 * np.ones(num_hour0),
         efficiency=0.9,
+        device_name = "municipalSteam"
     )
     municipalSteam.constraints_register(model1)
     return (
@@ -389,6 +391,7 @@ def hotWaterSourcesRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
+        device_name="phaseChangeHeatStorage"
     )
     phaseChangeHeatStorage.constraints_register(model1)
 
@@ -400,6 +403,7 @@ def hotWaterSourcesRegistration(
         device_price=3000,
         run_price=municipalHotWater_price0,
         efficiency=0.9,
+        device_name = "municipalHotWater"
     )
     municipalHotWater.constraints_register(model1)
 
@@ -411,6 +415,7 @@ def hotWaterSourcesRegistration(
         electricBoiler_price=200,
         electricity_price=electricity_price0,
         efficiency=0.9,
+        device_name = "hotWaterElectricBoiler"
     )
     hotWaterElectricBoiler.constraints_register(model1)
 
@@ -422,6 +427,7 @@ def hotWaterSourcesRegistration(
         gasBoiler_price=200,
         gas_price=gas_price0,
         efficiency=0.9,
+        device_name = "gasBoiler_hotWater"
     )
     gasBoiler_hotWater.constraints_register(model1)
 
@@ -440,6 +446,7 @@ def hotWaterSourcesRegistration(
         ratio_cool=10,
         ratio_heat=10,
         ratio_gheat=20,
+        device_name="waterStorageTank"
     )
     waterStorageTank.constraints_register(
         model1, register_period_constraints=1, day_node=day_node
@@ -474,6 +481,7 @@ def cooletIceHeatDevicesRegistration(
         device_price=1000,
         electricity_price=electricity_price0,
         case_ratio=np.array([1, 1, 1, 1]),  # total four cases?
+        device_name="heatPump"
     )
     heatPump.constraints_register(model1)
 
@@ -485,6 +493,7 @@ def cooletIceHeatDevicesRegistration(
         device_price=3000,
         electricity_price=electricity_price0,
         case_ratio=np.ones(4),
+        device_name="waterSourceHeatPumps"
     )
     waterSourceHeatPumps.constraints_register(model1)
 
@@ -543,6 +552,7 @@ def cooletIceHeatDevicesRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
+        device_name ="iceStorage"
     )
     iceStorage.constraints_register(model1)
 
@@ -558,6 +568,7 @@ def cooletIceHeatDevicesRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
+        device_name = "phaseChangeRefrigerantStorage"
     )
     phaseChangeRefrigerantStorage.constraints_register(model1)
 
@@ -573,6 +584,7 @@ def cooletIceHeatDevicesRegistration(
         energyStorageSystem_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
+        device_name ="lowphaseChangeHeatStorage"
     )
     lowphaseChangeHeatStorage.constraints_register(model1)
 
