@@ -18,11 +18,11 @@ load = LoadGet()
 import math
 import numpy as np
 
-steam_load = load.get_steam_load(num_hour0)
+heat_load = load.get_heat_load(num_hour0)
 delta = 0.3
-steam_load = (
-    np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(steam_load))])
-    * steam_load
+heat_load = (
+    np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
+    * heat_load
 )
 model1 = Model(name=simulation_name)
 
@@ -62,31 +62,29 @@ power_steam_sum = model1.continuous_var_list(
 model1.add_constraints(
     power_steam_sum[h]
     == municipalSteam.heat_citySupplied[h]
-    + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
-    + troughPhotoThermal.power_troughPhotoThermal_steam[h]
+    + troughPhotoThermal.power_troughPhotoThermal_steam[h] + power_steamStorage[h]
     for h in range(0, num_hour0)
 )
 # 高温蒸汽去处
 model1.add_constraints(
-    power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
+    power_steam_sum[h] >= heat_load[h]
     for h in range(0, num_hour0)
-)  # 每小时蒸汽消耗 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
+)  # 每小时蒸汽消耗 >= 每小时蒸汽负荷消耗量
 
-# 汽水热交换器
-steamAndWater_exchanger = Exchanger(
-    num_hour0, model1, device_max=20000, device_price=400, k=50
-)
-steamAndWater_exchanger.constraints_register(model1)  # qs - 泉水？ steamAndWater热交换器？
-
-# 蒸汽溴化锂
-steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
-    num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9
-)
-steamPowered_LiBr.constraints_register(model1)
 
 model1.add_constraints(
-    power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
-    >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
-    + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
+    + steamStorage.power_energyStorageSystem[h]
+    == power_steamStorage[h]  # 蓄冰机组平衡输出 = 三工况机组的制冰功率 + 双工况机组的制冰功率 + 冰蓄能充放能功率
     for h in range(0, num_hour0)
+)
+linearization = Linearization()
+#
+linearization.max_zeros(
+    # TODO: invert x/y position
+    # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
+    # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能（负数），制冰机组输出（正数）全部被冰蓄能装置吸收；要么制冰机组用于蓄冰的功率为0，冰蓄能装置放能（正数），蓄冰机组平衡输出（正数）全部由冰蓄能装置提供
+    num_hour0,
+    model1,
+    y=power_iceStorage,
+    x=iceStorage.power_energyStorageSystem,
 )
