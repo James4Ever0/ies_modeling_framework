@@ -26,7 +26,7 @@ delta = 0.3
 heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
     * heat_load
-)
+)*0.4
 model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
