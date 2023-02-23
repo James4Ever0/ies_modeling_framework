@@ -7,9 +7,14 @@ bigNumber = 1e10
 
 
 def max_zeros_2(num_hour: int, model: Model, x: List[VarType], y: List[VarType]):
+    
+    helpers = model.binary_var_list([i for i in range(num_hour)],name="x_flags")
     for i in range(num_hour):
-        model.add_if_then(x[i] >= 0, y[i] == x[i])
-        model.add_if_then(x[i] <= 0, y[i] == 0)
+        eps = 1e-3
+        model.add_if_then(helpers[i] == 0, x[i] <= 0 - eps)
+        model.add_if_then(helpers[i] == 1, x[i] >= 0)
+        model.add_if_then(helpers[i], y[i] == x[i])
+        model.add_if_then(1-helpers[i], y[i] == 0)
     # x_positive = model.binary_var_list([i for i in range(num_hour)], name="x_positive")
     # model.add_constraints(
     #     (1 - x_positive[i]) * bigNumber + x[i] >= 0 for i in range(num_hour)
