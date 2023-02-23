@@ -11,6 +11,9 @@ def max_zeros_2(num_hour: int, model: Model, x: List[VarType], y: List[VarType])
     model.add_constraints(
         (1 - x_positive[i]) * bigNumber + x[i] >= 0 for i in range(num_hour)
     )
+    model.add_constraints(
+        x_positive[i] * bigNumber - x[i] >= 0 for i in range(num_hour)
+    )
     # flag == 1 -> positive x
     # flag == 0 -> negative x
     model.add_constraints(
@@ -20,11 +23,11 @@ def max_zeros_2(num_hour: int, model: Model, x: List[VarType], y: List[VarType])
         y[h] >= x[h] - (1 - x_positive[h]) * bigNumber for h in range(0, num_hour)
     )
     model.add_constraints(
-        y[h] >= x_positive[h] * bigNumber for h in range(0, num_hour)
+        y[h] <= x_positive[h] * bigNumber for h in range(0, num_hour)
     )
     
     model.add_constraints(
-        y[h] <= x_positive[h] * bigNumber for h in range(0, num_hour)
+        y[h] >= -x_positive[h] * bigNumber for h in range(0, num_hour)
     )
 
 
