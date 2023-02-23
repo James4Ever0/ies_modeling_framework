@@ -87,6 +87,7 @@ power_heat_sum = model1.continuous_var_list(
 power_heatStorage = model1.continuous_var_list(
     [i for i in range(0, num_hour0)], name="power_heat_sum"
 )
+
 model1.add_constraints(
     power_heat_sum[h]
     == municipalSteam.heat_citySupplied[h]
