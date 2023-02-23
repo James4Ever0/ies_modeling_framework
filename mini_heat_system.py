@@ -1,5 +1,5 @@
 from integratedEnergySystemPrototypes import (
-    TroughPhotoThermal,
+    PhotoVoltaic,
     # CombinedHeatAndPower,
     # GroundSourceSteamGenerator,
     WaterHeatPump,
@@ -7,6 +7,7 @@ from integratedEnergySystemPrototypes import (
     Linearization,
     WaterEnergyStorage,
     # GasBoiler,
+    GridNet
 )
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour0, day_node
@@ -33,7 +34,37 @@ resource = ResourceGet()
 gas_price0 = resource.get_gas_price(num_hour0)
 municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
 electricity_price0 = resource.get_electricity_price(num_hour0)
-# free_electricity_price =
+
+electricity_price0 = resource.get_electricity_price(num_hour0)
+intensityOfIllumination0 = (
+    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
+)
+
+# 光伏
+photoVoltaic = PhotoVoltaic(
+    num_hour0,
+    model1,
+    photoVoltaic_device_max=5000,  # how about let's alter this?
+    device_price=4500,
+    intensityOfIllumination0=intensityOfIllumination0,
+    efficiency=0.8,
+    device_name="PhotoVoltaic",
+)
+photoVoltaic.constraints_register(model1)
+
+
+
+# 电网
+gridNet = GridNet(
+    num_hour0,
+    model1,
+    gridNet_device_max=200000,
+    device_price=0,
+    electricity_price_from=electricity_price0,
+    electricity_price_to=0.35,
+)
+gridNet.constraints_register(model1, powerPeak_pre=2000)
+
 
 
 # 水源热泵
@@ -43,12 +74,17 @@ waterSourceHeatPumps = (
         model1,
         device_max=2000,
         device_price=3000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0, # with gridnet.
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
     )
 )
 waterSourceHeatPumps.constraints_register(model1)
+
+
+# power constrains:
+
+model1.add_constraint(waterSourceHeatPumps.electricity_waterSourceHeatPumps[h] == photoVoltaic +  for h in range(num_hour0))
 
 # 水储能罐
 waterStorageTank = WaterEnergyStorage(
