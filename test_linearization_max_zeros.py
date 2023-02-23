@@ -61,9 +61,11 @@ model.add_constraints(
 # let's define the `max_zeros` ourselves.
 max_zeros_2(num_hour=num_hours + 1, model=model, x=x, y=y)
 
-objective =model.sum(x[i] + y[i] for i in range(num_hours + 1))
+# objective =model.sum(x[i] + y[i] for i in range(num_hours + 1))
+objective =model.abs(model.sum(x[i] + y[i] for i in range(num_hours + 1)))
 
-solution = model.minimize(objective)
+model.minimize(objective)
+solution = model.solve()
 
 if solution:
     print("HAVE SOLUTION?")
