@@ -117,5 +117,5 @@ linearization.max_zeros(
     num_hour0,
     model1,
     y=power_heatStorage,
-    x=waterStorageTank.power_energyStorageSystem,
+    x=waterStorageTank.power_waterStorageTank_heat,
 )
