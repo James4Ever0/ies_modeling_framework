@@ -348,8 +348,8 @@ if __name__ == "__main__":
     power_cooletStorage = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_cooletStorage"
     )
-    power_heatStorge = model1.continuous_var_list(
-        [i for i in range(0, num_hour0)], name="power_heatStorge"
+    power_heatStorage = model1.continuous_var_list(
+        [i for i in range(0, num_hour0)], name="power_heatStorage"
     )
     power_iceStorage = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_iceStorage"
@@ -374,10 +374,10 @@ if __name__ == "__main__":
         ]  # 冷量需求 = 热泵制冷功率 + 蓄冷机组平衡输出 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 蓄冰机组平衡输出 + 三工况机组的制冷功率 + 双工况机组的制冷功率
         for h in range(0, num_hour0)
     )
-    # power_heatPump_heat[h]+power_heatStorge[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
+    # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
     model1.add_constraints(
         heatPump.power_waterSourceHeatPumps_heat[h]
-        + power_heatStorge[h]
+        + power_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
         + steamAndWater_exchanger.heat_exchange[h]
         + hotWaterExchanger.heat_exchange[h]
@@ -436,11 +436,11 @@ if __name__ == "__main__":
     )
     # 蓄热逻辑组合
     model1.add_constraints(
-        heatPump.power_waterSourceHeatPumps_heatStorge[h]
-        + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorge[h]
+        heatPump.power_waterSourceHeatPumps_heatStorage[h]
+        + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
         + lowphaseChangeHeatStorage.power_energyStorageSystem[h]
-        == power_heatStorge[h]  # 蓄热系统功率 = 热泵蓄热功率 + 水源热泵蓄热功率 + 水蓄能设备储能功率 + 储热设备充放功率
+        == power_heatStorage[h]  # 蓄热系统功率 = 热泵蓄热功率 + 水源热泵蓄热功率 + 水蓄能设备储能功率 + 储热设备充放功率
         for h in range(0, num_hour0)
     )
     linearization.max_zeros(
@@ -449,7 +449,7 @@ if __name__ == "__main__":
         # TODO: invert x/y position
         # 修改之前：要么蓄热设备不充不放，系统不产生热量；要么消耗热，热量全部由蓄热设备提供
         # 修改之后： 要么蓄热机组平衡输出为0，蓄热装置充能（负数），制热机组输出（正数）全部被蓄热装置吸收；要么制热用于蓄热的功率为0，蓄热装置放能（正数），蓄热机组平衡输出（正数）全部由蓄热装置提供
-        y=power_heatStorge,
+        y=power_heatStorage,
         x=linearization.add(
             num_hour0,
             model1,
@@ -648,7 +648,7 @@ if __name__ == "__main__":
             "heat": {  #  制热相关数据
                 "list": [
                     heatPump.power_waterSourceHeatPumps_heat,
-                    power_heatStorge,
+                    power_heatStorage,
                     waterSourceHeatPumps.power_waterSourceHeatPumps_heat,
                     steamAndWater_exchanger.heat_exchange,
                     hotWaterExchanger.heat_exchange,
@@ -658,7 +658,7 @@ if __name__ == "__main__":
                 ],
                 "name": [
                     "heatPump.power_waterSourceHeatPumps_heat",
-                    "power_heatStorge",
+                    "power_heatStorage",
                     "waterSourceHeatPumps.power_waterSourceHeatPumps_heat",
                     "steamAndWater_exchanger.heat_exchange",
                     "hotWaterExchanger.heat_exchange",
