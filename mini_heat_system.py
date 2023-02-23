@@ -89,7 +89,7 @@ waterStorageTank = WaterEnergyStorage(
     num_hour0,
     model1,
     waterStorageTank_Volume_max=10000,
-    volume_price=300,
+    volume_price=300, # make it cheap
     powerConversionSystem_price=1,
     conversion_rate_max=0.5,
     efficiency=0.9,
