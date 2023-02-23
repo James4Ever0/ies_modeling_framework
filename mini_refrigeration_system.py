@@ -30,6 +30,8 @@ resource = ResourceGet()
 municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
 
 
+# let's add illumination data.
+
 hotWaterLiBr = LiBrRefrigeration(
     num_hour0, model1, LiBr_device_max=10000 * 10000, device_price=1000, efficiency=0.9
 )
