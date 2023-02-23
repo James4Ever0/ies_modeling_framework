@@ -87,52 +87,6 @@ model1.add_constraints(
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
-systems_annualized = [system.annualized for system in systems]
+from mini_data_log_utils import solve_and_log
 
-import functools
-
-objective = functools.reduce(lambda a, b: a + b, systems_annualized)
-
-model1.minimize(objective)
-
-# 1000秒以内解出 否则放弃
-model1.set_time_limit(time_limit=1000)
-
-from typing import Union
-from docplex.mp.solution import SolveSolution
-
-# 模型求解返回值 可为空
-solution_run1: Union[None, SolveSolution] = model1.solve(
-    log_output=True
-)  # output some solution.
-
-from data_visualize_utils import (
-    printDecisionVariablesFromSolution,
-    printIntegratedEnergySystemDeviceCounts,
-    plotSingle,
-)
-
-if solution_run1 == None:
-    print("UNABLE TO SOLVE")
-else:
-    printDecisionVariablesFromSolution(model1)
-    printIntegratedEnergySystemDeviceCounts(systems)
-
-    # collect all types of lists.
-
-    for system in systems:
-        system_name = system.device_name
-        system_data_name_list = dir(system)
-        for system_data_name in system_data_name_list:
-            system_data = system.__dict__.get(system_data_name, None)
-            if type(system_data) == list:
-                # then we plot this!
-                plotSingle(
-                    system_data,
-                    title_content=f"{system_name}_{system_data_name}",
-                    save_directory=f"{simulation_name}_figures",
-                )
-    print("TOTAL ANNUAL:", objective.solution_value)
-    # breakpoint()
-    # 1007399999.999996 if charge[0] == discharge[0] == 0
-    # 992227727.2532595 if no init constrains on charge/discharge
+solve_and_log(systems, model1, simulation_name)

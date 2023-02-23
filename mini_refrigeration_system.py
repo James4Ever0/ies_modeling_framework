@@ -1,7 +1,8 @@
 from integratedEnergySystemPrototypes import (
     LiBrRefrigeration,
     CitySupply,
-    WaterEnergyStorage,
+    # no storage?
+    # WaterEnergyStorage,
 )
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour0, day_node
@@ -64,3 +65,9 @@ model1.add_constraint(
 model1.add_constraint(
     cool_load[h] == hotWaterLiBr.cool_LiBr[h] for h in range(num_hour0)
 )
+
+systems = [hotWaterLiBr,municipalHotWater]
+
+from mini_data_log_utils import solve_and_log
+
+solve_and_log(systems, model1, simulation_name)

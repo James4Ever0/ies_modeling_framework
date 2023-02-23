@@ -17,7 +17,21 @@ steam_load = np.array([(1-delta) + math.cos(i*0.1)*delta for i in range(len(stea
 model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
-gas_price0
+gas_price0 = resource.get_gas_price(num_hour0)
+municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
+electricity_price0 = resource.get_electricity_price(num_hour0)
 intensityOfIllumination0 = resource.get_radiation(
     path="jinan_changqing-hour.dat", num_hour=num_hour0
 )*100
+
+# 槽式光热设备
+    troughPhotoThermal = TroughPhotoThermal(
+        num_hour0,
+        model1,
+        troughPhotoThermal_device_max=5000,
+        troughPhotoThermal_price=2000,
+        troughPhotoThermalSolidHeatStorage_price=1000,
+        intensityOfIllumination0=intensityOfIllumination0,
+        efficiency=0.8,
+    )
+    troughPhotoThermal.constraints_register(model1)
