@@ -538,7 +538,7 @@ if __name__ == "__main__":
     # 目标值 = 所有混合能源机组年运行成本总和
     objective = integratedEnergySystem_device[0].annualized
     for ii in range(1, len(integratedEnergySystem_device)):
-        objective+= integratedEnergySystem_device[ii].annualized
+        objective += integratedEnergySystem_device[ii].annualized
 
     # 使得目标值最小
     model1.minimize(objective)
