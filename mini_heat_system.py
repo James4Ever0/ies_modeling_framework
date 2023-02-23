@@ -111,7 +111,6 @@ model1.add_constraints(
 )
 linearization = Linearization()
 
-#
 linearization.max_zeros(
     # TODO: invert x/y position
     num_hour0,
