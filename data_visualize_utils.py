@@ -44,9 +44,13 @@ def printIntegratedEnergySystemDeviceCounts(
         for subitem in subitems:
             if subitem.endswith("_device"):  # 打印每个类型机组里面的设备数量
                 val = item.__dict__[subitem]
-                print("value name:", subitem)
-                print("value:", float(val))
-                # breakpoint()
+                try:
+                    value = float(val)
+                    print("value name:", subitem)
+                    print("value:", value)
+                    # breakpoint()
+                except:
+                    continue
         print("_____")
     print("_________DEVICE_COUNT__________")
 
