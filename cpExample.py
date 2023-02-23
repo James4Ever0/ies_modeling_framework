@@ -692,12 +692,12 @@ if __name__ == "__main__":
         }
 
         # 绘制(所有?)相关数据
-        flag = "hotWaterLiBr.cool_LiBr" # stop here!
+        # flag = "hotWaterLiBr.cool_LiBr" # stop here!
         for key, value in database.items():
             datalist, names = value["list"], value["name"]
             for data, name in zip(datalist, names):
-                if name == flag:
-                    print(data)
-                    print("BREAK ON:", flag)
-                    breakpoint()
+                # if name == flag:
+                #     print(data)
+                #     print("BREAK ON:", flag)
+                #     breakpoint()
                 plotSingle(data, name)
