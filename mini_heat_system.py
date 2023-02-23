@@ -33,6 +33,7 @@ resource = ResourceGet()
 gas_price0 = resource.get_gas_price(num_hour0)
 municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
 electricity_price0 = resource.get_electricity_price(num_hour0)
+# free_electricity_price = 
 
 
 # 水源热泵
@@ -41,7 +42,7 @@ waterSourceHeatPumps = WaterHeatPump( # you are not using the electricity of pho
     model1,
     device_max=2000,
     device_price=3000,
-    electricity_price=electricity_price0,
+    electricity_price=electricity_price0*0,
     case_ratio=np.ones(4),
     device_name="waterSourceHeatPumps",
 )
