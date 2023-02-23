@@ -29,9 +29,9 @@ model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
 municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
-intensityOfIllumination0 = (
-    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
-)
+# intensityOfIllumination0 = (
+#     resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
+# )
 
 # let's add illumination data.
 
@@ -46,17 +46,17 @@ power_highTemperatureHotWater_sum = model1.continuous_var_list(
 )
 
 
-# 平板光热
-platePhotothermal = PhotoVoltaic(
-    num_hour0,
-    model1,
-    photoVoltaic_device_max=10000,
-    device_price=500,
-    intensityOfIllumination0=intensityOfIllumination0,
-    efficiency=0.8,
-    device_name="platePhotothermal",
-)  # platePhotothermal
-platePhotothermal.constraints_register(model1)
+# # 平板光热
+# platePhotothermal = PhotoVoltaic(
+#     num_hour0,
+#     model1,
+#     photoVoltaic_device_max=10000,
+#     device_price=500,
+#     intensityOfIllumination0=intensityOfIllumination0,
+#     efficiency=0.8,
+#     device_name="platePhotothermal",
+# )  # platePhotothermal
+# platePhotothermal.constraints_register(model1)
 
 # 市政热水
 municipalHotWater = CitySupply(
@@ -70,7 +70,9 @@ municipalHotWater = CitySupply(
 municipalHotWater.constraints_register(model1)
 
 model1.add_constraints(
-    power_highTemperatureHotWater_sum[h] == platePhotothermal.power_photoVoltaic[h]+municipalHotWater.heat_citySupplied[h]
+    power_highTemperatureHotWater_sum[h] == 
+    # platePhotothermal.power_photoVoltaic[h]+ 
+    municipalHotWater.heat_citySupplied[h]
     for h in range(num_hour0)
 )
 
@@ -84,10 +86,12 @@ model1.add_constraints(
     cool_load[h] == hotWaterLiBr.cool_LiBr[h] for h in range(num_hour0)
 )
 
-systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
+systems = [hotWaterLiBr,municipalHotWater]
+# systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 
 from mini_data_log_utils import solve_and_log
 
 solve_and_log(systems, model1, simulation_name)
-# without platephotothermal: 
+# without platephotothermal: 19327715.402514137
 # with platephotothermal: 13374199.775218224
+# obviously cheaper.

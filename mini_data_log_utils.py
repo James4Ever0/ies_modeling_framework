@@ -1,21 +1,27 @@
-def solve_and_log(systems, model1, simulation_name):
-        
+from typing import List
+from docplex.mp.model import Model
+from integratedEnergySystemPrototypes import IntegratedEnergySystem
+
+
+def solve_and_log(
+    systems: List[IntegratedEnergySystem], model: Model, simulation_name: str
+):
     systems_annualized = [system.annualized for system in systems]
 
     import functools
 
     objective = functools.reduce(lambda a, b: a + b, systems_annualized)
 
-    model1.minimize(objective)
+    model.minimize(objective)
 
     # 1000秒以内解出 否则放弃
-    model1.set_time_limit(time_limit=1000)
+    model.set_time_limit(time_limit=1000)
 
     from typing import Union
     from docplex.mp.solution import SolveSolution
 
     # 模型求解返回值 可为空
-    solution_run1: Union[None, SolveSolution] = model1.solve(
+    solution_run1: Union[None, SolveSolution] = model.solve(
         log_output=True
     )  # output some solution.
 
@@ -28,7 +34,7 @@ def solve_and_log(systems, model1, simulation_name):
     if solution_run1 == None:
         print("UNABLE TO SOLVE")
     else:
-        printDecisionVariablesFromSolution(model1)
+        printDecisionVariablesFromSolution(model)
         printIntegratedEnergySystemDeviceCounts(systems)
 
         # collect all types of lists.
