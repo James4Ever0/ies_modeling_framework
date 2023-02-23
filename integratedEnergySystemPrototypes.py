@@ -361,7 +361,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init: int,
+        energyStorageSystem_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
@@ -375,7 +375,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
             eff (float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
-            energyStorageSystem_init (int): 储能装置的初始能量。
+            energyStorageSystem_init (float): 储能装置的初始能量。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 储能系统机组名称,默认为"energyStorageSystem"
@@ -547,6 +547,18 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         model.add_constraints(
             self.charge_flag[i] + self.discharge_flag[i] == 1 for i in irange
         )
+        
+        # should we not add these?
+        model.add_constraint(
+            self.power_energyStorageSystem_charge[0] ==
+            self.power_energyStorageSystem_charge[1] 
+        )
+        
+        # # troublemaker, for battery. fixed?
+        model.add_constraint(
+            self.power_energyStorageSystem_discharge[0] == 
+            self.power_energyStorageSystem_discharge[1]
+        )
         # 节点必须是24的倍数
         # day_node=24
         for day in range(1, int(self.num_hour / day_node) + 1):
@@ -582,10 +594,16 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             )
             / 15
         )
+        
+        # # 初始值
+        # model.add_constraint(
+        #     self.energyStorageSystem[0]
+        #     == self.energyStorageSystem_init * self.energyStorageSystem_device
+        # )
 
         # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # this is a flag, not a numeric value
-            # 今天的电量等于daynode-1天以前的电量, 当day_node== 24时只考虑i== 23的情况
+            # i天的电量等于daynode-1天以前的电量, 当day_node == 24时只考虑i == 23的情况
             model.add_constraints(
                 self.energyStorageSystem[i]
                 == self.energyStorageSystem[i - (day_node - 1)]  # 1+i-day_node
@@ -594,11 +612,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 )  # what is the day_node? # start, stop, step (23, 24, 24)?
             )
         else:  # what else?
-            # 初始值
+            # TODO: comment out misplaced init statement
+            # # 初始值
             model.add_constraint(
                 self.energyStorageSystem[0]
                 == self.energyStorageSystem_init * self.energyStorageSystem_device
             )
+            # not using this?
+            # print(f"MAKING INIT TO `{self.energyStorageSystem_init} * device_count`")
+            # breakpoint()
             # 两天之间的连接
             # 上一小时的电量加上这一小时的变化 得到此时的电量
             model.add_constraints(
@@ -660,7 +682,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
             eff (float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
-            energyStorageSystem_init (float): 储能装置的初始能量。
+            energyStorageSystem_init (float): 储能装置的初始储能百分比。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 可变容量储能系统机组名称,默认为"energyStorageSystem_variable"
@@ -841,6 +863,24 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         model.add_constraints(
             self.charge_flag[i] + self.discharge_flag[i] == 1 for i in irange
         )
+        
+        # seems this will discourage the simulation.
+        # let's not make it zero.
+        
+        model.add_constraint(
+            self.power_energyStorageSystem_charge[0] == 
+            self.power_energyStorageSystem_charge[1]
+        )
+        
+        model.add_constraint(
+            self.power_energyStorageSystem_discharge[0] == 
+            self.power_energyStorageSystem_discharge[1]
+        )
+        
+        # should we not add these statements?
+        
+        # TODO: fix charge/discharge init value issues
+        # we should set init charge/discharge value to 1
         for day in range(1, int(self.num_hour / day_node) + 1):
             model.add_constraints(
                 self.energyStorageSystem[i]
@@ -851,7 +891,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
                 )
                 * simulationTime
                 / 3600
-                for i in range(1 + day_node * (day - 1), day_node * day)
+                for i in range(1 + day_node * (day - 1), day_node * day) # not starting from the zero day?
             )
         # TODO: figure out init (fixing init error)
         model.add_constraint(
@@ -882,12 +922,14 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             )
         else:
             # 初始值
-            # TODO: figure out init
-            model.add_constraint(
-                self.energyStorageSystem[0]
-                == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
-                # since it is init we should not iterate through all variables.
-            )
+            # # TODO: figure out init
+            # model.add_constraint(
+            #     self.energyStorageSystem[0]
+            #     == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
+            #     # since it is init we should not iterate through all variables.
+            # )
+            # breakpoint()
+            # not breaking here?
             # 两天之间的连接
             model.add_constraints(
                 self.energyStorageSystem[i]
