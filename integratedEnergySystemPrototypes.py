@@ -4068,7 +4068,7 @@ class Linearization(object):
             var_bin[i] <= bin0[i] * self.bigNumber0 for i in irangeback
         )
 
-    def max_zeros(
+    def max_zeros( # deprecated?
         self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
     ):  # max?
         """
@@ -4088,7 +4088,7 @@ class Linearization(object):
         Linearization.index += 1
         y_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="y_flag{0}".format(Linearization.index),
+           name="y_flag{0}".format(Linearization.index),
         )
         model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)

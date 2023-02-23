@@ -1,5 +1,9 @@
-from integratedEnergySystemPrototypes import Linearization
+# from integratedEnergySystemPrototypes import Linearization
 from docplex.mp.model import Model
+from docplex.mp.vartype import VarType
+
+def max_zeros_2(num_hour:int,model:Model,x:List[VarType],y:List[VarType]):
+    model.add_constraint
 
 model_name = "max_zeros_test"
 
@@ -16,10 +20,14 @@ model.add_constraints(
     x[i] == b + math.sin(i * math.pi / 12) for i in range(num_hours + 1)
 )
 
-linearization = Linearization()
-linearization.max_zeros(num_hour=num_hours + 1, model=model, x=x, y=y)
+# this FAILS!
 
-objective = model.sum(model.abs(x[i] + y[i]) for i in range(num_hours + 1))
+# linearization = Linearization()
+# linearization.max_zeros(num_hour=num_hours + 1, model=model, x=x, y=y)
+
+# let's define the `max_zeros` ourselves.
+
+objective = model.abs(model.sum(x[i] + y[i] for i in range(num_hours + 1)))
 
 solution = model.minimize(objective)
 if solution:
