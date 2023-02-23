@@ -31,10 +31,8 @@ heat_load = (
 model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
-gas_price0 = resource.get_gas_price(num_hour0)
+# gas_price0 = resource.get_gas_price(num_hour0)
 municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
-electricity_price0 = resource.get_electricity_price(num_hour0)
-
 electricity_price0 = resource.get_electricity_price(num_hour0)
 intensityOfIllumination0 = (
     resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
@@ -84,7 +82,7 @@ waterSourceHeatPumps.constraints_register(model1)
 
 # power constrains:
 
-model1.add_constraint(waterSourceHeatPumps.electricity_waterSourceHeatPumps[h] == photoVoltaic +  for h in range(num_hour0))
+model1.add_constraints(waterSourceHeatPumps.electricity_waterSourceHeatPumps[h] == photoVoltaic.power_photoVoltaic[h] + gridNet.total_power[h] for h in range(num_hour0))
 
 # 水储能罐
 waterStorageTank = WaterEnergyStorage(
@@ -157,6 +155,8 @@ linearization.max_zeros(
 
 
 systems = [
+    photoVoltaic,
+    gridNet,
     waterSourceHeatPumps,
     waterStorageTank,
     municipalSteam,
