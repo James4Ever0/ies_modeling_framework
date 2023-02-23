@@ -7,13 +7,16 @@
 
 import os
 
-os.environ['PATH']='/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:'+os.environ['PATH'] # not working?
+os.environ["PATH"] = (
+    "/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:" + os.environ["PATH"]
+)  # not working?
 
 # print(os.environ['PATH'])
 
 from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour0, day_node, epsilon
+
 # num_hour0 *=3
 from docplex.mp.model import Model
 
@@ -26,15 +29,15 @@ model1 = Model(name=simulation_name)
 
 resource = ResourceGet()
 electricity_price0 = resource.get_electricity_price(num_hour0)
-intensityOfIllumination0 = resource.get_radiation(
-    path="jinan_changqing-hour.dat", num_hour=num_hour0
-)*100
+intensityOfIllumination0 = (
+    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
+)
 
 # 光伏
 photoVoltaic = PhotoVoltaic(
     num_hour0,
     model1,
-    photoVoltaic_device_max=5000, # how about let's alter this?
+    photoVoltaic_device_max=5000,  # how about let's alter this?
     device_price=4500,
     intensityOfIllumination0=intensityOfIllumination0,
     efficiency=0.8,
@@ -59,18 +62,18 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     num_hour0,
     model1,
     energyStorageSystem_device_max=20000,
-    energyStorageSystem_price=1800/20,  #this won't save anything.
-    powerConversionSystem_price=250/10,
+    energyStorageSystem_price=1800 / 20,  # this won't save anything.
+    powerConversionSystem_price=250 / 10,
     conversion_rate_max=2,
     efficiency=0.9,
-    energyStorageSystem_init=0.5, # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
+    energyStorageSystem_init=0.5,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
     stateOfCharge_min=0,  # state of charge
     stateOfCharge_max=1,
 )
 # original: battery
-batteryEnergyStorageSystem.constraints_register( # using mode 1?
+batteryEnergyStorageSystem.constraints_register(  # using mode 1?
     model1, register_period_constraints=0, day_node=day_node
-) # why it is not working under mode 0?
+)  # why it is not working under mode 0?
 
 # define energy balance restrictions
 
