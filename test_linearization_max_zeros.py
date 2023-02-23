@@ -23,13 +23,9 @@ def max_zeros_2(num_hour: int, model: Model, x: List[VarType], y: List[VarType])
         y[h] >= x[h] - (1 - x_positive[h]) * bigNumber for h in range(0, num_hour)
     )
     model.add_constraints(
-        y[h] <= x_positive[h] * bigNumber for h in range(0, num_hour)
+        y[h]>=0 for h in range(0, num_hour)
     )
     
-    model.add_constraints(
-        y[h] >= -x_positive[h] * bigNumber for h in range(0, num_hour)
-    )
-
 
 
 model_name = "max_zeros_test"
