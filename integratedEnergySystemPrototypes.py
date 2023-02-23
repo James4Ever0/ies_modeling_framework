@@ -1791,27 +1791,27 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         二元变量列表,表示空气热泵在每个时段的制热状态
         """
-        self.power_heatPump_heatStorge: List[
+        self.power_heatPump_heatStorage: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_heatPump_heatStorge{0}".format(AirHeatPump.index),
+            name="power_heatPump_heatStorage{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的蓄热功率
         """
-        self.heatStorge_heatPump_out: List[
+        self.heatStorage_heatPump_out: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="heatStorge_heatPump_out{0}".format(AirHeatPump.index),
+            name="heatStorage_heatPump_out{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的蓄热出口温度
         """
-        self.heatPump_heatStorge_flag: List[BinaryVarType] = model.binary_var_list(
+        self.heatPump_heatStorage_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="heatPump_heatStorge_flag{0}".format(AirHeatPump.index),
+            name="heatPump_heatStorage_flag{0}".format(AirHeatPump.index),
         )
         """
         二元变量列表,表示空气热泵在每个时段的蓄热状态
@@ -1831,11 +1831,11 @@ class AirHeatPump(IntegratedEnergySystem):
         连续变量列表,表示空气热泵在每个时段的总功率
         """
 
-        # TODO: unclear meaning of "cooletStorage" and "heatStorge"
+        # TODO: unclear meaning of "cooletStorage" and "heatStorage"
         self.coefficientOfPerformance_heatPump_cool = 3  # 表示该组件制冷时的性能系数
         self.coefficientOfPerformance_heatPump_cooletStorage = 3  # 表示该组件蓄冷时的性能系数
         self.coefficientOfPerformance_heatPump_heat = 3  # 表示该组件供热时的性能系数
-        self.coefficientOfPerformance_heatPump_heatStorge = 3  # 表示该组件蓄热时的性能系数
+        self.coefficientOfPerformance_heatPump_heatStorage = 3  # 表示该组件蓄热时的性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -1895,15 +1895,15 @@ class AirHeatPump(IntegratedEnergySystem):
             for h in hourRange
         )
 
-        model.add_constraints(0 <= self.power_heatPump_heatStorge[h] for h in hourRange)
+        model.add_constraints(0 <= self.power_heatPump_heatStorage[h] for h in hourRange)
         model.add_constraints(
-            self.power_heatPump_heatStorge[h]
-            <= self.heatStorge_heatPump_out[h] * self.heatPump_device / 100
+            self.power_heatPump_heatStorage[h]
+            <= self.heatStorage_heatPump_out[h] * self.heatPump_device / 100
             for h in hourRange
         )
         model.add_constraints(
-            self.power_heatPump_heatStorge[h]
-            <= bigNumber * self.heatPump_heatStorge_flag[h]
+            self.power_heatPump_heatStorage[h]
+            <= bigNumber * self.heatPump_heatStorage_flag[h]
             for h in hourRange
         )
 
@@ -1911,7 +1911,7 @@ class AirHeatPump(IntegratedEnergySystem):
             self.heatPump_cool_flag[h]
             + self.heatPump_cooletStorage_flag[h]
             + self.heatPump_heat_flag[h]
-            + self.heatPump_heatStorge_flag[h]
+            + self.heatPump_heatStorage_flag[h]
             == 1
             for h in hourRange
         )
@@ -1924,8 +1924,8 @@ class AirHeatPump(IntegratedEnergySystem):
             / self.coefficientOfPerformance_heatPump_cooletStorage  # [h]
             + self.power_heatPump_heat[h]
             / self.coefficientOfPerformance_heatPump_heat  # [h]
-            + self.power_heatPump_heatStorge[h]
-            / self.coefficientOfPerformance_heatPump_heatStorge  # [h]
+            + self.power_heatPump_heatStorage[h]
+            / self.coefficientOfPerformance_heatPump_heatStorage  # [h]
             for h in hourRange
         )
         model.add_constraints(
@@ -1933,7 +1933,7 @@ class AirHeatPump(IntegratedEnergySystem):
             == self.power_heatPump_cool[h]
             + self.power_heatPump_cooletStorage[h]
             + self.power_heatPump_heat[h]
-            + self.power_heatPump_heatStorge[h]
+            + self.power_heatPump_heatStorage[h]
             for h in hourRange
         )
 
@@ -2065,20 +2065,20 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         二元变量列表,表示每个时刻水源热泵制热状态
         """
-        self.power_waterSourceHeatPumps_heatStorge: List[
+        self.power_waterSourceHeatPumps_heatStorage: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterSourceHeatPumps_heatStorge{0}".format(WaterHeatPump.index),
+            name="power_waterSourceHeatPumps_heatStorage{0}".format(WaterHeatPump.index),
         )
         """
         连续变量列表,表示每个时刻水源热泵蓄热功率
         """
-        self.waterSourceHeatPumps_heatStorge_flag: List[
+        self.waterSourceHeatPumps_heatStorage_flag: List[
             BinaryVarType
         ] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterSourceHeatPumps_heatStorge_flag{0}".format(WaterHeatPump.index),
+            name="waterSourceHeatPumps_heatStorage_flag{0}".format(WaterHeatPump.index),
         )
         """
         二元变量列表,表示每个时刻水源热泵蓄热状态
@@ -2104,7 +2104,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         self.coefficientOfPerformance_waterSourceHeatPumps_cool = 5  # 制冷性能系数
         self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage = 5  # 蓄冷性能系数
         self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
-        self.coefficientOfPerformance_waterSourceHeatPumps_heatStorge = 5  # 蓄热性能系数
+        self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage = 5  # 蓄热性能系数
 
     def constraints_register(self, model: Model):
         """
@@ -2171,16 +2171,16 @@ class WaterHeatPump(IntegratedEnergySystem):
         )
 
         model.add_constraints(
-            0 <= self.power_waterSourceHeatPumps_heatStorge[h] for h in hourRange
+            0 <= self.power_waterSourceHeatPumps_heatStorage[h] for h in hourRange
         )
         model.add_constraints(
-            self.power_waterSourceHeatPumps_heatStorge[h]
+            self.power_waterSourceHeatPumps_heatStorage[h]
             <= self.waterSourceHeatPumps_device * self.case_ratio[3]
             for h in hourRange
         )
         model.add_constraints(
-            self.power_waterSourceHeatPumps_heatStorge[h]
-            <= bigNumber * self.waterSourceHeatPumps_heatStorge_flag[h]
+            self.power_waterSourceHeatPumps_heatStorage[h]
+            <= bigNumber * self.waterSourceHeatPumps_heatStorage_flag[h]
             for h in hourRange
         )
 
@@ -2188,7 +2188,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             self.waterSourceHeatPumps_cool_flag[h]
             + self.waterSourceHeatPumps_cooletStorage_flag[h]
             + self.waterSourceHeatPumps_heat_flag[h]
-            + self.waterSourceHeatPumps_heatStorge_flag[h]
+            + self.waterSourceHeatPumps_heatStorage_flag[h]
             == 1
             for h in hourRange
         )
@@ -2200,8 +2200,8 @@ class WaterHeatPump(IntegratedEnergySystem):
             / self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage
             + self.power_waterSourceHeatPumps_heat[h]
             / self.coefficientOfPerformance_waterSourceHeatPumps_heat
-            + self.power_waterSourceHeatPumps_heatStorge[h]
-            / self.coefficientOfPerformance_waterSourceHeatPumps_heatStorge
+            + self.power_waterSourceHeatPumps_heatStorage[h]
+            / self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage
             for h in hourRange
         )
         model.add_constraints(
@@ -2209,7 +2209,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             == self.power_waterSourceHeatPumps_cool[h]
             + self.power_waterSourceHeatPumps_cooletStorage[h]
             + self.power_waterSourceHeatPumps_heat[h]
-            + self.power_waterSourceHeatPumps_heatStorge[h]
+            + self.power_waterSourceHeatPumps_heatStorage[h]
             for h in hourRange
         )
 
