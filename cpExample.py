@@ -229,13 +229,13 @@ if __name__ == "__main__":
 
     # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
-        num_hour0, model1, device_max=20000, device_price=400, k=50
+        num_hour0, model1, device_max=20000, device_price=400, k=50, device_name="steamAndWater_exchanger"
     )
     steamAndWater_exchanger.constraints_register(model1) # qs - 泉水？ steamAndWater热交换器？
 
     # 蒸汽溴化锂
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
-        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9
+        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9, device_name="steamPowered_LiBr"
     )
     steamPowered_LiBr.constraints_register(model1)
 
@@ -295,13 +295,13 @@ if __name__ == "__main__":
 
     # 热水溴化锂，制冷
     hotWaterLiBr = LiBrRefrigeration(
-        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9
+        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9, device_name="hotWaterLiBr"
     )
     hotWaterLiBr.constraints_register(model1)
 
     # 热水交换器，吸收热量
     hotWaterExchanger = Exchanger(
-        num_hour0, model1, device_max=20000, device_price=400, k=50
+        num_hour0, model1, device_max=20000, device_price=400, k=50, device_name="hotWaterExchanger"
     )
     hotWaterExchanger.constraints_register(model1)
 
