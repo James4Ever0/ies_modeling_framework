@@ -12,3 +12,6 @@ import math
 import numpy as np
 
 steam_load=load.get_steam_load(num_hour0)
+delta = 0.3
+steam_load = np.array([(1-delta) + math.cos(i*0.1)*delta for i in range(len(steam_load))])*steam_load
+model1 = Model(name=simulation_name)
