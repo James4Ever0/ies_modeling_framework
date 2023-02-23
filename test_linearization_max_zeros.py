@@ -5,7 +5,10 @@ model_name = "max_zeros_test"
 
 model = Model(model_name)
 
-b = model.continuous_var()
+num_hours = 24
+
+b = model.continuous_var(lb=-100,ub=100,name="b")
+x = model.continuous_var_list(lb=-100,ub=100,keys=[],name="x_n")
 
 
 linearization = Linearization()
