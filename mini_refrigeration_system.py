@@ -51,18 +51,18 @@ municipalHotWater = CitySupply(
 )
 municipalHotWater.constraints_register(model1)
 
-model1.add_constraint(
+model1.add_constraints(
     power_highTemperatureHotWater_sum[h] == municipalHotWater.heat_citySupplied[h]
     for h in range(num_hour0)
 )
 
-model1.add_constraint(
+model1.add_constraints(
     hotWaterLiBr.heat_LiBr_from[h] <= power_highTemperatureHotWater_sum[h]
     for h in range(num_hour0)
 )
 
 # consumption and production
-model1.add_constraint(
+model1.add_constraints(
     cool_load[h] == hotWaterLiBr.cool_LiBr[h] for h in range(num_hour0)
 )
 
