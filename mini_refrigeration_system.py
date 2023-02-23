@@ -26,6 +26,11 @@ hotWaterLiBr = LiBrRefrigeration(
 )
 hotWaterLiBr.constraints_register(model1)
 
+
+power_highTemperatureHotWater_sum = model1.continuous_var_list(
+    [i for i in range(0, num_hour0)], name="power_highTemperatureHotWater_sum"
+)
+
 model1.add_constraint(power_highTemperatureHotWater_sum[h] == municipalHotWater.heat_citySupplied[h] for h in range(num_hour0))
 
 model1.add_constraint(hotWaterLiBr.heat_LiBr_from[h] <= power_highTemperatureHotWater_sum[h] for h in range(num_hour0))
