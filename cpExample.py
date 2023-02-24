@@ -371,7 +371,7 @@ if __name__ == "__main__":
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
         == cool_load[
             h
-        ]  # 冷量需求 = 热泵制冷功率 + 蓄冷机组平衡输出 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 蓄冰机组平衡输出 + 三工况机组的制冷功率 + 双工况机组的制冷功率
+        ]  # 冷量需求 == (热泵制冷功率 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 三工况机组的制冷功率 + 双工况机组的制冷功率) + (蓄冰机组平衡输出 + 蓄冷机组平衡输出)
         for h in range(0, num_hour0)
     )
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
@@ -393,7 +393,7 @@ if __name__ == "__main__":
         tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
         + iceStorage.power_energyStorageSystem[h]
-        == power_iceStorage[h]  # 蓄冰机组平衡输出 = 三工况机组的制冰功率 + 双工况机组的制冰功率 + 冰蓄能充放能功率
+        == power_iceStorage[h]  # 蓄冰机组平衡输出 == (三工况机组的制冰功率 + 双工况机组的制冰功率) + 冰蓄能充放能功率
         for h in range(0, num_hour0)
     )
     linearization = Linearization()
@@ -417,7 +417,7 @@ if __name__ == "__main__":
         + phaseChangeRefrigerantStorage.power_energyStorageSystem[h]
         == power_cooletStorage[
             h
-        ]  # 蓄冷系统平衡功率 = 热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率 + 水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率
+        ]  # 蓄冷系统平衡功率 == (热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率) + (水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率)
         for h in range(0, num_hour0)
     )
     linearization.max_zeros(
@@ -440,7 +440,7 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
         + lowphaseChangeHeatStorage.power_energyStorageSystem[h]
-        == power_heatStorage[h]  # 蓄热系统功率 = 热泵蓄热功率 + 水源热泵蓄热功率 + 水蓄能设备储能功率 + 储热设备充放功率
+        == power_heatStorage[h]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
         for h in range(0, num_hour0)
     )
     linearization.max_zeros(
@@ -494,9 +494,9 @@ if __name__ == "__main__":
         - photoVoltaic.power_photoVoltaic[h]
         - combinedHeatAndPower.power_combinedHeatAndPower[h]
         - dieselEngine.power_dieselEngine[h]
-        == gridNet.total_power[h]  # 总的耗电量 = 用电量 - 放能量
-        # 用电量 = 地源热泵每小时耗电量+水冷螺旋机的用电量+每个时刻热泵用电量+每个时刻水源热泵用电量+用电需求+地源蒸汽发生器总功率+电锅炉在每个时段的电消耗量+三工况机组的用电量+双工况机组的用电量
-        # 放能量 = 每小时储能装置的充放能功率+每个小时内光伏机组发电量+热电联产在每个时段的发电量+每个小时内柴油发电机机组发电量
+        == gridNet.total_power[h]  # 总的耗电量 == 用电量 - 放能量
+        # 用电量 == 地源热泵每小时耗电量 + 水冷螺旋机的用电量 + 每个时刻热泵用电量 + 每个时刻水源热泵用电量 + 用电需求 + 地源蒸汽发生器总功率 + 电锅炉在每个时段的电消耗量 + 三工况机组的用电量 + 双工况机组的用电量
+        # 放能量 == 每小时储能装置的充放能功率 + 每个小时内光伏机组发电量 + 热电联产在每个时段的发电量 + 每个小时内柴油发电机机组发电量
         for h in range(0, num_hour0)
     )
     ##########################################
