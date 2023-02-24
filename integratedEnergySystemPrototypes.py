@@ -49,7 +49,7 @@ class IntegratedEnergySystem(object):
             IntegratedEnergySystem.device_count,
         )
 
-
+# TODO: 加上输出类型区分校验
 class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
     """
     光伏类,适用于光伏及平板式光热
@@ -571,7 +571,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                     self.power_energyStorageSystem_charge[i] * self.efficiency
                     - self.power_energyStorageSystem_discharge[i] / self.efficiency
                 )
-                * simulationTime
+                * simulationTime # TODO: 可以细分到秒进行仿真 需要中间变量进行步长转换
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
@@ -652,6 +652,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
 
 # 可变容量储能
+# TODO: 水蓄能
 class EnergyStorageSystemVariable(IntegratedEnergySystem):
     """
     可变容量储能类,适用于储能机组
@@ -931,6 +932,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             # breakpoint()
             # not breaking here?
             # 两天之间的连接
+            # TODO: 8760（一年）设置为num_hour时使用这个条件
             model.add_constraints(
                 self.energyStorageSystem[i]
                 == self.energyStorageSystem[i - 1]
@@ -1671,7 +1673,7 @@ class Exchanger(IntegratedEnergySystem):
             self.annualized == self.exchanger_device * self.device_price / 15
         )
 
-
+# TODO: 运行效率与温度环境（气温）有关
 class AirHeatPump(IntegratedEnergySystem):
     """
     空气源热泵类
@@ -1809,6 +1811,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         连续变量列表,表示空气热泵在每个时段的蓄热出口温度
         """
+        # TODO: 可以调节工作模式 热水温度较高时储存热量 （是否应当作为设备连接约束条件？）
         self.heatPump_heatStorage_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatPump_heatStorage_flag{0}".format(AirHeatPump.index),
@@ -2651,6 +2654,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         )
 
 
+#TODO: 冷水机组效率与带载情况有关 考虑分段拟合
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
     """
     三工况机组类
@@ -3151,9 +3155,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         每小时水蓄能设备是否处在高温热水状态下
         """
-        self.ratio_cool = ratio_cool
+        self.ratio_cool = ratio_cool 
         self.ratio_heat = ratio_heat
-        self.ratio_gheat = ratio_gheat
+        self.ratio_gheat = ratio_gheat # 蓄能效率 高温水
         self.power_waterStorageTank_cool: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -3390,6 +3394,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
 
 # groundSourceSteamGenerator?
+# TODO: 修改为：电用蒸汽蒸汽发生器
 class GroundSourceSteamGenerator(IntegratedEnergySystem):
     """
     地源蒸汽发生器类
@@ -3911,7 +3916,7 @@ class GridNet(IntegratedEnergySystem):
         2. 电网最大设备数 >= 电网设备数 >= 0
         3. 每小时用电量小于电网设备数
         4. 每小时电网发电量小于电网设备数
-        5. 电网一天基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22)
+        5. 电网一天基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22), 31是电价
         6. 电网一天总消费 = sum(每小时用电量 * 用电电价 + 每小时发电量 * 发电消费) + 电网基础消费
         7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15 + 电网一天总消费 * 8760 / 一天小时数
 

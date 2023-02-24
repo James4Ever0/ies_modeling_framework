@@ -122,6 +122,8 @@ from demo_utils import (
     hotWaterSourcesRegistration,
 )
 
+# TODO: 拟合实际情况 根据历史数据 求待定系数 反馈机制
+
 power_load, cool_load, heat_load, steam_load = getPowerCoolHeatSteamLoads(num_hour0)
 
 ##########################################
@@ -203,7 +205,7 @@ if __name__ == "__main__":
     ##########################################
     power_steam_used_product = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_product"
-    ) # shall this be never used?
+    )  # shall this be never used?
     power_steam_used_heatcool = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_steam_used_heatcool"
     )
@@ -229,13 +231,24 @@ if __name__ == "__main__":
 
     # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
-        num_hour0, model1, device_max=20000, device_price=400, k=50, device_name="steamAndWater_exchanger"
+        num_hour0,
+        model1,
+        device_max=20000,
+        device_price=400,
+        k=50,
+        device_name="steamAndWater_exchanger",
     )
-    steamAndWater_exchanger.constraints_register(model1) # qs - 泉水？ steamAndWater热交换器？
+    steamAndWater_exchanger.constraints_register(model1)  # qs - 泉水？ steamAndWater热交换器？
 
     # 蒸汽溴化锂
+    # TODO: 添加设备最少购买数量
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
-        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9, device_name="steamPowered_LiBr"
+        num_hour0,
+        model1,
+        LiBr_device_max=10000,
+        device_price=1000,
+        efficiency=0.9,
+        device_name="steamPowered_LiBr",
     )
     steamPowered_LiBr.constraints_register(model1)
 
@@ -258,7 +271,7 @@ if __name__ == "__main__":
         platePhotothermal,
         waterStorageTank,
         municipalHotWater,
-        gasBoiler_hotWater,
+        gasBoiler_hotWater,# TODO: 待定是否只能烧高温热水
         phaseChangeHeatStorage,
         hotWaterElectricBoiler,
     ) = hotWaterSourcesRegistration(
@@ -276,6 +289,8 @@ if __name__ == "__main__":
     power_highTemperatureHotWater_sum = model1.continuous_var_list(
         [i for i in range(0, num_hour0)], name="power_highTemperatureHotWater_sum"
     )
+
+    # TODO: 这些设备能不能输出高温热水 待定
     model1.add_constraints(
         power_highTemperatureHotWater_sum[h]
         == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
@@ -295,13 +310,23 @@ if __name__ == "__main__":
 
     # 热水溴化锂，制冷
     hotWaterLiBr = LiBrRefrigeration(
-        num_hour0, model1, LiBr_device_max=10000, device_price=1000, efficiency=0.9, device_name="hotWaterLiBr"
+        num_hour0,
+        model1,
+        LiBr_device_max=10000,
+        device_price=1000,
+        efficiency=0.9,
+        device_name="hotWaterLiBr",
     )
     hotWaterLiBr.constraints_register(model1)
 
     # 热水交换器，吸收热量
     hotWaterExchanger = Exchanger(
-        num_hour0, model1, device_max=20000, device_price=400, k=50, device_name="hotWaterExchanger"
+        num_hour0,
+        model1,
+        device_max=20000,
+        device_price=400,
+        k=50,
+        device_name="hotWaterExchanger",
     )
     hotWaterExchanger.constraints_register(model1)
 
@@ -440,7 +465,9 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
         + lowphaseChangeHeatStorage.power_energyStorageSystem[h]
-        == power_heatStorage[h]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
+        == power_heatStorage[
+            h
+        ]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
         for h in range(0, num_hour0)
     )
     linearization.max_zeros(
@@ -528,7 +555,7 @@ if __name__ == "__main__":
             tripleWorkingConditionUnit,
             doubleWorkingConditionUnit,
             groundSourceHeatPump,
-            iceStorage,  # ?
+            iceStorage,  # bx?
             phaseChangeRefrigerantStorage,
             lowphaseChangeHeatStorage,
             gridNet,
@@ -566,7 +593,7 @@ if __name__ == "__main__":
         # from docplex.mp.sdetails import SolveDetails
 
         print("NO SOLUTION.")
-    else: # 解出来了
+    else:  # 解出来了
         print("objective: annual", solution_run1.get_value(objective))  # 所有设备年运行成本总和
         print()
 

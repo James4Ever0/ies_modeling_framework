@@ -84,7 +84,7 @@ class ResourceGet(object):
             intensityOfIllumination (np.array): 逐小时光照强度数据,数组形状为`(num_hour,)`
         """
         if os.path.exists(path):
-            raw_file = np.loadtxt(path, dtype=float)
+            raw_file = np.loadtxt(path, dtype=float) 
             radiation = raw_file[:, 0]
             intensityOfIllumination1 = radiation
             for loop in range(
@@ -190,11 +190,12 @@ def getResourceData(num_hour0: int):
     resource = ResourceGet()
     # model_input
     intensityOfIllumination0: Union[np.ndarray, List] = resource.get_radiation(
-        "jinan_changqing-hour.dat", num_hour0
+        "jinan_changqing-hour.dat", num_hour0 # 光照、风速
     )
     # what is the output? break here.
     electricity_price0 = resource.get_electricity_price(num_hour0)
     gas_price0 = resource.get_gas_price(num_hour0)
+    # TODO: 按面积、人数计价热水消耗
     municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour0)
     municipalSteam_price0 = resource.get_municipalSteam_price(num_hour0)
     return (
@@ -301,7 +302,7 @@ def steamSourcesRegistration(
     )
     troughPhotoThermal.constraints_register(model1)
 
-    # 地热蒸汽发生器
+    # 电用蒸汽发生器
     groundSourceSteamGenerator = GroundSourceSteamGenerator(
         num_hour0,
         model1,
@@ -572,7 +573,7 @@ def cooletIceHeatDevicesRegistration(
     )
     phaseChangeRefrigerantStorage.constraints_register(model1)
 
-    # 相变蓄热
+    # TODO: 修改为：低温水 相变蓄热
     lowphaseChangeHeatStorage = EnergyStorageSystem(
         num_hour0,
         model1,
