@@ -225,7 +225,7 @@ if __name__ == "__main__":
     model1.add_constraints(
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour0)
-    )  # 每小时蒸汽消耗 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
+    )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
 
     # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
