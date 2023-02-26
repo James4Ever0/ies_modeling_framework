@@ -226,7 +226,7 @@ from integratedEnergySystemPrototypes import (
     TripleWorkingConditionUnit,
     GeothermalHeatPump,
     WaterEnergyStorage,
-    GroundSourceSteamGenerator,
+    ElectricSteamGenerator,
     # Linear_absolute,
     CitySupply,
     GridNet,
@@ -303,16 +303,16 @@ def steamSourcesRegistration(
     troughPhotoThermal.constraints_register(model1)
 
     # 电用蒸汽发生器
-    groundSourceSteamGenerator = GroundSourceSteamGenerator(
+    electricSteamGenerator = ElectricSteamGenerator(
         num_hour0,
         model1,
-        groundSourceSteamGenerator_device_max=20000,
-        groundSourceSteamGenerator_price=200,
-        groundSourceSteamGeneratorSolidHeatStorage_price=200,  # gtxr? SolidHeatStorage？
+        electricSteamGenerator_device_max=20000,
+        electricSteamGenerator_price=200,
+        electricSteamGeneratorSolidHeatStorage_price=200,  # gtxr? SolidHeatStorage？
         electricity_price=electricity_price0,
         efficiency=0.9,
     )
-    groundSourceSteamGenerator.constraints_register(model1)
+    electricSteamGenerator.constraints_register(model1)
 
     # 热电联产机组
     combinedHeatAndPower = CombinedHeatAndPower(
@@ -350,7 +350,7 @@ def steamSourcesRegistration(
     municipalSteam.constraints_register(model1)
     return (
         troughPhotoThermal,
-        groundSourceSteamGenerator,
+        electricSteamGenerator,
         combinedHeatAndPower,
         gasBoiler,
         municipalSteam,

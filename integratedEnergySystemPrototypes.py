@@ -24,9 +24,12 @@ from config import (
     num_hour0,
     simulationTime,
     bigNumber,
+    
     # intensityOfIllumination,
 )
 
+
+# we define some type of "special" type that can convert from and into any energy form, called "energy".
 
 # another name for IES?
 class IntegratedEnergySystem(object):
@@ -34,20 +37,162 @@ class IntegratedEnergySystem(object):
     综合能源系统基类
     """
 
-    device_count: int = 0  # what is this "SET"? device?
+    device_index: int = 0  # what is this "SET"? device?
 
-    def __init__(self, device_name: str):
+    def __init__(
+        self,
+        model: Model,
+        num_hour: int,
+        device_name: str,
+        device_count_max: float,
+        device_count_min: float,
+        device_price: float,
+        classObject
+        # className: str,
+        # classIndex: int,
+    ):
         """
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
+        # self.device_name = device_name
+        IntegratedEnergySystem.device_index += 1
+        classObject.index += 1
+        self.hourRange = range(0, self.num_hour)
+        self.className = classObject.__name__
+        self.classIndex = classObject.index
+        self.model = model
+        self.num_hour = num_hour
         self.device_name = device_name
-        IntegratedEnergySystem.device_count += 1
+        self.device_count_max = device_count_max
+        assert device_count_min >= 0
+        assert device_count_max >= device_count_min
+        self.device_count_min = device_count_min
+        self.device_price = device_price
+        self.classSuffix = f"{self.className}_{self.classIndex}"
+
+        self.device_count: ContinuousVarType = model.continuous_var(
+            name=f"device_count_{self.classSuffix}"
+        )
+
+        self.annualized: ContinuousVarType = model.continuous_var(
+            name=f"annualized_{self.classSuffix}"
+        )
+
+        # check if all inputs/outputs are connected?
+        self.power_of_inputs = {}
+        self.power_of_outputs = {}
+
         print(
             "IntegratedEnergySystem Define a device named:",
-            device_name,
-            ", total device count/device number is:",
-            IntegratedEnergySystem.device_count,
+            self.device_name,
+            ", total device index is:",
+            IntegratedEnergySystem.device_index,
         )
+        return IntegratedEnergySystem.device_index
+
+    def build_power_of_inputs(self, energy_types: List[str]):
+        for energy_type in energy_types:
+            self.power_of_inputs.update(
+                {
+                    energy_type: self.model.continuous_var_list(
+                        [i for i in range(0, self.num_hour)],
+                        name=f"{energy_type}_{self.classSuffix}",
+                    )
+                }
+            )
+
+    def build_power_of_outputs(self, energy_types: List[str]):
+        for energy_type in energy_types:
+            self.power_of_outputs.update(
+                {
+                    energy_type: self.model.continuous_var_list(
+                        [i for i in range(0, self.num_hour)],
+                        name=f"{energy_type}_{self.classSuffix}",
+                    )
+                }
+            )
+
+    def constraint_multiplexer(
+        self, variables, values, index_range, constraint_function
+    ):
+
+        iterable = isinstance(values, List)
+
+        for index in index_range:
+            if iterable:
+                value = values[index]
+            else:
+                value = values
+            constraint_function(variables[index], value)
+
+    def add_lower_bound(self, variable, lower_bound):
+        self.model.add_constraint(lower_bound <= variable)  # 最大装机量
+
+    def add_lower_bounds(self, variables, lower_bounds, index_range):
+        self.constraint_multiplexer(
+            variables, lower_bounds, index_range, self.add_lower_bound
+        )
+
+    def add_upper_bound(self, variable, upper_bound):
+        self.model.add_constraint(upper_bound >= variable)  # 最大装机量
+
+    def add_upper_bounds(self, variables, upper_bounds, index_range):
+        self.constraint_multiplexer(
+            variables, upper_bounds, index_range, self.add_upper_bound
+        )
+
+    def equation(self, variable, value):
+        self.model.add_constraint(variable == value)
+
+    def equations(self, variables, values, index_range):
+        self.constraint_multiplexer(variables, values, index_range, self.equation)
+
+    def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
+        self.add_lower_bound(variable, lower_bound)
+        self.add_upper_bound(variable, upper_bound)
+
+    def add_lower_and_upper_bounds(
+        self, variable, lower_bounds, upper_bounds, index_range
+    ):
+        self.add_lower_bounds(variable, lower_bounds, index_range)
+        self.add_upper_bounds(variable, upper_bounds, index_range)
+
+    def constraints_register(self):
+        self.add_lower_and_upper_bound(
+            self.device_count, self.device_count_min, self.device_count_max
+        )
+        # self.model.add_constraint(self.device_count <= self.device_count_max)  # 最大装机量
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count_min<=self.device_count )
+
+    def elementwise_operation(self, variables, values, operation_function):
+        iterable = isinstance(values, List)
+        results = []
+        for index, variable in enumerate(variables):
+            if iterable:
+                value = values[index]
+            else:
+                value = values
+            result = operation_function(variable, value)
+            results.append(result)
+        return results
+
+    def divide(self, variable, value):
+        return variable / value
+
+    def multiply(self, variable, value):
+        return variable * value
+
+    def elementwise_divide(self, variables, values):
+        return self.elementwise_operation(variables, values, self.divide)
+
+    def elementwise_multiply(self, variables, values):
+        return self.elementwise_operation(variables, values, self.multiply)
+
+    def sum_within_range(self, variables, index_range):
+        result = self.model.sum(variables[index] for index in index_range)
+        return result
+
 
 # TODO: 加上输出类型区分校验
 class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
@@ -61,11 +206,15 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         self,
         num_hour: int,
         model: Model,
-        photoVoltaic_device_max: float,
+        device_count_max: float,
         device_price: float,  # float?
         intensityOfIllumination0: Union[np.ndarray, List],
         efficiency: float,  # efficiency
         device_name: str = "PhotoVoltaic",
+        output_type: Union[
+            Literal["electricity"], Literal["hot_water"]
+        ] = "electricity",
+        device_count_min=0,
     ):
         """
         新建一个光伏类
@@ -73,45 +222,50 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            photoVoltaic_device_max (float): 光伏设备机组最大装机量
+            device_count_max (float): 光伏设备机组最大装机量
             device_price (float): 设备单价
             intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name=device_name)
-        PhotoVoltaic.index += (
-            1  # increase the index whenever another PhotoVoltaic system is created.
+        # self.device_name = device_name
+        # index += (
+        #     1  # increase the index whenever another PhotoVoltaic system is created.
+        # )
+        # classObject=self.__class__
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+            # className=className,
+            # classIndex=classIndex,
         )
 
-        self.photoVoltaic_device: ContinuousVarType = model.continuous_var(
-            name="photoVoltaic_device{0}".format(PhotoVoltaic.index)
-        )
+        # className = self.__class__.__name__  # better use this instead.
+        # classIndex = self.__class__.index
+
         """
         光伏机组等效单位设备数 大于零的实数
         """
-        self.power_photoVoltaic: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="power_photoVoltaic{0}".format(PhotoVoltaic.index),
-        )
+        self.output_type = output_type
+        self.build_power_of_outputs([self.output_type])
         """
         初始化每个小时内光伏机组发电量 大于零的实数 一共`num_hour`个变量
         """
-        self.photoVoltaic_device_max = photoVoltaic_device_max
-        self.device_price = device_price
-        self.num_hour = num_hour
         # intensityOfIllumination
         self.intensityOfIllumination = intensityOfIllumination0
         self.efficiency = efficiency
-        self.annualized: ContinuousVarType = model.continuous_var(
-            name="photoVoltaic_annualized{0}".format(PhotoVoltaic.index)
-        )
         """
         每年消耗的运维成本 大于零的实数
         """
+        return val
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -123,19 +277,23 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        model.add_constraint(
-            self.photoVoltaic_device <= self.photoVoltaic_device_max
-        )  # 最大装机量
-        model.add_constraint(self.photoVoltaic_device >= 0)
-        model.add_constraints(
-            self.power_photoVoltaic[i]  # 输出发电量不得超过最大发电量
-            <= self.photoVoltaic_device
-            * self.efficiency
-            * self.intensityOfIllumination[i]
-            for i in range(self.num_hour)
+        super().constraints_register()
+
+        self.add_upper_bound(
+            self.power_of_outputs[self.output_type],
+            self.elementwise_multiply(
+                self.intensityOfIllumination, self.device_count * self.efficiency
+            ),
+            self.hourRange,
         )
-        model.add_constraint(
-            self.annualized == self.photoVoltaic_device * self.device_price / 15
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][i]  # 输出发电量不得超过最大发电量
+        #     <= self.device_count * self.efficiency * self.intensityOfIllumination[i]
+        #     for i in range(self.num_hour)
+        # )
+
+        self.equation(
+            self.annualized, self.device_count * self.device_price / 15
         )  # 每年维护费用？折价？回收成本？利润？
 
     def total_cost(self, solution: SolveSolution) -> float:  # 购买设备总费用
@@ -146,8 +304,10 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         Return:
             购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
-        return solution.get_value(self.photoVoltaic_device) * self.device_price
+        return solution.get_value(self.device_count) * self.device_price
 
+
+from typing import Literal
 
 # LiBr制冷
 class LiBrRefrigeration(IntegratedEnergySystem):
@@ -161,62 +321,80 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        LiBr_device_max: float,
+        device_count_max: float,
         device_price: float,  # what is this device?
         efficiency: float,
         device_name: str = "LiBrRefrigeration",
+        input_type: Union[Literal["steam"], Literal["hot_water"]] = "steam",
+        device_count_min=0,
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            LiBr_device_max (float): 溴化锂制冷设备机组最大装机量
+            device_count_max (float): 溴化锂制冷设备机组最大装机量
             device_price (float): 设备单价
             efficiency (float): 设备运行效率
             device_name (str): 溴化锂制冷机组名称,默认为"LiBrRefrigeration"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        LiBrRefrigeration.index += 1
-        self.num_hour = num_hour
-        self.LiBr_device: ContinuousVarType = model.continuous_var(
-            name="LiBr_device{0}".format(LiBrRefrigeration.index)
+        # self.device_name = device_name
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
         )
+        # LiBrRefrigeration.index += 1
+        # self.num_hour = num_hour
+
+        # device count now.
+        # self.device_count: ContinuousVarType = model.continuous_var(
+        #     name="device_count{0}".format(LiBrRefrigeration.index)
+        # )
         """
         溴化锂制冷机组等效单位设备数 大于零的实数
         """
 
-        self.heat_LiBr_from: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(  # iterate through hours in a day?
-            [i for i in range(0, self.num_hour)],
-            name="heat_LiBr_from{0}".format(LiBrRefrigeration.index),
-        )
+        # self.power_of_inputs[self.input_type]: List[
+        #     ContinuousVarType
+        # ] = model.continuous_var_list(  # iterate through hours in a day?
+        #     [i for i in range(0, self.num_hour)],
+        #     name="inputs[self.input_type]{0}".format(LiBrRefrigeration.index),
+        # )
+        self.input_type = input_type
+        self.build_power_of_inputs([input_type])  # can be either hot water or steam.
         """
         初始化每个小时内溴化锂机组得到的热量 大于零的实数 一共`num_hour`个变量
         """
+        # what is the output? cold water?
 
-        self.cool_LiBr: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(  # the same?
-            [i for i in range(0, self.num_hour)],
-            name="heat_LiBr{0}".format(LiBrRefrigeration.index),
-        )
+        # self.cool_LiBr: List[
+        #     ContinuousVarType
+        # ] = model.continuous_var_list(  # the same?
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_LiBr{0}".format(LiBrRefrigeration.index),
+        # )
+        self.output_type = "cold_water"
+        self.build_power_of_outputs([self.output_type])
         """
         初始化每个小时内溴化锂机组制冷量 大于零的实数 一共`num_hour`个变量
         """
 
-        self.LiBr_device_max = LiBr_device_max
-        self.device_price = device_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.efficiency = efficiency
-        self.annualized: ContinuousVarType = model.continuous_var(
-            name="LiBr_annualized{0}".format(LiBrRefrigeration.index)
-        )
+        # self.annualized: ContinuousVarType = model.continuous_var(
+        #     name="LiBr_annualized{0}".format(LiBrRefrigeration.index)
+        # )
         """
         每年消耗的运维成本 大于零的实数
         """
+        return val
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -230,22 +408,35 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # register constraints
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.LiBr_device >= 0)
-        model.add_constraint(self.LiBr_device <= self.LiBr_device_max)
-        model.add_constraints(
-            self.heat_LiBr_from[h] >= 0 for h in hourRange
-        )  # adding multiple constraints, passed as arguments
-        model.add_constraints(
-            self.heat_LiBr_from[h] <= self.LiBr_device for h in hourRange
-        )  # avaliable/active device count?
-        model.add_constraints(
-            self.cool_LiBr[h] == self.heat_LiBr_from[h] / self.efficiency
-            for h in hourRange  # how does this work out? what is the meaning of this?
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        super().constraints_register()
+        self.add_lower_and_upper_bounds(
+            self.power_of_inputs[self.input_type], 0, self.device_count, self.hourRange
         )
-        model.add_constraint(
-            self.annualized == self.LiBr_device * self.device_price / 15
+
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][h] >= 0 for h in self.hourRange
+        # )  # adding multiple constraints, passed as arguments
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][h] <= self.device_count for h in self.hourRange
+        # )  # avaliable/active device count?
+
+        self.equations(
+            self.power_of_outputs[self.output_type],
+            self.elementwise_divide(
+                self.power_of_inputs[self.input_type], self.efficiency
+            ),
+            self.hourRange,
         )
+
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h]
+        #     == self.power_of_inputs[self.input_type][h] / self.efficiency
+        #     for h in self.hourRange  # how does this work out? what is the meaning of this?
+        # )
+
+        self.equation(self.annualized, self.device_count * self.device_price / 15)
 
 
 # 柴油发电机
@@ -260,54 +451,77 @@ class DieselEngine(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        dieselEngine_device_max: int,
+        device_count_max: int,
         device_price: int,
         run_price: int,
         device_name: str = "dieselEngine",
+        device_count_min: int = 0,
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            dieselEngine_device_max (float): 柴油发电机设备机组最大装机量
+            device_count_max (float): 柴油发电机设备机组最大装机量
             device_price (float): 设备单价
             run_price (float): 运维价格
             device_name (str): 柴油发电机机组名称,默认为"DieselEngine"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        DieselEngine.index += 1
-        self.num_hour = num_hour
-        self.dieselEngine_device: ContinuousVarType = model.continuous_var(
-            name="dieselEngine_device{0}".format(DieselEngine.index)
+        # self.device_name = device_name
+        #
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
         )
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # DieselEngine.index += 1
+        # self.num_hour = num_hour
+        # self.device_count: ContinuousVarType = model.continuous_var(
+        #     name="device_count{0}".format(DieselEngine.index)
+        # )
         """
         柴油发电机机组等效单位设备数 大于零的实数
         """
-        self.power_dieselEngine: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],  # keys, not values.
-            name="power_dieselEngine{0}".format(DieselEngine.index),
-        )
+        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] = model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],  # keys, not values.
+        #     name="self.power_of_outputs[self.output_type]{0}".format(DieselEngine.index),
+        # )
+        self.output_type = "electricity"
+        self.build_power_of_inputs([self.output_type])
         """
         初始化每个小时内柴油发电机机组发电量 大于零的实数 一共`num_hour`个变量
         """
-        self.dieselEngine_device_max = dieselEngine_device_max
-        self.device_price = device_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.run_price = run_price
-        self.power_sum = model.sum(
-            self.power_dieselEngine[i] for i in range(0, self.num_hour)
+        self.electricity_output_sum = self.sum_within_range(
+            self.power_of_outputs[self.output_type], self.hourRange
         )
         """
         柴油发电机总发电量
         """
-        self.annualized: ContinuousVarType = model.continuous_var(
-            name="dieselEngine_annualized{0}".format(DieselEngine.index)
-        )
+        # self.annualized: ContinuousVarType = model.continuous_var(
+        #     name="dieselEngine_annualized{0}".format(DieselEngine.index)
+        # )
         """
         每年消耗的运维成本 大于零的实数
         """
+        return val
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -319,17 +533,24 @@ class DieselEngine(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        model.add_constraint(self.dieselEngine_device <= self.dieselEngine_device_max)
-        model.add_constraint(self.dieselEngine_device >= 0)
-        model.add_constraints(
-            self.power_dieselEngine[i]
-            <= self.dieselEngine_device  # does this make sense? again active device count per hour?
-            for i in range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        # self.model.add_constraint(self.device_count >= 0)
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type],
+            0,
+            self.device_count,
+            self.hourRange,
         )
-        model.add_constraint(
-            self.annualized  # 年运行成本?
-            == self.dieselEngine_device * self.device_price / 15
-            + self.power_sum * self.run_price * 8760 / self.num_hour
+        # in fact, you should add one more?
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][i]
+        #     <= self.device_count  # does this make sense? again active device count per hour?
+        #     for i in range(0, self.num_hour)
+        # )
+        self.equation(
+            self.annualized,  # 年运行成本?
+            self.device_count * self.device_price / 15
+            + self.electricity_output_sum * self.run_price * 8760 / self.num_hour,
         )
 
     def total_cost(self, solution: SolveSolution) -> float:
@@ -341,7 +562,7 @@ class DieselEngine(IntegratedEnergySystem):
             购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
         # energyStorageSystem you will have it?
-        return solution.get_value(self.dieselEngine_device) * self.device_price
+        return solution.get_value(self.device_count) * self.device_price
 
 
 # 储能系统基类
@@ -356,106 +577,129 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        energyStorageSystem_device_max: float,
-        energyStorageSystem_price: float,
+        device_count_max: float,
+        device_price: float,
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init: float,
+        energy_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
+        device_count_min: float = 0,
+        input_type: str = "energy",
+        output_type: str = "energy",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price (float): 储能装置的购置价格。
+            device_count_max (float): 储能系统设备机组最大装机量
+            device_price (float): 储能装置的购置价格。
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
-            eff (float): 储能装置的充放能效率。
+            efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
-            energyStorageSystem_init (float): 储能装置的初始能量。
+            energy_init (float): 储能装置的初始能量。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 储能系统机组名称,默认为"energyStorageSystem"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        EnergyStorageSystem.index += 1
+        # self.device_name = device_name
 
-        self.energyStorageSystem_device: ContinuousVarType = model.continuous_var(
-            name="energyStorageSystem_device{0}".format(EnergyStorageSystem.index)
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
         )
+        # EnergyStorageSystem.index += 1
+
+        # self.device_count: ContinuousVarType = model.continuous_var(
+        #     name="device_count{0}".format(EnergyStorageSystem.index)
+        # )
         """
         储能系统机组等效单位设备数 大于零的实数
         """
-        self.power_energyStorageSystem: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
+        self.power: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,
-            name="power_energyStorageSystem{0}".format(EnergyStorageSystem.index),
+            name=f"power_{self.classSuffix}",
         )
+
+        # depends on what type of energy you are storing. well. it could be anything. really?
+
+        # self.input_type = input_type
+        # self.build_power_of_inputs([self.input_type])
+
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充放能功率
         """
+
+        self.input_type = input_type
+        self.output_type = output_type
+
+        self.build_power_of_inputs([self.input_type])
+        self.build_power_of_outputs([self.output_type])
+
         # 充能功率
-        self.power_energyStorageSystem_charge: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="power_energyStorageSystem_charge{0}".format(
-                EnergyStorageSystem.index
-            ),
-        )
+        # input power?
+        # self.power_of_inputs[self.input_type]: List[
+        #     ContinuousVarType
+        # ] = model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],lb=0,
+        #     name="power_of_inputs[self.input_type]{0}".format(
+        #         EnergyStorageSystem.index
+        #     ),
+        # )
+
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充能功率
         """
+
         # 放能功率
-        self.power_energyStorageSystem_discharge: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="power_energyStorageSystem_discharge{0}".format(
-                EnergyStorageSystem.index
-            ),
-        )
+        # self.power_of_outputs[self.output_type]: List[
+        #     ContinuousVarType
+        # ] = model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],lb=0,
+        #     name="power_of_outputs[self.output_type]{0}".format(
+        #         EnergyStorageSystem.index
+        #     ),
+        # )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
         """
         # 能量
-        self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="energyStorageSystem{0}".format(EnergyStorageSystem.index),
+        self.energy: List[ContinuousVarType] = model.continuous_var_list(
+            [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
         )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
-        self.energyStorageSystem_device_max = energyStorageSystem_device_max
-        self.energyStorageSystem_price = energyStorageSystem_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.powerConversionSystem_price = powerConversionSystem_price  # powerConversionSystem? power conversion system?
-        self.num_hour = num_hour
-        self.powerConversionSystem_device: ContinuousVarType = model.continuous_var(
-            name="powerConversionSystem_device{0}".format(EnergyStorageSystem.index)
+        # self.num_hour = num_hour
+        self.powerConversionSystem_device_count: ContinuousVarType = (
+            model.continuous_var(
+                name=f"powerConversionSystem_device_count_{self.classSuffix}"
+            )
         )  # powerConversionSystem
         """
         模型中的连续变量,表示 PCS 的容量。
         """
         self.charge_flag: List[BinaryVarType] = model.binary_var_list(  # is charging?
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystem_charge_flag{0}".format(
-                EnergyStorageSystem.index
-            ),
+            name=f"charge_flag_{self.classSuffix}",
         )  # 充能
         """
         模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于充能状态。
         """
         self.discharge_flag: List[BinaryVarType] = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystem_discharge_flag{0}".format(
-                EnergyStorageSystem.index
-            ),
+            name=f"discharge_flag_{self.classSuffix}",
         )  # 放能
         """
         模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于放能状态。
@@ -463,18 +707,18 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # 效率
         self.efficiency = efficiency
         self.conversion_rate_max = conversion_rate_max  # rate of change/charge?
-        self.energyStorageSystem_init = energyStorageSystem_init
+        self.energy_init = energy_init
         self.stateOfCharge_min = stateOfCharge_min
         self.stateOfCharge_max = stateOfCharge_max
-        self.annualized: ContinuousVarType = model.continuous_var(
-            name="energyStorageSystem_annualized{0}".format(EnergyStorageSystem.index)
-        )
+        # self.annualized: ContinuousVarType = model.continuous_var(
+        #     name="energyStorageSystem_annualized{0}".format(EnergyStorageSystem.index)
+        # )
         """
         每年消耗的运维成本 大于零的实数
         """
 
     def constraints_register(
-        self, model: Model, register_period_constraints: int = 1, day_node: int = 24
+        self, register_period_constraints: int = 1, day_node: int = 24
     ):
         """
         定义机组内部约束
@@ -497,116 +741,98 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             register_period_constraints (int): 注册周期约束为1
             day_node (int): 一天时间节点为24
         """
-        bigNumber = 1e10
-        irange = range(0, self.num_hour)
-        model.add_constraint(
-            self.energyStorageSystem_device <= self.energyStorageSystem_device_max
+        # self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.device_count <= self.device_count_max)
+        self.model.add_constraint(self.device_count >= 0)
+        self.model.add_constraint(
+            self.device_count * self.conversion_rate_max
+            >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
         )
-        model.add_constraint(self.energyStorageSystem_device >= 0)
-        model.add_constraint(
-            self.energyStorageSystem_device * self.conversion_rate_max
-            >= self.powerConversionSystem_device  # satisfying the need of power conversion system? power per unit?
-        )
-        model.add_constraint(self.powerConversionSystem_device >= 0)
+        self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
         # 功率拆分
-        model.add_constraints(
-            self.power_energyStorageSystem[i]
-            == -self.power_energyStorageSystem_charge[i]
-            + self.power_energyStorageSystem_discharge[i]
-            for i in irange
+        self.model.add_constraints(
+            self.power[i] == -self.power_of_inputs[self.input_type][i] + self.power_of_outputs[self.output_type][i]
+            for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i] >= 0 for i in irange
-        )
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i]
+        self.model.add_constraints(self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            self.power_of_inputs[self.input_type][i]
             <= self.charge_flag[i] * bigNumber  # smaller than infinity?
-            for i in irange
+            for i in self.hourRange
         )
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i]
-            <= self.powerConversionSystem_device
-            for i in irange
+        self.model.add_constraints(
+            self.power_of_inputs[self.input_type][i] <= self.powerConversionSystem_device_count for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i] >= 0 for i in irange
+        self.model.add_constraints(self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            self.power_of_outputs[self.output_type][i] <= self.discharge_flag[i] * bigNumber
+            for i in self.hourRange
         )
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i]
-            <= self.discharge_flag[i] * bigNumber
-            for i in irange
-        )
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i]
-            <= self.powerConversionSystem_device
-            for i in irange
+        self.model.add_constraints(
+            self.power_of_outputs[self.output_type][i] <= self.powerConversionSystem_device_count
+            for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in irange
+        self.model.add_constraints(
+            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in self.hourRange
         )
-        
+
         # should we not add these?
-        model.add_constraint(
-            self.power_energyStorageSystem_charge[0] ==
-            self.power_energyStorageSystem_charge[1] 
-        )
-        
+        self.model.add_constraint(self.power_of_inputs[self.input_type][0] == self.power_of_inputs[self.input_type][1])
+
         # # troublemaker, for battery. fixed?
-        model.add_constraint(
-            self.power_energyStorageSystem_discharge[0] == 
-            self.power_energyStorageSystem_discharge[1]
+        self.model.add_constraint(
+            self.power_of_outputs[self.output_type][0] == self.power_of_outputs[self.output_type][1]
         )
         # 节点必须是24的倍数
-        # day_node=24
+        # day_node = 24
         for day in range(1, int(self.num_hour / day_node) + 1):
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[
                     i - 1
                 ]  # previous state, previous level/state of charge
                 + (
-                    self.power_energyStorageSystem_charge[i] * self.efficiency
-                    - self.power_energyStorageSystem_discharge[i] / self.efficiency
+                    self.power_of_inputs[self.input_type][i] * self.efficiency
+                    - self.power_of_outputs[self.output_type][i] / self.efficiency
                 )
-                * simulationTime # TODO: 可以细分到秒进行仿真 需要中间变量进行步长转换
+                * simulationTime  # TODO: 可以细分到秒进行仿真 需要中间变量进行步长转换
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
 
-        model.add_constraints(
-            self.energyStorageSystem[i]
-            <= self.energyStorageSystem_device * self.stateOfCharge_max
+        self.model.add_constraints(
+            self.energy[i] <= self.device_count * self.stateOfCharge_max
             for i in range(1, self.num_hour)
         )
-        model.add_constraints(
-            self.energyStorageSystem[i]
-            >= self.energyStorageSystem_device * self.stateOfCharge_min
+        self.model.add_constraints(
+            self.energy[i] >= self.device_count * self.stateOfCharge_min
             for i in range(1, self.num_hour)
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == (
-                self.energyStorageSystem_device * self.energyStorageSystem_price
-                + self.powerConversionSystem_device * self.powerConversionSystem_price
+                self.device_count * self.device_price
+                + self.powerConversionSystem_device_count
+                * self.powerConversionSystem_price
             )
             / 15
         )
-        
+
         # # 初始值
-        # model.add_constraint(
-        #     self.energyStorageSystem[0]
-        #     == self.energyStorageSystem_init * self.energyStorageSystem_device
+        # self.model.add_constraint(
+        #     self.energy[0]
+        #     == self.energy_init * self.device_count
         # )
 
         # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # this is a flag, not a numeric value
             # i天的电量等于daynode-1天以前的电量, 当day_node == 24时只考虑i == 23的情况
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - (day_node - 1)]  # 1+i-day_node
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[i - (day_node - 1)]  # 1+i-day_node
                 for i in range(
                     day_node - 1, self.num_hour, day_node
                 )  # what is the day_node? # start, stop, step (23, 24, 24)?
@@ -614,21 +840,20 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         else:  # what else?
             # TODO: comment out misplaced init statement
             # # 初始值
-            model.add_constraint(
-                self.energyStorageSystem[0]
-                == self.energyStorageSystem_init * self.energyStorageSystem_device
+            self.model.add_constraint(
+                self.energy[0] == self.energy_init * self.device_count
             )
             # not using this?
-            # print(f"MAKING INIT TO `{self.energyStorageSystem_init} * device_count`")
+            # print(f"MAKING INIT TO `{self.energy_init} * device_count`")
             # breakpoint()
             # 两天之间的连接
             # 上一小时的电量加上这一小时的变化 得到此时的电量
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - 1]
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[i - 1]
                 + (
-                    self.power_energyStorageSystem_charge[i] * self.efficiency
-                    - self.power_energyStorageSystem_discharge[i] / self.efficiency
+                    self.power_of_inputs[self.input_type][i] * self.efficiency
+                    - self.power_of_outputs[self.output_type][i] / self.efficiency
                 )
                 * simulationTime
                 / 3600
@@ -644,8 +869,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             购买设备总费用 = 储能系统设备数 * 储能设备设备价格+功率转化设备数 * 功率转化设备价格
         """
         return (
-            solution.get_value(self.energyStorageSystem_device)
-            * self.energyStorageSystem_price
+            solution.get_value(self.device_count) * self.device_price
             + solution.get_value(self.powerConversionSystem_device)
             * self.powerConversionSystem_price
         )
@@ -664,83 +888,85 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        energyStorageSystem_device_max: float,
-        energyStorageSystem_price: float,
+        device_count_max: float,
+        device_price: float,
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init: float,
+        energy_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem_variable",
+        input_type:str="energy",
+        output_type:str="energy",
+        device_count_min:int=0
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            energyStorageSystem_device_max (float): 储能系统设备机组最大装机量
-            energyStorageSystem_price (float): 储能装置的购置价格。
+            device_count_max (float): 储能系统设备机组最大装机量
+            device_price (float): 储能装置的购置价格。
             powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
-            eff (float): 储能装置的充放能效率。
+            efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
-            energyStorageSystem_init (float): 储能装置的初始储能百分比。
+            energy_init (float): 储能装置的初始储能百分比。
             stateOfCharge_min (float): 储能装置的最小储能量百分比。
             stateOfCharge_max (float): 储能装置的最大储能量百分比。
             device_name (str): 可变容量储能系统机组名称,默认为"energyStorageSystem_variable"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        EnergyStorageSystemVariable.index += 1
+        # self.device_name = device_name
 
-        self.energyStorageSystem_device: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="energyStorageSystemVariable_device{0}".format(
-                EnergyStorageSystemVariable.index
-            ),
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
         )
+        # EnergyStorageSystemVariable.index += 1
+        self.input_type=input_type
+        self.output_type=output_type
+
+        # self.device_count: List[ContinuousVarType] = model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="energyStorageSystemVariable_device{0}".format(
+        #         EnergyStorageSystemVariable.index
+        #     ),
+        # )
         """
         可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
-        self.power_energyStorageSystem: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
+        self.power: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,
-            name="power_energyStorageSystemVariable{0}".format(
-                EnergyStorageSystemVariable.index
-            ),
+            name=f"power_{self.classSuffix}"
         )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充放能功率
         """
         # 充能功率
-        self.power_energyStorageSystem_charge: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="power_energyStorageSystemVariable_charge{0}".format(
-                EnergyStorageSystemVariable.index
-            ),
-        )
-        """
-        模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充能功率
-        """
-        # 放能功率
-        self.power_energyStorageSystem_discharge: List[
-            ContinuousVarType
-        ] = model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="power_energyStorageSystemVariable_discharge{0}".format(
-                EnergyStorageSystemVariable.index
-            ),
-        )
+        self.build_power_of_inputs([self.input_type])
+        self.build_power_of_outputs([self.output_type])
+        # self.power_of_inputs[self.input_type]: List[ContinuousVarType] = model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="powerVariable_charge{0}".format(EnergyStorageSystemVariable.index),
+        # )
+        # """
+        # 模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充能功率
+        # """
+        # # 放能功率
+        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] = model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="powerVariable_discharge{0}".format(EnergyStorageSystemVariable.index),
+        # )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
         """
         # 能量
-        self.energyStorageSystem: List[ContinuousVarType] = model.continuous_var_list(
+        self.energy: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, num_hour)],
             name="energyStorageSystemVariable{0}".format(
                 EnergyStorageSystemVariable.index
@@ -749,10 +975,10 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
-        self.energyStorageSystem_device_max = energyStorageSystem_device_max
-        self.energyStorageSystem_price = energyStorageSystem_price
+        self.device_count_max = device_count_max
+        self.device_price = device_price
         self.powerConversionSystem_price = powerConversionSystem_price
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.powerConversionSystem_device: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -786,7 +1012,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # 效率
         self.efficiency = efficiency
         self.conversion_rate_max = conversion_rate_max  # conversion rate? charge rate?
-        self.energyStorageSystem_init = energyStorageSystem_init
+        self.energy_init = energy_init
         self.stateOfCharge_min = stateOfCharge_min
         self.stateOfCharge_max = stateOfCharge_max
 
@@ -813,132 +1039,119 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             register_period_constraints (int): 注册周期约束为1
             day_node (int): 一天时间节点为24
         """
-        bigNumber = 1e10
-        irange = range(0, self.num_hour)
-        model.add_constraints(
-            self.energyStorageSystem_device[i] <= self.energyStorageSystem_device_max
-            for i in irange
+        # bigNumber = 1e10
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraints(
+            self.device_count[i] <= self.device_count_max for i in self.hourRange
         )
-        model.add_constraints(self.energyStorageSystem_device[i] >= 0 for i in irange)
-        model.add_constraints(
-            self.energyStorageSystem_device[i] * self.conversion_rate_max
+        self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            self.device_count[i] * self.conversion_rate_max
             >= self.powerConversionSystem_device[i]
-            for i in irange
+            for i in self.hourRange
         )
-        model.add_constraints(self.powerConversionSystem_device[i] >= 0 for i in irange)
+        self.model.add_constraints(
+            self.powerConversionSystem_device[i] >= 0 for i in self.hourRange
+        )
         # 功率拆分
-        model.add_constraints(
-            self.power_energyStorageSystem[i]
-            == -self.power_energyStorageSystem_charge[i]
-            + self.power_energyStorageSystem_discharge[i]
-            for i in irange
+        self.model.add_constraints(
+            self.power[i] == -self.power_of_inputs[self.input_type][i] + self.power_of_outputs[self.output_type][i]
+            for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i] >= 0 for i in irange
+        self.model.add_constraints(self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            self.power_of_inputs[self.input_type][i] <= self.charge_flag[i] * bigNumber for i in self.hourRange
         )
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i] <= self.charge_flag[i] * bigNumber
-            for i in irange
-        )
-        model.add_constraints(
-            self.power_energyStorageSystem_charge[i]
-            <= self.powerConversionSystem_device[i]
-            for i in irange
+        self.model.add_constraints(
+            self.power_of_inputs[self.input_type][i] <= self.powerConversionSystem_device[i]
+            for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i] >= 0 for i in irange
+        self.model.add_constraints(self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            self.power_of_outputs[self.output_type][i] <= self.discharge_flag[i] * bigNumber
+            for i in self.hourRange
         )
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i]
-            <= self.discharge_flag[i] * bigNumber
-            for i in irange
-        )
-        model.add_constraints(
-            self.power_energyStorageSystem_discharge[i]
-            <= self.powerConversionSystem_device[i]
-            for i in irange
+        self.model.add_constraints(
+            self.power_of_outputs[self.output_type][i] <= self.powerConversionSystem_device[i]
+            for i in self.hourRange
         )
 
-        model.add_constraints(
-            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in irange
+        self.model.add_constraints(
+            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in self.hourRange
         )
-        
+
         # seems this will discourage the simulation.
         # let's not make it zero.
-        
-        model.add_constraint(
-            self.power_energyStorageSystem_charge[0] == 
-            self.power_energyStorageSystem_charge[1]
+
+        self.model.add_constraint(self.power_of_inputs[self.input_type][0] == self.power_of_inputs[self.input_type][1])
+
+        self.model.add_constraint(
+            self.power_of_outputs[self.output_type][0] == self.power_of_outputs[self.output_type][1]
         )
-        
-        model.add_constraint(
-            self.power_energyStorageSystem_discharge[0] == 
-            self.power_energyStorageSystem_discharge[1]
-        )
-        
+
         # should we not add these statements?
-        
+
         # TODO: fix charge/discharge init value issues
         # we should set init charge/discharge value to 1
         for day in range(1, int(self.num_hour / day_node) + 1):
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - 1]
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[i - 1]
                 + (
-                    self.power_energyStorageSystem_charge[i] * self.efficiency
-                    - self.power_energyStorageSystem_discharge[i] / self.efficiency
+                    self.power_of_inputs[self.input_type][i] * self.efficiency
+                    - self.power_of_outputs[self.output_type][i] / self.efficiency
                 )
                 * simulationTime
                 / 3600
-                for i in range(1 + day_node * (day - 1), day_node * day) # not starting from the zero day?
+                for i in range(
+                    1 + day_node * (day - 1), day_node * day
+                )  # not starting from the zero day?
             )
         # TODO: figure out init (fixing init error)
-        model.add_constraint(
-            # model.add_constraints(
-            self.energyStorageSystem[0]
-            == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
+        self.model.add_constraint(
+            # self.model.add_constraints(
+            self.energy[0]
+            == self.energy_init * self.device_count[0]
             # for i in range(1, self.num_hour)
             # since it is init we should not iterate through all variables.
         )
 
-        model.add_constraints(
-            self.energyStorageSystem[i]
-            <= self.energyStorageSystem_device[i] * self.stateOfCharge_max
+        self.model.add_constraints(
+            self.energy[i] <= self.device_count[i] * self.stateOfCharge_max
             for i in range(1, self.num_hour)
         )
-        model.add_constraints(
-            self.energyStorageSystem[i]
-            >= self.energyStorageSystem_device[i] * self.stateOfCharge_min
+        self.model.add_constraints(
+            self.energy[i] >= self.device_count[i] * self.stateOfCharge_min
             for i in range(1, self.num_hour)
         )
 
         # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # register??
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - (day_node - 1)]
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[i - (day_node - 1)]
                 for i in range(day_node - 1, self.num_hour, day_node)
             )
         else:
             # 初始值
             # # TODO: figure out init
-            # model.add_constraint(
-            #     self.energyStorageSystem[0]
-            #     == self.energyStorageSystem_init * self.energyStorageSystem_device[0]
+            # self.model.add_constraint(
+            #     self.energy[0]
+            #     == self.energy_init * self.device_count[0]
             #     # since it is init we should not iterate through all variables.
             # )
             # breakpoint()
             # not breaking here?
             # 两天之间的连接
             # TODO: 8760（一年）设置为num_hour时使用这个条件
-            model.add_constraints(
-                self.energyStorageSystem[i]
-                == self.energyStorageSystem[i - 1]
+            self.model.add_constraints(
+                self.energy[i]
+                == self.energy[i - 1]
                 + (
-                    self.power_energyStorageSystem_charge[i] * self.efficiency
-                    - self.power_energyStorageSystem_discharge[i] / self.efficiency
+                    self.power_of_inputs[self.input_type][i] * self.efficiency
+                    - self.power_of_outputs[self.output_type][i] / self.efficiency
                 )
                 * simulationTime
                 / 3600
@@ -976,10 +1189,19 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         TroughPhotoThermal.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.troughPhotoThermal_device: ContinuousVarType = model.continuous_var(
             name="troughPhotoThermal_device{0}".format(TroughPhotoThermal.index)
         )
@@ -1034,7 +1256,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             powerConversionSystem_price=100,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
-            energyStorageSystem_init=1,
+            energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
         )
@@ -1042,7 +1264,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         固态储热设备初始化为`EnergyStorageSystem`
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义槽式光热机组约束条件：
 
@@ -1056,32 +1278,32 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
 
         """
-        hourRange = range(0, self.num_hour)
+        self.hourRange = range(0, self.num_hour)
         self.troughPhotoThermalSolidHeatStorage_device.constraints_register(model)
-        model.add_constraint(self.troughPhotoThermal_device >= 0)
-        model.add_constraint(
+        self.model.add_constraint(self.troughPhotoThermal_device >= 0)
+        self.model.add_constraint(
             self.troughPhotoThermal_device <= self.troughPhotoThermal_device_max
         )
-        model.add_constraints(self.power_troughPhotoThermal[h] >= 0 for h in hourRange)
-        model.add_constraints(
+        self.model.add_constraints(
+            self.power_troughPhotoThermal[h] >= 0 for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_troughPhotoThermal[h]
             <= self.troughPhotoThermal_device
             * self.intensityOfIllumination[h]
             * self.efficiency
-            for h in hourRange
+            for h in self.hourRange
         )  # 与天气相关
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_troughPhotoThermal[h]
-            + self.troughPhotoThermalSolidHeatStorage_device.power_energyStorageSystem[
-                h
-            ]
+            + self.troughPhotoThermalSolidHeatStorage_device.power[h]
             == self.power_troughPhotoThermal_steam[h]
-            for h in hourRange
+            for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
-        model.add_constraints(
-            0 <= self.power_troughPhotoThermal_steam[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_troughPhotoThermal_steam[h] for h in self.hourRange
         )  # 约束能量不能倒流
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.troughPhotoThermal_device * self.troughPhotoThermal_price / 15
             + self.troughPhotoThermalSolidHeatStorage_device.annualized
@@ -1120,10 +1342,19 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             power_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         CombinedHeatAndPower.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.combinedHeatAndPower_device: ContinuousVarType = model.continuous_var(
             name="combinedHeatAndPower_device{0}".format(CombinedHeatAndPower.index)
         )
@@ -1255,7 +1486,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -1281,100 +1512,100 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
 
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.combinedHeatAndPower_num >= 0)
-        model.add_constraint(
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.combinedHeatAndPower_num >= 0)
+        self.model.add_constraint(
             self.combinedHeatAndPower_num <= self.combinedHeatAndPower_num_max
         )
 
-        model.add_constraint(
+        self.model.add_constraint(
             self.combinedHeatAndPower_device
             == self.combinedHeatAndPower_num * self.combinedHeatAndPower_single_device
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.combinedHeatAndPower_open_flag[h]
             * self.combinedHeatAndPower_single_device
             * self.combinedHeatAndPower_limit_down_ratio
             <= self.power_combinedHeatAndPower[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # power_combinedHeatAndPower(1, h) <= combinedHeatAndPower_device * combinedHeatAndPower_open_flag(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_combinedHeatAndPower[h] <= self.combinedHeatAndPower_device
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_combinedHeatAndPower[h]
             <= self.combinedHeatAndPower_open_flag[h] * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # power_combinedHeatAndPower[h]>= 0
         # power_combinedHeatAndPower(1, h) >= combinedHeatAndPower_device - (1 - combinedHeatAndPower_open_flag[h]) * bigNumber
-        model.add_constraints(
+        self.model.add_constraints(
             self.combinedHeatAndPower_run_num[h]
             * self.combinedHeatAndPower_single_device
             >= self.power_combinedHeatAndPower[h]
-            for h in hourRange
+            for h in self.hourRange
         )  # 确定CombinedHeatAndPower开启台数
-        model.add_constraints(
+        self.model.add_constraints(
             self.combinedHeatAndPower_run_num[h]
             * self.combinedHeatAndPower_single_device
             <= self.power_combinedHeatAndPower[h]
             + self.combinedHeatAndPower_single_device
             + 1
-            for h in hourRange
+            for h in self.hourRange
         )  # 确定CombinedHeatAndPower开启台数
-        model.add_constraints(
-            0 <= self.combinedHeatAndPower_run_num[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.combinedHeatAndPower_run_num[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.combinedHeatAndPower_run_num[h] <= self.combinedHeatAndPower_num
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_combinedHeatAndPower[h]
             * self.power_to_heat_ratio  # power * power_to_heat_coefficient = heat
             == self.heat_combinedHeatAndPower[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.gas_combinedHeatAndPower[h] == self.power_combinedHeatAndPower[h] / 3.5
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.gas_cost = model.sum(
-            self.gas_combinedHeatAndPower[h] * self.gas_price[h] for h in hourRange
+            self.gas_combinedHeatAndPower[h] * self.gas_price[h] for h in self.hourRange
         )  # 统计燃气费用
         #
-        model.add_constraint(
+        self.model.add_constraint(
             self.wasteGasAndHeat_water_flag + self.wasteGasAndHeat_steam_flag == 1
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.wasteGasAndHeat_water_device.exchanger_device
             <= self.wasteGasAndHeat_water_flag * bigNumber
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.wasteGasAndHeat_steam_device.exchanger_device
             <= self.wasteGasAndHeat_steam_flag * bigNumber
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.gasTurbineSystem_device.heat_exchange[h]
             <= self.heat_combinedHeatAndPower[h] * 0.5
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.wasteGasAndHeat_water_device.heat_exchange[h]
             <= self.heat_combinedHeatAndPower[h] * 0.5
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.wasteGasAndHeat_steam_device.heat_exchange[h]
             <= self.heat_combinedHeatAndPower[h] * 0.5
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.combinedHeatAndPower_num
             * self.combinedHeatAndPower_single_device
@@ -1415,10 +1646,19 @@ class GasBoiler(IntegratedEnergySystem):
             efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         GasBoiler.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.gasBoiler_device: ContinuousVarType = model.continuous_var(
             name="gasBoiler_device{0}".format(GasBoiler.index)
         )
@@ -1456,7 +1696,7 @@ class GasBoiler(IntegratedEnergySystem):
         连续变量,表示燃气锅炉的年化费用
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -1469,21 +1709,21 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.gasBoiler_device >= 0)
-        model.add_constraint(self.gasBoiler_device <= self.gasBoiler_device_max)
-        model.add_constraints(self.heat_gasBoiler[h] >= 0 for h in hourRange)
-        model.add_constraints(
-            self.heat_gasBoiler[h] <= self.gasBoiler_device for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.gasBoiler_device >= 0)
+        self.model.add_constraint(self.gasBoiler_device <= self.gasBoiler_device_max)
+        self.model.add_constraints(self.heat_gasBoiler[h] >= 0 for h in self.hourRange)
+        self.model.add_constraints(
+            self.heat_gasBoiler[h] <= self.gasBoiler_device for h in self.hourRange
         )  # 天燃气蒸汽锅炉
-        model.add_constraints(
+        self.model.add_constraints(
             self.gas_gasBoiler[h] == self.heat_gasBoiler[h] / (10 * self.efficiency)
-            for h in hourRange
+            for h in self.hourRange
         )
         self.gas_cost = model.sum(
-            self.gas_gasBoiler[h] * self.gas_price[h] for h in hourRange
+            self.gas_gasBoiler[h] * self.gas_price[h] for h in self.hourRange
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.gasBoiler_device * self.gasBoiler_price / 15
             + self.gas_cost * 8760 / self.num_hour
@@ -1518,10 +1758,19 @@ class ElectricBoiler(IntegratedEnergySystem):
             efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         ElectricBoiler.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.electricBoiler_device: ContinuousVarType = model.continuous_var(
             name="electricBoiler_device{0}".format(ElectricBoiler.index)
         )
@@ -1563,7 +1812,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         连续变量,表示电锅炉的年化费用
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -1576,23 +1825,26 @@ class ElectricBoiler(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.electricBoiler_device >= 0)
-        model.add_constraint(self.electricBoiler_device <= self.gas_device_max)
-        model.add_constraints(self.heat_electricBoiler[h] >= 0 for h in hourRange)
-        model.add_constraints(
-            self.heat_electricBoiler[h] <= self.electricBoiler_device for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.electricBoiler_device >= 0)
+        self.model.add_constraint(self.electricBoiler_device <= self.gas_device_max)
+        self.model.add_constraints(
+            self.heat_electricBoiler[h] >= 0 for h in self.hourRange
+        )
+        self.model.add_constraints(
+            self.heat_electricBoiler[h] <= self.electricBoiler_device
+            for h in self.hourRange
         )  # 天燃气蒸汽锅炉
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_electricBoiler[h]
             == self.heat_electricBoiler[h] / self.efficiency
-            for h in hourRange
+            for h in self.hourRange
         )
         self.electricity_cost = model.sum(
             self.electricity_electricBoiler[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.electricBoiler_device * self.electricBoiler_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -1624,11 +1876,20 @@ class Exchanger(IntegratedEnergySystem):
             k (float): 传热系数(暂时没有使用)
             device_name (str): 热交换器机组名称,默认为"exchanger"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         # k 传热系数
         Exchanger.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.exchanger_device: ContinuousVarType = model.continuous_var(
             name="exchanger_device{0}".format(Exchanger.index)
         )
@@ -1651,7 +1912,7 @@ class Exchanger(IntegratedEnergySystem):
         连续变量列表,表示热交换器的每小时热交换量
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -1662,16 +1923,17 @@ class Exchanger(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.exchanger_device >= 0)
-        model.add_constraint(self.exchanger_device <= self.exchanger_device_max)
-        model.add_constraints(self.heat_exchange[h] >= 0 for h in hourRange)
-        model.add_constraints(
-            self.heat_exchange[h] <= self.exchanger_device for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.exchanger_device >= 0)
+        self.model.add_constraint(self.exchanger_device <= self.exchanger_device_max)
+        self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
+        self.model.add_constraints(
+            self.heat_exchange[h] <= self.exchanger_device for h in self.hourRange
         )  # 天燃气蒸汽锅炉
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized == self.exchanger_device * self.device_price / 15
         )
+
 
 # TODO: 运行效率与温度环境（气温）有关
 class AirHeatPump(IntegratedEnergySystem):
@@ -1699,9 +1961,18 @@ class AirHeatPump(IntegratedEnergySystem):
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
         AirHeatPump.index += 1
         self.electricity_price = electricity_price
         self.heatPump_device: ContinuousVarType = model.continuous_var(
@@ -1840,7 +2111,7 @@ class AirHeatPump(IntegratedEnergySystem):
         self.coefficientOfPerformance_heatPump_heat = 3  # 表示该组件供热时的性能系数
         self.coefficientOfPerformance_heatPump_heatStorage = 3  # 表示该组件蓄热时的性能系数
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义空气热泵机组内部约束
 
@@ -1858,67 +2129,73 @@ class AirHeatPump(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.heatPump_device)
-        model.add_constraint(self.heatPump_device <= self.device_max)
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(0 <= self.heatPump_device)
+        self.model.add_constraint(self.heatPump_device <= self.device_max)
 
-        model.add_constraints(0 <= self.power_heatPump_cool[h] for h in hourRange)
-        model.add_constraints(
+        self.model.add_constraints(
+            0 <= self.power_heatPump_cool[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_heatPump_cool[h]
             <= self.cool_heatPump_out[h] * self.heatPump_device / 100
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump_cool[h] <= bigNumber * self.heatPump_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_heatPump_cooletStorage[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_heatPump_cooletStorage[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump_cooletStorage[h]
             <= self.cooletStorage_heatPump_out[h] * self.heatPump_device / 100
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump_cooletStorage[h]
             <= bigNumber * self.heatPump_cooletStorage_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(0 <= self.power_heatPump_heat[h] for h in hourRange)
-        model.add_constraints(
+        self.model.add_constraints(
+            0 <= self.power_heatPump_heat[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_heatPump_heat[h]
             <= self.heat_heatPump_out[h] * self.heatPump_device / 100
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump_heat[h] <= bigNumber * self.heatPump_heat_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(0 <= self.power_heatPump_heatStorage[h] for h in hourRange)
-        model.add_constraints(
+        self.model.add_constraints(
+            0 <= self.power_heatPump_heatStorage[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_heatPump_heatStorage[h]
             <= self.heatStorage_heatPump_out[h] * self.heatPump_device / 100
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump_heatStorage[h]
             <= bigNumber * self.heatPump_heatStorage_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.heatPump_cool_flag[h]
             + self.heatPump_cooletStorage_flag[h]
             + self.heatPump_heat_flag[h]
             + self.heatPump_heatStorage_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_heatPump[h]
             # are you sure you want to subscribe?
             == self.power_heatPump_cool[h]
@@ -1929,22 +2206,23 @@ class AirHeatPump(IntegratedEnergySystem):
             / self.coefficientOfPerformance_heatPump_heat  # [h]
             + self.power_heatPump_heatStorage[h]
             / self.coefficientOfPerformance_heatPump_heatStorage  # [h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_heatPump[h]
             == self.power_heatPump_cool[h]
             + self.power_heatPump_cooletStorage[h]
             + self.power_heatPump_heat[h]
             + self.power_heatPump_heatStorage[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.electricity_cost = model.sum(
-            self.electricity_heatPump[h] * self.electricity_price[h] for h in hourRange
+            self.electricity_heatPump[h] * self.electricity_price[h]
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.heatPump_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -1979,11 +2257,20 @@ class WaterHeatPump(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下热冷效率
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         # 不同工况下热冷效率
         # case_ratio 不同工况下制热量/制冷量的比值
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         WaterHeatPump.index += 1
         self.electricity_price = electricity_price
         self.waterSourceHeatPumps_device: ContinuousVarType = model.continuous_var(
@@ -2072,7 +2359,9 @@ class WaterHeatPump(IntegratedEnergySystem):
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterSourceHeatPumps_heatStorage{0}".format(WaterHeatPump.index),
+            name="power_waterSourceHeatPumps_heatStorage{0}".format(
+                WaterHeatPump.index
+            ),
         )
         """
         连续变量列表,表示每个时刻水源热泵蓄热功率
@@ -2109,7 +2398,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
         self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage = 5  # 蓄热性能系数
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -2127,75 +2416,76 @@ class WaterHeatPump(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.waterSourceHeatPumps_device)
-        model.add_constraint(self.waterSourceHeatPumps_device <= self.device_max)
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(0 <= self.waterSourceHeatPumps_device)
+        self.model.add_constraint(self.waterSourceHeatPumps_device <= self.device_max)
 
-        model.add_constraints(
-            0 <= self.power_waterSourceHeatPumps_cool[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_waterSourceHeatPumps_cool[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_cool[h]
             <= self.waterSourceHeatPumps_device * self.case_ratio[0]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_cool[h]
             <= bigNumber * self.waterSourceHeatPumps_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_waterSourceHeatPumps_cooletStorage[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_waterSourceHeatPumps_cooletStorage[h]
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_cooletStorage[h]
             <= self.waterSourceHeatPumps_device * self.case_ratio[1]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_cooletStorage[h]
             <= bigNumber * self.waterSourceHeatPumps_cooletStorage_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_waterSourceHeatPumps_heat[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_waterSourceHeatPumps_heat[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_heat[h]
             <= self.waterSourceHeatPumps_device * self.case_ratio[2]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_heat[h]
             <= bigNumber * self.waterSourceHeatPumps_heat_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_waterSourceHeatPumps_heatStorage[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_waterSourceHeatPumps_heatStorage[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_heatStorage[h]
             <= self.waterSourceHeatPumps_device * self.case_ratio[3]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps_heatStorage[h]
             <= bigNumber * self.waterSourceHeatPumps_heatStorage_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterSourceHeatPumps_cool_flag[h]
             + self.waterSourceHeatPumps_cooletStorage_flag[h]
             + self.waterSourceHeatPumps_heat_flag[h]
             + self.waterSourceHeatPumps_heatStorage_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_waterSourceHeatPumps[h]
             == self.power_waterSourceHeatPumps_cool[h]
             / self.coefficientOfPerformance_waterSourceHeatPumps_cool
@@ -2205,23 +2495,23 @@ class WaterHeatPump(IntegratedEnergySystem):
             / self.coefficientOfPerformance_waterSourceHeatPumps_heat
             + self.power_waterSourceHeatPumps_heatStorage[h]
             / self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterSourceHeatPumps[h]
             == self.power_waterSourceHeatPumps_cool[h]
             + self.power_waterSourceHeatPumps_cooletStorage[h]
             + self.power_waterSourceHeatPumps_heat[h]
             + self.power_waterSourceHeatPumps_heatStorage[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.electricity_cost = model.sum(
             self.electricity_waterSourceHeatPumps[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.waterSourceHeatPumps_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -2256,9 +2546,18 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下水冷螺旋机利用率
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_spiral"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
         WaterCoolingSpiral.index += 1
         self.electricity_price = electricity_price
         self.waterCoolingSpiralMachine_device: ContinuousVarType = model.continuous_var(
@@ -2354,7 +2653,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         self.coefficientOfPerformance_waterCoolingSpiralMachine_cool = 5
         self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage = 5
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -2370,66 +2669,68 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.waterCoolingSpiralMachine_device)
-        model.add_constraint(self.waterCoolingSpiralMachine_device <= self.device_max)
-
-        model.add_constraints(
-            0 <= self.power_waterCoolingSpiralMachine_cool[h] for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(0 <= self.waterCoolingSpiralMachine_device)
+        self.model.add_constraint(
+            self.waterCoolingSpiralMachine_device <= self.device_max
         )
-        model.add_constraints(
+
+        self.model.add_constraints(
+            0 <= self.power_waterCoolingSpiralMachine_cool[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_waterCoolingSpiralMachine_cool[h]
             <= self.waterCoolingSpiralMachine_device * self.case_ratio[0]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterCoolingSpiralMachine_cool[h]
             <= bigNumber * self.waterCoolingSpiralMachine_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             0 <= self.power_waterCoolingSpiralMachine_cooletStorage[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterCoolingSpiralMachine_cooletStorage[h]
             <= self.waterCoolingSpiralMachine_device * self.case_ratio[1]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterCoolingSpiralMachine_cooletStorage[h]
             <= bigNumber * self.waterCoolingSpiralMachine_cooletStorage_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterCoolingSpiralMachine_cool_flag[h]
             + self.waterCoolingSpiralMachine_cooletStorage_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_waterCoolingSpiralMachine[h]
             == self.power_waterCoolingSpiralMachine_cool[h]
             / self.coefficientOfPerformance_waterCoolingSpiralMachine_cool
             + self.power_waterCoolingSpiralMachine_cooletStorage[h]
             / self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterCoolingSpiralMachine[h]
             == self.power_waterCoolingSpiralMachine_cool[h]
             + self.power_waterCoolingSpiralMachine_cooletStorage[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.electricity_cost = model.sum(
             self.electricity_waterCoolingSpiralMachine[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.waterCoolingSpiralMachine_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -2464,9 +2765,18 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下双工况机组利用率
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
         DoubleWorkingConditionUnit.index += 1
         self.electricity_price = electricity_price
         self.doubleWorkingConditionUnit_device: ContinuousVarType = (
@@ -2573,7 +2883,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
     # 三工况机组
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -2589,72 +2899,74 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.doubleWorkingConditionUnit_device)
-        model.add_constraint(self.doubleWorkingConditionUnit_device <= self.device_max)
-
-        model.add_constraints(
-            0 <= self.power_doubleWorkingConditionUnit_cool[h] for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(0 <= self.doubleWorkingConditionUnit_device)
+        self.model.add_constraint(
+            self.doubleWorkingConditionUnit_device <= self.device_max
         )
-        model.add_constraints(
+
+        self.model.add_constraints(
+            0 <= self.power_doubleWorkingConditionUnit_cool[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_doubleWorkingConditionUnit_cool[h]
             <= self.doubleWorkingConditionUnit_device * self.case_ratio[0]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_doubleWorkingConditionUnit_cool[h]
             <= bigNumber * self.doubleWorkingConditionUnit_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_doubleWorkingConditionUnit_ice[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_doubleWorkingConditionUnit_ice[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_doubleWorkingConditionUnit_ice[h]
             <= self.doubleWorkingConditionUnit_device * self.case_ratio[1]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_doubleWorkingConditionUnit_ice[h]
             <= bigNumber * self.doubleWorkingConditionUnit_ice_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.doubleWorkingConditionUnit_cool_flag[h]
             + self.doubleWorkingConditionUnit_ice_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_doubleWorkingConditionUnit[h]
             == self.power_doubleWorkingConditionUnit_cool[h]
             / self.coefficientOfPerformance_doubleWorkingConditionUnit_cool
             + self.power_doubleWorkingConditionUnit_ice[h]
             / self.coefficientOfPerformance_doubleWorkingConditionUnit_ice
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_doubleWorkingConditionUnit[h]
             == self.power_doubleWorkingConditionUnit_cool[h]
             + self.power_doubleWorkingConditionUnit_ice[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.electricity_cost = model.sum(
             self.electricity_doubleWorkingConditionUnit[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.doubleWorkingConditionUnit_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
         )
 
 
-#TODO: 冷水机组效率与带载情况有关 考虑分段拟合
+# TODO: 冷水机组效率与带载情况有关 考虑分段拟合
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
     """
     三工况机组类
@@ -2682,9 +2994,18 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             case_ratio (Union[np.ndarray, List]): 不同工况下三工况机组利用率
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
 
         TripleWorkingConditionUnit.index += 1
         self.electricity_price = electricity_price
@@ -2815,7 +3136,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
         self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
@@ -2832,60 +3153,62 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(0 <= self.tripleWorkingConditionUnit_device)
-        model.add_constraint(self.tripleWorkingConditionUnit_device <= self.device_max)
-
-        model.add_constraints(
-            0 <= self.power_tripleWorkingConditionUnit_cool[h] for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(0 <= self.tripleWorkingConditionUnit_device)
+        self.model.add_constraint(
+            self.tripleWorkingConditionUnit_device <= self.device_max
         )
-        model.add_constraints(
+
+        self.model.add_constraints(
+            0 <= self.power_tripleWorkingConditionUnit_cool[h] for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_cool[h]
             <= self.tripleWorkingConditionUnit_device * self.case_ratio[0]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_cool[h]
             <= bigNumber * self.tripleWorkingConditionUnit_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_tripleWorkingConditionUnit_ice[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_tripleWorkingConditionUnit_ice[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_ice[h]
             <= self.tripleWorkingConditionUnit_device * self.case_ratio[1]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_ice[h]
             <= bigNumber * self.tripleWorkingConditionUnit_ice_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
-            0 <= self.power_tripleWorkingConditionUnit_heat[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_tripleWorkingConditionUnit_heat[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_heat[h]
             <= self.tripleWorkingConditionUnit_device * self.case_ratio[2]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit_heat[h]
             <= bigNumber * self.tripleWorkingConditionUnit_heat_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.tripleWorkingConditionUnit_cool_flag[h]
             + self.tripleWorkingConditionUnit_ice_flag[h]
             + self.tripleWorkingConditionUnit_heat_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_tripleWorkingConditionUnit[h]
             == self.power_tripleWorkingConditionUnit_cool[h]
             / self.coefficientOfPerformance_tripleWorkingConditionUnit_cool
@@ -2893,22 +3216,22 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             / self.coefficientOfPerformance_tripleWorkingConditionUnit_ice
             + self.power_tripleWorkingConditionUnit_heat[h]
             / self.coefficientOfPerformance_tripleWorkingConditionUnit_heat
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_tripleWorkingConditionUnit[h]
             == self.power_tripleWorkingConditionUnit_cool[h]
             + self.power_tripleWorkingConditionUnit_ice[h]
             + self.power_tripleWorkingConditionUnit_heat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
 
         self.electricity_cost = model.sum(
             self.electricity_tripleWorkingConditionUnit[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.tripleWorkingConditionUnit_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -2939,9 +3262,18 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             electricity_price (Union[np.ndarray, List]): 24小时用电价格
             device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
         GeothermalHeatPump.index += 1
         self.electricity_price = electricity_price
         self.groundSourceHeatPump_device: ContinuousVarType = model.continuous_var(
@@ -2990,7 +3322,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵设备运行效率参数 默认为5
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义地源热泵机组约束条件:
 
@@ -3003,31 +3335,31 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
+        self.hourRange = range(0, self.num_hour)
 
-        model.add_constraint(0 <= self.groundSourceHeatPump_device)
-        model.add_constraint(self.groundSourceHeatPump_device <= self.device_max)
+        self.model.add_constraint(0 <= self.groundSourceHeatPump_device)
+        self.model.add_constraint(self.groundSourceHeatPump_device <= self.device_max)
 
-        model.add_constraints(
-            0 <= self.power_groundSourceHeatPump[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_groundSourceHeatPump[h] for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_groundSourceHeatPump[h] <= self.groundSourceHeatPump_device
-            for h in hourRange
+            for h in self.hourRange
         )
 
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_groundSourceHeatPump[h]
             == self.power_groundSourceHeatPump[h]
             / self.coefficientOfPerformance_groundSourceHeatPump
-            for h in hourRange
+            for h in self.hourRange
         )
         self.electricity_cost = model.sum(
             self.electricity_groundSourceHeatPump[h] * self.electricity_price[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # 年化
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.groundSourceHeatPump_device * self.device_price / 15
             + self.electricity_cost * 8760 / self.num_hour
@@ -3051,7 +3383,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         powerConversionSystem_price: float,
         conversion_rate_max: float,
         efficiency: float,
-        energyStorageSystem_init: float,
+        energy_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         ratio_cool: float,
@@ -3070,7 +3402,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             powerConversionSystem_price (float): 电力转换系统设备价格
             conversion_rate_max (float): 最大充放能倍率
             efficiency (float): 水罐储水效率参数
-            energyStorageSystem_init (float): 储能装置的初始能量
+            energy_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
             ratio_cool (float): 蓄冷模式下水蓄能罐单位体积的蓄冷效率
@@ -3078,9 +3410,18 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             ratio_gheat (float): 地源热泵模式下水蓄能罐单位体积的蓄热效率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        self.num_hour = num_hour
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        # self.num_hour = num_hour
         self.model = model
         # 对于水蓄能,优化的变量为水罐的体积
         self.waterStorageTank = EnergyStorageSystemVariable(
@@ -3091,7 +3432,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             powerConversionSystem_price,
             conversion_rate_max,
             efficiency,
-            energyStorageSystem_init,
+            energy_init,
             stateOfCharge_min,
             stateOfCharge_max,
         )
@@ -3155,9 +3496,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         每小时水蓄能设备是否处在高温热水状态下
         """
-        self.ratio_cool = ratio_cool 
+        self.ratio_cool = ratio_cool
         self.ratio_heat = ratio_heat
-        self.ratio_gheat = ratio_gheat # 蓄能效率 高温水
+        self.ratio_gheat = ratio_gheat  # 蓄能效率 高温水
         self.power_waterStorageTank_cool: List[
             ContinuousVarType
         ] = model.continuous_var_list(
@@ -3227,92 +3568,92 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             register_period_constraints (int): 注册周期约束为1
             day_node (int): 一天时间节点为24
         """
-        bigNumber = 1e10
-        hourRange = range(0, self.num_hour)
+        # bigNumber = 1e10
+        self.hourRange = range(0, self.num_hour)
         self.waterStorageTank.constraints_register(
             model, register_period_constraints, day_node
         )
         # waterStorageTank_device[h] == waterStorageTank_cool_flag[h] * waterStorageTank_Volume * ratio_cool + waterStorageTank_heat_flag[h] * waterStorageTank_Volume * ratio_heat + waterStorageTank_gheat_flag[
         #   h] * waterStorageTank_Volume * ratio_gheat
         # 用下面的式子进行线性化
-        model.add_constraint(
+        self.model.add_constraint(
             self.waterStorageTank_Volume <= self.waterStorageTank_Volume_max
         )
-        model.add_constraint(self.waterStorageTank_Volume >= 0)
-        model.add_constraints(
-            self.waterStorageTank.energyStorageSystem_device[h]
+        self.model.add_constraint(self.waterStorageTank_Volume >= 0)
+        self.model.add_constraints(
+            self.waterStorageTank.device_count[h]
             == self.waterStorageTank_device_cool[h]
             + self.waterStorageTank_device_heat[h]
             + self.waterStorageTank_device_gheat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
         # (1)
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_cool[h]
             <= self.waterStorageTank_Volume * self.ratio_cool
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_cool[h]
             <= self.waterStorageTank_cool_flag[h] * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank_device_cool[h] >= 0 for h in hourRange
+        self.model.add_constraints(
+            self.waterStorageTank_device_cool[h] >= 0 for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_cool[h]
             >= self.waterStorageTank_Volume * self.ratio_cool
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # (2)
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_heat[h]
             <= self.waterStorageTank_Volume * self.ratio_heat
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_heat[h]
             <= self.waterStorageTank_heat_flag[h] * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank_device_heat[h] >= 0 for h in hourRange
+        self.model.add_constraints(
+            self.waterStorageTank_device_heat[h] >= 0 for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_heat[h]
             >= self.waterStorageTank_Volume * self.ratio_heat
             - (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # (3)
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_gheat[h]
             <= self.waterStorageTank_Volume * self.ratio_gheat
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_gheat[h]
             <= self.waterStorageTank_gheat_flag[h] * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank_device_gheat[h] >= 0 for h in hourRange
+        self.model.add_constraints(
+            self.waterStorageTank_device_gheat[h] >= 0 for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_device_gheat[h]
             >= self.waterStorageTank_Volume * self.ratio_gheat
             - (1 - self.waterStorageTank_gheat_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        model.add_constraints(
+        self.model.add_constraints(
             self.waterStorageTank_cool_flag[h]
             + self.waterStorageTank_heat_flag[h]
             + self.waterStorageTank_gheat_flag[h]
             == 1
-            for h in hourRange
+            for h in self.hourRange
         )  # % 三个方面进行核算。
         # （1） power_waterStorageTank_cool[h] == power_waterStorageTank[h] * waterStorageTank_cool_flag[h]
         # （2）power_waterStorageTank_heat[h] == power_waterStorageTank[h] * waterStorageTank_heat_flag[h]
@@ -3320,84 +3661,84 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # 上面的公式进行线性化后,用下面的公式替代
         # (1)
 
-        model.add_constraints(
+        self.model.add_constraints(
             -bigNumber * self.waterStorageTank_cool_flag[h]
             <= self.power_waterStorageTank_cool[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_cool[h]
             <= bigNumber * self.waterStorageTank_cool_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank.power_energyStorageSystem[h]
+        self.model.add_constraints(
+            self.waterStorageTank.power[h]
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             <= self.power_waterStorageTank_cool[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_cool[h]
-            <= self.waterStorageTank.power_energyStorageSystem[h]
+            <= self.waterStorageTank.power[h]
             + (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # (2)
-        model.add_constraints(
+        self.model.add_constraints(
             -bigNumber * self.waterStorageTank_heat_flag[h]
             <= self.power_waterStorageTank_heat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_heat[h]
             <= bigNumber * self.waterStorageTank_heat_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank.power_energyStorageSystem[h]
+        self.model.add_constraints(
+            self.waterStorageTank.power[h]
             - (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
             <= self.power_waterStorageTank_heat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_heat[h]
-            <= self.waterStorageTank.power_energyStorageSystem[h]
+            <= self.waterStorageTank.power[h]
             + (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
         # (3)
-        model.add_constraints(
+        self.model.add_constraints(
             -bigNumber * self.waterStorageTank_gheat_flag[h]
             <= self.power_waterStorageTank_gheat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_gheat[h]
             <= bigNumber * self.waterStorageTank_gheat_flag[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
-            self.waterStorageTank.power_energyStorageSystem[h]
+        self.model.add_constraints(
+            self.waterStorageTank.power[h]
             - (1 - self.waterStorageTank_gheat_flag[h]) * bigNumber
             <= self.power_waterStorageTank_gheat[h]
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraints(
+        self.model.add_constraints(
             self.power_waterStorageTank_gheat[h]
-            <= self.waterStorageTank.power_energyStorageSystem[h]
+            <= self.waterStorageTank.power[h]
             + (1 - self.waterStorageTank_gheat_flag[h]) * bigNumber
-            for h in hourRange
+            for h in self.hourRange
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized == self.waterStorageTank_Volume * self.volume_price / 20
         )
 
 
-# groundSourceSteamGenerator?
+# electricSteamGenerator?
 # TODO: 修改为：电用蒸汽蒸汽发生器
-class GroundSourceSteamGenerator(IntegratedEnergySystem):
+class ElectricSteamGenerator(IntegratedEnergySystem):
     """
-    地源蒸汽发生器类
+    电蒸汽发生器类
     """
 
     index = 0
@@ -3406,109 +3747,110 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        groundSourceSteamGenerator_device_max: float,
-        groundSourceSteamGenerator_price: float,
-        groundSourceSteamGeneratorSolidHeatStorage_price: float,
+        electricSteamGenerator_device_max: float,
+        electricSteamGenerator_price: float,
+        electricSteamGeneratorSolidHeatStorage_price: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "groundSourceSteamGenerator",
+        device_name: str = "electricSteamGenerator",
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            groundSourceSteamGenerator_device_max (int): 表示地热蒸汽发生器的最大数量
-            groundSourceSteamGenerator_price (float): 表示地热蒸汽发生器的单价
-            groundSourceSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器机组固态储热设备单价
+            electricSteamGenerator_device_max (int): 表示地热蒸汽发生器的最大数量
+            electricSteamGenerator_price (float): 表示地热蒸汽发生器的单价
+            electricSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器机组固态储热设备单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
             efficiency (float): 效率参数
-            device_name (str): 地源蒸汽发生器机组名称，默认为"groundSourceSteamGenerator"
+            device_name (str): 电蒸汽发生器机组名称，默认为"electricSteamGenerator"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
-        GroundSourceSteamGenerator.index += 1
-        self.num_hour = num_hour
-        self.groundSourceSteamGenerator_device: ContinuousVarType = (
-            model.continuous_var(
-                name="groundSourceSteamGenerator_device{0}".format(
-                    GroundSourceSteamGenerator.index
-                )
-            )
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
+        ElectricSteamGenerator.index += 1
+        # self.num_hour = num_hour
+        self.electricSteamGenerator_device: ContinuousVarType = model.continuous_var(
+            name="electricSteamGenerator_device{0}".format(ElectricSteamGenerator.index)
         )
 
         """
-        地源蒸汽发生器机组等效单位设备数 大于零的实数
+        电蒸汽发生器机组等效单位设备数 大于零的实数
         """
-        self.power_groundSourceSteamGenerator: List[
+        self.power_electricSteamGenerator: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_groundSourceSteamGenerator{0}".format(
-                GroundSourceSteamGenerator.index
-            ),
+            name="power_electricSteamGenerator{0}".format(ElectricSteamGenerator.index),
         )
 
         """
-        地源蒸汽发生器总功率
+        电蒸汽发生器总功率
         """
-        self.power_groundSourceSteamGenerator_steam: List[
+        self.power_electricSteamGenerator_steam: List[
             ContinuousVarType
         ] = model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_groundSourceSteamGenerator_steam{0}".format(
+            name="power_electricSteamGenerator_steam{0}".format(
                 TroughPhotoThermal.index
             ),
         )
 
         """
-        地源蒸汽发生器产生蒸汽功率
+        电蒸汽发生器产生蒸汽功率
         """
-        self.groundSourceSteamGenerator_device_max = (
-            groundSourceSteamGenerator_device_max
-        )
-        self.groundSourceSteamGeneratorSolidHeatStorage_device_max = (
-            groundSourceSteamGenerator_device_max * 6
+        self.electricSteamGenerator_device_max = electricSteamGenerator_device_max
+        self.electricSteamGeneratorSolidHeatStorage_device_max = (
+            electricSteamGenerator_device_max * 6
         )
 
         """
-        地源蒸汽发生器固体蓄热最大设备数=地源蒸汽发生器最大设备数 * 6
+        电蒸汽发生器固体蓄热最大设备数=电蒸汽发生器最大设备数 * 6
         """
-        self.groundSourceSteamGenerator_price = groundSourceSteamGenerator_price
-        self.groundSourceSteamGeneratorSolidHeatStorage_price = (
-            groundSourceSteamGeneratorSolidHeatStorage_price
+        self.electricSteamGenerator_price = electricSteamGenerator_price
+        self.electricSteamGeneratorSolidHeatStorage_price = (
+            electricSteamGeneratorSolidHeatStorage_price
         )
         self.electricity_price = electricity_price
 
         self.annualized: ContinuousVarType = model.continuous_var(
-            name="GroundSourceSteamGenerator_annualized{0}".format(
-                GroundSourceSteamGenerator.index
+            name="ElectricSteamGenerator_annualized{0}".format(
+                ElectricSteamGenerator.index
             )
         )
 
         """
-        地源蒸汽发生器年化运维成本
+        电蒸汽发生器年化运维成本
         """
         self.efficiency = efficiency
 
-        self.groundSourceSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
+        self.electricSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
             num_hour,
             model,
-            self.groundSourceSteamGeneratorSolidHeatStorage_device_max,
-            self.groundSourceSteamGeneratorSolidHeatStorage_price,
+            self.electricSteamGeneratorSolidHeatStorage_device_max,
+            self.electricSteamGeneratorSolidHeatStorage_price,
             powerConversionSystem_price=0,
             conversion_rate_max=2,
             efficiency=0.9,
-            energyStorageSystem_init=1,
+            energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
         )
 
         """
-        地源蒸汽发生器固态储热,由储能设备`EnergyStorageSystem`创建而来
+        电蒸汽发生器固态储热,由储能设备`EnergyStorageSystem`创建而来
         """
         self.electricity_cost: ContinuousVarType = model.continuous_var(
-            name="groundSourceSteamGenerator_electricity_cost{0}".format(
-                GroundSourceSteamGenerator.index
+            name="electricSteamGenerator_electricity_cost{0}".format(
+                ElectricSteamGenerator.index
             )
         )
 
@@ -3516,58 +3858,52 @@ class GroundSourceSteamGenerator(IntegratedEnergySystem):
         用电成本
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦每个时段的地源蒸汽发生器的功率≦地源蒸汽发生器设备
-        3. 每个时段地源蒸汽发生器产生蒸汽功率 = 每个时段地源蒸汽发生器功率+每个时段储能系统中地源蒸汽发生器固态储能设备功率,且大于等于0
+        2. 0≦每个时段的电蒸汽发生器的功率≦电蒸汽发生器设备
+        3. 每个时段电蒸汽发生器产生蒸汽功率 = 每个时段电蒸汽发生器功率+每个时段储能系统中电蒸汽发生器固态储能设备功率,且大于等于0
         4. 用电成本=每个时段的功率 * 每个时段的电价
-        5. 年化成本=地源蒸汽发生器设备数 * 设备单价/15+地源蒸汽发生器固态储能设备年化成本+用电成本
+        5. 年化成本=电蒸汽发生器设备数 * 设备单价/15+电蒸汽发生器固态储能设备年化成本+用电成本
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        self.groundSourceSteamGeneratorSolidHeatStorage_device.constraints_register(
-            model
+        self.hourRange = range(0, self.num_hour)
+        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(model)
+        self.model.add_constraint(self.electricSteamGenerator_device >= 0)
+        self.model.add_constraint(
+            self.electricSteamGenerator_device <= self.electricSteamGenerator_device_max
         )
-        model.add_constraint(self.groundSourceSteamGenerator_device >= 0)
-        model.add_constraint(
-            self.groundSourceSteamGenerator_device
-            <= self.groundSourceSteamGenerator_device_max
+        self.model.add_constraints(
+            self.power_electricSteamGenerator[h] >= 0 for h in self.hourRange
         )
-        model.add_constraints(
-            self.power_groundSourceSteamGenerator[h] >= 0 for h in hourRange
-        )
-        model.add_constraints(
-            self.power_groundSourceSteamGenerator[h]
-            <= self.groundSourceSteamGenerator_device
-            for h in hourRange
+        self.model.add_constraints(
+            self.power_electricSteamGenerator[h] <= self.electricSteamGenerator_device
+            for h in self.hourRange
         )  # 与天气相关
-        model.add_constraints(
-            self.power_groundSourceSteamGenerator[h]
-            + self.groundSourceSteamGeneratorSolidHeatStorage_device.power_energyStorageSystem[
-                h
-            ]
-            == self.power_groundSourceSteamGenerator_steam[h]
-            for h in hourRange
+        self.model.add_constraints(
+            self.power_electricSteamGenerator[h]
+            + self.electricSteamGeneratorSolidHeatStorage_device.power[h]
+            == self.power_electricSteamGenerator_steam[h]
+            for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
-        model.add_constraints(
-            0 <= self.power_groundSourceSteamGenerator_steam[h] for h in hourRange
+        self.model.add_constraints(
+            0 <= self.power_electricSteamGenerator_steam[h] for h in self.hourRange
         )  # 约束能量不能倒流
-        model.add_constraints(
+        self.model.add_constraints(
             self.electricity_cost
-            == self.power_groundSourceSteamGenerator[h] * self.electricity_price[h]
-            for h in hourRange
+            == self.power_electricSteamGenerator[h] * self.electricity_price[h]
+            for h in self.hourRange
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
-            == self.groundSourceSteamGenerator_device
-            * self.groundSourceSteamGenerator_price
+            == self.electricSteamGenerator_device
+            * self.electricSteamGenerator_price
             / 15
-            + self.groundSourceSteamGeneratorSolidHeatStorage_device.annualized
+            + self.electricSteamGeneratorSolidHeatStorage_device.annualized
             + self.electricity_cost
         )
 
@@ -3577,25 +3913,25 @@ class Linear_absolute(object):  # absolute?
     带绝对值的线性约束类
     """
 
-    bigNumber0 = 1e10
+    # bigNumber = 1e10
     index = 0
 
-    def __init__(self, model: Model, x: List[VarType], irange: Iterable):  # irange?
+    def __init__(self, model: Model, x: List[VarType], self.hourRange: Iterable):  # self.hourRange?
         """
         初始化带绝对值的线性约束类
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`irange`内逐元素相减结果约束得到的变量组`x`
-            irange (Iterable): 整数区间
+            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`self.hourRange`内逐元素相减结果约束得到的变量组`x`
+            self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1  # 要增加变量
         self.b_positive: List[BinaryVarType] = model.binary_var_list(
-            [i for i in irange],
+            [i for i in self.hourRange],
             name="b_positive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个二进制变量列表,长度为`len(irange)`
+        一个二进制变量列表,长度为`len(self.hourRange)`
         
         对于`b_positive`和`b_negitive`,有:
         `b_positive[i] == 1`时,`b_negitive[i] == 0`
@@ -3606,90 +3942,90 @@ class Linear_absolute(object):  # absolute?
         `b_positive[i]` == 0`时,`x_positive[i] == 0`
         """
         self.b_negitive: List[BinaryVarType] = model.binary_var_list(
-            [i for i in irange],
+            [i for i in self.hourRange],
             name="b_negitive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个二进制变量列表,长度为`len(irange)`
+        一个二进制变量列表,长度为`len(self.hourRange)`
         
         对于`b_negitive`和`x_negitive`,有:
         `b_negitive[i]` == 1`时,`x_negitive[i] >= 0`
         `b_negitive[i]` == 0`时,`x_negitive[i] == 0`
         """
         self.x_positive: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in irange],
+            [i for i in self.hourRange],
             name="x_positive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个实数变量列表,长度为`len(irange)`
+        一个实数变量列表,长度为`len(self.hourRange)`
         
-        对于区间`irange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
+        对于区间`self.hourRange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
         self.x_negitive: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in irange],
+            [i for i in self.hourRange],
             name="x_negitive_absolute{0}".format(Linear_absolute.index),
         )
         """
-        一个实数变量列表,长度为`len(irange)`
+        一个实数变量列表,长度为`len(self.hourRange)`
         
-        对于区间`irange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
+        对于区间`self.hourRange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
         self.absolute_x: List[ContinuousVarType] = model.continuous_var_list(
-            [i for i in irange], name="absolute_x{0}".format(Linear_absolute.index)
+            [i for i in self.hourRange], name="absolute_x{0}".format(Linear_absolute.index)
         )
         """
-        一个实数变量列表,长度为`len(irange)`
+        一个实数变量列表,长度为`len(self.hourRange)`
         
         对于`b_positive`、`absolute_x`、`x_positive`、`x_negitive`有:
         `b_positive[i] == 1`时,`absolute_x[i] == x_positive[i]`
         `b_positive[i] == 0`时,`absolute_x[i] == x_negitive[i]`
         """
-        self.irange = irange
+        self.self.hourRange = self.hourRange
         self.x = x
 
     def absolute_add_constraints(self, model: Model):
         """
-        对于区间`irange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
+        对于区间`self.hourRange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
 
-        1. `bigNumber0 >= x_negitive[i] >= 0`,`x_positive[i] == 0`,此时`b_positive[i] == 0`,`b_negitive[i] == 1`,`x[i] == -x_negitive[i]`,`absolute_x[i] == x_negitive[i]`
-        2. `bigNumber0 >= x_positive[i] >= 0`,`x_negative[i] == 0`,此时`b_positive[i] == 1`,`b_negitive[i] == 0`,`x[i] == x_positive[i]`,`absolute_x[i] == x_positive[i]`
+        1. `bigNumber >= x_negitive[i] >= 0`,`x_positive[i] == 0`,此时`b_positive[i] == 0`,`b_negitive[i] == 1`,`x[i] == -x_negitive[i]`,`absolute_x[i] == x_negitive[i]`
+        2. `bigNumber >= x_positive[i] >= 0`,`x_negative[i] == 0`,此时`b_positive[i] == 1`,`b_negitive[i] == 0`,`x[i] == x_positive[i]`,`absolute_x[i] == x_positive[i]`
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        model.add_constraints(
-            self.b_positive[i] + self.b_negitive[i] == 1 for i in self.irange
+        self.model.add_constraints(
+            self.b_positive[i] + self.b_negitive[i] == 1 for i in self.self.hourRange
         )
         # b_positive[i]==1时,b_negitive[i]==0
         # b_positive[i]==0时,b_negitive[i]==1
-        model.add_constraints(
-            self.x_positive[i] >= 0 for i in self.irange
+        self.model.add_constraints(
+            self.x_positive[i] >= 0 for i in self.self.hourRange
         )  # x_positive[i]是非负数
-        model.add_constraints(
-            self.x_positive[i] <= self.bigNumber0 * self.b_positive[i]
-            for i in self.irange
+        self.model.add_constraints(
+            self.x_positive[i] <= self.bigNumber * self.b_positive[i]
+            for i in self.self.hourRange
         )
         # 当b_positive[i]==1时,x_positive[i]>=0
         # 当b_positive[i]==0时,x_positive[i]==0
 
-        model.add_constraints(self.x_negitive[i] >= 0 for i in self.irange)
+        self.model.add_constraints(self.x_negitive[i] >= 0 for i in self.self.hourRange)
         # x_negitive[i]是非负数
-        model.add_constraints(
-            self.x_negitive[i] <= self.bigNumber0 * self.b_negitive[i]
-            for i in self.irange
+        self.model.add_constraints(
+            self.x_negitive[i] <= self.bigNumber * self.b_negitive[i]
+            for i in self.self.hourRange
         )
 
         # 当b_negitive[i]==1时,x_negitive[i]>=0
         # 当b_negitive[i]==0时,x_negitive[i]==0
-        model.add_constraints(
-            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.irange
+        self.model.add_constraints(
+            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.self.hourRange
         )
         # x[i] == x_positive[i] - x_negitive[i]
         # 也就是说,如果b_positive[i]==1,x[i] == x_positive[i]
         # 如果b_positive[i]==0,x[i] == -x_negitive[i]
-        model.add_constraints(
+        self.model.add_constraints(
             self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
-            for i in self.irange
+            for i in self.self.hourRange
         )
 
         # absolute_x[i] == x_positive[i] + x_negitive[i]
@@ -3725,10 +4061,19 @@ class CitySupply(IntegratedEnergySystem):
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         CitySupply.index += 1
-        self.num_hour = num_hour  # hours in a day
+        # self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = model.continuous_var(
             name="citySupplied_device{0}".format(CitySupply.index)
         )
@@ -3769,7 +4114,7 @@ class CitySupply(IntegratedEnergySystem):
         市政能源年运维费用 实数变量
         """
 
-    def constraints_register(self, model: Model):
+    def constraints_register(self):
         """
         定义市政能源类内部约束条件：
 
@@ -3782,22 +4127,27 @@ class CitySupply(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        hourRange = range(0, self.num_hour)
-        model.add_constraint(self.citySupplied_device >= 0)
-        model.add_constraint(self.citySupplied_device <= self.citySupplied_device_max)
-        model.add_constraints(self.heat_citySupplied[h] >= 0 for h in hourRange)
-        model.add_constraints(
-            self.heat_citySupplied[h] <= self.citySupplied_device for h in hourRange
+        self.hourRange = range(0, self.num_hour)
+        self.model.add_constraint(self.citySupplied_device >= 0)
+        self.model.add_constraint(
+            self.citySupplied_device <= self.citySupplied_device_max
         )
-        model.add_constraints(
+        self.model.add_constraints(
+            self.heat_citySupplied[h] >= 0 for h in self.hourRange
+        )
+        self.model.add_constraints(
+            self.heat_citySupplied[h] <= self.citySupplied_device
+            for h in self.hourRange
+        )
+        self.model.add_constraints(
             self.heat_citySupplied[h]
             == self.heat_citySupplied_from[h] / self.efficiency
-            for h in hourRange
+            for h in self.hourRange
         )
         self.citySupplied_cost = model.sum(
-            self.heat_citySupplied_from[h] * self.run_price[h] for h in hourRange
+            self.heat_citySupplied_from[h] * self.run_price[h] for h in self.hourRange
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.citySupplied_device * self.device_price / 15
             + self.citySupplied_cost * 8760 / self.num_hour
@@ -3834,10 +4184,19 @@ class GridNet(IntegratedEnergySystem):
             electricity_price_to (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
-        self.device_name = device_name
-        IntegratedEnergySystem(device_name)
+        # self.device_name = device_name
+
+        val = super().__init__(
+            model=model,
+            num_hour=num_hour,
+            device_name=device_name,
+            device_count_max=device_count_max,
+            device_count_min=device_count_min,
+            device_price=device_price,
+            classObject=self.__class__,
+        )
         GridNet.index += 1
-        self.num_hour = num_hour
+        # self.num_hour = num_hour
         self.model = model
         self.gridNet_device: ContinuousVarType = model.continuous_var(
             name="gridNet_device{0}".format(GridNet.index)
@@ -3908,7 +4267,7 @@ class GridNet(IntegratedEnergySystem):
         电网发电峰值 实数
         """
 
-    def constraints_register(self, model: Model, powerPeak_pre: float = 2000):
+    def constraints_register(self, powerPeak_pre: float = 2000):
         """
         创建电网的约束条件到模型中
 
@@ -3924,21 +4283,27 @@ class GridNet(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             powerPeak_pre (float): 预估用电峰值
         """
-        hourRange = range(0, self.num_hour)
+        self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         linearization.positive_negitive_constraints_register(
             self.num_hour, model, self.total_power, self.powerFrom, self.powerTo
         )
-        model.add_constraint(self.gridNet_device >= 0)
-        model.add_constraint(self.gridNet_device <= self.gridNet_device_max)
-        model.add_constraints(
-            self.powerFrom[h] <= self.gridNet_device for h in hourRange
+        self.model.add_constraint(self.gridNet_device >= 0)
+        self.model.add_constraint(self.gridNet_device <= self.gridNet_device_max)
+        self.model.add_constraints(
+            self.powerFrom[h] <= self.gridNet_device for h in self.hourRange
         )
-        model.add_constraints(self.powerTo[h] <= self.gridNet_device for h in hourRange)
+        self.model.add_constraints(
+            self.powerTo[h] <= self.gridNet_device for h in self.hourRange
+        )
 
         # these are always true, not constraints.
-        model.add_constraints(self.powerFrom[h] <= self.powerPeak for h in hourRange)
-        model.add_constraints(self.powerTo[h] <= self.powerPeak for h in hourRange)
+        self.model.add_constraints(
+            self.powerFrom[h] <= self.powerPeak for h in self.hourRange
+        )
+        self.model.add_constraints(
+            self.powerTo[h] <= self.powerPeak for h in self.hourRange
+        )
         self.powerFrom_max = model.max(self.powerFrom)
         self.powerTo_max = model.max(self.powerFrom)
         self.powerPeak = model.max(self.powerFrom_max, self.powerTo_max)
@@ -3955,11 +4320,11 @@ class GridNet(IntegratedEnergySystem):
             model.sum(
                 self.powerFrom[h] * self.electricity_price_from[h]
                 + self.powerTo[h] * self.electricity_price_to
-                for h in hourRange
+                for h in self.hourRange
             )
             + self.baseCost
         )
-        model.add_constraint(
+        self.model.add_constraint(
             self.annualized
             == self.gridNet_device * self.device_price / 15
             + self.gridNet_cost * 8760 / self.num_hour
@@ -3971,7 +4336,7 @@ class Linearization(object):
     线性化约束类
     """
 
-    bigNumber0 = 1e10
+    # bigNumber = 1e10
     """
     一个非常大的数,默认为10的10次方
     """
@@ -4000,15 +4365,15 @@ class Linearization(object):
             bin (BinaryVarType): 控制变量
         """
         Linearization.index += 1
-        model.add_constraint(var_bin >= 0)
+        self.model.add_constraint(var_bin >= 0)
         # var_bin 大于等于 0
-        model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber0)
-        # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber0)
+        self.model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber)
+        # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber)
         # 如果bin == 1, var_bin 大于等于 var
-        model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
-        model.add_constraint(var_bin <= bin * self.bigNumber0)
+        self.model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
+        self.model.add_constraint(var_bin <= bin * self.bigNumber)
         # 如果bin == 0, var_bin 小于等于 0
-        # 如果bin == 1, var_bin 小于等于 1 * bigNumber0
+        # 如果bin == 1, var_bin 小于等于 1 * bigNumber
 
     def product_var_bins(
         self,
@@ -4016,10 +4381,10 @@ class Linearization(object):
         var_bin: List[VarType],
         var: List[VarType],
         bin0: List[BinaryVarType],
-        irange: Iterable,
+        self.hourRange: Iterable,
     ):  # bins?
         """
-        对于区间`irange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
+        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
 
         其中`var[i]`是一个大于0的实数
 
@@ -4030,15 +4395,17 @@ class Linearization(object):
             var_bin (List[VarType]): 受控变量组
             var (List[VarType]): 原变量组
             bin (List[BinaryVarType]): 控制变量组
-            irange (Iterable): 整数区间
+            self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        model.add_constraints(var_bin[i] >= 0 for i in irange)
-        model.add_constraints(
-            var_bin[i] >= var[i] - (1 - bin0[i]) * self.bigNumber0 for i in irange
+        self.model.add_constraints(var_bin[i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(
+            var_bin[i] >= var[i] - (1 - bin0[i]) * self.bigNumber for i in self.hourRange
         )
-        model.add_constraints(var_bin[i] <= var[i] for i in irange)
-        model.add_constraints(var_bin[i] <= bin0[i] * self.bigNumber0 for i in irange)
+        self.model.add_constraints(var_bin[i] <= var[i] for i in self.hourRange)
+        self.model.add_constraints(
+            var_bin[i] <= bin0[i] * self.bigNumber for i in self.hourRange
+        )
 
     def product_var_back_bins(
         self,
@@ -4046,10 +4413,10 @@ class Linearization(object):
         var_bin: List[VarType],
         var: List[VarType],
         bin0: List[BinaryVarType],
-        irangeback: Iterable,
+        self.hourRangeback: Iterable,
     ):  # back?
         """
-        对于区间`irange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
+        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
 
         其中`var[i - 1]`是一个大于0的实数
 
@@ -4060,20 +4427,20 @@ class Linearization(object):
             var_bin (List[VarType]): 受控变量组
             var (List[VarType]): 原变量组
             bin (List[BinaryVarType]): 控制变量组
-            irange (Iterable): 整数区间
+            self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        model.add_constraints(var_bin[i] >= 0 for i in irangeback)
-        model.add_constraints(
-            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * self.bigNumber0
-            for i in irangeback
+        self.model.add_constraints(var_bin[i] >= 0 for i in self.hourRangeback)
+        self.model.add_constraints(
+            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * self.bigNumber
+            for i in self.hourRangeback
         )
-        model.add_constraints(var_bin[i] <= var[i - 1] for i in irangeback)
-        model.add_constraints(
-            var_bin[i] <= bin0[i] * self.bigNumber0 for i in irangeback
+        self.model.add_constraints(var_bin[i] <= var[i - 1] for i in self.hourRangeback)
+        self.model.add_constraints(
+            var_bin[i] <= bin0[i] * self.bigNumber for i in self.hourRangeback
         )
 
-    def max_zeros( # deprecated?
+    def max_zeros(  # deprecated?
         self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
     ):  # max?
         """
@@ -4093,25 +4460,29 @@ class Linearization(object):
         Linearization.index += 1
         y_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-           name="y_flag{0}".format(Linearization.index),
+            name="y_flag{0}".format(Linearization.index),
         )
-        model.add_constraints(
+        self.model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, y[h] 小于等于 x[h] + bigNumber (此时 -bigNumber <= x[h] )
         # 当y_flag[h] == 1, y[h] 小于等于 x[h]
-        model.add_constraints(
+        self.model.add_constraints(
             y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber (此时 bigNumber >= x[h] )
         # 当y_flag[h] == 1, y[h] 大于等于 x[h] (y[h] == x[h])
-        model.add_constraints(y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        self.model.add_constraints(
+            y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
+        )
         # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
         # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
-        model.add_constraints(x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        self.model.add_constraints(
+            x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
+        )
         # 当y_flag[h] == 0, x[h] 小于等于 0 (-bigNumber<=x[h]<=0) 非正数？
         # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
-        model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
+        self.model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
         # y[h] 是非负数
 
     def add(
@@ -4136,7 +4507,9 @@ class Linearization(object):
         add_y = model.continuous_var_list(
             [i for i in range(0, num_hour)], name="add_y{0}".format(Linearization.index)
         )
-        model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
+        self.model.add_constraints(
+            add_y[h] == x1[h] + x2[h] for h in range(0, num_hour)
+        )
         return add_y
 
     def positive_negitive_constraints_register(
@@ -4163,24 +4536,24 @@ class Linearization(object):
             xnegitive (List[VarType]): 变量组`xnegitive`
         """
         Linearization.index += 1
-        bigNumber = 1e10
+        # bigNumber = 1e10
         positive_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="Linearization_positive_flag{0}".format(Linearization.index),
         )
-        model.add_constraints(
+        self.model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
         )
         # 两变量组在区间内逐元素相减 存在传入的元素组x中
-        model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
-        model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
+        self.model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
+        self.model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
         # 两变量组在区间内元素都是非负数
-        model.add_constraints(
+        self.model.add_constraints(
             xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
         )
         # 当positive_flag[h] == 0,xpositive[h] <= 0 (xpositive[h] == 0)
         # 当positive_flag[h] == 1,xpositive[h] <= bigNumber
-        model.add_constraints(
+        self.model.add_constraints(
             xnegitive[h] <= bigNumber * (1 - positive_flag[h])
             for h in range(0, num_hour)
         )
