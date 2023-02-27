@@ -1346,6 +1346,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "troughPhotoThermal",
         device_count_min: int = 0,
+        device_price_powerConversionSystem:float=100
     ):
         """
         Args:
@@ -1418,12 +1419,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.troughPhotoThermalSolidHeatStorage_device = EnergyStorageSystem(
+        self.troughPhotoThermalSolidHeatStorage= EnergyStorageSystem(
             num_hour,
             model,
             self.troughPhotoThermalSolidHeatStorage_device_max,
             self.device_price_troughPhotoThermalSolidHeatStorage,
-            device_price_powerConversionSystem=100,
+            device_price_powerConversionSystem=device_price_powerConversionSystem,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
             energy_init=1,
@@ -1448,12 +1449,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
 
         """
-        self.hourRange = range(0, self.num_hour)
-        self.troughPhotoThermalSolidHeatStorage_device.constraints_register(model)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(
-            self.device_count <= self.device_count_max
-        )
+        # self.hourRange = range(0, self.num_hour)
+        self.troughPhotoThermalSolidHeatStorage.constraints_register()
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(
+        #     self.device_count <= self.device_count_max
+        # )
         self.model.add_constraints(
             self.power_troughPhotoThermal[h] >= 0 for h in self.hourRange
         )
@@ -1464,12 +1465,16 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             * self.efficiency
             for h in self.hourRange
         )  # 与天气相关
+
+
         self.model.add_constraints(
             self.power_troughPhotoThermal[h]
             + self.troughPhotoThermalSolidHeatStorage_device.power[h]
             == self.power_troughPhotoThermal_steam[h]
             for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
+
+        
         self.model.add_constraints(
             0 <= self.power_troughPhotoThermal_steam[h] for h in self.hourRange
         )  # 约束能量不能倒流
