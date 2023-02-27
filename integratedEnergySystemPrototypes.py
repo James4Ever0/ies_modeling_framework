@@ -970,7 +970,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
 # 可变容量储能
 # TODO: 水蓄能
-class EnergyStorageSystemVariable(IntegratedEnergySystem):
+class EnergyStorageSystemVariable(EnergyStorageSystem):
     """
     可变容量储能类,适用于储能机组
     """
