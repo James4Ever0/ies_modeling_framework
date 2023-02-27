@@ -1985,19 +1985,22 @@ class GasBoiler(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
-        self.add_lower_and_upper_bounds(sel)
+        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.device_count)
         # self.model.add_constraints(self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange)
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][h] <= self.device_count for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
         
-        self.model.add_constraints(
-            self.gas_consumed[h] == self.power_of_outputs[self.output_type][h] / (10 * self.efficiency)
-            for h in self.hourRange
-        )
-        self.gas_cost = self.model.sum(
-            self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
-        )
+        self.equations(self.gas_consumed,self.elementwise_divide(self.power_of_outputs[self.output_type],10 * self.efficiency))
+        # self.model.add_constraints(
+        #     self.gas_consumed[h] == self.power_of_outputs[self.output_type][h] / (10 * self.efficiency)
+        #     for h in self.hourRange
+        # )
+        
+        self.gas_cost=self.model.sum
+        # self.gas_cost = self.model.sum(
+        #     self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
+        # )
         self.model.add_constraint(
             self.annualized
             == self.device_count * self.device_price / 15
