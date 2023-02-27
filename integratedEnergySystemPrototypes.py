@@ -880,6 +880,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
+        
+        if self.className == EnergyStorageSystemVariable.__name__:
+            self.model.add_constraint(
+            # self.model.add_constraints(
+            self.energy[0]
+            == self.energy_init * self.device_count[0]
+            # for i in range(1, self.num_hour)
+            # since it is init we should not iterate through all variables.
+        )
         self.add_lower_and_upper_bounds(
             self.energy,
             self.device_count * self.stateOfCharge_min,
@@ -899,7 +908,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             self.annualized,
             (
                 self.device_count * self.device_price
-                + self.powerConversionSystem_device_count
+                + (self.powerConversionSystem_device_count if else )
                 * self.powerConversionSystem_price
             )
             / 15,
@@ -1256,6 +1265,8 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
                 )  # not starting from the zero day?
             )
         # TODO: figure out init (fixing init error)
+
+        # init when the type is varianle
         self.model.add_constraint(
             # self.model.add_constraints(
             self.energy[0]
@@ -1264,14 +1275,20 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             # since it is init we should not iterate through all variables.
         )
 
-        self.model.add_constraints(
-            self.energy[i] <= self.device_count[i] * self.stateOfCharge_max
-            for i in range(1, self.num_hour)
+        self.add_lower_and_upper_bounds(
+            self.energy,
+            self.device_count * self.stateOfCharge_min,
+            self.device_count * self.stateOfCharge_max,
+            range(1, self.num_hour),
         )
-        self.model.add_constraints(
-            self.energy[i] >= self.device_count[i] * self.stateOfCharge_min
-            for i in range(1, self.num_hour)
-        )
+        # self.model.add_constraints(
+        #     self.energy[i] <= self.device_count[i] * self.stateOfCharge_max
+        #     for i in range(1, self.num_hour)
+        # )
+        # self.model.add_constraints(
+        #     self.energy[i] >= self.device_count[i] * self.stateOfCharge_min
+        #     for i in range(1, self.num_hour)
+        # )
 
         # 两天之间直接割裂,没有啥关系
         if register_period_constraints == 1:  # register??
