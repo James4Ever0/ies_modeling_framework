@@ -1529,6 +1529,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         electricity_to_heat_ratio: float,  # drratio?
         device_name: str = "combinedHeatAndPower",
         device_count_min: int = 0,
+        gas_to_electricity_ratio=3.5
     ):
         """
         Args:
@@ -1685,6 +1686,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
+        
+        self.gas_to_electricity_ratio = gas_to_electricity_ratio
+        
 
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
@@ -1729,7 +1733,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     == self.device_count * self.rated_power
         # )
 
-        self.add_upper_and_lower_bounds(
+        self.add_lower_and_upper_bounds(
             self.outputs["electricity"],
             self.elementwise_multiply(
                 self.on_flags, self.total_rated_power * self.running_ratio_min
@@ -1790,7 +1794,6 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.device_count_running[h] <= self.device_count for h in self.hourRange
         # )
 
-        self.
         
         self.model.add_constraints(
             self.outputs["electricity"][h]
@@ -1802,14 +1805,15 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.gas_consumed[h] == self.outputs["electricity"][h] / self.gas_to_electricity_ratio
             for h in self.hourRange
         )
-
-        self.gas_cost = self.model.sum(
-            self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
-        )  # 统计燃气费用
+        self.gas_cost = self.sum_within_range(self.elementwise_multiply(self.gas_consumed, self.gas_price), self.hourRange)
+        # self.gas_cost = self.model.sum(
+        #     self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
+        # )  # 统计燃气费用
         #
-        self.model.add_constraint(
-            self.output_hot_water_flags + self.output_steam_flags == 1
-        )
+        self.equation(self)
+        # self.model.add_constraint(
+        #     self.output_hot_water_flags + self.output_steam_flags == 1
+        # )
         self.model.add_constraint(
             self.hot_water_exchanger_2.exchanger_device
             <= self.output_hot_water_flags * bigNumber
