@@ -2050,31 +2050,31 @@ class ElectricBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # ElectricBoiler.index += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count_{0}".format(ElectricBoiler.index)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         电锅炉机组等效单位设备数 大于零的实数
         """
         self.output_type = output_type
         self.build_power_of_outputs([self.output_type])
-        # self.heat_electricBoiler: List[
+        # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(  # h? heat?
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_electricBoiler{0}".format(ElectricBoiler.index),
+        #     name="power_of_outputs[self.output_type]{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示电锅炉在每个时段的热功率
         """
         self.build_power_of_inputs(['electricity'])
-        # self.electricity_electricBoiler: List[
+        # self.electricity_consumed: List[
         #     ContinuousVarType
         # ] = self.model.continuuntous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
+        #     name="electricity_consumed{0}".format(self.classSuffix),
         # )  # 时时耗气量
         """
         连续变量列表,表示电锅炉在每个时段的电消耗量
@@ -2084,13 +2084,13 @@ class ElectricBoiler(IntegratedEnergySystem):
         self.electricity_price = electricity_price
         self.efficiency = efficiency
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="electricity_cost_{0}".format(ElectricBoiler.index)
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
         """
         连续变量,表示总用电费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
+        #     name="electricBoiler_annualized{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示电锅炉的年化费用
@@ -2109,23 +2109,23 @@ class ElectricBoiler(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(self.device_count <= self.gas_device_max)
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.gas_device_max)
         self.model.add_constraints(
-            self.heat_electricBoiler[h] >= 0 for h in self.hourRange
+            self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.heat_electricBoiler[h] <= self.device_count
+            self.power_of_outputs[self.output_type][h] <= self.device_count
             for h in self.hourRange
         )  # 天燃气蒸汽锅炉
         self.model.add_constraints(
-            self.electricity_electricBoiler[h]
-            == self.heat_electricBoiler[h] / self.efficiency
+            self.electricity_consumed[h]
+            == self.power_of_outputs[self.output_type][h] / self.efficiency
             for h in self.hourRange
         )
         self.electricity_cost = self.model.sum(
-            self.electricity_electricBoiler[h] * self.electricity_price[h]
+            self.electricity_consumed[h] * self.electricity_price[h]
             for h in self.hourRange
         )
         self.model.add_constraint(
