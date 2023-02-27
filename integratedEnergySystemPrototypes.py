@@ -410,7 +410,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         # self.device_count_max = device_count_max
         # self.device_price = device_price
         self.efficiency = efficiency
-        # self.annualized: ContinuousVarType =self.model.continuous_var(
+        # # self.annualized: ContinuousVarType =self.model.continuous_var(
         #     name="LiBr_annualized{0}".format(LiBrRefrigeration.index)
         # )
         """
@@ -537,7 +537,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         柴油发电机总发电量
         """
-        # self.annualized: ContinuousVarType =self.model.continuous_var(
+        # # self.annualized: ContinuousVarType =self.model.continuous_var(
         #     name="dieselEngine_annualized{0}".format(DieselEngine.index)
         # )
         """
@@ -603,7 +603,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        powerConversionSystem_price: float,
+        device_price_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -621,7 +621,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 储能系统设备机组最大装机量
             device_price (float): 储能装置的购置价格。
-            powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
+            device_price_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
             efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
             energy_init (float): 储能装置的初始能量。
@@ -705,11 +705,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
-        self.powerConversionSystem_price = powerConversionSystem_price  # powerConversionSystem? power conversion system?
+        self.device_price_powerConversionSystem = device_price_powerConversionSystem  # powerConversionSystem? power conversion system?
         # self.num_hour = num_hour
-        self.powerConversionSystem_device_count: ContinuousVarType = (
+        self.device_count_powerConversionSystem: ContinuousVarType = (
             self.model.continuous_var(
-                name=f"powerConversionSystem_device_count_{self.classSuffix}"
+                name=f"device_count_powerConversionSystem_{self.classSuffix}"
             )
         )  # powerConversionSystem
         """
@@ -737,7 +737,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.energy_init = energy_init
         self.stateOfCharge_min = stateOfCharge_min
         self.stateOfCharge_max = stateOfCharge_max
-        # self.annualized: ContinuousVarType =self.model.continuous_var(
+        # # self.annualized: ContinuousVarType =self.model.continuous_var(
         #     name="energyStorageSystem_annualized{0}".format(EnergyStorageSystem.index)
         # )
         """
@@ -774,17 +774,17 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count >= 0)
 
         self.add_lower_and_upper_bounds(
-            self.powerConversionSystem_device_count
-            if isinstance(self.powerConversionSystem_device_count)
-            else [self.powerConversionSystem_device_count],
+            self.device_count_powerConversionSystem
+            if isinstance(self.device_count_powerConversionSystem)
+            else [self.device_count_powerConversionSystem],
             0,
             self.device_count * self.conversion_rate_max,
         )
         # self.model.add_constraint(
         #     self.device_count * self.conversion_rate_max
-        #     >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
+        #     >= self.device_count_powerConversionSystem  # satisfying the need of power conversion system? power per unit?
         # )
-        # self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
+        # self.model.add_constraint(self.device_count_powerConversionSystem >= 0)
         # 功率拆分
 
         self.equations(
@@ -808,7 +808,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.charge_flags, bigNumber),
-                self.powerConversionSystem_device_count,
+                self.device_count_powerConversionSystem,
             ),
             self.hourRange,
         )
@@ -824,7 +824,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         # self.model.add_constraints(
         #     self.power_of_inputs[self.input_type][i]
-        #     <= self.powerConversionSystem_device_count
+        #     <= self.device_count_powerConversionSystem
         #     for i in self.hourRange
         # )
 
@@ -833,7 +833,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.discharge_flags, bigNumber),
-                self.powerConversionSystem_device_count,
+                self.device_count_powerConversionSystem,
             ),
             self.hourRange,
         )
@@ -847,7 +847,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # )
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][i]
-        #     <= self.powerConversionSystem_device_count
+        #     <= self.device_count_powerConversionSystem
         #     for i in self.hourRange
         # )
 
@@ -910,11 +910,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             (
                 self.device_count * self.device_price
                 + (
-                    self.model.max(self.powerConversionSystem_device_count)
-                    if isinstance(self.powerConversionSystem_device_count, List)
-                    else self.powerConversionSystem_device_count
+                    self.model.max(self.device_count_powerConversionSystem)
+                    if isinstance(self.device_count_powerConversionSystem, List)
+                    else self.device_count_powerConversionSystem
                 )
-                * self.powerConversionSystem_price
+                * self.device_price_powerConversionSystem
             )
             / 15,
         )
@@ -922,8 +922,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         #     self.annualized
         #     == (
         #         self.device_count * self.device_price
-        #         + self.powerConversionSystem_device_count
-        #         * self.powerConversionSystem_price
+        #         + self.device_count_powerConversionSystem
+        #         * self.device_price_powerConversionSystem
         #     )
         #     / 15
         # )
@@ -980,11 +980,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         return (
             solution.get_value(self.device_count) * self.device_price
             + (
-                max(solution.get_values(self.powerConversionSystem_device_count))
-                if isinstance(self.powerConversionSystem_device_count, List)
-                else solution.get_value(self.powerConversionSystem_device_count)
+                max(solution.get_values(self.device_count_powerConversionSystem))
+                if isinstance(self.device_count_powerConversionSystem, List)
+                else solution.get_value(self.device_count_powerConversionSystem)
             )
-            * self.powerConversionSystem_price
+            * self.device_price_powerConversionSystem
         )
 
 
@@ -1003,7 +1003,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        powerConversionSystem_price: float,
+        device_price_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -1020,7 +1020,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 储能系统设备机组最大装机量
             device_price (float): 储能装置的购置价格。
-            powerConversionSystem_price (float): 储能装置与电网之间的 PCS 转换价格。
+            device_price_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
             efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
             energy_init (float): 储能装置的初始储能百分比。
@@ -1042,7 +1042,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             stateOfCharge_max=stateOfCharge_max,
             input_type=input_type,
             output_type=output_type,
-            powerConversionSystem_price=powerConversionSystem_price,
+            device_price_powerConversionSystem=device_price_powerConversionSystem,
             conversion_rate_max=conversion_rate_max,
             efficiency=efficiency,
             energy_init=energy_init,
@@ -1095,13 +1095,13 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
-        # self.powerConversionSystem_price = powerConversionSystem_price
+        # self.device_price_powerConversionSystem = device_price_powerConversionSystem
         # self.num_hour = num_hour
-        self.powerConversionSystem_device_count: List[
+        self.device_count_powerConversionSystem: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
-            name=f"powerConversionSystem_device_count_{self.classSuffix}",
+            name=f"device_count_powerConversionSystem_{self.classSuffix}",
         )
         # powerConversionSystem
         """
@@ -1159,18 +1159,18 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #     # )
     #     # self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
     #     self.add_lower_and_upper_bounds(
-    #         self.powerConversionSystem_device_count,
+    #         self.device_count_powerConversionSystem,
     #         0,
     #         self.elementwise_multiply(self.device_count, self.conversion_rate_max),
     #         self.hourRange,
     #     )
     #     # self.model.add_constraints(
     #     #     self.device_count[i] * self.conversion_rate_max
-    #     #     >= self.powerConversionSystem_device_count[i]
+    #     #     >= self.device_count_powerConversionSystem[i]
     #     #     for i in self.hourRange
     #     # )
     #     # self.model.add_constraints(
-    #     #     self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
+    #     #     self.device_count_powerConversionSystem[i] >= 0 for i in self.hourRange
     #     # )
 
     #     # 功率拆分
@@ -1193,7 +1193,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #         0,
     #         self.elementwise_min(
     #             self.elementwise_multiply(self.charge_flags, bigNumber),
-    #             self.powerConversionSystem_device_count,
+    #             self.device_count_powerConversionSystem,
     #         ),
     #         self.hourRange,
     #     )
@@ -1206,7 +1206,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #     # )
     #     # self.model.add_constraints(
     #     #     self.power_of_inputs[self.input_type][i]
-    #     #     <= self.powerConversionSystem_device_count[i]
+    #     #     <= self.device_count_powerConversionSystem[i]
     #     #     for i in self.hourRange
     #     # )
 
@@ -1215,7 +1215,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #         0,
     #         self.elementwise_min(
     #             self.elementwise_multiply(self.discharge_flags, bigNumber),
-    #             self.powerConversionSystem_device_count,
+    #             self.device_count_powerConversionSystem,
     #         ),
     #         self.hourRange,
     #     )
@@ -1229,7 +1229,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #     # )
     #     # self.model.add_constraints(
     #     #     self.power_of_outputs[self.output_type][i]
-    #     #     <= self.powerConversionSystem_device_count[i]
+    #     #     <= self.device_count_powerConversionSystem[i]
     #     #     for i in self.hourRange
     #     # )
 
@@ -1341,7 +1341,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        troughPhotoThermalSolidHeatStorage_device_price: float,  # (csgrgtxr是啥)
+        device_price_troughPhotoThermalSolidHeatStorage: float,  # (csgrgtxr是啥)
         intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
@@ -1353,7 +1353,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 槽式光热设备机组最大装机量
             device_price (float): 槽式光热设备的购置价格。
-            troughPhotoThermalSolidHeatStorage_device_price (float): 槽式光热储能设备价格
+            device_price_troughPhotoThermalSolidHeatStorage (float): 槽式光热储能设备价格
             intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
@@ -1397,20 +1397,20 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         槽式光热机组每小时产蒸汽功率 实数变量列表
         """
         self.device_count_max = device_count_max
-        self.troughPhotoThermalSolidHeatStorage_device_count_max: float = (
+        self.device_count_max_troughPhotoThermalSolidHeatStorage: float = (
             device_count_max * 6
         )
         """
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
         self.device_price = device_price
-        self.troughPhotoThermalSolidHeatStorage_device_price = (
-            troughPhotoThermalSolidHeatStorage_device_price
+        self.device_price_troughPhotoThermalSolidHeatStorage = (
+            device_price_troughPhotoThermalSolidHeatStorage
         )
         self.intensityOfIllumination = (
             intensityOfIllumination  # intensityOfIllumination
         )
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
         )
         """
@@ -1422,8 +1422,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             num_hour,
             model,
             self.troughPhotoThermalSolidHeatStorage_device_max,
-            self.troughPhotoThermalSolidHeatStorage_device_price,
-            powerConversionSystem_price=100,
+            self.device_price_troughPhotoThermalSolidHeatStorage,
+            device_price_powerConversionSystem=100,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
             energy_init=1,
@@ -1598,7 +1598,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         整数型,表示热电联产实际装机数量
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
         )
         """
@@ -1861,7 +1861,7 @@ class GasBoiler(IntegratedEnergySystem):
         """
         连续变量,表示总燃气费用
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="gasBoiler_annualized{0}".format(GasBoiler.index)
         )
         """
@@ -1978,7 +1978,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量,表示总用电费用
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
         )
         """
@@ -2070,7 +2070,7 @@ class Exchanger(IntegratedEnergySystem):
         """
         热交换器机组等效单位设备数 大于零的实数变量
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="exchanger_annualized{0}".format(Exchanger.index)
         )
         """
@@ -2156,7 +2156,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         空气热泵机组等效单位设备数 大于零的实数
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="AirHeatPumpower_annualized{0}".format(AirHeatPump.index)
         )
         """
@@ -2469,7 +2469,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         水源热泵机组等效单位设备数 大于零的实数
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="WaterHeatPumpower_annualized{0}".format(WaterHeatPump.index)
         )
         """
@@ -2761,7 +2761,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         """
         水冷螺旋机机组等效单位设备数 大于零的实数
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="waterCoolingSpiral_annualized{0}".format(WaterCoolingSpiral.index)
         )
         """
@@ -2985,7 +2985,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         """
         双工况机组等效单位设备数 大于零的实数
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="DoubleWorkingConditionUnit_annualized{0}".format(
                 DoubleWorkingConditionUnit.index
             )
@@ -3216,7 +3216,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         """
         三工况机组等效单位设备数 大于零的实数
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="TripleWorkingConditionUnit_annualized{0}".format(
                 TripleWorkingConditionUnit.index
             )
@@ -3480,7 +3480,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         地源热泵机组设备数量
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="GeothermalHeatPumpower_annualized{0}".format(GeothermalHeatPump.index)
         )
         """
@@ -3578,7 +3578,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         model: Model,
         waterStorageTank_Volume_max: float,  # V?
         volume_price: float,
-        powerConversionSystem_price: float,
+        device_price_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -3598,7 +3598,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             waterStorageTank_Volume_max (float): 单个水罐的最大体积
             volume_price (float): 单位体积储水费用
-            powerConversionSystem_price (float): 电力转换系统设备价格
+            device_price_powerConversionSystem (float): 电力转换系统设备价格
             conversion_rate_max (float): 最大充放能倍率
             efficiency (float): 水罐储水效率参数
             energy_init (float): 储能装置的初始能量
@@ -3628,7 +3628,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             model,
             bigNumber,
             0,
-            powerConversionSystem_price,
+            device_price_powerConversionSystem,
             conversion_rate_max,
             efficiency,
             energy_init,
@@ -3731,7 +3731,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         每小时水蓄能设备储能功率 高温热水状态下
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="power_waterStorageTank_annualized{0}".format(self.index)
         )
         """
@@ -4031,7 +4031,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         )
         self.electricity_price = electricity_price
 
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="ElectricSteamGenerator_annualized{0}".format(
                 ElectricSteamGenerator.index
             )
@@ -4047,7 +4047,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             model,
             self.electricSteamGeneratorSolidHeatStorage_device_max,
             self.electricSteamGeneratorSolidHeatStorage_price,
-            powerConversionSystem_price=0,
+            device_price_powerConversionSystem=0,
             conversion_rate_max=2,
             efficiency=0.9,
             energy_init=1,
@@ -4321,7 +4321,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源消耗总费用 实数变量
         """
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="citySupplied_annualized{0}".format(CitySupply.index)
         )
         """
@@ -4433,7 +4433,7 @@ class GridNet(IntegratedEnergySystem):
         电网用电费用 非负实数
         """
 
-        self.annualized: ContinuousVarType = self.model.continuous_var(
+        # self.annualized: ContinuousVarType = self.model.continuous_var(
             name="gridNet_annualized{0}".format(GridNet.index)
         )
         """
