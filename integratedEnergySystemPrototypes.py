@@ -1833,7 +1833,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
         self.add_lower_and_upper_bounds(
-            self.hot_water_exchanger_2.exchanger_device,
+            self.hot_water_exchanger_2.device_count,
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.output_hot_water_flags, bigNumber),
@@ -1842,11 +1842,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.hourRange,
         )
         # self.model.add_constraint(
-        #     self.hot_water_exchanger_2.exchanger_device
+        #     self.hot_water_exchanger_2.device_count
         #     <= self.output_hot_water_flags * bigNumber
         # )
         self.add_lower_and_upper_bounds(
-            self.steam_exchanger.exchanger_device,
+            self.steam_exchanger.device_count,
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.output_steam_flags, bigNumber),
@@ -1855,10 +1855,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.hourRange,
         )
         # self.model.add_constraint(
-        #     self.steam_exchanger.exchanger_device <= self.output_steam_flags * bigNumber
+        #     self.steam_exchanger.device_count <= self.output_steam_flags * bigNumber
         # )
         self.add_lower_and_upper_bounds(
-            self.hot_water_exchanger_1.exchanger_device,
+            self.hot_water_exchanger_1.device_count,
             0,
             self.elementwise_multiply(self.heat_generated, 0.5),
             self.hourRange,
@@ -2097,6 +2097,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量,表示电锅炉的年化费用
         """
+        return val
 
     def constraints_register(self):
         """
@@ -2180,10 +2181,10 @@ class Exchanger(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # k 传热系数
-        Exchanger.index += 1
+        # Exchanger.index += 1
         # self.num_hour = num_hour
-        self.exchanger_device: ContinuousVarType = self.model.continuous_var(
-            name="exchanger_device{0}".format(Exchanger.index)
+        self.device_count: ContinuousVarType = self.model.continuous_var(
+            name="device_count{0}".format(Exchanger.index)
         )
         """
         热交换器机组等效单位设备数 大于零的实数变量
@@ -2195,7 +2196,7 @@ class Exchanger(IntegratedEnergySystem):
         连续变量,表示热交换器的年化费用
         """
         self.device_price = device_price
-        self.exchanger_device_count_max = device_max
+        self.device_count_max = device_count_max
         self.heat_exchange: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_exchanger{0}".format(Exchanger.index),
@@ -2209,21 +2210,23 @@ class Exchanger(IntegratedEnergySystem):
         定义机组内部约束
 
         1. 0≦机组设备数≦最大设备量
-        2. 0≦热交换器的热功率≦热交换器运行量
+        2. 0≦热交换器的热功率≦热交换器总设备量
         3. 热交换器的总年化成本 == 热交换器设备数 * 设备价格/15
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.exchanger_device >= 0)
-        self.model.add_constraint(self.exchanger_device <= self.exchanger_device_max)
-        self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
-        self.model.add_constraints(
-            self.heat_exchange[h] <= self.exchanger_device for h in self.hourRange
-        )  # 天燃气蒸汽锅炉
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        
+        self.add_lower_and_upper_bounds(self.heat)
+        # self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
+        # self.model.add_constraints(
+        #     self.heat_exchange[h] <= self.device_count for h in self.hourRange
+        # )  # 天燃气蒸汽锅炉
         self.model.add_constraint(
-            self.annualized == self.exchanger_device * self.device_price / 15
+            self.annualized == self.device_count * self.device_price / 15
         )
 
 
