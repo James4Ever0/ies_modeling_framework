@@ -1492,14 +1492,20 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # troughPhotoThermal系统产生的highTemperature
 
-        self.model.add_constraints(
-            0 <= self.outputs[self.output_type][h] for h in self.hourRange
-        )  # 约束能量不能倒流
-        self.model.add_constraint(
-            self.annualized
-            == self.device_count * self.device_price / 15
-            + self.troughPhotoThermalSolidHeatStorage.annualized
+        # self.model.add_constraints(
+        #     0 <= self.outputs[self.output_type][h] for h in self.hourRange
+        # )  # 约束能量不能倒流
+        self.add_lower_bounds(self.outputs[self.output_type], 0)
+        self.equation(
+            self.annualized,
+            self.device_count * self.device_price / 15
+            + self.troughPhotoThermalSolidHeatStorage.annualized,
         )
+        # self.model.add_constraint(
+        #     self.annualized
+        #     == self.device_count * self.device_price / 15
+        #     + self.troughPhotoThermalSolidHeatStorage.annualized
+        # )
 
 
 # CombinedHeatAndPower设备
@@ -1516,8 +1522,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        combinedHeatAndPower_num_max: float,
-        combinedHeatAndPower_price: float,
+        device_count_max: float,
+        device_price: float,
         gas_price: Union[np.ndarray, List],
         combinedHeatAndPower_single_device: float,
         power_to_heat_ratio: float,  # drratio?
@@ -1528,8 +1534,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            combinedHeatAndPower_num_max (float): 表示热电联产机组的最大等效设备数量
-            combinedHeatAndPower_price (float): 表示热电联产等效设备的单价
+            device_count_max (float): 表示热电联产机组的最大等效设备数量
+            device_price (float): 表示热电联产等效设备的单价
             gas_price (Union[np.ndarray, List]): 表示燃气的单价
             combinedHeatAndPower_single_device (float): 表示每台热电联产设备的等效设备数量
             power_to_heat_ratio (float): 表示热电联产设备的电热比。
@@ -1581,7 +1587,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型列表,表示热电联产在每个时段的耗气量
         """
-        self.combinedHeatAndPower_price = combinedHeatAndPower_price
+        self.device_price = device_price
         self.gas_price = gas_price
         self.combinedHeatAndPower_open_flag: List[
             BinaryVarType
@@ -1632,7 +1638,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型,表示总燃气费用
         """
-        self.combinedHeatAndPower_num_max = combinedHeatAndPower_num_max
+        self.device_count_max = device_count_max
         self.combinedHeatAndPower_single_device = combinedHeatAndPower_single_device
         self.combinedHeatAndPower_limit_down_ratio = (
             0.2  # ? devices cannot be turned down more than 20% ? what is this?
@@ -1708,7 +1714,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(self.combinedHeatAndPower_num >= 0)
         self.model.add_constraint(
-            self.combinedHeatAndPower_num <= self.combinedHeatAndPower_num_max
+            self.combinedHeatAndPower_num <= self.device_count_max
         )
 
         self.model.add_constraint(
@@ -1802,7 +1808,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.annualized
             == self.combinedHeatAndPower_num
             * self.combinedHeatAndPower_single_device
-            * self.combinedHeatAndPower_price
+            * self.device_price
             / 15
             + self.gasTurbineSystem_device.annualized
             + self.wasteGasAndHeat_water_device.annualized
