@@ -127,7 +127,9 @@ class IntegratedEnergySystem(object):
     def add_lower_bound(self, variable, lower_bound):
         self.model.add_constraint(lower_bound <= variable)  # 最大装机量
 
-    def add_lower_bounds(self, variables, lower_bounds, index_range):
+    def add_lower_bounds(self, variables, lower_bounds, index_range=None):
+        index_range = self.get_index_range(index_range)
+        
         self.constraint_multiplexer(
             variables, lower_bounds, index_range, self.add_lower_bound
         )
@@ -135,7 +137,9 @@ class IntegratedEnergySystem(object):
     def add_upper_bound(self, variable, upper_bound):
         self.model.add_constraint(upper_bound >= variable)  # 最大装机量
 
-    def add_upper_bounds(self, variables, upper_bounds, index_range):
+    def add_upper_bounds(self, variables, upper_bounds, index_range=None):
+        index_range = self.get_index_range(index_range)
+        
         self.constraint_multiplexer(
             variables, upper_bounds, index_range, self.add_upper_bound
         )
@@ -143,18 +147,18 @@ class IntegratedEnergySystem(object):
     def equation(self, variable, value):
         self.model.add_constraint(variable == value)
 
-    def equations(self, variables, values, index_range):
-        self.constraint_multiplexer(variables, values, index_range, self.equation)
+    def equations(self, variables, values, index_range=None):
+        self.constraint_multiplexer(variables, values, index_range=index_range, equation=self.equation)
 
     def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
         self.add_lower_bound(variable, lower_bound)
         self.add_upper_bound(variable, upper_bound)
 
     def add_lower_and_upper_bounds(
-        self, variable, lower_bounds, upper_bounds, index_range
+        self, variable, lower_bounds, upper_bounds, index_range=None
     ):
-        self.add_lower_bounds(variable, lower_bounds, index_range)
-        self.add_upper_bounds(variable, upper_bounds, index_range)
+        self.add_lower_bounds(variable, lower_bounds, index_range=index_range)
+        self.add_upper_bounds(variable, upper_bounds, index_range=index_range)
 
     def constraints_register(self):
         self.add_lower_and_upper_bound(
@@ -211,8 +215,14 @@ class IntegratedEnergySystem(object):
 
     def elementwise_subtract(self, variables, values):
         return self.elementwise_operation(variables, values, self.subtract)
+    
+    def get_index_range(self, index_range=None):
+        if index_range is None:
+            index_range = self.hourRange
+        return index_range
 
-    def sum_within_range(self, variables, index_range):
+    def sum_within_range(self, variables, index_range=None):
+        index_range = self.get_index_range(index_range)
         result = self.model.sum(variables[index] for index in index_range)
         return result
 
@@ -1818,7 +1828,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # self.model.add_constraint(
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
-        self.add_lower_and_upper_bounds(self.hot_water_exchanger_2.exchanger_device,0,self.elementwise_min(self.elementwise_multiply(self.output_hot_water_flags ,bigNumber),))
+        self.add_lower_and_upper_bounds(self.hot_water_exchanger_2.exchanger_device,0,self.elementwise_min(self.elementwise_multiply(self.output_hot_water_flags ,bigNumber),self.elementwise_multiply(self.heat_generated,0.5)), self.hourRange)
         # self.model.add_constraint(
         #     self.hot_water_exchanger_2.exchanger_device
         #     <= self.output_hot_water_flags * bigNumber
