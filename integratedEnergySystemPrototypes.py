@@ -1986,6 +1986,7 @@ class GasBoiler(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
+        
         self.add_lower_and_upper_bounds(
             self.power_of_outputs[self.output_type], 0, self.device_count
         )
