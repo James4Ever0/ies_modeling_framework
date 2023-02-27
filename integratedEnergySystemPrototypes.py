@@ -1437,7 +1437,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.troughPhotoThermalSolidHeatStorage = EnergyStorageSystem(
             num_hour,
             model,
-            self.troughPhotoThermalSolidHeatStorage_device_max,
+            self.troughPhotoThermalSolidHeatStorage_device_count_max,
             self.device_price_troughPhotoThermalSolidHeatStorage,
             device_price_powerConversionSystem=device_price_powerConversionSystem,
             conversion_rate_max=2,  # change?
@@ -2132,7 +2132,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
-        # self.model.add_constraint(self.device_count <= self.gas_device_max)
+        # self.model.add_constraint(self.device_count <= self.gas_device_count_max)
 
         self.add_lower_and_upper_bounds(
             self.power_of_outputs[self.output_type], 0, self.device_count
@@ -2468,6 +2468,8 @@ class AirHeatPump(IntegratedEnergySystem):
         self.coefficientOfPerformance_heatPump_cooletStorage = 3  # 表示该组件蓄冷时的性能系数
         self.coefficientOfPerformance_heatPump_heat = 3  # 表示该组件供热时的性能系数
         self.coefficientOfPerformance_heatPump_heatStorage = 3  # 表示该组件蓄热时的性能系数
+        
+        return val
 
     def constraints_register(self):
         """
@@ -2501,7 +2503,7 @@ class AirHeatPump(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,self.elementwise_multiply(bigNumber,self.heatPump_cool_flag))
+        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,self.elementwise_multiply(self.heatPump_cool_flag,bigNumber))
         # self.model.add_constraints(
         #     self.power_heatPump_cool[h] <= bigNumber * self.heatPump_cool_flag[h]
         #     for h in self.hourRange
@@ -2517,21 +2519,24 @@ class AirHeatPump(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        
-        self.model.add_constraints(
-            self.power_heatPump_cooletStorage[h]
-            <= bigNumber * self.heatPump_cooletStorage_flag[h]
-            for h in self.hourRange
-        )
+        self.add_upper_bounds(self.power_heatPump_cooletStorage,self.elementwise_multiply(self.heatPump_cooletStorage_flag,bigNumber))
+        # self.model.add_constraints(
+        #     self.power_heatPump_cooletStorage[h]
+        #     <= bigNumber * self.heatPump_cooletStorage_flag[h]
+        #     for h in self.hourRange
+        # )
 
-        self.model.add_constraints(
-            0 <= self.power_heatPump_heat[h] for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_heatPump_heat[h]
-            <= self.heat_heatPump_out[h] * self.device_count / 100
-            for h in self.hourRange
-        )
+        self.add_lower_and_upper_bounds(self.power_heatPump_heat,0,self.elementwise_multiply(self.heat_heatPump_out, self.device_count / 100))
+        # self.model.add_constraints(
+        #     0 <= self.power_heatPump_heat[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_heatPump_heat[h]
+        #     <= self.heat_heatPump_out[h] * self.device_count / 100
+        #     for h in self.hourRange
+        # )
+
+        
         self.model.add_constraints(
             self.power_heatPump_heat[h] <= bigNumber * self.heatPump_heat_flag[h]
             for h in self.hourRange
@@ -2657,7 +2662,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         连续变量,表示水源热泵的用电成本
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
         self.case_ratio = case_ratio
 
         self.power_waterSourceHeatPumps_cool: List[
@@ -2783,7 +2788,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(0 <= self.waterSourceHeatPumps_device)
-        self.model.add_constraint(self.waterSourceHeatPumps_device <= self.device_max)
+        self.model.add_constraint(self.waterSourceHeatPumps_device <= self.device_count_max)
 
         self.model.add_constraints(
             0 <= self.power_waterSourceHeatPumps_cool[h] for h in self.hourRange
@@ -2951,7 +2956,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         连续变量,表示水冷螺旋机的用电成本
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
         self.case_ratio = case_ratio
         self.power_waterCoolingSpiralMachine_cool: List[
             ContinuousVarType
@@ -3042,7 +3047,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(0 <= self.waterCoolingSpiralMachine_device)
         self.model.add_constraint(
-            self.waterCoolingSpiralMachine_device <= self.device_max
+            self.waterCoolingSpiralMachine_device <= self.device_count_max
         )
 
         self.model.add_constraints(
@@ -3177,7 +3182,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         连续变量,表示双工况机组的用电成本
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
         self.case_ratio = case_ratio
         self.power_doubleWorkingConditionUnit_cool: List[
             ContinuousVarType
@@ -3273,7 +3278,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(0 <= self.doubleWorkingConditionUnit_device)
         self.model.add_constraint(
-            self.doubleWorkingConditionUnit_device <= self.device_max
+            self.doubleWorkingConditionUnit_device <= self.device_count_max
         )
 
         self.model.add_constraints(
@@ -3408,7 +3413,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         连续变量,表示三工况机组的用电成本
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
         self.case_ratio = case_ratio
         self.power_tripleWorkingConditionUnit_cool: List[
             ContinuousVarType
@@ -3528,7 +3533,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(0 <= self.tripleWorkingConditionUnit_device)
         self.model.add_constraint(
-            self.tripleWorkingConditionUnit_device <= self.device_max
+            self.tripleWorkingConditionUnit_device <= self.device_count_max
         )
 
         self.model.add_constraints(
@@ -3670,7 +3675,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵每小时耗电费用
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
 
         self.electricity_groundSourceHeatPump: List[
             ContinuousVarType
@@ -3711,7 +3716,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
 
         self.model.add_constraint(0 <= self.groundSourcedevice_count)
-        self.model.add_constraint(self.groundSourcedevice_count <= self.device_max)
+        self.model.add_constraint(self.groundSourcedevice_count <= self.device_count_max)
 
         self.model.add_constraints(
             0 <= self.power_groundSourceHeatPump[h] for h in self.hourRange
@@ -4192,7 +4197,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         电蒸汽发生器产生蒸汽功率
         """
-        self.electricSteamGenerator_device_count_max = electricSteamGenerator_device_max
+        self.electricSteamGenerator_device_count_max = electricSteamGenerator_device_count_max
         self.electricSteamGeneratorSolidHeatStorage_device_count_max = (
             electricSteamGenerator_device_count_max * 6
         )
@@ -4220,7 +4225,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
             num_hour,
             model,
-            self.electricSteamGeneratorSolidHeatStorage_device_max,
+            self.electricSteamGeneratorSolidHeatStorage_device_count_max,
             self.electricSteamGeneratorSolidHeatStorage_price,
             device_price_powerConversionSystem=0,
             conversion_rate_max=2,
@@ -4260,7 +4265,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(model)
         self.model.add_constraint(self.electricSteamGenerator_device >= 0)
         self.model.add_constraint(
-            self.electricSteamGenerator_device <= self.electricSteamGenerator_device_max
+            self.electricSteamGenerator_device <= self.electricSteamGenerator_device_count_max
         )
         self.model.add_constraints(
             self.power_electricSteamGenerator[h] >= 0 for h in self.hourRange
@@ -4485,7 +4490,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         每小时市政能源热量输入 实数变量列表
         """
-        self.citySupplied_device_count_max = citySupplied_device_max
+        self.citySupplied_device_count_max = citySupplied_device_count_max
         self.run_price = run_price
         self.device_price = device_price
 
@@ -4519,7 +4524,7 @@ class CitySupply(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(self.citySupplied_device >= 0)
         self.model.add_constraint(
-            self.citySupplied_device <= self.citySupplied_device_max
+            self.citySupplied_device <= self.citySupplied_device_count_max
         )
         self.model.add_constraints(
             self.heat_citySupplied[h] >= 0 for h in self.hourRange
@@ -4595,7 +4600,7 @@ class GridNet(IntegratedEnergySystem):
         电网装机设备数 非负实数
         """
 
-        self.gridNet_device_count_max = gridNet_device_max
+        self.gridNet_device_count_max = gridNet_device_count_max
         self.electricity_price_from = electricity_price_from
         self.electricity_price_to = electricity_price_to
 
@@ -4683,7 +4688,7 @@ class GridNet(IntegratedEnergySystem):
             self.num_hour, model, self.total_power, self.powerFrom, self.powerTo
         )
         self.model.add_constraint(self.gridNet_device >= 0)
-        self.model.add_constraint(self.gridNet_device <= self.gridNet_device_max)
+        self.model.add_constraint(self.gridNet_device <= self.gridNet_device_count_max)
         self.model.add_constraints(
             self.powerFrom[h] <= self.gridNet_device for h in self.hourRange
         )
