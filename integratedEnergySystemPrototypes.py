@@ -181,12 +181,12 @@ class IntegratedEnergySystem(object):
 
     def multiply(self, variable, value):
         return variable * value
-    
-    def add(self,variable, value):
+
+    def add(self, variable, value):
         return variable + value
-    
-    def minus(self,variable,value):
-        return variable-value
+
+    def subtract(self, variable, value):
+        return variable - value
 
     def elementwise_divide(self, variables, values):
         return self.elementwise_operation(variables, values, self.divide)
@@ -194,13 +194,11 @@ class IntegratedEnergySystem(object):
     def elementwise_multiply(self, variables, values):
         return self.elementwise_operation(variables, values, self.multiply)
 
-
     def elementwise_add(self, variables, values):
         return self.elementwise_operation(variables, values, self.add)
 
     def elementwise_subtract(self, variables, values):
-        return self.elementwise_operation(variables, values, self.multiply)
-
+        return self.elementwise_operation(variables, values, self.subtract)
 
     def sum_within_range(self, variables, index_range):
         result = self.model.sum(variables[index] for index in index_range)
@@ -704,7 +702,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         模型中的连续变量,表示 PCS 的容量。
         """
-        self.charge_flag: List[
+        self.charge_flags: List[
             BinaryVarType
         ] = self.model.binary_var_list(  # is charging?
             [i for i in range(0, num_hour)],
@@ -713,7 +711,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于充能状态。
         """
-        self.discharge_flag: List[BinaryVarType] = self.model.binary_var_list(
+        self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, num_hour)],
             name=f"discharge_flag_{self.classSuffix}",
         )  # 放能
@@ -762,7 +760,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
 
-        self.add_lower_and_upper_bound(self.powerConversionSystem_device_count,0,self.device_count * self.conversion_rate_max)
+        self.add_lower_and_upper_bound(
+            self.powerConversionSystem_device_count,
+            0,
+            self.device_count * self.conversion_rate_max,
+        )
         # self.model.add_constraint(
         #     self.device_count * self.conversion_rate_max
         #     >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
@@ -770,21 +772,38 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
         # 功率拆分
 
-        self.model.add_constraints(
-            self.power[i]
-            == -self.power_of_inputs[self.input_type][i]
-            + self.power_of_outputs[self.output_type][i]
-            for i in self.hourRange
+        self.equations(
+            self.power,
+            self.elementwise_subtract(
+                self.power_of_outputs[self.output_type],
+                self.power_of_inputs[self.input_type],
+            ),
+            self.hourRange,
         )
 
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
+        # self.model.add_constraints(
+        #     self.power[i]
+        #     == -self.power_of_inputs[self.input_type][i]
+        #     + self.power_of_outputs[self.output_type][i]
+        #     for i in self.hourRange
+        # )
+
+        self.add_lower_and_upper_bounds(
+            self.power_of_inputs[self.input_type],
+            0,
+            self.elementwise_multiply(self.charge_flags, bigNumber),
+            self.hourRange,
         )
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i]
-            <= self.charge_flag[i] * bigNumber  # smaller than infinity?
-            for i in self.hourRange
-        )
+
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][i]
+        #     <= self.charge_flags[i] * bigNumber  # smaller than infinity?
+        #     for i in self.hourRange
+        # )
+
         self.model.add_constraints(
             self.power_of_inputs[self.input_type][i]
             <= self.powerConversionSystem_device_count
@@ -796,7 +815,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_of_outputs[self.output_type][i]
-            <= self.discharge_flag[i] * bigNumber
+            <= self.discharge_flags[i] * bigNumber
             for i in self.hourRange
         )
         self.model.add_constraints(
@@ -806,7 +825,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         )
 
         self.model.add_constraints(
-            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in self.hourRange
+            self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
         )
 
         # should we not add these?
@@ -1022,7 +1041,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         模型中的连续变量,表示 PCS 的容量
         """
         # paradox? redundancy? both charge and discharge?
-        self.charge_flag: List[BinaryVarType] = self.model.binary_var_list(
+        self.charge_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="batteryEnergyStorageSystemVariable_charge_flag{0}".format(
                 EnergyStorageSystemVariable.index
@@ -1031,7 +1050,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于充能状态。
         """
-        self.discharge_flag: List[BinaryVarType] = self.model.binary_var_list(
+        self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
             keys=[i for i in range(0, num_hour)],
             name="batteryEnergyStorageSystemVariable_discharge_flag{0}".format(
                 EnergyStorageSystemVariable.index
@@ -1096,7 +1115,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
         )
         self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i] <= self.charge_flag[i] * bigNumber
+            self.power_of_inputs[self.input_type][i] <= self.charge_flags[i] * bigNumber
             for i in self.hourRange
         )
         self.model.add_constraints(
@@ -1110,7 +1129,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_of_outputs[self.output_type][i]
-            <= self.discharge_flag[i] * bigNumber
+            <= self.discharge_flags[i] * bigNumber
             for i in self.hourRange
         )
         self.model.add_constraints(
@@ -1120,7 +1139,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )
 
         self.model.add_constraints(
-            self.charge_flag[i] + self.discharge_flag[i] == 1 for i in self.hourRange
+            self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
         )
 
         # seems this will discourage the simulation.
@@ -4527,9 +4546,7 @@ class Linearization(object):
             var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber for i in hourRangeback
         )
         model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
-        model.add_constraints(
-            var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback
-        )
+        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback)
 
     def max_zeros(  # deprecated?
         self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
@@ -4563,14 +4580,10 @@ class Linearization(object):
         )
         # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber (此时 bigNumber >= x[h] )
         # 当y_flag[h] == 1, y[h] 大于等于 x[h] (y[h] == x[h])
-        model.add_constraints(
-            y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
-        )
+        model.add_constraints(y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
         # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
         # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
-        model.add_constraints(
-            x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
-        )
+        model.add_constraints(x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
         # 当y_flag[h] == 0, x[h] 小于等于 0 (-bigNumber<=x[h]<=0) 非正数？
         # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
         model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
@@ -4598,9 +4611,7 @@ class Linearization(object):
         add_y = model.continuous_var_list(
             [i for i in range(0, num_hour)], name="add_y{0}".format(Linearization.index)
         )
-        model.add_constraints(
-            add_y[h] == x1[h] + x2[h] for h in range(0, num_hour)
-        )
+        model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
         return add_y
 
     def positive_negitive_constraints_register(
