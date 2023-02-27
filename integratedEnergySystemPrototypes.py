@@ -773,9 +773,10 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
 
-
         self.add_lower_and_upper_bounds(
-            self.powerConversionSystem_device_count if isinstance(self.powerConversionSystem_device_count) else [self.powerConversionSystem_device_count],
+            self.powerConversionSystem_device_count
+            if isinstance(self.powerConversionSystem_device_count)
+            else [self.powerConversionSystem_device_count],
             0,
             self.device_count * self.conversion_rate_max,
         )
@@ -880,15 +881,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
-        
+
         if self.className == EnergyStorageSystemVariable.__name__:
             self.model.add_constraint(
-            # self.model.add_constraints(
-            self.energy[0]
-            == self.energy_init * self.device_count[0]
-            # for i in range(1, self.num_hour)
-            # since it is init we should not iterate through all variables.
-        )
+                # self.model.add_constraints(
+                self.energy[0]
+                == self.energy_init * self.device_count[0]
+                # for i in range(1, self.num_hour)
+                # since it is init we should not iterate through all variables.
+            )
         self.add_lower_and_upper_bounds(
             self.energy,
             self.device_count * self.stateOfCharge_min,
@@ -908,7 +909,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             self.annualized,
             (
                 self.device_count * self.device_price
-                + (self.powerConversionSystem_device_count if else )
+                + (
+                    self.model.max(self.powerConversionSystem_device_count)
+                    if isinstance(self.powerConversionSystem_device_count, List)
+                    else self.powerConversionSystem_device_count
+                )
                 * self.powerConversionSystem_price
             )
             / 15,
@@ -941,8 +946,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         else:  # what else?
             # TODO: comment out misplaced init statement
             # # 初始值
-
-            self.equation(self.energy[0], self.energy_init * self.device_count)
+            if self.className  == EnergyStorageSystem.__name__:
+                self.equation(self.energy[0], self.energy_init * self.device_count)
             # self.model.add_constraint(
             #     self.energy[0] == self.energy_init * self.device_count
             # )
@@ -972,9 +977,10 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         Return:
             购买设备总费用 = 储能系统设备数 * 储能设备设备价格+功率转化设备数 * 功率转化设备价格
         """
+        solution.get_values()
         return (
             solution.get_value(self.device_count) * self.device_price
-            + solution.get_value(self.powerConversionSystem_device_count)
+            + (max(solution.get_values(self.powerConversionSystem_device_count) if isinstance(self.powerConversionSystem_device_count,Lisr))
             * self.powerConversionSystem_price
         )
 
@@ -1121,204 +1127,202 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # self.stateOfCharge_max = stateOfCharge_max
         return val
 
-    def constraints_register(
-        self, model: Model, register_period_constraints=1, day_node=24
-    ):
-        """
-        定义机组内部约束
+    # def constraints_register(
+    #     self, model: Model, register_period_constraints=1, day_node=24
+    # ):
+    #     """
+    #     定义机组内部约束
 
-        1. 机组设备数大于等于0
-        2. 机组设备总数不得大于最大装机量
-        3. 可变容量储能装置功率转化率约束:<br>储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
-        4. 充能功率和放能功率之间的关系:<br>储能系统功率 = -充能功率+放能功率
-        5. 充能功率约束:<br>充能功率大于等于0,小于等于功率转化系统设备,小于等于充能状态 * bigNumber
-        6. 放能功率约束:<br>放能功率大于等于0,小于等于功率转化系统设备,小于等于放能状态 * bigNumber
-        7. 充能功率和放能功率二选一
-        8. 储能量守恒约束:<br>储能系统能量 = 上一时段储能量+(当前时段充能 * 效率-当前时段放能/效率) * simulationTime/3600
-        9. 最大和最小储能量约束:<br>储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
-        10. 两天之间充放能关系约束:<br>对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放能变化能量`
-
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-            register_period_constraints (int): 注册周期约束为1
-            day_node (int): 一天时间节点为24
-        """
-        # bigNumber = 1e10
-        # self.hourRange = range(0, self.num_hour)
-        # self.model.add_constraints(
-        #     self.device_count[i] <= self.device_count_max for i in self.hourRange
-        # )
-        # self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
-        self.add_lower_and_upper_bounds(
-            self.powerConversionSystem_device_count,
-            0,
-            self.elementwise_multiply(self.device_count, self.conversion_rate_max),
-            self.hourRange,
-        )
-        # self.model.add_constraints(
-        #     self.device_count[i] * self.conversion_rate_max
-        #     >= self.powerConversionSystem_device_count[i]
-        #     for i in self.hourRange
-        # )
-        # self.model.add_constraints(
-        #     self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
-        # )
-
-        # 功率拆分
-        self.equations(
-            self.power,
-            self.elementwise_subtract(
-                self.power_of_outputs[self.output_type],
-                self.power_of_inputs[self.input_type],
-            ),
-            self.hourRange,
-        )
-        # self.model.add_constraints(
-        #     self.power[i]
-        #     == -self.power_of_inputs[self.input_type][i]
-        #     + self.power_of_outputs[self.output_type][i]
-        #     for i in self.hourRange
-        # )
-        self.add_lower_and_upper_bounds(
-            self.power_of_inputs[self.input_type],
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.charge_flags, bigNumber),
-                self.powerConversionSystem_device_count,
-            ),
-            self.hourRange,
-        )
-        # self.model.add_constraints(
-        #     self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
-        # )
-        # self.model.add_constraints(
-        #     self.power_of_inputs[self.input_type][i] <= self.charge_flags[i] * bigNumber
-        #     for i in self.hourRange
-        # )
-        # self.model.add_constraints(
-        #     self.power_of_inputs[self.input_type][i]
-        #     <= self.powerConversionSystem_device_count[i]
-        #     for i in self.hourRange
-        # )
+    #     1. 机组设备数大于等于0
+    #     2. 机组设备总数不得大于最大装机量
+    #     3. 可变容量储能装置功率转化率约束:<br>储能系统设备 * 储能装置的最大倍率大于等于功率转化系统设备,且功率转化系统设备大于等于0
+    #     4. 充能功率和放能功率之间的关系:<br>储能系统功率 = -充能功率+放能功率
+    #     5. 充能功率约束:<br>充能功率大于等于0,小于等于功率转化系统设备,小于等于充能状态 * bigNumber
+    #     6. 放能功率约束:<br>放能功率大于等于0,小于等于功率转化系统设备,小于等于放能状态 * bigNumber
+    #     7. 充能功率和放能功率二选一
+    #     8. 储能量守恒约束:<br>储能系统能量 = 上一时段储能量+(当前时段充能 * 效率-当前时段放能/效率) * simulationTime/3600
+    #     9. 最大和最小储能量约束:<br>储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
+    #     10. 两天之间充放能关系约束:<br>对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放能变化能量`
 
 
-        self.add_lower_and_upper_bounds(
-            self.power_of_outputs[self.output_type],
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.discharge_flags, bigNumber),
-                self.powerConversionSystem_device_count,
-            ),
-            self.hourRange,
-        )
-        # self.model.add_constraints(
-        #     self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
-        # )
-        # self.model.add_constraints(
-        #     self.power_of_outputs[self.output_type][i]
-        #     <= self.discharge_flags[i] * bigNumber
-        #     for i in self.hourRange
-        # )
-        # self.model.add_constraints(
-        #     self.power_of_outputs[self.output_type][i]
-        #     <= self.powerConversionSystem_device_count[i]
-        #     for i in self.hourRange
-        # )
+    #     Args:
+    #         model (docplex.mp.model.Model): 求解模型实例
+    #         register_period_constraints (int): 注册周期约束为1
+    #         day_node (int): 一天时间节点为24
+    #     """
+    #     # bigNumber = 1e10
+    #     # self.hourRange = range(0, self.num_hour)
+    #     # self.model.add_constraints(
+    #     #     self.device_count[i] <= self.device_count_max for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
+    #     self.add_lower_and_upper_bounds(
+    #         self.powerConversionSystem_device_count,
+    #         0,
+    #         self.elementwise_multiply(self.device_count, self.conversion_rate_max),
+    #         self.hourRange,
+    #     )
+    #     # self.model.add_constraints(
+    #     #     self.device_count[i] * self.conversion_rate_max
+    #     #     >= self.powerConversionSystem_device_count[i]
+    #     #     for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
+    #     # )
 
-        
-        self.equations(self.elementwise_add(self.charge_flags, self.discharge_flags), 1)
+    #     # 功率拆分
+    #     self.equations(
+    #         self.power,
+    #         self.elementwise_subtract(
+    #             self.power_of_outputs[self.output_type],
+    #             self.power_of_inputs[self.input_type],
+    #         ),
+    #         self.hourRange,
+    #     )
+    #     # self.model.add_constraints(
+    #     #     self.power[i]
+    #     #     == -self.power_of_inputs[self.input_type][i]
+    #     #     + self.power_of_outputs[self.output_type][i]
+    #     #     for i in self.hourRange
+    #     # )
+    #     self.add_lower_and_upper_bounds(
+    #         self.power_of_inputs[self.input_type],
+    #         0,
+    #         self.elementwise_min(
+    #             self.elementwise_multiply(self.charge_flags, bigNumber),
+    #             self.powerConversionSystem_device_count,
+    #         ),
+    #         self.hourRange,
+    #     )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_inputs[self.input_type][i] <= self.charge_flags[i] * bigNumber
+    #     #     for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_inputs[self.input_type][i]
+    #     #     <= self.powerConversionSystem_device_count[i]
+    #     #     for i in self.hourRange
+    #     # )
 
-        # self.model.add_constraints(
-        #     self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
-        # )
+    #     self.add_lower_and_upper_bounds(
+    #         self.power_of_outputs[self.output_type],
+    #         0,
+    #         self.elementwise_min(
+    #             self.elementwise_multiply(self.discharge_flags, bigNumber),
+    #             self.powerConversionSystem_device_count,
+    #         ),
+    #         self.hourRange,
+    #     )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_outputs[self.output_type][i]
+    #     #     <= self.discharge_flags[i] * bigNumber
+    #     #     for i in self.hourRange
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.power_of_outputs[self.output_type][i]
+    #     #     <= self.powerConversionSystem_device_count[i]
+    #     #     for i in self.hourRange
+    #     # )
 
-        # seems this will discourage the simulation.
-        # let's not make it zero.
+    #     self.equations(self.elementwise_add(self.charge_flags, self.discharge_flags), 1)
 
-        self.model.add_constraint(
-            self.power_of_inputs[self.input_type][0]
-            == self.power_of_inputs[self.input_type][1]
-        )
+    #     # self.model.add_constraints(
+    #     #     self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
+    #     # )
 
-        self.model.add_constraint(
-            self.power_of_outputs[self.output_type][0]
-            == self.power_of_outputs[self.output_type][1]
-        )
+    #     # seems this will discourage the simulation.
+    #     # let's not make it zero.
 
-        # should we not add these statements?
+    #     self.model.add_constraint(
+    #         self.power_of_inputs[self.input_type][0]
+    #         == self.power_of_inputs[self.input_type][1]
+    #     )
 
-        # TODO: fix charge/discharge init value issues
-        # we should set init charge/discharge value to 1
-        for day in range(1, int(self.num_hour / day_node) + 1):
-            self.model.add_constraints(
-                self.energy[i]
-                == self.energy[i - 1]
-                + (
-                    self.power_of_inputs[self.input_type][i] * self.efficiency
-                    - self.power_of_outputs[self.output_type][i] / self.efficiency
-                )
-                * simulationTime
-                / 3600
-                for i in range(
-                    1 + day_node * (day - 1), day_node * day
-                )  # not starting from the zero day?
-            )
-        # TODO: figure out init (fixing init error)
+    #     self.model.add_constraint(
+    #         self.power_of_outputs[self.output_type][0]
+    #         == self.power_of_outputs[self.output_type][1]
+    #     )
 
-        # init when the type is varianle
-        self.model.add_constraint(
-            # self.model.add_constraints(
-            self.energy[0]
-            == self.energy_init * self.device_count[0]
-            # for i in range(1, self.num_hour)
-            # since it is init we should not iterate through all variables.
-        )
+    #     # should we not add these statements?
 
-        self.add_lower_and_upper_bounds(
-            self.energy,
-            self.device_count * self.stateOfCharge_min,
-            self.device_count * self.stateOfCharge_max,
-            range(1, self.num_hour),
-        )
-        # self.model.add_constraints(
-        #     self.energy[i] <= self.device_count[i] * self.stateOfCharge_max
-        #     for i in range(1, self.num_hour)
-        # )
-        # self.model.add_constraints(
-        #     self.energy[i] >= self.device_count[i] * self.stateOfCharge_min
-        #     for i in range(1, self.num_hour)
-        # )
+    #     # TODO: fix charge/discharge init value issues
+    #     # we should set init charge/discharge value to 1
+    #     for day in range(1, int(self.num_hour / day_node) + 1):
+    #         self.model.add_constraints(
+    #             self.energy[i]
+    #             == self.energy[i - 1]
+    #             + (
+    #                 self.power_of_inputs[self.input_type][i] * self.efficiency
+    #                 - self.power_of_outputs[self.output_type][i] / self.efficiency
+    #             )
+    #             * simulationTime
+    #             / 3600
+    #             for i in range(
+    #                 1 + day_node * (day - 1), day_node * day
+    #             )  # not starting from the zero day?
+    #         )
+    #     # TODO: figure out init (fixing init error)
 
-        # 两天之间直接割裂,没有啥关系
-        if register_period_constraints == 1:  # register??
-            self.model.add_constraints(
-                self.energy[i] == self.energy[i - (day_node - 1)]
-                for i in range(day_node - 1, self.num_hour, day_node)
-            )
-        else:
-            # 初始值
-            # # TODO: figure out init
-            # self.model.add_constraint(
-            #     self.energy[0]
-            #     == self.energy_init * self.device_count[0]
-            #     # since it is init we should not iterate through all variables.
-            # )
-            # breakpoint()
-            # not breaking here?
-            # 两天之间的连接
-            # TODO: 8760（一年）设置为num_hour时使用这个条件
-            self.model.add_constraints(
-                self.energy[i]
-                == self.energy[i - 1]
-                + (
-                    self.power_of_inputs[self.input_type][i] * self.efficiency
-                    - self.power_of_outputs[self.output_type][i] / self.efficiency
-                )
-                * simulationTime
-                / 3600
-                for i in range(day_node, self.num_hour, day_node)
-            )
+    #     # init when the type is varianle
+    #     self.model.add_constraint(
+    #         # self.model.add_constraints(
+    #         self.energy[0]
+    #         == self.energy_init * self.device_count[0]
+    #         # for i in range(1, self.num_hour)
+    #         # since it is init we should not iterate through all variables.
+    #     )
+
+    #     self.add_lower_and_upper_bounds(
+    #         self.energy,
+    #         self.device_count * self.stateOfCharge_min,
+    #         self.device_count * self.stateOfCharge_max,
+    #         range(1, self.num_hour),
+    #     )
+    #     # self.model.add_constraints(
+    #     #     self.energy[i] <= self.device_count[i] * self.stateOfCharge_max
+    #     #     for i in range(1, self.num_hour)
+    #     # )
+    #     # self.model.add_constraints(
+    #     #     self.energy[i] >= self.device_count[i] * self.stateOfCharge_min
+    #     #     for i in range(1, self.num_hour)
+    #     # )
+
+    #     # 两天之间直接割裂,没有啥关系
+    #     if register_period_constraints == 1:  # register??
+    #         self.model.add_constraints(
+    #             self.energy[i] == self.energy[i - (day_node - 1)]
+    #             for i in range(day_node - 1, self.num_hour, day_node)
+    #         )
+    #     else:
+    #         # 初始值
+    #         # # TODO: figure out init
+    #         # self.model.add_constraint(
+    #         #     self.energy[0]
+    #         #     == self.energy_init * self.device_count[0]
+    #         #     # since it is init we should not iterate through all variables.
+    #         # )
+    #         # breakpoint()
+    #         # not breaking here?
+    #         # 两天之间的连接
+    #         # TODO: 8760（一年）设置为num_hour时使用这个条件
+    #         self.model.add_constraints(
+    #             self.energy[i]
+    #             == self.energy[i - 1]
+    #             + (
+    #                 self.power_of_inputs[self.input_type][i] * self.efficiency
+    #                 - self.power_of_outputs[self.output_type][i] / self.efficiency
+    #             )
+    #             * simulationTime
+    #             / 3600
+    #             for i in range(day_node, self.num_hour, day_node)
+    #         )
 
 
 # troughPhotoThermal
