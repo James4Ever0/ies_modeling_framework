@@ -1967,6 +1967,7 @@ class GasBoiler(IntegratedEnergySystem):
         """
         连续变量,表示燃气锅炉的年化费用
         """
+        return val
 
     def constraints_register(self):
         """
@@ -1997,7 +1998,7 @@ class GasBoiler(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
         
-        self.gas_cost=self.model.sum
+        self.gas_cost=self.sum_within_range(self.elementwise_multiply(self.gas_consumed, self.gas_price))
         # self.gas_cost = self.model.sum(
         #     self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
         # )
@@ -2020,19 +2021,20 @@ class ElectricBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricBoiler_device_count_max: float,
-        electricBoiler_price: float,
+        device_count_max: float,
+        device_price: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "electricBoiler",
         device_count_min: int = 0,
+        output_type:Union[]
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricBoiler_device_count_max (float): 表示电锅炉的最大数量。
-            electricBoiler_price (float): 表示电锅炉的单价。
+            device_count_max (float): 表示电锅炉的最大数量。
+            device_price (float): 表示电锅炉的单价。
             electricity_price (Union[np.ndarray, List]): 表示电的单价。
             efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
@@ -2048,11 +2050,11 @@ class ElectricBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        ElectricBoiler.index += 1
+        # ElectricBoiler.index += 1
         # self.num_hour = num_hour
-        self.electricBoiler_device: ContinuousVarType = self.model.continuous_var(
-            name="electricBoiler_device{0}".format(ElectricBoiler.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count_{0}".format(ElectricBoiler.index)
+        # )
         """
         电锅炉机组等效单位设备数 大于零的实数
         """
@@ -2074,8 +2076,8 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量列表,表示电锅炉在每个时段的电消耗量
         """
-        self.gas_device_count_max = electricBoiler_device_max
-        self.electricBoiler_price = electricBoiler_price
+        self.gas_device_count_max = device_count_max
+        self.device_price = device_price
         self.electricity_price = electricity_price
         self.efficiency = efficiency
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
@@ -2105,13 +2107,13 @@ class ElectricBoiler(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.electricBoiler_device >= 0)
-        self.model.add_constraint(self.electricBoiler_device <= self.gas_device_max)
+        self.model.add_constraint(self.device_count >= 0)
+        self.model.add_constraint(self.device_count <= self.gas_device_max)
         self.model.add_constraints(
             self.heat_electricBoiler[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.heat_electricBoiler[h] <= self.electricBoiler_device
+            self.heat_electricBoiler[h] <= self.device_count
             for h in self.hourRange
         )  # 天燃气蒸汽锅炉
         self.model.add_constraints(
@@ -2125,7 +2127,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         )
         self.model.add_constraint(
             self.annualized
-            == self.electricBoiler_device * self.electricBoiler_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
