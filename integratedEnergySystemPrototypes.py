@@ -1341,7 +1341,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        troughPhotoThermalSolidHeatStorage_price: float,  # (csgrgtxr是啥)
+        troughPhotoThermalSolidHeatStorage_device_price: float,  # (csgrgtxr是啥)
         intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
@@ -1353,7 +1353,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 槽式光热设备机组最大装机量
             device_price (float): 槽式光热设备的购置价格。
-            troughPhotoThermalSolidHeatStorage_price (float): 槽式光热储能设备价格
+            troughPhotoThermalSolidHeatStorage_device_price (float): 槽式光热储能设备价格
             intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
@@ -1371,31 +1371,32 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         )
         # TroughPhotoThermal.index += 1
         # self.num_hour = num_hour
-        self.troughPhotoThermal_device: ContinuousVarType = self.model.continuous_var(
-            name="troughPhotoThermal_device{0}".format(TroughPhotoThermal.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count{0}".format(TroughPhotoThermal.index)
+        # )
+        self.build_power_of_outputs(["hot_water","steam"])
         """
         槽式光热机组设备数 实数变量
         """
-        self.power_troughPhotoThermal: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
-        )
+        # self.power_troughPhotoThermal: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
+        # )
         """
-        槽式光热机组每小时产电功率 实数变量列表
+        槽式光热机组每小时产热功率 实数变量列表
         """
-        self.power_troughPhotoThermal_steam: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_troughPhotoThermal_steam{0}".format(TroughPhotoThermal.index),
-        )
+        # self.power_troughPhotoThermal_steam: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_troughPhotoThermal_steam{0}".format(TroughPhotoThermal.index),
+        # )
         """
         槽式光热机组每小时产蒸汽功率 实数变量列表
         """
-        self.device_count_max = troughPhotoThermal_device_max
+        self.device_count_max = device_count_max
         self.troughPhotoThermalSolidHeatStorage_device_count_max: float = (
             device_count_max * 6
         )
@@ -1403,8 +1404,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
         self.device_price = device_price
-        self.troughPhotoThermalSolidHeatStorage_price = (
-            troughPhotoThermalSolidHeatStorage_price
+        self.troughPhotoThermalSolidHeatStorage_device_price = (
+            troughPhotoThermalSolidHeatStorage_device_price
         )
         self.intensityOfIllumination = (
             intensityOfIllumination  # intensityOfIllumination
@@ -1421,7 +1422,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             num_hour,
             model,
             self.troughPhotoThermalSolidHeatStorage_device_max,
-            self.troughPhotoThermalSolidHeatStorage_price,
+            self.troughPhotoThermalSolidHeatStorage_device_price,
             powerConversionSystem_price=100,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
@@ -1449,16 +1450,16 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.hourRange = range(0, self.num_hour)
         self.troughPhotoThermalSolidHeatStorage_device.constraints_register(model)
-        self.model.add_constraint(self.troughPhotoThermal_device >= 0)
+        self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(
-            self.troughPhotoThermal_device <= self.troughPhotoThermal_device_max
+            self.device_count <= self.device_count_max
         )
         self.model.add_constraints(
             self.power_troughPhotoThermal[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
             self.power_troughPhotoThermal[h]
-            <= self.troughPhotoThermal_device
+            <= self.device_count
             * self.intensityOfIllumination[h]
             * self.efficiency
             for h in self.hourRange
@@ -1474,7 +1475,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         )  # 约束能量不能倒流
         self.model.add_constraint(
             self.annualized
-            == self.troughPhotoThermal_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.troughPhotoThermalSolidHeatStorage_device.annualized
         )
 
