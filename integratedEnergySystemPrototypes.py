@@ -1898,19 +1898,20 @@ class GasBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        gasBoiler_device_count_max: float,
-        gasBoiler_price: float,
+        device_count_max: float,
+        device_price: float,
         gas_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "gasBoiler",
         device_count_min: int = 0,
+        
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gasBoiler_device_count_max (float): 表示燃气锅炉的最大数量。
-            gasBoiler_price (float): 表示燃气锅炉的单价。
+            device_count_max (float): 表示燃气锅炉的最大数量。
+            device_price (float): 表示燃气锅炉的单价。
             gas_price (Union[np.ndarray, List]): 表示燃气的单价。
             efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
@@ -1926,30 +1927,32 @@ class GasBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        GasBoiler.index += 1
+        # GasBoiler.index += 1
         # self.num_hour = num_hour
-        self.gasBoiler_device: ContinuousVarType = self.model.continuous_var(
-            name="gasBoiler_device{0}".format(GasBoiler.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count{0}".format(GasBoiler.index)
+        # )
         """
         燃气锅炉机组等效单位设备数 大于零的实数变量
         """
-        self.heat_gasBoiler: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="heat_gasBoiler{0}".format(GasBoiler.index),
-        )
+        self.output_type = output_type
+        self.build_power_of_outputs([self.output_type])
+        # self.heat_gasBoiler: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_gasBoiler{0}".format(GasBoiler.index),
+        # )
         """
         连续变量列表,表示燃气锅炉在每个时段的热功率
         """
-        self.gas_gasBoiler: List[ContinuousVarType] = self.model.continuous_var_list(
+        self.gas_consumed: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="gas_gasBoiler{0}".format(GasBoiler.index),
+            name="gas_consumed{0}".format(GasBoiler.index),
         )  # 时时耗气量
         """
         连续变量列表,表示燃气锅炉在每个时段的燃气消耗量
         """
-        self.gasBoiler_device_count_max = gasBoiler_device_max
-        self.gasBoiler_price = gasBoiler_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.gas_price = gas_price
         self.efficiency = efficiency
         self.gas_cost: ContinuousVarType = self.model.continuous_var(
@@ -1979,22 +1982,22 @@ class GasBoiler(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.gasBoiler_device >= 0)
-        self.model.add_constraint(self.gasBoiler_device <= self.gasBoiler_device_max)
+        self.model.add_constraint(self.device_count >= 0)
+        self.model.add_constraint(self.device_count <= self.device_count_max)
         self.model.add_constraints(self.heat_gasBoiler[h] >= 0 for h in self.hourRange)
         self.model.add_constraints(
-            self.heat_gasBoiler[h] <= self.gasBoiler_device for h in self.hourRange
+            self.heat_gasBoiler[h] <= self.device_count for h in self.hourRange
         )  # 天燃气蒸汽锅炉
         self.model.add_constraints(
-            self.gas_gasBoiler[h] == self.heat_gasBoiler[h] / (10 * self.efficiency)
+            self.gas_consumed[h] == self.heat_gasBoiler[h] / (10 * self.efficiency)
             for h in self.hourRange
         )
         self.gas_cost = self.model.sum(
-            self.gas_gasBoiler[h] * self.gas_price[h] for h in self.hourRange
+            self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
         )
         self.model.add_constraint(
             self.annualized
-            == self.gasBoiler_device * self.gasBoiler_price / 15
+            == self.device_count * self.device_price / 15
             + self.gas_cost * (365 * 24) / self.num_hour
         )
 
