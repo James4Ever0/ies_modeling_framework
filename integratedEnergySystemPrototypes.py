@@ -3981,7 +3981,7 @@ class Linear_absolute(object):  # absolute?
         `b_positive[i] == 1`时,`absolute_x[i] == x_positive[i]`
         `b_positive[i] == 0`时,`absolute_x[i] == x_negitive[i]`
         """
-        self.self.hourRange = self.hourRange
+        self.hourRange = self.hourRange
         self.x = x
 
     def absolute_add_constraints(self, model: Model):
@@ -3995,38 +3995,38 @@ class Linear_absolute(object):  # absolute?
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.model.add_constraints(
-            self.b_positive[i] + self.b_negitive[i] == 1 for i in self.self.hourRange
+            self.b_positive[i] + self.b_negitive[i] == 1 for i in self.hourRange
         )
         # b_positive[i]==1时,b_negitive[i]==0
         # b_positive[i]==0时,b_negitive[i]==1
         self.model.add_constraints(
-            self.x_positive[i] >= 0 for i in self.self.hourRange
+            self.x_positive[i] >= 0 for i in self.hourRange
         )  # x_positive[i]是非负数
         self.model.add_constraints(
-            self.x_positive[i] <= self.bigNumber * self.b_positive[i]
-            for i in self.self.hourRange
+            self.x_positive[i] <= bigNumber * self.b_positive[i]
+            for i in self.hourRange
         )
         # 当b_positive[i]==1时,x_positive[i]>=0
         # 当b_positive[i]==0时,x_positive[i]==0
 
-        self.model.add_constraints(self.x_negitive[i] >= 0 for i in self.self.hourRange)
+        self.model.add_constraints(self.x_negitive[i] >= 0 for i in self.hourRange)
         # x_negitive[i]是非负数
         self.model.add_constraints(
-            self.x_negitive[i] <= self.bigNumber * self.b_negitive[i]
-            for i in self.self.hourRange
+            self.x_negitive[i] <= bigNumber * self.b_negitive[i]
+            for i in self.hourRange
         )
 
         # 当b_negitive[i]==1时,x_negitive[i]>=0
         # 当b_negitive[i]==0时,x_negitive[i]==0
         self.model.add_constraints(
-            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.self.hourRange
+            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in self.hourRange
         )
         # x[i] == x_positive[i] - x_negitive[i]
         # 也就是说,如果b_positive[i]==1,x[i] == x_positive[i]
         # 如果b_positive[i]==0,x[i] == -x_negitive[i]
         self.model.add_constraints(
             self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
-            for i in self.self.hourRange
+            for i in self.hourRange
         )
 
         # absolute_x[i] == x_positive[i] + x_negitive[i]
@@ -4368,11 +4368,11 @@ class Linearization(object):
         Linearization.index += 1
         self.model.add_constraint(var_bin >= 0)
         # var_bin 大于等于 0
-        self.model.add_constraint(var_bin >= var - (1 - bin) * self.bigNumber)
+        self.model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
         # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber)
         # 如果bin == 1, var_bin 大于等于 var
         self.model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
-        self.model.add_constraint(var_bin <= bin * self.bigNumber)
+        self.model.add_constraint(var_bin <= bin * bigNumber)
         # 如果bin == 0, var_bin 小于等于 0
         # 如果bin == 1, var_bin 小于等于 1 * bigNumber
 
@@ -4399,13 +4399,13 @@ class Linearization(object):
             self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        self.model.add_constraints(var_bin[i] >= 0 for i in self.hourRange)
+        self.model.add_constraints(var_bin[i] >= 0 for i in hourRange)
         self.model.add_constraints(
-            var_bin[i] >= var[i] - (1 - bin0[i]) * self.bigNumber for i in self.hourRange
+            var_bin[i] >= var[i] - (1 - bin0[i]) * bigNumber for i in hourRange
         )
-        self.model.add_constraints(var_bin[i] <= var[i] for i in self.hourRange)
+        self.model.add_constraints(var_bin[i] <= var[i] for i in hourRange)
         self.model.add_constraints(
-            var_bin[i] <= bin0[i] * self.bigNumber for i in self.hourRange
+            var_bin[i] <= bin0[i] * bigNumber for i in hourRange
         )
 
     def product_var_back_bins(
@@ -4433,12 +4433,12 @@ class Linearization(object):
         Linearization.index += 1
         self.model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
         self.model.add_constraints(
-            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * self.bigNumber
+            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber
             for i in hourRangeback
         )
         self.model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
         self.model.add_constraints(
-            var_bin[i] <= bin0[i] * self.bigNumber for i in hourRangeback
+            var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback
         )
 
     def max_zeros(  # deprecated?
