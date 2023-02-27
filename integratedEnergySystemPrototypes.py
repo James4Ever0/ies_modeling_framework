@@ -1621,9 +1621,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         整数型列表,表示每个时段启动的热电联产等效设备数量
         """
-        self.combinedHeatAndPower_num: IntegerVarType = self.model.integer_var(
-            name="combinedHeatAndPower_num{0}".format(self.classSuffix)
-        )
+        # self.device_count: IntegerVarType = self.model.integer_var(
+        #     name="device_count_{0}".format(self.classSuffix)
+        # )
         """
         整数型,表示热电联产实际装机数量
         """
@@ -1634,13 +1634,16 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         实数型,表示热电联产年化投资成本
         """
         self.gas_cost: ContinuousVarType = self.model.continuous_var(
-            name="CombinedHeatAndPower_gas_cost{0}".format(self.classSuffix)
+            name="gas_cost_{0}".format(self.classSuffix)
         )  # 燃气费用统计
         """
         实数型,表示总燃气费用
         """
-        self.device_count_max = device_count_max
+        # self.device_count_max = device_count_max
         self.rated_power = rated_power
+        """
+        单台机组额定功率
+        """
         self.combinedHeatAndPower_limit_down_ratio = (
             0.2  # ? devices cannot be turned down more than 20% ? what is this?
         )
@@ -1651,7 +1654,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.power_to_heat_ratio = power_to_heat_ratio
 
         # arbitrary settings
-        self.gasTurbineSystem_device = Exchanger(
+        self.steam_exchanger = Exchanger(
             self.num_hour,
             model,
             self.device_count * 0.5,
@@ -1662,7 +1665,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         燃气轮机热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
-        self.wasteGasAndHeat_water_device = Exchanger(
+        self.hot_water_exchanger = Exchanger(
             self.num_hour,
             model,
             self.device_count * 0.5,
@@ -1713,14 +1716,14 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
 
         self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.combinedHeatAndPower_num >= 0)
+        self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(
-            self.combinedHeatAndPower_num <= self.device_count_max
+            self.device_count <= self.device_count_max
         )
 
         self.model.add_constraint(
             self.device_count
-            == self.combinedHeatAndPower_num * self.rated_power
+            == self.device_count * self.rated_power
         )
         self.model.add_constraints(
             self.on_flags[h]
@@ -1760,7 +1763,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             0 <= self.device_count_running[h] for h in self.hourRange
         )
         self.model.add_constraints(
-            self.device_count_running[h] <= self.combinedHeatAndPower_num
+            self.device_count_running[h] <= self.device_count
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -1782,7 +1785,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.output_hot_water_flags + self.output_steam_flags == 1
         )
         self.model.add_constraint(
-            self.wasteGasAndHeat_water_device.exchanger_device
+            self.hot_water_exchanger.exchanger_device
             <= self.output_hot_water_flags * bigNumber
         )
         self.model.add_constraint(
@@ -1790,12 +1793,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             <= self.output_steam_flags * bigNumber
         )
         self.model.add_constraints(
-            self.gasTurbineSystem_device.heat_exchange[h]
+            self.steam_exchanger.heat_exchange[h]
             <= self.outputs['hot_water'][h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.wasteGasAndHeat_water_device.heat_exchange[h]
+            self.hot_water_exchanger.heat_exchange[h]
             <= self.outputs['hot_water'][h] * 0.5
             for h in self.hourRange
         )
@@ -1807,12 +1810,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
         self.model.add_constraint(
             self.annualized
-            == self.combinedHeatAndPower_num
+            == self.device_count
             * self.rated_power
             * self.device_price
             / 15
-            + self.gasTurbineSystem_device.annualized
-            + self.wasteGasAndHeat_water_device.annualized
+            + self.steam_exchanger.annualized
+            + self.hot_water_exchanger.annualized
             + self.wasteGasAndHeat_steam_device.annualized
             + self.gas_cost * 8760 / self.num_hour
         )
