@@ -587,7 +587,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
         device_count_min: float = 0,
-        input_type: str = "energy",
+        input_type: str = "energy", 
         output_type: str = "energy",
     ):
         """
@@ -674,7 +674,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # 能量
         self.energy: List[ContinuousVarType] = model.continuous_var_list(
             [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
-        )
+        ) # name clash?
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
