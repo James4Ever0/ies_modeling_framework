@@ -848,7 +848,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         #     for i in self.hourRange
         # )
 
-        self.equations(self.elementwise_add(self.charge_flags, self.discharge_flags),1)
+        self.equations(self.elementwise_add(self.charge_flags, self.discharge_flags), 1)
         # self.model.add_constraints(
         #     self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
         # )
@@ -878,24 +878,31 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
+        self.add_lower_and_upper_bounds(
+            self.energy,
+            self.device_count * self.stateOfCharge_min,
+            self.device_count * self.stateOfCharge_max,
+            range(1, self.num_hour),
+        )
+        # self.model.add_constraints(
+        #     self.energy[i] <= self.device_count * self.stateOfCharge_max
+        #     for i in range(1, self.num_hour)
+        # )
+        # self.model.add_constraints(
+        #     self.energy[i] >= self.device_count * self.stateOfCharge_min
+        #     for i in range(1, self.num_hour)
+        # )
 
-        self.model.add_constraints(
-            self.energy[i] <= self.device_count * self.stateOfCharge_max
-            for i in range(1, self.num_hour)
-        )
-        self.model.add_constraints(
-            self.energy[i] >= self.device_count * self.stateOfCharge_min
-            for i in range(1, self.num_hour)
-        )
-        self.model.add_constraint(
-            self.annualized
-            == (
-                self.device_count * self.device_price
-                + self.powerConversionSystem_device_count
-                * self.powerConversionSystem_price
-            )
-            / 15
-        )
+        self.equation(self.annualized,)
+        # self.model.add_constraint(
+        #     self.annualized
+        #     == (
+        #         self.device_count * self.device_price
+        #         + self.powerConversionSystem_device_count
+        #         * self.powerConversionSystem_price
+        #     )
+        #     / 15
+        # )
 
         # # 初始值
         # self.model.add_constraint(
