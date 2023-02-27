@@ -2329,7 +2329,7 @@ class AirHeatPump(IntegratedEnergySystem):
         连续变量,表示空气热泵的电价成本
         """
         self.device_price = device_price
-        self.device_count_max = device_max
+        self.device_count_max = device_count_max
         self.power_heatPump_cool: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
