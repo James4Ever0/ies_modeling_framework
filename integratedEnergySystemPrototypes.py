@@ -2112,20 +2112,24 @@ class ElectricBoiler(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.gas_device_max)
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] <= self.device_count
-            for h in self.hourRange
-        )  # 天燃气蒸汽锅炉
-        self.model.add_constraints(
-            self.electricity_consumed[h]
-            == self.power_of_outputs[self.output_type][h] / self.efficiency
-            for h in self.hourRange
-        )
+        
+        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.device_count)
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] <= self.device_count
+        #     for h in self.hourRange
+        # )  # 天燃气蒸汽锅炉
+        
+        self.equations(self.elec)
+        # self.model.add_constraints(
+        #     self.[h]
+        #     == self.power_of_outputs[self.output_type][h] / self.efficiency
+        #     for h in self.hourRange
+        # )
         self.electricity_cost = self.model.sum(
-            self.electricity_consumed[h] * self.electricity_price[h]
+            self.[h] * self.electricity_price[h]
             for h in self.hourRange
         )
         self.model.add_constraint(
