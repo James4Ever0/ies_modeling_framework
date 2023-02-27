@@ -1560,7 +1560,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型,表示热电联产的等效设备数量
         """
-        self.build_power_of_outputs(['electricity','hot_water','steam'])
+        self.build_power_of_outputs(["electricity", "hot_water", "steam"])
         # self.outputs['electricity']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
@@ -1568,8 +1568,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     name="power_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         # """
-        self.heat_generated:List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in self.hourRange],name=f"heat_generated_{self.classSuffix}"
+        self.heat_generated: List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in self.hourRange], name=f"heat_generated_{self.classSuffix}"
         )
         # 实数型列表,表示热电联产在每个时段的发电量
         # """
@@ -1582,9 +1582,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型列表,表示热电联产在每个时段的总产热量
         """
-        self.gas_consumed: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+        self.gas_consumed: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_consumed_{0}".format(self.classSuffix),
         )  # 时时耗气量? 时时是什么意思 实时？
@@ -1593,9 +1591,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         self.device_price = device_price
         self.gas_price = gas_price
-        self.on_flags: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
+        self.on_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, self.num_hour)],
             name="on_flag_{0}".format(self.classSuffix),
         )
@@ -1615,9 +1611,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         二元变量,表示热电联产是否用于供热蒸汽
         """
         # 机组数量
-        self.device_count_running: List[
-            IntegerVarType
-        ] = self.model.integer_var_list(
+        self.device_count_running: List[IntegerVarType] = self.model.integer_var_list(
             [i for i in range(0, self.num_hour)],
             name="device_count_running_{0}".format(self.classSuffix),
         )
@@ -1643,7 +1637,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         实数型,表示总燃气费用
         """
 
-        self.total_rated_power:ContinuousVarType = self.model.continuous_var(name = f"total_rated_power_{self.classSuffix}")
+        self.total_rated_power: ContinuousVarType = self.model.continuous_var(
+            name=f"total_rated_power_{self.classSuffix}"
+        )
         # self.device_count_max = device_count_max
         self.rated_power = rated_power
         """
@@ -1726,14 +1722,23 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.device_count <= self.device_count_max
         # )
 
-        self.equation(self.total_rated_power, self.device_count*self.rated_power)
+        self.equation(self.total_rated_power, self.device_count * self.rated_power)
 
         # self.model.add_constraint(
         #     self.total_rated_power
         #     == self.device_count * self.rated_power
         # )
 
-        self.add_upper_and_lower_bounds(self.outputs['electricity'],self.elementwise_multiply(self.on_flags, self.total_rated_power*self.running_ratio_min),self.elementwise_min(self.elementwise_multiply(self.on_flags,bigNumber),self.total_rated_power))
+        self.add_upper_and_lower_bounds(
+            self.outputs["electricity"],
+            self.elementwise_multiply(
+                self.on_flags, self.total_rated_power * self.running_ratio_min
+            ),
+            self.elementwise_min(
+                self.elementwise_multiply(self.on_flags, bigNumber),
+                self.total_rated_power,
+            ),
+        )
 
         # TODO: guess this is not "rated_power" but "total_rated_power"
 
@@ -1759,35 +1764,38 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
         # power_combinedHeatAndPower[h]>= 0
         # power_combinedHeatAndPower(1, h) >= device_count - (1 - on_flags[h]) * bigNumber
-        self.model.add_constraints(
-            self.device_count_running[h]
-            * self.rated_power
-            >= self.outputs['electricity'][h]
-            for h in self.hourRange
-        )  # 确定CombinedHeatAndPower开启台数
-        self.model.add_constraints(
-            self.device_count_running[h]
-            * self.rated_power
-            <= self.outputs['electricity'][h]
-            + self.rated_power
-            + 1
-            for h in self.hourRange
-        )  # 确定CombinedHeatAndPower开启台数
+
+        self.add_lower_and_upper_bounds(
+            self.elementwise_multiply(self.device_count_running, self.rated_power),
+            self.outputs["electricity"],
+            self.elementwise_add(self.output["electricity"], self.rated_power + 1),
+        )
+
+        # self.model.add_constraints(
+        #     self.device_count_running[h] * self.rated_power
+        #     >= self.outputs["electricity"][h]
+        #     for h in self.hourRange
+        # )  # 确定CombinedHeatAndPower开启台数
+        # self.model.add_constraints(
+        #     self.device_count_running[h] * self.rated_power
+        #     <= self.outputs["electricity"][h] + self.rated_power + 1
+        #     for h in self.hourRange
+        # )  # 确定CombinedHeatAndPower开启台数
+
         self.model.add_constraints(
             0 <= self.device_count_running[h] for h in self.hourRange
         )
         self.model.add_constraints(
-            self.device_count_running[h] <= self.device_count
-            for h in self.hourRange
+            self.device_count_running[h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
-            self.outputs['electricity'][h]
+            self.outputs["electricity"][h]
             * self.power_to_heat_ratio  # power * power_to_heat_coefficient = heat
-            == self.outputs['hot_water'][h]
+            == self.outputs["hot_water"][h]
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.gas_consumed[h] == self.outputs['electricity'][h] / 3.5
+            self.gas_consumed[h] == self.outputs["electricity"][h] / 3.5
             for h in self.hourRange
         )
 
@@ -1803,31 +1811,26 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             <= self.output_hot_water_flags * bigNumber
         )
         self.model.add_constraint(
-            self.steam_exchanger.exchanger_device
-            <= self.output_steam_flags * bigNumber
+            self.steam_exchanger.exchanger_device <= self.output_steam_flags * bigNumber
         )
         self.model.add_constraints(
             self.hot_water_exchanger_1.heat_exchange[h]
-            <= self.outputs['hot_water'][h] * 0.5
+            <= self.outputs["hot_water"][h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
             self.hot_water_exchanger_2.heat_exchange[h]
-            <= self.outputs['hot_water'][h] * 0.5
+            <= self.outputs["hot_water"][h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.steam_exchanger.heat_exchange[h]
-            <= self.outputs['hot_water'][h] * 0.5
+            self.steam_exchanger.heat_exchange[h] <= self.outputs["hot_water"][h] * 0.5
             for h in self.hourRange
         )
 
         self.model.add_constraint(
             self.annualized
-            == self.device_count
-            * self.rated_power
-            * self.device_price
-            / 15
+            == self.device_count * self.rated_power * self.device_price / 15
             + self.hot_water_exchanger_1.annualized
             + self.hot_water_exchanger_2.annualized
             + self.steam_exchanger.annualized
