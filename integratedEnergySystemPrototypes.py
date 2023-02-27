@@ -613,7 +613,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         device_count_min: float = 0,
         input_type: str = "energy",
         output_type: str = "energy",
-        classObject = None,
+        classObject=None,
     ):
         """
         Args:
@@ -1019,18 +1019,18 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
-        stateOfCharge_min=stateOfCharge_min,
-        stateOfCharge_max=stateOfCharge_max,
-        input_type=input_type,
-        output_type=output_type,
-        powerConversionSystem_price=powerConversionSystem_price,
-        conversion_rate_max=conversion_rate_max,
-        efficiency=efficiency,
-        energy_init=energy_init,
+            stateOfCharge_min=stateOfCharge_min,
+            stateOfCharge_max=stateOfCharge_max,
+            input_type=input_type,
+            output_type=output_type,
+            powerConversionSystem_price=powerConversionSystem_price,
+            conversion_rate_max=conversion_rate_max,
+            efficiency=efficiency,
+            energy_init=energy_init,
         )
         # EnergyStorageSystemVariable.index += 1
-        self.input_type = input_type
-        self.output_type = output_type
+        # self.input_type = input_type
+        # self.output_type = output_type
 
         # self.device_count: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
@@ -1041,17 +1041,17 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         """
         可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
-        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            lb=-bigNumber,
-            name=f"power_{self.classSuffix}",
-        )
+        # self.power: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     lb=-bigNumber,
+        #     name=f"power_{self.classSuffix}",
+        # )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充放能功率
         """
         # 充能功率
-        self.build_power_of_inputs([self.input_type])
-        self.build_power_of_outputs([self.output_type])
+        # self.build_power_of_inputs([self.input_type])
+        # self.build_power_of_outputs([self.output_type])
         # self.power_of_inputs[self.input_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="powerVariable_charge{0}".format(EnergyStorageSystemVariable.index),
@@ -1068,15 +1068,15 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
         """
         # 能量
-        self.energy: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
-        )
+        # self.energy: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
+        # )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
-        self.powerConversionSystem_price = powerConversionSystem_price
+        # self.powerConversionSystem_price = powerConversionSystem_price
         # self.num_hour = num_hour
         self.powerConversionSystem_device_count: List[
             ContinuousVarType
@@ -1089,26 +1089,27 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         模型中的连续变量,表示 PCS 的容量
         """
         # paradox? redundancy? both charge and discharge?
-        self.charge_flags: List[BinaryVarType] = self.model.binary_var_list(
-            [i for i in range(0, num_hour)],
-            name=f"charge_flag_{0}".format(self.classSuffix),
-        )  # 充能
+        # self.charge_flags: List[BinaryVarType] = self.model.binary_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name=f"charge_flag_{0}".format(self.classSuffix),
+        # )  # 充能
         """
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于充能状态。
         """
-        self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
-            keys=[i for i in range(0, num_hour)],
-            name="discharge_flag_{0}".format(self.classSuffix),
-        )  # 放能
+        # self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
+        #     keys=[i for i in range(0, num_hour)],
+        #     name="discharge_flag_{0}".format(self.classSuffix),
+        # )  # 放能
         """
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于放能状态。
         """
         # 效率
-        self.efficiency = efficiency
-        self.conversion_rate_max = conversion_rate_max  # conversion rate? charge rate?
-        self.energy_init = energy_init
-        self.stateOfCharge_min = stateOfCharge_min
-        self.stateOfCharge_max = stateOfCharge_max
+        # self.efficiency = efficiency
+        # self.conversion_rate_max = conversion_rate_max  # conversion rate? charge rate?
+        # self.energy_init = energy_init
+        # self.stateOfCharge_min = stateOfCharge_min
+        # self.stateOfCharge_max = stateOfCharge_max
+        return val
 
     def constraints_register(
         self, model: Model, register_period_constraints=1, day_node=24
@@ -1155,12 +1156,20 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # )
 
         # 功率拆分
-        self.model.add_constraints(
-            self.power[i]
-            == -self.power_of_inputs[self.input_type][i]
-            + self.power_of_outputs[self.output_type][i]
-            for i in self.hourRange
+        self.equations(
+            self.power,
+            self.elementwise_subtract(
+                self.power_of_outputs[self.output_type],
+                self.power_of_inputs[self.input_type],
+            ),
+            self.hourRange,
         )
+        # self.model.add_constraints(
+        #     self.power[i]
+        #     == -self.power_of_inputs[self.input_type][i]
+        #     + self.power_of_outputs[self.output_type][i]
+        #     for i in self.hourRange
+        # )
 
         self.model.add_constraints(
             self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
