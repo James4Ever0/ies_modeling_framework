@@ -1529,7 +1529,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         electricity_to_heat_ratio: float,  # drratio?
         device_name: str = "combinedHeatAndPower",
         device_count_min: int = 0,
-        gas_to_electricity_ratio=3.5
+        gas_to_electricity_ratio=3.5,
     ):
         """
         Args:
@@ -1686,9 +1686,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=300,
             k=0,
         )
-        
+
         self.gas_to_electricity_ratio = gas_to_electricity_ratio
-        
 
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
@@ -1794,7 +1793,6 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.device_count_running[h] <= self.device_count for h in self.hourRange
         # )
 
-        
         self.model.add_constraints(
             self.outputs["electricity"][h]
             * self.electricity_to_heat_ratio  # power * power_to_heat_coefficient = heat
@@ -1802,15 +1800,21 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.gas_consumed[h] == self.outputs["electricity"][h] / self.gas_to_electricity_ratio
+            self.gas_consumed[h]
+            == self.outputs["electricity"][h] / self.gas_to_electricity_ratio
             for h in self.hourRange
         )
-        self.gas_cost = self.sum_within_range(self.elementwise_multiply(self.gas_consumed, self.gas_price), self.hourRange)
+        self.gas_cost = self.sum_within_range(
+            self.elementwise_multiply(self.gas_consumed, self.gas_price), self.hourRange
+        )
         # self.gas_cost = self.model.sum(
         #     self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
         # )  # 统计燃气费用
         #
-        self.equation(self)
+        self.equations(
+            self.elementwise_add(self.output_hot_water_flags, self.output_steam_flags),
+            1,
+        )
         # self.model.add_constraint(
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
@@ -1828,11 +1832,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.hot_water_exchanger_2.heat_exchange[h]
-            <= self.outputs["hot_water"][h] * 0.5
+            <= self.[h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.steam_exchanger.heat_exchange[h] <= self.outputs["hot_water"][h] * 0.5
+            self.steam_exchanger.heat_exchange[h] <= self.[h] * 0.5
             for h in self.hourRange
         )
 
