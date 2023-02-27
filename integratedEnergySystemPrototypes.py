@@ -1411,8 +1411,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             intensityOfIllumination  # intensityOfIllumination
         )
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
-        )
+        #     name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
+        # )
         """
         槽式光热年运维成本
         """
@@ -1599,8 +1599,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         整数型,表示热电联产实际装机数量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
-        )
+        #     name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
+        # )
         """
         实数型,表示热电联产年化投资成本
         """
@@ -1862,8 +1862,8 @@ class GasBoiler(IntegratedEnergySystem):
         连续变量,表示总燃气费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="gasBoiler_annualized{0}".format(GasBoiler.index)
-        )
+        #     name="gasBoiler_annualized{0}".format(GasBoiler.index)
+        # )
         """
         连续变量,表示燃气锅炉的年化费用
         """
@@ -1979,8 +1979,8 @@ class ElectricBoiler(IntegratedEnergySystem):
         连续变量,表示总用电费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
-        )
+        #     name="electricBoiler_annualized{0}".format(ElectricBoiler.index)
+        # )
         """
         连续变量,表示电锅炉的年化费用
         """
@@ -2071,8 +2071,8 @@ class Exchanger(IntegratedEnergySystem):
         热交换器机组等效单位设备数 大于零的实数变量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="exchanger_annualized{0}".format(Exchanger.index)
-        )
+        #     name="exchanger_annualized{0}".format(Exchanger.index)
+        # )
         """
         连续变量,表示热交换器的年化费用
         """
@@ -2157,8 +2157,8 @@ class AirHeatPump(IntegratedEnergySystem):
         空气热泵机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="AirHeatPumpower_annualized{0}".format(AirHeatPump.index)
-        )
+        #     name="AirHeatPumpower_annualized{0}".format(AirHeatPump.index)
+        # )
         """
         连续变量,表示空气热泵的年化费用
         """
@@ -2470,8 +2470,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         水源热泵机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="WaterHeatPumpower_annualized{0}".format(WaterHeatPump.index)
-        )
+        #     name="WaterHeatPumpower_annualized{0}".format(WaterHeatPump.index)
+        # )
         """
         连续变量,表示水源热泵的年化费用
         """
@@ -2762,8 +2762,8 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         水冷螺旋机机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="waterCoolingSpiral_annualized{0}".format(WaterCoolingSpiral.index)
-        )
+        #     name="waterCoolingSpiral_annualized{0}".format(WaterCoolingSpiral.index)
+        # )
         """
         连续变量,表示水冷螺旋机的年化费用
         """
@@ -2986,10 +2986,10 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         双工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="DoubleWorkingConditionUnit_annualized{0}".format(
-                DoubleWorkingConditionUnit.index
-            )
-        )
+        #     name="DoubleWorkingConditionUnit_annualized{0}".format(
+        #         DoubleWorkingConditionUnit.index
+        #     )
+        # )
         """
         连续变量,表示双工况机组的年化费用
         """
@@ -3217,10 +3217,10 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         三工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="TripleWorkingConditionUnit_annualized{0}".format(
-                TripleWorkingConditionUnit.index
-            )
-        )
+        #     name="TripleWorkingConditionUnit_annualized{0}".format(
+        #         TripleWorkingConditionUnit.index
+        #     )
+        # )
         """
         连续变量,表示三工况机组的年化费用
         """
@@ -3481,8 +3481,8 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵机组设备数量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="GeothermalHeatPumpower_annualized{0}".format(GeothermalHeatPump.index)
-        )
+        #     name="GeothermalHeatPumpower_annualized{0}".format(GeothermalHeatPump.index)
+        # )
         """
         地源热泵机组年运维成本
         """
@@ -3732,8 +3732,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         每小时水蓄能设备储能功率 高温热水状态下
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="power_waterStorageTank_annualized{0}".format(self.index)
-        )
+        #     name="power_waterStorageTank_annualized{0}".format(self.index)
+        # )
         """
         水蓄能设备年运维费用
         """
@@ -4032,10 +4032,10 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricity_price = electricity_price
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="ElectricSteamGenerator_annualized{0}".format(
-                ElectricSteamGenerator.index
-            )
-        )
+        #     name="ElectricSteamGenerator_annualized{0}".format(
+        #         ElectricSteamGenerator.index
+        #     )
+        # )
 
         """
         电蒸汽发生器年化运维成本
@@ -4322,8 +4322,8 @@ class CitySupply(IntegratedEnergySystem):
         市政能源消耗总费用 实数变量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="citySupplied_annualized{0}".format(CitySupply.index)
-        )
+        #     name="citySupplied_annualized{0}".format(CitySupply.index)
+        # )
         """
         市政能源年运维费用 实数变量
         """
@@ -4434,8 +4434,8 @@ class GridNet(IntegratedEnergySystem):
         """
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-            name="gridNet_annualized{0}".format(GridNet.index)
-        )
+        #     name="gridNet_annualized{0}".format(GridNet.index)
+        # )
         """
         电网每年运维费用 非负实数
         """
