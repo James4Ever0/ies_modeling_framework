@@ -96,7 +96,7 @@ class IntegratedEnergySystem(object):
                 {
                     energy_type: self.model.continuous_var_list(
                         [i for i in range(0, self.num_hour)],
-                        name=f"{energy_type}_{self.classSuffix}",
+                        name=f"power_of_input_{energy_type}_{self.classSuffix}",
                     )
                 }
             )
@@ -107,7 +107,7 @@ class IntegratedEnergySystem(object):
                 {
                     energy_type: self.model.continuous_var_list(
                         [i for i in range(0, self.num_hour)],
-                        name=f"{energy_type}_{self.classSuffix}",
+                        name=f"power_of_output_{energy_type}_{self.classSuffix}",
                     )
                 }
             )
@@ -360,7 +360,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 
         # self.power_of_inputs[self.input_type]: List[
         #     ContinuousVarType
-        # ] = model.continuous_var_list(  # iterate through hours in a day?
+        # ] =self.model.continuous_var_list(  # iterate through hours in a day?
         #     [i for i in range(0, self.num_hour)],
         #     name="inputs[self.input_type]{0}".format(LiBrRefrigeration.index),
         # )
@@ -373,7 +373,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 
         # self.cool_LiBr: List[
         #     ContinuousVarType
-        # ] = model.continuous_var_list(  # the same?
+        # ] =self.model.continuous_var_list(  # the same?
         #     [i for i in range(0, self.num_hour)],
         #     name="heat_LiBr{0}".format(LiBrRefrigeration.index),
         # )
@@ -495,7 +495,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         柴油发电机机组等效单位设备数 大于零的实数
         """
-        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] = model.continuous_var_list(
+        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],  # keys, not values.
         #     name="self.power_of_outputs[self.output_type]{0}".format(DieselEngine.index),
         # )
@@ -623,7 +623,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         储能系统机组等效单位设备数 大于零的实数
         """
-        self.power: List[ContinuousVarType] = model.continuous_var_list(
+        self.power: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,
             name=f"power_{self.classSuffix}",
@@ -648,7 +648,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # input power?
         # self.power_of_inputs[self.input_type]: List[
         #     ContinuousVarType
-        # ] = model.continuous_var_list(
+        # ] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],lb=0,
         #     name="power_of_inputs[self.input_type]{0}".format(
         #         EnergyStorageSystem.index
@@ -662,7 +662,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # 放能功率
         # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
-        # ] = model.continuous_var_list(
+        # ] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],lb=0,
         #     name="power_of_outputs[self.output_type]{0}".format(
         #         EnergyStorageSystem.index
@@ -672,7 +672,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
         """
         # 能量
-        self.energy: List[ContinuousVarType] = model.continuous_var_list(
+        self.energy: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
         ) # name clash?
         """
@@ -931,7 +931,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         self.input_type=input_type
         self.output_type=output_type
 
-        # self.device_count: List[ContinuousVarType] = model.continuous_var_list(
+        # self.device_count: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="energyStorageSystemVariable_device{0}".format(
         #         EnergyStorageSystemVariable.index
@@ -940,7 +940,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
-        self.power: List[ContinuousVarType] = model.continuous_var_list(
+        self.power: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,
             name=f"power_{self.classSuffix}"
@@ -951,7 +951,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # 充能功率
         self.build_power_of_inputs([self.input_type])
         self.build_power_of_outputs([self.output_type])
-        # self.power_of_inputs[self.input_type]: List[ContinuousVarType] = model.continuous_var_list(
+        # self.power_of_inputs[self.input_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="powerVariable_charge{0}".format(EnergyStorageSystemVariable.index),
         # )
@@ -959,7 +959,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # 模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充能功率
         # """
         # # 放能功率
-        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] = model.continuous_var_list(
+        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="powerVariable_discharge{0}".format(EnergyStorageSystemVariable.index),
         # )
@@ -967,7 +967,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
         """
         # 能量
-        self.energy: List[ContinuousVarType] = model.continuous_var_list(
+        self.energy: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             name="energyStorageSystemVariable{0}".format(
                 EnergyStorageSystemVariable.index
@@ -982,7 +982,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # self.num_hour = num_hour
         self.powerConversionSystem_device: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             name="powerConversionSystem_deviceVariable{0}".format(
                 EnergyStorageSystemVariable.index
@@ -1172,7 +1172,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        troughPhotoThermal_device_max: float,
+        troughPhotoThermal_device_count_max: float,
         troughPhotoThermal_price: float,
         troughPhotoThermalSolidHeatStorage_price: float,  # (csgrgtxr是啥)
         intensityOfIllumination0: Union[np.ndarray, List],
@@ -1183,7 +1183,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            troughPhotoThermal_device_max (float): 槽式光热设备机组最大装机量
+            troughPhotoThermal_device_count_max (float): 槽式光热设备机组最大装机量
             troughPhotoThermal_price (float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price (float): 槽式光热储能设备价格
             intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
@@ -1211,7 +1211,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.power_troughPhotoThermal: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
         )
@@ -1220,16 +1220,16 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.power_troughPhotoThermal_steam: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_troughPhotoThermal_steam{0}".format(TroughPhotoThermal.index),
         )
         """
         槽式光热机组每小时产蒸汽功率 实数变量列表
         """
-        self.troughPhotoThermal_device_max = troughPhotoThermal_device_max
-        self.troughPhotoThermalSolidHeatStorage_device_max: float = (
-            troughPhotoThermal_device_max * 6
+        self.troughPhotoThermal_device_count_max = troughPhotoThermal_device_max
+        self.troughPhotoThermalSolidHeatStorage_device_count_max: float = (
+            troughPhotoThermal_device_count_max * 6
         )
         """
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
@@ -1364,7 +1364,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         self.power_combinedHeatAndPower: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
@@ -1373,7 +1373,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         self.heat_combinedHeatAndPower: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )
@@ -1382,7 +1382,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         self.gas_combinedHeatAndPower: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
         )  # 时时耗气量? 时时是什么意思 实时？
@@ -1631,7 +1631,7 @@ class GasBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        gasBoiler_device_max: float,
+        gasBoiler_device_count_max: float,
         gasBoiler_price: float,
         gas_price: Union[np.ndarray, List],
         efficiency: float,
@@ -1641,7 +1641,7 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gasBoiler_device_max (float): 表示燃气锅炉的最大数量。
+            gasBoiler_device_count_max (float): 表示燃气锅炉的最大数量。
             gasBoiler_price (float): 表示燃气锅炉的单价。
             gas_price (Union[np.ndarray, List]): 表示燃气的单价。
             efficiency (float): 燃气锅炉的热效率
@@ -1666,21 +1666,21 @@ class GasBoiler(IntegratedEnergySystem):
         """
         燃气锅炉机组等效单位设备数 大于零的实数变量
         """
-        self.heat_gasBoiler: List[ContinuousVarType] = model.continuous_var_list(
+        self.heat_gasBoiler: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_gasBoiler{0}".format(GasBoiler.index),
         )
         """
         连续变量列表,表示燃气锅炉在每个时段的热功率
         """
-        self.gas_gasBoiler: List[ContinuousVarType] = model.continuous_var_list(
+        self.gas_gasBoiler: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="gas_gasBoiler{0}".format(GasBoiler.index),
         )  # 时时耗气量
         """
         连续变量列表,表示燃气锅炉在每个时段的燃气消耗量
         """
-        self.gasBoiler_device_max = gasBoiler_device_max
+        self.gasBoiler_device_count_max = gasBoiler_device_max
         self.gasBoiler_price = gasBoiler_price
         self.gas_price = gas_price
         self.efficiency = efficiency
@@ -1743,7 +1743,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricBoiler_device_max: float,
+        electricBoiler_device_count_max: float,
         electricBoiler_price: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
@@ -1753,7 +1753,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricBoiler_device_max (float): 表示电锅炉的最大数量。
+            electricBoiler_device_count_max (float): 表示电锅炉的最大数量。
             electricBoiler_price (float): 表示电锅炉的单价。
             electricity_price (Union[np.ndarray, List]): 表示电的单价。
             efficiency (float): 电锅炉的热效率
@@ -1780,7 +1780,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         self.heat_electricBoiler: List[
             ContinuousVarType
-        ] = model.continuous_var_list(  # h? heat?
+        ] =self.model.continuous_var_list(  # h? heat?
             [i for i in range(0, self.num_hour)],
             name="heat_electricBoiler{0}".format(ElectricBoiler.index),
         )
@@ -1789,14 +1789,14 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         self.electricity_electricBoiler: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
         )  # 时时耗气量
         """
         连续变量列表,表示电锅炉在每个时段的电消耗量
         """
-        self.gas_device_max = electricBoiler_device_max
+        self.gas_device_count_max = electricBoiler_device_max
         self.electricBoiler_price = electricBoiler_price
         self.electricity_price = electricity_price
         self.efficiency = efficiency
@@ -1863,7 +1863,7 @@ class Exchanger(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         k: float,  # 传热系数, 没用在模型里面
         device_name: str = "exchanger",
@@ -1872,7 +1872,7 @@ class Exchanger(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示热交换器的最大数量。
+            device_count_max (float): 表示热交换器的最大数量。
             device_price (float): 表示热交换器的单价。
             k (float): 传热系数(暂时没有使用)
             device_name (str): 热交换器机组名称,默认为"exchanger"
@@ -1904,8 +1904,8 @@ class Exchanger(IntegratedEnergySystem):
         连续变量,表示热交换器的年化费用
         """
         self.device_price = device_price
-        self.exchanger_device_max = device_max
-        self.heat_exchange: List[ContinuousVarType] = model.continuous_var_list(
+        self.exchanger_device_count_max = device_max
+        self.heat_exchange: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_exchanger{0}".format(Exchanger.index),
         )
@@ -1948,7 +1948,7 @@ class AirHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         device_name: str = "air_heat_pump",
@@ -1957,7 +1957,7 @@ class AirHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示空气热泵的最大数量。
+            device_count_max (float): 表示空气热泵的最大数量。
             device_price (float): 表示空气热泵的单价。
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
@@ -1995,15 +1995,15 @@ class AirHeatPump(IntegratedEnergySystem):
         连续变量,表示空气热泵的电价成本
         """
         self.device_price = device_price
-        self.device_max = device_max
-        self.power_heatPump_cool: List[ContinuousVarType] = model.continuous_var_list(
+        self.device_count_max = device_max
+        self.power_heatPump_cool: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_cool{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的制冷功率
         """
-        self.cool_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
+        self.cool_heatPump_out: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="cool_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -2020,7 +2020,7 @@ class AirHeatPump(IntegratedEnergySystem):
 
         self.power_heatPump_cooletStorage: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_cooletStorage{0}".format(AirHeatPump.index),
         )
@@ -2029,7 +2029,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         self.cooletStorage_heatPump_out: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="cooletStorage_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -2044,14 +2044,14 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         二元变量列表,表示空气热泵在每个时段的蓄冷状态
         """
-        self.power_heatPump_heat: List[ContinuousVarType] = model.continuous_var_list(
+        self.power_heatPump_heat: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_heat{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的制热功率
         """
-        self.heat_heatPump_out: List[ContinuousVarType] = model.continuous_var_list(
+        self.heat_heatPump_out: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -2067,7 +2067,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         self.power_heatPump_heatStorage: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump_heatStorage{0}".format(AirHeatPump.index),
         )
@@ -2076,7 +2076,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         self.heatStorage_heatPump_out: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heatStorage_heatPump_out{0}".format(AirHeatPump.index),
         )
@@ -2091,14 +2091,14 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         二元变量列表,表示空气热泵在每个时段的蓄热状态
         """
-        self.electricity_heatPump: List[ContinuousVarType] = model.continuous_var_list(
+        self.electricity_heatPump: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_heatPump{0}".format(AirHeatPump.index),
         )
         """
         连续变量列表,表示空气热泵在每个时段的用电量
         """
-        self.power_heatPump: List[ContinuousVarType] = model.continuous_var_list(
+        self.power_heatPump: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_heatPump{0}".format(AirHeatPump.index),
         )
@@ -2242,7 +2242,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
@@ -2252,7 +2252,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示水源热泵的最大数量。
+            device_count_max (float): 表示水源热泵的最大数量。
             device_price (float): 表示水源热泵的单价。
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             case_ratio (Union[np.ndarray, List]): 不同工况下热冷效率
@@ -2293,12 +2293,12 @@ class WaterHeatPump(IntegratedEnergySystem):
         连续变量,表示水源热泵的用电成本
         """
         self.device_price = device_price
-        self.device_max = device_max
+        self.device_count_max = device_max
         self.case_ratio = case_ratio
 
         self.power_waterSourceHeatPumps_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterSourceHeatPumps_cool{0}".format(WaterHeatPump.index),
         )
@@ -2318,7 +2318,7 @@ class WaterHeatPump(IntegratedEnergySystem):
 
         self.power_waterSourceHeatPumps_cooletStorage: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterSourceHeatPumps_cooletStorage{0}".format(
                 WaterHeatPump.index
@@ -2340,7 +2340,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         self.power_waterSourceHeatPumps_heat: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterSourceHeatPumps_heat{0}".format(WaterHeatPump.index),
         )
@@ -2358,7 +2358,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         self.power_waterSourceHeatPumps_heatStorage: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterSourceHeatPumps_heatStorage{0}".format(
                 WaterHeatPump.index
@@ -2378,7 +2378,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         self.electricity_waterSourceHeatPumps: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_waterSourceHeatPumps{0}".format(WaterHeatPump.index),
         )
@@ -2387,7 +2387,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         self.power_waterSourceHeatPumps: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterSourceHeatPumps{0}".format(WaterHeatPump.index),
         )
@@ -2531,7 +2531,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
@@ -2541,7 +2541,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示水冷螺旋机的最大数量。
+            device_count_max (float): 表示水冷螺旋机的最大数量。
             device_price (float): 表示水冷螺旋机的单价。
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下水冷螺旋机利用率
@@ -2582,11 +2582,11 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         连续变量,表示水冷螺旋机的用电成本
         """
         self.device_price = device_price
-        self.device_max = device_max
+        self.device_count_max = device_max
         self.case_ratio = case_ratio
         self.power_waterCoolingSpiralMachine_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterCoolingSpiralMachine_cool{0}".format(
                 WaterCoolingSpiral.index
@@ -2609,7 +2609,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
 
         self.power_waterCoolingSpiralMachine_cooletStorage: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterCoolingSpiralMachine_cooletStorage{0}".format(
                 WaterCoolingSpiral.index
@@ -2633,7 +2633,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
 
         self.electricity_waterCoolingSpiralMachine: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_waterCoolingSpiralMachine{0}".format(
                 WaterCoolingSpiral.index
@@ -2644,7 +2644,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         """
         self.power_waterCoolingSpiralMachine: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterCoolingSpiralMachine{0}".format(WaterCoolingSpiral.index),
         )
@@ -2750,7 +2750,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
@@ -2760,7 +2760,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示双工况机组的最大数量。
+            device_count_max (float): 表示双工况机组的最大数量。
             device_price (float): 表示双工况机组的单价。
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下双工况机组利用率
@@ -2807,11 +2807,11 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         连续变量,表示双工况机组的用电成本
         """
         self.device_price = device_price
-        self.device_max = device_max
+        self.device_count_max = device_max
         self.case_ratio = case_ratio
         self.power_doubleWorkingConditionUnit_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_doubleWorkingConditionUnit_cool{0}".format(
                 DoubleWorkingConditionUnit.index
@@ -2835,7 +2835,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
         self.power_doubleWorkingConditionUnit_ice: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_doubleWorkingConditionUnit_ice{0}".format(
                 DoubleWorkingConditionUnit.index
@@ -2859,7 +2859,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
         self.electricity_doubleWorkingConditionUnit: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_doubleWorkingConditionUnit{0}".format(
                 DoubleWorkingConditionUnit.index
@@ -2870,7 +2870,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         """
         self.power_doubleWorkingConditionUnit: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_doubleWorkingConditionUnit{0}".format(
                 DoubleWorkingConditionUnit.index
@@ -2979,7 +2979,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
@@ -2989,7 +2989,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 表示三工况机组的最大数量
+            device_count_max (float): 表示三工况机组的最大数量
             device_price (float): 表示三工况机组的单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下三工况机组利用率
@@ -3037,11 +3037,11 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         连续变量,表示三工况机组的用电成本
         """
         self.device_price = device_price
-        self.device_max = device_max
+        self.device_count_max = device_max
         self.case_ratio = case_ratio
         self.power_tripleWorkingConditionUnit_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_tripleWorkingConditionUnit_cool{0}".format(
                 TripleWorkingConditionUnit.index
@@ -3065,7 +3065,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
         self.power_tripleWorkingConditionUnit_ice: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_tripleWorkingConditionUnit_ice{0}".format(
                 TripleWorkingConditionUnit.index
@@ -3089,7 +3089,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
         self.power_tripleWorkingConditionUnit_heat: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_tripleWorkingConditionUnit_heat{0}".format(
                 TripleWorkingConditionUnit.index
@@ -3113,7 +3113,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
         self.electricity_tripleWorkingConditionUnit: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_tripleWorkingConditionUnit{0}".format(
                 TripleWorkingConditionUnit.index
@@ -3124,7 +3124,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         """
         self.power_tripleWorkingConditionUnit: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_tripleWorkingConditionUnit{0}".format(
                 TripleWorkingConditionUnit.index
@@ -3248,7 +3248,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_max: float,
+        device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
@@ -3258,7 +3258,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            device_max (float): 地源热泵机组最大装机量
+            device_count_max (float): 地源热泵机组最大装机量
             device_price (float): 设备单价
             electricity_price (Union[np.ndarray, List]): 24小时用电价格
             device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
@@ -3298,11 +3298,11 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵每小时耗电费用
         """
         self.device_price = device_price
-        self.device_max = device_max
+        self.device_count_max = device_max
 
         self.electricity_groundSourceHeatPump: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="electricity_groundSourceHeatPump{0}".format(GeothermalHeatPump.index),
         )
@@ -3311,7 +3311,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         self.power_groundSourceHeatPump: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_groundSourceHeatPump{0}".format(GeothermalHeatPump.index),
         )
@@ -3443,7 +3443,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.index = EnergyStorageSystemVariable.index
         self.waterStorageTank_device_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_cool{0}".format(self.index),
         )
@@ -3452,7 +3452,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         self.waterStorageTank_device_heat: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_heat{0}".format(self.index),
         )
@@ -3461,7 +3461,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         self.waterStorageTank_device_gheat: List[  # generate?
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="waterStorageTank_device_gheat{0}".format(self.index),
         )
@@ -3502,7 +3502,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.ratio_gheat = ratio_gheat  # 蓄能效率 高温水
         self.power_waterStorageTank_cool: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_cool{0}".format(self.index),
         )
@@ -3511,7 +3511,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         self.power_waterStorageTank_heat: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_heat{0}".format(self.index),
         )
@@ -3520,7 +3520,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         self.power_waterStorageTank_gheat: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_waterStorageTank_gheat{0}".format(self.index),  # gheat?
         )
@@ -3748,7 +3748,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricSteamGenerator_device_max: float,
+        electricSteamGenerator_device_count_max: float,
         electricSteamGenerator_price: float,
         electricSteamGeneratorSolidHeatStorage_price: float,
         electricity_price: Union[np.ndarray, List],
@@ -3759,7 +3759,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricSteamGenerator_device_max (int): 表示地热蒸汽发生器的最大数量
+            electricSteamGenerator_device_count_max (int): 表示地热蒸汽发生器的最大数量
             electricSteamGenerator_price (float): 表示地热蒸汽发生器的单价
             electricSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器机组固态储热设备单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
@@ -3788,7 +3788,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.power_electricSteamGenerator: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_electricSteamGenerator{0}".format(ElectricSteamGenerator.index),
         )
@@ -3798,7 +3798,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.power_electricSteamGenerator_steam: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_electricSteamGenerator_steam{0}".format(
                 TroughPhotoThermal.index
@@ -3808,9 +3808,9 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         电蒸汽发生器产生蒸汽功率
         """
-        self.electricSteamGenerator_device_max = electricSteamGenerator_device_max
-        self.electricSteamGeneratorSolidHeatStorage_device_max = (
-            electricSteamGenerator_device_max * 6
+        self.electricSteamGenerator_device_count_max = electricSteamGenerator_device_max
+        self.electricSteamGeneratorSolidHeatStorage_device_count_max = (
+            electricSteamGenerator_device_count_max * 6
         )
 
         """
@@ -3953,7 +3953,7 @@ class Linear_absolute(object):  # absolute?
         `b_negitive[i]` == 1`时,`x_negitive[i] >= 0`
         `b_negitive[i]` == 0`时,`x_negitive[i] == 0`
         """
-        self.x_positive: List[ContinuousVarType] = model.continuous_var_list(
+        self.x_positive: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in self.hourRange],
             name="x_positive_absolute{0}".format(Linear_absolute.index),
         )
@@ -3962,7 +3962,7 @@ class Linear_absolute(object):  # absolute?
         
         对于区间`self.hourRange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
-        self.x_negitive: List[ContinuousVarType] = model.continuous_var_list(
+        self.x_negitive: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in self.hourRange],
             name="x_negitive_absolute{0}".format(Linear_absolute.index),
         )
@@ -3971,7 +3971,7 @@ class Linear_absolute(object):  # absolute?
         
         对于区间`self.hourRange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
-        self.absolute_x: List[ContinuousVarType] = model.continuous_var_list(
+        self.absolute_x: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in self.hourRange], name="absolute_x{0}".format(Linear_absolute.index)
         )
         """
@@ -4044,7 +4044,7 @@ class CitySupply(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        citySupplied_device_max: float,
+        citySupplied_device_count_max: float,
         device_price: float,
         run_price: Union[np.ndarray, List],
         efficiency: float,
@@ -4056,7 +4056,7 @@ class CitySupply(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            citySupplied_device_max (float): 市政能源设备机组最大装机量
+            citySupplied_device_count_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
             run_price (Union[np.ndarray, List]): 每小时运维价格
             efficiency (float): 能源转换效率
@@ -4081,7 +4081,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源设备装机量 非负实数变量
         """
-        self.heat_citySupplied: List[ContinuousVarType] = model.continuous_var_list(
+        self.heat_citySupplied: List[ContinuousVarType] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_citySupplied{0}".format(CitySupply.index),
         )
@@ -4090,14 +4090,14 @@ class CitySupply(IntegratedEnergySystem):
         """
         self.heat_citySupplied_from: List[
             ContinuousVarType
-        ] = model.continuous_var_list(
+        ] =self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="heat_citySupplied_from{0}".format(CitySupply.index),
         )
         """
         每小时市政能源热量输入 实数变量列表
         """
-        self.citySupplied_device_max = citySupplied_device_max
+        self.citySupplied_device_count_max = citySupplied_device_max
         self.run_price = run_price
         self.device_price = device_price
 
@@ -4167,7 +4167,7 @@ class GridNet(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        gridNet_device_max: float,
+        gridNet_device_count_max: float,
         device_price: float,
         electricity_price_from: Union[np.ndarray, List],
         electricity_price_to: float,
@@ -4179,7 +4179,7 @@ class GridNet(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            gridnet_device_max (float): 电网最大设备量
+            gridnet_device_count_max (float): 电网最大设备量
             device_price (float): 设备单价
             electricity_price_from (Union[np.ndarray, List]): 电力使用价格
             electricity_price_to (float): 电力生产报酬
@@ -4206,7 +4206,7 @@ class GridNet(IntegratedEnergySystem):
         电网装机设备数 非负实数
         """
 
-        self.gridNet_device_max = gridNet_device_max
+        self.gridNet_device_count_max = gridNet_device_max
         self.electricity_price_from = electricity_price_from
         self.electricity_price_to = electricity_price_to
 
@@ -4226,7 +4226,7 @@ class GridNet(IntegratedEnergySystem):
         电网每年运维费用 非负实数
         """
 
-        self.total_power = model.continuous_var_list(
+        self.total_power =self.model.continuous_var_list(
             [i for i in range(0, num_hour0)],
             lb=-bigNumber,  # lower bound
             name="total_power {0}".format(GridNet.index),
@@ -4235,13 +4235,13 @@ class GridNet(IntegratedEnergySystem):
         电网逐小时净用电量 长度为`num_hour0`的实数列表 大于零时电网耗电 小于零时电网发电
         """
 
-        self.powerFrom = model.continuous_var_list(
+        self.powerFrom =self.model.continuous_var_list(
             [i for i in range(0, num_hour0)], name="powerFrom{0}".format(GridNet.index)
         )
         """
         电网逐小时用电量 长度为`num_hour0`的非负实数列表
         """
-        self.powerTo = model.continuous_var_list(
+        self.powerTo =self.model.continuous_var_list(
             [i for i in range(0, num_hour0)], name="powerTo {0}".format(GridNet.index)
         )
         """
@@ -4505,7 +4505,7 @@ class Linearization(object):
         """
         # looks like two lists.
         Linearization.index += 1
-        add_y = model.continuous_var_list(
+        add_y =self.model.continuous_var_list(
             [i for i in range(0, num_hour)], name="add_y{0}".format(Linearization.index)
         )
         self.model.add_constraints(
