@@ -1560,7 +1560,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型,表示热电联产的等效设备数量
         """
-        self.build_power_of_outputs(['electricity','hot_water'])
+        self.build_power_of_outputs(['electricity','hot_water','steam'])
         # self.outputs['electricity']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
@@ -1568,6 +1568,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     name="power_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         # """
+        self.heat_generated:List[ContinuousVarType] = self.model.continuous_var_list([
+            [i for i in self.hourRange]
+        ])
         # 实数型列表,表示热电联产在每个时段的发电量
         # """
         # self.outputs['hot_water']: List[
@@ -1577,7 +1580,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     name="heat_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         """
-        实数型列表,表示热电联产在每个时段的供暖热水量
+        实数型列表,表示热电联产在每个时段的总产热量
         """
         self.gas_consumed: List[
             ContinuousVarType
