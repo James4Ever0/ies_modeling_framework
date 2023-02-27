@@ -1526,7 +1526,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         device_price: float,
         gas_price: Union[np.ndarray, List],
         rated_power: float,
-        power_to_heat_ratio: float,  # drratio?
+        electricity_to_heat_ratio: float,  # drratio?
         device_name: str = "combinedHeatAndPower",
         device_count_min: int = 0,
     ):
@@ -1538,7 +1538,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price (float): 表示热电联产等效设备的单价
             gas_price (Union[np.ndarray, List]): 表示燃气的单价
             rated_power (float): 表示每台热电联产设备的等效设备数量
-            power_to_heat_ratio (float): 表示热电联产设备的电热比。
+            electricity_to_heat_ratio (float): 表示热电联产设备的电热比。
             device_name (str): 热电联产机组名称,默认为"combinedHeatAndPower"
         """
         # self.device_name = device_name
@@ -1652,7 +1652,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         最低CHP机组开启比率 默认为0.2
         """
 
-        self.power_to_heat_ratio = power_to_heat_ratio
+        self.electricity_to_heat_ratio = electricity_to_heat_ratio
 
         # arbitrary settings
         self.hot_water_exchanger_1 = Exchanger(
@@ -1782,20 +1782,24 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 确定CombinedHeatAndPower开启台数
 
-        self.model.add_constraints(
-            0 <= self.device_count_running[h] for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.device_count_running[h] <= self.device_count for h in self.hourRange
-        )
+        self.add_lower_and_upper_bounds(self.device_count_running, 0, self.device_count)
+        # self.model.add_constraints(
+        #     0 <= self.device_count_running[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.device_count_running[h] <= self.device_count for h in self.hourRange
+        # )
+
+        self.
+        
         self.model.add_constraints(
             self.outputs["electricity"][h]
-            * self.power_to_heat_ratio  # power * power_to_heat_coefficient = heat
-            == self.outputs["hot_water"][h]
+            * self.electricity_to_heat_ratio  # power * power_to_heat_coefficient = heat
+            == self.heat_generated[h]
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.gas_consumed[h] == self.outputs["electricity"][h] / 3.5
+            self.gas_consumed[h] == self.outputs["electricity"][h] / self.gas_to_electricity_ratio
             for h in self.hourRange
         )
 
