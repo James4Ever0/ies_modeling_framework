@@ -1676,6 +1676,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.device_count * 0.5,
             device_price=300,
             k=0,
+            input_type="heat",
+            output_type="hot_water"
         )
         """
         燃气轮机热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
@@ -1687,6 +1689,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.device_count * 0.5,
             device_price=300,
             k=0,
+            input_type="heat",
+            output_type="hot_water"
         )
 
         """
@@ -1699,6 +1703,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.device_count * 0.5,
             device_price=300,
             k=0,
+            input_type="heat",
+            output_type="steam"
         )
 
         self.gas_to_electricity_ratio = gas_to_electricity_ratio
@@ -1833,7 +1839,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
         self.add_lower_and_upper_bounds(
-            self.hot_water_exchanger_2.device_count,
+            self.hot_water_exchanger_2.power_of_inputs[self.hot_water_exchanger_2.input_type],
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.output_hot_water_flags, bigNumber),
@@ -1846,7 +1852,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     <= self.output_hot_water_flags * bigNumber
         # )
         self.add_lower_and_upper_bounds(
-            self.steam_exchanger.device_count,
+            self.steam_exchanger.power_of_inputs[self.steam_exchanger.input_type],
             0,
             self.elementwise_min(
                 self.elementwise_multiply(self.output_steam_flags, bigNumber),
@@ -1858,7 +1864,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.steam_exchanger.device_count <= self.output_steam_flags * bigNumber
         # )
         self.add_lower_and_upper_bounds(
-            self.hot_water_exchanger_1.device_count,
+            self.hot_water_exchanger_1.power_of_inputs[self.hot_water_exchanger_1.input_type],
             0,
             self.elementwise_multiply(self.heat_generated, 0.5),
             self.hourRange,
@@ -1875,6 +1881,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.steam_exchanger.heat_exchange[h] <= self.heat_generated[h] * 0.5
         #     for h in self.hourRange
         # )
+        
+        
 
         self.model.add_constraint(
             self.annualized
@@ -2493,19 +2501,23 @@ class AirHeatPump(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,se)
+        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,self.elementwise_multiply(bigNumber,self.heatPump_cool_flag))
         # self.model.add_constraints(
         #     self.power_heatPump_cool[h] <= bigNumber * self.heatPump_cool_flag[h]
         #     for h in self.hourRange
         # )
+
+        self.add_lower_and_upper_bounds(self.power_heatPump_cooletStorage,0,self.elementwise_multiply(self.cooletStorage_heatPump_out,self.device_count / 100))
         # self.model.add_constraints(
         #     0 <= self.power_heatPump_cooletStorage[h] for h in self.hourRange
         # )
-        self.model.add_constraints(
-            self.power_heatPump_cooletStorage[h]
-            <= self.cooletStorage_heatPump_out[h] * self.device_count / 100
-            for h in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.power_heatPump_cooletStorage[h]
+        #     <= self.cooletStorage_heatPump_out[h] * self.device_count / 100
+        #     for h in self.hourRange
+        # )
+
+        
         self.model.add_constraints(
             self.power_heatPump_cooletStorage[h]
             <= bigNumber * self.heatPump_cooletStorage_flag[h]
