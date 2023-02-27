@@ -1904,7 +1904,7 @@ class GasBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "gasBoiler",
         device_count_min: int = 0,
-        output_type:Union[Literal['hot_water'], Literal['steam']]="hot_water"
+        output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
         Args:
@@ -1982,23 +1982,32 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        
+
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
-        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.device_count)
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type], 0, self.device_count
+        )
         # self.model.add_constraints(self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange)
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][h] <= self.device_count for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
-        
-        self.equations(self.gas_consumed,self.elementwise_divide(self.power_of_outputs[self.output_type],10 * self.efficiency))
+
+        self.equations(
+            self.gas_consumed,
+            self.elementwise_divide(
+                self.power_of_outputs[self.output_type], 10 * self.efficiency
+            ),
+        )
         # self.model.add_constraints(
         #     self.gas_consumed[h] == self.power_of_outputs[self.output_type][h] / (10 * self.efficiency)
         #     for h in self.hourRange
         # )
-        
-        self.gas_cost=self.sum_within_range(self.elementwise_multiply(self.gas_consumed, self.gas_price))
+
+        self.gas_cost = self.sum_within_range(
+            self.elementwise_multiply(self.gas_consumed, self.gas_price)
+        )
         # self.gas_cost = self.model.sum(
         #     self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
         # )
@@ -2027,7 +2036,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "electricBoiler",
         device_count_min: int = 0,
-        output_type:Union[Literal['hot_water'],Literal['steam']] = "hot_water"
+        output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
         Args:
@@ -2080,7 +2089,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
-        self.input_type='electricity'
+        self.input_type = "electricity"
         self.build_power_of_inputs([self.input_type])
 
         self.electricity_price = electricity_price
@@ -2115,8 +2124,10 @@ class ElectricBoiler(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.gas_device_max)
-        
-        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.device_count)
+
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type], 0, self.device_count
+        )
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
         # )
@@ -2124,14 +2135,23 @@ class ElectricBoiler(IntegratedEnergySystem):
         #     self.power_of_outputs[self.output_type][h] <= self.device_count
         #     for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
-        
-        self.equations(self.power_of_inputs[self.input_type],self.elementwise_divide(self.power_of_outputs[self.output_type],self.efficiency))
+
+        self.equations(
+            self.power_of_inputs[self.input_type],
+            self.elementwise_divide(
+                self.power_of_outputs[self.output_type], self.efficiency
+            ),
+        )
         # self.model.add_constraints(
         #     self.power_of_inputs[self.input_type][h]
         #     == self.power_of_outputs[self.output_type][h] / self.efficiency
         #     for h in self.hourRange
         # )
-        self.electricity_cost=self.sum_within_range(self.elementwise_multiply(self.power_of_inputs[self.input_type],self.electricity_price))
+        self.electricity_cost = self.sum_within_range(
+            self.elementwise_multiply(
+                self.power_of_inputs[self.input_type], self.electricity_price
+            )
+        )
         # self.electricity_cost = self.model.sum(
         #     self.power_of_inputs[self.input_type][h] * self.electricity_price[h]
         #     for h in self.hourRange
@@ -2157,11 +2177,11 @@ class Exchanger(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         k: float,  # 传热系数, 没用在模型里面
-        efficiency:float=1, #效率系数为1
+        efficiency: float = 1,  # 效率系数为1
         device_name: str = "exchanger",
         device_count_min: int = 0,
-        input_type:str="heat", #进口温度
-        output_type:str="heat", #出口温度
+        input_type: str = "heat",  # 进口温度
+        output_type: str = "heat",  # 出口温度
     ):
         """
         Args:
@@ -2201,7 +2221,8 @@ class Exchanger(IntegratedEnergySystem):
         self.device_price = device_price
         self.device_count_max = device_count_max
         self.input_type = input_type
-        self.output_type=output_type
+        self.output_type = output_type
+        self.efficiency = efficiency
         self.build_power_of_inputs([self.input_type])
         self.build_power_of_outputs([self.output_type])
         # self.heat_exchange: List[ContinuousVarType] = self.model.continuous_var_list(
@@ -2227,16 +2248,21 @@ class Exchanger(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
-        
+
         # self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
         # self.model.add_constraints(
         #     self.heat_exchange[h] <= self.device_count for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
-        self.add_lower_bounds(self.power_of_inputs[self.input_type],0)
-        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.elementwise_multiply(self.power_of_inputs[self.input_type],)
+        self.add_lower_bounds(self.power_of_inputs[self.input_type], 0)
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type],
+            0,
+            self.elementwise_multiply(
+                self.power_of_inputs[self.input_type], self.efficiency
+            ),
+        )
         # self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
-        
-        
+
         self.model.add_constraint(
             self.annualized == self.device_count * self.device_price / 15
         )
@@ -2455,6 +2481,7 @@ class AirHeatPump(IntegratedEnergySystem):
         self.model.add_constraint(0 <= self.heatPump_device)
         self.model.add_constraint(self.heatPump_device <= self.device_max)
 
+        
         self.model.add_constraints(
             0 <= self.power_heatPump_cool[h] for h in self.hourRange
         )
