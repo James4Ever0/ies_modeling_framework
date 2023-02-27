@@ -1654,7 +1654,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.power_to_heat_ratio = power_to_heat_ratio
 
         # arbitrary settings
-        self.steam_exchanger = Exchanger(
+        self.gasTurbineSystem_device = Exchanger(
             self.num_hour,
             model,
             self.device_count * 0.5,
@@ -1665,7 +1665,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         燃气轮机热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
 
-        self.hot_water_exchanger = Exchanger(
+        self.wasteGasAndHeat_water_device = Exchanger(
             self.num_hour,
             model,
             self.device_count * 0.5,
@@ -1715,14 +1715,14 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
 
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(
-            self.device_count <= self.device_count_max
-        )
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(
+        #     self.device_count <= self.device_count_max
+        # )
 
         self.model.add_constraint(
-            self.device_count
+            self.total_rated_power
             == self.device_count * self.rated_power
         )
         self.model.add_constraints(
@@ -1785,7 +1785,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.output_hot_water_flags + self.output_steam_flags == 1
         )
         self.model.add_constraint(
-            self.hot_water_exchanger.exchanger_device
+            self.wasteGasAndHeat_water_device.exchanger_device
             <= self.output_hot_water_flags * bigNumber
         )
         self.model.add_constraint(
@@ -1793,12 +1793,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             <= self.output_steam_flags * bigNumber
         )
         self.model.add_constraints(
-            self.steam_exchanger.heat_exchange[h]
+            self.gasTurbineSystem_device.heat_exchange[h]
             <= self.outputs['hot_water'][h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.hot_water_exchanger.heat_exchange[h]
+            self.wasteGasAndHeat_water_device.heat_exchange[h]
             <= self.outputs['hot_water'][h] * 0.5
             for h in self.hourRange
         )
@@ -1814,8 +1814,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             * self.rated_power
             * self.device_price
             / 15
-            + self.steam_exchanger.annualized
-            + self.hot_water_exchanger.annualized
+            + self.gasTurbineSystem_device.annualized
+            + self.wasteGasAndHeat_water_device.annualized
             + self.wasteGasAndHeat_steam_device.annualized
             + self.gas_cost * 8760 / self.num_hour
         )
