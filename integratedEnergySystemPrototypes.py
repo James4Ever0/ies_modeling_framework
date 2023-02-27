@@ -231,7 +231,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         model: Model,
         device_count_max: float,
         device_price: float,  # float?
-        intensityOfIllumination0: Union[np.ndarray, List],
+        intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,  # efficiency
         device_name: str = "PhotoVoltaic",
         output_type: Union[
@@ -247,7 +247,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 光伏设备机组最大装机量
             device_price (float): 设备单价
-            intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
+            intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
         """
@@ -281,7 +281,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         初始化每个小时内光伏机组发电量 大于零的实数 一共`num_hour`个变量
         """
         # intensityOfIllumination
-        self.intensityOfIllumination = intensityOfIllumination0
+        self.intensityOfIllumination = intensityOfIllumination
         self.efficiency = efficiency
         """
         每年消耗的运维成本 大于零的实数
@@ -946,7 +946,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         else:  # what else?
             # TODO: comment out misplaced init statement
             # # 初始值
-            if self.className  == EnergyStorageSystem.__name__:
+            if self.className == EnergyStorageSystem.__name__:
                 self.equation(self.energy[0], self.energy_init * self.device_count)
             # self.model.add_constraint(
             #     self.energy[0] == self.energy_init * self.device_count
@@ -977,10 +977,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         Return:
             购买设备总费用 = 储能系统设备数 * 储能设备设备价格+功率转化设备数 * 功率转化设备价格
         """
-        solution.get_values()
         return (
             solution.get_value(self.device_count) * self.device_price
-            + (max(solution.get_values(self.powerConversionSystem_device_count) if isinstance(self.powerConversionSystem_device_count,Lisr))
+            + (
+                max(solution.get_values(self.powerConversionSystem_device_count))
+                if isinstance(self.powerConversionSystem_device_count, List)
+                else solution.get_value(self.powerConversionSystem_device_count)
+            )
             * self.powerConversionSystem_price
         )
 
@@ -1144,13 +1147,12 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #     9. 最大和最小储能量约束:<br>储能设备数 * 储能装置的最小储能量百分比≦储能系统能量≦储能设备数 * 储能装置的最大储能量百分比
     #     10. 两天之间充放能关系约束:<br>对于`range(day_node-1, num_hour, day_node)`区间每个数`i`，如果`register_period_constraints`参数为1,表示`energyStorageSystem[i] == energyStorageSystem[i - (day_node - 1)]`;如果`register_period_constraints`参数不为1,表示`energyStorageSystem[i] == energyStorageSystem[i - 1] + 充放能变化能量`
 
-
     #     Args:
     #         model (docplex.mp.model.Model): 求解模型实例
     #         register_period_constraints (int): 注册周期约束为1
     #         day_node (int): 一天时间节点为24
     #     """
-    #     # bigNumber = 1e10
+    #     # bigNumber = 1e10 
     #     # self.hourRange = range(0, self.num_hour)
     #     # self.model.add_constraints(
     #     #     self.device_count[i] <= self.device_count_max for i in self.hourRange
@@ -1337,10 +1339,10 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        troughPhotoThermal_device_count_max: float,
-        troughPhotoThermal_price: float,
+        device_count_max: float,
+        device_price: float,
         troughPhotoThermalSolidHeatStorage_price: float,  # (csgrgtxr是啥)
-        intensityOfIllumination0: Union[np.ndarray, List],
+        intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
         device_count_min: int = 0,
@@ -1349,10 +1351,10 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            troughPhotoThermal_device_count_max (float): 槽式光热设备机组最大装机量
-            troughPhotoThermal_price (float): 槽式光热设备的购置价格。
+            device_count_max (float): 槽式光热设备机组最大装机量
+            device_price (float): 槽式光热设备的购置价格。
             troughPhotoThermalSolidHeatStorage_price (float): 槽式光热储能设备价格
-            intensityOfIllumination0 (Union[np.ndarray, List]): 24小时光照强度
+            intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
         """
@@ -1367,7 +1369,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        TroughPhotoThermal.index += 1
+        # TroughPhotoThermal.index += 1
         # self.num_hour = num_hour
         self.troughPhotoThermal_device: ContinuousVarType = self.model.continuous_var(
             name="troughPhotoThermal_device{0}".format(TroughPhotoThermal.index)
@@ -1393,19 +1395,19 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         槽式光热机组每小时产蒸汽功率 实数变量列表
         """
-        self.troughPhotoThermal_device_count_max = troughPhotoThermal_device_max
+        self.device_count_max = troughPhotoThermal_device_max
         self.troughPhotoThermalSolidHeatStorage_device_count_max: float = (
-            troughPhotoThermal_device_count_max * 6
+            device_count_max * 6
         )
         """
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
-        self.troughPhotoThermal_price = troughPhotoThermal_price
+        self.device_price = device_price
         self.troughPhotoThermalSolidHeatStorage_price = (
             troughPhotoThermalSolidHeatStorage_price
         )
         self.intensityOfIllumination = (
-            intensityOfIllumination0  # intensityOfIllumination
+            intensityOfIllumination  # intensityOfIllumination
         )
         self.annualized: ContinuousVarType = self.model.continuous_var(
             name="troughPhotoThermal_annualized{0}".format(TroughPhotoThermal.index)
@@ -1472,7 +1474,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         )  # 约束能量不能倒流
         self.model.add_constraint(
             self.annualized
-            == self.troughPhotoThermal_device * self.troughPhotoThermal_price / 15
+            == self.troughPhotoThermal_device * self.device_price / 15
             + self.troughPhotoThermalSolidHeatStorage_device.annualized
         )
 
