@@ -1403,7 +1403,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         槽式光热机组每小时产热功率 实数变量列表
         """
-        # self.outputs['steam']: List[
+        # self.power_of_outputs['steam']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
@@ -1491,7 +1491,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # )  # 与天气相关
 
         self.equations(
-            self.outputs[self.output_type],
+            self.power_of_outputs[self.output_type],
             self.elementwise_add(
                 self.power_generated_steam,
                 self.troughPhotoThermalSolidHeatStorage.power,
@@ -1502,14 +1502,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # self.model.add_constraints(
         #     self.power_generated_steam[h]
         #     + self.troughPhotoThermalSolidHeatStorage.power[h]
-        #     == self.outputs[self.output_type][h]
+        #     == self.power_of_outputs[self.output_type][h]
         #     for h in self.hourRange
         # )  # troughPhotoThermal系统产生的highTemperature
 
         # self.model.add_constraints(
-        #     0 <= self.outputs[self.output_type][h] for h in self.hourRange
+        #     0 <= self.power_of_outputs[self.output_type][h] for h in self.hourRange
         # )  # 约束能量不能倒流
-        self.add_lower_bounds(self.outputs[self.output_type], 0)
+        self.add_lower_bounds(self.power_of_outputs[self.output_type], 0)
         self.equation(
             self.annualized,
             self.device_count * self.device_price / 15
@@ -1576,7 +1576,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         实数型,表示热电联产的等效设备数量
         """
         self.build_power_of_outputs(["electricity", "hot_water", "steam"])
-        # self.outputs['electricity']: List[
+        # self.power_of_outputs['electricity']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
@@ -1588,7 +1588,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
         # 实数型列表,表示热电联产在每个时段的发电量
         # """
-        # self.outputs['hot_water']: List[
+        # self.power_of_outputs['hot_water']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
@@ -1747,7 +1747,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # )
 
         self.add_lower_and_upper_bounds(
-            self.outputs["electricity"],
+            self.power_of_outputs["electricity"],
             self.elementwise_multiply(
                 self.on_flags, self.total_rated_power * self.running_ratio_min
             ),
@@ -1763,18 +1763,18 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.on_flags[h]
         #     * self.rated_power
         #     * self.running_ratio_min
-        #     <= self.outputs['electricity'][h]
+        #     <= self.power_of_outputs['electricity'][h]
         #     for h in self.hourRange
         # )
 
         # power_combinedHeatAndPower(1, h) <= device_count * on_flags(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
         # self.model.add_constraints(
-        #     self.outputs['electricity'][h] <= self.total_rated_power
+        #     self.power_of_outputs['electricity'][h] <= self.total_rated_power
         #     for h in self.hourRange
         # )
 
         # self.model.add_constraints(
-        #     self.outputs['electricity'][h]
+        #     self.power_of_outputs['electricity'][h]
         #     <= self.on_flags[h] * bigNumber
         #     for h in self.hourRange
         # )
@@ -1784,18 +1784,18 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
         self.add_lower_and_upper_bounds(
             self.elementwise_multiply(self.device_count_running, self.rated_power),
-            self.outputs["electricity"],
+            self.power_of_outputs["electricity"],
             self.elementwise_add(self.output["electricity"], self.rated_power + 1),
         )
 
         # self.model.add_constraints(
         #     self.device_count_running[h] * self.rated_power
-        #     >= self.outputs["electricity"][h]
+        #     >= self.power_of_outputs["electricity"][h]
         #     for h in self.hourRange
         # )  # 确定CombinedHeatAndPower开启台数
         # self.model.add_constraints(
         #     self.device_count_running[h] * self.rated_power
-        #     <= self.outputs["electricity"][h] + self.rated_power + 1
+        #     <= self.power_of_outputs["electricity"][h] + self.rated_power + 1
         #     for h in self.hourRange
         # )  # 确定CombinedHeatAndPower开启台数
 
@@ -1808,14 +1808,14 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # )
 
         self.model.add_constraints(
-            self.outputs["electricity"][h]
+            self.power_of_outputs["electricity"][h]
             * self.electricity_to_heat_ratio  # power * power_to_heat_coefficient = heat
             == self.heat_generated[h]
             for h in self.hourRange
         )
         self.model.add_constraints(
             self.gas_consumed[h]
-            == self.outputs["electricity"][h] / self.gas_to_electricity_ratio
+            == self.power_of_outputs["electricity"][h] / self.gas_to_electricity_ratio
             for h in self.hourRange
         )
         self.gas_cost = self.sum_within_range(
@@ -1904,7 +1904,7 @@ class GasBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "gasBoiler",
         device_count_min: int = 0,
-        
+        output_type:Union[Literal['hot_water'], Literal['steam']]="hot_water"
     ):
         """
         Args:
@@ -1927,26 +1927,26 @@ class GasBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # GasBoiler.index += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(GasBoiler.index)
+        #     name="device_count{0}".format(self.classSuffix)
         # )
         """
         燃气锅炉机组等效单位设备数 大于零的实数变量
         """
         self.output_type = output_type
         self.build_power_of_outputs([self.output_type])
-        # self.heat_gasBoiler: List[ContinuousVarType] = self.model.continuous_var_list(
+        # self.power_of_outputs[self.output_type]: List[ContinuousVarType] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_gasBoiler{0}".format(GasBoiler.index),
+        #     name="outputs[self.output_type]{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示燃气锅炉在每个时段的热功率
         """
         self.gas_consumed: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="gas_consumed{0}".format(GasBoiler.index),
+            name="gas_consumed_{0}".format(self.classSuffix),
         )  # 时时耗气量
         """
         连续变量列表,表示燃气锅炉在每个时段的燃气消耗量
@@ -1956,13 +1956,13 @@ class GasBoiler(IntegratedEnergySystem):
         self.gas_price = gas_price
         self.efficiency = efficiency
         self.gas_cost: ContinuousVarType = self.model.continuous_var(
-            name="gasBoiler_gas_cost{0}".format(GasBoiler.index)
+            name="gas_cost_{0}".format(self.classSuffix)
         )
         """
         连续变量,表示总燃气费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="gasBoiler_annualized{0}".format(GasBoiler.index)
+        #     name="gasBoiler_annualized{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示燃气锅炉的年化费用
@@ -1981,15 +1981,18 @@ class GasBoiler(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(self.device_count <= self.device_count_max)
-        self.model.add_constraints(self.heat_gasBoiler[h] >= 0 for h in self.hourRange)
+        
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        self.add_lower_and_upper_bounds(sel)
+        # self.model.add_constraints(self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange)
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] <= self.device_count for h in self.hourRange
+        # )  # 天燃气蒸汽锅炉
+        
         self.model.add_constraints(
-            self.heat_gasBoiler[h] <= self.device_count for h in self.hourRange
-        )  # 天燃气蒸汽锅炉
-        self.model.add_constraints(
-            self.gas_consumed[h] == self.heat_gasBoiler[h] / (10 * self.efficiency)
+            self.gas_consumed[h] == self.power_of_outputs[self.output_type][h] / (10 * self.efficiency)
             for h in self.hourRange
         )
         self.gas_cost = self.model.sum(
