@@ -1569,7 +1569,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # )
         # """
         self.heat_generated:List[ContinuousVarType] = self.model.continuous_var_list([
-            [i for i in self.hourRange]
+            [i for i in self.hourRange],name=f"heat_generated_{self.classSuffix}"
         ])
         # 实数型列表,表示热电联产在每个时段的发电量
         # """
@@ -1649,7 +1649,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         单台机组额定功率
         """
-        self.combinedHeatAndPower_limit_down_ratio = (
+        self.running_ratio_min = (
             0.2  # ? devices cannot be turned down more than 20% ? what is this?
         )
         """
@@ -1726,17 +1726,21 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.device_count <= self.device_count_max
         # )
 
-        self.model.add_constraint(
-            self.total_rated_power
-            == self.device_count * self.rated_power
-        )
-        self.model.add_constraints(
-            self.on_flags[h]
-            * self.rated_power
-            * self.combinedHeatAndPower_limit_down_ratio
-            <= self.outputs['electricity'][h]
-            for h in self.hourRange
-        )
+        self.equation(self.tota)
+
+        # self.model.add_constraint(
+        #     self.total_rated_power
+        #     == self.device_count * self.rated_power
+        # )
+
+        # self.model.add_constraints(
+        #     self.on_flags[h]
+        #     * self.rated_power
+        #     * self.running_ratio_min
+        #     <= self.outputs['electricity'][h]
+        #     for h in self.hourRange
+        # )
+
         # power_combinedHeatAndPower(1, h) <= device_count * on_flags(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
         self.model.add_constraints(
             self.outputs['electricity'][h] <= self.device_count
