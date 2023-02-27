@@ -181,12 +181,26 @@ class IntegratedEnergySystem(object):
 
     def multiply(self, variable, value):
         return variable * value
+    
+    def add(self,variable, value):
+        return variable + value
+    
+    def minus(self,variable,value):
+        return variable-value
 
     def elementwise_divide(self, variables, values):
         return self.elementwise_operation(variables, values, self.divide)
 
     def elementwise_multiply(self, variables, values):
         return self.elementwise_operation(variables, values, self.multiply)
+
+
+    def elementwise_add(self, variables, values):
+        return self.elementwise_operation(variables, values, self.add)
+
+    def elementwise_subtract(self, variables, values):
+        return self.elementwise_operation(variables, values, self.multiply)
+
 
     def sum_within_range(self, variables, index_range):
         result = self.model.sum(variables[index] for index in index_range)
@@ -748,13 +762,14 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
 
-        self.add_lower_and_upper_bound(self.powerConversionSystem_device_count,self.device_count * self.conversion_rate_max)
+        self.add_lower_and_upper_bound(self.powerConversionSystem_device_count,0,self.device_count * self.conversion_rate_max)
         # self.model.add_constraint(
         #     self.device_count * self.conversion_rate_max
         #     >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
         # )
-        self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
+        # self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
         # 功率拆分
+
         self.model.add_constraints(
             self.power[i]
             == -self.power_of_inputs[self.input_type][i]
