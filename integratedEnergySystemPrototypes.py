@@ -1060,8 +1060,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         # 能量
         self.energy: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name=f"energy_{self.classSuffix}"
+            [i for i in range(0, num_hour)], name=f"energy_{self.classSuffix}"
         )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
@@ -1074,26 +1073,23 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
-            name=f"powerConversionSystem_device_count_{self.classSuffix}"
-            ),
-        )  # powerConversionSystem
+            name=f"powerConversionSystem_device_count_{self.classSuffix}",
+        )
+        # powerConversionSystem
         """
         模型中的连续变量,表示 PCS 的容量
         """
         # paradox? redundancy? both charge and discharge?
         self.charge_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name=f"charge_flag_{0}".format(self.classSuffix
-            ),
+            name=f"charge_flag_{0}".format(self.classSuffix),
         )  # 充能
         """
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于充能状态。
         """
         self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
             keys=[i for i in range(0, num_hour)],
-            name="discharge_flag_{0}".format(
-                self.classSuffix
-            ),
+            name="discharge_flag_{0}".format(self.classSuffix),
         )  # 放能
         """
         模型中的二元变量列表,长度为`num_h`,表示每小时储能装置是否处于放能状态。
@@ -1129,19 +1125,26 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
             day_node (int): 一天时间节点为24
         """
         # bigNumber = 1e10
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraints(
-            self.device_count[i] <= self.device_count_max for i in self.hourRange
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraints(
+        #     self.device_count[i] <= self.device_count_max for i in self.hourRange
+        # )
+        # self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
+        self.add_lower_and_upper_bounds(
+            self.powerConversionSystem_device_count,
+            0,
+            self.elementwise_multiply(self.device_count, self.conversion_rate_max),
+            self.hourRange,
         )
-        self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
-        self.model.add_constraints(
-            self.device_count[i] * self.conversion_rate_max
-            >= self.powerConversionSystem_device_count[i]
-            for i in self.hourRange
-        )
-        self.model.add_constraints(
-            self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.device_count[i] * self.conversion_rate_max
+        #     >= self.powerConversionSystem_device_count[i]
+        #     for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
+        # )
+
         # 功率拆分
         self.model.add_constraints(
             self.power[i]
