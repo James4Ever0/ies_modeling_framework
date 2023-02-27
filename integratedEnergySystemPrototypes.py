@@ -2220,11 +2220,12 @@ class Exchanger(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         
-        self.add_lower_and_upper_bounds(self.heat)
+        self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
         # self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
         # self.model.add_constraints(
         #     self.heat_exchange[h] <= self.device_count for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
+        
         self.model.add_constraint(
             self.annualized == self.device_count * self.device_price / 15
         )
