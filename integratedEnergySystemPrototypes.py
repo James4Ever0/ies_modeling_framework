@@ -2069,7 +2069,6 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量列表,表示电锅炉在每个时段的热功率
         """
-        self.build_power_of_inputs(['electricity'])
         # self.electricity_consumed: List[
         #     ContinuousVarType
         # ] = self.model.continuuntous_var_list(
@@ -2081,6 +2080,9 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
+        self.input_type='electricity'
+        self.build_power_of_inputs([self.input_type])
+
         self.electricity_price = electricity_price
         self.efficiency = efficiency
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
@@ -2122,16 +2124,17 @@ class ElectricBoiler(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
         
-        self.equations(self.elec)
+        self.equations(self.power_of_inputs[self.input_type],self.elementwise_divide(self.power_of_outputs[self.output_type],self.efficiency))
         # self.model.add_constraints(
-        #     self.[h]
+        #     self.power_of_inputs[self.input_type][h]
         #     == self.power_of_outputs[self.output_type][h] / self.efficiency
         #     for h in self.hourRange
         # )
-        self.electricity_cost = self.model.sum(
-            self.[h] * self.electricity_price[h]
-            for h in self.hourRange
-        )
+        self.electricity_cost=self.sum_within_range(self.elementwise_multiply(self.power_of_inputs[self.input_type],self.electricity_price))
+        # self.electricity_cost = self.model.sum(
+        #     self.power_of_inputs[self.input_type][h] * self.electricity_price[h]
+        #     for h in self.hourRange
+        # )
         self.model.add_constraint(
             self.annualized
             == self.device_count * self.device_price / 15
