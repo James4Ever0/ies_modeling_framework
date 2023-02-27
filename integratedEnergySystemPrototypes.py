@@ -1818,25 +1818,26 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # self.model.add_constraint(
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
-        self.model.add_constraint(
-            self.hot_water_exchanger_2.exchanger_device
-            <= self.output_hot_water_flags * bigNumber
-        )
+        self.add_lower_and_upper_bounds(self.hot_water_exchanger_2.exchanger_device,0,self.elementwise_min(self.elementwise_multiply(self.output_hot_water_flags ,bigNumber),))
+        # self.model.add_constraint(
+        #     self.hot_water_exchanger_2.exchanger_device
+        #     <= self.output_hot_water_flags * bigNumber
+        # )
         self.model.add_constraint(
             self.steam_exchanger.exchanger_device <= self.output_steam_flags * bigNumber
         )
         self.model.add_constraints(
             self.hot_water_exchanger_1.heat_exchange[h]
-            <= self.outputs["hot_water"][h] * 0.5
+            <= self.heat_generated[h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
             self.hot_water_exchanger_2.heat_exchange[h]
-            <= self.[h] * 0.5
+            <= self.heat_generated[h] * 0.5
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.steam_exchanger.heat_exchange[h] <= self.[h] * 0.5
+            self.steam_exchanger.heat_exchange[h] <= self.heat_generated[h] * 0.5
             for h in self.hourRange
         )
 
