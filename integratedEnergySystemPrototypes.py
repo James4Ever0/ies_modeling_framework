@@ -963,7 +963,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         return (
             solution.get_value(self.device_count) * self.device_price
-            + solution.get_value(self.powerConversionSystem_device)
+            + solution.get_value(self.powerConversionSystem_device_count)
             * self.powerConversionSystem_price
         )
 
@@ -1066,16 +1066,15 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
-        self.device_count_max = device_count_max
-        self.device_price = device_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.powerConversionSystem_price = powerConversionSystem_price
         # self.num_hour = num_hour
-        self.powerConversionSystem_device: List[
+        self.powerConversionSystem_device_count: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
-            name="powerConversionSystem_deviceVariable{0}".format(
-                EnergyStorageSystemVariable.index
+            name=f"powerConversionSystem_device_count_{self.classSuffix}"
             ),
         )  # powerConversionSystem
         """
@@ -1084,8 +1083,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # paradox? redundancy? both charge and discharge?
         self.charge_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystemVariable_charge_flag{0}".format(
-                EnergyStorageSystemVariable.index
+            name=f"charge_flag_{0}".format(self.classSuffix
             ),
         )  # 充能
         """
@@ -1093,8 +1091,8 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         """
         self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
             keys=[i for i in range(0, num_hour)],
-            name="batteryEnergyStorageSystemVariable_discharge_flag{0}".format(
-                EnergyStorageSystemVariable.index
+            name="discharge_flag_{0}".format(
+                self.classSuffix
             ),
         )  # 放能
         """
@@ -1138,11 +1136,11 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         self.model.add_constraints(self.device_count[i] >= 0 for i in self.hourRange)
         self.model.add_constraints(
             self.device_count[i] * self.conversion_rate_max
-            >= self.powerConversionSystem_device[i]
+            >= self.powerConversionSystem_device_count[i]
             for i in self.hourRange
         )
         self.model.add_constraints(
-            self.powerConversionSystem_device[i] >= 0 for i in self.hourRange
+            self.powerConversionSystem_device_count[i] >= 0 for i in self.hourRange
         )
         # 功率拆分
         self.model.add_constraints(
@@ -1161,7 +1159,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_of_inputs[self.input_type][i]
-            <= self.powerConversionSystem_device[i]
+            <= self.powerConversionSystem_device_count[i]
             for i in self.hourRange
         )
 
@@ -1175,7 +1173,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_of_outputs[self.output_type][i]
-            <= self.powerConversionSystem_device[i]
+            <= self.powerConversionSystem_device_count[i]
             for i in self.hourRange
         )
 
