@@ -773,8 +773,9 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
 
-        self.add_lower_and_upper_bound(
-            self.powerConversionSystem_device_count,
+
+        self.add_lower_and_upper_bounds(
+            self.powerConversionSystem_device_count if isinstance(self.powerConversionSystem_device_count) else [self.powerConversionSystem_device_count],
             0,
             self.device_count * self.conversion_rate_max,
         )
@@ -1170,37 +1171,58 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         #     + self.power_of_outputs[self.output_type][i]
         #     for i in self.hourRange
         # )
+        self.add_lower_and_upper_bounds(
+            self.power_of_inputs[self.input_type],
+            0,
+            self.elementwise_min(
+                self.elementwise_multiply(self.charge_flags, bigNumber),
+                self.powerConversionSystem_device_count,
+            ),
+            self.hourRange,
+        )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][i] <= self.charge_flags[i] * bigNumber
+        #     for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][i]
+        #     <= self.powerConversionSystem_device_count[i]
+        #     for i in self.hourRange
+        # )
 
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i] <= self.charge_flags[i] * bigNumber
-            for i in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][i]
-            <= self.powerConversionSystem_device_count[i]
-            for i in self.hourRange
-        )
 
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type],
+            0,
+            self.elementwise_min(
+                self.elementwise_multiply(self.discharge_flags, bigNumber),
+                self.powerConversionSystem_device_count,
+            ),
+            self.hourRange,
         )
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][i]
-            <= self.discharge_flags[i] * bigNumber
-            for i in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][i]
-            <= self.powerConversionSystem_device_count[i]
-            for i in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][i]
+        #     <= self.discharge_flags[i] * bigNumber
+        #     for i in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][i]
+        #     <= self.powerConversionSystem_device_count[i]
+        #     for i in self.hourRange
+        # )
 
-        self.model.add_constraints(
-            self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
-        )
+        
+        self.equations(self.elementwise_add(self.charge_flags, self.discharge_flags), 1)
+
+        # self.model.add_constraints(
+        #     self.charge_flags[i] + self.discharge_flags[i] == 1 for i in self.hourRange
+        # )
 
         # seems this will discourage the simulation.
         # let's not make it zero.
