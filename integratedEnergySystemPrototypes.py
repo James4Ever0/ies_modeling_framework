@@ -113,8 +113,10 @@ class IntegratedEnergySystem(object):
             )
 
     def constraint_multiplexer(
-        self, variables, values, index_range, constraint_function
+        self, variables, values, index_range=None, constraint_function=lambda x: x
     ):
+        index_range = self.get_index_range(index_range)
+
         iterable = isinstance(values, List)
 
         for index in index_range:
@@ -129,7 +131,7 @@ class IntegratedEnergySystem(object):
 
     def add_lower_bounds(self, variables, lower_bounds, index_range=None):
         index_range = self.get_index_range(index_range)
-        
+
         self.constraint_multiplexer(
             variables, lower_bounds, index_range, self.add_lower_bound
         )
@@ -139,7 +141,7 @@ class IntegratedEnergySystem(object):
 
     def add_upper_bounds(self, variables, upper_bounds, index_range=None):
         index_range = self.get_index_range(index_range)
-        
+
         self.constraint_multiplexer(
             variables, upper_bounds, index_range, self.add_upper_bound
         )
@@ -148,7 +150,9 @@ class IntegratedEnergySystem(object):
         self.model.add_constraint(variable == value)
 
     def equations(self, variables, values, index_range=None):
-        self.constraint_multiplexer(variables, values, index_range=index_range, equation=self.equation)
+        self.constraint_multiplexer(
+            variables, values, index_range=index_range, equation=self.equation
+        )
 
     def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
         self.add_lower_bound(variable, lower_bound)
@@ -215,7 +219,7 @@ class IntegratedEnergySystem(object):
 
     def elementwise_subtract(self, variables, values):
         return self.elementwise_operation(variables, values, self.subtract)
-    
+
     def get_index_range(self, index_range=None):
         if index_range is None:
             index_range = self.hourRange
@@ -562,7 +566,7 @@ class DieselEngine(IntegratedEnergySystem):
         1. 机组设备数大于等于0
         2. 机组设备总数不得大于最大装机量
         3. 每个小时内,设备发电量小于等于装机设备实际值
-        4. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15+设备总发电量 * 设备运行价格 * 8760/小时数
+        4. 每年消耗的运维成本 = 机组等效单位设备数 * 单位设备价格/15+设备总发电量 * 设备运行价格 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -584,7 +588,7 @@ class DieselEngine(IntegratedEnergySystem):
         self.equation(
             self.annualized,  # 年运行成本?
             self.device_count * self.device_price / 15
-            + self.electricity_output_sum * self.run_price * 8760 / self.num_hour,
+            + self.electricity_output_sum * self.run_price * (365 * 24) / self.num_hour,
         )
 
     def total_cost(self, solution: SolveSolution) -> float:
@@ -1323,7 +1327,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #         # breakpoint()
     #         # not breaking here?
     #         # 两天之间的连接
-    #         # TODO: 8760（一年）设置为num_hour时使用这个条件
+    #         # TODO: (365*24)（一年）设置为num_hour时使用这个条件
     #         self.model.add_constraints(
     #             self.energy[i]
     #             == self.energy[i - 1]
@@ -1828,28 +1832,49 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # self.model.add_constraint(
         #     self.output_hot_water_flags + self.output_steam_flags == 1
         # )
-        self.add_lower_and_upper_bounds(self.hot_water_exchanger_2.exchanger_device,0,self.elementwise_min(self.elementwise_multiply(self.output_hot_water_flags ,bigNumber),self.elementwise_multiply(self.heat_generated,0.5)), self.hourRange)
+        self.add_lower_and_upper_bounds(
+            self.hot_water_exchanger_2.exchanger_device,
+            0,
+            self.elementwise_min(
+                self.elementwise_multiply(self.output_hot_water_flags, bigNumber),
+                self.elementwise_multiply(self.heat_generated, 0.5),
+            ),
+            self.hourRange,
+        )
         # self.model.add_constraint(
         #     self.hot_water_exchanger_2.exchanger_device
         #     <= self.output_hot_water_flags * bigNumber
         # )
-        self.model.add_constraint(
-            self.steam_exchanger.exchanger_device <= self.output_steam_flags * bigNumber
+        self.add_lower_and_upper_bounds(
+            self.steam_exchanger.exchanger_device,
+            0,
+            self.elementwise_min(
+                self.elementwise_multiply(self.output_steam_flags, bigNumber),
+                self.elementwise_multiply(self.heat_generated, 0.5),
+            ),
+            self.hourRange,
         )
-        self.model.add_constraints(
-            self.hot_water_exchanger_1.heat_exchange[h]
-            <= self.heat_generated[h] * 0.5
-            for h in self.hourRange
+        # self.model.add_constraint(
+        #     self.steam_exchanger.exchanger_device <= self.output_steam_flags * bigNumber
+        # )
+        self.add_lower_and_upper_bounds(
+            self.hot_water_exchanger_1.exchanger_device,
+            0,
+            self.elementwise_multiply(self.heat_generated, 0.5),
+            self.hourRange,
         )
-        self.model.add_constraints(
-            self.hot_water_exchanger_2.heat_exchange[h]
-            <= self.heat_generated[h] * 0.5
-            for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.steam_exchanger.heat_exchange[h] <= self.heat_generated[h] * 0.5
-            for h in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.hot_water_exchanger_1.heat_exchange[h] <= self.heat_generated[h] * 0.5
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.hot_water_exchanger_2.heat_exchange[h] <= self.heat_generated[h] * 0.5
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.steam_exchanger.heat_exchange[h] <= self.heat_generated[h] * 0.5
+        #     for h in self.hourRange
+        # )
 
         self.model.add_constraint(
             self.annualized
@@ -1857,7 +1882,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             + self.hot_water_exchanger_1.annualized
             + self.hot_water_exchanger_2.annualized
             + self.steam_exchanger.annualized
-            + self.gas_cost * 8760 / self.num_hour
+            + self.gas_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -1970,7 +1995,7 @@ class GasBoiler(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.gasBoiler_device * self.gasBoiler_price / 15
-            + self.gas_cost * 8760 / self.num_hour
+            + self.gas_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -2092,7 +2117,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.electricBoiler_device * self.electricBoiler_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -2385,7 +2410,7 @@ class AirHeatPump(IntegratedEnergySystem):
         7. 空气热泵用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数+设备制热功率/制热性能系数+设备蓄热功率/蓄热性能系数
         8. 空气热泵总功率 = 制冷功率+蓄冷功率+制热功率+蓄热功率
         9. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
-        10. 空气热泵的总年化成本 = 空气热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
+        10. 空气热泵的总年化成本 = 空气热泵设备数 * 设备价格/15+用电成本 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2486,7 +2511,7 @@ class AirHeatPump(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.heatPump_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -2673,7 +2698,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         7. 水源热泵用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数+设备制热功率/制热性能系数+设备蓄热功率/蓄热性能系数
         8. 热泵总功率 = 制冷功率+蓄冷功率+制热功率+蓄热功率
         9. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
-        10. 水源热泵的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
+        10. 水源热泵的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -2776,7 +2801,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.waterSourceHeatPumps_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -2931,7 +2956,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         5. 水冷螺旋机用电量 = 设备制冷功率/制冷性能系数+设备蓄冷功率/蓄冷性能系数
         6. 热泵总功率 = 制冷功率+蓄冷功率
         7. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
-        8. 水冷螺旋机的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * 8760/小时数
+        8. 水冷螺旋机的总年化成本 = 水源热泵设备数 * 设备价格/15+用电成本 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3000,7 +3025,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.waterCoolingSpiralMachine_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -3162,7 +3187,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         5. 双工况机组用电量 = 设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数
         6. 热泵总功率 = 制冷功率+制冰功率
         7. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
-        8. 双工况机组的总年化成本 = 双工况机组设备数 * 设备价格/15+用电成本 * 8760/小时数
+        8. 双工况机组的总年化成本 = 双工况机组设备数 * 设备价格/15+用电成本 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3230,7 +3255,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.doubleWorkingConditionUnit_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -3417,7 +3442,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         6. 三工况机组用电量 = 设备制冷功率/制冷性能系数+设备制冰功率/制冰性能系数+设备制热功率/制热性能系数
         7. 热泵总功率 = 制冷功率+制冰功率+制热功率
         8. 用电成本 = 每个时刻(设备用电量 * 电价)的总和
-        9. 三工况机组的总年化成本 = 三工况机组设备数 * 设备价格/15+用电成本 * 8760/小时数
+        9. 三工况机组的总年化成本 = 三工况机组设备数 * 设备价格/15+用电成本 * (365*24)/小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3503,7 +3528,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.tripleWorkingConditionUnit_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -3600,7 +3625,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         2. 0 <= 每小时输出功率 <= 机组设备数量
         3. 每小时耗电量 = 每小时输出功率 / 运行效率参数
         4. 机组一天用电费用 = sum(每小时耗电量 * 该小时用电价格)
-        5. 机组年运维成本 = 机组设备数量 * 设备价格 / 15 + 机组一天用电费用 * 8760 / 一天小时数
+        5. 机组年运维成本 = 机组设备数量 * 设备价格 / 15 + 机组一天用电费用 * (365*24) / 一天小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -3632,7 +3657,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.groundSourceHeatPump_device * self.device_price / 15
-            + self.electricity_cost * 8760 / self.num_hour
+            + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -4408,7 +4433,7 @@ class CitySupply(IntegratedEnergySystem):
         2. 市政能源设备装机量 >= 每小时市政能源热量消耗 >= 0
         3. 每小时市政能源热量消耗 <= 每小时市政能源热量输入 / 能源传输效率
         4. 市政能源消耗总费用 = sum(每小时市政能源热量输入 * 每小时市政能源价格)
-        5. 市政能源年运维费用 = 市政能源设备装机量 * 设备单价 / 15 + 市政能源消耗总费用 * 8760 / 一天小时数
+        5. 市政能源年运维费用 = 市政能源设备装机量 * 设备单价 / 15 + 市政能源消耗总费用 * (365*24) / 一天小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4436,7 +4461,7 @@ class CitySupply(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.citySupplied_device * self.device_price / 15
-            + self.citySupplied_cost * 8760 / self.num_hour
+            + self.citySupplied_cost * (365 * 24) / self.num_hour
         )
 
 
@@ -4568,7 +4593,7 @@ class GridNet(IntegratedEnergySystem):
         4. 每小时电网发电量小于电网设备数
         5. 电网一天基础消费 = min(max(用电或者发电峰值, 预估用电峰值) * 31, 电网设备数 * 22), 31是电价
         6. 电网一天总消费 = sum(每小时用电量 * 用电电价 + 每小时发电量 * 发电消费) + 电网基础消费
-        7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15 + 电网一天总消费 * 8760 / 一天小时数
+        7. 电网年运行成本 = 电网设备数量 * 设备单价 / 15 + 电网一天总消费 * (365*24) / 一天小时数
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
@@ -4618,7 +4643,7 @@ class GridNet(IntegratedEnergySystem):
         self.model.add_constraint(
             self.annualized
             == self.gridNet_device * self.device_price / 15
-            + self.gridNet_cost * 8760 / self.num_hour
+            + self.gridNet_cost * (365 * 24) / self.num_hour
         )
 
 
