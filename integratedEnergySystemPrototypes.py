@@ -613,6 +613,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         device_count_min: float = 0,
         input_type: str = "energy",
         output_type: str = "energy",
+        classObject = None,
     ):
         """
         Args:
@@ -637,7 +638,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             device_count_max=device_count_max,
             device_count_min=device_count_min,
             device_price=device_price,
-            classObject=self.__class__,
+            classObject=classObject if classObject else self.__class__,
         )
         # EnergyStorageSystem.index += 1
 
@@ -1018,6 +1019,14 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+        stateOfCharge_min=stateOfCharge_min,
+        stateOfCharge_max=stateOfCharge_max,
+        input_type=input_type,
+        output_type=output_type,
+        powerConversionSystem_price=powerConversionSystem_price,
+        conversion_rate_max=conversion_rate_max,
+        efficiency=efficiency,
+        energy_init=energy_init,
         )
         # EnergyStorageSystemVariable.index += 1
         self.input_type = input_type
