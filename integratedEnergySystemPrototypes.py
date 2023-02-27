@@ -745,12 +745,14 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             day_node (int): 一天时间节点为24
         """
         # self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.device_count <= self.device_count_max)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(
-            self.device_count * self.conversion_rate_max
-            >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
-        )
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        # self.model.add_constraint(self.device_count >= 0)
+
+        self.add_lower_and_upper_bound(self.powerConversionSystem_device_count,self.device_count * self.conversion_rate_max)
+        # self.model.add_constraint(
+        #     self.device_count * self.conversion_rate_max
+        #     >= self.powerConversionSystem_device_count  # satisfying the need of power conversion system? power per unit?
+        # )
         self.model.add_constraint(self.powerConversionSystem_device_count >= 0)
         # 功率拆分
         self.model.add_constraints(
@@ -4054,7 +4056,7 @@ class Linear_absolute(object):  # absolute?
         self.hourRange = hourRange
         self.x = x
 
-    def absolute_add_constraints(self, model: Model, hourRange: Iterable):
+    def absolute_add_constraints(self, hourRange: Iterable):
         """
         对于区间`hourRange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
 
@@ -4442,13 +4444,13 @@ class Linearization(object):
             bin (BinaryVarType): 控制变量
         """
         Linearization.index += 1
-        self.model.add_constraint(var_bin >= 0)
+        model.add_constraint(var_bin >= 0)
         # var_bin 大于等于 0
-        self.model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
+        model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
         # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber)
         # 如果bin == 1, var_bin 大于等于 var
-        self.model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
-        self.model.add_constraint(var_bin <= bin * bigNumber)
+        model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
+        model.add_constraint(var_bin <= bin * bigNumber)
         # 如果bin == 0, var_bin 小于等于 0
         # 如果bin == 1, var_bin 小于等于 1 * bigNumber
 
@@ -4475,12 +4477,12 @@ class Linearization(object):
             self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        self.model.add_constraints(var_bin[i] >= 0 for i in hourRange)
-        self.model.add_constraints(
+        model.add_constraints(var_bin[i] >= 0 for i in hourRange)
+        model.add_constraints(
             var_bin[i] >= var[i] - (1 - bin0[i]) * bigNumber for i in hourRange
         )
-        self.model.add_constraints(var_bin[i] <= var[i] for i in hourRange)
-        self.model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRange)
+        model.add_constraints(var_bin[i] <= var[i] for i in hourRange)
+        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRange)
 
     def product_var_back_bins(
         self,
@@ -4505,12 +4507,12 @@ class Linearization(object):
             self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        self.model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
-        self.model.add_constraints(
+        model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
+        model.add_constraints(
             var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber for i in hourRangeback
         )
-        self.model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
-        self.model.add_constraints(
+        model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
+        model.add_constraints(
             var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback
         )
 
@@ -4532,31 +4534,31 @@ class Linearization(object):
             y (List[VarType]): 变量组`y`
         """
         Linearization.index += 1
-        y_flag = self.model.binary_var_list(
+        y_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="y_flag{0}".format(Linearization.index),
         )
-        self.model.add_constraints(
+        model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, y[h] 小于等于 x[h] + bigNumber (此时 -bigNumber <= x[h] )
         # 当y_flag[h] == 1, y[h] 小于等于 x[h]
-        self.model.add_constraints(
+        model.add_constraints(
             y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber (此时 bigNumber >= x[h] )
         # 当y_flag[h] == 1, y[h] 大于等于 x[h] (y[h] == x[h])
-        self.model.add_constraints(
+        model.add_constraints(
             y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
         # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
-        self.model.add_constraints(
+        model.add_constraints(
             x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour)
         )
         # 当y_flag[h] == 0, x[h] 小于等于 0 (-bigNumber<=x[h]<=0) 非正数？
         # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
-        self.model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
+        model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
         # y[h] 是非负数
 
     def add(
@@ -4578,10 +4580,10 @@ class Linearization(object):
         """
         # looks like two lists.
         Linearization.index += 1
-        add_y = self.model.continuous_var_list(
+        add_y = model.continuous_var_list(
             [i for i in range(0, num_hour)], name="add_y{0}".format(Linearization.index)
         )
-        self.model.add_constraints(
+        model.add_constraints(
             add_y[h] == x1[h] + x2[h] for h in range(0, num_hour)
         )
         return add_y
@@ -4611,23 +4613,23 @@ class Linearization(object):
         """
         Linearization.index += 1
         # bigNumber = 1e10
-        positive_flag = self.model.binary_var_list(
+        positive_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
             name="Linearization_positive_flag{0}".format(Linearization.index),
         )
-        self.model.add_constraints(
+        model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
         )
         # 两变量组在区间内逐元素相减 存在传入的元素组x中
-        self.model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
-        self.model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
+        model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
+        model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
         # 两变量组在区间内元素都是非负数
-        self.model.add_constraints(
+        model.add_constraints(
             xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
         )
         # 当positive_flag[h] == 0,xpositive[h] <= 0 (xpositive[h] == 0)
         # 当positive_flag[h] == 1,xpositive[h] <= bigNumber
-        self.model.add_constraints(
+        model.add_constraints(
             xnegitive[h] <= bigNumber * (1 - positive_flag[h])
             for h in range(0, num_hour)
         )
