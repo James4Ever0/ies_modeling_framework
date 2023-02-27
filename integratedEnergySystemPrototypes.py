@@ -2287,6 +2287,7 @@ class AirHeatPump(IntegratedEnergySystem):
         device_name: str = "air_heat_pump",
         device_count_min: int = 0,
     ):
+        
         """
         Args:
             num_hour (int): 一天的小时数
@@ -2308,11 +2309,11 @@ class AirHeatPump(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        AirHeatPump.index += 1
+        # AirHeatPump.index += 1
         self.electricity_price = electricity_price
-        self.heatPump_device: ContinuousVarType = self.model.continuous_var(
-            name="heatPump_device{0}".format(AirHeatPump.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count{0}".format(AirHeatPump.index)
+        # )
         """
         空气热泵机组等效单位设备数 大于零的实数
         """
@@ -2479,8 +2480,8 @@ class AirHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(0 <= self.heatPump_device)
-        self.model.add_constraint(self.heatPump_device <= self.device_max)
+        self.model.add_constraint(0 <= self.device_count)
+        self.model.add_constraint(self.device_count <= self.device_max)
 
         
         self.model.add_constraints(
@@ -2488,7 +2489,7 @@ class AirHeatPump(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_heatPump_cool[h]
-            <= self.cool_heatPump_out[h] * self.heatPump_device / 100
+            <= self.cool_heatPump_out[h] * self.device_count / 100
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -2501,7 +2502,7 @@ class AirHeatPump(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_heatPump_cooletStorage[h]
-            <= self.cooletStorage_heatPump_out[h] * self.heatPump_device / 100
+            <= self.cooletStorage_heatPump_out[h] * self.device_count / 100
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -2515,7 +2516,7 @@ class AirHeatPump(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_heatPump_heat[h]
-            <= self.heat_heatPump_out[h] * self.heatPump_device / 100
+            <= self.heat_heatPump_out[h] * self.device_count / 100
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -2528,7 +2529,7 @@ class AirHeatPump(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.power_heatPump_heatStorage[h]
-            <= self.heatStorage_heatPump_out[h] * self.heatPump_device / 100
+            <= self.heatStorage_heatPump_out[h] * self.device_count / 100
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -2574,7 +2575,7 @@ class AirHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.heatPump_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -3635,8 +3636,8 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         # self.num_hour = num_hour
         GeothermalHeatPump.index += 1
         self.electricity_price = electricity_price
-        self.groundSourceHeatPump_device: ContinuousVarType = self.model.continuous_var(
-            name="groundSourceHeatPump_device{0}".format(GeothermalHeatPump.index)
+        self.groundSourcedevice_count: ContinuousVarType = self.model.continuous_var(
+            name="groundSourcedevice_count{0}".format(GeothermalHeatPump.index)
         )
         """
         地源热泵机组设备数量
@@ -3696,14 +3697,14 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         self.hourRange = range(0, self.num_hour)
 
-        self.model.add_constraint(0 <= self.groundSourceHeatPump_device)
-        self.model.add_constraint(self.groundSourceHeatPump_device <= self.device_max)
+        self.model.add_constraint(0 <= self.groundSourcedevice_count)
+        self.model.add_constraint(self.groundSourcedevice_count <= self.device_max)
 
         self.model.add_constraints(
             0 <= self.power_groundSourceHeatPump[h] for h in self.hourRange
         )
         self.model.add_constraints(
-            self.power_groundSourceHeatPump[h] <= self.groundSourceHeatPump_device
+            self.power_groundSourceHeatPump[h] <= self.groundSourcedevice_count
             for h in self.hourRange
         )
 
@@ -3720,7 +3721,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.groundSourceHeatPump_device * self.device_price / 15
+            == self.groundSourcedevice_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
