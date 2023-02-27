@@ -1726,12 +1726,16 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     self.device_count <= self.device_count_max
         # )
 
-        self.equation(self.tota)
+        self.equation(self.total_rated_power, self.device_count*self.rated_power)
 
         # self.model.add_constraint(
         #     self.total_rated_power
         #     == self.device_count * self.rated_power
         # )
+
+        self.add_lower_bounds(self.outputs['electricity'],self.elementwise_multiply(self.on_flags, self.total_rated_power*self.running_ratio_min))
+
+        # TODO: guess this is not "rated_power" but "total_rated_power"
 
         # self.model.add_constraints(
         #     self.on_flags[h]
