@@ -2207,9 +2207,9 @@ class Exchanger(IntegratedEnergySystem):
         # k 传热系数
         # Exchanger.index += 1
         # self.num_hour = num_hour
-        self.device_count: ContinuousVarType = self.model.continuous_var(
-            name="device_count{0}".format(Exchanger.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count_{0}".format(Exchanger.index)
+        # )
         """
         热交换器机组等效单位设备数 大于零的实数变量
         """
@@ -2329,8 +2329,8 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         连续变量,表示空气热泵的电价成本
         """
-        self.device_price = device_price
-        self.device_count_max = device_count_max
+        # self.device_price = device_price
+        # self.device_count_max = device_count_max
         self.power_heatPump_cool: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
@@ -2479,27 +2479,28 @@ class AirHeatPump(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(0 <= self.device_count)
-        self.model.add_constraint(self.device_count <= self.device_max)
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(0 <= self.device_count)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
 
-        
-        self.model.add_constraints(
-            0 <= self.power_heatPump_cool[h] for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_heatPump_cool[h]
-            <= self.cool_heatPump_out[h] * self.device_count / 100
-            for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_heatPump_cool[h] <= bigNumber * self.heatPump_cool_flag[h]
-            for h in self.hourRange
-        )
+        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,self.elementwise_multiply(self.cool_heatPump_out,self.device_count/100))
+        # self.model.add_constraints(
+        #     0 <= self.power_heatPump_cool[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_heatPump_cool[h]
+        #     <= self.cool_heatPump_out[h] * self.device_count / 100
+        #     for h in self.hourRange
+        # )
 
-        self.model.add_constraints(
-            0 <= self.power_heatPump_cooletStorage[h] for h in self.hourRange
-        )
+        self.add_lower_and_upper_bounds(self.power_heatPump_cool,0,se)
+        # self.model.add_constraints(
+        #     self.power_heatPump_cool[h] <= bigNumber * self.heatPump_cool_flag[h]
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     0 <= self.power_heatPump_cooletStorage[h] for h in self.hourRange
+        # )
         self.model.add_constraints(
             self.power_heatPump_cooletStorage[h]
             <= self.cooletStorage_heatPump_out[h] * self.device_count / 100
