@@ -2027,7 +2027,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "electricBoiler",
         device_count_min: int = 0,
-        output_type:Union[]
+        output_type:Union[Literal['hot_water'],Literal['steam']] = "hot_water"
     ):
         """
         Args:
@@ -2058,30 +2058,33 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         电锅炉机组等效单位设备数 大于零的实数
         """
-        self.heat_electricBoiler: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(  # h? heat?
-            [i for i in range(0, self.num_hour)],
-            name="heat_electricBoiler{0}".format(ElectricBoiler.index),
-        )
+        self.output_type = output_type
+        self.build_power_of_outputs([self.output_type])
+        # self.heat_electricBoiler: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(  # h? heat?
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_electricBoiler{0}".format(ElectricBoiler.index),
+        # )
         """
         连续变量列表,表示电锅炉在每个时段的热功率
         """
-        self.electricity_electricBoiler: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
-        )  # 时时耗气量
+        self.build_power_of_inputs(['electricity'])
+        # self.electricity_electricBoiler: List[
+        #     ContinuousVarType
+        # ] = self.model.continuuntous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="electricity_electricBoiler{0}".format(ElectricBoiler.index),
+        # )  # 时时耗气量
         """
         连续变量列表,表示电锅炉在每个时段的电消耗量
         """
-        self.gas_device_count_max = device_count_max
-        self.device_price = device_price
+        # self.device_count_max = device_count_max
+        # self.device_price = device_price
         self.electricity_price = electricity_price
         self.efficiency = efficiency
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="electricity_cost{0}".format(ElectricBoiler.index)
+            name="electricity_cost_{0}".format(ElectricBoiler.index)
         )
         """
         连续变量,表示总用电费用
