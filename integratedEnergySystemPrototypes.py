@@ -1375,20 +1375,20 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(TroughPhotoThermal.index)
         # )
-        self.build_power_of_outputs(["hot_water","steam"])
+        self.build_power_of_outputs(["steam"])
         """
         槽式光热机组设备数 实数变量
         """
-        # self.power_troughPhotoThermal: List[
-        #     ContinuousVarType
-        # ] = self.model.continuous_var_list(
-        #     [i for i in range(0, self.num_hour)],
-        #     name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
-        # )
+        self.power_generated_steam: List[
+            ContinuousVarType
+        ] = self.model.continuous_var_list(
+            [i for i in range(0, self.num_hour)],
+            name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
+        )
         """
         槽式光热机组每小时产热功率 实数变量列表
         """
-        # self.power_troughPhotoThermal_steam: List[
+        # self.outputs['steam']: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
@@ -1455,33 +1455,35 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # self.model.add_constraint(
         #     self.device_count <= self.device_count_max
         # )
-        self.model.add_constraints(
-            self.power_troughPhotoThermal[h] >= 0 for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_troughPhotoThermal[h]
-            <= self.device_count
-            * self.intensityOfIllumination[h]
-            * self.efficiency
-            for h in self.hourRange
-        )  # 与天气相关
+        
+        # self.model.add_constraints(
+        #     self.power_generated_steam[h] >= 0 for h in self.hourRange
+        # )
+
+        # self.model.add_constraints(
+        #     self.power_generated_steam[h]
+        #     <= self.device_count
+        #     * self.intensityOfIllumination[h]
+        #     * self.efficiency
+        #     for h in self.hourRange
+        # )  # 与天气相关
 
 
         self.model.add_constraints(
-            self.power_troughPhotoThermal[h]
-            + self.troughPhotoThermalSolidHeatStorage_device.power[h]
-            == self.power_troughPhotoThermal_steam[h]
+            self.power_generated_steam[h]
+            + self.troughPhotoThermalSolidHeatStorage.power[h]
+            == self.outputs['steam'][h]
             for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
 
-        
+
         self.model.add_constraints(
-            0 <= self.power_troughPhotoThermal_steam[h] for h in self.hourRange
+            0 <= self.outputs['steam'][h] for h in self.hourRange
         )  # 约束能量不能倒流
         self.model.add_constraint(
             self.annualized
             == self.device_count * self.device_price / 15
-            + self.troughPhotoThermalSolidHeatStorage_device.annualized
+            + self.troughPhotoThermalSolidHeatStorage.annualized
         )
 
 
