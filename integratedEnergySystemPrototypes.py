@@ -2157,8 +2157,11 @@ class Exchanger(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         k: float,  # 传热系数, 没用在模型里面
+        efficiency:float=1, #效率系数为1
         device_name: str = "exchanger",
         device_count_min: int = 0,
+        input_type:str="heat", #进口温度
+        output_type:str="heat", #出口温度
     ):
         """
         Args:
@@ -2197,13 +2200,18 @@ class Exchanger(IntegratedEnergySystem):
         """
         self.device_price = device_price
         self.device_count_max = device_count_max
-        self.heat_exchange: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="heat_exchanger{0}".format(Exchanger.index),
-        )
+        self.input_type = input_type
+        self.output_type=output_type
+        self.build_power_of_inputs([self.input_type])
+        self.build_power_of_outputs([self.output_type])
+        # self.heat_exchange: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_exchanger{0}".format(Exchanger.index),
+        # )
         """
         连续变量列表,表示热交换器的每小时热交换量
         """
+        return val
 
     def constraints_register(self):
         """
@@ -2220,11 +2228,14 @@ class Exchanger(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         
-        self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
         # self.model.add_constraints(self.heat_exchange[h] >= 0 for h in self.hourRange)
         # self.model.add_constraints(
         #     self.heat_exchange[h] <= self.device_count for h in self.hourRange
         # )  # 天燃气蒸汽锅炉
+        self.add_lower_bounds(self.power_of_inputs[self.input_type],0)
+        self.add_lower_and_upper_bounds(self.power_of_outputs[self.output_type],0,self.elementwise_multiply(self.power_of_inputs[self.input_type],)
+        # self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
+        
         
         self.model.add_constraint(
             self.annualized == self.device_count * self.device_price / 15
