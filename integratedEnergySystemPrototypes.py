@@ -1560,40 +1560,41 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型,表示热电联产的等效设备数量
         """
-        self.outputs['electricity']: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
-        )
-        """
-        实数型列表,表示热电联产在每个时段的发电量
-        """
-        self.outputs['hot_water']: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
-        )
+        self.build_power_of_outputs(['electricity','hot_water'])
+        # self.outputs['electricity']: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
+        # )
+        # """
+        # 实数型列表,表示热电联产在每个时段的发电量
+        # """
+        # self.outputs['hot_water']: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
+        # )
         """
         实数型列表,表示热电联产在每个时段的供暖热水量
         """
-        self.gas_combinedHeatAndPower: List[
+        self.gas_consumed: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="gas_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
+            name="gas_consumed_{0}".format(CombinedHeatAndPower.index),
         )  # 时时耗气量? 时时是什么意思 实时？
         """
         实数型列表,表示热电联产在每个时段的耗气量
         """
         self.device_price = device_price
         self.gas_price = gas_price
-        self.combinedHeatAndPower_open_flag: List[
+        self.on_flags: List[
             BinaryVarType
         ] = self.model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="combinedHeatAndPower_open_flag{0}".format(CombinedHeatAndPower.index),
+            name="on_flag_{0}".format(CombinedHeatAndPower.index),
         )
         """
         二元变量列表,表示热电联产在每个时段是否启动
@@ -1722,13 +1723,13 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             == self.combinedHeatAndPower_num * self.rated_power
         )
         self.model.add_constraints(
-            self.combinedHeatAndPower_open_flag[h]
+            self.on_flags[h]
             * self.rated_power
             * self.combinedHeatAndPower_limit_down_ratio
             <= self.outputs['electricity'][h]
             for h in self.hourRange
         )
-        # power_combinedHeatAndPower(1, h) <= device_count * combinedHeatAndPower_open_flag(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
+        # power_combinedHeatAndPower(1, h) <= device_count * on_flags(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
         self.model.add_constraints(
             self.outputs['electricity'][h] <= self.device_count
             for h in self.hourRange
@@ -1736,11 +1737,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
         self.model.add_constraints(
             self.outputs['electricity'][h]
-            <= self.combinedHeatAndPower_open_flag[h] * bigNumber
+            <= self.on_flags[h] * bigNumber
             for h in self.hourRange
         )
         # power_combinedHeatAndPower[h]>= 0
-        # power_combinedHeatAndPower(1, h) >= device_count - (1 - combinedHeatAndPower_open_flag[h]) * bigNumber
+        # power_combinedHeatAndPower(1, h) >= device_count - (1 - on_flags[h]) * bigNumber
         self.model.add_constraints(
             self.combinedHeatAndPower_run_num[h]
             * self.rated_power
@@ -1769,12 +1770,12 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.gas_combinedHeatAndPower[h] == self.outputs['electricity'][h] / 3.5
+            self.gas_consumed[h] == self.outputs['electricity'][h] / 3.5
             for h in self.hourRange
         )
 
         self.gas_cost = self.model.sum(
-            self.gas_combinedHeatAndPower[h] * self.gas_price[h] for h in self.hourRange
+            self.gas_consumed[h] * self.gas_price[h] for h in self.hourRange
         )  # 统计燃气费用
         #
         self.model.add_constraint(
