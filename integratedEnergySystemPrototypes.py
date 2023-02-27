@@ -716,6 +716,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
+        return val
 
     def constraints_register(
         self, register_period_constraints: int = 1, day_node: int = 24
@@ -1574,7 +1575,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.gas_cost = model.sum(
+        self.gas_cost =self.model.sum(
             self.gas_combinedHeatAndPower[h] * self.gas_price[h] for h in self.hourRange
         )  # 统计燃气费用
         #
@@ -1720,7 +1721,7 @@ class GasBoiler(IntegratedEnergySystem):
             self.gas_gasBoiler[h] == self.heat_gasBoiler[h] / (10 * self.efficiency)
             for h in self.hourRange
         )
-        self.gas_cost = model.sum(
+        self.gas_cost =self.model.sum(
             self.gas_gasBoiler[h] * self.gas_price[h] for h in self.hourRange
         )
         self.model.add_constraint(
@@ -1840,7 +1841,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             == self.heat_electricBoiler[h] / self.efficiency
             for h in self.hourRange
         )
-        self.electricity_cost = model.sum(
+        self.electricity_cost = self.model.sum(
             self.electricity_electricBoiler[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -2217,7 +2218,7 @@ class AirHeatPump(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_heatPump[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -2506,7 +2507,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_waterSourceHeatPumps[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -2725,7 +2726,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_waterCoolingSpiralMachine[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -2954,7 +2955,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_doubleWorkingConditionUnit[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -3226,7 +3227,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             for h in self.hourRange
         )
 
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_tripleWorkingConditionUnit[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -3354,7 +3355,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             / self.coefficientOfPerformance_groundSourceHeatPump
             for h in self.hourRange
         )
-        self.electricity_cost = model.sum(
+        self.electricity_cost =self.model.sum(
             self.electricity_groundSourceHeatPump[h] * self.electricity_price[h]
             for h in self.hourRange
         )
@@ -4144,7 +4145,7 @@ class CitySupply(IntegratedEnergySystem):
             == self.heat_citySupplied_from[h] / self.efficiency
             for h in self.hourRange
         )
-        self.citySupplied_cost = model.sum(
+        self.citySupplied_cost =self.model.sum(
             self.heat_citySupplied_from[h] * self.run_price[h] for h in self.hourRange
         )
         self.model.add_constraint(
@@ -4317,7 +4318,7 @@ class GridNet(IntegratedEnergySystem):
         )
 
         self.gridNet_cost = (
-            model.sum(
+           self.model.sum(
                 self.powerFrom[h] * self.electricity_price_from[h]
                 + self.powerTo[h] * self.electricity_price_to
                 for h in self.hourRange
