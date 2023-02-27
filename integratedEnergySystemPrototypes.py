@@ -893,7 +893,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         #     for i in range(1, self.num_hour)
         # )
 
-        self.equation(self.annualized,)
+        self.equation(
+            self.annualized,
+            (
+                self.device_count * self.device_price
+                + self.powerConversionSystem_device_count
+                * self.powerConversionSystem_price
+            )
+            / 15,
+        )
         # self.model.add_constraint(
         #     self.annualized
         #     == (
@@ -922,9 +930,12 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         else:  # what else?
             # TODO: comment out misplaced init statement
             # # 初始值
-            self.model.add_constraint(
-                self.energy[0] == self.energy_init * self.device_count
-            )
+
+            self.equation(self.energy[0], self.energy_init * self.device_count)
+            # self.model.add_constraint(
+            #     self.energy[0] == self.energy_init * self.device_count
+            # )
+
             # not using this?
             # print(f"MAKING INIT TO `{self.energy_init} * device_count`")
             # breakpoint()
@@ -1050,9 +1061,7 @@ class EnergyStorageSystemVariable(IntegratedEnergySystem):
         # 能量
         self.energy: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
-            name="energyStorageSystemVariable{0}".format(
-                EnergyStorageSystemVariable.index
-            ),
+            name=f"energy_{self.classSuffix}"
         )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
