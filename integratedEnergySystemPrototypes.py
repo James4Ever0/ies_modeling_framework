@@ -1639,6 +1639,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型,表示总燃气费用
         """
+
+        self.total_rated_power:ContinuousVarType = self.model.continuous_var(name = f"total_rated_power_{self.classSuffix}")
         # self.device_count_max = device_count_max
         self.rated_power = rated_power
         """
