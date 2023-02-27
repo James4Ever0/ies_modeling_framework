@@ -1152,7 +1152,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
     #         register_period_constraints (int): 注册周期约束为1
     #         day_node (int): 一天时间节点为24
     #     """
-    #     # bigNumber = 1e10 
+    #     # bigNumber = 1e10
     #     # self.hourRange = range(0, self.num_hour)
     #     # self.model.add_constraints(
     #     #     self.device_count[i] <= self.device_count_max for i in self.hourRange
@@ -1346,7 +1346,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "troughPhotoThermal",
         device_count_min: int = 0,
-        device_price_powerConversionSystem:float=100
+        device_price_powerConversionSystem: float = 100,
     ):
         """
         Args:
@@ -1375,7 +1375,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(TroughPhotoThermal.index)
         # )
-        self.build_power_of_outputs(["steam"])
+        self.output_type = "steam"
+        self.build_power_of_outputs([self.output_type])
         """
         槽式光热机组设备数 实数变量
         """
@@ -1419,7 +1420,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.troughPhotoThermalSolidHeatStorage= EnergyStorageSystem(
+        self.troughPhotoThermalSolidHeatStorage = EnergyStorageSystem(
             num_hour,
             model,
             self.troughPhotoThermalSolidHeatStorage_device_max,
@@ -1455,7 +1456,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # self.model.add_constraint(
         #     self.device_count <= self.device_count_max
         # )
-        
+
+        self.add_lower_and_upper_bounds(
+            self.power_generated_steam,
+            0,
+            self.elementwise_multiply(
+                self.intensityOfIllumination, self.device_count * self.efficiency
+            ),
+        )
         # self.model.add_constraints(
         #     self.power_generated_steam[h] >= 0 for h in self.hourRange
         # )
@@ -1468,17 +1476,24 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 与天气相关
 
+        self.equations(
+            self.outputs[self.output_type],
+            self.elementwise_add(
+                self.power_generated_steam,
+                self.troughPhotoThermalSolidHeatStorage.power,
+            ),
+            self.hourRange,
+        )
+
+        # self.model.add_constraints(
+        #     self.power_generated_steam[h]
+        #     + self.troughPhotoThermalSolidHeatStorage.power[h]
+        #     == self.outputs[self.output_type][h]
+        #     for h in self.hourRange
+        # )  # troughPhotoThermal系统产生的highTemperature
 
         self.model.add_constraints(
-            self.power_generated_steam[h]
-            + self.troughPhotoThermalSolidHeatStorage.power[h]
-            == self.outputs['steam'][h]
-            for h in self.hourRange
-        )  # troughPhotoThermal系统产生的highTemperature
-
-
-        self.model.add_constraints(
-            0 <= self.outputs['steam'][h] for h in self.hourRange
+            0 <= self.outputs[self.output_type][h] for h in self.hourRange
         )  # 约束能量不能倒流
         self.model.add_constraint(
             self.annualized
