@@ -1384,7 +1384,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_troughPhotoThermal{0}".format(TroughPhotoThermal.index),
+            name="power_{0}".format(self.classSuffix),
         )
         """
         槽式光热机组每小时产热功率 实数变量列表
@@ -1552,11 +1552,11 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # CombinedHeatAndPower.index += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour
-        self.device_count: ContinuousVarType = self.model.continuous_var(
-            name="device_count{0}".format(CombinedHeatAndPower.index)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count{0}".format(self.classSuffix)
+        # )
         """
         实数型,表示热电联产的等效设备数量
         """
@@ -1565,7 +1565,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
+        #     name="power_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         # """
         # 实数型列表,表示热电联产在每个时段的发电量
@@ -1574,7 +1574,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_combinedHeatAndPower{0}".format(CombinedHeatAndPower.index),
+        #     name="heat_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         """
         实数型列表,表示热电联产在每个时段的供暖热水量
@@ -1583,7 +1583,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="gas_consumed_{0}".format(CombinedHeatAndPower.index),
+            name="gas_consumed_{0}".format(self.classSuffix),
         )  # 时时耗气量? 时时是什么意思 实时？
         """
         实数型列表,表示热电联产在每个时段的耗气量
@@ -1594,47 +1594,47 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             BinaryVarType
         ] = self.model.binary_var_list(
             [i for i in range(0, self.num_hour)],
-            name="on_flag_{0}".format(CombinedHeatAndPower.index),
+            name="on_flag_{0}".format(self.classSuffix),
         )
         """
         二元变量列表,表示热电联产在每个时段是否启动
         """
-        self.wasteGasAndHeat_water_flag: BinaryVarType = self.model.binary_var(
-            name="wasteGasAndHeat_water_flag{0}".format(CombinedHeatAndPower.index)
+        self.output_hot_water_flags: BinaryVarType = self.model.binary_var(
+            name="output_hot_water_flag_{0}".format(self.classSuffix)
         )
         """
         二元变量,表示热电联产是否用于供暖热水
         """
-        self.wasteGasAndHeat_steam_flag: BinaryVarType = self.model.binary_var(
-            name="wasteGasAndHeat_steam_flag{0}".format(CombinedHeatAndPower.index)
+        self.output_steam_flags: BinaryVarType = self.model.binary_var(
+            name="output_steam_flag_{0}".format(self.classSuffix)
         )
         """
         二元变量,表示热电联产是否用于供热蒸汽
         """
         # 机组数量
-        self.combinedHeatAndPower_run_num: List[
+        self.device_count_running: List[
             IntegerVarType
         ] = self.model.integer_var_list(
             [i for i in range(0, self.num_hour)],
-            name="combinedHeatAndPower_run_num{0}".format(CombinedHeatAndPower.index),
+            name="device_count_running_{0}".format(self.classSuffix),
         )
         """
         整数型列表,表示每个时段启动的热电联产等效设备数量
         """
         self.combinedHeatAndPower_num: IntegerVarType = self.model.integer_var(
-            name="combinedHeatAndPower_num{0}".format(CombinedHeatAndPower.index)
+            name="combinedHeatAndPower_num{0}".format(self.classSuffix)
         )
         """
         整数型,表示热电联产实际装机数量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="combinedHeatAndPower_annualized{0}".format(CombinedHeatAndPower.index)
+        #     name="combinedHeatAndPower_annualized{0}".format(self.classSuffix)
         # )
         """
         实数型,表示热电联产年化投资成本
         """
         self.gas_cost: ContinuousVarType = self.model.continuous_var(
-            name="CombinedHeatAndPower_gas_cost{0}".format(CombinedHeatAndPower.index)
+            name="CombinedHeatAndPower_gas_cost{0}".format(self.classSuffix)
         )  # 燃气费用统计
         """
         实数型,表示总燃气费用
@@ -1701,8 +1701,8 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         9. 热电联产的燃气消耗量必须等于热电联产的总热功率除以燃气发电机组的热效率 3.5
         10. 所有时间段的天燃气消费和天燃气价格的乘积相加来计算总的天燃气成本
         11. 确保了与余气余热系统的热交换只使用一种类型(热水或蒸汽)
-        12. 根据二元决策变量wasteGasAndHeat_water_flag和一个大常数bigM来设定与余气余热系统的最大热交换能力。如果wasteGasAndHeat_water_flag为0,该约束就会失去作用。
-        13. 根据二元决策变量wasteGasAndHeat_steam_flag和一个大常数bigM来设定蒸汽与余气余热系统的最大热交换能力。如果wasteGasAndHeat_steam_flag为0,该约束就会失去作用。
+        12. 根据二元决策变量output_hot_water_flags和一个大常数bigM来设定与余气余热系统的最大热交换能力。如果output_hot_water_flags为0,该约束就会失去作用。
+        13. 根据二元决策变量output_steam_flags和一个大常数bigM来设定蒸汽与余气余热系统的最大热交换能力。如果output_steam_flags为0,该约束就会失去作用。
         14. GTS系统的最大热交换能力限制在所有时间段内热电联产机组额定热输出的50%
         15. 余气余热热水系统的最大换热量限制为所有时段热电联产机组额定热出力的50%
         16. 余气余热蒸汽系统的最大换热能力限制为所有时段热电联产机组额定热出力的50%
@@ -1743,13 +1743,13 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # power_combinedHeatAndPower[h]>= 0
         # power_combinedHeatAndPower(1, h) >= device_count - (1 - on_flags[h]) * bigNumber
         self.model.add_constraints(
-            self.combinedHeatAndPower_run_num[h]
+            self.device_count_running[h]
             * self.rated_power
             >= self.outputs['electricity'][h]
             for h in self.hourRange
         )  # 确定CombinedHeatAndPower开启台数
         self.model.add_constraints(
-            self.combinedHeatAndPower_run_num[h]
+            self.device_count_running[h]
             * self.rated_power
             <= self.outputs['electricity'][h]
             + self.rated_power
@@ -1757,10 +1757,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             for h in self.hourRange
         )  # 确定CombinedHeatAndPower开启台数
         self.model.add_constraints(
-            0 <= self.combinedHeatAndPower_run_num[h] for h in self.hourRange
+            0 <= self.device_count_running[h] for h in self.hourRange
         )
         self.model.add_constraints(
-            self.combinedHeatAndPower_run_num[h] <= self.combinedHeatAndPower_num
+            self.device_count_running[h] <= self.combinedHeatAndPower_num
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -1779,15 +1779,15 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )  # 统计燃气费用
         #
         self.model.add_constraint(
-            self.wasteGasAndHeat_water_flag + self.wasteGasAndHeat_steam_flag == 1
+            self.output_hot_water_flags + self.output_steam_flags == 1
         )
         self.model.add_constraint(
             self.wasteGasAndHeat_water_device.exchanger_device
-            <= self.wasteGasAndHeat_water_flag * bigNumber
+            <= self.output_hot_water_flags * bigNumber
         )
         self.model.add_constraint(
             self.wasteGasAndHeat_steam_device.exchanger_device
-            <= self.wasteGasAndHeat_steam_flag * bigNumber
+            <= self.output_steam_flags * bigNumber
         )
         self.model.add_constraints(
             self.gasTurbineSystem_device.heat_exchange[h]
