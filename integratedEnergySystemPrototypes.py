@@ -1177,7 +1177,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         troughPhotoThermalSolidHeatStorage_price: float,  # (csgrgtxr是啥)
         intensityOfIllumination0: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "troughPhotoThermal",
+        device_name: str = "troughPhotoThermal",device_count_min:int=0,
     ):
         """
         Args:
@@ -1330,7 +1330,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         gas_price: Union[np.ndarray, List],
         combinedHeatAndPower_single_device: float,
         power_to_heat_ratio: float,  # drratio?
-        device_name: str = "combinedHeatAndPower",
+        device_name: str = "combinedHeatAndPower",device_count_min:int=0,
     ):
         """
         Args:
@@ -1635,7 +1635,7 @@ class GasBoiler(IntegratedEnergySystem):
         gasBoiler_price: float,
         gas_price: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "gasBoiler",
+        device_name: str = "gasBoiler",device_count_min:int=0,
     ):
         """
         Args:
@@ -1747,7 +1747,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         electricBoiler_price: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "electricBoiler",
+        device_name: str = "electricBoiler",device_count_min:int=0,
     ):
         """
         Args:
@@ -1866,7 +1866,7 @@ class Exchanger(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         k: float,  # 传热系数, 没用在模型里面
-        device_name: str = "exchanger",
+        device_name: str = "exchanger",device_count_min:int=0,
     ):
         """
         Args:
@@ -1951,7 +1951,7 @@ class AirHeatPump(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
-        device_name: str = "air_heat_pump",
+        device_name: str = "air_heat_pump",device_count_min:int=0,
     ):
         """
         Args:
@@ -2246,7 +2246,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
-        device_name: str = "water_heat_pump",
+        device_name: str = "water_heat_pump",device_count_min:int=0,
     ):
         """
         Args:
@@ -2535,7 +2535,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
-        device_name: str = "water_cooled_spiral",
+        device_name: str = "water_cooled_spiral",device_count_min:int=0,
     ):
         """
         Args:
@@ -2754,7 +2754,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
-        device_name: str = "doubleWorkingConditionUnit",
+        device_name: str = "doubleWorkingConditionUnit",device_count_min:int=0,
     ):
         """
         Args:
@@ -2983,7 +2983,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         device_price: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
-        device_name: str = "tripleWorkingConditionUnit",
+        device_name: str = "tripleWorkingConditionUnit",device_count_min:int=0,
     ):
         """
         Args:
@@ -3251,7 +3251,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
-        device_name: str = "geothermal_heat_pump",
+        device_name: str = "geothermal_heat_pump",device_count_min:int=0,
     ):
         """新建一个地源热泵类
 
@@ -3390,7 +3390,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         ratio_cool: float,
         ratio_heat: float,
         ratio_gheat: float,  # gheat? 工作热量？ geothermal heat?
-        device_name: str = "water_energy_storage",
+        device_name: str = "water_energy_storage",device_count_min:int=0,
     ):
         """
         创建一个水蓄能类
@@ -3753,7 +3753,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         electricSteamGeneratorSolidHeatStorage_price: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "electricSteamGenerator",
+        device_name: str = "electricSteamGenerator",device_count_min:int=0,
     ):
         """
         Args:
@@ -3917,7 +3917,7 @@ class Linear_absolute(object):  # absolute?
     # bigNumber = 1e10
     index = 0
 
-    def __init__(self, model: Model, x: List[VarType], self.hourRange: Iterable):  # self.hourRange?
+    def __init__(self, model: Model, x: List[VarType], hourRange: Iterable):  # self.hourRange?
         """
         初始化带绝对值的线性约束类
 
@@ -4048,7 +4048,7 @@ class CitySupply(IntegratedEnergySystem):
         device_price: float,
         run_price: Union[np.ndarray, List],
         efficiency: float,
-        device_name: str = "city_supply",
+        device_name: str = "city_supply",device_count_min:int=0,
     ):
         """
         创建一个市政能源类
@@ -4171,7 +4171,7 @@ class GridNet(IntegratedEnergySystem):
         device_price: float,
         electricity_price_from: Union[np.ndarray, List],
         electricity_price_to: float,
-        device_name: str = "grid_net",
+        device_name: str = "grid_net",device_count_min:int=0,
     ):
         """
         新建一个电网类
@@ -4382,7 +4382,7 @@ class Linearization(object):
         var_bin: List[VarType],
         var: List[VarType],
         bin0: List[BinaryVarType],
-        self.hourRange: Iterable,
+        hourRange: Iterable,
     ):  # bins?
         """
         对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
@@ -4414,7 +4414,7 @@ class Linearization(object):
         var_bin: List[VarType],
         var: List[VarType],
         bin0: List[BinaryVarType],
-        self.hourRangeback: Iterable,
+        hourRangeback: Iterable,
     ):  # back?
         """
         对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
@@ -4431,14 +4431,14 @@ class Linearization(object):
             self.hourRange (Iterable): 整数区间
         """
         Linearization.index += 1
-        self.model.add_constraints(var_bin[i] >= 0 for i in self.hourRangeback)
+        self.model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
         self.model.add_constraints(
             var_bin[i] >= var[i - 1] - (1 - bin0[i]) * self.bigNumber
-            for i in self.hourRangeback
+            for i in hourRangeback
         )
-        self.model.add_constraints(var_bin[i] <= var[i - 1] for i in self.hourRangeback)
+        self.model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
         self.model.add_constraints(
-            var_bin[i] <= bin0[i] * self.bigNumber for i in self.hourRangeback
+            var_bin[i] <= bin0[i] * self.bigNumber for i in hourRangeback
         )
 
     def max_zeros(  # deprecated?
