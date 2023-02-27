@@ -1568,9 +1568,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     name="power_combinedHeatAndPower{0}".format(self.classSuffix),
         # )
         # """
-        self.heat_generated:List[ContinuousVarType] = self.model.continuous_var_list([
+        self.heat_generated:List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in self.hourRange],name=f"heat_generated_{self.classSuffix}"
-        ])
+        )
         # 实数型列表,表示热电联产在每个时段的发电量
         # """
         # self.outputs['hot_water']: List[
@@ -1733,7 +1733,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     == self.device_count * self.rated_power
         # )
 
-        self.add_lower_bounds(self.outputs['electricity'],self.elementwise_multiply(self.on_flags, self.total_rated_power*self.running_ratio_min))
+        self.add_upper_and_lower_bounds(self.outputs['electricity'],self.elementwise_multiply(self.on_flags, self.total_rated_power*self.running_ratio_min),self.elementwise_min(self.elementwise_multiply(self.on_flags,bigNumber),self.total_rated_power))
 
         # TODO: guess this is not "rated_power" but "total_rated_power"
 
@@ -1746,16 +1746,17 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # )
 
         # power_combinedHeatAndPower(1, h) <= device_count * on_flags(1, h) % combinedHeatAndPower功率限制, 采用线性化约束,有以下等效:
-        self.model.add_constraints(
-            self.outputs['electricity'][h] <= self.device_count
-            for h in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.outputs['electricity'][h] <= self.total_rated_power
+        #     for h in self.hourRange
+        # )
 
-        self.model.add_constraints(
-            self.outputs['electricity'][h]
-            <= self.on_flags[h] * bigNumber
-            for h in self.hourRange
-        )
+        # self.model.add_constraints(
+        #     self.outputs['electricity'][h]
+        #     <= self.on_flags[h] * bigNumber
+        #     for h in self.hourRange
+        # )
+
         # power_combinedHeatAndPower[h]>= 0
         # power_combinedHeatAndPower(1, h) >= device_count - (1 - on_flags[h]) * bigNumber
         self.model.add_constraints(
