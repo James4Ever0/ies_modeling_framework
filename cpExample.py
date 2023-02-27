@@ -152,7 +152,7 @@ from integratedEnergySystemPrototypes import (
     # TripleWorkingConditionUnit,
     # GeothermalHeatPump,
     # WaterEnergyStorage,
-    # GroundSourceSteamGenerator,
+    # ElectricSteamGenerator,
     # Linear_absolute,
     # CitySupply,
     GridNet,
@@ -185,7 +185,7 @@ if __name__ == "__main__":
 
     (
         troughPhotoThermal,
-        groundSourceSteamGenerator,
+        electricSteamGenerator,
         combinedHeatAndPower,
         gasBoiler,
         municipalSteam,
@@ -217,7 +217,7 @@ if __name__ == "__main__":
         == municipalSteam.heat_citySupplied[h]
         + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
         + troughPhotoThermal.power_troughPhotoThermal_steam[h]
-        + groundSourceSteamGenerator.power_groundSourceSteamGenerator_steam[h]
+        + electricSteamGenerator.power_electricSteamGenerator_steam[h]
         + gasBoiler.heat_gasBoiler[
             h
         ]  # （每小时）所有产生蒸汽量的总和 = 市政热量 + CHP余气余热蒸汽 + 槽式光热产蒸汽 + 燃气锅炉产生热量
@@ -488,7 +488,7 @@ if __name__ == "__main__":
 
     # 电量平衡
     # electricity_groundSourceHeatPump[h] + electricity_waterCoolingSpiralMachine[h] + electricity_heatPump[h] - power_batteryEnergyStorageSystem[h] - power_photoVoltaic[h] + electricity_waterSourceHeatPumps[h] + power_load[h] - power_combinedHeatAndPower[h] - power_chargeaifa[h] + \
-    # power_groundSourceSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
+    # power_electricSteamGenerator[h] + power_electricBoiler[h] + electricity_tripleWorkingConditionUnit[h] + electricity_doubleWorkingConditionUnit[h] == total_power[h]
     # 市政电力电流是双向的,其余市政是单向的。
 
     # what is "chargeaifa" ??
@@ -513,7 +513,7 @@ if __name__ == "__main__":
         + heatPump.electricity_waterSourceHeatPumps[h]
         + waterSourceHeatPumps.electricity_waterSourceHeatPumps[h]
         + power_load[h]
-        + groundSourceSteamGenerator.power_groundSourceSteamGenerator[h]
+        + electricSteamGenerator.power_electricSteamGenerator[h]
         + hotWaterElectricBoiler.electricity_electricBoiler[h]
         + tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit[h]
         + doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit[h]
@@ -522,7 +522,7 @@ if __name__ == "__main__":
         - combinedHeatAndPower.power_combinedHeatAndPower[h]
         - dieselEngine.power_dieselEngine[h]
         == gridNet.total_power[h]  # 总的耗电量 == 用电量 - 放能量
-        # 用电量 == 地源热泵每小时耗电量 + 水冷螺旋机的用电量 + 每个时刻热泵用电量 + 每个时刻水源热泵用电量 + 用电需求 + 地源蒸汽发生器总功率 + 电锅炉在每个时段的电消耗量 + 三工况机组的用电量 + 双工况机组的用电量
+        # 用电量 == 地源热泵每小时耗电量 + 水冷螺旋机的用电量 + 每个时刻热泵用电量 + 每个时刻水源热泵用电量 + 用电需求 + 电蒸汽发生器总功率 + 电锅炉在每个时段的电消耗量 + 三工况机组的用电量 + 双工况机组的用电量
         # 放能量 == 每小时储能装置的充放能功率 + 每个小时内光伏机组发电量 + 热电联产在每个时段的发电量 + 每个小时内柴油发电机机组发电量
         for h in range(0, num_hour0)
     )
@@ -535,7 +535,7 @@ if __name__ == "__main__":
             photoVoltaic,
             batteryEnergyStorageSystem,
             troughPhotoThermal,
-            groundSourceSteamGenerator,
+            electricSteamGenerator,
             combinedHeatAndPower,
             gasBoiler,
             steamAndWater_exchanger,  # qs? 气水？
@@ -625,7 +625,7 @@ if __name__ == "__main__":
                     power_load,
                     combinedHeatAndPower.power_combinedHeatAndPower,
                     dieselEngine.power_dieselEngine,
-                    groundSourceSteamGenerator.power_groundSourceSteamGenerator,
+                    electricSteamGenerator.power_electricSteamGenerator,
                     hotWaterElectricBoiler.electricity_electricBoiler,
                     tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
                     doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
@@ -641,7 +641,7 @@ if __name__ == "__main__":
                     "power_load",
                     "combinedHeatAndPower.power_combinedHeatAndPower",
                     "dieselEngine.power_dieselEngine",
-                    "groundSourceSteamGenerator.power_groundSourceSteamGenerator",
+                    "electricSteamGenerator.power_electricSteamGenerator",
                     "hotWaterElectricBoiler.electricity_electricBoiler",
                     "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
                     "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
