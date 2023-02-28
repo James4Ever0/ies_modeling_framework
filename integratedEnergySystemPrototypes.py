@@ -5500,19 +5500,29 @@ class CitySupply(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] <= self.device_count
-            for h in self.hourRange
+
+        self.add_lower_and_upper_bounds(
+            self.power_of_outputs[self.output_type], 0, self.device_count
         )
 
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h]
-            == self.heat_consumed[h] / self.efficiency
-            for h in self.hourRange
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] <= self.device_count
+        #     for h in self.hourRange
+        # )
+
+        self.equations(
+            self.power_of_outputs[self.output_type],
+            self.elementwise_divide(self.heat_consumed, self.efficiency),
         )
+
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h]
+        #     == self.heat_consumed[h] / self.efficiency
+        #     for h in self.hourRange
+        # )
 
         self.heat_cost = self.sum_within_range(self.heat_consumed, self.running_price)
         # self.heat_cost = self.model.sum(
@@ -5578,11 +5588,11 @@ class GridNet(IntegratedEnergySystem):
         电网装机设备数 非负实数
         """
 
-        self.device_count_max = device_count_max
+        # self.device_count_max = device_count_max
         self.electricity_price_from = electricity_price_from
         self.electricity_price_to = electricity_price_to
 
-        self.device_price = device_price
+        # self.device_price = device_price
 
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricity_cost_{0}".format(self.classSuffix)
@@ -5597,27 +5607,32 @@ class GridNet(IntegratedEnergySystem):
         """
         电网每年运维费用 非负实数
         """
+        
+        # can you not to connect anything as input?
+        self.input_type = self.output_type = 'electricity'
 
-        self.total_power = self.model.continuous_var_list(
+        self.electricity_consumed = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,  # lower bound
-            name="total_power_{0}".format(self.classSuffix),
-        )
+            name="electricity_consumed_{0}".format(self.classSuffix),
+        ) # power consumed?
         """
         电网逐小时净用电量 长度为`num_hour`的实数列表 大于零时电网耗电 小于零时电网发电
         """
+        self.build_power_of_inputs([self.input_type])
+        self.build_power_of_inputs([self.input_type])
 
-        self.powerFrom = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="powerFrom{0}".format(self.classSuffix),
-        )
-        """
-        电网逐小时用电量 长度为`num_hour`的非负实数列表
-        """
-        self.powerTo = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="powerTo_{0}".format(self.classSuffix),
-        )
+        # self.powerFrom = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="powerFrom{0}".format(self.classSuffix),
+        # )
+        # """
+        # 电网逐小时用电量 长度为`num_hour`的非负实数列表
+        # """
+        # self.powerTo = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="powerTo_{0}".format(self.classSuffix),
+        # )
         """
         电网逐小时发电量 长度为`num_hour`的非负实数列表
         """
@@ -5666,7 +5681,7 @@ class GridNet(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         linearization.positive_negitive_constraints_register(
-            self.num_hour, self.model, self.total_power, self.powerFrom, self.powerTo
+            self.num_hour, self.model, self.electricity_consumed, self.powerFrom, self.powerTo
         )
         self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(self.device_count <= self.device_count_max)
