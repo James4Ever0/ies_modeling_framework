@@ -409,7 +409,7 @@ class EnengySystemUtils(object):
     ):
         index_range = self.get_index_range(index_range)
 
-        iterable = isinstance(values, List)
+        iterable = isinstance(values, Iterable)
 
         for index in index_range:
             if iterable:
@@ -464,7 +464,7 @@ class EnengySystemUtils(object):
         # self.model.add_constraint(self.device_count_min<=self.device_count )
 
     def elementwise_operation(self, variables, values, operation_function):
-        iterable = isinstance(values, List)
+        iterable = isinstance(values, Iterable)
         results = []
         for index, variable in enumerate(variables):
             if iterable:
@@ -612,9 +612,9 @@ class IntegratedEnergySystem(EnengySystemUtils):
             "IntegratedEnergySystem Define a device named:",
             self.device_name,
             ", total device index is:",
-            IntegratedEnergySystem.device_index,
+            self.__class__.device_index,
         )
-        return IntegratedEnergySystem.device_index
+        # return self.__class__.device_index
 
     def build_power_of_inputs(self, energy_types: List[str]):
         for energy_type in energy_types:
@@ -1220,7 +1220,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
 
         self.add_lower_and_upper_bounds(
             self.device_count_powerConversionSystem
-            if isinstance(self.device_count_powerConversionSystem)
+            if isinstance(self.device_count_powerConversionSystem, Iterable)
             else [self.device_count_powerConversionSystem],
             0,
             self.device_count * self.conversion_rate_max,
@@ -1356,7 +1356,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 self.device_count * self.device_price
                 + (
                     self.model.max(self.device_count_powerConversionSystem)
-                    if isinstance(self.device_count_powerConversionSystem, List)
+                    if isinstance(self.device_count_powerConversionSystem, Iterable)
                     else self.device_count_powerConversionSystem
                 )
                 * self.device_price_powerConversionSystem
@@ -1426,7 +1426,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             solution.get_value(self.device_count) * self.device_price
             + (
                 max(solution.get_values(self.device_count_powerConversionSystem))
-                if isinstance(self.device_count_powerConversionSystem, List)
+                if isinstance(self.device_count_powerConversionSystem,Iterable)
                 else solution.get_value(self.device_count_powerConversionSystem)
             )
             * self.device_price_powerConversionSystem
