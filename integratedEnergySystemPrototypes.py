@@ -723,7 +723,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         """
         每年消耗的运维成本 大于零的实数
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -851,7 +851,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -978,7 +978,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -1182,7 +1182,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        return val
+        #return val
 
     def constraints_register(
         self, register_period_constraints: int = 1, day_node: int = 24
@@ -1567,7 +1567,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # self.energy_init = energy_init
         # self.stateOfCharge_min = stateOfCharge_min
         # self.stateOfCharge_max = stateOfCharge_max
-        return val
+        #return val
 
     # def constraints_register(
     #     self, model: Model, register_period_constraints=1, day_node=24
@@ -1870,7 +1870,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         固态储热设备初始化为`EnergyStorageSystem`
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -2134,7 +2134,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -2402,7 +2402,7 @@ class GasBoiler(IntegratedEnergySystem):
         """
         连续变量,表示燃气锅炉的年化费用
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -2542,7 +2542,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量,表示电锅炉的年化费用
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -2668,7 +2668,7 @@ class Exchanger(IntegratedEnergySystem):
         """
         连续变量列表,表示热交换器的每小时热交换量
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -2917,7 +2917,7 @@ class AirHeatPump(IntegratedEnergySystem):
         # self.coefficientOfPerformance_hot_water = 3  # 表示该组件供热时的性能系数
         # self.coefficientOfPerformance_hot_water_storage = 3  # 表示该组件蓄热时的性能系数
 
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -3337,7 +3337,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         # self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage = 5  # 蓄冷性能系数
         # self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
         # self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage = 5  # 蓄热性能系数
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -3714,7 +3714,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             self.__dict__.update({f"coefficientOfPerformance_{output_type}": 5})
         # self.coefficientOfPerformance_waterCoolingSpiralMachine_cool = 5
         # self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage = 5
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -4053,7 +4053,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         # self.coefficientOfPerformance_doubleWorkingConditionUnit_ice = 5
 
         # 三工况机组
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -4418,7 +4418,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_cool = 5
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -4693,7 +4693,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         地源热泵设备运行效率参数 默认为5
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -4959,7 +4959,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         水蓄能设备年运维费用
         """
-        return val
+        #return val
 
     def constraints_register(self, register_period_constraints: int, day_node: int):
         """
@@ -5384,7 +5384,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         用电成本
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -5537,7 +5537,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源年运维费用 实数变量
         """
-        return val
+        #return val
 
     def constraints_register(self):
         """
@@ -5734,7 +5734,7 @@ class GridNet(IntegratedEnergySystem):
         """
         电网发电峰值 实数
         """
-        return val
+        #return val
 
     def constraints_register(self, powerPeak_predicted: float = 2000):
         """
