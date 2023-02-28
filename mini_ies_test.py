@@ -98,7 +98,7 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 Node1 = EnergyFlowNode(model,num_hour,"greater_equal")
 Node2 = EnergyFlowNode(model,num_hour,"greater_equal")
 
-Node1.add_input()
+Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
 
 # model.add_constraints(
 #     power_load[h]
