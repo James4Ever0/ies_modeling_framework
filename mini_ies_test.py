@@ -102,6 +102,7 @@ Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 Node2 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 
 Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
+Node
 
 # model.add_constraints(
 #     power_load[h]

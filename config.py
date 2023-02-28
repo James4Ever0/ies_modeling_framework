@@ -26,9 +26,9 @@ day_node = 24
 
 node = day_node * 1 * 1
 if debug == 0:
-    num_hour0 = node
+    num_hour = node
 else:
-    num_hour0 = node * year
+    num_hour = node * year
 # total simulation rounds?
 simulationTime = 3600
 # a big number
@@ -39,7 +39,7 @@ bigNumber = 10e10
 
 
 # every hour of one day?
-intensityOfIllumination = np.ones(shape=num_hour0)
+intensityOfIllumination = np.ones(shape=num_hour)
 
 """
 24小时光照强度数组,数组形状为`(num_hour0,)`,所有元素初始化为1
