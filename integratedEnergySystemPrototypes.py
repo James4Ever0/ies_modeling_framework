@@ -54,11 +54,12 @@ class Linear_absolute(object):  # absolute?
             x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`hourRange`内逐元素相减结果约束得到的变量组`x`
             hourRange (Iterable): 整数区间
         """
-        Linearization.index += 1  # 要增加变量
+        self.__class__.index += 1  # 要增加变量
         self.model = model
+        self.classSuffix = f"{self.__class__.__name__}_{self.__class__.index}"
         self.b_positive: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in hourRange],
-            name="b_positive_absolute{0}".format(self.classSuffix),
+            name="b_positive_absolute_{0}".format(self.classSuffix),
         )
         """
         一个二进制变量列表,长度为`len(hourRange)`
@@ -73,7 +74,7 @@ class Linear_absolute(object):  # absolute?
         """
         self.b_negitive: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in hourRange],
-            name="b_negitive_absolute{0}".format(self.classSuffix),
+            name="b_negitive_absolute_{0}".format(self.classSuffix),
         )
         """
         一个二进制变量列表,长度为`len(hourRange)`
@@ -84,7 +85,7 @@ class Linear_absolute(object):  # absolute?
         """
         self.x_positive: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in hourRange],
-            name="x_positive_absolute{0}".format(self.classSuffix),
+            name="x_positive_absolute_{0}".format(self.classSuffix),
         )
         """
         一个实数变量列表,长度为`len(hourRange)`
@@ -93,7 +94,7 @@ class Linear_absolute(object):  # absolute?
         """
         self.x_negitive: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in hourRange],
-            name="x_negitive_absolute{0}".format(self.classSuffix),
+            name="x_negitive_absolute_{0}".format(self.classSuffix),
         )
         """
         一个实数变量列表,长度为`len(hourRange)`
@@ -101,7 +102,7 @@ class Linear_absolute(object):  # absolute?
         对于区间`hourRange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
         """
         self.absolute_x: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in hourRange], name="absolute_x{0}".format(self.classSuffix)
+            [i for i in hourRange], name="absolute_x_{0}".format(self.classSuffix)
         )
         """
         一个实数变量列表,长度为`len(hourRange)`
@@ -123,6 +124,7 @@ class Linear_absolute(object):  # absolute?
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
+        self.__class__.__index__ += 1
         self.model.add_constraints(
             self.b_positive[i] + self.b_negitive[i] == 1 for i in hourRange
         )
@@ -285,7 +287,7 @@ class Linearization(object):
         Linearization.index += 1
         y_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="y_flag{0}".format(self.classSuffix),
+            name="y_flag_{0}".format(self.classSuffix),
         )
         model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
@@ -326,7 +328,7 @@ class Linearization(object):
         # looks like two lists.
         Linearization.index += 1
         add_y = model.continuous_var_list(
-            [i for i in range(0, num_hour)], name="add_y{0}".format(self.classSuffix)
+            [i for i in range(0, num_hour)], name="add_y_{0}".format(self.classSuffix)
         )
         model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
         return add_y
@@ -358,7 +360,7 @@ class Linearization(object):
         # bigNumber = 1e10
         positive_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="Linearization_positive_flag{0}".format(self.classSuffix),
+            name="Linearization_positive_flag_{0}".format(self.classSuffix),
         )
         model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
@@ -756,7 +758,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
 
         # device count now.
         # self.device_count: ContinuousVarType =self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         溴化锂制冷机组等效单位设备数 大于零的实数
@@ -779,7 +781,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] =self.model.continuous_var_list(  # the same?
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_LiBr{0}".format(self.classSuffix),
+        #     name="heat_LiBr_{0}".format(self.classSuffix),
         # )
         self.output_type = "cold_water"
         self.build_power_of_outputs([self.output_type])
@@ -791,7 +793,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         # self.device_price = device_price
         self.efficiency = efficiency
         # # self.annualized: ContinuousVarType =self.model.continuous_var(
-        #     name="LiBr_annualized{0}".format(self.classSuffix)
+        #     name="LiBr_annualized_{0}".format(self.classSuffix)
         # )
         """
         每年消耗的运维成本 大于零的实数
@@ -894,7 +896,7 @@ class DieselEngine(IntegratedEnergySystem):
         # DieselEngine.index += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType =self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         柴油发电机机组等效单位设备数 大于零的实数
@@ -918,7 +920,7 @@ class DieselEngine(IntegratedEnergySystem):
         柴油发电机总发电量
         """
         # # self.annualized: ContinuousVarType =self.model.continuous_var(
-        #     name="dieselEngine_annualized{0}".format(self.classSuffix)
+        #     name="dieselEngine_annualized_{0}".format(self.classSuffix)
         # )
         """
         每年消耗的运维成本 大于零的实数
@@ -1026,7 +1028,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # EnergyStorageSystem.index += 1
 
         # self.device_count: ContinuousVarType =self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         储能系统机组等效单位设备数 大于零的实数
@@ -1122,7 +1124,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.stateOfCharge_min = stateOfCharge_min
         self.stateOfCharge_max = stateOfCharge_max
         # # self.annualized: ContinuousVarType =self.model.continuous_var(
-        #     name="energyStorageSystem_annualized{0}".format(self.classSuffix)
+        #     name="energyStorageSystem_annualized_{0}".format(self.classSuffix)
         # )
         """
         每年消耗的运维成本 大于零的实数
@@ -1437,7 +1439,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
 
         # self.device_count: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="energyStorageSystemVariable_device{0}".format(
+        #     name="energyStorageSystemVariable_device_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -1457,7 +1459,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # self.build_power_of_outputs([self.output_type])
         # self.power_of_inputs[self.input_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="powerVariable_charge{0}".format(self.classSuffix),
+        #     name="powerVariable_charge_{0}".format(self.classSuffix),
         # )
         # """
         # 模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的充能功率
@@ -1465,7 +1467,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # # 放能功率
         # self.power_of_outputs[self.output_type]: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="powerVariable_discharge{0}".format(self.classSuffix),
+        #     name="powerVariable_discharge_{0}".format(self.classSuffix),
         # )
         """
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的放能功率
@@ -1757,7 +1759,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         self.output_type = "steam"
         self.build_power_of_outputs([self.output_type])
@@ -1777,7 +1779,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_troughPhotoThermal_steam{0}".format(self.classSuffix),
+        #     name="power_troughPhotoThermal_steam_{0}".format(self.classSuffix),
         # )
         """
         槽式光热机组每小时产蒸汽功率 实数变量列表
@@ -1793,7 +1795,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             intensityOfIllumination  # intensityOfIllumination
         )
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="troughPhotoThermal_annualized{0}".format(self.classSuffix)
+        #     name="troughPhotoThermal_annualized_{0}".format(self.classSuffix)
         # )
         """
         槽式光热年运维成本
@@ -1937,7 +1939,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         实数型,表示热电联产的等效设备数量
@@ -1947,7 +1949,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_combinedHeatAndPower{0}".format(self.classSuffix),
+        #     name="power_combinedHeatAndPower_{0}".format(self.classSuffix),
         # )
         # """
         self.heat_generated: List[ContinuousVarType] = self.model.continuous_var_list(
@@ -1959,7 +1961,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_combinedHeatAndPower{0}".format(self.classSuffix),
+        #     name="heat_combinedHeatAndPower_{0}".format(self.classSuffix),
         # )
         """
         实数型列表,表示热电联产在每个时段的总产热量
@@ -2007,7 +2009,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         整数型,表示热电联产实际装机数量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="combinedHeatAndPower_annualized{0}".format(self.classSuffix)
+        #     name="combinedHeatAndPower_annualized_{0}".format(self.classSuffix)
         # )
         """
         实数型,表示热电联产年化投资成本
@@ -2310,7 +2312,7 @@ class GasBoiler(IntegratedEnergySystem):
         # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         燃气锅炉机组等效单位设备数 大于零的实数变量
@@ -2342,7 +2344,7 @@ class GasBoiler(IntegratedEnergySystem):
         连续变量,表示总燃气费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="gasBoiler_annualized{0}".format(self.classSuffix)
+        #     name="gasBoiler_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示燃气锅炉的年化费用
@@ -2482,7 +2484,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         连续变量,表示总用电费用
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="electricBoiler_annualized{0}".format(self.classSuffix)
+        #     name="electricBoiler_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示电锅炉的年化费用
@@ -2594,7 +2596,7 @@ class Exchanger(IntegratedEnergySystem):
         热交换器机组等效单位设备数 大于零的实数变量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="exchanger_annualized{0}".format(self.classSuffix)
+        #     name="exchanger_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示热交换器的年化费用
@@ -2608,7 +2610,7 @@ class Exchanger(IntegratedEnergySystem):
         self.build_power_of_outputs([self.output_type])
         # self.heat_exchange: List[ContinuousVarType] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_exchanger{0}".format(self.classSuffix),
+        #     name="heat_exchanger_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示热交换器的每小时热交换量
@@ -2691,13 +2693,13 @@ class AirHeatPump(IntegratedEnergySystem):
         # AirHeatPump.index += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         空气热泵机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="AirHeatPumpower_annualized{0}".format(self.classSuffix)
+        #     name="AirHeatPumpower_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示空气热泵的年化费用
@@ -2841,7 +2843,7 @@ class AirHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_heatPump{0}".format(self.classSuffix),
+        #     name="electricity_heatPump_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示空气热泵在每个时段的用电量
@@ -3158,7 +3160,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         水源热泵机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="WaterHeatPumpower_annualized{0}".format(self.classSuffix)
+        #     name="WaterHeatPumpower_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示水源热泵的年化费用
@@ -3187,7 +3189,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterSourceHeatPumps_cool{0}".format(self.classSuffix),
+        #     name="power_waterSourceHeatPumps_cool_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示每个时刻水源热泵制冷功率
@@ -3197,7 +3199,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterSourceHeatPumps_cool_flag{0}".format(self.classSuffix),
+        #     name="waterSourceHeatPumps_cool_flag_{0}".format(self.classSuffix),
         # )
         """
         二元变量列表,表示每个时刻水源热泵制冷状态
@@ -3207,7 +3209,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterSourceHeatPumps_cooletStorage{0}".format(self.classSuffix),
+        #     name="power_waterSourceHeatPumps_cooletStorage_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示每个时刻水源热泵蓄冷功率
@@ -3216,7 +3218,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterSourceHeatPumps_cooletStorage_flag{0}".format(self.classSuffix),
+        #     name="waterSourceHeatPumps_cooletStorage_flag_{0}".format(self.classSuffix),
         # )
         """
         二元变量列表,表示每个时刻水源热泵蓄冷状态
@@ -3225,7 +3227,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterSourceHeatPumps_heat{0}".format(self.classSuffix),
+        #     name="power_waterSourceHeatPumps_heat_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示每个时刻水源热泵制热功率
@@ -3234,7 +3236,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterSourceHeatPumps_heat_flag{0}".format(self.classSuffix),
+        #     name="waterSourceHeatPumps_heat_flag_{0}".format(self.classSuffix),
         # )
         """
         二元变量列表,表示每个时刻水源热泵制热状态
@@ -3243,7 +3245,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterSourceHeatPumps_heatStorage{0}".format(self.classSuffix),
+        #     name="power_waterSourceHeatPumps_heatStorage_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示每个时刻水源热泵蓄热功率
@@ -3252,7 +3254,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterSourceHeatPumps_heatStorage_flag{0}".format(self.classSuffix),
+        #     name="waterSourceHeatPumps_heatStorage_flag_{0}".format(self.classSuffix),
         # )
         """
         二元变量列表,表示每个时刻水源热泵蓄热状态
@@ -3264,7 +3266,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_waterSourceHeatPumps{0}".format(self.classSuffix),
+        #     name="electricity_waterSourceHeatPumps_{0}".format(self.classSuffix),
         # )
         """
         连续变量列表,表示每个时刻水源热泵用电量
@@ -3558,7 +3560,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = (
         #     self.model.continuous_var(
-        #         name="device_count{0}".format(
+        #         name="device_count_{0}".format(
         #             self.classSuffix
         #         )
         #     )
@@ -3567,7 +3569,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         水冷螺旋机机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="waterCoolingSpiral_annualized{0}".format(self.classSuffix)
+        #     name="waterCoolingSpiral_annualized_{0}".format(self.classSuffix)
         # )
         """
         连续变量,表示水冷螺旋机的年化费用
@@ -3603,7 +3605,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterCoolingSpiralMachine_cool_flag{0}".format(
+        #     name="waterCoolingSpiralMachine_cool_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3615,7 +3617,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_of_outputs_coolet_storage{0}".format(
+        #     name="power_of_outputs_coolet_storage_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3627,7 +3629,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterCoolingSpiralMachine_cooletStorage_flag{0}".format(
+        #     name="waterCoolingSpiralMachine_cooletStorage_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3641,7 +3643,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_waterCoolingSpiralMachine{0}".format(
+        #     name="electricity_waterCoolingSpiralMachine_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3907,7 +3909,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         双工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="DoubleWorkingConditionUnit_annualized{0}".format(
+        #     name="DoubleWorkingConditionUnit_annualized_{0}".format(
         #         self.classSuffix
         #     )
         # )
@@ -3930,7 +3932,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_cool{0}".format(
+        #     name="power_cool_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3942,7 +3944,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="doubleWorkingConditionUnit_cool_flag{0}".format(
+        #     name="doubleWorkingConditionUnit_cool_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3954,7 +3956,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_ice{0}".format(
+        #     name="power_ice_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3966,7 +3968,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="doubleWorkingConditionUnit_ice_flag{0}".format(
+        #     name="doubleWorkingConditionUnit_ice_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -3978,7 +3980,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_doubleWorkingConditionUnit{0}".format(
+        #     name="electricity_doubleWorkingConditionUnit_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4246,7 +4248,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         三工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="TripleWorkingConditionUnit_annualized{0}".format(
+        #     name="TripleWorkingConditionUnit_annualized_{0}".format(
         #         self.classSuffix
         #     )
         # )
@@ -4269,7 +4271,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_cool{0}".format(
+        #     name="power_cool_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4281,7 +4283,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="tripleWorkingConditionUnit_cool_flag{0}".format(
+        #     name="tripleWorkingConditionUnit_cool_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4293,7 +4295,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_ice{0}".format(
+        #     name="power_ice_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4305,7 +4307,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="tripleWorkingConditionUnit_ice_flag{0}".format(
+        #     name="tripleWorkingConditionUnit_ice_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4317,7 +4319,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_heat{0}".format(
+        #     name="power_heat_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4329,7 +4331,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="tripleWorkingConditionUnit_heat_flag{0}".format(
+        #     name="tripleWorkingConditionUnit_heat_flag_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4342,7 +4344,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_tripleWorkingConditionUnit{0}".format(
+        #     name="electricity_tripleWorkingConditionUnit_{0}".format(
         #         self.classSuffix
         #     ),
         # )
@@ -4597,7 +4599,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵机组设备数量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="GeothermalHeatPumpower_annualized{0}".format(self.classSuffix)
+        #     name="GeothermalHeatPumpower_annualized_{0}".format(self.classSuffix)
         # )
         """
         地源热泵机组年运维成本
@@ -4618,7 +4620,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="electricity_groundSourceHeatPump{0}".format(self.classSuffix),
+        #     name="electricity_groundSourceHeatPump_{0}".format(self.classSuffix),
         # )
         """
         地源热泵每小时耗电量
@@ -4629,7 +4631,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_groundSourceHeatPump{0}".format(self.classSuffix),
+        #     name="power_groundSourceHeatPump_{0}".format(self.classSuffix),
         # )
         """
         地源热泵每小时输出功率
@@ -4816,7 +4818,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterStorageTank_device_heat{0}".format(self.classSuffix),
+        #     name="waterStorageTank_device_heat_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能在蓄热模式下的储水量
@@ -4825,7 +4827,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterStorageTank_device_gheat{0}".format(self.classSuffix),
+        #     name="waterStorageTank_device_gheat_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能在地源热泵模式下的储水量
@@ -4843,7 +4845,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterStorageTank_cool_flag{0}".format(self.classSuffix),
+        #     name="waterStorageTank_cool_flag_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能设备是否处在蓄冷状态下
@@ -4852,7 +4854,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterStorageTank_heat_flag{0}".format(self.classSuffix),
+        #     name="waterStorageTank_heat_flag_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能设备是否处在蓄热状态下
@@ -4861,7 +4863,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     BinaryVarType
         # ] = self.model.binary_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="waterStorageTank_gheat_flag{0}".format(self.classSuffix),
+        #     name="waterStorageTank_gheat_flag_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能设备是否处在高温热水状态下
@@ -4875,7 +4877,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterStorageTank_cool{0}".format(self.classSuffix),
+        #     name="power_waterStorageTank_cool_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能设备储能功率 蓄冷状态下
@@ -4884,7 +4886,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterStorageTank_heat{0}".format(self.classSuffix),
+        #     name="power_waterStorageTank_heat_{0}".format(self.classSuffix),
         # )
         """
         每小时水蓄能设备储能功率 蓄热状态下
@@ -4893,13 +4895,13 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_waterStorageTank_gheat{0}".format(self.classSuffix),  # gheat?
+        #     name="power_waterStorageTank_gheat_{0}".format(self.classSuffix),  # gheat?
         # )
         """
         每小时水蓄能设备储能功率 高温热水状态下
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="power_waterStorageTank_annualized{0}".format(self.classSuffix)
+        #     name="power_waterStorageTank_annualized_{0}".format(self.classSuffix)
         # )
         """
         水蓄能设备年运维费用
@@ -5296,7 +5298,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricity_price = electricity_price
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="ElectricSteamGenerator_annualized{0}".format(
+        #     name="ElectricSteamGenerator_annualized_{0}".format(
         #         self.classSuffix
         #     )
         # )
@@ -5477,7 +5479,7 @@ class CitySupply(IntegratedEnergySystem):
         市政能源消耗总费用 实数变量
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="citySupplied_annualized{0}".format(self.classSuffix)
+        #     name="citySupplied_annualized_{0}".format(self.classSuffix)
         # )
         """
         市政能源年运维费用 实数变量
@@ -5582,7 +5584,7 @@ class GridNet(IntegratedEnergySystem):
         # self.num_hour = num_hour
         # self.model = model
         # self.device_count: ContinuousVarType = self.model.continuous_var(
-        #     name="device_count{0}".format(self.classSuffix)
+        #     name="device_count_{0}".format(self.classSuffix)
         # )
         """
         电网装机设备数 非负实数
@@ -5602,7 +5604,7 @@ class GridNet(IntegratedEnergySystem):
         """
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
-        #     name="gridNet_annualized{0}".format(self.classSuffix)
+        #     name="gridNet_annualized_{0}".format(self.classSuffix)
         # )
         """
         电网每年运维费用 非负实数
@@ -5624,7 +5626,7 @@ class GridNet(IntegratedEnergySystem):
 
         # self.power_output = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="power_output{0}".format(self.classSuffix),
+        #     name="power_output_{0}".format(self.classSuffix),
         # )
         # """
         # 电网逐小时用电量 长度为`num_hour`的非负实数列表
