@@ -5677,7 +5677,8 @@ class GridNet(IntegratedEnergySystem):
                 name=f"electricity_{direction}_{self.classSuffix}",
             )
 
-        self.equations(self.power_of_inputs[self.input_type], self.power_upload)
+        self.equations(self.power_of_inputs[self.input_type], self.electricity_upload)
+        self.equations(self.power_of_outputs[self.output_type], self.electricity_download)
 
         # self.power_output_max = self.model.continuous_var(
         #     name="power_output_max_{0}".format(self.classSuffix)
@@ -5712,14 +5713,18 @@ class GridNet(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
-        linearization.max_zeros
+        
+        # self.electrity_flow = self.model.continuous_var(lb=-bigNumber,ub=bigNumber,name="electricity_flow_{}")
+        
         # linearization.positive_negitive_constraints_register(
         #     self.num_hour,
         #     self.model,
         #     self.power_of_outputs[self.output_type],
-        #     self.electricity_consumed,
-        #     self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
+        #     self.electricity_download,
+        #     self.elementwise_multiply(self.electricity_upload, -1),
         # )
+        linearization.max_zeros(self.num_hour,self.model,x=self.elementwise_subtract(),y=)
+        
 
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
