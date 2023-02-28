@@ -63,7 +63,7 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     model,
     device_count_max=20000,
     device_price=1800 / 20,  # this won't save anything.
-    powerConversionSystem_price=250 / 10,
+    device_price_powerConversionSystem=250 / 10,
     conversion_rate_max=2,
     efficiency=0.9,
     energy_init=0.5,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.

@@ -581,9 +581,9 @@ class IntegratedEnergySystem(EnengySystemUtils):
         """
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
+        self.__class__.device_index += 1
         super().__init__(model, num_hour)
         # self.device_name = device_name
-        self.__class__.device_index += 1
         classObject.index += 1
         self.className = classObject.__name__
         self.classIndex = classObject.index

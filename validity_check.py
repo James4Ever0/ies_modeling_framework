@@ -15,3 +15,13 @@ for i, arg in enumerate(args):
         print(f"SUCCEED WITH ARG{i}")
     except:
         print(f"FAILED WITH ARG{i}")
+
+
+class A:
+    val = 1
+    def __init__(self):
+        self.__class__.val+=1
+        print("VALUE?",self.__class__.val)
+
+A()
+A()
