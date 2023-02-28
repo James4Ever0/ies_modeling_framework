@@ -4657,43 +4657,121 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                     self.volume * self.ratio_cold_water,
                 ),
             )
-        # (1)  
+        # # (1)
+        # self.model.add_constraints(
+        #     self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.device_count_cold_water[h]
+        #     <= self.waterStorageTank_cool_flag[h] * bigNumber
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.device_count_cold_water[h] >= 0 for h in self.hourRange
+        # )
+
+        # self.model.add_constraints(
+        #     self.device_count_cold_water[h]
+        #     >= self.volume * self.ratio_cold_water
+        #     - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+        #     for h in self.hourRange
+        # )
+
+        # # (2)
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_heat[h] <= self.volume * self.ratio_warm_water
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_heat[h]
+        #     <= self.waterStorageTank_heat_flag[h] * bigNumber
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_heat[h] >= 0 for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_heat[h]
+        #     >= self.volume * self.ratio_warm_water
+        #     - (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
+        #     for h in self.hourRange
+        # )
+        # # (3)
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_gheat[h] <= self.volume * self.ratio_hot_water
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_gheat[h]
+        #     <= self.waterStorageTank_gheat_flag[h] * bigNumber
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_gheat[h] >= 0 for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_device_gheat[h]
+        #     >= self.volume * self.ratio_hot_water
+        #     - (1 - self.waterStorageTank_gheat_flag[h]) * bigNumber
+        #     for h in self.hourRange
+        # )
         # % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        self.model.add_constraints(
-            self.waterStorageTank_cool_flag[h]
-            + self.waterStorageTank_heat_flag[h]
-            + self.waterStorageTank_gheat_flag[h]
-            == 1
-            for h in self.hourRange
-        )  # % 三个方面进行核算。
+        
+        self.equations(
+            reduce(
+                self.elementwise_add,
+                [
+                    self.__dict__[f"{output_type}_flags"]
+                    for output_type in self.output_types
+                ],
+            ),
+            1,
+        )
+        # self.model.add_constraints(
+        #     self.waterStorageTank_cool_flag[h]
+        #     + self.waterStorageTank_heat_flag[h]
+        #     + self.waterStorageTank_gheat_flag[h]
+        #     == 1
+        #     for h in self.hourRange
+        # )  # % 三个方面进行核算。
         # （1） power_waterStorageTank_cool[h] == power_waterStorageTank[h] * waterStorageTank_cool_flag[h]
         # （2）power_waterStorageTank_heat[h] == power_waterStorageTank[h] * waterStorageTank_heat_flag[h]
         # （3）power_waterStorageTank_gheat[h] == power_waterStorageTank[h] * waterStorageTank_gheat_flag[h]
         # 上面的公式进行线性化后,用下面的公式替代
         # (1)
+        
+        for output_type in self.output_types:
+            self.add_lower_and_upper_bounds(
+                self.power_of_outputs[output_type],
+                self.elementwise_max(),
+                self.elementwise_min(),
+            )
 
-        self.model.add_constraints(
+        self.model.add_constraints( # lower
             -bigNumber * self.waterStorageTank_cool_flag[h]
             <= self.power_waterStorageTank_cool[h]
             for h in self.hourRange
         )
-        self.model.add_constraints(
+        self.model.add_constraints(# upper
             self.power_waterStorageTank_cool[h]
             <= bigNumber * self.waterStorageTank_cool_flag[h]
             for h in self.hourRange
         )
-        self.model.add_constraints(
+        self.model.add_constraints( # lower
             self.waterStorageTank.power[h]
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             <= self.power_waterStorageTank_cool[h]
             for h in self.hourRange
         )
-        self.model.add_constraints(
+        self.model.add_constraints( # upper
             self.power_waterStorageTank_cool[h]
             <= self.waterStorageTank.power[h]
             + (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             for h in self.hourRange
         )
+        
+        
         # (2)
         self.model.add_constraints(
             -bigNumber * self.waterStorageTank_heat_flag[h]
