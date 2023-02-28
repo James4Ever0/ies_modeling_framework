@@ -35,9 +35,10 @@ from config import (
 
 ############################UTILS############################
 
+
 class symbols:
-    greater_equal="greater_equal"
-    equal="equal"
+    greater_equal = "greater_equal"
+    equal = "equal"
 
 
 class Linear_absolute(object):  # absolute?
@@ -397,7 +398,6 @@ class Linearization(object):
 ############################UTILS############################
 
 
-
 class EnengySystemUtils(object):
     def __init__(self, model: Model, num_hour: int):
         self.model = model
@@ -443,7 +443,10 @@ class EnengySystemUtils(object):
 
     def equations(self, variables, values, index_range=None):
         self.constraint_multiplexer(
-            variables, values, index_range=index_range, equation=self.equation
+            variables,
+            values,
+            index_range=index_range,
+            constraint_function=self.equation,
         )
 
     def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
@@ -519,11 +522,11 @@ class EnengySystemUtils(object):
         return result
 
 
-
 # use the input/output way
 from typing import Union, List
 
 # usually. we are talking about something else.
+
 
 class EnergyFlowNode:
     def __init__(
@@ -538,11 +541,11 @@ class EnergyFlowNode:
         self.outputs = []
         self.model = model
 
-    def add_input(self,input_port: List):
+    def add_input(self, input_port: List):
         self.util.add_lower_bounds(input_port, 0)
         self.inputs.append(input_port)
 
-    def add_output(self,output_port: List):
+    def add_output(self, output_port: List):
         self.util.add_lower_bounds(output_port, 0)
         self.outputs.append(output_port)
 
@@ -553,6 +556,7 @@ class EnergyFlowNode:
             self.util.equations(inputs, outputs)
         else:
             self.util.add_lower_bounds(inputs, outputs)
+
 
 # another name for IES?
 class IntegratedEnergySystem(EnengySystemUtils):
@@ -723,7 +727,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         """
         每年消耗的运维成本 大于零的实数
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -739,7 +743,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         """
         super().constraints_register()
 
-        self.add_upper_bound(
+        self.add_upper_bounds(
             self.power_of_outputs[self.output_type],
             self.elementwise_multiply(
                 self.intensityOfIllumination, self.device_count * self.efficiency
@@ -766,7 +770,9 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         """
         return solution.get_value(self.device_count) * self.device_price
 
+
 # from typing import Literal
+
 
 # LiBr制冷
 class LiBrRefrigeration(IntegratedEnergySystem):
@@ -851,7 +857,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -978,7 +984,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -1182,7 +1188,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         每年消耗的运维成本 大于零的实数
         """
-        #return val
+        # return val
 
     def constraints_register(
         self, register_period_constraints: int = 1, day_node: int = 24
@@ -1567,7 +1573,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # self.energy_init = energy_init
         # self.stateOfCharge_min = stateOfCharge_min
         # self.stateOfCharge_max = stateOfCharge_max
-        #return val
+        # return val
 
     # def constraints_register(
     #     self, model: Model, register_period_constraints=1, day_node=24
@@ -1870,7 +1876,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         固态储热设备初始化为`EnergyStorageSystem`
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -2134,7 +2140,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -2402,7 +2408,7 @@ class GasBoiler(IntegratedEnergySystem):
         """
         连续变量,表示燃气锅炉的年化费用
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -2542,7 +2548,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         连续变量,表示电锅炉的年化费用
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -2668,7 +2674,7 @@ class Exchanger(IntegratedEnergySystem):
         """
         连续变量列表,表示热交换器的每小时热交换量
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -2917,7 +2923,7 @@ class AirHeatPump(IntegratedEnergySystem):
         # self.coefficientOfPerformance_hot_water = 3  # 表示该组件供热时的性能系数
         # self.coefficientOfPerformance_hot_water_storage = 3  # 表示该组件蓄热时的性能系数
 
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -3337,7 +3343,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         # self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage = 5  # 蓄冷性能系数
         # self.coefficientOfPerformance_waterSourceHeatPumps_heat = 5  # 制热性能系数
         # self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage = 5  # 蓄热性能系数
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -3714,7 +3720,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             self.__dict__.update({f"coefficientOfPerformance_{output_type}": 5})
         # self.coefficientOfPerformance_waterCoolingSpiralMachine_cool = 5
         # self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage = 5
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -4053,7 +4059,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         # self.coefficientOfPerformance_doubleWorkingConditionUnit_ice = 5
 
         # 三工况机组
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -4418,7 +4424,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_cool = 5
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
         # self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -4693,7 +4699,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         地源热泵设备运行效率参数 默认为5
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -4959,7 +4965,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         水蓄能设备年运维费用
         """
-        #return val
+        # return val
 
     def constraints_register(self, register_period_constraints: int, day_node: int):
         """
@@ -5384,7 +5390,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         用电成本
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -5537,7 +5543,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源年运维费用 实数变量
         """
-        #return val
+        # return val
 
     def constraints_register(self):
         """
@@ -5677,7 +5683,7 @@ class GridNet(IntegratedEnergySystem):
         """
         self.build_power_of_inputs([self.input_type])
         self.build_power_of_outputs([self.output_type])
-        
+
         # when input/upload is not zero, output is zero. download is zero.
         # when input/upload is zero, output is not zero, output equals to download.
 
@@ -5720,7 +5726,9 @@ class GridNet(IntegratedEnergySystem):
             )
 
         self.equations(self.power_of_inputs[self.input_type], self.electricity_upload)
-        self.equations(self.power_of_outputs[self.output_type], self.electricity_download)
+        self.equations(
+            self.power_of_outputs[self.output_type], self.electricity_download
+        )
 
         # self.power_output_max = self.model.continuous_var(
         #     name="power_output_max_{0}".format(self.classSuffix)
@@ -5734,7 +5742,14 @@ class GridNet(IntegratedEnergySystem):
         """
         电网发电峰值 实数
         """
-        #return val
+
+        self.electricity_net_exchange = self.model.continuous_var_list(
+            [i for i in range(0, num_hour)],
+            lb=0,
+            ub=bigNumber,
+            name=f"electricity_net_exchange_{self.classSuffix}",
+        )
+        # return val
 
     def constraints_register(self, powerPeak_predicted: float = 2000):
         """
@@ -5755,9 +5770,7 @@ class GridNet(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
-        
-        self.electrity_net_exchange = self.model.continuous_var(lb=0,ub=bigNumber,name=f"electricity_net_exchange_{self.classSuffix}")
-        
+
         linearization.positive_negitive_constraints_register(
             self.num_hour,
             self.model,
@@ -5768,7 +5781,7 @@ class GridNet(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
 
-        for direction, io_direction in zip(self.directions,['input','output']):
+        for direction, io_direction in zip(self.directions, ["input", "output"]):
             self.__dict__[f"electricity_{direction}_max"] = self.model.max(
                 self.__dict__[f"power_of_{io_direction}s"][
                     self.__dict__[f"{io_direction}_type"]
@@ -5809,7 +5822,8 @@ class GridNet(IntegratedEnergySystem):
         # self.power_output_max = self.model.max(self.power_output)
         # self.power_input_max = self.model.max(self.)
         self.powerPeak = self.model.max(
-            self.__dict__[f"electricity_{direction}_max"] for direction in self.directions
+            self.__dict__[f"electricity_{direction}_max"]
+            for direction in self.directions
         )
 
         self.baseCost = (
@@ -5826,11 +5840,11 @@ class GridNet(IntegratedEnergySystem):
                     self.elementwise_multiply(power, price)
                     for power, price in [
                         (
-                            self.electricity_download, # output
+                            self.electricity_download,  # output
                             self.electricity_price,
                         ),
                         (
-                            self.electricity_upload, # input
+                            self.electricity_upload,  # input
                             self.electricity_price_upload,
                         ),
                     ]

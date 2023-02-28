@@ -51,8 +51,8 @@ gridNet = GridNet(
     model,
     device_count_max=200000,
     device_price=0,
-    electricity_price_from=electricity_price,
-    electricity_price_to=0.35,
+    electricity_price=electricity_price,
+    electricity_price_upload=0.35,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
 
