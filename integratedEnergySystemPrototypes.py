@@ -1095,19 +1095,20 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         模型中的连续变量,表示 PCS 的容量。
         """
-        self.charge_flags: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(  # is charging?
-            [i for i in range(0, num_hour)],
-            name=f"charge_flag_{self.classSuffix}",
-        )  # 充能
-        """
-        模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于充能状态。
-        """
-        self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
-            [i for i in range(0, num_hour)],
-            name=f"discharge_flag_{self.classSuffix}",
-        )  # 放能
+        self.build_flags(['charge','discharge'])
+        # self.charge_flags: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(  # is charging?
+        #     [i for i in range(0, num_hour)],
+        #     name=f"charge_flag_{self.classSuffix}",
+        # )  # 充能
+        # """
+        # 模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于充能状态。
+        # """
+        # self.discharge_flags: List[BinaryVarType] = self.model.binary_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name=f"discharge_flag_{self.classSuffix}",
+        # )  # 放能
         """
         模型中的二元变量列表,长度为`num_hour`,表示每小时储能装置是否处于放能状态。
         """
