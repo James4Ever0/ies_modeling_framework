@@ -34,6 +34,10 @@ from config import (
 
 ############################UTILS############################
 
+class symbols:
+    greater_equal="greater_equal"
+    equal="equal"
+
 
 class Linear_absolute(object):  # absolute?
     """

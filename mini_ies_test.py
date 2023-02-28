@@ -13,7 +13,7 @@ os.environ["PATH"] = (
 
 # print(os.environ['PATH'])
 
-from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic
+from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic, 
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour, day_node, epsilon
 
@@ -96,10 +96,6 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 # TOTAL: 2 Nodes
 
 # no checking!
-
-class symbols:
-    greater_equal="greater_equal"
-    equal="equal"
 
 
 Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
