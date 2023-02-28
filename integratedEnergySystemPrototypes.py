@@ -5550,8 +5550,8 @@ class GridNet(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        electricity_price_from: Union[np.ndarray, List],
-        electricity_price_to: float,
+        electricity_price_output: Union[np.ndarray, List],
+        electricity_price_input: float,
         device_name: str = "grid_net",
         device_count_min: int = 0,
     ):
@@ -5563,8 +5563,8 @@ class GridNet(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 电网最大设备量
             device_price (float): 设备单价
-            electricity_price_from (Union[np.ndarray, List]): 电力使用价格
-            electricity_price_to (float): 电力生产报酬
+            electricity_price_output (Union[np.ndarray, List]): 电力使用价格
+            electricity_price_input (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
         # self.device_name = device_name
@@ -5589,8 +5589,8 @@ class GridNet(IntegratedEnergySystem):
         """
 
         # self.device_count_max = device_count_max
-        self.electricity_price_from = electricity_price_from
-        self.electricity_price_to = electricity_price_to
+        self.electricity_price_output = electricity_price_output
+        self.electricity_price_input = electricity_price_input
 
         # self.device_price = device_price
 
@@ -5684,20 +5684,23 @@ class GridNet(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             powerPeak_pre (float): 预估用电峰值
         """
-        self.hourRange = range(0, self.num_hour)
+        # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
-        # make sure this time we have power_input as positive number.
+        # TODO: make sure this time we have power_input as positive number.
         linearization.positive_negitive_constraints_register(
             self.num_hour,
             self.model,
             self.electricity_consumed,
-            self.power_output,
-            self.elementwise_multiply(self.power_input, -1),
+            self.power_of_outputs[self.output_type],
+            self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
         )
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(self.device_count <= self.device_count_max)
+        
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
+        
+        
         self.model.add_constraints(
-            self.power_output[h] <= self.device_count for h in self.hourRange
+            self.power_of_outputs[self.output_type][h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
             self.power_of_inputs[self.input_type][h] <= self.device_count
@@ -5706,7 +5709,7 @@ class GridNet(IntegratedEnergySystem):
 
         # these are always true, not constraints.
         self.model.add_constraints(
-            self.power_output[h] <= self.powerPeak for h in self.hourRange
+            self.power_of_outputs[self.output_type][h] <= self.powerPeak for h in self.hourRange
         )
         self.model.add_constraints(
             self.power_of_inputs[self.input_type][h] <= self.powerPeak
@@ -5731,15 +5734,18 @@ class GridNet(IntegratedEnergySystem):
             )
             * 12
         )
+        
+        self.electricity_cost = self.sum_within_range(self.elementwise_subtract(*[self.elementwise_multiply(power, price) for power,price in [(self.power_of_outputs[self.output_type][h] * self.electricity_price_output[h]
+        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_input),()]]))
 
-        self.electricity_cost = (
-            self.model.sum(
-                self.power_output[h] * self.electricity_price_from[h]
-                + self.power_input[h] * self.electricity_price_to
-                for h in self.hourRange
-            )
-            + self.baseCost
-        )
+        # self.electricity_cost = (
+        #     self.model.sum(
+        #         self.power_of_outputs[self.output_type][h] * self.electricity_price_output[h]
+        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_input
+        #         for h in self.hourRange
+        #     )
+        #     + self.baseCost
+        # )
         self.model.add_constraint(
             self.annualized
             == self.device_count * self.device_price / 15
