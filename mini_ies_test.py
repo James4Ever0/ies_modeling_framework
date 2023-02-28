@@ -82,8 +82,13 @@ from integratedEnergySystemPrototypes import EnengySystemUtils
 
 util = EnengySystemUtils(model1,num_hour0)
 
-from functools import reduce
-util.equations(power_load,reduce(util.elementwise_add,[batteryEnergyStorageSystem.power_of_inputs]))
+
+# use the input/output way
+from typing import Union,Literal
+class Node:
+    def __init__(self,node_type:Union[Literal['equal','greater_equal']]):
+        
+
 # model1.add_constraints(
 #     power_load[h]
 #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]
