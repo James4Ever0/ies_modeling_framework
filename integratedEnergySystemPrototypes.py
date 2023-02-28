@@ -32,6 +32,356 @@ from config import (
 
 # we define some type of "special" type that can convert from and into any energy form, called "energy".
 
+############################UTILS############################
+
+class Linear_absolute(object):  # absolute?
+    """
+    带绝对值的线性约束类
+    """
+
+    # bigNumber = 1e10
+    index = 0
+
+    def __init__(
+        self, model: Model, x: List[VarType], hourRange: Iterable
+    ):  # hourRange?
+        """
+        初始化带绝对值的线性约束类
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`hourRange`内逐元素相减结果约束得到的变量组`x`
+            hourRange (Iterable): 整数区间
+        """
+        Linearization.index += 1  # 要增加变量
+        self.model = model
+        self.b_positive: List[BinaryVarType] = self.model.binary_var_list(
+            [i for i in hourRange],
+            name="b_positive_absolute{0}".format(self.classSuffix),
+        )
+        """
+        一个二进制变量列表,长度为`len(hourRange)`
+        
+        对于`b_positive`和`b_negitive`,有:
+        `b_positive[i] == 1`时,`b_negitive[i] == 0`
+        `b_positive[i] == 0`时,`b_negitive[i] == 1`
+        
+        对于`b_positive`和`x_positive`,有:
+        `b_positive[i]` == 1`时,`x_positive[i] >= 0`
+        `b_positive[i]` == 0`时,`x_positive[i] == 0`
+        """
+        self.b_negitive: List[BinaryVarType] = self.model.binary_var_list(
+            [i for i in hourRange],
+            name="b_negitive_absolute{0}".format(self.classSuffix),
+        )
+        """
+        一个二进制变量列表,长度为`len(hourRange)`
+        
+        对于`b_negitive`和`x_negitive`,有:
+        `b_negitive[i]` == 1`时,`x_negitive[i] >= 0`
+        `b_negitive[i]` == 0`时,`x_negitive[i] == 0`
+        """
+        self.x_positive: List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in hourRange],
+            name="x_positive_absolute{0}".format(self.classSuffix),
+        )
+        """
+        一个实数变量列表,长度为`len(hourRange)`
+        
+        对于区间`hourRange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
+        """
+        self.x_negitive: List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in hourRange],
+            name="x_negitive_absolute{0}".format(self.classSuffix),
+        )
+        """
+        一个实数变量列表,长度为`len(hourRange)`
+        
+        对于区间`hourRange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
+        """
+        self.absolute_x: List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in hourRange], name="absolute_x{0}".format(self.classSuffix)
+        )
+        """
+        一个实数变量列表,长度为`len(hourRange)`
+        
+        对于`b_positive`、`absolute_x`、`x_positive`、`x_negitive`有:
+        `b_positive[i] == 1`时,`absolute_x[i] == x_positive[i]`
+        `b_positive[i] == 0`时,`absolute_x[i] == x_negitive[i]`
+        """
+        self.hourRange = hourRange
+        self.x = x
+
+    def absolute_add_constraints(self, hourRange: Iterable):
+        """
+        对于区间`hourRange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
+
+        1. `bigNumber >= x_negitive[i] >= 0`,`x_positive[i] == 0`,此时`b_positive[i] == 0`,`b_negitive[i] == 1`,`x[i] == -x_negitive[i]`,`absolute_x[i] == x_negitive[i]`
+        2. `bigNumber >= x_positive[i] >= 0`,`x_negative[i] == 0`,此时`b_positive[i] == 1`,`b_negitive[i] == 0`,`x[i] == x_positive[i]`,`absolute_x[i] == x_positive[i]`
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+        """
+        self.model.add_constraints(
+            self.b_positive[i] + self.b_negitive[i] == 1 for i in hourRange
+        )
+        # b_positive[i]==1时,b_negitive[i]==0
+        # b_positive[i]==0时,b_negitive[i]==1
+        self.model.add_constraints(
+            self.x_positive[i] >= 0 for i in hourRange
+        )  # x_positive[i]是非负数
+        self.model.add_constraints(
+            self.x_positive[i] <= bigNumber * self.b_positive[i] for i in hourRange
+        )
+        # 当b_positive[i]==1时,x_positive[i]>=0
+        # 当b_positive[i]==0时,x_positive[i]==0
+
+        self.model.add_constraints(self.x_negitive[i] >= 0 for i in hourRange)
+        # x_negitive[i]是非负数
+        self.model.add_constraints(
+            self.x_negitive[i] <= bigNumber * self.b_negitive[i] for i in hourRange
+        )
+
+        # 当b_negitive[i]==1时,x_negitive[i]>=0
+        # 当b_negitive[i]==0时,x_negitive[i]==0
+        self.model.add_constraints(
+            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in hourRange
+        )
+        # x[i] == x_positive[i] - x_negitive[i]
+        # 也就是说,如果b_positive[i]==1,x[i] == x_positive[i]
+        # 如果b_positive[i]==0,x[i] == -x_negitive[i]
+        self.model.add_constraints(
+            self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
+            for i in hourRange
+        )
+
+        # absolute_x[i] == x_positive[i] + x_negitive[i]
+        # 也就是说,如果b_positive[i]==1,absolute_x[i] == x_positive[i]
+        # 如果b_positive[i]==0,absolute_x[i] == x_negitive[i]
+
+
+
+
+class Linearization(object):
+    """
+    线性化约束类
+    """
+
+    # bigNumber = 1e10
+    """
+    一个非常大的数,默认为10的10次方
+    """
+    index: int = 0
+    """
+    线性约束条件编号
+    """
+
+    # bin?
+    # never used.
+
+    def product_var_bin(
+        self, model: Model, var_bin: VarType, var: VarType, bin: BinaryVarType
+    ):
+        """
+        通过二进制变量`bin`的控制,当`bin == 1`,则`var_bin == var`；当`bin == 0`,则`var_bin == 0`
+
+        其中`var`是一个大于0的实数
+
+        每添加一个约束组,编号加一
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin (Var): 受控变量
+            var (Var): 原变量
+            bin (BinaryVarType): 控制变量
+        """
+        Linearization.index += 1
+        model.add_constraint(var_bin >= 0)
+        # var_bin 大于等于 0
+        model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
+        # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber)
+        # 如果bin == 1, var_bin 大于等于 var
+        model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
+        model.add_constraint(var_bin <= bin * bigNumber)
+        # 如果bin == 0, var_bin 小于等于 0
+        # 如果bin == 1, var_bin 小于等于 1 * bigNumber
+
+    def product_var_bins(
+        self,
+        model: Model,
+        var_bin: List[VarType],
+        var: List[VarType],
+        bin0: List[BinaryVarType],
+        hourRange: Iterable,
+    ):  # bins?
+        """
+        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
+
+        其中`var[i]`是一个大于0的实数
+
+        每添加一个约束组,编号加一
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin (List[VarType]): 受控变量组
+            var (List[VarType]): 原变量组
+            bin (List[BinaryVarType]): 控制变量组
+            self.hourRange (Iterable): 整数区间
+        """
+        Linearization.index += 1
+        model.add_constraints(var_bin[i] >= 0 for i in hourRange)
+        model.add_constraints(
+            var_bin[i] >= var[i] - (1 - bin0[i]) * bigNumber for i in hourRange
+        )
+        model.add_constraints(var_bin[i] <= var[i] for i in hourRange)
+        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRange)
+
+    def product_var_back_bins(
+        self,
+        model: Model,
+        var_bin: List[VarType],
+        var: List[VarType],
+        bin0: List[BinaryVarType],
+        hourRangeback: Iterable,
+    ):  # back?
+        """
+        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
+
+        其中`var[i - 1]`是一个大于0的实数
+
+        每添加一个约束组,编号加一
+
+        Args:
+            model (docplex.mp.model.Model): 求解模型实例
+            var_bin (List[VarType]): 受控变量组
+            var (List[VarType]): 原变量组
+            bin (List[BinaryVarType]): 控制变量组
+            self.hourRange (Iterable): 整数区间
+        """
+        Linearization.index += 1
+        model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
+        model.add_constraints(
+            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber for i in hourRangeback
+        )
+        model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
+        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback)
+
+    def max_zeros(  # deprecated?
+        self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
+    ):  # max?
+        """
+        对于区间`range(0, num_hour)`的每个数`h`,`y[h]`是非负实数,`y_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
+
+        1. `y[h] == 0`,`-bigNumber <= x[h] <= 0`,此时`y_flag[h] == 0`
+        2. `y[h] == x[h]`,此时`y_flag[h] == 1`
+
+        每添加一个约束组,编号加一
+
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x (List[VarType]): 变量组`x`
+            y (List[VarType]): 变量组`y`
+        """
+        Linearization.index += 1
+        y_flag = model.binary_var_list(
+            [i for i in range(0, num_hour)],
+            name="y_flag{0}".format(self.classSuffix),
+        )
+        model.add_constraints(
+            y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
+        )
+        # 当y_flag[h] == 0, y[h] 小于等于 x[h] + bigNumber (此时 -bigNumber <= x[h] )
+        # 当y_flag[h] == 1, y[h] 小于等于 x[h]
+        model.add_constraints(
+            y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
+        )
+        # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber (此时 bigNumber >= x[h] )
+        # 当y_flag[h] == 1, y[h] 大于等于 x[h] (y[h] == x[h])
+        model.add_constraints(y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
+        # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
+        model.add_constraints(x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
+        # 当y_flag[h] == 0, x[h] 小于等于 0 (-bigNumber<=x[h]<=0) 非正数？
+        # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
+        model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
+        # y[h] 是非负数
+
+    def add(
+        self, num_hour: int, model: Model, x1: List[VarType], x2: List[VarType]
+    ) -> List[VarType]:
+        """
+        对于区间`range(0, num_hour)`的每个数`h`,将两个变量`x1[h]`,`x2[h]`组合为一个变量`add_y[h]`
+
+        每添加一个约束组,编号加一
+
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x1 (List[VarType]): 变量组`x1`
+            x2 (List[VarType]): 变量组`x2`
+
+        Return:
+            add_y (List[VarType]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
+        """
+        # looks like two lists.
+        Linearization.index += 1
+        add_y = model.continuous_var_list(
+            [i for i in range(0, num_hour)], name="add_y{0}".format(self.classSuffix)
+        )
+        model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
+        return add_y
+
+    def positive_negitive_constraints_register(
+        self,
+        num_hour: int,
+        model: Model,
+        x: List[VarType],
+        xpositive: List[VarType],
+        xnegitive: List[VarType],
+    ):
+        """
+        对于区间`range(0, num_hour)`的每个数`h`,`x[h] == xpositive[h] - xnegitive[h]`,`positive_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
+
+        1. `xpositive[h] == 0`,`0 <= xnegitive[h] <= bigNumber`,此时`positive_flag[h] == 0`,`x[h] == -xnegitive[h]`
+        2. `0 <= xpositive[h] <= bigNumber`,`xnegitive[h] == 0`,此时`positive_flag[h] == 1`,`x[h] == xpositive[h]`
+
+        每添加一个约束组,编号加一
+
+        Args:
+            num_hour (int): 一天小时数
+            model (docplex.mp.model.Model): 求解模型实例
+            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减结果约束得到的变量组`x`
+            xpositive (List[VarType]): 变量组`xpositive`
+            xnegitive (List[VarType]): 变量组`xnegitive`
+        """
+        Linearization.index += 1
+        # bigNumber = 1e10
+        positive_flag = model.binary_var_list(
+            [i for i in range(0, num_hour)],
+            name="Linearization_positive_flag{0}".format(self.classSuffix),
+        )
+        model.add_constraints(
+            x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
+        )
+        # 两变量组在区间内逐元素相减 存在传入的元素组x中
+        model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
+        model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
+        # 两变量组在区间内元素都是非负数
+        model.add_constraints(
+            xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
+        )
+        # 当positive_flag[h] == 0,xpositive[h] <= 0 (xpositive[h] == 0)
+        # 当positive_flag[h] == 1,xpositive[h] <= bigNumber
+        model.add_constraints(
+            xnegitive[h] <= bigNumber * (1 - positive_flag[h])
+            for h in range(0, num_hour)
+        )
+        # 当positive_flag[h] == 0,xnegitive[h] <= bigNumber
+        # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
+
+
+############################UTILS############################
 
 # another name for IES?
 class IntegratedEnergySystem(object):
@@ -5352,222 +5702,3 @@ class GridNet(IntegratedEnergySystem):
             == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
-
-
-class Linearization(object):
-    """
-    线性化约束类
-    """
-
-    # bigNumber = 1e10
-    """
-    一个非常大的数,默认为10的10次方
-    """
-    index: int = 0
-    """
-    线性约束条件编号
-    """
-
-    # bin?
-    # never used.
-
-    def product_var_bin(
-        self, model: Model, var_bin: VarType, var: VarType, bin: BinaryVarType
-    ):
-        """
-        通过二进制变量`bin`的控制,当`bin == 1`,则`var_bin == var`；当`bin == 0`,则`var_bin == 0`
-
-        其中`var`是一个大于0的实数
-
-        每添加一个约束组,编号加一
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-            var_bin (Var): 受控变量
-            var (Var): 原变量
-            bin (BinaryVarType): 控制变量
-        """
-        Linearization.index += 1
-        model.add_constraint(var_bin >= 0)
-        # var_bin 大于等于 0
-        model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
-        # 如果bin == 0, var_bin 大于等于 (var - 1 * bigNumber)
-        # 如果bin == 1, var_bin 大于等于 var
-        model.add_constraint(var_bin <= var)  # var_bin 小于等于 var
-        model.add_constraint(var_bin <= bin * bigNumber)
-        # 如果bin == 0, var_bin 小于等于 0
-        # 如果bin == 1, var_bin 小于等于 1 * bigNumber
-
-    def product_var_bins(
-        self,
-        model: Model,
-        var_bin: List[VarType],
-        var: List[VarType],
-        bin0: List[BinaryVarType],
-        hourRange: Iterable,
-    ):  # bins?
-        """
-        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i]`；当`bin[i] == 0`,则`var_bin[i] == 0`
-
-        其中`var[i]`是一个大于0的实数
-
-        每添加一个约束组,编号加一
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-            var_bin (List[VarType]): 受控变量组
-            var (List[VarType]): 原变量组
-            bin (List[BinaryVarType]): 控制变量组
-            self.hourRange (Iterable): 整数区间
-        """
-        Linearization.index += 1
-        model.add_constraints(var_bin[i] >= 0 for i in hourRange)
-        model.add_constraints(
-            var_bin[i] >= var[i] - (1 - bin0[i]) * bigNumber for i in hourRange
-        )
-        model.add_constraints(var_bin[i] <= var[i] for i in hourRange)
-        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRange)
-
-    def product_var_back_bins(
-        self,
-        model: Model,
-        var_bin: List[VarType],
-        var: List[VarType],
-        bin0: List[BinaryVarType],
-        hourRangeback: Iterable,
-    ):  # back?
-        """
-        对于区间`self.hourRange`的每个数`i`,通过二进制变量`bin[i]`的控制,当`bin[i] == 1`,则`var_bin[i] == var[i - 1]`；当`bin[i] == 0`,则`var_bin[i - 1] == 0`
-
-        其中`var[i - 1]`是一个大于0的实数
-
-        每添加一个约束组,编号加一
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-            var_bin (List[VarType]): 受控变量组
-            var (List[VarType]): 原变量组
-            bin (List[BinaryVarType]): 控制变量组
-            self.hourRange (Iterable): 整数区间
-        """
-        Linearization.index += 1
-        model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
-        model.add_constraints(
-            var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber for i in hourRangeback
-        )
-        model.add_constraints(var_bin[i] <= var[i - 1] for i in hourRangeback)
-        model.add_constraints(var_bin[i] <= bin0[i] * bigNumber for i in hourRangeback)
-
-    def max_zeros(  # deprecated?
-        self, num_hour: int, model: Model, x: List[VarType], y: List[VarType]
-    ):  # max?
-        """
-        对于区间`range(0, num_hour)`的每个数`h`,`y[h]`是非负实数,`y_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
-
-        1. `y[h] == 0`,`-bigNumber <= x[h] <= 0`,此时`y_flag[h] == 0`
-        2. `y[h] == x[h]`,此时`y_flag[h] == 1`
-
-        每添加一个约束组,编号加一
-
-        Args:
-            num_hour (int): 一天小时数
-            model (docplex.mp.model.Model): 求解模型实例
-            x (List[VarType]): 变量组`x`
-            y (List[VarType]): 变量组`y`
-        """
-        Linearization.index += 1
-        y_flag = model.binary_var_list(
-            [i for i in range(0, num_hour)],
-            name="y_flag{0}".format(self.classSuffix),
-        )
-        model.add_constraints(
-            y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
-        )
-        # 当y_flag[h] == 0, y[h] 小于等于 x[h] + bigNumber (此时 -bigNumber <= x[h] )
-        # 当y_flag[h] == 1, y[h] 小于等于 x[h]
-        model.add_constraints(
-            y[h] >= x[h] - (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
-        )
-        # 当y_flag[h] == 0, y[h] 大于等于 x[h] - bigNumber (此时 bigNumber >= x[h] )
-        # 当y_flag[h] == 1, y[h] 大于等于 x[h] (y[h] == x[h])
-        model.add_constraints(y[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
-        # 当y_flag[h] == 0, y[h] 小于等于 0 (此时y[h] == 0)
-        # 当y_flag[h] == 1, y[h] 小于等于 bigNumber
-        model.add_constraints(x[h] <= y_flag[h] * bigNumber for h in range(0, num_hour))
-        # 当y_flag[h] == 0, x[h] 小于等于 0 (-bigNumber<=x[h]<=0) 非正数？
-        # 当y_flag[h] == 1, x[h] 小于等于 bigNumber
-        model.add_constraints(y[h] >= 0 for h in range(0, num_hour))
-        # y[h] 是非负数
-
-    def add(
-        self, num_hour: int, model: Model, x1: List[VarType], x2: List[VarType]
-    ) -> List[VarType]:
-        """
-        对于区间`range(0, num_hour)`的每个数`h`,将两个变量`x1[h]`,`x2[h]`组合为一个变量`add_y[h]`
-
-        每添加一个约束组,编号加一
-
-        Args:
-            num_hour (int): 一天小时数
-            model (docplex.mp.model.Model): 求解模型实例
-            x1 (List[VarType]): 变量组`x1`
-            x2 (List[VarType]): 变量组`x2`
-
-        Return:
-            add_y (List[VarType]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
-        """
-        # looks like two lists.
-        Linearization.index += 1
-        add_y = model.continuous_var_list(
-            [i for i in range(0, num_hour)], name="add_y{0}".format(self.classSuffix)
-        )
-        model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
-        return add_y
-
-    def positive_negitive_constraints_register(
-        self,
-        num_hour: int,
-        model: Model,
-        x: List[VarType],
-        xpositive: List[VarType],
-        xnegitive: List[VarType],
-    ):
-        """
-        对于区间`range(0, num_hour)`的每个数`h`,`x[h] == xpositive[h] - xnegitive[h]`,`positive_flag[h]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
-
-        1. `xpositive[h] == 0`,`0 <= xnegitive[h] <= bigNumber`,此时`positive_flag[h] == 0`,`x[h] == -xnegitive[h]`
-        2. `0 <= xpositive[h] <= bigNumber`,`xnegitive[h] == 0`,此时`positive_flag[h] == 1`,`x[h] == xpositive[h]`
-
-        每添加一个约束组,编号加一
-
-        Args:
-            num_hour (int): 一天小时数
-            model (docplex.mp.model.Model): 求解模型实例
-            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`range(0, num_hour)`内逐元素相减结果约束得到的变量组`x`
-            xpositive (List[VarType]): 变量组`xpositive`
-            xnegitive (List[VarType]): 变量组`xnegitive`
-        """
-        Linearization.index += 1
-        # bigNumber = 1e10
-        positive_flag = model.binary_var_list(
-            [i for i in range(0, num_hour)],
-            name="Linearization_positive_flag{0}".format(self.classSuffix),
-        )
-        model.add_constraints(
-            x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)
-        )
-        # 两变量组在区间内逐元素相减 存在传入的元素组x中
-        model.add_constraints(xpositive[h] >= 0 for h in range(0, num_hour))
-        model.add_constraints(xnegitive[h] >= 0 for h in range(0, num_hour))
-        # 两变量组在区间内元素都是非负数
-        model.add_constraints(
-            xpositive[h] <= bigNumber * positive_flag[h] for h in range(0, num_hour)
-        )
-        # 当positive_flag[h] == 0,xpositive[h] <= 0 (xpositive[h] == 0)
-        # 当positive_flag[h] == 1,xpositive[h] <= bigNumber
-        model.add_constraints(
-            xnegitive[h] <= bigNumber * (1 - positive_flag[h])
-            for h in range(0, num_hour)
-        )
-        # 当positive_flag[h] == 0,xnegitive[h] <= bigNumber
-        # 当positive_flag[h] == 1,xnegitive[h] <= 0 (xnegitive[h] == 0)
