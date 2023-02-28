@@ -857,7 +857,7 @@ class DieselEngine(IntegratedEnergySystem):
         model: Model,
         device_count_max: int,
         device_price: int,
-        run_price: int,
+        running_price: int,
         device_name: str = "dieselEngine",
         device_count_min: int = 0,
     ):
@@ -867,7 +867,7 @@ class DieselEngine(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 柴油发电机设备机组最大装机量
             device_price (float): 设备单价
-            run_price (float): 运维价格
+            running_price (float): 运维价格
             device_name (str): 柴油发电机机组名称,默认为"DieselEngine"
         """
         # self.device_name = device_name
@@ -910,7 +910,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         # self.device_count_max = device_count_max
         # self.device_price = device_price
-        self.run_price = run_price
+        self.running_price = running_price
         self.electricity_output_sum = self.sum_within_range(
             self.power_of_outputs[self.output_type], self.hourRange
         )
@@ -954,7 +954,10 @@ class DieselEngine(IntegratedEnergySystem):
         self.equation(
             self.annualized,  # 年运行成本?
             self.device_count * self.device_price / 15
-            + self.electricity_output_sum * self.run_price * (365 * 24) / self.num_hour,
+            + self.electricity_output_sum
+            * self.running_price
+            * (365 * 24)
+            / self.num_hour,
         )
 
     def total_cost(self, solution: SolveSolution) -> float:
@@ -5405,11 +5408,11 @@ class CitySupply(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        run_price: Union[np.ndarray, List],
+        running_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "city_supply",
         device_count_min: int = 0,
-        output_type:Union[Literal["hot_water"],Literal["steam"]]='hot_water'
+        output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
         创建一个市政能源类
@@ -5419,7 +5422,7 @@ class CitySupply(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
-            run_price (Union[np.ndarray, List]): 每小时运维价格
+            running_price (Union[np.ndarray, List]): 每小时运维价格
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
         """
@@ -5442,33 +5445,33 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源设备装机量 非负实数变量
         """
-        # self.heat_citySupplied: List[
+        self.build_power_of_outputs([self.output_type])
+        # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="heat_citySupplied{0}".format(self.classSuffix),
+        #     name="power_of_outputs[self.output_type]{0}".format(self.classSuffix),
         # )
         """
         每小时市政能源热量实际消耗 实数变量列表
         """
-        
-        # input?
-        self.heat_citySupplied_from: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+
+        # input? this is how they count for price
+        self.heat_consumed: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="heat_citySupplied_from{0}".format(self.classSuffix),
+            name="heat_consumed_{0}".format(self.classSuffix),
         )
         """
         每小时市政能源热量输入 实数变量列表
         """
-        self.device_count_max = device_count_max
-        self.run_price = run_price
-        self.device_price = device_price
+        # self.device_count_max = device_count_max
+        self.running_price = running_price
+        # self.device_price = device_price
+        self.output_type = output_type
 
         self.efficiency = efficiency
-        self.citySupplied_cost: ContinuousVarType = self.model.continuous_var(
-            name="citySupplied_cost{0}".format(self.classSuffix)
+        self.heat_cost: ContinuousVarType = self.model.continuous_var(
+            name="heat_cost_{0}".format(self.classSuffix)
         )
         """
         市政能源消耗总费用 实数变量
@@ -5494,27 +5497,32 @@ class CitySupply(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(self.device_count <= self.device_count_max)
+        # self.hourRange = range(0, self.num_hour)
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count <= self.device_count_max)
         self.model.add_constraints(
-            self.heat_citySupplied[h] >= 0 for h in self.hourRange
+            self.power_of_outputs[self.output_type][h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.heat_citySupplied[h] <= self.device_count for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.heat_citySupplied[h]
-            == self.heat_citySupplied_from[h] / self.efficiency
+            self.power_of_outputs[self.output_type][h] <= self.device_count
             for h in self.hourRange
         )
-        self.citySupplied_cost = self.model.sum(
-            self.heat_citySupplied_from[h] * self.run_price[h] for h in self.hourRange
+
+        self.model.add_constraints(
+            self.power_of_outputs[self.output_type][h]
+            == self.heat_consumed[h] / self.efficiency
+            for h in self.hourRange
         )
+
+        self.heat_cost = self.sum_within_range(self.heat_consumed, self.running_price)
+        # self.heat_cost = self.model.sum(
+        #     self.heat_consumed[h] * self.running_price[h] for h in self.hourRange
+        # )
+
         self.model.add_constraint(
             self.annualized
             == self.device_count * self.device_price / 15
-            + self.citySupplied_cost * (365 * 24) / self.num_hour
+            + self.heat_cost * (365 * 24) / self.num_hour
         )
 
 
