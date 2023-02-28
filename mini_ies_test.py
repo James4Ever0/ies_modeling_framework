@@ -81,11 +81,25 @@ batteryEnergyStorageSystem.constraints_register(  # using mode 1?
 from integratedEnergySystemPrototypes import EnergyFlowNode
 
 # util = EnengySystemUtils(model, num_hour)
-# | d\dv | PV | BESS | GRID | LOAD |
+#
+# | r\dv | PV | BESS | GRID | LOAD |
 # |------|----|------|------|------|
 # | recv |    |  x   |   x  |  x   |
 # | send | x  |  x   |   x  |      |
 #
+
+############## HOW WE CONNECT THIS ##############
+#
+# PV - [NODE1] -> BESS -> - [NODE2] - LOAD
+#              \_ GRID _/
+#
+# TOTAL: 2 Nodes
+
+Node1 = EnergyFlowNode(model,num_hour,"greater_equal")
+Node2 = EnergyFlowNode(model,num_hour,"greater_equal")
+
+Node1.add_input()
+
 # model.add_constraints(
 #     power_load[h]
 #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]
