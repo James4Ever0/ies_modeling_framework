@@ -5566,7 +5566,7 @@ class GridNet(IntegratedEnergySystem):
         device_count_max: float,
         device_price: float,
         electricity_price: Union[np.ndarray, List],
-        electricity_price_reward: float,
+        electricity_price_upload: float,
         device_name: str = "grid_net",
         device_count_min: int = 0,
     ):
@@ -5579,7 +5579,7 @@ class GridNet(IntegratedEnergySystem):
             device_count_max (float): 电网最大设备量
             device_price (float): 设备单价
             electricity_price (Union[np.ndarray, List]): 电力使用价格
-            electricity_price_reward (float): 电力生产报酬
+            electricity_price_upload (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
         # self.device_name = device_name
@@ -5605,7 +5605,7 @@ class GridNet(IntegratedEnergySystem):
 
         # self.device_count_max = device_count_max
         self.electricity_price = electricity_price
-        self.electricity_price_reward = electricity_price_reward
+        self.electricity_price_upload = electricity_price_upload
 
         # self.device_price = device_price
 
@@ -5636,6 +5636,9 @@ class GridNet(IntegratedEnergySystem):
         """
         self.build_power_of_inputs([self.input_type])
         self.build_power_of_outputs([self.output_type])
+        
+        # when input/upload is not zero, output is zero. download is zero.
+        # when input/upload is zero, output is not zero, output equals to download.
 
         # self.power_output = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
@@ -5709,13 +5712,14 @@ class GridNet(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
-        linearization.positive_negitive_constraints_register(
-            self.num_hour,
-            self.model,
-            self.power_of_outputs[self.output_type],
-            self.electricity_consumed,
-            self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
-        )
+        linearization.max_zeros
+        # linearization.positive_negitive_constraints_register(
+        #     self.num_hour,
+        #     self.model,
+        #     self.power_of_outputs[self.output_type],
+        #     self.electricity_consumed,
+        #     self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
+        # )
 
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
@@ -5778,12 +5782,12 @@ class GridNet(IntegratedEnergySystem):
                     self.elementwise_multiply(power, price)
                     for power, price in [
                         (
-                            self.electricity_consumed,
+                            self.electricity_download,
                             self.electricity_price,
                         ),
                         (
                             self.power_of_inputs[self.input_type],
-                            self.electricity_price_reward,
+                            self.electricity_price_upload,
                         ),
                     ]
                 ]
@@ -5793,7 +5797,7 @@ class GridNet(IntegratedEnergySystem):
         # self.electricity_cost = (
         #     self.model.sum(
         #         self.power_of_outputs[self.output_type][h] * self.electricity_price[h]
-        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_reward
+        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_upload
         #         for h in self.hourRange
         #     )
         #     + self.baseCost
