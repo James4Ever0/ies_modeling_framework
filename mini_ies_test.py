@@ -6,7 +6,6 @@
 # using enviorment: `conda activate rosetta`
 
 import os
-from functools import reduce
 
 os.environ["PATH"] = (
     "/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:" + os.environ["PATH"]
@@ -29,7 +28,7 @@ power_load = load.get_power_load(num_hour)
 model = Model(name=simulation_name)
 
 resource = ResourceGet()
-electricity_price0 = resource.get_electricity_price(num_hour)
+electricity_price = resource.get_electricity_price(num_hour)
 intensityOfIllumination = (
     resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 100
 )
@@ -52,7 +51,7 @@ gridNet = GridNet(
     model,
     gridNet_device_max=200000,
     device_price=0,
-    electricity_price_from=electricity_price0,
+    electricity_price_from=electricity_price,
     electricity_price_to=0.35,
 )
 gridNet.constraints_register(model, powerPeak_predicted=2000)
@@ -79,13 +78,14 @@ batteryEnergyStorageSystem.constraints_register(  # using mode 1?
 # define energy balance restrictions
 
 
-from integratedEnergySystemPrototypes import EnengySystemUtils
+from integratedEnergySystemPrototypes import EnergyFlowNode
 
-util = EnengySystemUtils(model, num_hour)
-
-
-
-
+# util = EnengySystemUtils(model, num_hour)
+# | d\dv | PV | BESS | GRID | LOAD |
+# |------|----|------|------|------|
+# | recv |    |  x   |   x  |  x   |
+# | send | x  |  x   |   x  |      |
+#
 # model.add_constraints(
 #     power_load[h]
 #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]

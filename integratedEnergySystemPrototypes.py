@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Literal
 from typing import Iterable, Union
 import numpy as np
 from docplex.mp.model import Model
