@@ -5632,7 +5632,7 @@ class GridNet(IntegratedEnergySystem):
             name="electricity_consumed_{0}".format(self.classSuffix),
         )  # power consumed?
         """
-        电网逐小时净用电量 长度为`num_hour`的实数列表 大于零时电网耗电 小于零时电网发电
+        电网逐小时下载电量 长度为`num_hour`的实数列表
         """
         self.build_power_of_inputs([self.input_type])
         self.build_power_of_outputs([self.output_type])
@@ -5642,14 +5642,14 @@ class GridNet(IntegratedEnergySystem):
         #     name="power_output_{0}".format(self.classSuffix),
         # )
         # """
-        # 电网逐小时用电量 长度为`num_hour`的非负实数列表
+        # 电网逐小时输出电量 长度为`num_hour`的非负实数列表
         # """
         # self.power_input = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="power_input_{0}".format(self.classSuffix),
         # )
         """
-        电网逐小时发电量 长度为`num_hour`的非负实数列表
+        电网逐小时输入电量 长度为`num_hour`的非负实数列表
         """
         self.powerPeak = self.model.continuous_var(
             name="powerPeak_{0}".format(self.classSuffix)
@@ -5663,7 +5663,7 @@ class GridNet(IntegratedEnergySystem):
         """
         电网基础费用 实数
         """
-        self.directions = ["input", "output"]
+        self.directions = ["input", "consumed"]
         for direction in self.directions:
             self.__dict__[f"power_{direction}_max"] = self.model.continuous_var(
                 name=f"power_{direction}_max_{self.classSuffix}"
@@ -5771,7 +5771,7 @@ class GridNet(IntegratedEnergySystem):
                     self.elementwise_multiply(power, price)
                     for power, price in [
                         (
-                            self.power_of_outputs[self.output_type],
+                            self.electricity_consumed,
                             self.electricity_price,
                         ),
                         (
