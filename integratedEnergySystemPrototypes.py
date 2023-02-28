@@ -23,7 +23,7 @@ from config import (
     # node,
     # day_node,
     # debug,
-    num_hour0,
+    num_hour,
     simulationTime,
     bigNumber,
     # intensityOfIllumination,
@@ -4997,11 +4997,12 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     self.device_count
         #     <= self.device_count_max
         # )
-        self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
+        self.add_lower_and_upper_bounds(self.power,0,self.device_count)
+        # self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
         
-        self.model.add_constraints(
-            self.power[h] <= self.device_count for h in self.hourRange
-        )  # 与天气相关
+        # self.model.add_constraints(
+        #     self.power[h] <= self.device_count for h in self.hourRange
+        # )  # 与天气相关
 
         self.equations(
             self.power_of_outputs[self.output_type],
@@ -5013,11 +5014,11 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # troughPhotoThermal系统产生的highTemperature
 
+        self.add_lower_bounds(self.power_of_outputs[self.output_type],0)
         # self.model.add_constraints(
         #     0 <= self.power_of_outputs[self.output_type][h] for h in self.hourRange
         # )  # 约束能量不能倒流
         
-        self.
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(self.power, self.electricity_price)
@@ -5038,133 +5039,12 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         )
 
 
-class Linear_absolute(object):  # absolute?
-    """
-    带绝对值的线性约束类
-    """
-
-    # bigNumber = 1e10
-    index = 0
-
-    def __init__(
-        self, model: Model, x: List[VarType], hourRange: Iterable
-    ):  # hourRange?
-        """
-        初始化带绝对值的线性约束类
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-            x (List[VarType]): 存放`xpositive`和`xnegitive`在区间`hourRange`内逐元素相减结果约束得到的变量组`x`
-            hourRange (Iterable): 整数区间
-        """
-        Linearization.index += 1  # 要增加变量
-        self.model = model
-        self.b_positive: List[BinaryVarType] = self.model.binary_var_list(
-            [i for i in hourRange],
-            name="b_positive_absolute{0}".format(self.classSuffix),
-        )
-        """
-        一个二进制变量列表,长度为`len(hourRange)`
-        
-        对于`b_positive`和`b_negitive`,有:
-        `b_positive[i] == 1`时,`b_negitive[i] == 0`
-        `b_positive[i] == 0`时,`b_negitive[i] == 1`
-        
-        对于`b_positive`和`x_positive`,有:
-        `b_positive[i]` == 1`时,`x_positive[i] >= 0`
-        `b_positive[i]` == 0`时,`x_positive[i] == 0`
-        """
-        self.b_negitive: List[BinaryVarType] = self.model.binary_var_list(
-            [i for i in hourRange],
-            name="b_negitive_absolute{0}".format(self.classSuffix),
-        )
-        """
-        一个二进制变量列表,长度为`len(hourRange)`
-        
-        对于`b_negitive`和`x_negitive`,有:
-        `b_negitive[i]` == 1`时,`x_negitive[i] >= 0`
-        `b_negitive[i]` == 0`时,`x_negitive[i] == 0`
-        """
-        self.x_positive: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in hourRange],
-            name="x_positive_absolute{0}".format(self.classSuffix),
-        )
-        """
-        一个实数变量列表,长度为`len(hourRange)`
-        
-        对于区间`hourRange`的每个数`i`,`x_positive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
-        """
-        self.x_negitive: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in hourRange],
-            name="x_negitive_absolute{0}".format(self.classSuffix),
-        )
-        """
-        一个实数变量列表,长度为`len(hourRange)`
-        
-        对于区间`hourRange`的每个数`i`,`x_negitive[i]`是非负数,`x_positive[i]`和`x_negitive[i]`中必须有一个为0,另外一个大于0
-        """
-        self.absolute_x: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in hourRange], name="absolute_x{0}".format(self.classSuffix)
-        )
-        """
-        一个实数变量列表,长度为`len(hourRange)`
-        
-        对于`b_positive`、`absolute_x`、`x_positive`、`x_negitive`有:
-        `b_positive[i] == 1`时,`absolute_x[i] == x_positive[i]`
-        `b_positive[i] == 0`时,`absolute_x[i] == x_negitive[i]`
-        """
-        self.hourRange = hourRange
-        self.x = x
-
-    def absolute_add_constraints(self, hourRange: Iterable):
-        """
-        对于区间`hourRange`的每个数`i`,`x_positive[i]`、`x_negitive[i]`是非负实数,`b_positive[i]`、`b_negitive[i]`是不同情况对应的二进制变量,约定以下两种情况有且只有一种出现:
-
-        1. `bigNumber >= x_negitive[i] >= 0`,`x_positive[i] == 0`,此时`b_positive[i] == 0`,`b_negitive[i] == 1`,`x[i] == -x_negitive[i]`,`absolute_x[i] == x_negitive[i]`
-        2. `bigNumber >= x_positive[i] >= 0`,`x_negative[i] == 0`,此时`b_positive[i] == 1`,`b_negitive[i] == 0`,`x[i] == x_positive[i]`,`absolute_x[i] == x_positive[i]`
-
-        Args:
-            model (docplex.mp.model.Model): 求解模型实例
-        """
-        self.model.add_constraints(
-            self.b_positive[i] + self.b_negitive[i] == 1 for i in hourRange
-        )
-        # b_positive[i]==1时,b_negitive[i]==0
-        # b_positive[i]==0时,b_negitive[i]==1
-        self.model.add_constraints(
-            self.x_positive[i] >= 0 for i in hourRange
-        )  # x_positive[i]是非负数
-        self.model.add_constraints(
-            self.x_positive[i] <= bigNumber * self.b_positive[i] for i in hourRange
-        )
-        # 当b_positive[i]==1时,x_positive[i]>=0
-        # 当b_positive[i]==0时,x_positive[i]==0
-
-        self.model.add_constraints(self.x_negitive[i] >= 0 for i in hourRange)
-        # x_negitive[i]是非负数
-        self.model.add_constraints(
-            self.x_negitive[i] <= bigNumber * self.b_negitive[i] for i in hourRange
-        )
-
-        # 当b_negitive[i]==1时,x_negitive[i]>=0
-        # 当b_negitive[i]==0时,x_negitive[i]==0
-        self.model.add_constraints(
-            self.x[i] == self.x_positive[i] - self.x_negitive[i] for i in hourRange
-        )
-        # x[i] == x_positive[i] - x_negitive[i]
-        # 也就是说,如果b_positive[i]==1,x[i] == x_positive[i]
-        # 如果b_positive[i]==0,x[i] == -x_negitive[i]
-        self.model.add_constraints(
-            self.absolute_x[i] == self.x_positive[i] + self.x_negitive[i]
-            for i in hourRange
-        )
-
-        # absolute_x[i] == x_positive[i] + x_negitive[i]
-        # 也就是说,如果b_positive[i]==1,absolute_x[i] == x_positive[i]
-        # 如果b_positive[i]==0,absolute_x[i] == x_negitive[i]
 
 
 # 适用于municipalSteam,municipalHotWater
+
+# both input and output?
+# hot water? steam?
 class CitySupply(IntegratedEnergySystem):
     """市政能源类,适用于市政蒸汽、市政热水"""
 
@@ -5174,7 +5054,7 @@ class CitySupply(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        citySupplied_device_count_max: float,
+        device_count_max: float,
         device_price: float,
         run_price: Union[np.ndarray, List],
         efficiency: float,
@@ -5187,7 +5067,7 @@ class CitySupply(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            citySupplied_device_count_max (float): 市政能源设备机组最大装机量
+            device_count_max (float): 市政能源设备机组最大装机量
             device_price (float): 设备单价
             run_price (Union[np.ndarray, List]): 每小时运维价格
             efficiency (float): 能源转换效率
@@ -5206,9 +5086,9 @@ class CitySupply(IntegratedEnergySystem):
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour  # hours in a day
-        self.citySupplied_device: ContinuousVarType = self.model.continuous_var(
-            name="citySupplied_device{0}".format(self.classSuffix)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count_{0}".format(self.classSuffix)
+        # )
         """
         市政能源设备装机量 非负实数变量
         """
@@ -5230,7 +5110,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         每小时市政能源热量输入 实数变量列表
         """
-        self.citySupplied_device_count_max = citySupplied_device_count_max
+        self.device_count_max = device_count_max
         self.run_price = run_price
         self.device_price = device_price
 
@@ -5263,15 +5143,15 @@ class CitySupply(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.model.add_constraint(self.citySupplied_device >= 0)
+        self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(
-            self.citySupplied_device <= self.citySupplied_device_count_max
+            self.device_count <= self.device_count_max
         )
         self.model.add_constraints(
             self.heat_citySupplied[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.heat_citySupplied[h] <= self.citySupplied_device
+            self.heat_citySupplied[h] <= self.device_count
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -5284,7 +5164,7 @@ class CitySupply(IntegratedEnergySystem):
         )
         self.model.add_constraint(
             self.annualized
-            == self.citySupplied_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.citySupplied_cost * (365 * 24) / self.num_hour
         )
 
@@ -5362,27 +5242,27 @@ class GridNet(IntegratedEnergySystem):
         """
 
         self.total_power = self.model.continuous_var_list(
-            [i for i in range(0, num_hour0)],
+            [i for i in range(0, num_hour)],
             lb=-bigNumber,  # lower bound
             name="total_power_{0}".format(self.classSuffix),
         )
         """
-        电网逐小时净用电量 长度为`num_hour0`的实数列表 大于零时电网耗电 小于零时电网发电
+        电网逐小时净用电量 长度为`num_hour`的实数列表 大于零时电网耗电 小于零时电网发电
         """
 
         self.powerFrom = self.model.continuous_var_list(
-            [i for i in range(0, num_hour0)],
+            [i for i in range(0, num_hour)],
             name="powerFrom{0}".format(self.classSuffix),
         )
         """
-        电网逐小时用电量 长度为`num_hour0`的非负实数列表
+        电网逐小时用电量 长度为`num_hour`的非负实数列表
         """
         self.powerTo = self.model.continuous_var_list(
-            [i for i in range(0, num_hour0)],
+            [i for i in range(0, num_hour)],
             name="powerTo_{0}".format(self.classSuffix),
         )
         """
-        电网逐小时发电量 长度为`num_hour0`的非负实数列表
+        电网逐小时发电量 长度为`num_hour`的非负实数列表
         """
         self.powerPeak = self.model.continuous_var(
             name="powerPeak{0}".format(self.classSuffix)
