@@ -94,9 +94,12 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 #              \_ GRID _/
 #
 # TOTAL: 2 Nodes
+class symbols:
+    greater_equal="greater_equal"
+    equal="equal"
 
-Node1 = EnergyFlowNode(model,num_hour,"greater_equal")
-Node2 = EnergyFlowNode(model,num_hour,"greater_equal")
+Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
+Node2 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 
 Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
 
