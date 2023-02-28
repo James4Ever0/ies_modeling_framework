@@ -449,15 +449,15 @@ class EnengySystemUtils(object):
             constraint_function=self.equation,
         )
 
-    def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
-        self.add_lower_bound(variable, lower_bound)
-        self.add_upper_bound(variable, upper_bound)
+    def add_lower_and_upper_bound(self, variables, lower_bound, upper_bound):
+        self.add_lower_bound(variables, lower_bound)
+        self.add_upper_bound(variables, upper_bound)
 
     def add_lower_and_upper_bounds(
-        self, variable, lower_bounds, upper_bounds, index_range=None
+        self, variables, lower_bounds, upper_bounds, index_range=None
     ):
-        self.add_lower_bounds(variable, lower_bounds, index_range=index_range)
-        self.add_upper_bounds(variable, upper_bounds, index_range=index_range)
+        self.add_lower_bounds(variables, lower_bounds, index_range=index_range)
+        self.add_upper_bounds(variables, upper_bounds, index_range=index_range)
 
         # self.model.add_constraint(self.device_count <= self.device_count_max)  # 最大装机量
         # self.model.add_constraint(self.device_count >= 0)
@@ -1217,6 +1217,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
+        breakpoint()
 
         self.add_lower_and_upper_bounds(
             self.device_count_powerConversionSystem
