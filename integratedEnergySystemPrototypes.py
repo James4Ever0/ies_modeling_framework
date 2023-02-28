@@ -34,6 +34,7 @@ from config import (
 
 ############################UTILS############################
 
+
 class Linear_absolute(object):  # absolute?
     """
     带绝对值的线性约束类
@@ -158,8 +159,6 @@ class Linear_absolute(object):  # absolute?
         # absolute_x[i] == x_positive[i] + x_negitive[i]
         # 也就是说,如果b_positive[i]==1,absolute_x[i] == x_positive[i]
         # 如果b_positive[i]==0,absolute_x[i] == x_negitive[i]
-
-
 
 
 class Linearization(object):
@@ -382,6 +381,7 @@ class Linearization(object):
 
 
 ############################UTILS############################
+
 
 # another name for IES?
 class IntegratedEnergySystem(object):
@@ -1095,7 +1095,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         模型中的连续变量,表示 PCS 的容量。
         """
-        self.build_flags(['charge','discharge'])
+        self.build_flags(["charge", "discharge"])
         # self.charge_flags: List[
         #     BinaryVarType
         # ] = self.model.binary_var_list(  # is charging?
@@ -5348,9 +5348,9 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     self.device_count
         #     <= self.device_count_max
         # )
-        self.add_lower_and_upper_bounds(self.power,0,self.device_count)
+        self.add_lower_and_upper_bounds(self.power, 0, self.device_count)
         # self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
-        
+
         # self.model.add_constraints(
         #     self.power[h] <= self.device_count for h in self.hourRange
         # )  # 与天气相关
@@ -5365,11 +5365,10 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # troughPhotoThermal系统产生的highTemperature
 
-        self.add_lower_bounds(self.power_of_outputs[self.output_type],0)
+        self.add_lower_bounds(self.power_of_outputs[self.output_type], 0)
         # self.model.add_constraints(
         #     0 <= self.power_of_outputs[self.output_type][h] for h in self.hourRange
         # )  # 约束能量不能倒流
-        
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(self.power, self.electricity_price)
@@ -5390,9 +5389,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         )
 
 
-
-
 # 适用于municipalSteam,municipalHotWater
+
 
 # both input and output?
 # hot water? steam?
@@ -5495,15 +5493,12 @@ class CitySupply(IntegratedEnergySystem):
         """
         self.hourRange = range(0, self.num_hour)
         self.model.add_constraint(self.device_count >= 0)
-        self.model.add_constraint(
-            self.device_count <= self.device_count_max
-        )
+        self.model.add_constraint(self.device_count <= self.device_count_max)
         self.model.add_constraints(
             self.heat_citySupplied[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.heat_citySupplied[h] <= self.device_count
-            for h in self.hourRange
+            self.heat_citySupplied[h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
             self.heat_citySupplied[h]
