@@ -4628,8 +4628,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # )
 
         for output_type in self.output_types:
-
-            self.add_lower_and_upper_bounds(self.__dict__)
+            self.add_lower_and_upper_bounds(self.__dict__[f'device_count_{output_type}'],self.elementwise_max(self.elementwise_multiply(self.__dict__[f'ratio_{output_type}'], self.volume)
+            - (self.elementwise_add(self.elementwise_multiply(self.__dict__[f'{output_type}_flags'], -1),1)) * bigNumber,0),self.elementwise_min(,)
+            )
         # (1)
         self.model.add_constraints(
             self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water
