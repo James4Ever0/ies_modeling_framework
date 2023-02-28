@@ -5551,6 +5551,7 @@ class CitySupply(IntegratedEnergySystem):
 
 
 # 电网？
+# input: "electricity", "electricity_gridnet"
 class GridNet(IntegratedEnergySystem):
     """
     电网类
