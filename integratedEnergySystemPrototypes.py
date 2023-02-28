@@ -196,7 +196,7 @@ class Linearization(object):
             var (Var): 原变量
             bin (BinaryVarType): 控制变量
         """
-        Linearization.index += 1
+        self.__class__.index += 1
         model.add_constraint(var_bin >= 0)
         # var_bin 大于等于 0
         model.add_constraint(var_bin >= var - (1 - bin) * bigNumber)
@@ -229,7 +229,7 @@ class Linearization(object):
             bin (List[BinaryVarType]): 控制变量组
             self.hourRange (Iterable): 整数区间
         """
-        Linearization.index += 1
+        self.__class__.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in hourRange)
         model.add_constraints(
             var_bin[i] >= var[i] - (1 - bin0[i]) * bigNumber for i in hourRange
@@ -259,7 +259,7 @@ class Linearization(object):
             bin (List[BinaryVarType]): 控制变量组
             self.hourRange (Iterable): 整数区间
         """
-        Linearization.index += 1
+        self.__class__.index += 1
         model.add_constraints(var_bin[i] >= 0 for i in hourRangeback)
         model.add_constraints(
             var_bin[i] >= var[i - 1] - (1 - bin0[i]) * bigNumber for i in hourRangeback
@@ -284,10 +284,12 @@ class Linearization(object):
             x (List[VarType]): 变量组`x`
             y (List[VarType]): 变量组`y`
         """
-        Linearization.index += 1
+        self.__class__.index += 1
         y_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="y_flag_{0}".format(self.classSuffix),
+            name="y_flag_{0}".format(
+                f"{self.__class__.__name__}_{self.__class__.index}"
+            ),
         )
         model.add_constraints(
             y[h] <= x[h] + (1 - y_flag[h]) * bigNumber for h in range(0, num_hour)
@@ -326,9 +328,12 @@ class Linearization(object):
             add_y (List[VarType]): 两个变量组在指定区间`range(0, num_hour)`内相加的变量
         """
         # looks like two lists.
-        Linearization.index += 1
+        self.__class__.index += 1
         add_y = model.continuous_var_list(
-            [i for i in range(0, num_hour)], name="add_y_{0}".format(self.classSuffix)
+            [i for i in range(0, num_hour)],
+            name="add_y_{0}".format(
+                f"{self.__class__.__name__}_{self.__class__.index}"
+            ),
         )
         model.add_constraints(add_y[h] == x1[h] + x2[h] for h in range(0, num_hour))
         return add_y
@@ -356,11 +361,13 @@ class Linearization(object):
             xpositive (List[VarType]): 变量组`xpositive`
             xnegitive (List[VarType]): 变量组`xnegitive`
         """
-        Linearization.index += 1
+        self.__class__.index += 1
         # bigNumber = 1e10
         positive_flag = model.binary_var_list(
             [i for i in range(0, num_hour)],
-            name="Linearization_positive_flag_{0}".format(self.classSuffix),
+            name="Linearization_positive_flag_{0}".format(
+                f"{self.__class__.__name__}_{self.__class__.index}"
+            ),
         )
         model.add_constraints(
             x[h] == xpositive[h] - xnegitive[h] for h in range(0, num_hour)

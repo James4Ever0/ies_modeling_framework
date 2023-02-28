@@ -77,13 +77,14 @@ batteryEnergyStorageSystem.constraints_register(  # using mode 1?
 
 # define energy balance restrictions
 
-model1.add_constraints(
-    power_load[h]
-    - batteryEnergyStorageSystem.power_energyStorageSystem[h]
-    - photoVoltaic.power_photoVoltaic[h]
-    == gridNet.total_power[h]
-    for h in range(num_hour0)
-)
+
+# model1.add_constraints(
+#     power_load[h]
+#     - batteryEnergyStorageSystem.power_energyStorageSystem[h]
+#     - photoVoltaic.power_photoVoltaic[h]
+#     == gridNet.total_power[h]
+#     for h in range(num_hour0)
+# )
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
