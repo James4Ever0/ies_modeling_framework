@@ -5551,7 +5551,7 @@ class CitySupply(IntegratedEnergySystem):
 
 
 # 电网？
-# input: "electricity", "electricity_gridnet"
+# input: "electricity" <- this will not cost you money.
 class GridNet(IntegratedEnergySystem):
     """
     电网类
@@ -5565,8 +5565,8 @@ class GridNet(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        electricity_price_output: Union[np.ndarray, List],
-        electricity_price_input: float,
+        electricity_price: Union[np.ndarray, List],
+        electricity_price_reward: float,
         device_name: str = "grid_net",
         device_count_min: int = 0,
     ):
@@ -5578,8 +5578,8 @@ class GridNet(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 电网最大设备量
             device_price (float): 设备单价
-            electricity_price_output (Union[np.ndarray, List]): 电力使用价格
-            electricity_price_input (float): 电力生产报酬
+            electricity_price (Union[np.ndarray, List]): 电力使用价格
+            electricity_price_reward (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
         """
         # self.device_name = device_name
@@ -5604,8 +5604,8 @@ class GridNet(IntegratedEnergySystem):
         """
 
         # self.device_count_max = device_count_max
-        self.electricity_price_output = electricity_price_output
-        self.electricity_price_input = electricity_price_input
+        self.electricity_price = electricity_price
+        self.electricity_price_reward = electricity_price_reward
 
         # self.device_price = device_price
 
@@ -5683,7 +5683,7 @@ class GridNet(IntegratedEnergySystem):
         """
         return val
 
-    def constraints_register(self, powerPeak_pre: float = 2000):
+    def constraints_register(self, powerPeak_predicted: float = 2000):
         """
         创建电网的约束条件到模型中
 
@@ -5697,7 +5697,7 @@ class GridNet(IntegratedEnergySystem):
 
         Args:
             model (docplex.mp.model.Model): 求解模型实例
-            powerPeak_pre (float): 预估用电峰值
+            powerPeak_predicted (float): 预估用电峰值
         """
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
@@ -5705,8 +5705,8 @@ class GridNet(IntegratedEnergySystem):
         linearization.positive_negitive_constraints_register(
             self.num_hour,
             self.model,
-            self.electricity_consumed,
             self.power_of_outputs[self.output_type],
+            self.electricity_consumed,
             self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
         )
 
@@ -5759,7 +5759,7 @@ class GridNet(IntegratedEnergySystem):
 
         self.baseCost = (
             self.min(
-                self.max(self.powerPeak, powerPeak_pre) * 31,
+                self.max(self.powerPeak, powerPeak_predicted) * 31,
                 self.device_count * 22,  # pre?
             )
             * 12
@@ -5772,11 +5772,11 @@ class GridNet(IntegratedEnergySystem):
                     for power, price in [
                         (
                             self.power_of_outputs[self.output_type],
-                            self.electricity_price_output,
+                            self.electricity_price,
                         ),
                         (
                             self.power_of_inputs[self.input_type],
-                            self.electricity_price_input,
+                            self.electricity_price_reward,
                         ),
                     ]
                 ]
@@ -5785,8 +5785,8 @@ class GridNet(IntegratedEnergySystem):
 
         # self.electricity_cost = (
         #     self.model.sum(
-        #         self.power_of_outputs[self.output_type][h] * self.electricity_price_output[h]
-        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_input
+        #         self.power_of_outputs[self.output_type][h] * self.electricity_price[h]
+        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_reward
         #         for h in self.hourRange
         #     )
         #     + self.baseCost
