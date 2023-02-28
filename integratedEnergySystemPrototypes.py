@@ -5637,25 +5637,25 @@ class GridNet(IntegratedEnergySystem):
         电网逐小时发电量 长度为`num_hour`的非负实数列表
         """
         self.powerPeak = self.model.continuous_var(
-            name="powerPeak{0}".format(self.classSuffix)
+            name="powerPeak_{0}".format(self.classSuffix)
         )
         """
         电网用电或者发电峰值 实数
         """
         self.baseCost = self.model.continuous_var(
-            name="baseCost{0}".format(self.classSuffix)
+            name="baseCost_{0}".format(self.classSuffix)
         )
         """
         电网基础费用 实数
         """
         self.power_output_max = self.model.continuous_var(
-            name="power_output_max{0}".format(self.classSuffix)
+            name="power_output_max_{0}".format(self.classSuffix)
         )
         """
         电网用电峰值 实数
         """
         self.power_input_max = self.model.continuous_var(
-            name="power_input_max{0}".format(self.classSuffix)
+            name="power_input_max_{0}".format(self.classSuffix)
         )
         """
         电网发电峰值 实数
@@ -5680,8 +5680,9 @@ class GridNet(IntegratedEnergySystem):
         """
         self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
+        # make sure this time we have power_input as positive number.
         linearization.positive_negitive_constraints_register(
-            self.num_hour, self.model, self.electricity_consumed, self.power_output, self.power_input
+            self.num_hour, self.model, self.electricity_consumed, self.power_output, self.elementwise_multiply(self.power_input,-1)
         )
         self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(self.device_count <= self.device_count_max)
@@ -5689,7 +5690,7 @@ class GridNet(IntegratedEnergySystem):
             self.power_output[h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
-            self.power_input[h] <= self.device_count for h in self.hourRange
+            power_of_inputs[self.input_type][h] <= self.device_count for h in self.hourRange
         )
 
         # these are always true, not constraints.
