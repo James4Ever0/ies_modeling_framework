@@ -672,7 +672,7 @@ if __name__ == "__main__":
                     "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
                 ],
             },
-            "heat": {  #  制热相关数据
+            "heat": {  #  制热相关数据, warm water?
                 "list": [
                     heatPump.power_waterSourceHeatPumps_heat,
                     power_heatStorage,

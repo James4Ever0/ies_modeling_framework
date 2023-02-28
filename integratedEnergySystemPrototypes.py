@@ -3838,7 +3838,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
 
 # TODO: 冷水机组效率与带载情况有关 考虑分段拟合
-# working conditions: ['cold_water', 'ice', 'hot_water']
+# working conditions: ['cold_water', 'ice', 'warm_water']
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
     """
     三工况机组类
@@ -3908,7 +3908,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         # self.device_price = device_price
         # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
-        self.output_types = ["cold_water", "ice", "hot_water"]
+        self.output_types = ["cold_water", "ice", "warm_water"]
         self.build_power_of_outputs(self.output_types)
         self.build_flags(self.output_types)
         # self.power_cool: List[
