@@ -4631,7 +4631,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         for output_type in self.output_types:
             self.add_lower_and_upper_bounds(
                 self.__dict__[f"device_count_{output_type}"],
-                self.elementwise_max( # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+                self.elementwise_max(  # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
                     self.elementwise_subtract(
                         self.elementwise_multiply(
                             self.__dict__[f"ratio_{output_type}"], self.volume
@@ -4717,7 +4717,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
         # % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-        
+
         self.equations(
             reduce(
                 self.elementwise_add,
@@ -4740,38 +4740,53 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # （3）power_waterStorageTank_gheat[h] == power_waterStorageTank[h] * waterStorageTank_gheat_flag[h]
         # 上面的公式进行线性化后,用下面的公式替代
         # (1)
-        
+
         for output_type in self.output_types:
             self.add_lower_and_upper_bounds(
                 self.power_of_outputs[output_type],
-                self.elementwise_max(),
-                self.elementwise_min(),
+                self.elementwise_max(
+                    self.elementwise_multiply(
+                        self.__dict__[f"{output_type}_flags"], -bigNumber
+                    ),
+                    self.elementwise_subtract(
+                        self.waterStorageTank.power,
+                        self.elementwise_multiply(
+                            self.elementwise_add(
+                                self.elementwise_multiply(
+                                    self.__dict__[f"{output_type}_flags"], -1
+                                ),
+                                1,
+                            ),
+                            bigNumber,
+                        ),
+                    ),
+                ),
+                self.elementwise_min(self.elementwise_multiply( bigNumber * self.waterStorageTank_cool_flag,), ...),
             )
 
-        self.model.add_constraints( # lower
+        self.model.add_constraints(  # lower
             -bigNumber * self.waterStorageTank_cool_flag[h]
             <= self.power_waterStorageTank_cool[h]
             for h in self.hourRange
         )
-        self.model.add_constraints(# upper
+        self.model.add_constraints(  # upper
             self.power_waterStorageTank_cool[h]
             <= bigNumber * self.waterStorageTank_cool_flag[h]
             for h in self.hourRange
         )
-        self.model.add_constraints( # lower
+        self.model.add_constraints(  # lower
             self.waterStorageTank.power[h]
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             <= self.power_waterStorageTank_cool[h]
             for h in self.hourRange
         )
-        self.model.add_constraints( # upper
+        self.model.add_constraints(  # upper
             self.power_waterStorageTank_cool[h]
             <= self.waterStorageTank.power[h]
             + (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             for h in self.hourRange
         )
-        
-        
+
         # (2)
         self.model.add_constraints(
             -bigNumber * self.waterStorageTank_heat_flag[h]
