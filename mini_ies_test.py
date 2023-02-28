@@ -94,15 +94,24 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 #              \_ GRID _/
 #
 # TOTAL: 2 Nodes
+
+# no checking!
+
 class symbols:
     greater_equal="greater_equal"
     equal="equal"
+
 
 Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 Node2 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 
 Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
-Node
+Node1.add_output()
+Node1.add_output()
+
+Node2.add_input()
+Node2.add_input()
+Node2.add_output(power_load)
 
 # model.add_constraints(
 #     power_load[h]
