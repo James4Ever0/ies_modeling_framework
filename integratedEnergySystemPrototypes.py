@@ -4364,7 +4364,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        waterStorageTank_Volume_max: float,  # V?
+        volume_max: float,  # V?
         device_price: float,
         volume_price: float,
         device_price_powerConversionSystem: float,
@@ -4373,9 +4373,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         energy_init: float,
         stateOfCharge_min: float,
         stateOfCharge_max: float,
-        ratio_cool: float,
-        ratio_heat: float,
-        ratio_gheat: float,  # gheat? 工作热量？ geothermal heat?
+        ratio_cold_water: float,
+        ratio_warm_water: float,
+        ratio_hot_water: float,  # gheat? 工作热量？ geothermal heat?
         device_name: str = "water_energy_storage",
         device_count_min: int = 0,
     ):
@@ -4385,7 +4385,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            waterStorageTank_Volume_max (float): 单个水罐的最大体积
+            volume_max (float): 单个水罐的最大体积
             volume_price (float): 单位体积储水费用
             device_price_powerConversionSystem (float): 电力转换系统设备价格
             conversion_rate_max (float): 最大充放能倍率
@@ -4393,9 +4393,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             energy_init (float): 储能装置的初始能量
             stateOfCharge_min (float): 最小储能量
             stateOfCharge_max (float): 最大储能量
-            ratio_cool (float): 蓄冷模式下水蓄能罐单位体积的蓄冷效率
-            ratio_heat (float): 蓄热模式下水蓄能罐单位体积的蓄热效率
-            ratio_gheat (float): 地源热泵模式下水蓄能罐单位体积的蓄热效率
+            ratio_cold_water (float): 蓄冷模式下水蓄能罐单位体积的蓄冷效率
+            ratio_warm_water (float): 蓄热模式下水蓄能罐单位体积的蓄热效率
+            ratio_hot_water (float): 地源热泵模式下水蓄能罐单位体积的蓄热效率
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         # self.device_name = device_name
@@ -4413,12 +4413,15 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.model = model
         # 对于水蓄能,优化的变量为水罐的体积
 
-        self.input_types = [
-            "cold_water_storage",
-            "warm_water_storage",
-            "hot_water_storage",
-        ]
+        # self.input_types = [
+        #     "cold_water_storage",
+        #     "warm_water_storage",
+        #     "hot_water_storage",
+        # ]
         self.output_types = ["cold_water", "warm_water", "hot_water"]
+        self.input_types = [
+            f"{output_type}_storage" for output_type in self.output_types
+        ]
         self.waterStorageTank = EnergyStorageSystemVariable(
             num_hour,
             model,
@@ -4435,71 +4438,81 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         水蓄能罐,由可变储能设备'EnergyStorageSystemVariable'创建而来
         """
         # self.index = self.classSuffix
-        self.device_count_cold_water: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="device_count_cold_water_{0}".format(self.classSuffix),
-        )
+        for output_type in self.output_types:
+            self.__dict__.update(
+                {
+                    f"device_count_{output_type}": self.model.continuous_var_list(
+                        [i for i in range(0, self.num_hour)],
+                        name=f"device_count_{output_type}_{self.classSuffix}",
+                    )
+                }
+            )
+        # self.device_count_cold_water: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="device_count_cold_water_{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能在蓄冷模式下的储水量
         """
-        self.waterStorageTank_device_heat: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_device_heat{0}".format(self.classSuffix),
-        )
+        # self.waterStorageTank_device_heat: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterStorageTank_device_heat{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能在蓄热模式下的储水量
         """
-        self.waterStorageTank_device_gheat: List[  # generate?
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_device_gheat{0}".format(self.classSuffix),
-        )
+        # self.waterStorageTank_device_gheat: List[  # generate?
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterStorageTank_device_gheat{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能在地源热泵模式下的储水量
         """
         self.volume_price = volume_price
-        self.waterStorageTank_Volume_max = waterStorageTank_Volume_max
-        self.waterStorageTank_Volume: ContinuousVarType = self.model.continuous_var(
-            name="waterStorageTank_V{0}".format(self.classSuffix)
+        self.volume_max = volume_max
+        self.volume: ContinuousVarType = self.model.continuous_var(
+            name="volume_{0}".format(self.classSuffix)
         )
         """
         水蓄能机组总体积
         """
-        self.waterStorageTank_cool_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_cool_flag{0}".format(self.classSuffix),
-        )
+        self.build_flags(self.output_types)
+        # self.waterStorageTank_cool_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterStorageTank_cool_flag{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能设备是否处在蓄冷状态下
         """
-        self.waterStorageTank_heat_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_heat_flag{0}".format(self.classSuffix),
-        )
+        # self.waterStorageTank_heat_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterStorageTank_heat_flag{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能设备是否处在蓄热状态下
         """
-        self.waterStorageTank_gheat_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_gheat_flag{0}".format(self.classSuffix),
-        )
+        # self.waterStorageTank_gheat_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterStorageTank_gheat_flag{0}".format(self.classSuffix),
+        # )
         """
         每小时水蓄能设备是否处在高温热水状态下
         """
-        self.ratio_cool = ratio_cool
-        self.ratio_heat = ratio_heat
-        self.ratio_gheat = ratio_gheat  # 蓄能效率 高温水
+        # self.ratio_cold_water = ratio_cold_water
+        # self.ratio_warm_water = ratio_warm_water
+        # self.ratio_hot_water = ratio_hot_water  # 蓄能效率 高温水
         self.power_waterStorageTank_cool: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
@@ -4573,16 +4586,16 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self.waterStorageTank.constraints_register(
             register_period_constraints, day_node
         )
-        # waterStorageTank_device[h] == waterStorageTank_cool_flag[h] * waterStorageTank_Volume * ratio_cool + waterStorageTank_heat_flag[h] * waterStorageTank_Volume * ratio_heat + waterStorageTank_gheat_flag[
-        #   h] * waterStorageTank_Volume * ratio_gheat
+        # waterStorageTank_device[h] == waterStorageTank_cool_flag[h] * volume * ratio_cold_water + waterStorageTank_heat_flag[h] * volume * ratio_warm_water + waterStorageTank_gheat_flag[
+        #   h] * volume * ratio_hot_water
         # 用下面的式子进行线性化
         self.add_lower_and_upper_bound(
-            self.waterStorageTank_Volume, 0, self.waterStorageTank_Volume_max
+            self.volume, 0, self.volume_max
         )
         # self.model.add_constraint(
-        #     self.waterStorageTank_Volume <= self.waterStorageTank_Volume_max
+        #     self.volume <= self.volume_max
         # )
-        # self.model.add_constraint(self.waterStorageTank_Volume >= 0)
+        # self.model.add_constraint(self.volume >= 0)
 
         self.equations(
             self.waterStorageTank.device_count,
@@ -4606,7 +4619,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # (1)
         self.model.add_constraints(
             self.device_count_cold_water[h]
-            <= self.waterStorageTank_Volume * self.ratio_cool
+            <= self.volume * self.ratio_cold_water
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -4619,14 +4632,14 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.device_count_cold_water[h]
-            >= self.waterStorageTank_Volume * self.ratio_cool
+            >= self.volume * self.ratio_cold_water
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             for h in self.hourRange
         )
         # (2)
         self.model.add_constraints(
             self.waterStorageTank_device_heat[h]
-            <= self.waterStorageTank_Volume * self.ratio_heat
+            <= self.volume * self.ratio_warm_water
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -4639,14 +4652,14 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.waterStorageTank_device_heat[h]
-            >= self.waterStorageTank_Volume * self.ratio_heat
+            >= self.volume * self.ratio_warm_water
             - (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
             for h in self.hourRange
         )
         # (3)
         self.model.add_constraints(
             self.waterStorageTank_device_gheat[h]
-            <= self.waterStorageTank_Volume * self.ratio_gheat
+            <= self.volume * self.ratio_hot_water
             for h in self.hourRange
         )
         self.model.add_constraints(
@@ -4659,7 +4672,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
         self.model.add_constraints(
             self.waterStorageTank_device_gheat[h]
-            >= self.waterStorageTank_Volume * self.ratio_gheat
+            >= self.volume * self.ratio_hot_water
             - (1 - self.waterStorageTank_gheat_flag[h]) * bigNumber
             for h in self.hourRange
         )
@@ -4746,7 +4759,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             for h in self.hourRange
         )
         self.model.add_constraint(
-            self.annualized == self.waterStorageTank_Volume * self.volume_price / 20
+            self.annualized == self.volume * self.volume_price / 20
         )
 
 
