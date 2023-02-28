@@ -82,7 +82,8 @@ from integratedEnergySystemPrototypes import EnengySystemUtils
 
 util = EnengySystemUtils(model1,num_hour0)
 
-util.equations(gridNet.electricity_consumed,)
+from functools import reduce
+util.equations(power_load,reduce(util.elementwise_add,[batteryEnergyStorageSystem.power_of_inputs]))
 # model1.add_constraints(
 #     power_load[h]
 #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]

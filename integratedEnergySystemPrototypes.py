@@ -5670,7 +5670,7 @@ class GridNet(IntegratedEnergySystem):
         # map to: ['input','output']
         for direction in self.directions:
             self.__dict__[f"electricity_{direction}_max"] = self.model.continuous_var(
-                name=f"power_{direction}_max_{self.classSuffix}"
+                name=f"electricity_{direction}_max_{self.classSuffix}"
             )
             self.__dict__[f"electricity_{direction}"] = self.model.continuous_var_list(
                 [i for i in range(0, num_hour)],
@@ -5728,20 +5728,20 @@ class GridNet(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count <= self.device_count_max)
 
         for direction, io_direction in zip(self.directions,['input','output']):
-            self.__dict__[f"power_{direction}_max"] = self.model.max(
-                self.__dict__[f"power_of_{direction}s"][
-                    self.__dict__[f"{direction}_type"]
+            self.__dict__[f"electricity_{direction}_max"] = self.model.max(
+                self.__dict__[f"power_of_{io_direction}s"][
+                    self.__dict__[f"{io_direction}_type"]
                 ]
             )
             self.add_upper_bounds(
-                self.__dict__[f"power_of_{direction}s"][
-                    self.__dict__[f"{direction}_type"]
+                self.__dict__[f"power_of_{io_direction}s"][
+                    self.__dict__[f"{io_direction}_type"]
                 ],
                 self.powerPeak,
             )
             self.add_upper_bounds(
-                self.__dict__[f"power_of_{direction}s"][
-                    self.__dict__[f"{direction}_type"]
+                self.__dict__[f"power_of_{io_direction}s"][
+                    self.__dict__[f"{io_direction}_type"]
                 ],
                 self.device_count,
             )
@@ -5768,7 +5768,7 @@ class GridNet(IntegratedEnergySystem):
         # self.power_output_max = self.model.max(self.power_output)
         # self.power_input_max = self.model.max(self.)
         self.powerPeak = self.model.max(
-            self.__dict__[f"power_{direction}_max"] for direction in self.directions
+            self.__dict__[f"electricity_{direction}_max"] for direction in self.directions
         )
 
         self.baseCost = (
@@ -5785,11 +5785,11 @@ class GridNet(IntegratedEnergySystem):
                     self.elementwise_multiply(power, price)
                     for power, price in [
                         (
-                            self.electricity_download,
+                            self.electricity_download, # output
                             self.electricity_price,
                         ),
                         (
-                            self.power_of_inputs[self.input_type],
+                            self.electricity_upload, # input
                             self.electricity_price_upload,
                         ),
                     ]
