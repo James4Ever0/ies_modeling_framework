@@ -391,9 +391,11 @@ class Linearization(object):
 
 ############################UTILS############################
 class EnengySystemUtils(object):
-    def __init__(self,model:Model):
-        self.model=model
-        
+    def __init__(self, model: Model, num_hour: int):
+        self.model = model
+        self.num_hour = num_hour
+        self.hourRange = range(0, self.num_hour)
+
     def constraint_multiplexer(
         self, variables, values, index_range=None, constraint_function=lambda x: x
     ):
@@ -508,8 +510,9 @@ class EnengySystemUtils(object):
         result = self.model.sum(variables[index] for index in index_range)
         return result
 
+
 # another name for IES?
-class IntegratedEnergySystem(EnergySystemUtils):
+class IntegratedEnergySystem(EnengySystemUtils):
     """
     综合能源系统基类
     """
@@ -531,14 +534,13 @@ class IntegratedEnergySystem(EnergySystemUtils):
         """
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
+        super().__init__(model, num_hour)
         # self.device_name = device_name
         self.__class__.device_index += 1
         classObject.index += 1
-        self.hourRange = range(0, self.num_hour)
         self.className = classObject.__name__
         self.classIndex = classObject.index
         self.model = model
-        self.num_hour = num_hour
         self.device_name = device_name
         self.device_count_max = device_count_max
         assert device_count_min >= 0
@@ -603,6 +605,10 @@ class IntegratedEnergySystem(EnergySystemUtils):
                 }
             )
 
+    def constraints_register(self):
+        self.add_lower_and_upper_bound(
+            self.device_count, self.device_count_min, self.device_count_max
+        )
 
 
 # TODO: 加上输出类型区分校验
