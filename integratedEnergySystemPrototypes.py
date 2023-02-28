@@ -4765,7 +4765,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                     self.elementwise_multiply(
                         self.__dict__[f"{output_type}_flags"], bigNumber
                     ),
-                     self.elementwise_add(
+                    self.elementwise_add(
                         self.waterStorageTank.power,
                         self.elementwise_multiply(
                             self.elementwise_add(
@@ -4826,7 +4826,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     + (1 - self.waterStorageTank_heat_flag[h]) * bigNumber
         #     for h in self.hourRange
         # )
-        
+
         # # (3)
         # self.model.add_constraints(
         #     -bigNumber * self.waterStorageTank_gheat_flag[h]
@@ -4911,9 +4911,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         电蒸汽发生器机组等效单位设备数 大于零的实数
         """
-        self.power: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_{0}".format(self.classSuffix),
         )
@@ -4923,30 +4921,24 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.output_type = "steam"
         self.build_power_of_outputs([self.output_type])
-        # self.power_steam: List[
+        # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
         #     [i for i in range(0, self.num_hour)],
-        #     name="power_steam{0}".format(self.classSuffix),
+        #     name="power_of_outputs[self.output_type]{0}".format(self.classSuffix),
         # )
 
         """
         电蒸汽发生器产生蒸汽功率
         """
-        self.device_count_max = (
-            device_count_max
-        )
-        self.device_count_max_solidHeatStorage = (
-            device_count_max * 6
-        )
+        self.device_count_max = device_count_max
+        self.device_count_max_solidHeatStorage = device_count_max * 6
 
         """
         电蒸汽发生器固体蓄热最大设备数=电蒸汽发生器最大设备数 * 6
         """
         self.device_price = device_price
-        self.device_price_solidHeatStorage = (
-            device_price_solidHeatStorage
-        )
+        self.device_price_solidHeatStorage = device_price_solidHeatStorage
         self.electricity_price = electricity_price
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
@@ -4999,43 +4991,48 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # self.hourRange = range(0, self.num_hour)
-        self.solidHeatStorage.constraints_register(
-        )
+        self.solidHeatStorage.constraints_register()
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(
         #     self.device_count
         #     <= self.device_count_max
         # )
+        self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
+        
         self.model.add_constraints(
-            self.power[h] >= 0 for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power[h] <= self.device_count
-            for h in self.hourRange
+            self.power[h] <= self.device_count for h in self.hourRange
         )  # 与天气相关
-        
-        
-        self.model.add_constraints(
-            self.power[h]
-            + self.solidHeatStorage.power[h]
-            == self.power_steam[h]
-            for h in self.hourRange
-        )  # troughPhotoThermal系统产生的highTemperature
-        
-        
-        self.model.add_constraints(
-            0 <= self.power_steam[h] for h in self.hourRange
-        )  # 约束能量不能倒流
-        self.model.add_constraints(
-            self.electricity_cost
-            == self.power[h] * self.electricity_price[h]
-            for h in self.hourRange
+
+        self.equations(
+            self.power_of_outputs[self.output_type],
+            self.sum_within_range(self.power, self.solidHeatStorage.power),
         )
+        # self.model.add_constraints(
+        #     self.power[h] + self.solidHeatStorage.power[h]
+        #     == self.power_of_outputs[self.output_type][h]
+        #     for h in self.hourRange
+        # )  # troughPhotoThermal系统产生的highTemperature
+
+        # self.model.add_constraints(
+        #     0 <= self.power_of_outputs[self.output_type][h] for h in self.hourRange
+        # )  # 约束能量不能倒流
+        
+        self.
+
+        self.electricity_cost = self.sum_within_range(
+            self.elementwise_multiply(self.power, self.electricity_price)
+        )
+
+        # this is simply wrong.
+        # self.model.add_constraints(
+        #     self.electricity_cost
+        #     == self.power[h] * self.electricity_price[h]
+        #     for h in self.hourRange
+        # )
+
         self.model.add_constraint(
             self.annualized
-            == self.device_count
-            * self.device_price
-            / 15
+            == self.device_count * self.device_price / 15
             + self.solidHeatStorage.annualized
             + self.electricity_cost
         )
