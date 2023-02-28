@@ -5667,6 +5667,7 @@ class GridNet(IntegratedEnergySystem):
         电网基础费用 实数
         """
         self.directions = ["upload", "download"]
+        # map to: ['input','output']
         for direction in self.directions:
             self.__dict__[f"electricity_{direction}_max"] = self.model.continuous_var(
                 name=f"power_{direction}_max_{self.classSuffix}"
@@ -5714,22 +5715,19 @@ class GridNet(IntegratedEnergySystem):
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
         
-        # self.electrity_flow = self.model.continuous_var(lb=-bigNumber,ub=bigNumber,name="electricity_flow_{}")
+        self.electrity_net_exchange = self.model.continuous_var(lb=0,ub=bigNumber,name=f"electricity_net_exchange_{self.classSuffix}")
         
-        # linearization.positive_negitive_constraints_register(
-        #     self.num_hour,
-        #     self.model,
-        #     self.power_of_outputs[self.output_type],
-        #     self.electricity_download,
-        #     self.elementwise_multiply(self.electricity_upload, -1),
-        # )
-        linearization.max_zeros(self.num_hour,self.model,x=self.elementwise_subtract(),y=)
-        
-
+        linearization.positive_negitive_constraints_register(
+            self.num_hour,
+            self.model,
+            self.electricity_net_exchange,
+            self.electricity_download,
+            self.elementwise_multiply(self.electricity_upload, -1),
+        )
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
 
-        for direction in self.directions:
+        for direction, io_direction in zip(self.directions,['input','output']):
             self.__dict__[f"power_{direction}_max"] = self.model.max(
                 self.__dict__[f"power_of_{direction}s"][
                     self.__dict__[f"{direction}_type"]
