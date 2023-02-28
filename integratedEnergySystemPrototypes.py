@@ -4213,7 +4213,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
         device_count_min: int = 0,
-        output_type: Union[Literal['cold_water'],Literal['hot_water']] = 'hot_water'
+        output_type: Union[Literal['cold_water'],Literal['warm_water']] = 'warm_water'
     ):
         """新建一个地源热泵类
 

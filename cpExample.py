@@ -404,8 +404,8 @@ if __name__ == "__main__":
         heatPump.power_waterSourceHeatPumps_heat[h]
         + power_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
-        + steamAndWater_exchanger.heat_exchange[h]
-        + hotWaterExchanger.heat_exchange[h]
+        + steamAndWater_exchanger.heat_exchange[h] # both warm water output.
+        + hotWaterExchanger.heat_exchange[h] # both warm water output.
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
         + groundSourceHeatPump.power_groundSourceHeatPump[h]
         == heat_load[
