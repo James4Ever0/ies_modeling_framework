@@ -4042,7 +4042,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                     self.elementwise_multiply(
                         self.__dict__[f"{output_type}_flags"], bigNumber
                     ),
-                    # self.multiply(self.device_count, self.case_ratio[index]),
+                    self.multiply(self.device_count, self.case_ratio[index]),
                 ),
             )
         ################################
