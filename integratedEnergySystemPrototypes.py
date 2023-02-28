@@ -1077,14 +1077,14 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             efficiency=efficiency,
             energy_init=energy_init,
         )
-        # EnergyStorageSystemVariable.index += 1
+        # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
 
         # self.device_count: List[ContinuousVarType] =self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
         #     name="energyStorageSystemVariable_device{0}".format(
-        #         EnergyStorageSystemVariable.index
+        #         self.classSuffix
         #     ),
         # )
         """
@@ -1400,7 +1400,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # TroughPhotoThermal.index += 1
+        #self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -4237,7 +4237,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # GeothermalHeatPump.index += 1
+        # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -4253,7 +4253,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricity_cost_{0}".format(
-                GeothermalHeatPump.index
+                self.classSuffix
             )
         )
         """
@@ -4427,7 +4427,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         水蓄能罐,由可变储能设备`EnergyStorageSystemVariable`创建而来
         """
-        self.index = EnergyStorageSystemVariable.index
+        # self.index = self.classSuffix
         self.waterStorageTank_device_cool: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
@@ -4788,12 +4788,12 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        ElectricSteamGenerator.index += 1
+        self.classSuffix += 1
         # self.num_hour = num_hour
         self.electricSteamGenerator_device: ContinuousVarType = (
             self.model.continuous_var(
                 name="electricSteamGenerator_device{0}".format(
-                    ElectricSteamGenerator.index
+                    self.classSuffix
                 )
             )
         )
@@ -4816,7 +4816,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_electricSteamGenerator_steam{0}".format(
-                TroughPhotoThermal.index
+               self.classSuffix
             ),
         )
 
@@ -4841,7 +4841,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
 
         # self.annualized: ContinuousVarType = self.model.continuous_var(
         #     name="ElectricSteamGenerator_annualized{0}".format(
-        #         ElectricSteamGenerator.index
+        #         self.classSuffix
         #     )
         # )
 
@@ -4868,7 +4868,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricSteamGenerator_electricity_cost{0}".format(
-                ElectricSteamGenerator.index
+                self.classSuffix
             )
         )
 
@@ -5094,7 +5094,7 @@ class CitySupply(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        CitySupply.index += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = self.model.continuous_var(
             name="citySupplied_device{0}".format(self.classSuffix)
