@@ -1,4 +1,5 @@
-from typing import List, Literal
+from typing import List
+from typing_extensions import Literal
 from typing import Iterable, Union
 import numpy as np
 from docplex.mp.model import Model
@@ -520,7 +521,7 @@ class EnengySystemUtils(object):
 
 
 # use the input/output way
-from typing import Union, Literal, List
+from typing import Union, List
 
 # usually. we are talking about something else.
 
@@ -765,9 +766,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         """
         return solution.get_value(self.device_count) * self.device_price
 
-
-from typing import Literal
-
+# from typing import Literal
 
 # LiBr制冷
 class LiBrRefrigeration(IntegratedEnergySystem):

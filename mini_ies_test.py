@@ -110,8 +110,8 @@ Node2.add_input(gridNet.power_of_outputs['electricity'])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs['electricity'])
 Node2.add_output(power_load)
 
-Node1.build()
-Node2.build()
+Node1.build_relations()
+Node2.build_relations()
 
 # model.add_constraints(
 #     power_load[h]
