@@ -1,7 +1,5 @@
 from typing import List
 from typing import Iterable, Union
-from typing_extensions import Self
-from matplotlib.cbook import index_of
 import numpy as np
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
@@ -1373,7 +1371,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         device_price: float,
-        device_price_troughPhotoThermalSolidHeatStorage: float,  # (csgrgtxr是啥)
+        device_price_solidHeatStorage: float,  # (csgrgtxr是啥)
         intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
@@ -1386,7 +1384,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 槽式光热设备机组最大装机量
             device_price (float): 槽式光热设备的购置价格。
-            device_price_troughPhotoThermalSolidHeatStorage (float): 槽式光热储能设备价格
+            device_price_solidHeatStorage (float): 槽式光热储能设备价格
             intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
@@ -1431,16 +1429,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         槽式光热机组每小时产蒸汽功率 实数变量列表
         """
         self.device_count_max = device_count_max
-        self.device_count_max_troughPhotoThermalSolidHeatStorage: float = (
-            device_count_max * 6
-        )
+        self.device_count_max_solidHeatStorage: float = device_count_max * 6
         """
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
         self.device_price = device_price
-        self.device_price_troughPhotoThermalSolidHeatStorage = (
-            device_price_troughPhotoThermalSolidHeatStorage
-        )
+        self.device_price_solidHeatStorage = device_price_solidHeatStorage
         self.intensityOfIllumination = (
             intensityOfIllumination  # intensityOfIllumination
         )
@@ -1452,11 +1446,11 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.troughPhotoThermalSolidHeatStorage = EnergyStorageSystem(
+        self.solidHeatStorage = EnergyStorageSystem(
             num_hour,
             model,
-            self.troughPhotoThermalSolidHeatStorage_device_count_max,
-            self.device_price_troughPhotoThermalSolidHeatStorage,
+            self.device_count_max_solidHeatStorage,
+            self.device_price_solidHeatStorage,
             device_price_powerConversionSystem=device_price_powerConversionSystem,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
@@ -1484,7 +1478,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 
         """
         # self.hourRange = range(0, self.num_hour)
-        self.troughPhotoThermalSolidHeatStorage.constraints_register()
+        self.solidHeatStorage.constraints_register()
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(
         #     self.device_count <= self.device_count_max
@@ -1513,14 +1507,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             self.power_of_outputs[self.output_type],
             self.elementwise_add(
                 self.power_generated_steam,
-                self.troughPhotoThermalSolidHeatStorage.power,
+                self.solidHeatStorage.power,
             ),
             self.hourRange,
         )
 
         # self.model.add_constraints(
         #     self.power_generated_steam[h]
-        #     + self.troughPhotoThermalSolidHeatStorage.power[h]
+        #     + self.solidHeatStorage.power[h]
         #     == self.power_of_outputs[self.output_type][h]
         #     for h in self.hourRange
         # )  # troughPhotoThermal系统产生的highTemperature
@@ -1532,12 +1526,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.equation(
             self.annualized,
             self.device_count * self.device_price / 15
-            + self.troughPhotoThermalSolidHeatStorage.annualized,
+            + self.solidHeatStorage.annualized,
         )
         # self.model.add_constraint(
         #     self.annualized
         #     == self.device_count * self.device_price / 15
-        #     + self.troughPhotoThermalSolidHeatStorage.annualized
+        #     + self.solidHeatStorage.annualized
         # )
 
 
@@ -2964,13 +2958,12 @@ class WaterHeatPump(IntegratedEnergySystem):
             [
                 (
                     self.power_of_outputs[output_type],
-                    self.__dict__[f"{output_type}_flag"],
+                    self.__dict__[f"{output_type}_flags"],
                 )
                 for output_type in self.output_types  # is the order correct?
                 # ["cold_water", "cold_water_storage", "hot_water", "hot_water_storage"]
             ]
         ):
-
             self.add_lower_and_upper_bounds(
                 power_of_output,
                 0,
@@ -3078,9 +3071,9 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     <= bigNumber * self.waterSourceHeatPumps_heatStorage_flag[h]
         #     for h in self.hourRange
         # )
-        
+
         ##### ADD UP TO 1 ################
-        
+
         self.equations(
             reduce(
                 self.elementwise_add,
@@ -3092,7 +3085,6 @@ class WaterHeatPump(IntegratedEnergySystem):
             1,
         )
 
-
         # self.model.add_constraints(
         #     self.waterSourceHeatPumps_cool_flag[h]
         #     + self.waterSourceHeatPumps_cooletStorage_flag[h]
@@ -3101,30 +3093,58 @@ class WaterHeatPump(IntegratedEnergySystem):
         #     == 1
         #     for h in self.hourRange
         # )
-        self.model.add_constraints(
-            self.electricity_waterSourceHeatPumps[h]
-            == self.power_waterSourceHeatPumps_cool[h]
-            / self.coefficientOfPerformance_waterSourceHeatPumps_cool
-            + self.power_waterSourceHeatPumps_cooletStorage[h]
-            / self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage
-            + self.power_waterSourceHeatPumps_heat[h]
-            / self.coefficientOfPerformance_waterSourceHeatPumps_heat
-            + self.power_waterSourceHeatPumps_heatStorage[h]
-            / self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage
-            for h in self.hourRange
+
+        self.equations(
+            reduce(
+                self.elementwise_add,
+                [
+                    self.elementwise_divide(x, y)
+                    for x, y in [
+                        (
+                            self.power_of_outputs[output_type],
+                            self.__dict__[f"coefficientOfPerformance_{output_type}"],
+                        )
+                        for output_type in self.output_types
+                    ]
+                ],
+            ),
+            self.power_of_inputs[self.input_type],
         )
-        self.model.add_constraints(
-            self.power_waterSourceHeatPumps[h]
-            == self.power_waterSourceHeatPumps_cool[h]
-            + self.power_waterSourceHeatPumps_cooletStorage[h]
-            + self.power_waterSourceHeatPumps_heat[h]
-            + self.power_waterSourceHeatPumps_heatStorage[h]
-            for h in self.hourRange
+        # self.model.add_constraints(
+        #     self.electricity_waterSourceHeatPumps[h]
+        #     == self.power_waterSourceHeatPumps_cool[h]
+        #     / self.coefficientOfPerformance_waterSourceHeatPumps_cool
+        #     + self.power_waterSourceHeatPumps_cooletStorage[h]
+        #     / self.coefficientOfPerformance_waterSourceHeatPumps_cooletStorage
+        #     + self.power_waterSourceHeatPumps_heat[h]
+        #     / self.coefficientOfPerformance_waterSourceHeatPumps_heat
+        #     + self.power_waterSourceHeatPumps_heatStorage[h]
+        #     / self.coefficientOfPerformance_waterSourceHeatPumps_heatStorage
+        #     for h in self.hourRange
+        # )
+
+        self.equations(
+            self.power,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.power_of_outputs[output_type]
+                    for output_type in self.output_types
+                ],
+            ),
         )
+        # self.model.add_constraints(
+        #     self.power_waterSourceHeatPumps[h]
+        #     == self.power_waterSourceHeatPumps_cool[h]
+        #     + self.power_waterSourceHeatPumps_cooletStorage[h]
+        #     + self.power_waterSourceHeatPumps_heat[h]
+        #     + self.power_waterSourceHeatPumps_heatStorage[h]
+        #     for h in self.hourRange
+        # )
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(
-                self.electricity_waterSourceHeatPumps, self.electricity_price
+                self.power_of_inputs[self.input_type], self.electricity_price
             )
         )
         # self.electricity_cost = self.model.sum(
@@ -3180,15 +3200,15 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        WaterCoolingSpiral.index += 1
+        # self.classSuffix += 1
         self.electricity_price = electricity_price
-        self.waterCoolingSpiralMachine_device: ContinuousVarType = (
-            self.model.continuous_var(
-                name="waterCoolingSpiralMachine_device{0}".format(
-                    WaterCoolingSpiral.index
-                )
-            )
-        )
+        # self.device_count: ContinuousVarType = (
+        #     self.model.continuous_var(
+        #         name="device_count{0}".format(
+        #             self.classSuffix
+        #         )
+        #     )
+        # )
         """
         水冷螺旋机机组等效单位设备数 大于零的实数
         """
@@ -3199,85 +3219,92 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         连续变量,表示水冷螺旋机的年化费用
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="waterCoolingSpiral_electricity_sum{0}".format(
-                WaterCoolingSpiral.index
-            )
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
         """
         连续变量,表示水冷螺旋机的用电成本
         """
         self.device_price = device_price
         self.device_count_max = device_count_max
-        self.case_ratio = case_ratio
-        self.power_waterCoolingSpiralMachine_cool: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_waterCoolingSpiralMachine_cool{0}".format(
-                WaterCoolingSpiral.index
-            ),
-        )
+        self.case_ratio = case_ratio  # are they matched?
+        self.output_types = ["cold_water", "cold_water_storage"]
+
+        self.build_power_of_outputs(self.output_types)
+        self.build_flags(self.output_types)
+
+        # power of outputs total?
+        # self.power_of_outputs_cold_water: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_of_outputs_cold_water_{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示水冷螺旋机的制冷功率
         """
-        self.waterCoolingSpiralMachine_cool_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterCoolingSpiralMachine_cool_flag{0}".format(
-                WaterCoolingSpiral.index
-            ),
-        )
+        # either "cold_water" or "cold_water_storage"
+        # self.waterCoolingSpiralMachine_cool_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterCoolingSpiralMachine_cool_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示水冷螺旋机的散热状态
         """
 
-        self.power_waterCoolingSpiralMachine_cooletStorage: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_waterCoolingSpiralMachine_cooletStorage{0}".format(
-                WaterCoolingSpiral.index
-            ),
-        )
+        # self.power_of_outputs_coolet_storage: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_of_outputs_coolet_storage{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示水冷螺旋机的蓄冷功率
         """
 
-        self.waterCoolingSpiralMachine_cooletStorage_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="waterCoolingSpiralMachine_cooletStorage_flag{0}".format(
-                WaterCoolingSpiral.index
-            ),
-        )
+        # self.waterCoolingSpiralMachine_cooletStorage_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="waterCoolingSpiralMachine_cooletStorage_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示水冷螺旋机的蓄冷状态
         """
+        self.input_type = "electricity"
+        self.build_power_of_inputs([self.input_type])
 
-        self.electricity_waterCoolingSpiralMachine: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="electricity_waterCoolingSpiralMachine{0}".format(
-                WaterCoolingSpiral.index
-            ),
-        )
+        # self.electricity_waterCoolingSpiralMachine: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="electricity_waterCoolingSpiralMachine{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示水冷螺旋机的用电量
         """
-        self.power_waterCoolingSpiralMachine: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_waterCoolingSpiralMachine{0}".format(self.classSuffix),
+            name="power_{0}".format(self.classSuffix),
         )
         """
         连续变量列表,表示水冷螺旋机的功率
         """
-        self.coefficientOfPerformance_waterCoolingSpiralMachine_cool = 5
-        self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage = 5
+        for output_type in self.output_types:
+            self.__dict__.update({f"coefficientOfPerformance_{output_type}": 5})
+        # self.coefficientOfPerformance_waterCoolingSpiralMachine_cool = 5
+        # self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage = 5
         return val
 
     def constraints_register(self):
@@ -3297,71 +3324,90 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # self.hourRange = range(0, self.num_hour)
-        # self.model.add_constraint(0 <= self.waterCoolingSpiralMachine_device)
+        # self.model.add_constraint(0 <= self.device_count)
         # self.model.add_constraint(
-        #     self.waterCoolingSpiralMachine_device <= self.device_count_max
+        #     self.device_count <= self.device_count_max
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_waterCoolingSpiralMachine_cool,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.waterCoolingSpiralMachine_cool_flag, bigNumber
+        for index, output_type in enumerate(self.output_types):
+            self.add_lower_and_upper_bounds(
+                self.power_of_outputs[output_type],
+                0,
+                self.elementwise_min(
+                    self.elementwise_multiply(
+                        self.__dict__[f"{output_type}_flags"], bigNumber
+                    ),
+                    self.multiply(self.device_count, self.case_ratio[index]),
                 ),
-                self.multiply(
-                    self.waterCoolingSpiralMachine_device, self.case_ratio[0]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_waterCoolingSpiralMachine_cool[h] for h in self.hourRange
+            )
+
+        ##############
+        # self.add_lower_and_upper_bounds(
+        #     self.power_of_outputs_cold_water,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.waterCoolingSpiralMachine_cool_flag, bigNumber
+        #         ),
+        #         self.multiply(self.device_count, self.case_ratio[0]),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_waterCoolingSpiralMachine_cool[h]
-        #     <= self.waterCoolingSpiralMachine_device * self.case_ratio[0]
+        #     0 <= self.power_of_outputs_cold_water[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_outputs_cold_water[h]
+        #     <= self.device_count * self.case_ratio[0]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_waterCoolingSpiralMachine_cool[h]
+        #     self.power_of_outputs_cold_water[h]
         #     <= bigNumber * self.waterCoolingSpiralMachine_cool_flag[h]
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_waterCoolingSpiralMachine_cooletStorage,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.waterCoolingSpiralMachine_cooletStorage_flag, bigNumber
-                ),
-                self.multiply(
-                    self.waterCoolingSpiralMachine_device, self.case_ratio[1]
-                ),
-            ),
-        )
+        # self.add_lower_and_upper_bounds(
+        #     self.power_of_outputs_coolet_storage,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.waterCoolingSpiralMachine_cooletStorage_flag, bigNumber
+        #         ),
+        #         self.multiply(self.device_count, self.case_ratio[1]),
+        #     ),
+        # )
         # self.model.add_constraints(
-        #     0 <= self.power_waterCoolingSpiralMachine_cooletStorage[h]
+        #     0 <= self.power_of_outputs_coolet_storage[h]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_waterCoolingSpiralMachine_cooletStorage[h]
-        #     <= self.waterCoolingSpiralMachine_device * self.case_ratio[1]
+        #     self.power_of_outputs_coolet_storage[h]
+        #     <= self.device_count * self.case_ratio[1]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_waterCoolingSpiralMachine_cooletStorage[h]
+        #     self.power_of_outputs_coolet_storage[h]
         #     <= bigNumber * self.waterCoolingSpiralMachine_cooletStorage_flag[h]
         #     for h in self.hourRange
         # )
 
         self.equations(
-            self.elementwise_add(
-                self.waterCoolingSpiralMachine_cool_flag,
-                self.waterCoolingSpiralMachine_cooletStorage_flag,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.__dict__[f"{output_type}_flags"]
+                    for output_type in self.output_types
+                ],
             ),
             1,
         )
+        # self.equations(
+        #     self.elementwise_add(
+        #         self.waterCoolingSpiralMachine_cool_flag,
+        #         self.waterCoolingSpiralMachine_cooletStorage_flag,
+        #     ),
+        #     1,
+        # )
         # self.model.add_constraints(
         #     self.waterCoolingSpiralMachine_cool_flag[h]
         #     + self.waterCoolingSpiralMachine_cooletStorage_flag[h]
@@ -3370,44 +3416,71 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         # )
 
         self.equations(
-            self.electricity_waterCoolingSpiralMachine,
-            self.elementwise_add(
-                self.elementwise_divide(
-                    self.power_waterCoolingSpiralMachine_cool,
-                    self.coefficientOfPerformance_waterCoolingSpiralMachine_cool,
-                ),
-                self.elementwise_divide(
-                    self.power_waterCoolingSpiralMachine_cooletStorage,
-                    self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage,
-                ),
+            self.power_of_inputs[self.input_type],
+            reduce(
+                self.elementwise_add,
+                [
+                    self.elementwise_divide(
+                        self.power_of_outputs[output_type],
+                        self.__dict__[f"coefficientOfPerformance_{output_type}"],
+                    )
+                    for output_type in self.output_types
+                ],
             ),
         )
+
+        # self.equations(
+        #     self.electricity_waterCoolingSpiralMachine,
+        #     self.elementwise_add(
+        #         self.elementwise_divide(
+        #             self.power_of_outputs_cold_water,
+        #             self.coefficientOfPerformance_waterCoolingSpiralMachine_cool,
+        #         ),
+        #         self.elementwise_divide(
+        #             self.power_of_outputs_coolet_storage,
+        #             self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage,
+        #         ),
+        #     ),
+        # )
+
         # self.model.add_constraints(
         #     self.electricity_waterCoolingSpiralMachine[h]
-        #     == self.power_waterCoolingSpiralMachine_cool[h]
+        #     == self.power_of_outputs_cold_water[h]
         #     / self.coefficientOfPerformance_waterCoolingSpiralMachine_cool
-        #     + self.power_waterCoolingSpiralMachine_cooletStorage[h]
+        #     + self.power_of_outputs_coolet_storage[h]
         #     / self.coefficientOfPerformance_waterCoolingSpiralMachine_cooletStorage
         #     for h in self.hourRange
         # )
 
         self.equations(
-            self.power_waterCoolingSpiralMachine,
-            self.elementwise_add(
-                self.power_waterCoolingSpiralMachine_cool,
-                self.power_waterCoolingSpiralMachine_cooletStorage,
+            self.power,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.power_of_outputs[output_type]
+                    for output_type in self.output_types
+                ],
             ),
         )
+
+        # self.equations(
+        #     self.power,
+        #     self.elementwise_add(
+        #         self.power_of_outputs_cold_water,
+        #         self.power_of_outputs_coolet_storage,
+        #     ),
+        # )
+
         # self.model.add_constraints(
-        #     self.power_waterCoolingSpiralMachine[h]
-        #     == self.power_waterCoolingSpiralMachine_cool[h]
-        #     + self.power_waterCoolingSpiralMachine_cooletStorage[h]
+        #     self.power[h]
+        #     == self.power_of_outputs_cold_water[h]
+        #     + self.power_of_outputs_coolet_storage[h]
         #     for h in self.hourRange
         # )
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(
-                self.electricity_waterCoolingSpiralMachine, self.electricity_price
+                self.power_of_inputs[self.input_type], self.electricity_price
             )
         )
         # self.electricity_cost = self.model.sum(
@@ -3417,12 +3490,14 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.waterCoolingSpiralMachine_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
 # 双工况机组
+# ice must be stored, turned into cold water.
+# working conditions: ['cold_water', 'ice']
 class DoubleWorkingConditionUnit(IntegratedEnergySystem):
     """
     双工况机组类
@@ -3463,109 +3538,110 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        DoubleWorkingConditionUnit.index += 1
+        # self.classSuffix += 1
+        self.output_types = ["cold_water", "ice"]  # matched?
+        self.input_type = "electricity"
         self.electricity_price = electricity_price
-        self.doubleWorkingConditionUnit_device: ContinuousVarType = (
-            self.model.continuous_var(
-                name="doubleWorkingConditionUnit_device{0}".format(
-                    DoubleWorkingConditionUnit.index
-                )
-            )
-        )
+        # self.device_count: ContinuousVarType = (
+        #     self.model.continuous_var(
+        #         name="device_count_{0}".format(
+        #             self.classSuffix
+        #         )
+        #     )
+        # )
         """
         双工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
         #     name="DoubleWorkingConditionUnit_annualized{0}".format(
-        #         DoubleWorkingConditionUnit.index
+        #         self.classSuffix
         #     )
         # )
         """
         连续变量,表示双工况机组的年化费用
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="DoubleWorkingConditionUnit_electricity_sum{0}".format(
-                DoubleWorkingConditionUnit.index
-            )
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
         """
         连续变量,表示双工况机组的用电成本
         """
-        self.device_price = device_price
-        self.device_count_max = device_count_max
+        # self.device_price = device_price
+        # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
-        self.power_doubleWorkingConditionUnit_cool: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_doubleWorkingConditionUnit_cool{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
-        )
+        self.build_power_of_outputs(self.output_types)
+        self.build_flags(self.output_types)
+
+        # self.power_cool: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_cool{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示双工况机组的制冷功率
         """
 
-        self.doubleWorkingConditionUnit_cool_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="doubleWorkingConditionUnit_cool_flag{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
-        )
+        # self.doubleWorkingConditionUnit_cool_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="doubleWorkingConditionUnit_cool_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示双工况机组的制冷状态
         """
 
-        self.power_doubleWorkingConditionUnit_ice: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_doubleWorkingConditionUnit_ice{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
-        )
+        # self.power_ice: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_ice{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示双工况机组的制冰功率
         """
 
-        self.doubleWorkingConditionUnit_ice_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="doubleWorkingConditionUnit_ice_flag{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
-        )
+        # self.doubleWorkingConditionUnit_ice_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="doubleWorkingConditionUnit_ice_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示双工况机组的制冰状态
         """
-
-        self.electricity_doubleWorkingConditionUnit: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="electricity_doubleWorkingConditionUnit{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
-        )
+        self.build_power_of_inputs([self.input_type])
+        # self.electricity_doubleWorkingConditionUnit: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="electricity_doubleWorkingConditionUnit{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示双工况机组的用电量
         """
-        self.power_doubleWorkingConditionUnit: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_doubleWorkingConditionUnit{0}".format(
-                DoubleWorkingConditionUnit.index
-            ),
+            name="power_{0}".format(self.classSuffix),
         )
         """
         连续变量列表,表示双工况机组的功率
         """
-        self.coefficientOfPerformance_doubleWorkingConditionUnit_cool = 5
-        self.coefficientOfPerformance_doubleWorkingConditionUnit_ice = 5
+        for output_type in self.output_types:
+            self.__dict__[f"coefficientOfPerformance_{output_type}"] = 5
+        # self.coefficientOfPerformance_doubleWorkingConditionUnit_cool = 5
+        # self.coefficientOfPerformance_doubleWorkingConditionUnit_ice = 5
 
         # 三工况机组
         return val
@@ -3587,70 +3663,94 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # self.hourRange = range(0, self.num_hour)
-        # self.model.add_constraint(0 <= self.doubleWorkingConditionUnit_device)
+        # self.model.add_constraint(0 <= self.device_count)
         # self.model.add_constraint(
-        #     self.doubleWorkingConditionUnit_device <= self.device_count_max
+        #     self.device_count <= self.device_count_max
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_doubleWorkingConditionUnit_cool,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.doubleWorkingConditionUnit_cool_flag, bigNumber
+        for index, output_type in enumerate(self.output_types):
+            self.add_lower_and_upper_bounds(
+                self.power_of_outputs[output_type],
+                0,
+                self.elementwise_min(
+                    self.elementwise_multiply(
+                        self.__dict__[f"{output_type}_flags"], bigNumber
+                    ),
+                    self.multiply(self.device_count, self.case_ratio[index]),
                 ),
-                self.multiply(
-                    self.doubleWorkingConditionUnit_device, self.case_ratio[0]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_doubleWorkingConditionUnit_cool[h] for h in self.hourRange
+            )
+
+        #################
+        # self.add_lower_and_upper_bounds(
+        #     self.power_cool,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.doubleWorkingConditionUnit_cool_flag, bigNumber
+        #         ),
+        #         self.multiply(
+        #             self.device_count, self.case_ratio[0]
+        #         ),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_doubleWorkingConditionUnit_cool[h]
-        #     <= self.doubleWorkingConditionUnit_device * self.case_ratio[0]
+        #     0 <= self.power_cool[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_cool[h]
+        #     <= self.device_count * self.case_ratio[0]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_doubleWorkingConditionUnit_cool[h]
+        #     self.power_cool[h]
         #     <= bigNumber * self.doubleWorkingConditionUnit_cool_flag[h]
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_doubleWorkingConditionUnit_ice,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.doubleWorkingConditionUnit_ice_flag, bigNumber
-                ),
-                self.multiply(
-                    self.doubleWorkingConditionUnit_device, self.case_ratio[1]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_doubleWorkingConditionUnit_ice[h] for h in self.hourRange
+        # self.add_lower_and_upper_bounds(
+        #     self.power_ice,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.doubleWorkingConditionUnit_ice_flag, bigNumber
+        #         ),
+        #         self.multiply(
+        #             self.device_count, self.case_ratio[1]
+        #         ),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_doubleWorkingConditionUnit_ice[h]
-        #     <= self.doubleWorkingConditionUnit_device * self.case_ratio[1]
+        #     0 <= self.power_ice[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_ice[h]
+        #     <= self.device_count * self.case_ratio[1]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_doubleWorkingConditionUnit_ice[h]
+        #     self.power_ice[h]
         #     <= bigNumber * self.doubleWorkingConditionUnit_ice_flag[h]
         #     for h in self.hourRange
         # )
 
         self.equations(
-            self.elementwise_add(
-                self.doubleWorkingConditionUnit_cool_flag,
-                self.doubleWorkingConditionUnit_ice_flag,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.__dict__[f"{output_type}_flags"]
+                    for output_type in self.output_types
+                ],
             ),
             1,
         )
+
+        # self.equations(
+        #     self.elementwise_add(
+        #         self.doubleWorkingConditionUnit_cool_flag,
+        #         self.doubleWorkingConditionUnit_ice_flag,
+        #     ),
+        #     1,
+        # )
         # self.model.add_constraints(
         #     self.doubleWorkingConditionUnit_cool_flag[h]
         #     + self.doubleWorkingConditionUnit_ice_flag[h]
@@ -3659,44 +3759,70 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         # )
 
         self.equations(
-            self.electricity_doubleWorkingConditionUnit,
-            self.elementwise_add(
-                self.elementwise_divide(
-                    self.power_doubleWorkingConditionUnit_cool,
-                    self.coefficientOfPerformance_doubleWorkingConditionUnit_cool,
-                ),
-                self.elementwise_divide(
-                    self.power_doubleWorkingConditionUnit_ice,
-                    self.coefficientOfPerformance_doubleWorkingConditionUnit_ice,
-                ),
+            self.power_of_inputs[self.input_type],
+            reduce(
+                self.elementwise_add,
+                [
+                    self.elementwise_divide(
+                        self.power_of_outputs[output_type],
+                        self.__dict__[f"coefficientOfPerformance_{output_type}"],
+                    )
+                    for output_type in self.output_types
+                ],
             ),
         )
+
+        # self.equations(
+        #     self.electricity_doubleWorkingConditionUnit,
+        #     self.elementwise_add(
+        #         self.elementwise_divide(
+        #             self.power_cool,
+        #             self.coefficientOfPerformance_doubleWorkingConditionUnit_cool,
+        #         ),
+        #         self.elementwise_divide(
+        #             self.power_ice,
+        #             self.coefficientOfPerformance_doubleWorkingConditionUnit_ice,
+        #         ),
+        #     ),
+        # )
+
         # self.model.add_constraints(
         #     self.electricity_doubleWorkingConditionUnit[h]
-        #     == self.power_doubleWorkingConditionUnit_cool[h]
+        #     == self.power_cool[h]
         #     / self.coefficientOfPerformance_doubleWorkingConditionUnit_cool
-        #     + self.power_doubleWorkingConditionUnit_ice[h]
+        #     + self.power_ice[h]
         #     / self.coefficientOfPerformance_doubleWorkingConditionUnit_ice
         #     for h in self.hourRange
         # )
 
         self.equations(
-            self.power_doubleWorkingConditionUnit,
-            self.elementwise_add(
-                self.power_doubleWorkingConditionUnit_cool,
-                self.power_doubleWorkingConditionUnit_ice,
+            self.power,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.power_of_outputs[output_type]
+                    for output_type in self.output_types
+                ],
             ),
         )
+
+        # self.equations(
+        #     self.power,
+        #     self.elementwise_add(
+        #         self.power_cool,
+        #         self.power_ice,
+        #     ),
+        # )
         # self.model.add_constraints(
-        #     self.power_doubleWorkingConditionUnit[h]
-        #     == self.power_doubleWorkingConditionUnit_cool[h]
-        #     + self.power_doubleWorkingConditionUnit_ice[h]
+        #     self.power[h]
+        #     == self.power_cool[h]
+        #     + self.power_ice[h]
         #     for h in self.hourRange
         # )
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(
-                self.electricity_doubleWorkingConditionUnit, self.electricity_price
+                self.power_of_inputs[self.input_type], self.electricity_price
             )
         )
         # self.electricity_cost = self.model.sum(
@@ -3706,12 +3832,13 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.doubleWorkingConditionUnit_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
 
 # TODO: 冷水机组效率与带载情况有关 考虑分段拟合
+# working conditions: ['cold_water', 'ice', 'hot_water']
 class TripleWorkingConditionUnit(IntegratedEnergySystem):
     """
     三工况机组类
@@ -3752,135 +3879,136 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-
-        TripleWorkingConditionUnit.index += 1
+        # self.classSuffix += 1
         self.electricity_price = electricity_price
-        self.tripleWorkingConditionUnit_device: ContinuousVarType = (
-            self.model.continuous_var(
-                name="tripleWorkingConditionUnit_device{0}".format(
-                    TripleWorkingConditionUnit.index
-                )
-            )
-        )
+        # self.device_count: ContinuousVarType = (
+        #     self.model.continuous_var(
+        #         name="device_count_{0}".format(
+        #             self.classSuffix
+        #         )
+        #     )
+        # )
         """
         三工况机组等效单位设备数 大于零的实数
         """
         # self.annualized: ContinuousVarType = self.model.continuous_var(
         #     name="TripleWorkingConditionUnit_annualized{0}".format(
-        #         TripleWorkingConditionUnit.index
+        #         self.classSuffix
         #     )
         # )
         """
         连续变量,表示三工况机组的年化费用
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="TripleWorkingConditionUnit_electricity_sum{0}".format(
-                TripleWorkingConditionUnit.index
-            )
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
         """
         连续变量,表示三工况机组的用电成本
         """
-        self.device_price = device_price
-        self.device_count_max = device_count_max
+        # self.device_price = device_price
+        # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
-        self.power_tripleWorkingConditionUnit_cool: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_tripleWorkingConditionUnit_cool{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        self.output_types = ["cold_water", "ice", "hot_water"]
+        self.build_power_of_outputs(self.output_types)
+        self.build_flags(self.output_types)
+        # self.power_cool: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_cool{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示三工况机组的制冷功率
         """
 
-        self.tripleWorkingConditionUnit_cool_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="tripleWorkingConditionUnit_cool_flag{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        # self.tripleWorkingConditionUnit_cool_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="tripleWorkingConditionUnit_cool_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示三工况机组的制冷状态
         """
 
-        self.power_tripleWorkingConditionUnit_ice: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_tripleWorkingConditionUnit_ice{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        # self.power_ice: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_ice{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示三工况机组的制冰功率
         """
 
-        self.tripleWorkingConditionUnit_ice_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="tripleWorkingConditionUnit_ice_flag{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        # self.tripleWorkingConditionUnit_ice_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="tripleWorkingConditionUnit_ice_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示三工况机组的制冰状态
         """
 
-        self.power_tripleWorkingConditionUnit_heat: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_tripleWorkingConditionUnit_heat{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        # self.power_heat: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_heat{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示三工况机组的制热功率
         """
 
-        self.tripleWorkingConditionUnit_heat_flag: List[
-            BinaryVarType
-        ] = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="tripleWorkingConditionUnit_heat_flag{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        # self.tripleWorkingConditionUnit_heat_flag: List[
+        #     BinaryVarType
+        # ] = self.model.binary_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="tripleWorkingConditionUnit_heat_flag{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         二元变量列表,表示三工况机组的制热状态
         """
-
-        self.electricity_tripleWorkingConditionUnit: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="electricity_tripleWorkingConditionUnit{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
-        )
+        self.input_type = "electricity"
+        self.build_power_of_inputs([self.input_type])
+        # self.electricity_tripleWorkingConditionUnit: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="electricity_tripleWorkingConditionUnit{0}".format(
+        #         self.classSuffix
+        #     ),
+        # )
         """
         连续变量列表,表示三工况机组的用电量
         """
-        self.power_tripleWorkingConditionUnit: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
+        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_tripleWorkingConditionUnit{0}".format(
-                TripleWorkingConditionUnit.index
-            ),
+            name="power_{0}".format(self.classSuffix),
         )
         """
         连续变量列表,表示三工况机组的功率
         """
-        self.coefficientOfPerformance_tripleWorkingConditionUnit_cool = 5
-        self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
-        self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
+        for output_type, coefficientOfPerformance in zip(self.output_types, [5, 4, 5]):
+            self.__dict__.update(
+                {f"coefficientOfPerformance_{output_type}": coefficientOfPerformance}
+            )
+        # self.coefficientOfPerformance_tripleWorkingConditionUnit_cool = 5
+        # self.coefficientOfPerformance_tripleWorkingConditionUnit_ice = 4
+        # self.coefficientOfPerformance_tripleWorkingConditionUnit_heat = 5
         return val
 
     def constraints_register(self):
@@ -3901,117 +4029,162 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # self.hourRange = range(0, self.num_hour)
-        # self.model.add_constraint(0 <= self.tripleWorkingConditionUnit_device)
+        # self.model.add_constraint(0 <= self.device_count)
         # self.model.add_constraint(
-        #     self.tripleWorkingConditionUnit_device <= self.device_count_max
+        #     self.device_count <= self.device_count_max
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_tripleWorkingConditionUnit_cool,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.tripleWorkingConditionUnit_cool_flag, bigNumber
+        for index, output_type in enumerate(self.output_types):
+            self.add_lower_and_upper_bounds(
+                self.power_of_outputs[output_type],
+                0,
+                self.elementwise_min(
+                    self.elementwise_multiply(
+                        self.__dict__[f"{output_type}_flags"], bigNumber
+                    ),
+                    # self.multiply(self.device_count, self.case_ratio[index]),
                 ),
-                self.multiply(
-                    self.tripleWorkingConditionUnit_device, self.case_ratio[0]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_tripleWorkingConditionUnit_cool[h] for h in self.hourRange
+            )
+        ################################
+
+        # self.add_lower_and_upper_bounds(
+        #     self.power_cool,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.tripleWorkingConditionUnit_cool_flag, bigNumber
+        #         ),
+        #         self.multiply(self.device_count, self.case_ratio[0]),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_cool[h]
-        #     <= self.tripleWorkingConditionUnit_device * self.case_ratio[0]
+        #     0 <= self.power_cool[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_cool[h]
+        #     <= self.device_count * self.case_ratio[0]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_cool[h]
+        #     self.power_cool[h]
         #     <= bigNumber * self.tripleWorkingConditionUnit_cool_flag[h]
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_tripleWorkingConditionUnit_ice,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.tripleWorkingConditionUnit_ice_flag, bigNumber
-                ),
-                self.multiply(
-                    self.tripleWorkingConditionUnit_device, self.case_ratio[1]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_tripleWorkingConditionUnit_ice[h] for h in self.hourRange
+        # self.add_lower_and_upper_bounds(
+        #     self.power_ice,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.tripleWorkingConditionUnit_ice_flag, bigNumber
+        #         ),
+        #         self.multiply(self.device_count, self.case_ratio[1]),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_ice[h]
-        #     <= self.tripleWorkingConditionUnit_device * self.case_ratio[1]
+        #     0 <= self.power_ice[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_ice[h]
+        #     <= self.device_count * self.case_ratio[1]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_ice[h]
+        #     self.power_ice[h]
         #     <= bigNumber * self.tripleWorkingConditionUnit_ice_flag[h]
         #     for h in self.hourRange
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_tripleWorkingConditionUnit_heat,
-            0,
-            self.elementwise_min(
-                self.elementwise_multiply(
-                    self.tripleWorkingConditionUnit_heat_flag, bigNumber
-                ),
-                self.multiply(
-                    self.tripleWorkingConditionUnit_device, self.case_ratio[2]
-                ),
-            ),
-        )
-        # self.model.add_constraints(
-        #     0 <= self.power_tripleWorkingConditionUnit_heat[h] for h in self.hourRange
+        # self.add_lower_and_upper_bounds(
+        #     self.power_heat,
+        #     0,
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.tripleWorkingConditionUnit_heat_flag, bigNumber
+        #         ),
+        #         self.multiply(self.device_count, self.case_ratio[2]),
+        #     ),
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_heat[h]
-        #     <= self.tripleWorkingConditionUnit_device * self.case_ratio[2]
+        #     0 <= self.power_heat[h] for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_heat[h]
+        #     <= self.device_count * self.case_ratio[2]
         #     for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_tripleWorkingConditionUnit_heat[h]
+        #     self.power_heat[h]
         #     <= bigNumber * self.tripleWorkingConditionUnit_heat_flag[h]
         #     for h in self.hourRange
         # )
+        
+        
+        self.equations(
+            reduce(
+                self.elementwise_add,
+                [
+                    self.__dict__[f"{output_type}_flags"]
+                    for output_type in self.output_types
+                ],
+            ),
+            1,
+        )
 
-        self.model.add_constraints(
-            self.tripleWorkingConditionUnit_cool_flag[h]
-            + self.tripleWorkingConditionUnit_ice_flag[h]
-            + self.tripleWorkingConditionUnit_heat_flag[h]
-            == 1
-            for h in self.hourRange
+        # self.model.add_constraints(
+        #     self.tripleWorkingConditionUnit_cool_flag[h]
+        #     + self.tripleWorkingConditionUnit_ice_flag[h]
+        #     + self.tripleWorkingConditionUnit_heat_flag[h]
+        #     == 1
+        #     for h in self.hourRange
+        # )
+        
+        
+        self.equations(
+            self.power_of_inputs[self.input_type],
+            reduce(
+                self.elementwise_add,
+                [
+                    self.elementwise_divide(
+                        self.power_of_outputs[output_type],
+                        self.__dict__[f"coefficientOfPerformance_{output_type}"],
+                    )
+                    for output_type in self.output_types
+                ],
+            ),
         )
-        self.model.add_constraints(
-            self.electricity_tripleWorkingConditionUnit[h]
-            == self.power_tripleWorkingConditionUnit_cool[h]
-            / self.coefficientOfPerformance_tripleWorkingConditionUnit_cool
-            + self.power_tripleWorkingConditionUnit_ice[h]
-            / self.coefficientOfPerformance_tripleWorkingConditionUnit_ice
-            + self.power_tripleWorkingConditionUnit_heat[h]
-            / self.coefficientOfPerformance_tripleWorkingConditionUnit_heat
-            for h in self.hourRange
+        
+        # self.model.add_constraints(
+        #     self.electricity_tripleWorkingConditionUnit[h]
+        #     == self.power_cool[h]
+        #     / self.coefficientOfPerformance_tripleWorkingConditionUnit_cool
+        #     + self.power_ice[h]
+        #     / self.coefficientOfPerformance_tripleWorkingConditionUnit_ice
+        #     + self.power_heat[h]
+        #     / self.coefficientOfPerformance_tripleWorkingConditionUnit_heat
+        #     for h in self.hourRange
+        # )
+        
+        
+        self.equations(
+            self.power,
+            reduce(
+                self.elementwise_add,
+                [
+                    self.power_of_outputs[output_type]
+                    for output_type in self.output_types
+                ],
+            ),
         )
-        self.model.add_constraints(
-            self.power_tripleWorkingConditionUnit[h]
-            == self.power_tripleWorkingConditionUnit_cool[h]
-            + self.power_tripleWorkingConditionUnit_ice[h]
-            + self.power_tripleWorkingConditionUnit_heat[h]
-            for h in self.hourRange
-        )
+        
+        # self.model.add_constraints(
+        #     self.power[h] == self.power_cool[h] + self.power_ice[h] + self.power_heat[h]
+        #     for h in self.hourRange
+        # )
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(
-                self.electricity_tripleWorkingConditionUnit, self.electricity_price
+                self.power_of_inputs[self.input_type], self.electricity_price
             )
         )
         # self.electricity_cost = self.model.sum(
@@ -4021,7 +4194,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.tripleWorkingConditionUnit_device * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -4040,6 +4213,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
         device_count_min: int = 0,
+        output_type: Union[Literal['cold_water'],Literal['hot_water']] = 'hot_water'
     ):
         """新建一个地源热泵类
 
@@ -4063,11 +4237,11 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        GeothermalHeatPump.index += 1
+        # GeothermalHeatPump.index += 1
         self.electricity_price = electricity_price
-        self.groundSourcedevice_count: ContinuousVarType = self.model.continuous_var(
-            name="groundSourcedevice_count{0}".format(self.classSuffix)
-        )
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
+        #     name="device_count_{0}".format(self.classSuffix)
+        # )
         """
         地源热泵机组设备数量
         """
@@ -4078,7 +4252,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵机组年运维成本
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="GeothermalHeatPumpower_electricity_sum{0}".format(
+            name="electricity_cost_{0}".format(
                 GeothermalHeatPump.index
             )
         )
@@ -4087,26 +4261,31 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         self.device_price = device_price
         self.device_count_max = device_count_max
+        
+        self.input_type = "electricity"
+        self.build_power_of_inputs([self.input_type])
 
-        self.electricity_groundSourceHeatPump: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="electricity_groundSourceHeatPump{0}".format(self.classSuffix),
-        )
+        # self.electricity_groundSourceHeatPump: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="electricity_groundSourceHeatPump{0}".format(self.classSuffix),
+        # )
         """
         地源热泵每小时耗电量
         """
-        self.power_groundSourceHeatPump: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_groundSourceHeatPump{0}".format(self.classSuffix),
-        )
+        self.output_type = output_type
+        self.build_power_of_outputs([self.output_type])
+        # self.power_groundSourceHeatPump: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_groundSourceHeatPump{0}".format(self.classSuffix),
+        # )
         """
         地源热泵每小时输出功率
         """
-        self.coefficientOfPerformance_groundSourceHeatPump = 5
+        self.coefficientOfPerformance = 5
         """
         地源热泵设备运行效率参数 默认为5
         """
@@ -4126,27 +4305,26 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         # self.hourRange = range(0, self.num_hour)
-        # self.model.add_constraint(0 <= self.groundSourcedevice_count)
+        # self.model.add_constraint(0 <= self.device_count)
         # self.model.add_constraint(
-        #     self.groundSourcedevice_count <= self.device_count_max
+        #     self.device_count <= self.device_count_max
         # )
 
         self.add_lower_and_upper_bounds(
-            self.power_groundSourceHeatPump, 0, self.groundSourcedevice_count
+            self.power_of_outputs[self.output_type], 0, self.device_count
         )
         # self.model.add_constraints(
         #     0 <= self.power_groundSourceHeatPump[h] for h in self.hourRange
         # )
         # self.model.add_constraints(
-        #     self.power_groundSourceHeatPump[h] <= self.groundSourcedevice_count
+        #     self.power_groundSourceHeatPump[h] <= self.device_count
         #     for h in self.hourRange
         # )
 
-        self.equations(
-            self.electricity_groundSourceHeatPump,
+        self.equations(self.power_of_inputs[self.input_type],
             self.elementwise_divide(
-                self.power_groundSourceHeatPump,
-                self.coefficientOfPerformance_groundSourceHeatPump,
+                self.power_of_outputs[self.output_type],
+                self.coefficientOfPerformance,
             ),
         )
         # self.model.add_constraints(
@@ -4158,7 +4336,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
 
         self.electricity_cost = self.sum_within_range(
             self.elementwise_multiply(
-                self.electricity_groundSourceHeatPump, self.electricity_price
+                self.power_of_inputs[self.input_type], self.electricity_price
             )
         )
         # self.electricity_cost = self.model.sum(
@@ -4168,7 +4346,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.groundSourcedevice_count * self.device_price / 15
+            == self.device_count * self.device_price / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -4579,6 +4757,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         electricSteamGenerator_device_count_max: float,
+        device_count_max:float,
+        device_price:float,
         electricSteamGenerator_price: float,
         electricSteamGeneratorSolidHeatStorage_price: float,
         electricity_price: Union[np.ndarray, List],
@@ -4646,7 +4826,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricSteamGenerator_device_count_max = (
             electricSteamGenerator_device_count_max
         )
-        self.electricSteamGeneratorSolidHeatStorage_device_count_max = (
+        self.electricSteamGeneratordevice_count_max_solidHeatStorage = (
             electricSteamGenerator_device_count_max * 6
         )
 
@@ -4673,7 +4853,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
             num_hour,
             model,
-            self.electricSteamGeneratorSolidHeatStorage_device_count_max,
+            self.electricSteamGeneratordevice_count_max_solidHeatStorage,
             self.electricSteamGeneratorSolidHeatStorage_price,
             device_price_powerConversionSystem=0,
             conversion_rate_max=2,
@@ -4711,7 +4891,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(model)
+        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(self.model)
         self.model.add_constraint(self.electricSteamGenerator_device >= 0)
         self.model.add_constraint(
             self.electricSteamGenerator_device
