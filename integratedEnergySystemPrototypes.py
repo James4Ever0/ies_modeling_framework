@@ -1077,7 +1077,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             efficiency=efficiency,
             energy_init=energy_init,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
 
@@ -1400,7 +1400,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -1580,7 +1580,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -1953,7 +1953,7 @@ class GasBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -2086,7 +2086,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -2795,7 +2795,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         # 不同工况下热冷效率
         # case_ratio 不同工况下制热量/制冷量的比值
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -3200,7 +3200,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = (
         #     self.model.continuous_var(
@@ -3538,7 +3538,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.output_types = ["cold_water", "ice"]  # matched?
         self.input_type = "electricity"
         self.electricity_price = electricity_price
@@ -3879,7 +3879,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = (
         #     self.model.continuous_var(
@@ -4234,7 +4234,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -4868,10 +4868,10 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricSteamGenerator_device_count_max: float,
+        # device_count_max: float,
         device_count_max: float,
         device_price: float,
-        electricSteamGenerator_price: float,
+        # device_price: float,
         device_price_solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
@@ -4882,8 +4882,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricSteamGenerator_device_count_max (int): 表示地热蒸汽发生器的最大数量
-            electricSteamGenerator_price (float): 表示地热蒸汽发生器的单价
+            device_count_max (int): 表示地热蒸汽发生器的最大数量
+            device_price (float): 表示地热蒸汽发生器的单价
             device_price_solidHeatStorage (float): 地热蒸汽发生器机组固态储热设备单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
             efficiency (float): 效率参数
@@ -4900,48 +4900,50 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        self.classSuffix += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour
-        self.electricSteamGenerator_device: ContinuousVarType = (
-            self.model.continuous_var(
-                name="electricSteamGenerator_device{0}".format(self.classSuffix)
-            )
-        )
+        # self.device_count: ContinuousVarType = (
+        #     self.model.continuous_var(
+        #         name="device_count_{0}".format(self.classSuffix)
+        #     )
+        # )
 
         """
         电蒸汽发生器机组等效单位设备数 大于零的实数
         """
-        self.power_electricSteamGenerator: List[
+        self.power: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_electricSteamGenerator{0}".format(self.classSuffix),
+            name="power_{0}".format(self.classSuffix),
         )
 
         """
         电蒸汽发生器总功率
         """
-        self.power_electricSteamGenerator_steam: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_electricSteamGenerator_steam{0}".format(self.classSuffix),
-        )
+        self.output_type = "steam"
+        self.build_power_of_outputs([self.output_type])
+        # self.power_steam: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_steam{0}".format(self.classSuffix),
+        # )
 
         """
         电蒸汽发生器产生蒸汽功率
         """
-        self.electricSteamGenerator_device_count_max = (
-            electricSteamGenerator_device_count_max
+        self.device_count_max = (
+            device_count_max
         )
-        self.electricSteamGeneratordevice_count_max_solidHeatStorage = (
-            electricSteamGenerator_device_count_max * 6
+        self.device_count_max_solidHeatStorage = (
+            device_count_max * 6
         )
 
         """
         电蒸汽发生器固体蓄热最大设备数=电蒸汽发生器最大设备数 * 6
         """
-        self.electricSteamGenerator_price = electricSteamGenerator_price
+        self.device_price = device_price
         self.device_price_solidHeatStorage = (
             device_price_solidHeatStorage
         )
@@ -4958,10 +4960,10 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.electricSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
+        self.solidHeatStorage = EnergyStorageSystem(
             num_hour,
             model,
-            self.electricSteamGeneratordevice_count_max_solidHeatStorage,
+            self.device_count_max_solidHeatStorage,
             self.device_price_solidHeatStorage,
             device_price_powerConversionSystem=0,
             conversion_rate_max=2,
@@ -4975,7 +4977,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         电蒸汽发生器固态储热,由储能设备`EnergyStorageSystem`创建而来
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="electricSteamGenerator_electricity_cost{0}".format(self.classSuffix)
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
 
         """
@@ -4996,42 +4998,45 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.hourRange = range(0, self.num_hour)
-        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(
-            self.model
+        # self.hourRange = range(0, self.num_hour)
+        self.solidHeatStorage.constraints_register(
         )
-        self.model.add_constraint(self.electricSteamGenerator_device >= 0)
-        self.model.add_constraint(
-            self.electricSteamGenerator_device
-            <= self.electricSteamGenerator_device_count_max
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(
+        #     self.device_count
+        #     <= self.device_count_max
+        # )
+        self.model.add_constraints(
+            self.power[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.power_electricSteamGenerator[h] >= 0 for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_electricSteamGenerator[h] <= self.electricSteamGenerator_device
+            self.power[h] <= self.device_count
             for h in self.hourRange
         )  # 与天气相关
+        
+        
         self.model.add_constraints(
-            self.power_electricSteamGenerator[h]
-            + self.electricSteamGeneratorSolidHeatStorage_device.power[h]
-            == self.power_electricSteamGenerator_steam[h]
+            self.power[h]
+            + self.solidHeatStorage.power[h]
+            == self.power_steam[h]
             for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
+        
+        
         self.model.add_constraints(
-            0 <= self.power_electricSteamGenerator_steam[h] for h in self.hourRange
+            0 <= self.power_steam[h] for h in self.hourRange
         )  # 约束能量不能倒流
         self.model.add_constraints(
             self.electricity_cost
-            == self.power_electricSteamGenerator[h] * self.electricity_price[h]
+            == self.power[h] * self.electricity_price[h]
             for h in self.hourRange
         )
         self.model.add_constraint(
             self.annualized
-            == self.electricSteamGenerator_device
-            * self.electricSteamGenerator_price
+            == self.device_count
+            * self.device_price
             / 15
-            + self.electricSteamGeneratorSolidHeatStorage_device.annualized
+            + self.solidHeatStorage.annualized
             + self.electricity_cost
         )
 
@@ -5202,7 +5207,7 @@ class CitySupply(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = self.model.continuous_var(
             name="citySupplied_device{0}".format(self.classSuffix)
@@ -5329,7 +5334,7 @@ class GridNet(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.model = model
         # self.device_count: ContinuousVarType = self.model.continuous_var(
