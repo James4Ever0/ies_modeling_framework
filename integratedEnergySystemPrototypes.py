@@ -5694,27 +5694,9 @@ class GridNet(IntegratedEnergySystem):
             self.power_of_outputs[self.output_type],
             self.elementwise_multiply(self.power_of_inputs[self.input_type], -1),
         )
-        
+
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
-        
-        
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] <= self.device_count for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][h] <= self.device_count
-            for h in self.hourRange
-        )
-
-        # these are always true, not constraints.
-        self.model.add_constraints(
-            self.power_of_outputs[self.output_type][h] <= self.powerPeak for h in self.hourRange
-        )
-        self.model.add_constraints(
-            self.power_of_inputs[self.input_type][h] <= self.powerPeak
-            for h in self.hourRange
-        )
 
         for direction in self.directions:
             self.__dict__[f"power_{direction}_max"] = self.model.max(
@@ -5722,21 +5704,69 @@ class GridNet(IntegratedEnergySystem):
                     self.__dict__[f"{direction}_type"]
                 ]
             )
+            self.add_upper_bounds(
+                self.__dict__[f"power_of_{direction}s"][
+                    self.__dict__[f"{direction}_type"]
+                ],
+                self.powerPeak,
+            )
+            self.add_upper_bounds(
+                self.__dict__[f"power_of_{direction}s"][
+                    self.__dict__[f"{direction}_type"]
+                ],
+                self.device_count,
+            )
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] <= self.device_count
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][h] <= self.device_count
+        #     for h in self.hourRange
+        # )
+
+        # these are always true, not constraints.
+
+        # self.model.add_constraints(
+        #     self.power_of_outputs[self.output_type][h] <= self.powerPeak
+        #     for h in self.hourRange
+        # )
+        # self.model.add_constraints(
+        #     self.power_of_inputs[self.input_type][h] <= self.powerPeak
+        #     for h in self.hourRange
+        # )
+
         # self.power_output_max = self.model.max(self.power_output)
         # self.power_input_max = self.model.max(self.)
         self.powerPeak = self.model.max(
-            self.__dict__[f"power_{direction}_max"] for direction in self.directions)
+            self.__dict__[f"power_{direction}_max"] for direction in self.directions
+        )
 
         self.baseCost = (
-            self.model.min(
-                self.model.max([self.powerPeak, powerPeak_pre]) * 31,
+            self.min(
+                self.max(self.powerPeak, powerPeak_pre) * 31,
                 self.device_count * 22,  # pre?
             )
             * 12
         )
-        
-        self.electricity_cost = self.sum_within_range(self.elementwise_subtract(*[self.elementwise_multiply(power, price) for power,price in [(self.power_of_outputs[self.output_type][h] * self.electricity_price_output[h]
-        #        - self.power_of_inputs[self.input_type][h] * self.electricity_price_input),()]]))
+
+        self.electricity_cost = self.baseCost + self.sum_within_range(
+            self.elementwise_subtract(
+                *[
+                    self.elementwise_multiply(power, price)
+                    for power, price in [
+                        (
+                            self.power_of_outputs[self.output_type],
+                            self.electricity_price_output,
+                        ),
+                        (
+                            self.power_of_inputs[self.input_type],
+                            self.electricity_price_input,
+                        ),
+                    ]
+                ]
+            )
+        )
 
         # self.electricity_cost = (
         #     self.model.sum(
