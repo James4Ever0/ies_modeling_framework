@@ -5607,15 +5607,15 @@ class GridNet(IntegratedEnergySystem):
         """
         电网每年运维费用 非负实数
         """
-        
+
         # can you not to connect anything as input?
-        self.input_type = self.output_type = 'electricity'
+        self.input_type = self.output_type = "electricity"
 
         self.electricity_consumed = self.model.continuous_var_list(
             [i for i in range(0, num_hour)],
             lb=-bigNumber,  # lower bound
             name="electricity_consumed_{0}".format(self.classSuffix),
-        ) # power consumed?
+        )  # power consumed?
         """
         电网逐小时净用电量 长度为`num_hour`的实数列表 大于零时电网耗电 小于零时电网发电
         """
@@ -5648,15 +5648,21 @@ class GridNet(IntegratedEnergySystem):
         """
         电网基础费用 实数
         """
-        self.power_output_max = self.model.continuous_var(
-            name="power_output_max_{0}".format(self.classSuffix)
-        )
+        self.directions = ["input", "output"]
+        for direction in self.directions:
+            self.__dict__[f"power_{direction}_max"] = self.model.continuous_var(
+                name=f"power_{direction}_max_{self.classSuffix}"
+            )
+
+        # self.power_output_max = self.model.continuous_var(
+        #     name="power_output_max_{0}".format(self.classSuffix)
+        # )
         """
         电网用电峰值 实数
         """
-        self.power_input_max = self.model.continuous_var(
-            name="power_input_max_{0}".format(self.classSuffix)
-        )
+        # self.power_input_max = self.model.continuous_var(
+        #     name="power_input_max_{0}".format(self.classSuffix)
+        # )
         """
         电网发电峰值 实数
         """
@@ -5682,7 +5688,11 @@ class GridNet(IntegratedEnergySystem):
         linearization = Linearization()
         # make sure this time we have power_input as positive number.
         linearization.positive_negitive_constraints_register(
-            self.num_hour, self.model, self.electricity_consumed, self.power_output, self.elementwise_multiply(self.power_input,-1)
+            self.num_hour,
+            self.model,
+            self.electricity_consumed,
+            self.power_output,
+            self.elementwise_multiply(self.power_input, -1),
         )
         self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(self.device_count <= self.device_count_max)
@@ -5690,7 +5700,8 @@ class GridNet(IntegratedEnergySystem):
             self.power_output[h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
-            power_of_inputs[self.input_type][h] <= self.device_count for h in self.hourRange
+            self.power_of_inputs[self.input_type][h] <= self.device_count
+            for h in self.hourRange
         )
 
         # these are always true, not constraints.
@@ -5698,11 +5709,20 @@ class GridNet(IntegratedEnergySystem):
             self.power_output[h] <= self.powerPeak for h in self.hourRange
         )
         self.model.add_constraints(
-            self.power_input[h] <= self.powerPeak for h in self.hourRange
+            self.power_of_inputs[self.input_type][h] <= self.powerPeak
+            for h in self.hourRange
         )
-        self.power_output_max = self.model.max(self.power_output)
-        self.power_input_max = self.model.max(self.power_output)
-        self.powerPeak = self.model.max(self.power_output_max, self.power_input_max)
+
+        for direction in self.directions:
+            self.__dict__[f"power_{direction}_max"] = self.model.max(
+                self.__dict__[f"power_of_{direction}s"][
+                    self.__dict__[f"{direction}_type"]
+                ]
+            )
+        # self.power_output_max = self.model.max(self.power_output)
+        # self.power_input_max = self.model.max(self.)
+        self.powerPeak = self.model.max(
+            self.__dict__[f"power_{direction}_max"] for direction in self.directions)
 
         self.baseCost = (
             self.model.min(
