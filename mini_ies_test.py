@@ -6,6 +6,7 @@
 # using enviorment: `conda activate rosetta`
 
 import os
+from functools import reduce
 
 os.environ["PATH"] = (
     "/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:" + os.environ["PATH"]
@@ -15,52 +16,52 @@ os.environ["PATH"] = (
 
 from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic
 from demo_utils import LoadGet, ResourceGet
-from config import num_hour0, day_node, epsilon
+from config import num_hour, day_node, epsilon
 
-# num_hour0 *=3
+# num_hour *=3
 from docplex.mp.model import Model
 
 simulation_name = "microgrid"
 
 load = LoadGet()
-power_load = load.get_power_load(num_hour0)
+power_load = load.get_power_load(num_hour)
 
-model1 = Model(name=simulation_name)
+model = Model(name=simulation_name)
 
 resource = ResourceGet()
-electricity_price0 = resource.get_electricity_price(num_hour0)
-intensityOfIllumination0 = (
-    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour0) * 100
+electricity_price0 = resource.get_electricity_price(num_hour)
+intensityOfIllumination = (
+    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 100
 )
 
 # 光伏
 photoVoltaic = PhotoVoltaic(
-    num_hour0,
-    model1,
+    num_hour,
+    model,
     photoVoltaic_device_max=5000,  # how about let's alter this?
     device_price=4500,
-    intensityOfIllumination0=intensityOfIllumination0,
+    intensityOfIllumination=intensityOfIllumination,
     efficiency=0.8,
     device_name="PhotoVoltaic",
 )
-photoVoltaic.constraints_register(model1)
+photoVoltaic.constraints_register(model)
 
 # 电网
 gridNet = GridNet(
-    num_hour0,
-    model1,
+    num_hour,
+    model,
     gridNet_device_max=200000,
     device_price=0,
     electricity_price_from=electricity_price0,
     electricity_price_to=0.35,
 )
-gridNet.constraints_register(model1, powerPeak_pre=2000)
+gridNet.constraints_register(model, powerPeak_predicted=2000)
 
 
 # 电池储能
 batteryEnergyStorageSystem = EnergyStorageSystem(
-    num_hour0,
-    model1,
+    num_hour,
+    model,
     energyStorageSystem_device_max=20000,
     energyStorageSystem_price=1800 / 20,  # this won't save anything.
     powerConversionSystem_price=250 / 10,
@@ -72,7 +73,7 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
-    model1, register_period_constraints=0, day_node=day_node
+    model, register_period_constraints=0, day_node=day_node
 )  # why it is not working under mode 0?
 
 # define energy balance restrictions
@@ -80,42 +81,21 @@ batteryEnergyStorageSystem.constraints_register(  # using mode 1?
 
 from integratedEnergySystemPrototypes import EnengySystemUtils
 
-util = EnengySystemUtils(model1,num_hour0)
+util = EnengySystemUtils(model, num_hour)
 
 
-# use the input/output way
-from typing import Union,Literal
-# usually. we are talking about something else.
-class Node:
-    def __init__(self,model:Model,num_hour:int,node_type:Union[Literal['equal'],Literal['greater_equal']]):
-        self.util = EnergySystemUtils(model, num_hour)
-        self.node_type = node_type
-        self.inputs = []
-        self.outputs = []
-        self.model = model
-    def add_input(input_port):
-        self.
-        self.inputs.append(input_port)
-    def add_output(output_port):
-        self.outputs.append(output_port)
-    def build_relations(self):
-        inputs = self.model.sum(*self.inputs)
-        outputs = self.model.sum(*self.outputs)
-        if self.node_type == "equal":
-            self.util.equations(inputs,outputs)
-        else:
-            self.util.add_lower_bounds(inputs, outputs)
 
-# model1.add_constraints(
+
+# model.add_constraints(
 #     power_load[h]
 #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]
 #     - photoVoltaic.power_photoVoltaic[h]
 #     == gridNet.total_power[h]
-#     for h in range(num_hour0)
+#     for h in range(num_hour)
 # )
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
 from mini_data_log_utils import solve_and_log
 
-solve_and_log(systems, model1, simulation_name)
+solve_and_log(systems, model, simulation_name)

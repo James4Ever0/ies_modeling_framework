@@ -390,6 +390,9 @@ class Linearization(object):
 
 
 ############################UTILS############################
+
+
+
 class EnengySystemUtils(object):
     def __init__(self, model: Model, num_hour: int):
         self.model = model
@@ -510,6 +513,41 @@ class EnengySystemUtils(object):
         result = self.model.sum(variables[index] for index in index_range)
         return result
 
+
+
+# use the input/output way
+from typing import Union, Literal, List
+
+# usually. we are talking about something else.
+
+class EnergyFlowNode:
+    def __init__(
+        self,
+        model: Model,
+        num_hour: int,
+        node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
+    ):
+        self.util = EnengySystemUtils(model, num_hour)
+        self.node_type = node_type
+        self.inputs = []
+        self.outputs = []
+        self.model = model
+
+    def add_input(self,input_port: List):
+        self.util.add_lower_bounds(input_port, 0)
+        self.inputs.append(input_port)
+
+    def add_output(self,output_port: List):
+        self.util.add_lower_bounds(output_port, 0)
+        self.outputs.append(output_port)
+
+    def build_relations(self):
+        inputs = reduce(self.util.elementwise_add, self.inputs)
+        outputs = reduce(self.util.elementwise_add, self.outputs)
+        if self.node_type == "equal":
+            self.util.equations(inputs, outputs)
+        else:
+            self.util.add_lower_bounds(inputs, outputs)
 
 # another name for IES?
 class IntegratedEnergySystem(EnengySystemUtils):
