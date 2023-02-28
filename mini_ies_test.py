@@ -13,7 +13,7 @@ os.environ["PATH"] = (
 
 # print(os.environ['PATH'])
 
-from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic, 
+from integratedEnergySystemPrototypes import GridNet, EnergyStorageSystem, PhotoVoltaic, symbols
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour, day_node, epsilon
 
@@ -69,6 +69,8 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     energyStorageSystem_init=0.5,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
     stateOfCharge_min=0,  # state of charge
     stateOfCharge_max=1,
+    input_type='electricity',
+    output_type='electricity'
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
@@ -97,17 +99,19 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 
 # no checking!
 
-
 Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 Node2 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 
 Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
-Node1.add_output()
-Node1.add_output()
+Node1.add_output(batteryEnergyStorageSystem.power_of_inputs['electricity'])
+Node1.add_output(gridNet.power_of_inputs['electricity'])
 
-Node2.add_input()
-Node2.add_input()
+Node2.add_input(gridNet.power_of_outputs['electricity'])
+Node2.add_input(batteryEnergyStorageSystem.power_of_outputs['electricity'])
 Node2.add_output(power_load)
+
+Node1.build()
+Node2.build()
 
 # model.add_constraints(
 #     power_load[h]
