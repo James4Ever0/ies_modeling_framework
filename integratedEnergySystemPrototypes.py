@@ -5620,18 +5620,18 @@ class GridNet(IntegratedEnergySystem):
         电网逐小时净用电量 长度为`num_hour`的实数列表 大于零时电网耗电 小于零时电网发电
         """
         self.build_power_of_inputs([self.input_type])
-        self.build_power_of_inputs([self.input_type])
+        self.build_power_of_outputs([self.output_type])
 
-        # self.powerFrom = self.model.continuous_var_list(
+        # self.power_output = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="powerFrom{0}".format(self.classSuffix),
+        #     name="power_output{0}".format(self.classSuffix),
         # )
         # """
         # 电网逐小时用电量 长度为`num_hour`的非负实数列表
         # """
-        # self.powerTo = self.model.continuous_var_list(
+        # self.power_input = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
-        #     name="powerTo_{0}".format(self.classSuffix),
+        #     name="power_input_{0}".format(self.classSuffix),
         # )
         """
         电网逐小时发电量 长度为`num_hour`的非负实数列表
@@ -5648,14 +5648,14 @@ class GridNet(IntegratedEnergySystem):
         """
         电网基础费用 实数
         """
-        self.powerFrom_max = self.model.continuous_var(
-            name="powerFrom_max{0}".format(self.classSuffix)
+        self.power_output_max = self.model.continuous_var(
+            name="power_output_max{0}".format(self.classSuffix)
         )
         """
         电网用电峰值 实数
         """
-        self.powerTo_max = self.model.continuous_var(
-            name="powerTo_max{0}".format(self.classSuffix)
+        self.power_input_max = self.model.continuous_var(
+            name="power_input_max{0}".format(self.classSuffix)
         )
         """
         电网发电峰值 实数
@@ -5681,27 +5681,27 @@ class GridNet(IntegratedEnergySystem):
         self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         linearization.positive_negitive_constraints_register(
-            self.num_hour, self.model, self.electricity_consumed, self.powerFrom, self.powerTo
+            self.num_hour, self.model, self.electricity_consumed, self.power_output, self.power_input
         )
         self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(self.device_count <= self.device_count_max)
         self.model.add_constraints(
-            self.powerFrom[h] <= self.device_count for h in self.hourRange
+            self.power_output[h] <= self.device_count for h in self.hourRange
         )
         self.model.add_constraints(
-            self.powerTo[h] <= self.device_count for h in self.hourRange
+            self.power_input[h] <= self.device_count for h in self.hourRange
         )
 
         # these are always true, not constraints.
         self.model.add_constraints(
-            self.powerFrom[h] <= self.powerPeak for h in self.hourRange
+            self.power_output[h] <= self.powerPeak for h in self.hourRange
         )
         self.model.add_constraints(
-            self.powerTo[h] <= self.powerPeak for h in self.hourRange
+            self.power_input[h] <= self.powerPeak for h in self.hourRange
         )
-        self.powerFrom_max = self.model.max(self.powerFrom)
-        self.powerTo_max = self.model.max(self.powerFrom)
-        self.powerPeak = self.model.max(self.powerFrom_max, self.powerTo_max)
+        self.power_output_max = self.model.max(self.power_output)
+        self.power_input_max = self.model.max(self.power_output)
+        self.powerPeak = self.model.max(self.power_output_max, self.power_input_max)
 
         self.baseCost = (
             self.model.min(
@@ -5713,8 +5713,8 @@ class GridNet(IntegratedEnergySystem):
 
         self.electricity_cost = (
             self.model.sum(
-                self.powerFrom[h] * self.electricity_price_from[h]
-                + self.powerTo[h] * self.electricity_price_to
+                self.power_output[h] * self.electricity_price_from[h]
+                + self.power_input[h] * self.electricity_price_to
                 for h in self.hourRange
             )
             + self.baseCost
