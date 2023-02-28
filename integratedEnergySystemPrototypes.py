@@ -641,7 +641,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
         device_count_min: float = 0,
-        input_type: str = "energy",
+        input_type: str = "energy_st",
         output_type: str = "energy",
         classObject=None,
     ):
@@ -1400,7 +1400,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        #self.classSuffix += 1
+        # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -4118,8 +4118,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     <= bigNumber * self.tripleWorkingConditionUnit_heat_flag[h]
         #     for h in self.hourRange
         # )
-        
-        
+
         self.equations(
             reduce(
                 self.elementwise_add,
@@ -4138,8 +4137,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     == 1
         #     for h in self.hourRange
         # )
-        
-        
+
         self.equations(
             self.power_of_inputs[self.input_type],
             reduce(
@@ -4153,7 +4151,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 ],
             ),
         )
-        
+
         # self.model.add_constraints(
         #     self.electricity_tripleWorkingConditionUnit[h]
         #     == self.power_cool[h]
@@ -4164,8 +4162,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         #     / self.coefficientOfPerformance_tripleWorkingConditionUnit_heat
         #     for h in self.hourRange
         # )
-        
-        
+
         self.equations(
             self.power,
             reduce(
@@ -4176,7 +4173,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 ],
             ),
         )
-        
+
         # self.model.add_constraints(
         #     self.power[h] == self.power_cool[h] + self.power_ice[h] + self.power_heat[h]
         #     for h in self.hourRange
@@ -4213,7 +4210,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
         device_count_min: int = 0,
-        output_type: Union[Literal['cold_water'],Literal['warm_water']] = 'warm_water'
+        output_type: Union[Literal["cold_water"], Literal["warm_water"]] = "warm_water",
     ):
         """新建一个地源热泵类
 
@@ -4252,16 +4249,14 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         地源热泵机组年运维成本
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="electricity_cost_{0}".format(
-                self.classSuffix
-            )
+            name="electricity_cost_{0}".format(self.classSuffix)
         )
         """
         地源热泵每小时耗电费用
         """
         self.device_price = device_price
         self.device_count_max = device_count_max
-        
+
         self.input_type = "electricity"
         self.build_power_of_inputs([self.input_type])
 
@@ -4321,7 +4316,8 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        self.equations(self.power_of_inputs[self.input_type],
+        self.equations(
+            self.power_of_inputs[self.input_type],
             self.elementwise_divide(
                 self.power_of_outputs[self.output_type],
                 self.coefficientOfPerformance,
@@ -4352,7 +4348,11 @@ class GeothermalHeatPump(IntegratedEnergySystem):
 
 
 # 水蓄能,可蓄highTemperature,可以蓄低温
+# inputs: "cold_water_storage", "warm_water_storage", "hot_water_storage"
+# outputs: "cold_water", "warm_water", "hot_water"
 # waterStorageTank,可变容量的储能体
+
+
 class WaterEnergyStorage(IntegratedEnergySystem):
     """
     水蓄能类
@@ -4412,6 +4412,13 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # self.num_hour = num_hour
         self.model = model
         # 对于水蓄能,优化的变量为水罐的体积
+
+        self.input_types = [
+            "cold_water_storage",
+            "warm_water_storage",
+            "hot_water_storage",
+        ]
+        self.output_types = ["cold_water", "warm_water", "hot_water"]
         self.waterStorageTank = EnergyStorageSystemVariable(
             num_hour,
             model,
@@ -4425,7 +4432,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             stateOfCharge_max,
         )
         """
-        水蓄能罐,由可变储能设备`EnergyStorageSystemVariable`创建而来
+        水蓄能罐,由可变储能设备'EnergyStorageSystemVariable'创建而来
         """
         # self.index = self.classSuffix
         self.device_count_cold_water: List[
@@ -4757,8 +4764,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         electricSteamGenerator_device_count_max: float,
-        device_count_max:float,
-        device_price:float,
+        device_count_max: float,
+        device_price: float,
         electricSteamGenerator_price: float,
         electricSteamGeneratorSolidHeatStorage_price: float,
         electricity_price: Union[np.ndarray, List],
@@ -4792,9 +4799,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         # self.num_hour = num_hour
         self.electricSteamGenerator_device: ContinuousVarType = (
             self.model.continuous_var(
-                name="electricSteamGenerator_device{0}".format(
-                    self.classSuffix
-                )
+                name="electricSteamGenerator_device{0}".format(self.classSuffix)
             )
         )
 
@@ -4815,9 +4820,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_electricSteamGenerator_steam{0}".format(
-               self.classSuffix
-            ),
+            name="power_electricSteamGenerator_steam{0}".format(self.classSuffix),
         )
 
         """
@@ -4867,9 +4870,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         电蒸汽发生器固态储热,由储能设备`EnergyStorageSystem`创建而来
         """
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
-            name="electricSteamGenerator_electricity_cost{0}".format(
-                self.classSuffix
-            )
+            name="electricSteamGenerator_electricity_cost{0}".format(self.classSuffix)
         )
 
         """
@@ -4891,7 +4892,9 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(self.model)
+        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(
+            self.model
+        )
         self.model.add_constraint(self.electricSteamGenerator_device >= 0)
         self.model.add_constraint(
             self.electricSteamGenerator_device
