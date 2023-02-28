@@ -5626,11 +5626,11 @@ class GridNet(IntegratedEnergySystem):
         # can you not to connect anything as input?
         self.input_type = self.output_type = "electricity"
 
-        self.electricity_consumed = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            lb=-bigNumber,  # lower bound
-            name="electricity_consumed_{0}".format(self.classSuffix),
-        )  # power consumed?
+        # self.electricity_consumed = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     lb=-bigNumber,  # lower bound
+        #     name="electricity_consumed_{0}".format(self.classSuffix),
+        # )  # power consumed?
         """
         电网逐小时下载电量 长度为`num_hour`的实数列表
         """
@@ -5663,11 +5663,18 @@ class GridNet(IntegratedEnergySystem):
         """
         电网基础费用 实数
         """
-        self.directions = ["input", "consumed"]
+        self.directions = ["upload", "download"]
         for direction in self.directions:
-            self.__dict__[f"power_{direction}_max"] = self.model.continuous_var(
+            self.__dict__[f"electricity_{direction}_max"] = self.model.continuous_var(
                 name=f"power_{direction}_max_{self.classSuffix}"
             )
+            self.__dict__[f"electricity_{direction}"] = self.model.continuous_var_list(
+                [i for i in range(0, num_hour)],
+                lb=0,  # lower bound
+                name=f"electricity_{direction}_{self.classSuffix}",
+            )
+
+        self.equations(self.power_of_inputs[self.input_type], self.power_upload)
 
         # self.power_output_max = self.model.continuous_var(
         #     name="power_output_max_{0}".format(self.classSuffix)
