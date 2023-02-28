@@ -4428,11 +4428,11 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         水蓄能罐,由可变储能设备`EnergyStorageSystemVariable`创建而来
         """
         # self.index = self.classSuffix
-        self.waterStorageTank_device_cool: List[
+        self.device_count_cold_water: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="waterStorageTank_device_cool{0}".format(self.classSuffix),
+            name="device_count_cold_water_{0}".format(self.classSuffix),
         )
         """
         每小时水蓄能在蓄冷模式下的储水量
@@ -4582,7 +4582,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             reduce(
                 self.elementwise_add,
                 [
-                    self.waterStorageTank_device_cool,
+                    self.device_count_cold_water,
                     self.waterStorageTank_device_heat,
                     self.waterStorageTank_device_gheat,
                 ],
@@ -4590,7 +4590,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         )
         # self.model.add_constraints(
         #     self.waterStorageTank.device_count[h]
-        #     == self.waterStorageTank_device_cool[h]
+        #     == self.device_count_cold_water[h]
         #     + self.waterStorageTank_device_heat[h]
         #     + self.waterStorageTank_device_gheat[h]
         #     for h in self.hourRange
@@ -4598,20 +4598,20 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
         # (1)
         self.model.add_constraints(
-            self.waterStorageTank_device_cool[h]
+            self.device_count_cold_water[h]
             <= self.waterStorageTank_Volume * self.ratio_cool
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.waterStorageTank_device_cool[h]
+            self.device_count_cold_water[h]
             <= self.waterStorageTank_cool_flag[h] * bigNumber
             for h in self.hourRange
         )
         self.model.add_constraints(
-            self.waterStorageTank_device_cool[h] >= 0 for h in self.hourRange
+            self.device_count_cold_water[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.waterStorageTank_device_cool[h]
+            self.device_count_cold_water[h]
             >= self.waterStorageTank_Volume * self.ratio_cool
             - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
             for h in self.hourRange
