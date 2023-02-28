@@ -390,10 +390,126 @@ class Linearization(object):
 
 
 ############################UTILS############################
+class EnengySystemUtils(object):
+    def __init__(self,model:Model):
+        self.model=model
+        
+    def constraint_multiplexer(
+        self, variables, values, index_range=None, constraint_function=lambda x: x
+    ):
+        index_range = self.get_index_range(index_range)
 
+        iterable = isinstance(values, List)
+
+        for index in index_range:
+            if iterable:
+                value = values[index]
+            else:
+                value = values
+            constraint_function(variables[index], value)
+
+    def add_lower_bound(self, variable, lower_bound):
+        self.model.add_constraint(lower_bound <= variable)  # 最大装机量
+
+    def add_lower_bounds(self, variables, lower_bounds, index_range=None):
+        index_range = self.get_index_range(index_range)
+
+        self.constraint_multiplexer(
+            variables, lower_bounds, index_range, self.add_lower_bound
+        )
+
+    def add_upper_bound(self, variable, upper_bound):
+        self.model.add_constraint(upper_bound >= variable)  # 最大装机量
+
+    def add_upper_bounds(self, variables, upper_bounds, index_range=None):
+        index_range = self.get_index_range(index_range)
+
+        self.constraint_multiplexer(
+            variables, upper_bounds, index_range, self.add_upper_bound
+        )
+
+    def equation(self, variable, value):
+        self.model.add_constraint(variable == value)
+
+    def equations(self, variables, values, index_range=None):
+        self.constraint_multiplexer(
+            variables, values, index_range=index_range, equation=self.equation
+        )
+
+    def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
+        self.add_lower_bound(variable, lower_bound)
+        self.add_upper_bound(variable, upper_bound)
+
+    def add_lower_and_upper_bounds(
+        self, variable, lower_bounds, upper_bounds, index_range=None
+    ):
+        self.add_lower_bounds(variable, lower_bounds, index_range=index_range)
+        self.add_upper_bounds(variable, upper_bounds, index_range=index_range)
+
+        # self.model.add_constraint(self.device_count <= self.device_count_max)  # 最大装机量
+        # self.model.add_constraint(self.device_count >= 0)
+        # self.model.add_constraint(self.device_count_min<=self.device_count )
+
+    def elementwise_operation(self, variables, values, operation_function):
+        iterable = isinstance(values, List)
+        results = []
+        for index, variable in enumerate(variables):
+            if iterable:
+                value = values[index]
+            else:
+                value = values
+            result = operation_function(variable, value)
+            results.append(result)
+        return results
+
+    def divide(self, variable, value):
+        return variable / value
+
+    def multiply(self, variable, value):
+        return variable * value
+
+    def add(self, variable, value):
+        return variable + value
+
+    def subtract(self, variable, value):
+        return variable - value
+
+    def min(self, variable_a, value):
+        return self.model.min(variable_a, value)
+
+    def max(self, variable_a, value):
+        return self.model.max(variable_a, value)
+
+    def elementwise_min(self, variables, values):
+        return self.elementwise_operation(variables, values, self.min)
+
+    def elementwise_max(self, variables, values):
+        return self.elementwise_operation(variables, values, self.max)
+
+    def elementwise_divide(self, variables, values):
+        return self.elementwise_operation(variables, values, self.divide)
+
+    def elementwise_multiply(self, variables, values):
+        return self.elementwise_operation(variables, values, self.multiply)
+
+    def elementwise_add(self, variables, values):
+        return self.elementwise_operation(variables, values, self.add)
+
+    def elementwise_subtract(self, variables, values):
+        return self.elementwise_operation(variables, values, self.subtract)
+
+    def get_index_range(self, index_range=None):
+        if index_range is None:
+            index_range = self.hourRange
+        return index_range
+
+    def sum_within_range(self, variables, index_range=None):
+        index_range = self.get_index_range(index_range)
+        result = self.model.sum(variables[index] for index in index_range)
+        return result
 
 # another name for IES?
-class IntegratedEnergySystem(object):
+class IntegratedEnergySystem(EnergySystemUtils):
     """
     综合能源系统基类
     """
@@ -416,7 +532,7 @@ class IntegratedEnergySystem(object):
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
         # self.device_name = device_name
-        IntegratedEnergySystem.device_index += 1
+        self.__class__.device_index += 1
         classObject.index += 1
         self.hourRange = range(0, self.num_hour)
         self.className = classObject.__name__
@@ -487,123 +603,6 @@ class IntegratedEnergySystem(object):
                 }
             )
 
-    def constraint_multiplexer(
-        self, variables, values, index_range=None, constraint_function=lambda x: x
-    ):
-        index_range = self.get_index_range(index_range)
-
-        iterable = isinstance(values, List)
-
-        for index in index_range:
-            if iterable:
-                value = values[index]
-            else:
-                value = values
-            constraint_function(variables[index], value)
-
-    def add_lower_bound(self, variable, lower_bound):
-        self.model.add_constraint(lower_bound <= variable)  # 最大装机量
-
-    def add_lower_bounds(self, variables, lower_bounds, index_range=None):
-        index_range = self.get_index_range(index_range)
-
-        self.constraint_multiplexer(
-            variables, lower_bounds, index_range, self.add_lower_bound
-        )
-
-    def add_upper_bound(self, variable, upper_bound):
-        self.model.add_constraint(upper_bound >= variable)  # 最大装机量
-
-    def add_upper_bounds(self, variables, upper_bounds, index_range=None):
-        index_range = self.get_index_range(index_range)
-
-        self.constraint_multiplexer(
-            variables, upper_bounds, index_range, self.add_upper_bound
-        )
-
-    def equation(self, variable, value):
-        self.model.add_constraint(variable == value)
-
-    def equations(self, variables, values, index_range=None):
-        self.constraint_multiplexer(
-            variables, values, index_range=index_range, equation=self.equation
-        )
-
-    def add_lower_and_upper_bound(self, variable, lower_bound, upper_bound):
-        self.add_lower_bound(variable, lower_bound)
-        self.add_upper_bound(variable, upper_bound)
-
-    def add_lower_and_upper_bounds(
-        self, variable, lower_bounds, upper_bounds, index_range=None
-    ):
-        self.add_lower_bounds(variable, lower_bounds, index_range=index_range)
-        self.add_upper_bounds(variable, upper_bounds, index_range=index_range)
-
-    def constraints_register(self):
-        self.add_lower_and_upper_bound(
-            self.device_count, self.device_count_min, self.device_count_max
-        )
-        # self.model.add_constraint(self.device_count <= self.device_count_max)  # 最大装机量
-        # self.model.add_constraint(self.device_count >= 0)
-        # self.model.add_constraint(self.device_count_min<=self.device_count )
-
-    def elementwise_operation(self, variables, values, operation_function):
-        iterable = isinstance(values, List)
-        results = []
-        for index, variable in enumerate(variables):
-            if iterable:
-                value = values[index]
-            else:
-                value = values
-            result = operation_function(variable, value)
-            results.append(result)
-        return results
-
-    def divide(self, variable, value):
-        return variable / value
-
-    def multiply(self, variable, value):
-        return variable * value
-
-    def add(self, variable, value):
-        return variable + value
-
-    def subtract(self, variable, value):
-        return variable - value
-
-    def min(self, variable_a, value):
-        return self.model.min(variable_a, value)
-
-    def max(self, variable_a, value):
-        return self.model.max(variable_a, value)
-
-    def elementwise_min(self, variables, values):
-        return self.elementwise_operation(variables, values, self.min)
-
-    def elementwise_max(self, variables, values):
-        return self.elementwise_operation(variables, values, self.max)
-
-    def elementwise_divide(self, variables, values):
-        return self.elementwise_operation(variables, values, self.divide)
-
-    def elementwise_multiply(self, variables, values):
-        return self.elementwise_operation(variables, values, self.multiply)
-
-    def elementwise_add(self, variables, values):
-        return self.elementwise_operation(variables, values, self.add)
-
-    def elementwise_subtract(self, variables, values):
-        return self.elementwise_operation(variables, values, self.subtract)
-
-    def get_index_range(self, index_range=None):
-        if index_range is None:
-            index_range = self.hourRange
-        return index_range
-
-    def sum_within_range(self, variables, index_range=None):
-        index_range = self.get_index_range(index_range)
-        result = self.model.sum(variables[index] for index in index_range)
-        return result
 
 
 # TODO: 加上输出类型区分校验
