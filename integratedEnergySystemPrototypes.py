@@ -48,7 +48,7 @@ class IntegratedEnergySystem(object):
         device_name: str,
         device_count_max: float,
         device_count_min: float,
-        device_price: float,
+        solidHeatStorage: float,
         classObject
         # className: str,
         # classIndex: int,
@@ -69,7 +69,7 @@ class IntegratedEnergySystem(object):
         assert device_count_min >= 0
         assert device_count_max >= device_count_min
         self.device_count_min = device_count_min
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
         self.classSuffix = f"{self.className}_{self.classIndex}"
 
         self.device_count: ContinuousVarType = self.model.continuous_var(
@@ -260,7 +260,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,  # float?
+        solidHeatStorage: float,  # float?
         intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,  # efficiency
         device_name: str = "PhotoVoltaic",
@@ -276,7 +276,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 光伏设备机组最大装机量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 设备运行效率
             device_name (str): 光伏机组名称,默认为"PhotoVoltaic"
@@ -293,7 +293,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
             # className=className,
             # classIndex=classIndex,
@@ -346,7 +346,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         # )
 
         self.equation(
-            self.annualized, self.device_count * self.device_price / 15
+            self.annualized, self.device_count * self.solidHeatStorage / 15
         )  # 每年维护费用？折价？回收成本？利润？
 
     def total_cost(self, solution: SolveSolution) -> float:  # 购买设备总费用
@@ -357,7 +357,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         Return:
             购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
-        return solution.get_value(self.device_count) * self.device_price
+        return solution.get_value(self.device_count) * self.solidHeatStorage
 
 
 from typing import Literal
@@ -376,7 +376,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,  # what is this device?
+        solidHeatStorage: float,  # what is this device?
         efficiency: float,
         device_name: str = "LiBrRefrigeration",
         input_type: Union[Literal["steam"], Literal["hot_water"]] = "steam",
@@ -387,7 +387,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 溴化锂制冷设备机组最大装机量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             efficiency (float): 设备运行效率
             device_name (str): 溴化锂制冷机组名称,默认为"LiBrRefrigeration"
         """
@@ -398,7 +398,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # LiBrRefrigeration.index += 1
@@ -438,7 +438,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         """
 
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         self.efficiency = efficiency
         # # self.annualized: ContinuousVarType =self.model.continuous_var(
         #     name="LiBr_annualized{0}".format(self.classSuffix)
@@ -490,7 +490,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         #     for h in self.hourRange  # how does this work out? what is the meaning of this?
         # )
 
-        self.equation(self.annualized, self.device_count * self.device_price / 15)
+        self.equation(self.annualized, self.device_count * self.solidHeatStorage / 15)
 
 
 # 柴油发电机
@@ -506,7 +506,7 @@ class DieselEngine(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: int,
-        device_price: int,
+        solidHeatStorage: int,
         run_price: int,
         device_name: str = "dieselEngine",
         device_count_min: int = 0,
@@ -516,7 +516,7 @@ class DieselEngine(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 柴油发电机设备机组最大装机量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             run_price (float): 运维价格
             device_name (str): 柴油发电机机组名称,默认为"DieselEngine"
         """
@@ -528,7 +528,7 @@ class DieselEngine(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
 
@@ -538,7 +538,7 @@ class DieselEngine(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # DieselEngine.index += 1
@@ -559,7 +559,7 @@ class DieselEngine(IntegratedEnergySystem):
         初始化每个小时内柴油发电机机组发电量 大于零的实数 一共`num_hour`个变量
         """
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         self.run_price = run_price
         self.electricity_output_sum = self.sum_within_range(
             self.power_of_outputs[self.output_type], self.hourRange
@@ -603,7 +603,7 @@ class DieselEngine(IntegratedEnergySystem):
         # )
         self.equation(
             self.annualized,  # 年运行成本?
-            self.device_count * self.device_price / 15
+            self.device_count * self.solidHeatStorage / 15
             + self.electricity_output_sum * self.run_price * (365 * 24) / self.num_hour,
         )
 
@@ -616,7 +616,7 @@ class DieselEngine(IntegratedEnergySystem):
             购买设备总费用 = 机组等效单位设备数 * 单位设备价格
         """
         # energyStorageSystem you will have it?
-        return solution.get_value(self.device_count) * self.device_price
+        return solution.get_value(self.device_count) * self.solidHeatStorage
 
 
 # 储能系统基类
@@ -632,8 +632,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
-        device_price_powerConversionSystem: float,
+        solidHeatStorage: float,
+        solidHeatStorage_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -650,8 +650,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 储能系统设备机组最大装机量
-            device_price (float): 储能装置的购置价格。
-            device_price_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
+            solidHeatStorage (float): 储能装置的购置价格。
+            solidHeatStorage_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
             efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
             energy_init (float): 储能装置的初始能量。
@@ -667,7 +667,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=classObject if classObject else self.__class__,
         )
         # EnergyStorageSystem.index += 1
@@ -734,8 +734,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
-        self.device_price_powerConversionSystem = device_price_powerConversionSystem  # powerConversionSystem? power conversion system?
+        # self.solidHeatStorage = solidHeatStorage
+        self.solidHeatStorage_powerConversionSystem = solidHeatStorage_powerConversionSystem  # powerConversionSystem? power conversion system?
         # self.num_hour = num_hour
         self.device_count_powerConversionSystem: ContinuousVarType = (
             self.model.continuous_var(
@@ -938,22 +938,22 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.equation(
             self.annualized,
             (
-                self.device_count * self.device_price
+                self.device_count * self.solidHeatStorage
                 + (
                     self.model.max(self.device_count_powerConversionSystem)
                     if isinstance(self.device_count_powerConversionSystem, List)
                     else self.device_count_powerConversionSystem
                 )
-                * self.device_price_powerConversionSystem
+                * self.solidHeatStorage_powerConversionSystem
             )
             / 15,
         )
         # self.model.add_constraint(
         #     self.annualized
         #     == (
-        #         self.device_count * self.device_price
+        #         self.device_count * self.solidHeatStorage
         #         + self.device_count_powerConversionSystem
-        #         * self.device_price_powerConversionSystem
+        #         * self.solidHeatStorage_powerConversionSystem
         #     )
         #     / 15
         # )
@@ -1008,13 +1008,13 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             购买设备总费用 = 储能系统设备数 * 储能设备设备价格+功率转化设备数 * 功率转化设备价格
         """
         return (
-            solution.get_value(self.device_count) * self.device_price
+            solution.get_value(self.device_count) * self.solidHeatStorage
             + (
                 max(solution.get_values(self.device_count_powerConversionSystem))
                 if isinstance(self.device_count_powerConversionSystem, List)
                 else solution.get_value(self.device_count_powerConversionSystem)
             )
-            * self.device_price_powerConversionSystem
+            * self.solidHeatStorage_powerConversionSystem
         )
 
 
@@ -1032,8 +1032,8 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
-        device_price_powerConversionSystem: float,
+        solidHeatStorage: float,
+        solidHeatStorage_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -1049,8 +1049,8 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 储能系统设备机组最大装机量
-            device_price (float): 储能装置的购置价格。
-            device_price_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
+            solidHeatStorage (float): 储能装置的购置价格。
+            solidHeatStorage_powerConversionSystem (float): 储能装置与电网之间的 PCS 转换价格。
             efficiency(float): 储能装置的充放能效率。
             conversion_rate_max (float): 储能装置的最大充放倍率。
             energy_init (float): 储能装置的初始储能百分比。
@@ -1066,18 +1066,18 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
             stateOfCharge_min=stateOfCharge_min,
             stateOfCharge_max=stateOfCharge_max,
             input_type=input_type,
             output_type=output_type,
-            device_price_powerConversionSystem=device_price_powerConversionSystem,
+            solidHeatStorage_powerConversionSystem=solidHeatStorage_powerConversionSystem,
             conversion_rate_max=conversion_rate_max,
             efficiency=efficiency,
             energy_init=energy_init,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
 
@@ -1124,8 +1124,8 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         模型中的连续变量列表,长度为`num_hour`,表示每小时储能装置的能量
         """
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
-        # self.device_price_powerConversionSystem = device_price_powerConversionSystem
+        # self.solidHeatStorage = solidHeatStorage
+        # self.solidHeatStorage_powerConversionSystem = solidHeatStorage_powerConversionSystem
         # self.num_hour = num_hour
         self.device_count_powerConversionSystem: List[
             ContinuousVarType
@@ -1370,21 +1370,21 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
-        device_price_solidHeatStorage: float,  # (csgrgtxr是啥)
+        solidHeatStorage: float,
+        solidHeatStorage_solidHeatStorage: float,  # (csgrgtxr是啥)
         intensityOfIllumination: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "troughPhotoThermal",
         device_count_min: int = 0,
-        device_price_powerConversionSystem: float = 100,
+        solidHeatStorage_powerConversionSystem: float = 100,
     ):
         """
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 槽式光热设备机组最大装机量
-            device_price (float): 槽式光热设备的购置价格。
-            device_price_solidHeatStorage (float): 槽式光热储能设备价格
+            solidHeatStorage (float): 槽式光热设备的购置价格。
+            solidHeatStorage_solidHeatStorage (float): 槽式光热储能设备价格
             intensityOfIllumination (Union[np.ndarray, List]): 24小时光照强度
             efficiency (float): 效率
             device_name (str): 槽式光热机组名称,默认为"troughPhotoThermal"
@@ -1397,10 +1397,10 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -1433,8 +1433,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         固态储热最大设备量 = 槽式光热机组最大装机量 * 6
         """
-        self.device_price = device_price
-        self.device_price_solidHeatStorage = device_price_solidHeatStorage
+        self.solidHeatStorage = solidHeatStorage
+        self.solidHeatStorage_solidHeatStorage = solidHeatStorage_solidHeatStorage
         self.intensityOfIllumination = (
             intensityOfIllumination  # intensityOfIllumination
         )
@@ -1450,8 +1450,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             num_hour,
             model,
             self.device_count_max_solidHeatStorage,
-            self.device_price_solidHeatStorage,
-            device_price_powerConversionSystem=device_price_powerConversionSystem,
+            self.solidHeatStorage_solidHeatStorage,
+            solidHeatStorage_powerConversionSystem=solidHeatStorage_powerConversionSystem,
             conversion_rate_max=2,  # change?
             efficiency=0.9,
             energy_init=1,
@@ -1525,12 +1525,12 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.add_lower_bounds(self.power_of_outputs[self.output_type], 0)
         self.equation(
             self.annualized,
-            self.device_count * self.device_price / 15
+            self.device_count * self.solidHeatStorage / 15
             + self.solidHeatStorage.annualized,
         )
         # self.model.add_constraint(
         #     self.annualized
-        #     == self.device_count * self.device_price / 15
+        #     == self.device_count * self.solidHeatStorage / 15
         #     + self.solidHeatStorage.annualized
         # )
 
@@ -1550,7 +1550,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         gas_price: Union[np.ndarray, List],
         rated_power: float,
         electricity_to_heat_ratio: float,  # drratio?
@@ -1563,7 +1563,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示热电联产机组的最大等效设备数量
-            device_price (float): 表示热电联产等效设备的单价
+            solidHeatStorage (float): 表示热电联产等效设备的单价
             gas_price (Union[np.ndarray, List]): 表示燃气的单价
             rated_power (float): 表示每台热电联产设备的等效设备数量
             electricity_to_heat_ratio (float): 表示热电联产设备的电热比。
@@ -1577,10 +1577,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -1617,7 +1617,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         实数型列表,表示热电联产在每个时段的耗气量
         """
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
         self.gas_price = gas_price
         self.on_flags: List[BinaryVarType] = self.model.binary_var_list(
             [i for i in range(0, self.num_hour)],
@@ -1687,7 +1687,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.num_hour,
             model,
             self.device_count * 0.5,
-            device_price=300,
+            solidHeatStorage=300,
             k=0,
             input_type="heat",
             output_type="hot_water",
@@ -1700,7 +1700,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.num_hour,
             model,
             self.device_count * 0.5,
-            device_price=300,
+            solidHeatStorage=300,
             k=0,
             input_type="heat",
             output_type="hot_water",
@@ -1714,7 +1714,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.num_hour,
             model,
             self.device_count * 0.5,
-            device_price=300,
+            solidHeatStorage=300,
             k=0,
             input_type="heat",
             output_type="steam",
@@ -1904,7 +1904,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
 
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.rated_power * self.device_price / 15
+            == self.device_count * self.rated_power * self.solidHeatStorage / 15
             + self.hot_water_exchanger_1.annualized
             + self.hot_water_exchanger_2.annualized
             + self.steam_exchanger.annualized
@@ -1925,7 +1925,7 @@ class GasBoiler(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         gas_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "gasBoiler",
@@ -1937,7 +1937,7 @@ class GasBoiler(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示燃气锅炉的最大数量。
-            device_price (float): 表示燃气锅炉的单价。
+            solidHeatStorage (float): 表示燃气锅炉的单价。
             gas_price (Union[np.ndarray, List]): 表示燃气的单价。
             efficiency (float): 燃气锅炉的热效率
             device_name (str): 燃气锅炉机组名称,默认为"gasBoiler"
@@ -1950,10 +1950,10 @@ class GasBoiler(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count{0}".format(self.classSuffix)
@@ -1978,7 +1978,7 @@ class GasBoiler(IntegratedEnergySystem):
         连续变量列表,表示燃气锅炉在每个时段的燃气消耗量
         """
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         self.gas_price = gas_price
         self.efficiency = efficiency
         self.gas_cost: ContinuousVarType = self.model.continuous_var(
@@ -2040,7 +2040,7 @@ class GasBoiler(IntegratedEnergySystem):
         # )
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.gas_cost * (365 * 24) / self.num_hour
         )
 
@@ -2058,7 +2058,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "electricBoiler",
@@ -2070,7 +2070,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示电锅炉的最大数量。
-            device_price (float): 表示电锅炉的单价。
+            solidHeatStorage (float): 表示电锅炉的单价。
             electricity_price (Union[np.ndarray, List]): 表示电的单价。
             efficiency (float): 电锅炉的热效率
             device_name (str): 电锅炉机组名称,默认为"electricBoiler"
@@ -2083,10 +2083,10 @@ class ElectricBoiler(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -2115,7 +2115,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         连续变量列表,表示电锅炉在每个时段的电消耗量
         """
         # self.device_count_max = device_count_max
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         self.input_type = "electricity"
         self.build_power_of_inputs([self.input_type])
 
@@ -2185,7 +2185,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         # )
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -2202,7 +2202,7 @@ class Exchanger(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         k: float,  # 传热系数, 没用在模型里面
         efficiency: float = 1,  # 效率系数为1
         device_name: str = "exchanger",
@@ -2215,7 +2215,7 @@ class Exchanger(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示热交换器的最大数量。
-            device_price (float): 表示热交换器的单价。
+            solidHeatStorage (float): 表示热交换器的单价。
             k (float): 传热系数(暂时没有使用)
             device_name (str): 热交换器机组名称,默认为"exchanger"
         """
@@ -2227,7 +2227,7 @@ class Exchanger(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # k 传热系数
@@ -2245,7 +2245,7 @@ class Exchanger(IntegratedEnergySystem):
         """
         连续变量,表示热交换器的年化费用
         """
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
         self.device_count_max = device_count_max
         self.input_type = input_type
         self.output_type = output_type
@@ -2291,7 +2291,7 @@ class Exchanger(IntegratedEnergySystem):
         # self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
 
         self.model.add_constraint(
-            self.annualized == self.device_count * self.device_price / 15
+            self.annualized == self.device_count * self.solidHeatStorage / 15
         )
 
 
@@ -2308,7 +2308,7 @@ class AirHeatPump(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         device_name: str = "air_heat_pump",
         device_count_min: int = 0,
@@ -2318,7 +2318,7 @@ class AirHeatPump(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示空气热泵的最大数量。
-            device_price (float): 表示空气热泵的单价。
+            solidHeatStorage (float): 表示空气热泵的单价。
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             device_name (str): 空气热泵机组名称,默认为"air_heat_pump"
         """
@@ -2330,7 +2330,7 @@ class AirHeatPump(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
@@ -2355,7 +2355,7 @@ class AirHeatPump(IntegratedEnergySystem):
         连续变量,表示空气热泵的电价成本
         """
         # 热水，冷水，储存热水，储存冷水
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         # self.device_count_max = device_count_max
         self.output_types = [
             "cold_water",
@@ -2747,7 +2747,7 @@ class AirHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -2765,7 +2765,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
         device_name: str = "water_heat_pump",
@@ -2776,7 +2776,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示水源热泵的最大数量。
-            device_price (float): 表示水源热泵的单价。
+            solidHeatStorage (float): 表示水源热泵的单价。
             electricity_price (Union[np.ndarray, List]): 每小时的电价
             case_ratio (Union[np.ndarray, List]): 不同工况下热冷效率
             device_name (str): 水源热泵机组名称,默认为"water_heat_pump"
@@ -2789,13 +2789,13 @@ class WaterHeatPump(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # 不同工况下热冷效率
         # case_ratio 不同工况下制热量/制冷量的比值
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -2815,7 +2815,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         连续变量,表示水源热泵的用电成本
         """
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
 
@@ -3154,7 +3154,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -3172,7 +3172,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
         device_name: str = "water_cooled_spiral",
@@ -3183,7 +3183,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示水冷螺旋机的最大数量。
-            device_price (float): 表示水冷螺旋机的单价。
+            solidHeatStorage (float): 表示水冷螺旋机的单价。
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下水冷螺旋机利用率
             device_name (str): 水冷螺旋机机组名称,默认为"water_cooled_spiral"
@@ -3196,11 +3196,11 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = (
         #     self.model.continuous_var(
@@ -3224,7 +3224,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         """
         连续变量,表示水冷螺旋机的用电成本
         """
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
         self.device_count_max = device_count_max
         self.case_ratio = case_ratio  # are they matched?
         self.output_types = ["cold_water", "cold_water_storage"]
@@ -3490,7 +3490,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -3510,7 +3510,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
         device_name: str = "doubleWorkingConditionUnit",
@@ -3521,7 +3521,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示双工况机组的最大数量。
-            device_price (float): 表示双工况机组的单价。
+            solidHeatStorage (float): 表示双工况机组的单价。
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下双工况机组利用率
             device_name (str): 双工况机组名称,默认为"doubleWorkingConditionUnit"
@@ -3534,11 +3534,11 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.output_types = ["cold_water", "ice"]  # matched?
         self.input_type = "electricity"
         self.electricity_price = electricity_price
@@ -3566,7 +3566,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         """
         连续变量,表示双工况机组的用电成本
         """
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
         self.build_power_of_outputs(self.output_types)
@@ -3832,7 +3832,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -3851,7 +3851,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         case_ratio: Union[np.ndarray, List],
         device_name: str = "tripleWorkingConditionUnit",
@@ -3862,7 +3862,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 表示三工况机组的最大数量
-            device_price (float): 表示三工况机组的单价
+            solidHeatStorage (float): 表示三工况机组的单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
             case_ratio (Union[np.ndarray, List]): 不同工况下三工况机组利用率
             device_name (str): 三工况机组名称,默认为"tripleWorkingConditionUnit"
@@ -3875,11 +3875,11 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = (
         #     self.model.continuous_var(
@@ -3905,7 +3905,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         """
         连续变量,表示三工况机组的用电成本
         """
-        # self.device_price = device_price
+        # self.solidHeatStorage = solidHeatStorage
         # self.device_count_max = device_count_max
         self.case_ratio = case_ratio
         self.output_types = ["cold_water", "ice", "warm_water"]
@@ -4191,7 +4191,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -4206,7 +4206,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
         device_count_min: int = 0,
@@ -4218,7 +4218,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 地源热泵机组最大装机量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             electricity_price (Union[np.ndarray, List]): 24小时用电价格
             device_name (str): 地源热泵机组名称,默认为"geothermal_heat_pump"
         """
@@ -4230,11 +4230,11 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         self.electricity_price = electricity_price
         # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
@@ -4254,7 +4254,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         地源热泵每小时耗电费用
         """
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
         self.device_count_max = device_count_max
 
         self.input_type = "electricity"
@@ -4342,7 +4342,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         # 年化
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
@@ -4365,9 +4365,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         model: Model,
         device_count_max: float,
         volume_max: float,  # V?
-        device_price: float,
+        solidHeatStorage: float,
         volume_price: float,
-        device_price_powerConversionSystem: float,
+        solidHeatStorage_powerConversionSystem: float,
         conversion_rate_max: float,
         efficiency: float,
         energy_init: float,
@@ -4387,7 +4387,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
             volume_max (float): 单个水罐的最大体积
             volume_price (float): 单位体积储水费用
-            device_price_powerConversionSystem (float): 电力转换系统设备价格
+            solidHeatStorage_powerConversionSystem (float): 电力转换系统设备价格
             conversion_rate_max (float): 最大充放能倍率
             efficiency (float): 水罐储水效率参数
             energy_init (float): 储能装置的初始能量
@@ -4406,7 +4406,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
         # self.num_hour = num_hour
@@ -4427,7 +4427,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             model,
             bigNumber,
             0,
-            device_price_powerConversionSystem,
+            solidHeatStorage_powerConversionSystem,
             conversion_rate_max,
             efficiency,
             energy_init,
@@ -4868,11 +4868,11 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        electricSteamGenerator_device_count_max: float,
         device_count_max: float,
+        device_count_max: float,
+        solidHeatStorage: float,
         device_price: float,
-        electricSteamGenerator_price: float,
-        electricSteamGeneratorSolidHeatStorage_price: float,
+        device_price_solidHeatStorage: float,
         electricity_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "electricSteamGenerator",
@@ -4882,9 +4882,9 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         Args:
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
-            electricSteamGenerator_device_count_max (int): 表示地热蒸汽发生器的最大数量
-            electricSteamGenerator_price (float): 表示地热蒸汽发生器的单价
-            electricSteamGeneratorSolidHeatStorage_price (float): 地热蒸汽发生器机组固态储热设备单价
+            device_count_max (int): 表示地热蒸汽发生器的最大数量
+            device_price (float): 表示地热蒸汽发生器的单价
+            device_price_solidHeatStorage (float): 地热蒸汽发生器机组固态储热设备单价
             electricity_price (Union[np.ndarray, List]): 每小时电价
             efficiency (float): 效率参数
             device_name (str): 电蒸汽发生器机组名称，默认为"electricSteamGenerator"
@@ -4897,53 +4897,55 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            # solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
-        self.electricSteamGenerator_device: ContinuousVarType = (
-            self.model.continuous_var(
-                name="electricSteamGenerator_device{0}".format(self.classSuffix)
-            )
-        )
+        # self.device_count: ContinuousVarType = (
+        #     self.model.continuous_var(
+        #         name="device_count_{0}".format(self.classSuffix)
+        #     )
+        # )
 
         """
         电蒸汽发生器机组等效单位设备数 大于零的实数
         """
-        self.power_electricSteamGenerator: List[
+        self.power: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
-            name="power_electricSteamGenerator{0}".format(self.classSuffix),
+            name="power_{0}".format(self.classSuffix),
         )
 
         """
         电蒸汽发生器总功率
         """
-        self.power_electricSteamGenerator_steam: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_electricSteamGenerator_steam{0}".format(self.classSuffix),
-        )
+        self.output_type = "steam"
+        self.build_power_of_outputs([self.output_type])
+        # self.power_steam: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_steam{0}".format(self.classSuffix),
+        # )
 
         """
         电蒸汽发生器产生蒸汽功率
         """
-        self.electricSteamGenerator_device_count_max = (
-            electricSteamGenerator_device_count_max
+        self.device_count_max = (
+            device_count_max
         )
-        self.electricSteamGeneratordevice_count_max_solidHeatStorage = (
-            electricSteamGenerator_device_count_max * 6
+        self.device_count_max_solidHeatStorage = (
+            device_count_max * 6
         )
 
         """
         电蒸汽发生器固体蓄热最大设备数=电蒸汽发生器最大设备数 * 6
         """
-        self.electricSteamGenerator_price = electricSteamGenerator_price
-        self.electricSteamGeneratorSolidHeatStorage_price = (
-            electricSteamGeneratorSolidHeatStorage_price
+        # self.device_price = device_price
+        self.device_price_solidHeatStorage = (
+            device_price_solidHeatStorage
         )
         self.electricity_price = electricity_price
 
@@ -4958,12 +4960,12 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.electricSteamGeneratorSolidHeatStorage_device = EnergyStorageSystem(
+        self.solidHeatStorage = EnergyStorageSystem(
             num_hour,
             model,
-            self.electricSteamGeneratordevice_count_max_solidHeatStorage,
-            self.electricSteamGeneratorSolidHeatStorage_price,
-            device_price_powerConversionSystem=0,
+            self.device_count_max_solidHeatStorage,
+            self.device_price_solidHeatStorage,
+            solidHeatStorage_powerConversionSystem=0,
             conversion_rate_max=2,
             efficiency=0.9,
             energy_init=1,
@@ -4997,41 +4999,40 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         self.hourRange = range(0, self.num_hour)
-        self.electricSteamGeneratorSolidHeatStorage_device.constraints_register(
-            self.model
+        self.solidHeatStorage.constraints_register(
         )
-        self.model.add_constraint(self.electricSteamGenerator_device >= 0)
+        self.model.add_constraint(self.device_count >= 0)
         self.model.add_constraint(
-            self.electricSteamGenerator_device
-            <= self.electricSteamGenerator_device_count_max
+            self.device_count
+            <= self.device_count_max
         )
         self.model.add_constraints(
-            self.power_electricSteamGenerator[h] >= 0 for h in self.hourRange
+            self.power[h] >= 0 for h in self.hourRange
         )
         self.model.add_constraints(
-            self.power_electricSteamGenerator[h] <= self.electricSteamGenerator_device
+            self.power[h] <= self.device_count
             for h in self.hourRange
         )  # 与天气相关
         self.model.add_constraints(
-            self.power_electricSteamGenerator[h]
-            + self.electricSteamGeneratorSolidHeatStorage_device.power[h]
-            == self.power_electricSteamGenerator_steam[h]
+            self.power[h]
+            + self.solidHeatStorage.power[h]
+            == self.power_steam[h]
             for h in self.hourRange
         )  # troughPhotoThermal系统产生的highTemperature
         self.model.add_constraints(
-            0 <= self.power_electricSteamGenerator_steam[h] for h in self.hourRange
+            0 <= self.power_steam[h] for h in self.hourRange
         )  # 约束能量不能倒流
         self.model.add_constraints(
             self.electricity_cost
-            == self.power_electricSteamGenerator[h] * self.electricity_price[h]
+            == self.power[h] * self.electricity_price[h]
             for h in self.hourRange
         )
         self.model.add_constraint(
             self.annualized
-            == self.electricSteamGenerator_device
-            * self.electricSteamGenerator_price
+            == self.device_count
+            * self.device_price
             / 15
-            + self.electricSteamGeneratorSolidHeatStorage_device.annualized
+            + self.solidHeatStorage.annualized
             + self.electricity_cost
         )
 
@@ -5173,7 +5174,7 @@ class CitySupply(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         citySupplied_device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         run_price: Union[np.ndarray, List],
         efficiency: float,
         device_name: str = "city_supply",
@@ -5186,7 +5187,7 @@ class CitySupply(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             citySupplied_device_count_max (float): 市政能源设备机组最大装机量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             run_price (Union[np.ndarray, List]): 每小时运维价格
             efficiency (float): 能源转换效率
             device_name (str): 市政能源设备机组名称,默认为"city_supply"
@@ -5199,10 +5200,10 @@ class CitySupply(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour  # hours in a day
         self.citySupplied_device: ContinuousVarType = self.model.continuous_var(
             name="citySupplied_device{0}".format(self.classSuffix)
@@ -5230,7 +5231,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         self.citySupplied_device_count_max = citySupplied_device_count_max
         self.run_price = run_price
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
 
         self.efficiency = efficiency
         self.citySupplied_cost: ContinuousVarType = self.model.continuous_var(
@@ -5282,7 +5283,7 @@ class CitySupply(IntegratedEnergySystem):
         )
         self.model.add_constraint(
             self.annualized
-            == self.citySupplied_device * self.device_price / 15
+            == self.citySupplied_device * self.solidHeatStorage / 15
             + self.citySupplied_cost * (365 * 24) / self.num_hour
         )
 
@@ -5300,7 +5301,7 @@ class GridNet(IntegratedEnergySystem):
         num_hour: int,
         model: Model,
         device_count_max: float,
-        device_price: float,
+        solidHeatStorage: float,
         electricity_price_from: Union[np.ndarray, List],
         electricity_price_to: float,
         device_name: str = "grid_net",
@@ -5313,7 +5314,7 @@ class GridNet(IntegratedEnergySystem):
             num_hour (int): 一天的小时数
             model (docplex.mp.model.Model): 求解模型实例
             device_count_max (float): 电网最大设备量
-            device_price (float): 设备单价
+            solidHeatStorage (float): 设备单价
             electricity_price_from (Union[np.ndarray, List]): 电力使用价格
             electricity_price_to (float): 电力生产报酬
             device_name (str): 电网名称,默认为"grid_net"
@@ -5326,10 +5327,10 @@ class GridNet(IntegratedEnergySystem):
             device_name=device_name,
             device_count_max=device_count_max,
             device_count_min=device_count_min,
-            device_price=device_price,
+            solidHeatStorage=solidHeatStorage,
             classObject=self.__class__,
         )
-        # self.classSuffix += 1
+        # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.model = model
         # self.device_count: ContinuousVarType = self.model.continuous_var(
@@ -5343,7 +5344,7 @@ class GridNet(IntegratedEnergySystem):
         self.electricity_price_from = electricity_price_from
         self.electricity_price_to = electricity_price_to
 
-        self.device_price = device_price
+        self.solidHeatStorage = solidHeatStorage
 
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricity_cost_{0}".format(self.classSuffix)
@@ -5467,7 +5468,7 @@ class GridNet(IntegratedEnergySystem):
         )
         self.model.add_constraint(
             self.annualized
-            == self.device_count * self.device_price / 15
+            == self.device_count * self.solidHeatStorage / 15
             + self.electricity_cost * (365 * 24) / self.num_hour
         )
 
