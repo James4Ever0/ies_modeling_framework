@@ -74,7 +74,7 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
-                                                register_period_constraints=0, day_node=day_node
+                                                register_period_constraints=1, day_node=day_node
 )  # why it is not working under mode 0?
 
 # define energy balance restrictions
