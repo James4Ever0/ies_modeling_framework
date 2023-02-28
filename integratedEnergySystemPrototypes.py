@@ -5393,7 +5393,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
 
 
 # both input and output?
-# hot water? steam?
+# "hot_water","steam"
 class CitySupply(IntegratedEnergySystem):
     """市政能源类,适用于市政蒸汽、市政热水"""
 
@@ -5409,6 +5409,7 @@ class CitySupply(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "city_supply",
         device_count_min: int = 0,
+        output_type:Union[Literal["hot_water"],Literal["steam"]]='hot_water'
     ):
         """
         创建一个市政能源类
@@ -5441,15 +5442,17 @@ class CitySupply(IntegratedEnergySystem):
         """
         市政能源设备装机量 非负实数变量
         """
-        self.heat_citySupplied: List[
-            ContinuousVarType
-        ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="heat_citySupplied{0}".format(self.classSuffix),
-        )
+        # self.heat_citySupplied: List[
+        #     ContinuousVarType
+        # ] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="heat_citySupplied{0}".format(self.classSuffix),
+        # )
         """
         每小时市政能源热量实际消耗 实数变量列表
         """
+        
+        # input?
         self.heat_citySupplied_from: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
