@@ -85,9 +85,26 @@ util = EnengySystemUtils(model1,num_hour0)
 
 # use the input/output way
 from typing import Union,Literal
+# usually. we are talking about something else.
 class Node:
-    def __init__(self,node_type:Union[Literal['equal','greater_equal']]):
-        
+    def __init__(self,model:Model,num_hour:int,node_type:Union[Literal['equal'],Literal['greater_equal']]):
+        self.util = EnergySystemUtils(model, num_hour)
+        self.node_type = node_type
+        self.inputs = []
+        self.outputs = []
+        self.model = model
+    def add_input(input_port):
+        self.
+        self.inputs.append(input_port)
+    def add_output(output_port):
+        self.outputs.append(output_port)
+    def build_relations(self):
+        inputs = self.model.sum(*self.inputs)
+        outputs = self.model.sum(*self.outputs)
+        if self.node_type == "equal":
+            self.util.equations(inputs,outputs)
+        else:
+            self.util.add_lower_bounds(inputs, outputs)
 
 # model1.add_constraints(
 #     power_load[h]
