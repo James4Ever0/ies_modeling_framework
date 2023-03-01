@@ -5,6 +5,8 @@ import numpy as np
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 
+from docplex.mp.dvar import Var
+
 from docplex.mp.vartype import (
     VarType,
     BinaryVarType,
