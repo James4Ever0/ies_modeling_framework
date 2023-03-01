@@ -1174,7 +1174,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.device_count_powerConversionSystem: ContinuousVarType = (
             self.model.continuous_var(
                 name=f"device_count_powerConversionSystem_{self.classSuffix}"
-            ),
+            )
         )  # powerConversionSystem
         """
         模型中的连续变量,表示 PCS 的容量。
@@ -1284,6 +1284,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             # ),
             self.hourRange,
         )
+        breakpoint()
         self.add_upper_bounds(
             self.power_of_inputs[self.input_type],
             self.device_count_powerConversionSystem,
