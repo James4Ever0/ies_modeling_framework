@@ -74,6 +74,7 @@ def check_conflict_decorator(class_method):
         model = self.model  # do we really have conflict?
         debug = self.debug
         # check_conflict()
+        
 
         if debug:
             has_conflict = check_conflict(model)
