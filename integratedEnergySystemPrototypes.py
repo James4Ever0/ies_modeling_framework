@@ -1075,7 +1075,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
         device_count_min: float = 0,
-        input_type: str = "energy_st",
+        input_type: str = "energy_storage",
         output_type: str = "energy",
         classObject=None,
     ):
@@ -1106,7 +1106,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         )
         # EnergyStorageSystem.index += 1
 
-        # self.device_count: ContinuousVarType =self.model.continuous_var(
+        # self.device_count: ContinuousVarType = self.model.continuous_var(
         #     name="device_count_{0}".format(self.classSuffix)
         # )
         """

@@ -121,7 +121,10 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 #              _<CHANNEL1>_
 #             /            \
 # PV - [NODE1] -> BESS -> - [NODE2] - LOAD
-#              \_ GRID _/
+#     |        |        |           |
+#     |        \_ GRID _/           |
+#     |                             |
+#      \________<CHANNEL2>_________/
 #
 # TOTAL: 2 Nodes
 
@@ -129,6 +132,10 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 
 Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal)
 Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal)
+
+Channel1 = model.continuous_var_list(
+    [i for i in range(num_hour)], lb=0, name="channel_1"
+)
 
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
