@@ -1459,6 +1459,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 # for i in range(1, self.num_hour)
                 # since it is init we should not iterate through all variables.
             )
+        print()
+        print("MIN_SOC:", self.stateOfCharge_min)
+        print("MAX_SOC:", self.stateOfCharge_max)
+        print()
+        breakpoint()
         self.add_lower_and_upper_bounds(
             self.energy,
             self.device_count * self.stateOfCharge_min,
