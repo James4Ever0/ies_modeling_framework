@@ -53,7 +53,8 @@ model = Model(name=simulation_name)
 
 # debug = True # we step through conflicts.
 # debug = "EXCEPTION" # we step through conflicts.
-debug = "STEP"
+# debug = "STEP"
+debug = False
 
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)

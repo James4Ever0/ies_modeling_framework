@@ -7,6 +7,9 @@ from docplex.mp.solution import SolveSolution
 
 from docplex.mp.conflict_refiner import ConflictRefiner
 
+# in our sense of "iterable", not "generally iterable".
+def checkIterable(values: Iterable):
+    return any([isinstance(values, subscripableType) for subscripableType in [list, np.ndarray, tuple]])
 
 def check_invalid_constraints(
     model: Model,
@@ -529,7 +532,7 @@ class EnergySystemUtils(object):
     ):
         index_range = self.get_index_range(variables, index_range)
 
-        iterable = any([isinstance(values, subscripableType) for subscripableType in [List, np.ndarray, tuple]])
+        iterable =checkIterable(values)
 
         for index in index_range:
             if iterable:
@@ -593,7 +596,8 @@ class EnergySystemUtils(object):
 
     @check_conflict_decorator
     def elementwise_operation(self, variables: List[Var], values, operation_function):
-        iterable = isinstance(values, Iterable)
+        # iterable = isinstance(values, Iterable)
+        iterable = checkIterable(values)
         results = []
         for index, variable in enumerate(variables):
             if iterable:
