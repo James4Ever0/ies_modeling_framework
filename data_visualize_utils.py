@@ -4,7 +4,7 @@
 
 from typing import Iterable, List
 import matplotlib.pyplot as plt
-from cpExample import IntegratedEnergySystem, Model
+from integratedEnergySystemPrototypes import IntegratedEnergySystem, Model
 import os
 
 
@@ -45,7 +45,12 @@ def printIntegratedEnergySystemDeviceCounts(
         print(f"objective index: {index}")
         print(f"objective class: {type(item).__name__}")
         for subitem in subitems:
-            if subitem.endswith("_device"):  # 打印每个类型机组里面的设备数量
+            if subitem == ("device_count") and not any(
+                [
+                    subitem.startswith(prohibited_keyword)
+                    for prohibited_keyword in ["device_count_max", "device_count_min"]
+                ]
+            ):  # 打印每个类型机组里面的设备数量
                 val = item.__dict__[subitem]
                 try:
                     value = float(val)
