@@ -47,7 +47,7 @@ model = Model(name=simulation_name)
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
 intensityOfIllumination = (
-    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 100
+    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 1000
 )
 
 # 光伏
@@ -55,7 +55,7 @@ photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
     device_count_max=5000,  # how about let's alter this?
-    device_price=4500,
+    device_price=4500/100,
     intensityOfIllumination=intensityOfIllumination,
     efficiency=0.8,
     device_name="PhotoVoltaic",
@@ -66,10 +66,10 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=200000,
+    device_count_max=200000*1000,
     device_price=0,
-    electricity_price=electricity_price,
-    electricity_price_upload=0.35,
+    electricity_price=electricity_price*100,
+    electricity_price_upload=0.35*100,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
 
@@ -79,11 +79,11 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     num_hour,
     model,
     device_count_max=20000,
-    device_price=1800 / 20,  # this won't save anything.
-    device_price_powerConversionSystem=250 / 10,
+    device_price=1800 / 1000,  # this won't save anything.
+    device_price_powerConversionSystem=250 / 100,
     conversion_rate_max=2,
     efficiency=0.9,
-    energy_init=0.5,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
+    energy_init=1,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
     stateOfCharge_min=0,  # state of charge
     stateOfCharge_max=1,
     input_type='electricity',
@@ -91,7 +91,7 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
-                                                register_period_constraints=1, day_node=day_node
+                                                register_period_constraints=0, day_node=day_node
 )  # why it is not working under mode 0?
 
 # define energy balance restrictions
@@ -108,7 +108,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 #
 
 ############## HOW WE CONNECT THIS ##############
-#
+#                _________
+#              /           \
 # PV - [NODE1] -> BESS -> - [NODE2] - LOAD
 #              \_ GRID _/
 #
