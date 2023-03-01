@@ -14,16 +14,16 @@ def check_invalid_constraints(
         ["(0,", "GE,", "energy_EnergyStorageSystem"],
         [",0)", "LE,", "energy_EnergyStorageSystem"],
         ["energy_EnergyStorageSystem_1_1 "],
-        ["energy_EnergyStorageSystem_1_1,"]
+        ["energy_EnergyStorageSystem_1_1,"],
     ],
-    white_list_filters:List[List[str]] = [["energy_EnergyStorageSystem_1_1 == 0.900"]]
+    white_list_filters: List[List[str]] = [["energy_EnergyStorageSystem_1_1 == 0.900"], ['energy_EnergyStorageSystem_1_1 >= 0']],
 ):
     invalid_constraints = set()
     invalid_flags = []
+
     def check_if_all(constraint_string, _filter):
-        return all(
-                [filter_keyword in constraint_string for filter_keyword in _filter]
-            )
+        return all([filter_keyword in constraint_string for filter_keyword in _filter])
+
     for constraint in model.iter_constraints():
         constraint_string = str(constraint)
         for _filter in filters:
@@ -31,7 +31,8 @@ def check_invalid_constraints(
             if invalid:
                 white_listed_flags = []
                 for white_list_filter in white_list_filters:
-                    white_listed =check_if_all(constraint_string, white_list_filter)
+                    white_listed = check_if_all(constraint_string, white_list_filter)
+                    white_listed_flags.append(white_listed)
                 if not any(white_listed_flags):
                     invalid_constraints.add(constraint_string)
                     invalid_flags.append(invalid)
@@ -1744,7 +1745,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # self.stateOfCharge_min = stateOfCharge_min
         # self.stateOfCharge_max = stateOfCharge_max
         # return val
-        
+
     # we don't need to define this. it is already covered.
     # def constraints_register(
     #     self,
