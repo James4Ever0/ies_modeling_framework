@@ -8,15 +8,23 @@ from docplex.mp.solution import SolveSolution
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 
-def check_invalid_constraints(model:Model, filters:List[str]= ['']):
+def check_invalid_constraints(
+    model: Model,
+    filters: List[List[str]] = [
+        ["(0,", "GE,", "energy_EnergyStorageSystem"],
+        [",0)", "LE,", "energy_EnergyStorageSystem"],
+    ],
+):
     for constraint in model.iter_constraints():
         constraint_string = str(constraint)
         for _filter in filters:
-            invalid = all([filter_keyword in constraint_string for filter_keyword in _filter])
+            invalid = all(
+                [filter_keyword in constraint_string for filter_keyword in _filter]
+            )
             if invalid:
                 return True
     return False
-                
+
 
 def check_conflict(model: Model):
     has_conflict = False
@@ -52,8 +60,11 @@ def check_conflict_decorator(class_method):
         # check_conflict()
 
         if debug:
-            has_conflict = check_conflict(model) or check_invalid_constraints(model)
-            if has_conflict:
+            has_conflict = check_conflict(model)
+            has_invalid = check_invalid_constraints(model)
+            if has_conflict or has_invalid:
+                if has_invalid:
+                    print("BREAK BECAUSE OF INVALID CONSTRAINS BUILT")
                 print("___BEFORE INVOKE___")
                 display_invoke_info()
                 breakpoint()
@@ -62,7 +73,10 @@ def check_conflict_decorator(class_method):
 
         if debug:
             has_conflict = check_conflict(model) or check_invalid_constraints(model)
-            if has_conflict:
+            has_invalid = check_invalid_constraints(model)
+            if has_conflict or has_invalid:
+                if has_invalid:
+                    print("BREAK BECAUSE OF INVALID CONSTRAINS HAS BEEN BUILT")
                 print("___AFTER INVOKE___")
                 display_invoke_info()
                 breakpoint()
