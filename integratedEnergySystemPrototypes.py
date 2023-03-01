@@ -15,8 +15,12 @@ def check_invalid_constraints(
         [",0)", "LE,", "energy_EnergyStorageSystem"],
         ["energy_EnergyStorageSystem_1_1 "],
         ["energy_EnergyStorageSystem_1_1,"],
+        ["energy_EnergyStorageSystem_1_1 <= 0"],
     ],
-    white_list_filters: List[List[str]] = [["energy_EnergyStorageSystem_1_1 == 0.900"], ['energy_EnergyStorageSystem_1_1 >= 0']],
+    white_list_filters: List[List[str]] = [
+        ["energy_EnergyStorageSystem_1_1 == 0.900"],
+        ["energy_EnergyStorageSystem_1_1 >= 0"],
+    ],
 ):
     invalid_constraints = set()
     invalid_flags = []
@@ -66,17 +70,17 @@ def check_conflict_decorator(class_method):
         # class_instance = args[0] # <- this is the 'self'
         # really?
         def display_invoke_info():
-            print("_"*30)
+            print("_" * 30)
             print("FUNCTION:", class_method)
             print("CLASS INSTANCE:", self)
             print("ALL REMAINING ARGS:", args)
             print("ALL KWARGS:", kwargs)
-            print("_"*30)
+            print("_" * 30)
 
         model = self.model  # do we really have conflict?
         debug = self.debug
         # check_conflict()
-        step = debug == 'STEP'
+        step = debug == "STEP"
         if step:
             display_invoke_info()
 
@@ -514,13 +518,14 @@ class EnergySystemUtils(object):
         self.hourRange = range(0, self.num_hour)
         self.debug = debug
 
+    from typing import Callable
     @check_conflict_decorator
     def constraint_multiplexer(
         self,
         variables: List[Var],
         values,
+        constraint_function:Callable,
         index_range=None,
-        constraint_function=lambda x: x,
     ):
         index_range = self.get_index_range(variables, index_range)
 
@@ -542,7 +547,7 @@ class EnergySystemUtils(object):
         index_range = self.get_index_range(variables, index_range)
 
         self.constraint_multiplexer(
-            variables, lower_bounds, index_range, self.add_lower_bound
+            variables, lower_bounds,  self.add_lower_bound,index_range
         )
 
     @check_conflict_decorator
@@ -554,7 +559,7 @@ class EnergySystemUtils(object):
         index_range = self.get_index_range(variables, index_range)
 
         self.constraint_multiplexer(
-            variables, upper_bounds, index_range, self.add_upper_bound
+            variables, upper_bounds,  self.add_upper_bound,index_range
         )
 
     @check_conflict_decorator
@@ -641,7 +646,7 @@ class EnergySystemUtils(object):
     def elementwise_subtract(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.subtract)
 
-    @check_conflict_decorator
+    # @check_conflict_decorator
     def get_index_range(self, variables: List[Var], index_range=None):
         if index_range is None:
             index_range = self.hourRange
