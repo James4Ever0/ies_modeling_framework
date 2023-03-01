@@ -66,15 +66,19 @@ def check_conflict_decorator(class_method):
         # class_instance = args[0] # <- this is the 'self'
         # really?
         def display_invoke_info():
+            print("_"*30)
             print("FUNCTION:", class_method)
             print("CLASS INSTANCE:", self)
             print("ALL REMAINING ARGS:", args)
             print("ALL KWARGS:", kwargs)
+            print("_"*30)
 
         model = self.model  # do we really have conflict?
         debug = self.debug
         # check_conflict()
-        
+        step = debug == 'STEP'
+        if step:
+            display_invoke_info()
 
         if debug:
             has_conflict = check_conflict(model)
@@ -83,7 +87,8 @@ def check_conflict_decorator(class_method):
                 if has_invalid:
                     print("BREAK BECAUSE OF INVALID CONSTRAINS BUILT")
                 print("___BEFORE INVOKE___")
-                display_invoke_info()
+                if not step:
+                    display_invoke_info()
                 if debug == "EXCEPTION":
                     raise Exception("FATAL ERROR WHILE DEBUGGING")
 
@@ -96,7 +101,8 @@ def check_conflict_decorator(class_method):
                 if has_invalid:
                     print("BREAK BECAUSE OF INVALID CONSTRAINS HAS BEEN BUILT")
                 print("___AFTER INVOKE___")
-                display_invoke_info()
+                if not step:
+                    display_invoke_info()
                 if debug == "EXCEPTION":
                     raise Exception("FATAL ERROR WHILE DEBUGGING")
                 breakpoint()

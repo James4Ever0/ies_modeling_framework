@@ -51,8 +51,9 @@ power_load = load.get_power_load(num_hour) * 0.01
 
 model = Model(name=simulation_name)
 
-debug = True # we step through conflicts.
+# debug = True # we step through conflicts.
 # debug = "EXCEPTION" # we step through conflicts.
+debug = "STEP"
 
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
