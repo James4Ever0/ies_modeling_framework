@@ -672,6 +672,8 @@ class IntegratedEnergySystem(EnengySystemUtils):
         self.add_lower_and_upper_bound(
             self.device_count, self.device_count_min, self.device_count_max
         )
+        # print("ADDING LOWER BOUNDS?")
+        # breakpoint()
 
 
 # TODO: 加上输出类型区分校验
@@ -1014,6 +1016,8 @@ class DieselEngine(IntegratedEnergySystem):
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
+        super().constraints_register()
+        
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
         self.add_lower_and_upper_bounds(
@@ -1209,6 +1213,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
     def constraints_register(
         self, register_period_constraints: int = 1, day_node: int = 24
     ):
+        super().constraints_register()
+        
         """
         定义机组内部约束
 
@@ -5661,8 +5667,8 @@ class GridNet(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
-        print("DEVICE COUNT?",self.device_count)
-        breakpoint()
+        # print("DEVICE COUNT?", self.device_count)
+        # breakpoint()
         # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.model = model
