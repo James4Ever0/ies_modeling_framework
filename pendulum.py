@@ -8,4 +8,4 @@ l = 1.0                             # length [m]
 m = 1.0                             # mass [kg]
 g = 9.81                            # gravitational acceleration [m/s²]
 u_0=np.array([θ_0, ω_0])
-tspan = ([0.0,10.0])                  # time interval
+tspan = [0.0,10.0]                  # time interval
