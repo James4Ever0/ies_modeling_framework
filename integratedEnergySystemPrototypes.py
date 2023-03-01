@@ -83,7 +83,8 @@ def check_conflict_decorator(class_method):
                     print("BREAK BECAUSE OF INVALID CONSTRAINS BUILT")
                 print("___BEFORE INVOKE___")
                 display_invoke_info()
-                breakpoint()
+                if debug == "EXCEPTION":
+                    raise Exception("FATAL ERROR WHILE DEBUGGING")
 
         value = class_method(self, *args, **kwargs)
 
@@ -95,6 +96,8 @@ def check_conflict_decorator(class_method):
                     print("BREAK BECAUSE OF INVALID CONSTRAINS HAS BEEN BUILT")
                 print("___AFTER INVOKE___")
                 display_invoke_info()
+                if debug == "EXCEPTION":
+                    raise Exception("FATAL ERROR WHILE DEBUGGING")
                 breakpoint()
 
         return value
