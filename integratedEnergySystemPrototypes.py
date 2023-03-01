@@ -544,14 +544,25 @@ class EnergyFlowNode:
         self.inputs = []
         self.outputs = []
         self.model = model
+        
+    def check_is_var_list(self, var_list):
+        
 
     def add_input(self, input_port: List):
         if type(isinstance(input_port[0], VarType) or isinstance(input_port[0],Var)):
+            sig1 = isinstance(input_port[0], VarType)
+            sig2 = isinstance(input_port[0], Var)
+            print("SIGNALS?", sig1, sig2)
+            breakpoint()
             self.util.add_lower_bounds(input_port, 0)
         self.inputs.append(input_port)
 
     def add_output(self, output_port: List):
         if type(isinstance(output_port[0], VarType) or isinstance(output_port[0], Var)):
+            sig1 = isinstance(output_port[0], VarType)
+            sig2 = isinstance(output_port[0], Var)
+            print("SIGNALS?", sig1, sig2)
+            breakpoint()
             self.util.add_lower_bounds(output_port, 0)
         self.outputs.append(output_port)
 
