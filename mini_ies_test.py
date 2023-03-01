@@ -169,8 +169,6 @@ systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
 from mini_data_log_utils import solve_and_log, check_conflict
 
-
-
 # before all the fuzz...
 check_conflict(model)
 
