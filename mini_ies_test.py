@@ -47,7 +47,7 @@ from docplex.mp.model import Model
 simulation_name = "microgrid"
 
 load = LoadGet()
-power_load = load.get_power_load(num_hour)
+power_load = load.get_power_load(num_hour)*0.01
 
 model = Model(name=simulation_name)
 
@@ -74,7 +74,7 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=10000,
+    device_count_max=1000,
     device_price=0,
     electricity_price=electricity_price * 10,
     electricity_price_upload=0.35 * 100,
@@ -97,6 +97,7 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     stateOfCharge_max=1,
     input_type="electricity",
     output_type="electricity",
+    device_count_min=1 # just buy it? what is the problem?
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
