@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 l = 1.0                             # length [m]
 m = 1.0                             # mass [kg]
 g = 9.81                            # gravitational acceleration [m/s²]
-
+# dx = x*dy
+# dy = y*dx
 def pendulum(t, u, M):
     θ, ω = u
     return [ω, -3*g/(2*l)*np.sin(θ) + 3/(m*l**2)*M(t)]
