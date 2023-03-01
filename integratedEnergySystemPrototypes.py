@@ -407,7 +407,7 @@ class EnengySystemUtils(object):
     def constraint_multiplexer(
         self, variables, values, index_range=None, constraint_function=lambda x: x
     ):
-        index_range = self.get_index_range(index_range)
+        index_range = self.get_index_range(variables,index_range)
 
         iterable = isinstance(values, Iterable)
 
@@ -422,7 +422,7 @@ class EnengySystemUtils(object):
         self.model.add_constraint(lower_bound <= variable)  # 最大装机量
 
     def add_lower_bounds(self, variables, lower_bounds, index_range=None):
-        index_range = self.get_index_range(index_range)
+        index_range = self.get_index_range(variables,index_range)
 
         self.constraint_multiplexer(
             variables, lower_bounds, index_range, self.add_lower_bound
@@ -432,7 +432,7 @@ class EnengySystemUtils(object):
         self.model.add_constraint(upper_bound >= variable)  # 最大装机量
 
     def add_upper_bounds(self, variables, upper_bounds, index_range=None):
-        index_range = self.get_index_range(index_range)
+        index_range = self.get_index_range(variables,index_range)
 
         self.constraint_multiplexer(
             variables, upper_bounds, index_range, self.add_upper_bound
@@ -511,13 +511,15 @@ class EnengySystemUtils(object):
     def elementwise_subtract(self, variables, values):
         return self.elementwise_operation(variables, values, self.subtract)
 
-    def get_index_range(self, index_range=None):
+    def get_index_range(self, variables,index_range=None):
         if index_range is None:
             index_range = self.hourRange
+            if len(variables) < self.num_hour:
+                index_range = range(len(variables))
         return index_range
 
     def sum_within_range(self, variables, index_range=None):
-        index_range = self.get_index_range(index_range)
+        index_range = self.get_index_range(variables,index_range)
         result = self.model.sum(variables[index] for index in index_range)
         return result
 
@@ -1217,12 +1219,12 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
-        breakpoint()
+        # breakpoint()
+        
+        # you don't know the range!
 
         self.add_lower_and_upper_bounds(
-            self.device_count_powerConversionSystem
-            if isinstance(self.device_count_powerConversionSystem, Iterable)
-            else [self.device_count_powerConversionSystem],
+            (self.device_count_powerConversionSystem if isinstance(self.device_count_powerConversionSystem, Iterable) else [self.device_count_powerConversionSystem]),
             0,
             self.device_count * self.conversion_rate_max,
         )
