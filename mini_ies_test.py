@@ -137,11 +137,12 @@ Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
 )
 
-Channel1 = model.continuous_var_list(
-    [i for i in range(num_hour)], lb=0, name="channel_1"
+Channel2 = model.continuous_var_list(
+    [i for i in range(num_hour)], lb=0, name="channel_2"
 )
 
 Node1.add_input(photoVoltaic.power_of_outputs["electricity"])
+Node1.add_input(Channel2)
 Node1.add_output(batteryEnergyStorageSystem.power_of_inputs["electricity"])
 Node1.add_output(gridNet.power_of_inputs["electricity"])
 Node1.add_output(Channel1)
@@ -150,6 +151,8 @@ Node2.add_input(Channel1)
 Node2.add_input(gridNet.power_of_outputs["electricity"])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs["electricity"])
 Node2.add_output(power_load)
+Node2.add_output(Channel2)
+
 
 Node1.build_relations()
 Node2.build_relations()
