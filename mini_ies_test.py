@@ -21,9 +21,12 @@ def get_platform():
         return sys.platform
     
     return platforms[sys.platform]
-os.environ["PATH"] = (
-    "/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:" + os.environ["PATH"]
-)  # not working?
+
+platform = get_platform()
+if platform == 'darwin': # not my computer!
+    os.environ["PATH"] = (
+        "/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:" + os.environ["PATH"]
+    )  # not working?
 
 # print(os.environ['PATH'])
 
