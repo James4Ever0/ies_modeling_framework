@@ -69,7 +69,7 @@ gridNet = GridNet(
     model,
     device_count_max=10000,
     device_price=0,
-    electricity_price=electricity_price*100,
+    electricity_price=electricity_price*10,
     electricity_price_upload=0.35*100,
     # device_count_min=5000,
 )
@@ -80,7 +80,7 @@ gridNet.constraints_register(powerPeak_predicted=2000)
 batteryEnergyStorageSystem = EnergyStorageSystem(
     num_hour,
     model,
-    device_count_max=20000,
+    device_count_max=20000*1000,
     device_price=1800 / 1000,  # this won't save anything.
     device_price_powerConversionSystem=250 / 100,
     conversion_rate_max=2,
