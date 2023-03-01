@@ -400,7 +400,7 @@ class Linearization(object):
 ############################UTILS############################
 
 
-class EnengySystemUtils(object):
+class EnergySystemUtils(object):
     def __init__(self, model: Model, num_hour: int):
         self.model = model
         self.num_hour = num_hour
@@ -543,7 +543,7 @@ class EnergyFlowNode:
         num_hour: int,
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
     ):
-        self.util = EnengySystemUtils(model, num_hour)
+        self.util = EnergySystemUtils(model, num_hour)
         self.node_type = node_type
         self.inputs = []
         self.outputs = []
@@ -575,7 +575,7 @@ class EnergyFlowNode:
 
 
 # another name for IES?
-class IntegratedEnergySystem(EnengySystemUtils):
+class IntegratedEnergySystem(EnergySystemUtils):
     """
     综合能源系统基类
     """
