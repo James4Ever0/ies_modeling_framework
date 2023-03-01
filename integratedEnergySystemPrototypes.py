@@ -1017,7 +1017,7 @@ class DieselEngine(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         super().constraints_register()
-        
+
         # self.model.add_constraint(self.device_count <= self.device_count_max)
         # self.model.add_constraint(self.device_count >= 0)
         self.add_lower_and_upper_bounds(
@@ -1214,7 +1214,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self, register_period_constraints: int = 1, day_node: int = 24
     ):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -1603,12 +1603,13 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # return val
 
     def constraints_register(
-        self, 
-        #model: Model, 
-        register_period_constraints=1, day_node=24
+        self,
+        # model: Model,
+        register_period_constraints=1,
+        day_node=24,
     ):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -1689,11 +1690,13 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         self.add_lower_and_upper_bounds(
             self.power_of_outputs[self.output_type],
             0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.discharge_flags, bigNumber),
-                self.device_count_powerConversionSystem,
-            ),
+            self.elementwise_multiply(self.discharge_flags, bigNumber),
             self.hourRange,
+        )
+
+        self.add_upper_bounds(
+            self.power_of_outputs[self.output_type],
+            self.device_count_powerConversionSystem,
         )
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
@@ -1924,7 +1927,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
 
         """
         super().constraints_register()
-        
+
         # self.hourRange = range(0, self.num_hour)
         self.solidHeatStorage.constraints_register()
         # self.model.add_constraint(self.device_count >= 0)
@@ -2201,7 +2204,6 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             model (docplex.mp.model.Model): 求解模型实例
         """
         super().constraints_register()
-        
 
         # self.hourRange = range(0, self.num_hour)
         # self.model.add_constraint(self.device_count >= 0)
@@ -2221,10 +2223,14 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.elementwise_multiply(
                 self.on_flags, self.total_rated_power * self.running_ratio_min
             ),
-            self.elementwise_min(
-                self.elementwise_multiply(self.on_flags, bigNumber),
-                self.total_rated_power,
-            ),
+            # self.elementwise_min(
+            self.elementwise_multiply(self.on_flags, bigNumber),
+            # self.total_rated_power,
+            # ),
+        )
+
+        self.add_upper_bounds(
+            self.power_of_outputs["electricity"], self.total_rated_power
         )
 
         # TODO: guess this is not "rated_power" but "total_rated_power"
@@ -2309,11 +2315,18 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
                 self.hot_water_exchanger_2.input_type
             ],
             0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.output_hot_water_flags, bigNumber),
-                self.elementwise_multiply(self.heat_generated, 0.5),
-            ),
+            # self.elementwise_min(
+            self.elementwise_multiply(self.output_hot_water_flags, bigNumber),
+            # self.elementwise_multiply(self.heat_generated, 0.5),
+            # ),
             self.hourRange,
+        )
+
+        self.add_upper_bounds(
+            self.hot_water_exchanger_2.power_of_inputs[
+                self.hot_water_exchanger_2.input_type
+            ],
+            self.elementwise_multiply(self.heat_generated, 0.5),
         )
         # self.model.add_constraint(
         #     self.hot_water_exchanger_2.device_count
@@ -2322,10 +2335,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         self.add_lower_and_upper_bounds(
             self.steam_exchanger.power_of_inputs[self.steam_exchanger.input_type],
             0,
-            self.elementwise_min(
+            # self.elementwise_min(
                 self.elementwise_multiply(self.output_steam_flags, bigNumber),
-                self.elementwise_multiply(self.heat_generated, 0.5),
-            ),
+                # self.elementwise_multiply(self.heat_generated, 0.5),
+            # ),
             self.hourRange,
         )
         # self.model.add_constraint(
@@ -2447,7 +2460,7 @@ class GasBoiler(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -2589,7 +2602,7 @@ class ElectricBoiler(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -2717,7 +2730,7 @@ class Exchanger(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -2968,7 +2981,7 @@ class AirHeatPump(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义空气热泵机组内部约束
 
@@ -3390,7 +3403,7 @@ class WaterHeatPump(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -3769,7 +3782,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -4110,7 +4123,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -4477,7 +4490,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -4754,7 +4767,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义地源热泵机组约束条件:
 
@@ -5022,7 +5035,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
 
     def constraints_register(self, register_period_constraints: int, day_node: int):
         super().constraints_register()
-        
+
         """
         定义水蓄能类的约束条件:
 
@@ -5449,7 +5462,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义机组内部约束
 
@@ -5604,7 +5617,7 @@ class CitySupply(IntegratedEnergySystem):
 
     def constraints_register(self):
         super().constraints_register()
-        
+
         """
         定义市政能源类内部约束条件：
 
@@ -5814,7 +5827,7 @@ class GridNet(IntegratedEnergySystem):
 
     def constraints_register(self, powerPeak_predicted: float = 2000):
         super().constraints_register()
-        
+
         """
         创建电网的约束条件到模型中
 
