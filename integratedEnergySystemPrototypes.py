@@ -8,6 +8,16 @@ from docplex.mp.solution import SolveSolution
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 
+def check_invalid_constraints(model:Model, filters:List[str]= ['']):
+    for constraint in model.iter_constraints():
+        constraint_string = str(constraint)
+        for _filter in filters:
+            invalid = all([filter_keyword in constraint_string for filter_keyword in _filter])
+            if invalid:
+                return True
+    return False
+                
+
 def check_conflict(model: Model):
     has_conflict = False
     try:
@@ -42,7 +52,7 @@ def check_conflict_decorator(class_method):
         # check_conflict()
 
         if debug:
-            has_conflict = check_conflict(model)
+            has_conflict = check_conflict(model) or check_invalid_constraints(model)
             if has_conflict:
                 print("___BEFORE INVOKE___")
                 display_invoke_info()
@@ -51,7 +61,7 @@ def check_conflict_decorator(class_method):
         value = class_method(self, *args, **kwargs)
 
         if debug:
-            has_conflict = check_conflict(model)
+            has_conflict = check_conflict(model) or check_invalid_constraints(model)
             if has_conflict:
                 print("___AFTER INVOKE___")
                 display_invoke_info()
@@ -1459,11 +1469,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 # for i in range(1, self.num_hour)
                 # since it is init we should not iterate through all variables.
             )
-        print()
-        print("MIN_SOC:", self.stateOfCharge_min)
-        print("MAX_SOC:", self.stateOfCharge_max)
-        print()
-        breakpoint()
+        # print()
+        # print("MIN_SOC:", self.stateOfCharge_min)
+        # print("MAX_SOC:", self.stateOfCharge_max)
+        # print()
+        # breakpoint()
         self.add_lower_and_upper_bounds(
             self.energy,
             self.device_count * self.stateOfCharge_min,
