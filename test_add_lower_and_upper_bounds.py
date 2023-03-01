@@ -7,7 +7,7 @@ var  =   model.continuous_var(name='var')
 target_value = 10 # 10>5, but we set 5 as lower bound, to check if this issue happens.
 
 # set 15 as upper bound.
-lower_bound, upper_bound=15,5
+lower_bound, upper_bound=4,5
 
 util = EnergySystemUtils(model,num_hour=1)
 
