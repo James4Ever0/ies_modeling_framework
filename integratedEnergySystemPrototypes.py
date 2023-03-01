@@ -5,6 +5,19 @@ import numpy as np
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 
+from docplex.mp.conflict_refiner import ConflictRefiner
+
+
+def check_conflict(model:Model):
+    refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
+    res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
+    res.display()  # 显示冲突约束
+
+# decorate class method?
+
+def check_conflict_decorator():
+    ...
+
 from docplex.mp.dvar import Var
 
 from docplex.mp.vartype import (

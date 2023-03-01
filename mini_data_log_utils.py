@@ -1,16 +1,8 @@
 from typing import List
 from docplex.mp.model import Model
-from integratedEnergySystemPrototypes import IntegratedEnergySystem
+from integratedEnergySystemPrototypes import IntegratedEnergySystem, check_conflict
 
 
-
-from docplex.mp.conflict_refiner import ConflictRefiner
-
-
-def check_conflict(model:Model):
-    refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
-    res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
-    res.display()  # 显示冲突约束
 
 def solve_and_log(
     systems: List[IntegratedEnergySystem], model: Model, simulation_name: str
