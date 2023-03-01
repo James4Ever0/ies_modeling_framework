@@ -31,21 +31,24 @@ def check_conflict_decorator(class_method):
             print("ALL KWARGS:", kwargs)
 
         model = self.model  # do we really have conflict?
+        debug = self.debug
         # check_conflict()
 
-        has_conflict = check_conflict(model)
-        if has_conflict:
-            print("___BEFORE INVOKE___")
-            display_invoke_info()
-            breakpoint()
+        if debug:
+            has_conflict = check_conflict(model)
+            if has_conflict:
+                print("___BEFORE INVOKE___")
+                display_invoke_info()
+                breakpoint()
 
         value = class_method(self, *args, **kwargs)
 
-        has_conflict = check_conflict(model)
-        if has_conflict:
-            print("___AFTER INVOKE___")
-            display_invoke_info()
-            breakpoint()
+        if debug:
+            has_conflict = check_conflict(model)
+            if has_conflict:
+                print("___AFTER INVOKE___")
+                display_invoke_info()
+                breakpoint()
 
         return value
 
@@ -448,11 +451,12 @@ class Linearization(object):
 
 
 class EnergySystemUtils(object):
-    def __init__(self, model: Model, num_hour: int, debug:bool=False):
+    def __init__(self, model: Model, num_hour: int, debug: bool = False):
         self.model = model
         self.num_hour = num_hour
         self.hourRange = range(0, self.num_hour)
         self.debug = debug
+
     @check_conflict_decorator
     def constraint_multiplexer(
         self,
@@ -607,12 +611,14 @@ class EnergyFlowNode:
         model: Model,
         num_hour: int,
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
+        debug: bool = False,
     ):
-        self.util = EnergySystemUtils(model, num_hour)
+        self.util = EnergySystemUtils(model, num_hour, debug=debug)
         self.node_type = node_type
         self.inputs = []
         self.outputs = []
         self.model = model
+        self.debug = debug
 
     def check_is_var_list(self, var_list):
         if type(var_list) == list:
@@ -655,7 +661,8 @@ class IntegratedEnergySystem(EnergySystemUtils):
         device_count_max: float,
         device_count_min: float,
         device_price: float,
-        classObject
+        classObject,
+        debug: bool = False
         # className: str,
         # classIndex: int,
     ):
@@ -663,7 +670,7 @@ class IntegratedEnergySystem(EnergySystemUtils):
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
         IntegratedEnergySystem.device_index += 1
-        super().__init__(model, num_hour)
+        super().__init__(model, num_hour, debug=debug)
         # self.device_name = device_name
         classObject.index += 1
         self.className = classObject.__name__
@@ -761,7 +768,8 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         output_type: Union[
             Literal["electricity"], Literal["hot_water"]
         ] = "electricity",
-        device_count_min=0,
+        device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         新建一个光伏类
@@ -789,6 +797,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
             # className=className,
             # classIndex=classIndex,
         )
@@ -874,7 +883,8 @@ class LiBrRefrigeration(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "LiBrRefrigeration",
         input_type: Union[Literal["steam"], Literal["hot_water"]] = "steam",
-        device_count_min=0,
+        device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -894,6 +904,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # LiBrRefrigeration.index += 1
         # self.num_hour = num_hour
@@ -1004,6 +1015,7 @@ class DieselEngine(IntegratedEnergySystem):
         running_price: int,
         device_name: str = "dieselEngine",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -1024,6 +1036,7 @@ class DieselEngine(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
 
         super().__init__(
@@ -1034,6 +1047,7 @@ class DieselEngine(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # DieselEngine.index += 1
         # self.num_hour = num_hour
@@ -1559,6 +1573,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         input_type: str = "energy",
         output_type: str = "energy",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -1584,6 +1599,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
             stateOfCharge_min=stateOfCharge_min,
             stateOfCharge_max=stateOfCharge_max,
             input_type=input_type,
@@ -1903,6 +1919,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "troughPhotoThermal",
         device_count_min: int = 0,
+        debug: bool = False,
         device_price_powerConversionSystem: float = 100,
     ):
         """
@@ -1926,6 +1943,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour
@@ -2085,6 +2103,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         electricity_to_heat_ratio: float,  # drratio?
         device_name: str = "combinedHeatAndPower",
         device_count_min: int = 0,
+        debug: bool = False,
         gas_to_electricity_ratio=3.5,
     ):
         """
@@ -2108,6 +2127,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour
@@ -2476,6 +2496,7 @@ class GasBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "gasBoiler",
         device_count_min: int = 0,
+        debug: bool = False,
         output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
@@ -2498,6 +2519,7 @@ class GasBoiler(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour
@@ -2611,6 +2633,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "electricBoiler",
         device_count_min: int = 0,
+        debug: bool = False,
         output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
@@ -2633,6 +2656,7 @@ class ElectricBoiler(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour
@@ -2757,6 +2781,7 @@ class Exchanger(IntegratedEnergySystem):
         efficiency: float = 1,  # 效率系数为1
         device_name: str = "exchanger",
         device_count_min: int = 0,
+        debug: bool = False,
         input_type: str = "heat",  # 进口温度
         output_type: str = "heat",  # 出口温度
     ):
@@ -2779,6 +2804,7 @@ class Exchanger(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # k 传热系数
         # Exchanger.index += 1
@@ -2864,6 +2890,7 @@ class AirHeatPump(IntegratedEnergySystem):
         electricity_price: Union[np.ndarray, List],
         device_name: str = "air_heat_pump",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -2884,6 +2911,7 @@ class AirHeatPump(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         # AirHeatPump.index += 1
@@ -3328,6 +3356,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         case_ratio: Union[np.ndarray, List],
         device_name: str = "water_heat_pump",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -3349,6 +3378,7 @@ class WaterHeatPump(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # 不同工况下热冷效率
         # case_ratio 不同工况下制热量/制冷量的比值
@@ -3741,6 +3771,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         case_ratio: Union[np.ndarray, List],
         device_name: str = "water_cooled_spiral",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -3762,6 +3793,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         # # self.classSuffix += 1
@@ -4086,6 +4118,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         case_ratio: Union[np.ndarray, List],
         device_name: str = "doubleWorkingConditionUnit",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -4107,6 +4140,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         # # self.classSuffix += 1
@@ -4433,6 +4467,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         case_ratio: Union[np.ndarray, List],
         device_name: str = "tripleWorkingConditionUnit",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -4454,6 +4489,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         # # self.classSuffix += 1
@@ -4794,6 +4830,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         electricity_price: Union[np.ndarray, List],
         device_name: str = "geothermal_heat_pump",
         device_count_min: int = 0,
+        debug: bool = False,
         output_type: Union[Literal["cold_water"], Literal["warm_water"]] = "warm_water",
     ):
         """新建一个地源热泵类
@@ -4816,6 +4853,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         # # self.classSuffix += 1
@@ -4964,6 +5002,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         ratio_hot_water: float,  # gheat? 工作热量？ geothermal heat?
         device_name: str = "water_energy_storage",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         创建一个水蓄能类
@@ -4994,6 +5033,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.num_hour = num_hour
         self.model = model
@@ -5515,6 +5555,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "electricSteamGenerator",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         Args:
@@ -5537,6 +5578,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # self.classSuffix += 1
         # self.num_hour = num_hour
@@ -5698,6 +5740,7 @@ class CitySupply(IntegratedEnergySystem):
         efficiency: float,
         device_name: str = "city_supply",
         device_count_min: int = 0,
+        debug: bool = False,
         output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
@@ -5722,6 +5765,7 @@ class CitySupply(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # # self.classSuffix += 1
         # self.num_hour = num_hour  # hours in a day
@@ -5843,6 +5887,7 @@ class GridNet(IntegratedEnergySystem):
         electricity_price_upload: float,
         device_name: str = "grid_net",
         device_count_min: int = 0,
+        debug: bool = False,
     ):
         """
         新建一个电网类
@@ -5866,6 +5911,7 @@ class GridNet(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=self.__class__,
+            debug=debug,
         )
         # print("DEVICE COUNT?", self.device_count)
         # breakpoint()
