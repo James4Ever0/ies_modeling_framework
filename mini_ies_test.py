@@ -159,4 +159,14 @@ systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
 from mini_data_log_utils import solve_and_log
 
+# before all the fuzz...
+
+from docplex.mp.conflict_refiner import ConflictRefiner
+
+refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
+res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
+res.display()  # 显示冲突约束
+
+breakpoint()
+
 solve_and_log(systems, model, simulation_name)
