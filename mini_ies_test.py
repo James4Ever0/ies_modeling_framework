@@ -66,10 +66,11 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=200000*1000,
+    device_count_max=20000,
     device_price=0,
     electricity_price=electricity_price*100,
     electricity_price_upload=0.35*100,
+    device_count_min = 20000
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
 

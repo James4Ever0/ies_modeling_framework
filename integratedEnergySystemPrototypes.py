@@ -714,7 +714,7 @@ class PhotoVoltaic(IntegratedEnergySystem):  # Photovoltaic
         # )
         # classObject=self.__class__
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -819,7 +819,7 @@ class LiBrRefrigeration(IntegratedEnergySystem):
             device_name (str): 溴化锂制冷机组名称,默认为"LiBrRefrigeration"
         """
         # self.device_name = device_name
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -949,7 +949,7 @@ class DieselEngine(IntegratedEnergySystem):
         """
         # self.device_name = device_name
         #
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -959,7 +959,7 @@ class DieselEngine(IntegratedEnergySystem):
             classObject=self.__class__,
         )
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -1091,7 +1091,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -1496,7 +1496,7 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -1827,7 +1827,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -2007,7 +2007,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -2380,7 +2380,7 @@ class GasBoiler(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -2513,7 +2513,7 @@ class ElectricBoiler(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -2657,7 +2657,7 @@ class Exchanger(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -2760,7 +2760,7 @@ class AirHeatPump(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -3219,7 +3219,7 @@ class WaterHeatPump(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -3626,7 +3626,7 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -3964,7 +3964,7 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -4305,7 +4305,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -4660,7 +4660,7 @@ class GeothermalHeatPump(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -4836,7 +4836,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -5327,7 +5327,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -5510,7 +5510,7 @@ class CitySupply(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -5652,7 +5652,7 @@ class GridNet(IntegratedEnergySystem):
         """
         # self.device_name = device_name
 
-        val = super().__init__(
+        super().__init__(
             model=model,
             num_hour=num_hour,
             device_name=device_name,
@@ -5661,6 +5661,8 @@ class GridNet(IntegratedEnergySystem):
             device_price=device_price,
             classObject=self.__class__,
         )
+        print("DEVICE COUNT?",self.device_count)
+        breakpoint()
         # # self.classSuffix += 1
         # self.num_hour = num_hour
         # self.model = model
