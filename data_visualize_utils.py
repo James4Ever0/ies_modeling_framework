@@ -31,7 +31,7 @@ def plotSingle(
 
 
 def printIntegratedEnergySystemDeviceCounts(
-    integratedEnergySystem_device: List[IntegratedEnergySystem],
+    integratedEnergySystem_device: List[IntegratedEnergySystem], min_value: float = 1e-2
 ):
     """
     Print all device counts in all kinds of `IntegratedEnergySystem` device sets.
@@ -45,16 +45,16 @@ def printIntegratedEnergySystemDeviceCounts(
         print(f"objective index: {index}")
         print(f"objective class: {type(item).__name__}")
         for subitem in subitems:
-            if subitem == ("device_count") and not any(
+            if "device_count" in subitem and not any(
                 [
-                    subitem.startswith(prohibited_keyword)
+                    prohibited_keyword in subitem
                     for prohibited_keyword in ["device_count_max", "device_count_min"]
                 ]
             ):  # 打印每个类型机组里面的设备数量
                 val = item.__dict__[subitem]
                 try:
                     value = float(val)
-                    if value > 1e-2:
+                    if value > min_value:
                         print("value name:", subitem)
                         print("value:", value)
                     else:
