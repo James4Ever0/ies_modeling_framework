@@ -87,7 +87,8 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     stateOfCharge_min=0,  # state of charge
     stateOfCharge_max=1,
     input_type='electricity',
-    output_type='electricity'
+    output_type='electricity',
+    device_count_min = 20000 # make it count.
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
@@ -108,8 +109,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 #
 
 ############## HOW WE CONNECT THIS ##############
-#                _________
-#              /           \
+#              _<CHANNEL1>_
+#             /            \
 # PV - [NODE1] -> BESS -> - [NODE2] - LOAD
 #              \_ GRID _/
 #
@@ -120,10 +121,14 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 Node1 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 Node2 = EnergyFlowNode(model,num_hour,symbols.greater_equal)
 
+Channel1 = model.continuous_var_list([i for i in range(num_hour)], lb=0, name="channel_1")
+
 Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
 Node1.add_output(batteryEnergyStorageSystem.power_of_inputs['electricity'])
 Node1.add_output(gridNet.power_of_inputs['electricity'])
+Node1.add_output(Channel1)
 
+Node2.add_input(Channel1)
 Node2.add_input(gridNet.power_of_outputs['electricity'])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs['electricity'])
 Node2.add_output(power_load)
