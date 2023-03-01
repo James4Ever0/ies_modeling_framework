@@ -1284,7 +1284,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             # ),
             self.hourRange,
         )
-        breakpoint()
+        # breakpoint()
         self.add_upper_bounds(
             self.power_of_inputs[self.input_type],
             self.device_count_powerConversionSystem,
