@@ -47,9 +47,11 @@ from docplex.mp.model import Model
 simulation_name = "microgrid"
 
 load = LoadGet()
-power_load = load.get_power_load(num_hour)*0.01
+power_load = load.get_power_load(num_hour) * 0.01
 
 model = Model(name=simulation_name)
+
+debug = True  # we step through conflicts.
 
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
@@ -67,6 +69,7 @@ photoVoltaic = PhotoVoltaic(
     efficiency=0.8,
     device_name="PhotoVoltaic",
     device_count_min=5000,
+    debug=debug,
 )
 photoVoltaic.constraints_register()
 
@@ -78,6 +81,7 @@ gridNet = GridNet(
     device_price=0,
     electricity_price=electricity_price * 10,
     electricity_price_upload=0.35 * 100,
+    debug=debug
     # device_count_min=5000,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
@@ -97,7 +101,8 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     stateOfCharge_max=1,
     input_type="electricity",
     output_type="electricity",
-    device_count_min=1 # just buy it? what is the problem?
+    device_count_min=1,  # just buy it? what is the problem?
+    debug=debug,
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
@@ -130,8 +135,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 
 # no checking!
 
-Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal)
-Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal)
+Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
+Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"

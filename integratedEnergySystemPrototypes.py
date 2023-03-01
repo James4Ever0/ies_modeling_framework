@@ -1153,7 +1153,8 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         stateOfCharge_min: float,
         stateOfCharge_max: float,
         device_name: str = "energyStorageSystem",
-        device_count_min: float = 0,
+        device_count_min: int = 0,
+        debug: bool = False,
         input_type: str = "energy_storage",
         output_type: str = "energy",
         classObject=None,
@@ -1182,6 +1183,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             device_count_min=device_count_min,
             device_price=device_price,
             classObject=classObject if classObject else self.__class__,
+            debug=debug,
         )
         # EnergyStorageSystem.index += 1
 
