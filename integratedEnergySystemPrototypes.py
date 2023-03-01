@@ -529,7 +529,7 @@ class EnergySystemUtils(object):
     ):
         index_range = self.get_index_range(variables, index_range)
 
-        iterable = isinstance(values, Iterable)
+        iterable = any([isinstance(values, subscripableType) for subscripableType in [List, np.ndarray, tuple]])
 
         for index in index_range:
             if iterable:
