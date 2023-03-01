@@ -11,6 +11,8 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 def check_conflict(model: Model):
     refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
     res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
+    number_of_conflicts = res.number_of_conflicts
+    breakpoint()
     res.display()  # 显示冲突约束
 
 
@@ -18,13 +20,15 @@ def check_conflict(model: Model):
 
 def check_conflict_decorator(class_method):
 
-    def decorated_func(self: object, *args, **kwargs):
+    def decorated_func(self, *args, **kwargs):
         # class_instance = args[0] # <- this is the 'self'
         # really?
         print("CLASS INSTANCE:", self)
         print("ALL REMAINING ARGS:", args)
         print("ALL KWARGS:", kwargs)
         print("___BEFORE INVOKE___")
+        model = self.model # do we really have conflict?
+        # check_conflict()
         value = class_method(self, *args, **kwargs)
         print("___AFTER INVOKE___")
         return value
@@ -159,7 +163,7 @@ class Linear_absolute(object):  # absolute?
         Args:
             model (docplex.mp.model.Model): 求解模型实例
         """
-        self.__class__.__index__ += 1
+        self.__class__.index += 1
         self.model.add_constraints(
             self.b_positive[i] + self.b_negitive[i] == 1 for i in hourRange
         )
