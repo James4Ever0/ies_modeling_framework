@@ -9,12 +9,18 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 
 
 def check_conflict(model: Model):
-    refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
-    res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
-    number_of_conflicts = res.number_of_conflicts
-    has_conflict = number_of_conflicts != 0
-    if has_conflict:
-        res.display()  # 显示冲突约束
+    has_conflict = False
+    try:
+        refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
+        res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
+        number_of_conflicts = res.number_of_conflicts
+        has_conflict = number_of_conflicts != 0
+        if has_conflict:
+            res.display()  # 显示冲突约束
+        del res
+        del refiner
+    except:
+        pass
     return has_conflict
 
 
@@ -26,6 +32,7 @@ def check_conflict_decorator(class_method):
         # class_instance = args[0] # <- this is the 'self'
         # really?
         def display_invoke_info():
+            print("FUNCTION:", class_method)
             print("CLASS INSTANCE:", self)
             print("ALL REMAINING ARGS:", args)
             print("ALL KWARGS:", kwargs)
