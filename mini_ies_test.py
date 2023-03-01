@@ -59,6 +59,7 @@ photoVoltaic = PhotoVoltaic(
     intensityOfIllumination=intensityOfIllumination,
     efficiency=0.8,
     device_name="PhotoVoltaic",
+    device_count_min=5000,
 )
 photoVoltaic.constraints_register()
 
@@ -66,11 +67,11 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=20000,
+    device_count_max=10000,
     device_price=0,
     electricity_price=electricity_price*100,
     electricity_price_upload=0.35*100,
-    device_count_min = 20000
+    # device_count_min=5000,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
 
@@ -89,7 +90,6 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     stateOfCharge_max=1,
     input_type='electricity',
     output_type='electricity',
-    device_count_min = 20000 # make it count.
 )
 # original: battery
 batteryEnergyStorageSystem.constraints_register(  # using mode 1?
