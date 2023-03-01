@@ -1174,7 +1174,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.device_count_powerConversionSystem: ContinuousVarType = (
             self.model.continuous_var(
                 name=f"device_count_powerConversionSystem_{self.classSuffix}"
-            )
+            ),
         )  # powerConversionSystem
         """
         模型中的连续变量,表示 PCS 的容量。
@@ -1278,11 +1278,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.add_lower_and_upper_bounds(
             self.power_of_inputs[self.input_type],
             0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.charge_flags, bigNumber),
-                self.device_count_powerConversionSystem,
-            ),
+            # self.elementwise_min(
+            self.elementwise_multiply(self.charge_flags, bigNumber),
+            # self.device_count_powerConversionSystem,
+            # ),
             self.hourRange,
+        )
+        self.add_upper_bounds(
+            self.power_of_inputs[self.input_type],
+            self.device_count_powerConversionSystem,
         )
 
         # self.model.add_constraints(
@@ -1303,11 +1307,15 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.add_lower_and_upper_bounds(
             self.power_of_outputs[self.output_type],
             0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.discharge_flags, bigNumber),
-                self.device_count_powerConversionSystem,
-            ),
+            # self.elementwise_min(
+            self.elementwise_multiply(self.discharge_flags, bigNumber),
+            # self.device_count_powerConversionSystem,
+            # ),
             self.hourRange,
+        )
+        self.add_upper_bounds(
+            self.power_of_outputs[self.output_type],
+            self.device_count_powerConversionSystem,
         )
         # self.model.add_constraints(
         #     self.power_of_outputs[self.output_type][i] >= 0 for i in self.hourRange
@@ -1668,11 +1676,15 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         self.add_lower_and_upper_bounds(
             self.power_of_inputs[self.input_type],
             0,
-            self.elementwise_min(
-                self.elementwise_multiply(self.charge_flags, bigNumber),
-                self.device_count_powerConversionSystem,
-            ),
+            # self.elementwise_min(
+            self.elementwise_multiply(self.charge_flags, bigNumber),
+            # self.device_count_powerConversionSystem,
+            # ),
             self.hourRange,
+        )
+        self.add_upper_bounds(
+            self.power_of_inputs[self.input_type],
+            self.device_count_powerConversionSystem,
         )
         # self.model.add_constraints(
         #     self.power_of_inputs[self.input_type][i] >= 0 for i in self.hourRange
@@ -4546,7 +4558,7 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
                 # self.multiply(self.device_count, self.case_ratio[index]),
                 # ),
             )
-            
+
             self.add_upper_bounds(
                 self.power_of_outputs[output_type],
                 self.multiply(self.device_count, self.case_ratio[index]),
@@ -5139,20 +5151,21 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # )
 
         for output_type in self.output_types:
-            
             self.model.add_constraints(
-                self.__dict__[f"device_count_{output_type}"][h] <= self.volume * self.__dict__[f"ratio_{output_type}"]
+                self.__dict__[f"device_count_{output_type}"][h]
+                <= self.volume * self.__dict__[f"ratio_{output_type}"]
                 for h in self.hourRange
             )
-            
+
             self.model.add_constraints(
                 self.__dict__[f"device_count_{output_type}"][h]
                 <= self.__dict__[f"{output_type}_flags"][h] * bigNumber
                 for h in self.hourRange
             )
-            
+
             self.model.add_constraints(
-                self.__dict__[f"device_count_{output_type}"][h] >= 0 for h in self.hourRange
+                self.__dict__[f"device_count_{output_type}"][h] >= 0
+                for h in self.hourRange
             )
 
             self.model.add_constraints(
@@ -5162,36 +5175,36 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                 for h in self.hourRange
             )
         #####################
-            # self.add_lower_and_upper_bounds(
-            #     self.__dict__[f"device_count_{output_type}"],
-            #     self.elementwise_max(  # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
-            #         self.elementwise_subtract(
-            #             self.elementwise_multiply(
-            #                 self.__dict__[f"ratio_{output_type}"], self.volume
-            #             ),
-            #             self.elementwise_multiply(
-            #                 (
-            #                     self.elementwise_add(
-            #                         self.elementwise_multiply(
-            #                             self.__dict__[f"{output_type}_flags"], -1
-            #                         ),
-            #                         1,
-            #                     )
-            #                 ),
-            #                 bigNumber,
-            #             ),
-            #         ),
-            #         0,
-            #     ),
-            #     self.elementwise_min(
-            #         self.elementwise_multiply(
-            #             self.waterStorageTank_cool_flag, bigNumber
-            #         ),
-            #         self.volume * self.ratio_cold_water,
-            #     ),
-            # )
+        # self.add_lower_and_upper_bounds(
+        #     self.__dict__[f"device_count_{output_type}"],
+        #     self.elementwise_max(  # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+        #         self.elementwise_subtract(
+        #             self.elementwise_multiply(
+        #                 self.__dict__[f"ratio_{output_type}"], self.volume
+        #             ),
+        #             self.elementwise_multiply(
+        #                 (
+        #                     self.elementwise_add(
+        #                         self.elementwise_multiply(
+        #                             self.__dict__[f"{output_type}_flags"], -1
+        #                         ),
+        #                         1,
+        #                     )
+        #                 ),
+        #                 bigNumber,
+        #             ),
+        #         ),
+        #         0,
+        #     ),
+        #     self.elementwise_min(
+        #         self.elementwise_multiply(
+        #             self.waterStorageTank_cool_flag, bigNumber
+        #         ),
+        #         self.volume * self.ratio_cold_water,
+        #     ),
+        # )
         #####################
-            
+
         # # (1)
         # self.model.add_constraints(
         #     self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water
@@ -5276,7 +5289,6 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # 上面的公式进行线性化后,用下面的公式替代
 
         for output_type in self.output_types:
-                
             self.model.add_constraints(  # lower
                 -bigNumber * self.waterStorageTank_cool_flag[h]
                 <= self.power_of_outputs[output_type][h]
@@ -5300,7 +5312,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                 for h in self.hourRange
             )
             ##########################
-            
+
             # self.add_lower_and_upper_bounds(
             #     self.power_of_outputs[output_type],
             #     self.elementwise_max(
