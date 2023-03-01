@@ -8,15 +8,29 @@ from docplex.mp.solution import SolveSolution
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 
-def check_conflict(model:Model):
+def check_conflict(model: Model):
     refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
     res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
     res.display()  # 显示冲突约束
 
+
 # decorate class method?
 
-def check_conflict_decorator():
-    ...
+def check_conflict_decorator(class_method):
+
+    def decorated_func(self: object, *args, **kwargs):
+        # class_instance = args[0] # <- this is the 'self'
+        # really?
+        print("CLASS INSTANCE:", self)
+        print("ALL REMAINING ARGS:", args)
+        print("ALL KWARGS:", kwargs)
+        print("___BEFORE INVOKE___")
+        value = class_method(self, *args, **kwargs)
+        print("___AFTER INVOKE___")
+        return value
+
+    return decorated_func
+
 
 from docplex.mp.dvar import Var
 
@@ -52,8 +66,8 @@ from config import (
 
 
 class symbols:
-    greater_equal = "greater_equal"
-    equal = "equal"
+    greater_equal: Literal["greater_equal"] = "greater_equal"
+    equal: Literal["equal"] = "equal"
 
 
 class Linear_absolute(object):  # absolute?
