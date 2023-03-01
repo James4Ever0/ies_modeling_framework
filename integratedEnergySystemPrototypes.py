@@ -5139,24 +5139,26 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # )
 
         for output_type in self.output_types:
-                
+            
             self.model.add_constraints(
-                self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water
+                self.__dict__[f"device_count_{output_type}"][h] <= self.volume * self.__dict__[f"ratio_{output_type}"]
                 for h in self.hourRange
             )
+            
             self.model.add_constraints(
-                self.device_count_cold_water[h]
-                <= self.waterStorageTank_cool_flag[h] * bigNumber
+                self.__dict__[f"device_count_{output_type}"][h]
+                <= self.__dict__[f"{output_type}_flags"][h] * bigNumber
                 for h in self.hourRange
             )
+            
             self.model.add_constraints(
-                self.device_count_cold_water[h] >= 0 for h in self.hourRange
+                self.__dict__[f"device_count_{output_type}"][h] >= 0 for h in self.hourRange
             )
 
             self.model.add_constraints(
-                self.device_count_cold_water[h]
-                >= self.volume * self.ratio_cold_water
-                - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+                self.__dict__[f"device_count_{output_type}"][h]
+                >= self.volume * self.__dict__[f"ratio_{output_type}"]
+                - (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
                 for h in self.hourRange
             )
         #####################
@@ -5272,47 +5274,72 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # （2）power_waterStorageTank_heat[h] == power_waterStorageTank[h] * waterStorageTank_heat_flag[h]
         # （3）power_waterStorageTank_gheat[h] == power_waterStorageTank[h] * waterStorageTank_gheat_flag[h]
         # 上面的公式进行线性化后,用下面的公式替代
-        # (1)
 
         for output_type in self.output_types:
-            self.add_lower_and_upper_bounds(
-                self.power_of_outputs[output_type],
-                self.elementwise_max(
-                    self.elementwise_multiply(
-                        self.__dict__[f"{output_type}_flags"], -bigNumber
-                    ),
-                    self.elementwise_subtract(
-                        self.waterStorageTank.power,
-                        self.elementwise_multiply(
-                            self.elementwise_add(
-                                self.elementwise_multiply(
-                                    self.__dict__[f"{output_type}_flags"], -1
-                                ),
-                                1,
-                            ),
-                            bigNumber,
-                        ),
-                    ),
-                ),
-                self.elementwise_min(
-                    self.elementwise_multiply(
-                        self.__dict__[f"{output_type}_flags"], bigNumber
-                    ),
-                    self.elementwise_add(
-                        self.waterStorageTank.power,
-                        self.elementwise_multiply(
-                            self.elementwise_add(
-                                self.elementwise_multiply(
-                                    self.__dict__[f"{output_type}_flags"], -1
-                                ),
-                                1,
-                            ),
-                            bigNumber,
-                        ),
-                    ),
-                ),
+                
+            self.model.add_constraints(  # lower
+                -bigNumber * self.waterStorageTank_cool_flag[h]
+                <= self.power_of_outputs[output_type][h]
+                for h in self.hourRange
             )
-
+            self.model.add_constraints(  # upper
+                self.power_of_outputs[output_type][h]
+                <= bigNumber * self.__dict__[f"{output_type}_flags"][h]
+                for h in self.hourRange
+            )
+            self.model.add_constraints(  # lower
+                self.waterStorageTank.power[h]
+                - (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
+                <= self.power_of_outputs[output_type][h]
+                for h in self.hourRange
+            )
+            self.model.add_constraints(  # upper
+                self.power_of_outputs[output_type][h]
+                <= self.waterStorageTank.power[h]
+                + (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
+                for h in self.hourRange
+            )
+            ##########################
+            
+            # self.add_lower_and_upper_bounds(
+            #     self.power_of_outputs[output_type],
+            #     self.elementwise_max(
+            #         self.elementwise_multiply(
+            #             self.__dict__[f"{output_type}_flags"], -bigNumber
+            #         ),
+            #         self.elementwise_subtract(
+            #             self.waterStorageTank.power,
+            #             self.elementwise_multiply(
+            #                 self.elementwise_add(
+            #                     self.elementwise_multiply(
+            #                         self.__dict__[f"{output_type}_flags"], -1
+            #                     ),
+            #                     1,
+            #                 ),
+            #                 bigNumber,
+            #             ),
+            #         ),
+            #     ),
+            #     self.elementwise_min(
+            #         self.elementwise_multiply(
+            #             self.__dict__[f"{output_type}_flags"], bigNumber
+            #         ),
+            #         self.elementwise_add(
+            #             self.waterStorageTank.power,
+            #             self.elementwise_multiply(
+            #                 self.elementwise_add(
+            #                     self.elementwise_multiply(
+            #                         self.__dict__[f"{output_type}_flags"], -1
+            #                     ),
+            #                     1,
+            #                 ),
+            #                 bigNumber,
+            #             ),
+            #         ),
+            #     ),
+            # )
+            ##########################
+        # (1)
         # self.model.add_constraints(  # lower
         #     -bigNumber * self.waterStorageTank_cool_flag[h]
         #     <= self.power_waterStorageTank_cool[h]
