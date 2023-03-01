@@ -16,18 +16,25 @@ def check_invalid_constraints(
         ["energy_EnergyStorageSystem_1_1 "],
         ["energy_EnergyStorageSystem_1_1,"]
     ],
+    white_list_filters:List[List[str]] = [["energy_EnergyStorageSystem_1_1 == 0.900"]]
 ):
     invalid_constraints = set()
     invalid_flags = []
+    def check_if_all(constraint_string, _filter):
+        return all(
+                [filter_keyword in constraint_string for filter_keyword in _filter]
+            )
     for constraint in model.iter_constraints():
         constraint_string = str(constraint)
         for _filter in filters:
-            invalid = all(
-                [filter_keyword in constraint_string for filter_keyword in _filter]
-            )
+            invalid = check_if_all(constraint_string, _filter)
             if invalid:
-                invalid_constraints.add(constraint_string)
-            invalid_flags.append(invalid)
+                white_listed_flags = []
+                for white_list_filter in white_list_filters:
+                    white_listed =check_if_all(constraint_string, white_list_filter)
+                if not any(white_listed_flags):
+                    invalid_constraints.add(constraint_string)
+                    invalid_flags.append(invalid)
     for invalid_constraint in invalid_constraints:
         print("INVALID CONSTRAINT:")
         print(invalid_constraint)
