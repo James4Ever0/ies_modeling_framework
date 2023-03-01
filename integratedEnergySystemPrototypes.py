@@ -2336,10 +2336,15 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
             self.steam_exchanger.power_of_inputs[self.steam_exchanger.input_type],
             0,
             # self.elementwise_min(
-                self.elementwise_multiply(self.output_steam_flags, bigNumber),
-                # self.elementwise_multiply(self.heat_generated, 0.5),
+            self.elementwise_multiply(self.output_steam_flags, bigNumber),
+            # self.elementwise_multiply(self.heat_generated, 0.5),
             # ),
             self.hourRange,
+        )
+
+        self.add_upper_bounds(
+            self.steam_exchanger.power_of_inputs[self.steam_exchanger.input_type],
+            self.elementwise_multiply(self.heat_generated, 0.5),
         )
         # self.model.add_constraint(
         #     self.steam_exchanger.device_count <= self.output_steam_flags * bigNumber
@@ -3015,12 +3020,16 @@ class AirHeatPump(IntegratedEnergySystem):
             self.add_lower_and_upper_bounds(
                 power_of_output,
                 0,
-                self.elementwise_min(
-                    self.elementwise_multiply(output_mode_flags, bigNumber),
-                    self.elementwise_multiply(
-                        output_temperature, self.device_count / 100
-                    ),
-                ),
+                # self.elementwise_min(
+                self.elementwise_multiply(output_mode_flags, bigNumber),
+                # self.elementwise_multiply(
+                #     output_temperature, self.device_count / 100
+                # ),
+                # ),
+            )
+            self.add_upper_bounds(
+                power_of_output,
+                self.elementwise_multiply(output_temperature, self.device_count / 100),
             )
         ########## REPLACE ALL FOUR CONSTRAINS WITH THIS ONE
 
@@ -3440,10 +3449,14 @@ class WaterHeatPump(IntegratedEnergySystem):
             self.add_lower_and_upper_bounds(
                 power_of_output,
                 0,
-                self.elementwise_min(
-                    self.elementwise_multiply(output_mode_flag, bigNumber),
-                    self.multiply(self.device_count, self.case_ratio[index]),
-                ),
+                # self.elementwise_min(
+                self.elementwise_multiply(output_mode_flag, bigNumber),
+                #     self.multiply(self.device_count, self.case_ratio[index]),
+                # ),
+            )
+            self.add_upper_bounds(
+                power_of_output,
+                self.multiply(self.device_count, self.case_ratio[index]),
             )
 
         # self.add_lower_and_upper_bounds(
@@ -3808,12 +3821,17 @@ class WaterCoolingSpiral(IntegratedEnergySystem):
             self.add_lower_and_upper_bounds(
                 self.power_of_outputs[output_type],
                 0,
-                self.elementwise_min(
-                    self.elementwise_multiply(
-                        self.__dict__[f"{output_type}_flags"], bigNumber
-                    ),
-                    self.multiply(self.device_count, self.case_ratio[index]),
+                # self.elementwise_min(
+                self.elementwise_multiply(
+                    self.__dict__[f"{output_type}_flags"], bigNumber
                 ),
+                # self.multiply(self.device_count, self.case_ratio[index]),
+                # ),
+            )
+
+            self.add_upper_bounds(
+                self.power_of_outputs[output_type],
+                self.multiply(self.device_count, self.case_ratio[index]),
             )
 
         ##############
@@ -4149,12 +4167,16 @@ class DoubleWorkingConditionUnit(IntegratedEnergySystem):
             self.add_lower_and_upper_bounds(
                 self.power_of_outputs[output_type],
                 0,
-                self.elementwise_min(
-                    self.elementwise_multiply(
-                        self.__dict__[f"{output_type}_flags"], bigNumber
-                    ),
-                    self.multiply(self.device_count, self.case_ratio[index]),
+                # self.elementwise_min(
+                self.elementwise_multiply(
+                    self.__dict__[f"{output_type}_flags"], bigNumber
                 ),
+                # self.multiply(self.device_count, self.case_ratio[index]),
+                # ),
+            )
+            self.add_upper_bounds(
+                self.power_of_outputs[output_type],
+                self.multiply(self.device_count, self.case_ratio[index]),
             )
 
         #################
@@ -4517,12 +4539,17 @@ class TripleWorkingConditionUnit(IntegratedEnergySystem):
             self.add_lower_and_upper_bounds(
                 self.power_of_outputs[output_type],
                 0,
-                self.elementwise_min(
-                    self.elementwise_multiply(
-                        self.__dict__[f"{output_type}_flags"], bigNumber
-                    ),
-                    self.multiply(self.device_count, self.case_ratio[index]),
+                # self.elementwise_min(
+                self.elementwise_multiply(
+                    self.__dict__[f"{output_type}_flags"], bigNumber
                 ),
+                # self.multiply(self.device_count, self.case_ratio[index]),
+                # ),
+            )
+            
+            self.add_upper_bounds(
+                self.power_of_outputs[output_type],
+                self.multiply(self.device_count, self.case_ratio[index]),
             )
         ################################
 
@@ -5112,34 +5139,57 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # )
 
         for output_type in self.output_types:
-            self.add_lower_and_upper_bounds(
-                self.__dict__[f"device_count_{output_type}"],
-                self.elementwise_max(  # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
-                    self.elementwise_subtract(
-                        self.elementwise_multiply(
-                            self.__dict__[f"ratio_{output_type}"], self.volume
-                        ),
-                        self.elementwise_multiply(
-                            (
-                                self.elementwise_add(
-                                    self.elementwise_multiply(
-                                        self.__dict__[f"{output_type}_flags"], -1
-                                    ),
-                                    1,
-                                )
-                            ),
-                            bigNumber,
-                        ),
-                    ),
-                    0,
-                ),
-                self.elementwise_min(
-                    self.elementwise_multiply(
-                        self.waterStorageTank_cool_flag, bigNumber
-                    ),
-                    self.volume * self.ratio_cold_water,
-                ),
+                
+            self.model.add_constraints(
+                self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water
+                for h in self.hourRange
             )
+            self.model.add_constraints(
+                self.device_count_cold_water[h]
+                <= self.waterStorageTank_cool_flag[h] * bigNumber
+                for h in self.hourRange
+            )
+            self.model.add_constraints(
+                self.device_count_cold_water[h] >= 0 for h in self.hourRange
+            )
+
+            self.model.add_constraints(
+                self.device_count_cold_water[h]
+                >= self.volume * self.ratio_cold_water
+                - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+                for h in self.hourRange
+            )
+        #####################
+            # self.add_lower_and_upper_bounds(
+            #     self.__dict__[f"device_count_{output_type}"],
+            #     self.elementwise_max(  # self.volume * self.ratio_cold_water - (1 - self.waterStorageTank_cool_flag[h]) * bigNumber
+            #         self.elementwise_subtract(
+            #             self.elementwise_multiply(
+            #                 self.__dict__[f"ratio_{output_type}"], self.volume
+            #             ),
+            #             self.elementwise_multiply(
+            #                 (
+            #                     self.elementwise_add(
+            #                         self.elementwise_multiply(
+            #                             self.__dict__[f"{output_type}_flags"], -1
+            #                         ),
+            #                         1,
+            #                     )
+            #                 ),
+            #                 bigNumber,
+            #             ),
+            #         ),
+            #         0,
+            #     ),
+            #     self.elementwise_min(
+            #         self.elementwise_multiply(
+            #             self.waterStorageTank_cool_flag, bigNumber
+            #         ),
+            #         self.volume * self.ratio_cold_water,
+            #     ),
+            # )
+        #####################
+            
         # # (1)
         # self.model.add_constraints(
         #     self.device_count_cold_water[h] <= self.volume * self.ratio_cold_water

@@ -243,7 +243,7 @@ def electricSystemRegistration(
 
     # 柴油发电机
     dieselEngine = DieselEngine(
-        num_hour0, model1, dieselEngine_device_max=320, device_price=750, run_price=2
+        num_hour0, model1, dieselEngine_count_max=320, device_price=750, run_price=2
     )
     dieselEngine.constraints_register(model1)
 
