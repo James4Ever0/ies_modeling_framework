@@ -12,7 +12,7 @@ def check_conflict(model: Model):
     refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
     res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
     number_of_conflicts = res.number_of_conflicts
-    has_conflict = number_of_conflicts !=0
+    has_conflict = number_of_conflicts != 0
     if has_conflict:
         res.display()  # 显示冲突约束
     return has_conflict
@@ -20,8 +20,8 @@ def check_conflict(model: Model):
 
 # decorate class method?
 
-def check_conflict_decorator(class_method):
 
+def check_conflict_decorator(class_method):
     def decorated_func(self, *args, **kwargs):
         # class_instance = args[0] # <- this is the 'self'
         # really?
@@ -29,24 +29,24 @@ def check_conflict_decorator(class_method):
             print("CLASS INSTANCE:", self)
             print("ALL REMAINING ARGS:", args)
             print("ALL KWARGS:", kwargs)
-            
-        model = self.model # do we really have conflict?
+
+        model = self.model  # do we really have conflict?
         # check_conflict()
-        
+
         has_conflict = check_conflict(model)
         if has_conflict:
             print("___BEFORE INVOKE___")
             display_invoke_info()
             breakpoint()
-            
+
         value = class_method(self, *args, **kwargs)
-        
+
         has_conflict = check_conflict(model)
         if has_conflict:
-            print("___BEFORE INVOKE___")
+            print("___AFTER INVOKE___")
             display_invoke_info()
             breakpoint()
-        
+
         return value
 
     return decorated_func
@@ -448,11 +448,12 @@ class Linearization(object):
 
 
 class EnergySystemUtils(object):
-    def __init__(self, model: Model, num_hour: int):
+    def __init__(self, model: Model, num_hour: int, debug:bool=False):
         self.model = model
         self.num_hour = num_hour
         self.hourRange = range(0, self.num_hour)
-
+        self.debug = debug
+    @check_conflict_decorator
     def constraint_multiplexer(
         self,
         variables: List[Var],
@@ -471,9 +472,11 @@ class EnergySystemUtils(object):
                 value = values
             constraint_function(variables[index], value)
 
+    @check_conflict_decorator
     def add_lower_bound(self, variable: Var, lower_bound):
         self.model.add_constraint(lower_bound <= variable)  # 最大装机量
 
+    @check_conflict_decorator
     def add_lower_bounds(self, variables: List[Var], lower_bounds, index_range=None):
         index_range = self.get_index_range(variables, index_range)
 
@@ -481,9 +484,11 @@ class EnergySystemUtils(object):
             variables, lower_bounds, index_range, self.add_lower_bound
         )
 
+    @check_conflict_decorator
     def add_upper_bound(self, variable: Var, upper_bound):
         self.model.add_constraint(upper_bound >= variable)  # 最大装机量
 
+    @check_conflict_decorator
     def add_upper_bounds(self, variables: List[Var], upper_bounds, index_range=None):
         index_range = self.get_index_range(variables, index_range)
 
@@ -491,9 +496,11 @@ class EnergySystemUtils(object):
             variables, upper_bounds, index_range, self.add_upper_bound
         )
 
+    @check_conflict_decorator
     def equation(self, variable: Var, value):
         self.model.add_constraint(variable == value)
 
+    @check_conflict_decorator
     def equations(self, variables: List[Var], values, index_range=None):
         self.constraint_multiplexer(
             variables,
@@ -502,10 +509,12 @@ class EnergySystemUtils(object):
             constraint_function=self.equation,
         )
 
+    @check_conflict_decorator
     def add_lower_and_upper_bound(self, variables: Var, lower_bound, upper_bound):
         self.add_lower_bound(variables, lower_bound)
         self.add_upper_bound(variables, upper_bound)
 
+    @check_conflict_decorator
     def add_lower_and_upper_bounds(
         self, variables: List[Var], lower_bounds, upper_bounds, index_range=None
     ):
@@ -516,6 +525,7 @@ class EnergySystemUtils(object):
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count_min<=self.device_count )
 
+    @check_conflict_decorator
     def elementwise_operation(self, variables: List[Var], values, operation_function):
         iterable = isinstance(values, Iterable)
         results = []
@@ -546,24 +556,31 @@ class EnergySystemUtils(object):
     def max(self, variable_a: Var, value):
         return self.model.max(variable_a, value)
 
+    @check_conflict_decorator
     def elementwise_min(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.min)
 
+    @check_conflict_decorator
     def elementwise_max(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.max)
 
+    @check_conflict_decorator
     def elementwise_divide(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.divide)
 
+    @check_conflict_decorator
     def elementwise_multiply(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.multiply)
 
+    @check_conflict_decorator
     def elementwise_add(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.add)
 
+    @check_conflict_decorator
     def elementwise_subtract(self, variables: List[Var], values):
         return self.elementwise_operation(variables, values, self.subtract)
 
+    @check_conflict_decorator
     def get_index_range(self, variables: List[Var], index_range=None):
         if index_range is None:
             index_range = self.hourRange
@@ -571,6 +588,7 @@ class EnergySystemUtils(object):
                 index_range = range(len(variables))
         return index_range
 
+    @check_conflict_decorator
     def sum_within_range(self, variables: List[Var], index_range=None):
         index_range = self.get_index_range(variables, index_range)
         result = self.model.sum(variables[index] for index in index_range)
