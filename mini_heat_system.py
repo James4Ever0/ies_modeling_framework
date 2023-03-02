@@ -7,7 +7,7 @@ from integratedEnergySystemPrototypes import (
     Linearization,
     WaterEnergyStorage,
     # GasBoiler,
-    GridNet
+    GridNet,
 )
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour, day_node
@@ -27,7 +27,7 @@ delta = 0.3
 heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
     * heat_load
-)*0.4
+) * 0.4
 model = Model(name=simulation_name)
 
 resource = ResourceGet()
@@ -51,7 +51,6 @@ photoVoltaic = PhotoVoltaic(
 photoVoltaic.constraints_register()
 
 
-
 # 电网
 gridNet = GridNet(
     num_hour,
@@ -64,7 +63,6 @@ gridNet = GridNet(
 gridNet.constraints_register(powerPeak_predicted=2000)
 
 
-
 # 水源热泵
 waterSourceHeatPumps = (
     WaterHeatPump(  # you are not using the electricity of photothermal power?
@@ -72,7 +70,8 @@ waterSourceHeatPumps = (
         model,
         device_count_max=2000,
         device_price=3000,
-        electricity_price=electricity_price0*0, # with gridnet, optional electricity input?
+        electricity_price=electricity_price0
+        * 0,  # with gridnet, optional electricity input?
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
     )
@@ -89,7 +88,7 @@ waterStorageTank = WaterEnergyStorage(
     num_hour,
     model,
     volume_max=10000,
-    volume_price=300, # make it cheap
+    volume_price=300,  # make it cheap
     device_price_powerConversionSystem=1,
     conversion_rate_max=0.5,
     efficiency=0.9,
@@ -101,21 +100,19 @@ waterStorageTank = WaterEnergyStorage(
     ratio_hot_water=20,
     device_name="waterStorageTank",
 )
-waterStorageTank.constraints_register(
-   register_period_constraints=1, day_node=day_node
-)
+waterStorageTank.constraints_register(register_period_constraints=1, day_node=day_node)
 
 # 市政热水
 municipalHotWater = CitySupply(
     num_hour,
     model,
-    device_count_max=5000*10000,
+    device_count_max=5000 * 10000,
     device_price=3000,
-    running_price=0.3 * np.ones(num_hour), # run_price -> running_price
+    running_price=0.3 * np.ones(num_hour),  # run_price -> running_price
     efficiency=0.9,
-    output_type='hot_water' # add output_type
+    output_type="hot_water",  # add output_type
 )
-municipalHotWater.constraints_register() # remove "model"
+municipalHotWater.constraints_register()  # remove "model"
 
 # power_heat_sum = model.continuous_var_list(
 #     [i for i in range(0, num_hour)], name="power_heat_sum"
@@ -155,7 +152,7 @@ municipalHotWater.constraints_register() # remove "model"
 # )
 
 systems = [
-    photoVoltaic, 
+    photoVoltaic,
     gridNet,
     waterSourceHeatPumps,
     waterStorageTank,
@@ -165,7 +162,7 @@ systems = [
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 
 ###### SYSTEM OVERVIEW ######
-# 
+#
 # |e\dv | PV | GN | HP | WT | MS |
 # |-----|----|----|----|----|----|
 # | ele | s  |r\s | r  |    |    |
@@ -175,8 +172,8 @@ systems = [
 ###### SYSTEM TOPOLOGY ######
 #
 #
-#
-#
+#    PV - [NODE1{FC_0}] -> GRID -> [NODE2{FC_0}] ->  HP 
+#                 \_________________________________/ 
 #
 #
 
