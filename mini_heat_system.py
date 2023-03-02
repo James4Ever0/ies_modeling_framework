@@ -7,6 +7,7 @@ from integratedEnergySystemPrototypes import (
     Linearization,
     WaterEnergyStorage,
     # GasBoiler,
+    Exchanger,
     Load,
     GridNet,
 )
@@ -111,6 +112,19 @@ waterStorageTank = WaterEnergyStorage(
 )
 waterStorageTank.constraints_register(register_period_constraints=1, day_node=day_node)
 
+
+hotWaterExchanger = Exchanger(
+    num_hour,
+    model,
+    device_count_max=20000,
+    device_price=400,
+    k=50,
+    device_name="hotWaterExchanger",
+    input_type='hot_water',
+    output_type='warm_water'
+)
+hotWaterExchanger.constraints_register()
+
 # 市政热水
 municipalHotWater = CitySupply(
     num_hour,
@@ -167,6 +181,7 @@ systems = [
     waterSourceHeatPumps,
     waterStorageTank,
     municipalHotWater,
+    hotWaterExchanger,
 ]
 
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
@@ -196,6 +211,7 @@ from integratedEnergySystemPrototypes import EnergyFlowNodeFactory, NodeUtils
 
 electricity_type = "electricity"
 warm_water_type = "warm_water"
+hot_water_type = "hot_water"
 warm_water_storage_type = "warm_water_storage"
 NodeFactory = EnergyFlowNodeFactory(model, num_hour, debug=debug)
 
@@ -208,6 +224,8 @@ Node3 = NodeFactory.create_node(
 )
 
 Node4 = NodeFactory.create_node(node_type="greater_equal", energy_type=warm_water_type)
+
+Node5 = NodeFactory.create_node(node_type="greater_equal", energy_type=hot_water_type)
 
 
 # in the end, we make some class called the "load class", to ensure the integrity.
@@ -226,8 +244,11 @@ Node3.add_output(waterStorageTank)
 
 Node4.add_input(waterSourceHeatPumps)
 Node4.add_input(waterStorageTank)
-Node4.add_input(municipalHotWater)
+Node4.add_input(hotWaterExchanger)
 Node4.add_output(heatLoad)
+
+Node5.add_input(municipalHotWater)
+Node5.add_output(hotWaterExchanger)
 
 NodeFactory.build_relations()
 # Node1.build_relations()
