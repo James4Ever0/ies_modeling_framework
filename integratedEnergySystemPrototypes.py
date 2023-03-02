@@ -703,12 +703,19 @@ class EnergyFlowNode:
                 return True
         return False
 
+    def add_port(self, port:List):
+        ...
+
     def add_input(self, input_port: List):
         assert not self.built
         if self.check_is_var_list(input_port):
             self.util.add_lower_bounds(input_port, 0)
+        # more advanced checks?
+        elif type(input_port) in [float, np.float64,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.intnp.double]
+        
         input_port_id = id(input_port)
         if input_port_id not in self.input_ids:
+            self.input_ids.append(input_port_id)
             self.inputs.append(input_port)
         # no way to check duplication?
 
@@ -718,6 +725,7 @@ class EnergyFlowNode:
             self.util.add_lower_bounds(output_port, 0)
         output_port_id = id(output_port)
         if output_port_id not in self.output_ids:
+            self.output_ids.append(output_port_id)
             self.outputs.append(output_port)
 
     def build_relations(self):
