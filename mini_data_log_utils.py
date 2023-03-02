@@ -39,6 +39,10 @@ def solve_and_log(
         printIntegratedEnergySystemDeviceCounts(systems)
 
         # collect all types of lists.
+        import os, shutil
+        save_directory = f"{simulation_name}_figures"
+        if os.path.isdir(save_directory):
+            shutil.rmtree(save_directory)
 
         for system in systems:
             system_name = system.device_name
@@ -50,7 +54,7 @@ def solve_and_log(
                     plotSingle(
                         system_data,
                         title_content=f"{system_name}_{system_data_name}",
-                        save_directory=f"{simulation_name}_figures",
+                        save_directory=save_directory,
                     )
         print("TOTAL ANNUAL:", objective.solution_value)
         # breakpoint()
