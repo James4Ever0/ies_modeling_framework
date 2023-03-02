@@ -690,7 +690,9 @@ class EnergyFlowNode:
         self.util = EnergySystemUtils(model, num_hour, debug=debug)
         self.node_type = node_type
         self.inputs = []
+        self.input_ids = []
         self.outputs = []
+        self.output_ids = []
         self.model = model
         self.debug = debug
         self.built = False
@@ -705,14 +707,17 @@ class EnergyFlowNode:
         assert not self.built
         if self.check_is_var_list(input_port):
             self.util.add_lower_bounds(input_port, 0)
-        if input_port not in self.inputs:
+        input_port_id = id(input_port)
+        if input_port_id not in self.input_ids:
             self.inputs.append(input_port)
+        # no way to check duplication?
 
     def add_output(self, output_port: List):
         assert not self.built
         if self.check_is_var_list(output_port):
             self.util.add_lower_bounds(output_port, 0)
-        if output_port not in self.outputs:
+        output_port_id = id(output_port)
+        if output_port_id not in self.output_ids:
             self.outputs.append(output_port)
 
     def build_relations(self):
