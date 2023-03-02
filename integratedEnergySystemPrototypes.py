@@ -836,7 +836,8 @@ class IntegratedEnergySystem(EnergySystemUtils):
         device_count_min: float,
         device_price: float,
         classObject,
-        debug: bool = False
+        debug: bool = False,
+        device_count_as_list: bool = False
         # className: str,
         # classIndex: int,
     ):
@@ -857,10 +858,17 @@ class IntegratedEnergySystem(EnergySystemUtils):
         self.device_count_min = device_count_min
         self.device_price = device_price
         self.classSuffix = f"{self.className}_{self.classIndex}"
+        self.device_count_as_list = device_count_as_list
 
-        self.device_count: ContinuousVarType = self.model.continuous_var(
-            name=f"device_count_{self.classSuffix}"
-        )
+        if self.device_count_as_list:
+            self.device_count: List[ContinuousVarType] = self.model.continuous_var_list(
+                [i for i in self.hourRange], name=f"device_count_{self.classSuffix}"
+            )
+
+        else:
+            self.device_count: ContinuousVarType = self.model.continuous_var(
+                name=f"device_count_{self.classSuffix}"
+            )
 
         self.annualized: ContinuousVarType = self.model.continuous_var(
             name=f"annualized_{self.classSuffix}"
@@ -915,9 +923,14 @@ class IntegratedEnergySystem(EnergySystemUtils):
             )
 
     def constraints_register(self):
-        self.add_lower_and_upper_bound(
-            self.device_count, self.device_count_min, self.device_count_max
-        )
+        if self.device_count_as_list:
+            self.add_lower_and_upper_bounds(
+                self.device_count, self.device_count_min, self.device_count_max
+            )
+        else:
+            self.add_lower_and_upper_bound(
+                self.device_count, self.device_count_min, self.device_count_max
+            )
         # print("ADDING LOWER BOUNDS?")
         # breakpoint()
 
@@ -1332,6 +1345,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         input_type: str = "energy_storage",
         output_type: str = "energy",
         classObject=None,
+        device_count_as_list:bool=False,
     ):
         """
         Args:
@@ -1358,6 +1372,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             device_price=device_price,
             classObject=classObject if classObject else self.__class__,
             debug=debug,
+            device_count_as_list=device_count_as_list
         )
         # EnergyStorageSystem.index += 1
 
@@ -1789,19 +1804,19 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             conversion_rate_max=conversion_rate_max,
             efficiency=efficiency,
             energy_init=energy_init,
+        device_count_as_list=True,
+            
         )
         # # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
-        
-        # overriding the thing? you also need to remove 
 
-        self.device_count: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            name="energyStorageSystemVariable_device_{0}".format(
-                self.classSuffix
-            ),
-        )
+        # overriding the thing? you also need to remove
+
+        # self.device_count: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     name="energyStorageSystemVariable_device_{0}".format(self.classSuffix),
+        # )
         """
         可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
@@ -5166,7 +5181,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
     水蓄能类
     """
 
-    index=0
+    index = 0
+
     def __init__(
         self,
         num_hour: int,
