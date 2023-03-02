@@ -156,6 +156,8 @@ class NodeUtils:
         assert len(nodes)>=2
         for two_nodes in itertools.combinations(nodes,2):
             for node_a, node_b in itertools.permutations(two_nodes,2):
+                assert not node_a.built
+                assert not node_b.built
                 Channel = model.continuous_var_list([i for i in range(self.num_hour)],lb=0,name = f'channel_{self.connection_index}_{self.__class__.__name__}_{self.index}')
                 node_a.add_input(Channel)
                 node_b.add_output(Channel)
@@ -184,6 +186,7 @@ Node2.add_output(power_load)
 # Node2.add_output(Channel2)
 
 nodeUtils = NodeUtils(model, num_hour)
+nodeUtils.fully_connected(Node1,Node2)
 
 
 Node1.build_relations()

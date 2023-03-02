@@ -693,6 +693,7 @@ class EnergyFlowNode:
         self.outputs = []
         self.model = model
         self.debug = debug
+        self.built = False
 
     def check_is_var_list(self, var_list):
         if type(var_list) == list:
@@ -701,22 +702,35 @@ class EnergyFlowNode:
         return False
 
     def add_input(self, input_port: List):
+        assert not self.built
         if self.check_is_var_list(input_port):
             self.util.add_lower_bounds(input_port, 0)
-        self.inputs.append(input_port)
+        if input_port not in self.inputs:
+            self.inputs.append(input_port)
 
     def add_output(self, output_port: List):
+        assert not self.built
         if self.check_is_var_list(output_port):
             self.util.add_lower_bounds(output_port, 0)
-        self.outputs.append(output_port)
+        if output_port not in self.outputs:
+            self.outputs.append(output_port)
 
     def build_relations(self):
-        inputs = reduce(self.util.elementwise_add, self.inputs)
-        outputs = reduce(self.util.elementwise_add, self.outputs)
+        assert not self.built
+        
+        inputs_deduplicated =  list(set(self.inputs))
+        inputs_count = len(inputs_deduplicated)
+        
+        outputs_deduplicated =  list(set(self.outputs))
+        outputs_count = len(outputs_deduplicated)
+        
+        inputs = reduce(self.util.elementwise_add, inputs_deduplicated)
+        outputs = reduce(self.util.elementwise_add, outputs_deduplicated)
         if self.node_type == "equal":
             self.util.equations(inputs, outputs)
         else:
             self.util.add_lower_bounds(inputs, outputs)
+        self.built = True
 
 
 # another name for IES?
