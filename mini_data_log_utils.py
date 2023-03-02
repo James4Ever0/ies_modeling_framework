@@ -49,6 +49,10 @@ def solve_and_log(
             system_data_name_list = dir(system)
             for system_data_name in system_data_name_list:
                 system_data = system.__dict__.get(system_data_name, None)
+                if system_data_name in ["power_of_inputs","power_of_outputs"] and type(system_data) == dict:
+                    for key,value in system_data.items():
+                        if type(key) == list:
+                            plotSingle(key,)
                 if type(system_data) == list:
                     # then we plot this!
                     plotSingle(
