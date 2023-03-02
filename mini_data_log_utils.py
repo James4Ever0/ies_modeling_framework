@@ -65,3 +65,13 @@ def solve_and_log(
         # breakpoint()
         # 1007399999.999996 if charge[0] == discharge[0] == 0
         # 992227727.2532595 if no init constrains on charge/discharge
+
+
+def check_solve_and_log(systems: List[IntegratedEnergySystem], model: Model, simulation_name: str):
+    # before all the fuzz...
+    has_conflict = check_conflict(model)  # no conflict?
+
+    if has_conflict:
+        breakpoint()
+
+    solve_and_log(systems,model,simulation_name)

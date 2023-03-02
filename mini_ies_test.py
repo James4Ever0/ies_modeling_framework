@@ -202,12 +202,5 @@ Node2.build_relations()
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
-from mini_data_log_utils import solve_and_log, check_conflict
-
-# before all the fuzz...
-has_conflict = check_conflict(model)  # no conflict?
-
-if has_conflict:
-    breakpoint()
-
-solve_and_log(systems, model, simulation_name)
+from mini_data_log_utils import check_solve_and_log
+check_solve_and_log(systems, model, simulation_name)

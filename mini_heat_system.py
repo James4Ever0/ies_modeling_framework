@@ -163,22 +163,26 @@ systems = [
 
 ###### SYSTEM OVERVIEW ######
 #
-# |e\dv | PV | GN | HP | WT | MS |
+# |e\dv | PV | GN | HP | WT | MH |
 # |-----|----|----|----|----|----|
 # | ele | s  |r\s | r  |    |    |
 # | hw  |    |    | s  | r  | s  |
 # | hw_s|    |    | s  | s  |    |
 #
 ###### SYSTEM TOPOLOGY ######
-#
-#                                                       / [NODE3]_ WT
-#    PV - [NODE1{FC_0}] -> GRID -> [NODE2{FC_0}] ->  HP _           |
-#                       \________/                       \          |
-#                                                         |         |
-#                                                         |        /
-#    MS ______________________________________________[NODE4] -----
-#                                                        |
-#                                                      LOAD
+#                                              [NODE3] - WT
+#                                             /          |
+#    PV - [NODE1] -> GRID -> [NODE2] ->  HP _            |           
+#                 \________/                  \          |
+#                                              |         |
+#                                              |        /
+#                                     MH -> [NODE4] ----
+#                                              |
+#                                            LOAD
+
+from integratedEnergySystemPrototypes import check_conflict
+
+check_conflict(model)
 
 from mini_data_log_utils import solve_and_log
 
