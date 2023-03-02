@@ -3185,6 +3185,7 @@ class Exchanger(IntegratedEnergySystem):
                 self.power_of_inputs[self.input_type], self.efficiency
             ),
         )
+        self.add_upper_bounds(self.power_of_inputs[self.input_type],self.device_count)
         # self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
 
         self.model.add_constraint(
