@@ -186,7 +186,7 @@ systems = [
 #                                                   \         |
 #                                                    |        |
 #                                                    |       /
-#                                          MH -> [NODE4] ----
+#                         MH - [NODE5] ->  EX -> [NODE4] ----
 #                                                   |
 #                                                   WL
 
@@ -207,22 +207,22 @@ Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,e
 
 # in the end, we make some class called the "load class", to ensure the integrity.
 
-Node1.add_input(photoVoltaic.power_of_outputs)
-Node1.add_output(gridNet.power_of_inputs)
+Node1.add_input(photoVoltaic)
+Node1.add_output(gridNet)
 
-Node2.add_input(gridNet.power_of_outputs)
-Node2.add_output(waterSourceHeatPumps.power_of_inputs)
+Node2.add_input(gridNet)
+Node2.add_output(waterSourceHeatPumps)
 
 nodeUtil = NodeUtils(model, num_hour)
 nodeUtil.fully_connected(Node1, Node2) # how do you do this?
 
-Node3.add_input(waterSourceHeatPumps.power_of_outputs)
-Node3.add_output(waterStorageTank.power_of_inputs)
+Node3.add_input(waterSourceHeatPumps)
+Node3.add_output(waterStorageTank)
 
-Node4.add_input(waterSourceHeatPumps.power_of_outputs)
-Node4.add_input(waterStorageTank.power_of_outputs)
-Node4.add_input(municipalHotWater.power_of_outputs)
-Node4.add_output(heatLoad.power_of_inputs)
+Node4.add_input(waterSourceHeatPumps)
+Node4.add_input(waterStorageTank)
+Node4.add_input(municipalHotWater)
+Node4.add_output(heatLoad)
 
 Node1.build_relations()
 Node2.build_relations()

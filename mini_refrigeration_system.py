@@ -117,7 +117,13 @@ Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,e
 Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=cold_water_type)
 
 Node1.add_input(municipalHotWater)
-Node
+Node1.add_output(hotWaterLiBr)
+
+Node2.add_input(hotWaterLiBr)
+Node2.add_output(coldWaterLoad)
+
+Node1.build_relations()
+Node2.build_relations()
 
 systems = [hotWaterLiBr,municipalHotWater]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
