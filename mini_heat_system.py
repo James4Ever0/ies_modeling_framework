@@ -156,13 +156,22 @@ municipalSteam.constraints_register() # remove "model"
 
 
 systems = [
-    photoVoltaic,
+    photoVoltaic, 
     gridNet,
     waterSourceHeatPumps,
     waterStorageTank,
     municipalSteam,
 ]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
+
+###### SYSTEM OVERVIEW ######
+# 
+# |e\dv | PV | GN | HP | WT | MS |
+# |-----|----|----|----|----|----|
+# | ele |    |    |    |    |    |
+# | hw  |    |    |    |    |    |
+# | stm |    |    |    |    |    |
+#
 
 from mini_data_log_utils import solve_and_log
 
