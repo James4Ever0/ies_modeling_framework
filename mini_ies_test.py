@@ -53,8 +53,8 @@ model = Model(name=simulation_name)
 
 # debug = True # we step through conflicts.
 # debug = "EXCEPTION" # we step through conflicts.
-debug = "STEP_EXCEPTION"
-# debug = False
+# debug = "STEP_EXCEPTION"
+debug = False
 
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
@@ -80,10 +80,10 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=1000,
+    device_count_max=1000*100,
     device_price=0,
-    electricity_price=electricity_price * 10,
-    electricity_price_upload=0.35 * 100,
+    electricity_price=electricity_price,
+    electricity_price_upload=0.35,
     debug=debug
     # device_count_min=5000,
 )
