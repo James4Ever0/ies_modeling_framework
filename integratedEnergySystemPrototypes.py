@@ -5123,9 +5123,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         self,
         num_hour: int,
         model: Model,
-        device_count_max: float,
+        # device_count_max: float,
         volume_max: float,  # V?
-        device_price: float,
+        # device_price: float,
         volume_price: float,
         device_price_powerConversionSystem: float,
         conversion_rate_max: float,
@@ -5160,6 +5160,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         # self.device_name = device_name
+        
+        device_count_max=device_price=0
+        # this is special. volume determines the price.
 
         super().__init__(
             model=model,

@@ -72,86 +72,87 @@ waterSourceHeatPumps = (
         model,
         device_count_max=2000,
         device_price=3000,
-        electricity_price=electricity_price0*0, # with gridnet.
+        electricity_price=electricity_price0*0, # with gridnet, optional electricity input?
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
     )
 )
-waterSourceHeatPumps.constraints_register(model)
+waterSourceHeatPumps.constraints_register()
 
 
 # power constrains:
 
-model.add_constraints(waterSourceHeatPumps.electricity_waterSourceHeatPumps[h] == photoVoltaic.power_photoVoltaic[h] + gridNet.total_power[h] for h in range(num_hour))
+# model.add_constraints(waterSourceHeatPumps.electricity_waterSourceHeatPumps[h] == photoVoltaic.power_photoVoltaic[h] + gridNet.total_power[h] for h in range(num_hour))
 
 # 水储能罐
 waterStorageTank = WaterEnergyStorage(
     num_hour,
     model,
-    waterStorageTank_Volume_max=10000,
+    volume_max=10000,
     volume_price=300, # make it cheap
-    powerConversionSystem_price=1,
+    device_price_powerConversionSystem=1,
     conversion_rate_max=0.5,
     efficiency=0.9,
-    energyStorageSystem_init=1,
+    energy_init=1,
     stateOfCharge_min=0,
     stateOfCharge_max=1,
-    ratio_cool=10,
-    ratio_heat=10,
-    ratio_gheat=20,
+    ratio_cold_water=10,
+    ratio_warm_water=10,
+    ratio_hot_water=20,
     device_name="waterStorageTank",
 )
 waterStorageTank.constraints_register(
-    model, register_period_constraints=1, day_node=day_node
+   register_period_constraints=1, day_node=day_node
 )
 
 # 市政热水
 municipalSteam = CitySupply(
     num_hour,
     model,
-    citySupplied_device_max=5000*10000,
+    device_count_max=5000*10000,
     device_price=3000,
-    run_price=0.3 * np.ones(num_hour),
+    running_price=0.3 * np.ones(num_hour), # run_price -> running_price
     efficiency=0.9,
+    output_type='steam' # add output_type
 )
-municipalSteam.constraints_register(model)
+municipalSteam.constraints_register() # remove "model"
 
-power_heat_sum = model.continuous_var_list(
-    [i for i in range(0, num_hour)], name="power_heat_sum"
-)
+# power_heat_sum = model.continuous_var_list(
+#     [i for i in range(0, num_hour)], name="power_heat_sum"
+# )
 
-power_heatStorage = model.continuous_var_list(
-    [i for i in range(0, num_hour)], name="power_heatStorage"
-)
+# power_heatStorage = model.continuous_var_list(
+#     [i for i in range(0, num_hour)], name="power_heatStorage"
+# )
 
-model.add_constraints(
-    power_heat_sum[h]
-    == municipalSteam.heat_citySupplied[h]
-    + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
-    + power_heatStorage[h]
-    for h in range(0, num_hour)
-)
+# model.add_constraints(
+#     power_heat_sum[h]
+#     == municipalSteam.heat_citySupplied[h]
+#     + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
+#     + power_heatStorage[h]
+#     for h in range(0, num_hour)
+# )
 
-# 高温热水去处
-model.add_constraints(
-    power_heat_sum[h] >= heat_load[h] for h in range(0, num_hour)
-)  # 每小时热水消耗 >= 每小时热水负荷消耗量
+# # 高温热水去处
+# model.add_constraints(
+#     power_heat_sum[h] >= heat_load[h] for h in range(0, num_hour)
+# )  # 每小时热水消耗 >= 每小时热水负荷消耗量
 
-model.add_constraints(
-    waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
-    + waterStorageTank.power_waterStorageTank_heat[h]
-    == power_heatStorage[h]
-    for h in range(0, num_hour)
-)
-linearization = Linearization()
+# model.add_constraints(
+#     waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
+#     + waterStorageTank.power_waterStorageTank_heat[h]
+#     == power_heatStorage[h]
+#     for h in range(0, num_hour)
+# )
+# linearization = Linearization()
 
-linearization.max_zeros(
-    # TODO: invert x/y position
-    num_hour,
-    model,
-    y=power_heatStorage,
-    x=waterStorageTank.power_waterStorageTank_heat,
-)
+# linearization.max_zeros(
+#     # TODO: invert x/y position
+#     num_hour,
+#     model,
+#     y=power_heatStorage,
+#     x=waterStorageTank.power_waterStorageTank_heat,
+# )
 
 
 systems = [
