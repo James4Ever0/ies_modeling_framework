@@ -207,22 +207,22 @@ Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,e
 
 # in the end, we make some class called the "load class", to ensure the integrity.
 
-Node1.add_input(photoVoltaic.power_of_outputs[electricity_type])
-Node1.add_output(gridNet.power_of_inputs[electricity_type])
+Node1.add_input(photoVoltaic.power_of_outputs)
+Node1.add_output(gridNet.power_of_inputs)
 
-Node2.add_input(gridNet.power_of_outputs[electricity_type])
-Node2.add_output(waterSourceHeatPumps.power_of_inputs[electricity_type])
+Node2.add_input(gridNet.power_of_outputs)
+Node2.add_output(waterSourceHeatPumps.power_of_inputs)
 
 nodeUtil = NodeUtils(model, num_hour)
-nodeUtil.fully_connected(Node1, Node2)
+nodeUtil.fully_connected(Node1, Node2) # how do you do this?
 
-Node3.add_input(waterSourceHeatPumps.power_of_outputs[hot_water_storage_type])
-Node3.add_output(waterStorageTank.power_of_inputs[hot_water_storage_type])
+Node3.add_input(waterSourceHeatPumps.power_of_outputs)
+Node3.add_output(waterStorageTank.power_of_inputs)
 
-Node4.add_input(waterSourceHeatPumps.power_of_outputs[hot_water_type])
-Node4.add_input(waterStorageTank.power_of_outputs[hot_water_type])
-Node4.add_input(municipalHotWater.power_of_outputs[hot_water_type])
-Node4.add_output(heatLoad.power_of_inputs[hot_water_type])
+Node4.add_input(waterSourceHeatPumps.power_of_outputs)
+Node4.add_input(waterStorageTank.power_of_outputs)
+Node4.add_input(municipalHotWater.power_of_outputs)
+Node4.add_output(heatLoad.power_of_inputs)
 
 Node1.build_relations()
 Node2.build_relations()

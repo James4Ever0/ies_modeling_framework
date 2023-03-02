@@ -780,12 +780,18 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(self, input_port: dict):
-        port_data: Union[List, np.ndarray] = input_port[self.energy_type]
+    def add_input(self, input_port: dict, ignore_energy_type: bool = False):
+        if ignore_energy_type:
+            port_data = input_port
+        else:
+            port_data: Union[List, np.ndarray] = input_port[self.energy_type]
         self.__add_port(port_data, self.inputs, self.input_ids)
 
-    def add_output(self, output_port: dict):
-        port_data: Union[List, np.ndarray] = output_port[self.energy_type]
+    def add_output(self, output_port: dict, ignore_energy_type: bool = False):
+        if ignore_energy_type:
+            port_data = output_port
+        else:
+            port_data: Union[List, np.ndarray] = output_port[self.energy_type]
         self.__add_port(port_data, self.outputs, self.output_ids)
 
     def build_relations(self):
@@ -827,8 +833,8 @@ class NodeUtils:
                     lb=0,
                     name=f"channel_{self.connection_index}_{self.__class__.__name__}_{self.index}",
                 )
-                node_a.add_input(Channel)
-                node_b.add_output(Channel)
+                node_a.add_input(Channel, ignore_energy_type=True)
+                node_b.add_output(Channel, ignore_energy_type=True)
                 self.connection_index += 1
 
 
