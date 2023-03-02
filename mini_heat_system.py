@@ -169,11 +169,11 @@ systems = [
 
 ###### SYSTEM OVERVIEW ######
 #
-# |e\dv | PV | GN | HP | WT | MH |
-# |-----|----|----|----|----|----|
-# | ele | s  |r\s | r  |    |    |
-# | hw  |    |    | s  | r  | s  |
-# | hw_s|    |    | s  | s  |    |
+# |e\dv | PV | GN | HP | WT | MH | HL |
+# |-----|----|----|----|----|----|----|
+# | ele | s  |r\s | r  |    |    |    |
+# | hw  |    |    | s  | r  | s  | r  |
+# | hw_s|    |    | s  | s  |    |    |
 #
 ###### SYSTEM TOPOLOGY ######
 #                                                   [NODE3] - WT
@@ -184,7 +184,7 @@ systems = [
 #                                                    |       /
 #                                          MH -> [NODE4] ----
 #                                                   |
-#                                                 LOAD
+#                                                   HL
 
 from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
 

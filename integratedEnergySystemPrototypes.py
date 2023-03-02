@@ -16,8 +16,8 @@ class Load:
         input_type: Union[
             Literal["hot_water"],
             Literal["cold_water"],
-            Literal["steam"], # is this one of the load types?
-            Literal["warm_water"], # is this one of the load types?
+            Literal["steam"],  # is this one of the load types?
+            Literal["warm_water"],  # is this one of the load types?
             Literal["electricity"],
         ],
         data: Union[List, np.ndarray],
@@ -748,7 +748,9 @@ class EnergyFlowNode:
                 return True
         return False
 
-    def __add_port(self, port: Union[List,np.ndarray], target_list: List, target_id_list: List):
+    def __add_port(
+        self, port: Union[List, np.ndarray], target_list: List, target_id_list: List
+    ):
         assert not self.built
         if self.check_is_var_list(port):
             self.util.add_lower_bounds(port, 0)
@@ -767,10 +769,10 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(self, input_port: Union[List,np.ndarray]):
+    def add_input(self, input_port: Union[List, np.ndarray]):
         self.__add_port(input_port, self.inputs, self.input_ids)
 
-    def add_output(self, output_port: Union[List,np.ndarray]):
+    def add_output(self, output_port: Union[List, np.ndarray]):
         self.__add_port(output_port, self.outputs, self.output_ids)
 
     def build_relations(self):

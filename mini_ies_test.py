@@ -155,18 +155,19 @@ from integratedEnergySystemPrototypes import NodeUtils
 #     [i for i in range(num_hour)], lb=0, name="channel_2"
 # )
 
-Node1.add_input(photoVoltaic.power_of_outputs["electricity"])
+electricity_type = 'electricity'
+Node1.add_input(photoVoltaic.power_of_outputs[electricity_type])
 # Node1.add_input(Channel2)
-Node1.add_output(batteryEnergyStorageSystem.power_of_inputs["electricity"])
-Node1.add_output(gridNet.power_of_inputs["electricity"])
+Node1.add_output(batteryEnergyStorageSystem.power_of_inputs[electricity_type])
+Node1.add_output(gridNet.power_of_inputs[electricity_type])
 # Node1.add_output(Channel1)
 
 
 
 # Node2.add_input(Channel1)
-Node2.add_input(gridNet.power_of_outputs["electricity"])
-Node2.add_input(batteryEnergyStorageSystem.power_of_outputs["electricity"])
-Node2.add_output(electricityLoad.power_of_inputs['electricity'])
+Node2.add_input(gridNet.power_of_outputs[electricity_type])
+Node2.add_input(batteryEnergyStorageSystem.power_of_outputs[electricity_type])
+Node2.add_output(electricityLoad.power_of_inputs[electricity_type])
 # Node2.add_output(Channel2)
 
 nodeUtils = NodeUtils(model, num_hour)
