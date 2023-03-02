@@ -142,17 +142,24 @@ Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
-import math
+import itertools
 
 class NodeUtils:
     index = 0
-    def __init__(self,model):
+    def __init__(self,model,num_hour):
         self.index = self.__class__.index
         self.__class__.index +=1
         self.model = model
         self.connection_index = 0
+        self.num_hour=num_hour
     def fully_connected(self, *nodes): # nodes as arguments.
-        for node_1, node_2 in math.comb(2,nodes):
+        assert len(nodes)>=2
+        for two_nodes in itertools.combinations(nodes,2):
+            for node_a, node_b in itertools.permutations(two_nodes,2):
+                Channel = model.continuous_var_list([i for i in range(self.num_hour)],lb=0,name = f'channel_{self.connection_index}_{self.__class__.__name__}_{self.index}')
+                node_a.add_input(Channel)
+                node_b.add_output(Channel)
+                self.connection_index+=1
 
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
@@ -163,20 +170,20 @@ Channel2 = model.continuous_var_list(
 )
 
 Node1.add_input(photoVoltaic.power_of_outputs["electricity"])
-Node1.add_input(Channel2)
+# Node1.add_input(Channel2)
 Node1.add_output(batteryEnergyStorageSystem.power_of_inputs["electricity"])
 Node1.add_output(gridNet.power_of_inputs["electricity"])
-Node1.add_output(Channel1)
+# Node1.add_output(Channel1)
 
 
 
-Node2.add_input(Channel1)
+# Node2.add_input(Channel1)
 Node2.add_input(gridNet.power_of_outputs["electricity"])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs["electricity"])
 Node2.add_output(power_load)
+# Node2.add_output(Channel2)
 
-
-Node2.add_output(Channel2)
+nodeUtils = NodeUtils(model, num_hour)
 
 
 Node1.build_relations()
