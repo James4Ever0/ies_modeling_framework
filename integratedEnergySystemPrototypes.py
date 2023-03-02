@@ -706,12 +706,15 @@ class EnergyFlowNode:
     def add_port(self, port:List):
         ...
 
-    def add_input(self, input_port: List):
+    def add_input(self, input_port: Union[List,np.ndarray,int,float, np.float16,np.float32,np.float64,np.float80,np.float96,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.int128,np.int256,np.double]):
+        common_numeral_types = [int,float, np.float16,np.float32,np.float64,np.float80,np.float96,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.int128,np.int256,np.double]
         assert not self.built
         if self.check_is_var_list(input_port):
             self.util.add_lower_bounds(input_port, 0)
         # more advanced checks?
-        elif type(input_port) in [float, np.float64,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.intnp.double]
+        elif type(input_port) in common_numeral_types:
+            assert input_port >=0
+        elif type(input_port) in [np.ndarray,List] and all([(type(input_element) in common_numeral_types):
         
         input_port_id = id(input_port)
         if input_port_id not in self.input_ids:
