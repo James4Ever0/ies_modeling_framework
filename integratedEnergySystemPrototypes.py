@@ -729,6 +729,12 @@ class EnergyFlowNode:
         self,
         model: Model,
         num_hour: int,
+        energy_type: Union[
+            Literal["cold_water"],
+            Literal["ice"],
+            Literal["warm_water"],
+            Literal["hot_water"],
+        ],
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
         debug: bool = False,
     ):
@@ -741,6 +747,7 @@ class EnergyFlowNode:
         self.model = model
         self.debug = debug
         self.built = False
+        self.energy_type = energy_type
 
     def check_is_var_list(self, var_list):
         if type(var_list) == list:
@@ -769,11 +776,13 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(self, input_port: Union[List, np.ndarray]):
-        self.__add_port(input_port, self.inputs, self.input_ids)
+    def add_input(self, input_port: dict):
+        port_data: Union[List, np.ndarray] = input_port[self.energy_type]
+        self.__add_port(port_data, self.inputs, self.input_ids)
 
-    def add_output(self, output_port: Union[List, np.ndarray]):
-        self.__add_port(output_port, self.outputs, self.output_ids)
+    def add_output(self, output_port: dict):
+        port_data: Union[List, np.ndarray] = output_port[self.energy_type]
+        self.__add_port(port_data, self.outputs, self.output_ids)
 
     def build_relations(self):
         assert not self.built
@@ -5997,7 +6006,7 @@ class CitySupply(IntegratedEnergySystem):
         市政能源设备装机量 非负实数变量
         """
         self.output_type = output_type
-        
+
         self.build_power_of_outputs([self.output_type])
         # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
@@ -6078,7 +6087,9 @@ class CitySupply(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        self.heat_cost = self.sum_within_range(self.elementwise_add(self.heat_consumed, self.running_price))
+        self.heat_cost = self.sum_within_range(
+            self.elementwise_add(self.heat_consumed, self.running_price)
+        )
         # self.heat_cost = self.model.sum(
         #     self.heat_consumed[h] * self.running_price[h] for h in self.hourRange
         # )
