@@ -143,6 +143,10 @@ Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
 
+class NodeUtils:
+    def __init__()
+def fully_connected(self, *args): # nodes as arguments.
+
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
 )
@@ -157,10 +161,14 @@ Node1.add_output(batteryEnergyStorageSystem.power_of_inputs["electricity"])
 Node1.add_output(gridNet.power_of_inputs["electricity"])
 Node1.add_output(Channel1)
 
+
+
 Node2.add_input(Channel1)
 Node2.add_input(gridNet.power_of_outputs["electricity"])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs["electricity"])
 Node2.add_output(power_load)
+
+
 Node2.add_output(Channel2)
 
 
