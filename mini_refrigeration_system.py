@@ -42,14 +42,12 @@ municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour)
 hotWaterLiBr = LiBrRefrigeration(
     num_hour, model,device_count_max=10000 * 10000, device_price=1000, efficiency=0.9,input_type='hot_water'
 )
-
 hotWaterLiBr.constraints_register()
 
 
-power_highTemperatureHotWater_sum = model.continuous_var_list(
-    [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
-)
-
+# power_highTemperatureHotWater_sum = model.continuous_var_list(
+#     [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
+# )
 
 # # 平板光热
 # platePhotothermal = PhotoVoltaic(
@@ -67,29 +65,43 @@ power_highTemperatureHotWater_sum = model.continuous_var_list(
 municipalHotWater = CitySupply(
     num_hour,
     model,
-    citySupplied_device_max=10000,
+    device_count_max=10000,
     device_price=3000,
-    run_price=municipalHotWater_price0,
+    running_price=municipalHotWater_price0,
     efficiency=0.9,
+    output_type = 'hot_water'
 )
-municipalHotWater.constraints_register(model)
+municipalHotWater.constraints_register()
 
-model.add_constraints(
-    power_highTemperatureHotWater_sum[h] == 
-    # platePhotothermal.power_photoVoltaic[h]+ 
-    municipalHotWater.heat_citySupplied[h]
-    for h in range(num_hour)
-)
+# model.add_constraints(
+#     power_highTemperatureHotWater_sum[h] == 
+#     # platePhotothermal.power_photoVoltaic[h]+ 
+#     municipalHotWater.heat_citySupplied[h]
+#     for h in range(num_hour)
+# )
 
-model.add_constraints(
-    hotWaterLiBr.heat_LiBr_from[h] <= power_highTemperatureHotWater_sum[h]
-    for h in range(num_hour)
-)
+# model.add_constraints(
+#     hotWaterLiBr.heat_LiBr_from[h] <= power_highTemperatureHotWater_sum[h]
+#     for h in range(num_hour)
+# )
 
-# consumption and production
-model.add_constraints(
-    cool_load[h] == hotWaterLiBr.cool_LiBr[h] for h in range(num_hour)
-)
+# # consumption and production
+# model.add_constraints(
+#     cool_load[h] == hotWaterLiBr.cool_LiBr[h] for h in range(num_hour)
+# )
+
+
+###### SYSTEM OVERVIEW ######
+#
+# |e\dv | LB | MH | CL |
+# |-----|----|----|----|
+# | cw  |  s |    |  r |
+# | hw  |  r |  s |    |
+# 
+###### SYSTEM TOPOLOGY ######
+# 
+# MH -> [NODE1] -> LB -> [NODE2] -> CL
+# 
 
 systems = [hotWaterLiBr,municipalHotWater]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]

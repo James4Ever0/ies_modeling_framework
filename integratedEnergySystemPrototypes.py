@@ -5959,10 +5959,10 @@ class CitySupply(IntegratedEnergySystem):
         device_price: float,
         running_price: Union[np.ndarray, List],
         efficiency: float,
+        output_type: Union[Literal["hot_water"], Literal["steam"]],
         device_name: str = "city_supply",
         device_count_min: int = 0,
         debug: bool = False,
-        output_type: Union[Literal["hot_water"], Literal["steam"]] = "hot_water",
     ):
         """
         创建一个市政能源类
