@@ -7,6 +7,8 @@ from docplex.mp.solution import SolveSolution
 
 from docplex.mp.conflict_refiner import ConflictRefiner
 
+import itertools
+
 
 # in our sense of "iterable", not "generally iterable".
 def checkIterable(values: Iterable):

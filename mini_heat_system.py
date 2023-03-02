@@ -29,6 +29,7 @@ heat_load = (
     * heat_load
 ) * 0.4
 model = Model(name=simulation_name)
+debug = False
 
 resource = ResourceGet()
 # gas_price0 = resource.get_gas_price(num_hour)
@@ -47,6 +48,7 @@ photoVoltaic = PhotoVoltaic(
     intensityOfIllumination=intensityOfIllumination0,
     efficiency=0.8,
     device_name="PhotoVoltaic",
+    debug=debug,
 )
 photoVoltaic.constraints_register()
 
@@ -59,6 +61,7 @@ gridNet = GridNet(
     device_price=0,
     electricity_price=electricity_price0,
     electricity_price_upload=0.35,
+    debug=debug,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
 
@@ -74,6 +77,7 @@ waterSourceHeatPumps = (
         * 0,  # with gridnet, optional electricity input?
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
+        debug=debug,
     )
 )
 waterSourceHeatPumps.constraints_register()
@@ -99,6 +103,7 @@ waterStorageTank = WaterEnergyStorage(
     ratio_warm_water=10,
     ratio_hot_water=20,
     device_name="waterStorageTank",
+    debug=debug,
 )
 waterStorageTank.constraints_register(register_period_constraints=1, day_node=day_node)
 
@@ -111,6 +116,7 @@ municipalHotWater = CitySupply(
     running_price=0.3 * np.ones(num_hour),  # run_price -> running_price
     efficiency=0.9,
     output_type="hot_water",  # add output_type
+    debug=debug,
 )
 municipalHotWater.constraints_register()  # remove "model"
 
@@ -170,20 +176,25 @@ systems = [
 # | hw_s|    |    | s  | s  |    |
 #
 ###### SYSTEM TOPOLOGY ######
-#                                              [NODE3] - WT
-#                                             /          |
-#    PV - [NODE1] -> GRID -> [NODE2] ->  HP _            |           
-#                 \________/                  \          |
-#                                              |         |
-#                                              |        /
-#                                     MH -> [NODE4] ----
-#                                              |
-#                                            LOAD
+#                                                   [NODE3] - WT
+#                                                  /          |
+#    PV - [NODE1{FC0}] -> GRID -> [NODE2{FC0}] ->  HP         |
+#                                                   \         |
+#                                                    |        |
+#                                                    |       /
+#                                          MH -> [NODE4] ----
+#                                                   |
+#                                                 LOAD
 
-from integratedEnergySystemPrototypes import check_conflict
+from integratedEnergySystemPrototypes import EnergyFlowNode, EnergySystemUtils
 
-check_conflict(model)
+Node1 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
+Node2 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
+Node3 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
+Node4 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
 
-from mini_data_log_utils import solve_and_log
 
-solve_and_log(systems, model, simulation_name)
+nodeUtil
+from mini_data_log_utils import check_solve_and_log
+
+check_solve_and_log(systems, model, simulation_name)
