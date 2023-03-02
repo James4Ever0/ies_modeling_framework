@@ -865,22 +865,41 @@ class NodeUtils:
         self.model = model
         self.connection_index = 0
         self.num_hour = num_hour
+        self.fully_connected_pairs = set()
 
     def fully_connected(self, *nodes: EnergyFlowNode):  # nodes as arguments.
         assert len(nodes) >= 2
         for two_nodes in itertools.combinations(nodes, 2):
             for node_a, node_b in itertools.permutations(two_nodes, 2):
+                node_a_id = id(node_a)
+                node_b_id = id(node_b)
+                
+                assert node_a_id != node_b_id
                 assert not node_a.built
                 assert not node_b.built
                 assert node_a.energy_type == node_b.energy_type
+                
+                if node_a_id > node_b_id:
+                    node_pair_id = (node_b_id, node_a_id)
+                else:
+                    node_pair_id = (node_a_id, node_b_id)
+                    
+                if (
+                    node_pair_id in self.fully_connected_pairs
+                ):  # do not connect these two. no need.
+                    continue
+                
+                self.fully_connected_pairs.add(node_pair_id)
 
-                Channel = self.model.continuous_var_list(
+                channel = self.model.continuous_var_list(
                     [i for i in range(self.num_hour)],
                     lb=0,
                     name=f"channel_{self.connection_index}_{self.__class__.__name__}_{self.index}",
                 )
-                node_a.add_input(Channel, ignore_energy_type=True)
-                node_b.add_output(Channel, ignore_energy_type=True)
+                
+                node_a.add_input(channel, ignore_energy_type=True)
+                node_b.add_output(channel, ignore_energy_type=True)
+                
                 self.connection_index += 1
 
 
