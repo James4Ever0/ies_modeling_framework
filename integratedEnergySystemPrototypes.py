@@ -7,9 +7,16 @@ from docplex.mp.solution import SolveSolution
 
 from docplex.mp.conflict_refiner import ConflictRefiner
 
+
 # in our sense of "iterable", not "generally iterable".
 def checkIterable(values: Iterable):
-    return any([isinstance(values, subscripableType) for subscripableType in [list, np.ndarray, tuple]])
+    return any(
+        [
+            isinstance(values, subscripableType)
+            for subscripableType in [list, np.ndarray, tuple]
+        ]
+    )
+
 
 def check_invalid_constraints(
     model: Model,
@@ -88,10 +95,10 @@ def check_conflict_decorator(class_method):
             if debug == True:
                 debug = "DEBUG"
             step = "STEP" in debug
-            exception = 'EXCEPTION' in debug
+            exception = "EXCEPTION" in debug
         else:
             step = exception = False
-            
+
         if step:
             display_invoke_info()
 
@@ -530,17 +537,18 @@ class EnergySystemUtils(object):
         self.debug = debug
 
     from typing import Callable
+
     @check_conflict_decorator
     def constraint_multiplexer(
         self,
         variables: List[Var],
         values,
-        constraint_function:Callable,
+        constraint_function: Callable,
         index_range=None,
     ):
         index_range = self.get_index_range(variables, index_range)
 
-        iterable =checkIterable(values)
+        iterable = checkIterable(values)
 
         for index in index_range:
             if iterable:
@@ -558,7 +566,7 @@ class EnergySystemUtils(object):
         index_range = self.get_index_range(variables, index_range)
 
         self.constraint_multiplexer(
-            variables, lower_bounds,  self.add_lower_bound,index_range
+            variables, lower_bounds, self.add_lower_bound, index_range
         )
 
     @check_conflict_decorator
@@ -570,7 +578,7 @@ class EnergySystemUtils(object):
         index_range = self.get_index_range(variables, index_range)
 
         self.constraint_multiplexer(
-            variables, upper_bounds,  self.add_upper_bound,index_range
+            variables, upper_bounds, self.add_upper_bound, index_range
         )
 
     @check_conflict_decorator
@@ -677,7 +685,25 @@ class EnergySystemUtils(object):
 from typing import Union, List
 
 # usually. we are talking about something else.
-
+common_numeral_types = [
+            int,
+            float,
+            np.float16,
+            np.float32,
+            np.float64,
+            np.float80,
+            np.float96,
+            np.float128,
+            np.float256,
+            np.int0,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.int128,
+            np.int256,
+            np.double,
+        ]
 
 class EnergyFlowNode:
     def __init__(
@@ -703,24 +729,37 @@ class EnergyFlowNode:
                 return True
         return False
 
-    def add_port(self, port:List):
-        ...
-
-    def add_input(self, input_port: Union[List,np.ndarray,int,float, np.float16,np.float32,np.float64,np.float80,np.float96,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.int128,np.int256,np.double]):
-        common_numeral_types = [int,float, np.float16,np.float32,np.float64,np.float80,np.float96,np.float128,np.float256,np.int0,np.int8,np.int16,np.int32,np.int64,np.int128,np.int256,np.double]
+    def add_port(self, port: List,target_list:List,target_id_list:List):
         assert not self.built
-        if self.check_is_var_list(input_port):
-            self.util.add_lower_bounds(input_port, 0)
+        if self.check_is_var_list(port):
+            self.util.add_lower_bounds(port, 0)
         # more advanced checks?
-        elif type(input_port) in common_numeral_types:
-            assert input_port >=0
-        elif type(input_port) in [np.ndarray,List] and all([(type(input_element) in common_numeral_types):
-        
-        input_port_id = id(input_port)
-        if input_port_id not in self.input_ids:
-            self.input_ids.append(input_port_id)
-            self.inputs.append(input_port)
+        elif type(port) in common_numeral_types:
+            assert port >= 0
+        elif type(port) in [np.ndarray, List] and all(
+            [
+                (type(input_element) in common_numeral_types)
+                for input_element in port
+            ]
+        ):
+            for input_element in port:
+                assert input_element >= 0
+
+        port_id = id(port)
+        if (port_id not in target_id_list) or type(port_id) in common_numeral_types:
+            target_id_list.append(port_id)
+            target_list.append(port)
         # no way to check duplication?
+
+    def add_input(
+        self,
+        input_port: Union[
+            List,
+            np.ndarray,
+        ],
+    ):
+        self.add_port(input_port, self.input_ports, self.input_port_ids)
+        
 
     def add_output(self, output_port: List):
         assert not self.built
@@ -733,13 +772,13 @@ class EnergyFlowNode:
 
     def build_relations(self):
         assert not self.built
-        
+
         # inputs_deduplicated =  list(set(self.inputs))
         # inputs_count = len(self.inputs)
-        
+
         # outputs_deduplicated =  list(set(self.outputs))
         # outputs_count = len(self.outputs)
-        
+
         inputs = reduce(self.util.elementwise_add, self.inputs)
         outputs = reduce(self.util.elementwise_add, self.outputs)
         if self.node_type == "equal":
