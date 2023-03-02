@@ -1,7 +1,8 @@
 from integratedEnergySystemPrototypes import (
-    LiBrRefrigeration,
+    LiBrRefrigeration, # are you sure there's no need to consume electricity here?
     CitySupply,
-    PhotoVoltaic,
+    # PhotoVoltaic,
+    # GridNet,
     # no storage?
     # WaterEnergyStorage,
 )
@@ -36,7 +37,7 @@ municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour)
 # let's add illumination data.
 
 hotWaterLiBr = LiBrRefrigeration(
-    num_hour, model, LiBr_device_max=10000 * 10000, device_price=1000, efficiency=0.9
+    num_hour, model,device_count_max=10000 * 10000, device_price=1000, efficiency=0.9,input_type='hot_water'
 )
 
 hotWaterLiBr.constraints_register()
