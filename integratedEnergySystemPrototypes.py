@@ -718,14 +718,14 @@ class EnergyFlowNode:
     def build_relations(self):
         assert not self.built
         
-        inputs_deduplicated =  list(set(self.inputs))
-        inputs_count = len(inputs_deduplicated)
+        # inputs_deduplicated =  list(set(self.inputs))
+        # inputs_count = len(self.inputs)
         
-        outputs_deduplicated =  list(set(self.outputs))
-        outputs_count = len(outputs_deduplicated)
+        # outputs_deduplicated =  list(set(self.outputs))
+        # outputs_count = len(self.outputs)
         
-        inputs = reduce(self.util.elementwise_add, inputs_deduplicated)
-        outputs = reduce(self.util.elementwise_add, outputs_deduplicated)
+        inputs = reduce(self.util.elementwise_add, self.inputs)
+        outputs = reduce(self.util.elementwise_add, self.outputs)
         if self.node_type == "equal":
             self.util.equations(inputs, outputs)
         else:
