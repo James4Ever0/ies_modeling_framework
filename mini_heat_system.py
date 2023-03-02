@@ -173,11 +173,12 @@ systems = [
 
 ###### SYSTEM OVERVIEW ######
 #
-# |e\dv | PV | GN | HP | WT | MH | WL |
-# |-----|----|----|----|----|----|----|
-# | ele | s  |r\s | r  |    |    |    |
-# | ww  |    |    | s  | r  | s  | r  |
-# | ww_s|    |    | s  | s  |    |    |
+# |e\dv | PV | GN | HP | WT | MH | WL | EX |
+# |-----|----|----|----|----|----|----|----|
+# | ele | s  |r\s | r  |    |    |    |    |
+# | ww  |    |    | s  | r  |    | r  | s  |
+# | ww_s|    |    | s  | s  |    |    |    |
+# | hw  |    |    |    |    | s  |    | r  |
 #
 ###### SYSTEM TOPOLOGY ######
 #                                                   [NODE3] - WT
@@ -214,7 +215,7 @@ Node2.add_input(gridNet)
 Node2.add_output(waterSourceHeatPumps)
 
 nodeUtil = NodeUtils(model, num_hour)
-nodeUtil.fully_connected(Node1, Node2) # how do you do this?
+nodeUtil.fully_connected(Node1, Node2) # ensure the energy types will match.
 
 Node3.add_input(waterSourceHeatPumps)
 Node3.add_output(waterStorageTank)

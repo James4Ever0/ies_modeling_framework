@@ -780,18 +780,22 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(self, input_port: dict, ignore_energy_type: bool = False):
+    def add_input(self, input_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = input_port
         else:
-            port_data: Union[List, np.ndarray] = input_port.power_of_outputs[self.energy_type]
+            port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
+                self.energy_type
+            ]
         self.__add_port(port_data, self.inputs, self.input_ids)
 
-    def add_output(self, output_port: dict, ignore_energy_type: bool = False):
+    def add_output(self, output_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = output_port
         else:
-            port_data: Union[List, np.ndarray] = output_port.power_of_inputs[self.energy_type]
+            port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
+                self.energy_type
+            ]
         self.__add_port(port_data, self.outputs, self.output_ids)
 
     def build_relations(self):
@@ -812,6 +816,25 @@ class EnergyFlowNode:
         self.built = True
 
 
+
+class EnergyFlowNodeFactory:
+    def __init__(
+        self,
+        model: Model,
+        num_hour: int,
+        energy_type: Union[
+            Literal["cold_water"],
+            Literal["cold_water_storage"],
+            Literal["warm_water"],
+            Literal["warm_water_storage"],
+            Literal["hot_water"],
+            Literal["ice"],
+            Literal["steam"],
+            Literal["electricity"],
+        ],
+        node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
+        debug: bool = False,
+
 class NodeUtils:
     index = 0
 
@@ -828,6 +851,8 @@ class NodeUtils:
             for node_a, node_b in itertools.permutations(two_nodes, 2):
                 assert not node_a.built
                 assert not node_b.built
+                assert node_a.energy_type == node_b.energy_type
+
                 Channel = self.model.continuous_var_list(
                     [i for i in range(self.num_hour)],
                     lb=0,

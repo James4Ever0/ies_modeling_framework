@@ -142,6 +142,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 # no checking!
 electricity_type = 'electricity'
 
+NodeFactory = EnergyFlowNodeFactory(model, num_hour,debug=debug)
+
 Node1 = EnergyFlowNode(model, num_hour, electricity_type,symbols.greater_equal, debug=debug)
 Node2 = EnergyFlowNode(model, num_hour, electricity_type,symbols.greater_equal, debug=debug)
 
