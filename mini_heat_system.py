@@ -220,6 +220,11 @@ Node4.add_input(waterStorageTank.power_of_outputs[hot_water_type])
 Node4.add_input(municipalHotWater.power_of_outputs[hot_water_type])
 Node4.add_output(heatLoad.power_of_inputs[hot_water_type])
 
+Node1.build_relations()
+Node2.build_relations()
+Node3.build_relations()
+Node4.build_relations()
+
 from mini_data_log_utils import check_solve_and_log
 
 check_solve_and_log(systems, model, simulation_name)

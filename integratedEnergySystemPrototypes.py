@@ -5164,7 +5164,7 @@ class WaterEnergyStorage(IntegratedEnergySystem):
     水蓄能类
     """
 
-    # index=0
+    index=0
     def __init__(
         self,
         num_hour: int,
