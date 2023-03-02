@@ -126,6 +126,8 @@ from demo_utils import (
 
 power_load, cool_load, heat_load, steam_load = getPowerCoolHeatSteamLoads(num_hour)
 
+# heat_load is for warm_water.
+
 ##########################################
 
 # is this a test on `Linear_absolute`?

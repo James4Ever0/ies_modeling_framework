@@ -31,7 +31,7 @@ heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
     * heat_load
 ) * 0.4
-heatLoad = Load("hot_water", data=heat_load)
+heatLoad = Load("warm_water", data=heat_load)
 
 model = Model(name=simulation_name)
 debug = False

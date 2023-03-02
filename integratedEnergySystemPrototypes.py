@@ -14,9 +14,10 @@ class Load:
     def __init__(
         self,
         input_type: Union[
-            Literal["hot_water"],
+            # Literal["hot_water"], 
+            # there's no such load.
             Literal["cold_water"],
-            Literal["steam"],  # is this one of the load types?
+            Literal["steam"],  # is this one of the load types? not sure.
             Literal["warm_water"],  # is this one of the load types?
             Literal["electricity"],
         ],
@@ -739,7 +740,7 @@ class EnergyFlowNode:
             Literal["steam"],
             Literal["electricity"],
         ],
-        factory, # the factory object.
+        factory,  # the factory object.
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
         debug: bool = False,
     ):
@@ -786,21 +787,24 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = input_port
         else:
-            port_id = input_port)
+            port_id = f"{id(input_port)}_output_{self.energy_type}"
             assert port_id not in self.output_ids
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
             ]
-            self.output_ids.add(port_id)
+            self.factory.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
 
     def add_output(self, output_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = output_port
         else:
+            port_id = f"{id(output_port)}_output_{self.energy_type}"
+            assert port_id not in self.input_ids
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
             ]
+            self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
 
     def build_relations(self):
@@ -834,7 +838,7 @@ class EnergyFlowNodeFactory:
         self.num_hour = num_hour
         self.debug = debug
         self.input_ids = set()
-        self.output_ids =set()
+        self.output_ids = set()
 
     def create_node(
         self,
@@ -851,9 +855,16 @@ class EnergyFlowNodeFactory:
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
     ):
         node = EnergyFlowNode(
-            self.model, self.num_hour, energy_type, node_type, debug=self.debug, factory=self
+            model=self.model,
+            num_hour=self.num_hour,
+            energy_type=energy_type,
+            factory=self,
+            node_type=node_type,
+            debug=self.debug,
         )
-        self.nodes.append(node) # how do you check validity? you can pass the factory object yourself.
+        self.nodes.append(
+            node
+        )  # how do you check validity? you can pass the factory object yourself.
         return node
 
     def build_relations(self):
@@ -880,22 +891,22 @@ class NodeUtils:
             for node_a, node_b in itertools.permutations(two_nodes, 2):
                 node_a_id = id(node_a)
                 node_b_id = id(node_b)
-                
+
                 assert node_a_id != node_b_id
                 assert not node_a.built
                 assert not node_b.built
                 assert node_a.energy_type == node_b.energy_type
-                
+
                 if node_a_id > node_b_id:
                     node_pair_id = (node_b_id, node_a_id)
                 else:
                     node_pair_id = (node_a_id, node_b_id)
-                    
+
                 if (
                     node_pair_id in self.fully_connected_pairs
                 ):  # do not connect these two. no need.
                     continue
-                
+
                 self.fully_connected_pairs.add(node_pair_id)
 
                 channel = self.model.continuous_var_list(
@@ -903,10 +914,10 @@ class NodeUtils:
                     lb=0,
                     name=f"channel_{self.connection_index}_{self.__class__.__name__}_{self.index}",
                 )
-                
+
                 node_a.add_input(channel, ignore_energy_type=True)
                 node_b.add_output(channel, ignore_energy_type=True)
-                
+
                 self.connection_index += 1
 
 
