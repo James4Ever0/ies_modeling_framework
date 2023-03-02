@@ -784,14 +784,14 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = input_port
         else:
-            port_data: Union[List, np.ndarray] = input_port[self.energy_type]
+            port_data: Union[List, np.ndarray] = input_port.power_of_inputs[self.energy_type]
         self.__add_port(port_data, self.inputs, self.input_ids)
 
     def add_output(self, output_port: dict, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = output_port
         else:
-            port_data: Union[List, np.ndarray] = output_port[self.energy_type]
+            port_data: Union[List, np.ndarray] = output_port.power_of_outputs[self.energy_type]
         self.__add_port(port_data, self.outputs, self.output_ids)
 
     def build_relations(self):

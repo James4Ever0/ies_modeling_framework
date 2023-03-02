@@ -11,6 +11,7 @@ from demo_utils import LoadGet, ResourceGet
 from config import num_hour, day_node
 
 # num_hour *=3
+debug=False
 from docplex.mp.model import Model
 
 simulation_name = "micro_refrigeration"
@@ -40,7 +41,8 @@ municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour)
 # let's add illumination data.
 
 hotWaterLiBr = LiBrRefrigeration(
-    num_hour, model,device_count_max=10000 * 10000, device_price=1000, efficiency=0.9,input_type='hot_water'
+    num_hour, model,device_count_max=10000 * 10000, device_price=1000, efficiency=0.9,input_type='hot_water',
+    debug=debug,
 )
 hotWaterLiBr.constraints_register()
 
@@ -69,7 +71,8 @@ municipalHotWater = CitySupply(
     device_price=3000,
     running_price=municipalHotWater_price0,
     efficiency=0.9,
-    output_type = 'hot_water'
+    output_type = 'hot_water',
+    debug=debug,
 )
 municipalHotWater.constraints_register()
 
@@ -102,6 +105,19 @@ municipalHotWater.constraints_register()
 # 
 # MH -> [NODE1] -> LB -> [NODE2] -> CL
 # 
+
+
+from integratedEnergySystemPrototypes import EnergyFlowNode
+
+
+cold_water_type = "cold_water"
+hot_water_type = "hot_water"
+
+Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=hot_water_type)
+Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=cold_water_type)
+
+Node1.add_input(municipalHotWater)
+Node
 
 systems = [hotWaterLiBr,municipalHotWater]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
