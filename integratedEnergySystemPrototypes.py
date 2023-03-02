@@ -1648,13 +1648,20 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # print("MAX_SOC:", self.stateOfCharge_max)
         # print()
         # breakpoint()
-        if self.className == self.
-        self.add_lower_and_upper_bounds(
-            self.energy,
-            self.device_count * self.stateOfCharge_min,
-            self.device_count * self.stateOfCharge_max,
-            range(1, self.num_hour),
-        )
+        if self.className == EnergyStorageSystemVariable.__name__:
+            self.add_lower_and_upper_bounds(
+                self.energy,
+                self.elementwise_multiply(self.device_count, self.stateOfCharge_min),
+                self.elementwise_multiply(self.device_count * self.stateOfCharge_max),
+                range(1, self.num_hour),
+            )
+        else:
+            self.add_lower_and_upper_bounds(
+                self.energy,
+                self.device_count * self.stateOfCharge_min,
+                self.device_count * self.stateOfCharge_max,
+                range(1, self.num_hour),
+            )
         # self.model.add_constraints(
         #     self.energy[i] <= self.device_count * self.stateOfCharge_max
         #     for i in range(1, self.num_hour)
@@ -1667,7 +1674,11 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         self.equation(
             self.annualized,
             (
-                self.device_count * self.device_price
+                (
+                    (self.device_count * self.device_price)
+                    if not (self.className == EnergyStorageSystemVariable.__name__)
+                    else (self.max(self.device_count) * self.device_price)
+                )
                 + (
                     self.model.max(self.device_count_powerConversionSystem)
                     if isinstance(self.device_count_powerConversionSystem, Iterable)
@@ -1737,7 +1748,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             购买设备总费用 = 储能系统设备数 * 储能设备设备价格+功率转化设备数 * 功率转化设备价格
         """
         return (
-            solution.get_value(self.device_count) * self.device_price
+            solution.get_value(self.max(self.device_count) if self.className == EnergyStorageSystemVariable.__name__ else self.device_count) * self.device_price
             + (
                 max(solution.get_values(self.device_count_powerConversionSystem))
                 if isinstance(self.device_count_powerConversionSystem, Iterable)
