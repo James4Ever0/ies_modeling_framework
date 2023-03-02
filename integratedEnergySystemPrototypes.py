@@ -1345,7 +1345,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         input_type: str = "energy_storage",
         output_type: str = "energy",
         classObject=None,
-        device_count_as_list:bool=False,
+        device_count_as_list: bool = False,
     ):
         """
         Args:
@@ -1372,7 +1372,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
             device_price=device_price,
             classObject=classObject if classObject else self.__class__,
             debug=debug,
-            device_count_as_list=device_count_as_list
+            device_count_as_list=device_count_as_list,
         )
         # EnergyStorageSystem.index += 1
 
@@ -1520,7 +1520,9 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 else [self.device_count_powerConversionSystem]
             ),
             0,
-            self.device_count * self.conversion_rate_max,
+            self.device_count * self.conversion_rate_max
+            if not (type(self.device_count) == list)
+            else self.elementwise_multiply(self.device_count, self.conversion_rate_max),
         )
         # self.model.add_constraint(
         #     self.device_count * self.conversion_rate_max
@@ -1632,7 +1634,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
-        breakpoint()
+        # breakpoint()
         if self.className == EnergyStorageSystemVariable.__name__:
             self.model.add_constraint(
                 # self.model.add_constraints(
@@ -1646,6 +1648,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
         # print("MAX_SOC:", self.stateOfCharge_max)
         # print()
         # breakpoint()
+        if self.className == self.
         self.add_lower_and_upper_bounds(
             self.energy,
             self.device_count * self.stateOfCharge_min,
@@ -1804,14 +1807,13 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
             conversion_rate_max=conversion_rate_max,
             efficiency=efficiency,
             energy_init=energy_init,
-        device_count_as_list=True,
-            
+            device_count_as_list=True,
         )
         # # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
 
-        # overriding the thing? you also need to remove
+        # overriding the thing? just do it in the base class.
 
         # self.device_count: List[ContinuousVarType] = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
