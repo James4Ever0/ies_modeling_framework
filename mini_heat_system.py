@@ -192,14 +192,18 @@ systems = [
 
 from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
 
-Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
-Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
-Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
-Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
 
 electricity_type = "electricity"
 hot_water_type = "hot_water"
 hot_water_storage_type = "hot_water_storage"
+
+Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
+Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
+
+Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = hot_water_storage_type)
+
+Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = hot_water_type)
+
 
 # in the end, we make some class called the "load class", to ensure the integrity.
 
