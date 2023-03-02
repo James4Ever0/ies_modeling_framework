@@ -171,12 +171,14 @@ systems = [
 #
 ###### SYSTEM TOPOLOGY ######
 #
-#
-#    PV - [NODE1{FC_0}] -> GRID -> [NODE2{FC_0}] ->  HP 
-#                 \_________________________________/ 
-#
-#
-
+#                                                       / [NODE3]_ WT
+#    PV - [NODE1{FC_0}] -> GRID -> [NODE2{FC_0}] ->  HP _           |
+#                       \________/                       \          |
+#                                                         |         |
+#                                                         |        /
+#    MS ______________________________________________[NODE4] -----
+#                                                        |
+#                                                      LOAD
 
 from mini_data_log_utils import solve_and_log
 
