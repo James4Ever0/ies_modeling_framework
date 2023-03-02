@@ -19,7 +19,7 @@ def check_invalid_constraints(
         ["energy_EnergyStorageSystem_1_1 "],
         ["energy_EnergyStorageSystem_1_1,"],
         ["energy_EnergyStorageSystem_1_1 <= 0"],
-        ["0 >= power_of_output_electricity_PhotoVoltaic_1_0"]
+        # ["0 >= power_of_output_electricity_PhotoVoltaic_1_0"],
     ],
     white_list_filters: List[List[str]] = [
         ["energy_EnergyStorageSystem_1_1 == 0.900"],
@@ -84,7 +84,14 @@ def check_conflict_decorator(class_method):
         model = self.model  # do we really have conflict?
         debug = self.debug
         # check_conflict()
-        step = "STEP" in debug
+        if debug:
+            if debug == True:
+                debug = "DEBUG"
+            step = "STEP" in debug
+            exception = 'EXCEPTION' in debug
+        else:
+            step = exception = False
+            
         if step:
             display_invoke_info()
 
@@ -97,7 +104,7 @@ def check_conflict_decorator(class_method):
                 print("___BEFORE INVOKE___")
                 if not step:
                     display_invoke_info()
-                if "EXCEPTION" in debug:
+                if exception:
                     raise Exception("FATAL ERROR WHILE DEBUGGING")
 
         value = class_method(self, *args, **kwargs)
@@ -111,7 +118,7 @@ def check_conflict_decorator(class_method):
                 print("___AFTER INVOKE___")
                 if not step:
                     display_invoke_info()
-                if "EXCEPTION" in debug:
+                if exception:
                     raise Exception("FATAL ERROR WHILE DEBUGGING")
                 breakpoint()
 

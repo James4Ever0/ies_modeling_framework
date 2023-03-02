@@ -53,7 +53,7 @@ model = Model(name=simulation_name)
 
 # debug = True # we step through conflicts.
 # debug = "EXCEPTION" # we step through conflicts.
-debug = "STEP"
+debug = "STEP_EXCEPTION"
 # debug = False
 
 resource = ResourceGet()
