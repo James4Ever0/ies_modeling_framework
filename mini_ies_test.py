@@ -37,6 +37,7 @@ from integratedEnergySystemPrototypes import (
     EnergyStorageSystem,
     PhotoVoltaic,
     symbols,
+    Load,
 )
 from demo_utils import LoadGet, ResourceGet
 from config import num_hour, day_node, epsilon
@@ -48,6 +49,8 @@ simulation_name = "microgrid"
 
 load = LoadGet()
 power_load = load.get_power_load(num_hour)
+
+electricityLoad = Load('electricity',power_load)
 
 model = Model(name=simulation_name)
 
@@ -163,7 +166,7 @@ Node1.add_output(gridNet.power_of_inputs["electricity"])
 # Node2.add_input(Channel1)
 Node2.add_input(gridNet.power_of_outputs["electricity"])
 Node2.add_input(batteryEnergyStorageSystem.power_of_outputs["electricity"])
-Node2.add_output(power_load)
+Node2.add_output(electricityLoad.power_of_inputs['electricity'])
 # Node2.add_output(Channel2)
 
 nodeUtils = NodeUtils(model, num_hour)

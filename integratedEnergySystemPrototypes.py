@@ -22,7 +22,8 @@ class Load:
         ],
         data: Union[List, np.ndarray],
     ):
-        self.inputs = {input_type: data}
+        self.power_of_inputs = {input_type: data}
+        self.power_of_outputs = {}
 
 
 # in our sense of "iterable", not "generally iterable".
@@ -743,11 +744,11 @@ class EnergyFlowNode:
 
     def check_is_var_list(self, var_list):
         if type(var_list) == list:
-            if type(var_list[0]) == Var:
+            if all([type(var) == Var for var in var_list]):
                 return True
         return False
 
-    def __add_port(self, port: List, target_list: List, target_id_list: List):
+    def __add_port(self, port: Union[List,np.ndarray], target_list: List, target_id_list: List):
         assert not self.built
         if self.check_is_var_list(port):
             self.util.add_lower_bounds(port, 0)
@@ -766,10 +767,10 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(self, input_port: List):
+    def add_input(self, input_port: Union[List,np.ndarray]):
         self.__add_port(input_port, self.inputs, self.input_ids)
 
-    def add_output(self, output_port: List):
+    def add_output(self, output_port: Union[List,np.ndarray]):
         self.__add_port(output_port, self.outputs, self.output_ids)
 
     def build_relations(self):
