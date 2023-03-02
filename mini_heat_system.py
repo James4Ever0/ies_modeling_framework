@@ -32,7 +32,7 @@ model = Model(name=simulation_name)
 
 resource = ResourceGet()
 # gas_price0 = resource.get_gas_price(num_hour)
-municipalSteam_price0 = resource.get_municipalSteam_price(num_hour)
+municipalHotWater_price0 = resource.get_municipalHotWater_price(num_hour)
 electricity_price0 = resource.get_electricity_price(num_hour)
 intensityOfIllumination0 = (
     resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 100
@@ -106,16 +106,16 @@ waterStorageTank.constraints_register(
 )
 
 # 市政热水
-municipalSteam = CitySupply(
+municipalHotWater = CitySupply(
     num_hour,
     model,
     device_count_max=5000*10000,
     device_price=3000,
     running_price=0.3 * np.ones(num_hour), # run_price -> running_price
     efficiency=0.9,
-    output_type='steam' # add output_type
+    output_type='hot_water' # add output_type
 )
-municipalSteam.constraints_register() # remove "model"
+municipalHotWater.constraints_register() # remove "model"
 
 # power_heat_sum = model.continuous_var_list(
 #     [i for i in range(0, num_hour)], name="power_heat_sum"
@@ -127,7 +127,7 @@ municipalSteam.constraints_register() # remove "model"
 
 # model.add_constraints(
 #     power_heat_sum[h]
-#     == municipalSteam.heat_citySupplied[h]
+#     == municipalHotWater.heat_citySupplied[h]
 #     + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
 #     + power_heatStorage[h]
 #     for h in range(0, num_hour)
@@ -154,24 +154,32 @@ municipalSteam.constraints_register() # remove "model"
 #     x=waterStorageTank.power_waterStorageTank_heat,
 # )
 
-
 systems = [
     photoVoltaic, 
     gridNet,
     waterSourceHeatPumps,
     waterStorageTank,
-    municipalSteam,
+    municipalHotWater,
 ]
+
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 
 ###### SYSTEM OVERVIEW ######
 # 
 # |e\dv | PV | GN | HP | WT | MS |
 # |-----|----|----|----|----|----|
-# | ele |    |    |    |    |    |
-# | hw  |    |    |    |    |    |
-# | stm |    |    |    |    |    |
+# | ele | s  |r\s | r  |    |    |
+# | hw  |    |    | s  | r  | s  |
+# | hw_s|    |    | s  | s  |    |
 #
+###### SYSTEM TOPOLOGY ######
+#
+#
+#
+#
+#
+#
+
 
 from mini_data_log_utils import solve_and_log
 
