@@ -53,13 +53,13 @@ model = Model(name=simulation_name)
 
 # debug = True # we step through conflicts.
 # debug = "EXCEPTION" # we step through conflicts.
-# debug = "STEP"
-debug = False
+debug = "STEP"
+# debug = False
 
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
-intensityOfIllumination = (
-    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour)
+intensityOfIllumination = resource.get_radiation(
+    path="jinan_changqing-hour.dat", num_hour=num_hour
 )
 
 # 光伏
@@ -180,8 +180,9 @@ systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 from mini_data_log_utils import solve_and_log, check_conflict
 
 # before all the fuzz...
-check_conflict(model) # no conflict?
+has_conflict = check_conflict(model)  # no conflict?
 
-# breakpoint()
+if has_conflict:
+    breakpoint()
 
 solve_and_log(systems, model, simulation_name)
