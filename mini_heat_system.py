@@ -42,13 +42,13 @@ intensityOfIllumination0 = (
 photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
-    photoVoltaic_device_max=5000,  # how about let's alter this?
+    device_count_max=5000,  # how about let's alter this?
     device_price=4500,
-    intensityOfIllumination0=intensityOfIllumination0,
+    intensityOfIllumination=intensityOfIllumination0,
     efficiency=0.8,
     device_name="PhotoVoltaic",
 )
-photoVoltaic.constraints_register(model)
+photoVoltaic.constraints_register()
 
 
 
@@ -56,12 +56,12 @@ photoVoltaic.constraints_register(model)
 gridNet = GridNet(
     num_hour,
     model,
-    gridNet_device_max=200000,
+    device_count_max=200000,
     device_price=0,
-    electricity_price_from=electricity_price0,
-    electricity_price_to=0.35,
+    electricity_price=electricity_price0,
+    electricity_price_upload=0.35,
 )
-gridNet.constraints_register(model, powerPeak_pre=2000)
+gridNet.constraints_register(powerPeak_predicted=2000)
 
 
 
@@ -70,7 +70,7 @@ waterSourceHeatPumps = (
     WaterHeatPump(  # you are not using the electricity of photothermal power?
         num_hour,
         model,
-        device_max=2000,
+        device_count_max=2000,
         device_price=3000,
         electricity_price=electricity_price0*0, # with gridnet.
         case_ratio=np.ones(4),

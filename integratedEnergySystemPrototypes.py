@@ -686,24 +686,25 @@ from typing import Union, List
 
 # usually. we are talking about something else.
 common_numeral_types = [
-            int,
-            float,
-            np.float16,
-            np.float32,
-            np.float64,
-            np.float80,
-            np.float96,
-            np.float128,
-            np.float256,
-            np.int0,
-            np.int8,
-            np.int16,
-            np.int32,
-            np.int64,
-            np.int128,
-            np.int256,
-            np.double,
-        ]
+    int,
+    float,
+    np.float16,
+    np.float32,
+    np.float64,
+    # np.float80,
+    # np.float96,
+    # np.float128,
+    # np.float256,
+    np.int0,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    # np.int128,
+    # np.int256,
+    np.double,
+]
+
 
 class EnergyFlowNode:
     def __init__(
@@ -729,7 +730,7 @@ class EnergyFlowNode:
                 return True
         return False
 
-    def add_port(self, port: List,target_list:List,target_id_list:List):
+    def add_port(self, port: List, target_list: List, target_id_list: List):
         assert not self.built
         if self.check_is_var_list(port):
             self.util.add_lower_bounds(port, 0)
@@ -737,10 +738,7 @@ class EnergyFlowNode:
         elif type(port) in common_numeral_types:
             assert port >= 0
         elif type(port) in [np.ndarray, List] and all(
-            [
-                (type(input_element) in common_numeral_types)
-                for input_element in port
-            ]
+            [(type(input_element) in common_numeral_types) for input_element in port]
         ):
             for input_element in port:
                 assert input_element >= 0
@@ -751,24 +749,11 @@ class EnergyFlowNode:
             target_list.append(port)
         # no way to check duplication?
 
-    def add_input(
-        self,
-        input_port: Union[
-            List,
-            np.ndarray,
-        ],
-    ):
-        self.add_port(input_port, self.input_ports, self.input_port_ids)
-        
+    def add_input(self, input_port: List):
+        self.add_port(input_port, self.inputs, self.input_ids)
 
     def add_output(self, output_port: List):
-        assert not self.built
-        if self.check_is_var_list(output_port):
-            self.util.add_lower_bounds(output_port, 0)
-        output_port_id = id(output_port)
-        if output_port_id not in self.output_ids:
-            self.output_ids.append(output_port_id)
-            self.outputs.append(output_port)
+        self.add_port(output_port, self.outputs, self.output_ids)
 
     def build_relations(self):
         assert not self.built
