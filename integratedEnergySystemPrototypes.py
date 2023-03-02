@@ -3170,8 +3170,8 @@ class AirHeatPump(IntegratedEnergySystem):
         self.output_types = [
             "cold_water",
             "cold_water_storage",
-            "hot_water",
-            "hot_water_storage",
+            "warm_water",
+            "warm_water_storage",
         ]
         self.build_power_of_outputs(self.output_types)
         # self.power_of_outputs['cold_water']: List[
@@ -3641,8 +3641,8 @@ class WaterHeatPump(IntegratedEnergySystem):
         self.output_types = [
             "cold_water",
             "cold_water_storage",
-            "hot_water",
-            "hot_water_storage",
+            "warm_water",
+            "warm_water_storage",
         ]
         self.build_power_of_outputs(self.output_types)
         self.build_flags(self.output_types)

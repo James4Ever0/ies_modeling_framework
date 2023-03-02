@@ -173,11 +173,11 @@ systems = [
 
 ###### SYSTEM OVERVIEW ######
 #
-# |e\dv | PV | GN | HP | WT | MH | HL |
+# |e\dv | PV | GN | HP | WT | MH | WL |
 # |-----|----|----|----|----|----|----|
 # | ele | s  |r\s | r  |    |    |    |
-# | hw  |    |    | s  | r  | s  | r  |
-# | hw_s|    |    | s  | s  |    |    |
+# | ww  |    |    | s  | r  | s  | r  |
+# | ww_s|    |    | s  | s  |    |    |
 #
 ###### SYSTEM TOPOLOGY ######
 #                                                   [NODE3] - WT
@@ -188,21 +188,21 @@ systems = [
 #                                                    |       /
 #                                          MH -> [NODE4] ----
 #                                                   |
-#                                                   HL
+#                                                   WL
 
 from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
 
 
 electricity_type = "electricity"
-hot_water_type = "hot_water"
-hot_water_storage_type = "hot_water_storage"
+warm_water_type = "warm_water"
+warm_water_storage_type = "warm_water_storage"
 
 Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
 Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
 
-Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = hot_water_storage_type)
+Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = warm_water_storage_type)
 
-Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = hot_water_type)
+Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = warm_water_type)
 
 
 # in the end, we make some class called the "load class", to ensure the integrity.
