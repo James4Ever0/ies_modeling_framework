@@ -142,10 +142,17 @@ Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
+import math
 
 class NodeUtils:
-    def __init__()
-def fully_connected(self, *args): # nodes as arguments.
+    index = 0
+    def __init__(self,model):
+        self.index = self.__class__.index
+        self.__class__.index +=1
+        self.model = model
+        self.connection_index = 0
+    def fully_connected(self, *nodes): # nodes as arguments.
+        for node_1, node_2 in math.comb(2,nodes):
 
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
