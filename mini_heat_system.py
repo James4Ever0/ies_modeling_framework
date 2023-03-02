@@ -7,6 +7,7 @@ from integratedEnergySystemPrototypes import (
     Linearization,
     WaterEnergyStorage,
     # GasBoiler,
+    Load,
     GridNet,
 )
 from demo_utils import LoadGet, ResourceGet
@@ -23,6 +24,9 @@ import math
 import numpy as np
 
 heat_load = load.get_heat_load(num_hour)
+
+heatLoad = Load('hot_water',data = heat_load)
+
 delta = 0.3
 heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
@@ -188,10 +192,10 @@ systems = [
 
 from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
 
-Node1 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
-Node2 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
-Node3 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
-Node4 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
+Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
+Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
+Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
+Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug)
 
 electricity_type = "electricity"
 hot_water_type = "hot_water"
@@ -199,18 +203,22 @@ hot_water_storage_type = "hot_water_storage"
 
 # in the end, we make some class called the "load class", to ensure the integrity.
 
-Node1.add_input(photoVoltaic.power_of_outputs[electricity_type ])
-Node1.add_output(gridNet.power_of_inputs[electricity_type ])
+Node1.add_input(photoVoltaic.power_of_outputs[electricity_type])
+Node1.add_output(gridNet.power_of_inputs[electricity_type])
 
-Node2.add_input(gridNet.power_of_outputs[electricity_type ])
-Node2.add_output(waterSourceHeatPumps.power_of_inputs[electricity_type ])
+Node2.add_input(gridNet.power_of_outputs[electricity_type])
+Node2.add_output(waterSourceHeatPumps.power_of_inputs[electricity_type])
 
-nodeUtil = NodeUtils(model,num_hour)
-nodeUtil.fully_connected(Node1,Node2)
+nodeUtil = NodeUtils(model, num_hour)
+nodeUtil.fully_connected(Node1, Node2)
 
 Node3.add_input(waterSourceHeatPumps.power_of_outputs[hot_water_storage_type])
 Node3.add_output(waterStorageTank.power_of_inputs[hot_water_storage_type])
 
+Node4.add_input(waterSourceHeatPumps.power_of_outputs[hot_water_type])
+Node4.add_input(waterStorageTank.power_of_outputs[hot_water_type])
+Node4.add_input(municipalHotWater.power_of_outputs[hot_water_type])
+Node4.add_output(heatLoad.power_of_inputs[hot_water_type])
 
 from mini_data_log_utils import check_solve_and_log
 
