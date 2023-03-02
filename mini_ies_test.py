@@ -118,7 +118,7 @@ batteryEnergyStorageSystem.constraints_register(  # using mode 1?
 # define energy balance restrictions
 
 
-from integratedEnergySystemPrototypes import EnergyFlowNode
+from integratedEnergySystemPrototypes import EnergyFlowNodeFactory
 
 # util = EnengySystemUtils(model, num_hour)
 #
@@ -144,8 +144,8 @@ electricity_type = 'electricity'
 
 NodeFactory = EnergyFlowNodeFactory(model, num_hour,debug=debug)
 
-Node1 = EnergyFlowNode(model, num_hour, electricity_type,symbols.greater_equal, debug=debug)
-Node2 = EnergyFlowNode(model, num_hour, electricity_type,symbols.greater_equal, debug=debug)
+Node1 = NodeFactory.create_node(electricity_type,symbols.greater_equal)
+Node2 = NodeFactory.create_node(electricity_type,symbols.greater_equal)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
 from integratedEnergySystemPrototypes import NodeUtils

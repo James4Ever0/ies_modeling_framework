@@ -816,12 +816,21 @@ class EnergyFlowNode:
         self.built = True
 
 
-
 class EnergyFlowNodeFactory:
     def __init__(
         self,
         model: Model,
         num_hour: int,
+        debug: bool = False,
+    ):
+        self.nodes: List[EnergyFlowNode] = []
+        self.built = False
+        self.model = model
+        self.num_hour = num_hour
+        self.debug = debug
+
+    def create_node(
+        self,
         energy_type: Union[
             Literal["cold_water"],
             Literal["cold_water_storage"],
@@ -833,7 +842,19 @@ class EnergyFlowNodeFactory:
             Literal["electricity"],
         ],
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
-        debug: bool = False,
+    ):
+        node = EnergyFlowNode(
+            self.model, self.num_hour, energy_type, node_type, debug=self.debug
+        )
+        self.nodes.append(node)
+        return node
+
+    def build_relations(self):
+        assert self.built is False
+        for node in self.nodes:
+            node.build_relations()
+        self.built = True
+
 
 class NodeUtils:
     index = 0
