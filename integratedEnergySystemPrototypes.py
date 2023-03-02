@@ -10,6 +10,21 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 import itertools
 
 
+class Load:
+    def __init__(
+        self,
+        input_type: Union[
+            Literal["hot_water"],
+            Literal["cold_water"],
+            Literal["steam"], # is this one of the load types?
+            Literal["warm_water"], # is this one of the load types?
+            Literal["electricity"],
+        ],
+        data: Union[List, np.ndarray],
+    ):
+        self.inputs = {input_type: data}
+
+
 # in our sense of "iterable", not "generally iterable".
 def checkIterable(values: Iterable):
     return any(
@@ -777,22 +792,29 @@ class EnergyFlowNode:
 
 class NodeUtils:
     index = 0
-    def __init__(self,model:Model,num_hour:int):
+
+    def __init__(self, model: Model, num_hour: int):
         self.index = self.__class__.index
-        self.__class__.index +=1
+        self.__class__.index += 1
         self.model = model
         self.connection_index = 0
-        self.num_hour=num_hour
-    def fully_connected(self, *nodes:EnergyFlowNode): # nodes as arguments.
-        assert len(nodes)>=2
-        for two_nodes in itertools.combinations(nodes,2):
-            for node_a, node_b in itertools.permutations(two_nodes,2):
+        self.num_hour = num_hour
+
+    def fully_connected(self, *nodes: EnergyFlowNode):  # nodes as arguments.
+        assert len(nodes) >= 2
+        for two_nodes in itertools.combinations(nodes, 2):
+            for node_a, node_b in itertools.permutations(two_nodes, 2):
                 assert not node_a.built
                 assert not node_b.built
-                Channel = self.model.continuous_var_list([i for i in range(self.num_hour)],lb=0,name = f'channel_{self.connection_index}_{self.__class__.__name__}_{self.index}')
+                Channel = self.model.continuous_var_list(
+                    [i for i in range(self.num_hour)],
+                    lb=0,
+                    name=f"channel_{self.connection_index}_{self.__class__.__name__}_{self.index}",
+                )
                 node_a.add_input(Channel)
                 node_b.add_output(Channel)
-                self.connection_index+=1
+                self.connection_index += 1
+
 
 # another name for IES?
 class IntegratedEnergySystem(EnergySystemUtils):
@@ -5181,8 +5203,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
             device_name (str): 水蓄能机组名称,默认为"water_energy_storage",
         """
         # self.device_name = device_name
-        
-        device_count_max=device_price=0
+
+        device_count_max = device_price = 0
         # this is special. volume determines the price.
 
         super().__init__(
