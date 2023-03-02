@@ -47,7 +47,7 @@ from docplex.mp.model import Model
 simulation_name = "microgrid"
 
 load = LoadGet()
-power_load = load.get_power_load(num_hour) * 0.01
+power_load = load.get_power_load(num_hour)
 
 model = Model(name=simulation_name)
 
@@ -59,7 +59,7 @@ debug = False
 resource = ResourceGet()
 electricity_price = resource.get_electricity_price(num_hour)
 intensityOfIllumination = (
-    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour) * 1000
+    resource.get_radiation(path="jinan_changqing-hour.dat", num_hour=num_hour)
 )
 
 # 光伏
@@ -67,11 +67,11 @@ photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
     device_count_max=5000,  # how about let's alter this?
-    device_price=4500 * 0,
+    device_price=4500,
     intensityOfIllumination=intensityOfIllumination,
     efficiency=0.8,
     device_name="PhotoVoltaic",
-    device_count_min=5000,
+    # device_count_min=5000,
     debug=debug,
 )
 photoVoltaic.constraints_register()
@@ -95,8 +95,8 @@ batteryEnergyStorageSystem = EnergyStorageSystem(
     num_hour,
     model,
     device_count_max=2000,
-    device_price=1800 * 0,  # this won't save anything.
-    device_price_powerConversionSystem=250 * 0,
+    device_price=1800,  # this won't save anything.
+    device_price_powerConversionSystem=250,
     conversion_rate_max=2,
     efficiency=0.9,
     energy_init=1,  # this value will somehow affect system for sure. epsilon? fully charged? what is the size of the battery? let's set it to zero? (no do not do this or the system will not run. let's set it slightly greater than zero.) this parameter is not used when `register_period_constraints=1` (original) because the battery status will always stay at the same level both at the end and the start.
@@ -141,6 +141,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNode
 Node1 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 Node2 = EnergyFlowNode(model, num_hour, symbols.greater_equal, debug=debug)
 
+# channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
+
 Channel1 = model.continuous_var_list(
     [i for i in range(num_hour)], lb=0, name="channel_1"
 )
@@ -178,8 +180,8 @@ systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 from mini_data_log_utils import solve_and_log, check_conflict
 
 # before all the fuzz...
-check_conflict(model)
+check_conflict(model) # no conflict?
 
-breakpoint()
+# breakpoint()
 
 solve_and_log(systems, model, simulation_name)
