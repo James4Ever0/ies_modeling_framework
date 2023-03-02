@@ -1,6 +1,7 @@
 from integratedEnergySystemPrototypes import (
     LiBrRefrigeration, # are you sure there's no need to consume electricity here?
     CitySupply,
+    Load,
     # PhotoVoltaic,
     # GridNet,
     # no storage?
@@ -20,6 +21,8 @@ import math
 import numpy as np
 
 cool_load = load.get_cool_load(num_hour)
+coldWaterLoad = Load("cold_water", cool_load)
+
 delta = 0.3
 cool_load = (
     np.array([(1 - delta) + math.cos(i * 0.1) * delta for i in range(len(cool_load))])
