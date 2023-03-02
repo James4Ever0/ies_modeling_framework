@@ -49,10 +49,11 @@ def solve_and_log(
             system_data_name_list = dir(system)
             for system_data_name in system_data_name_list:
                 system_data = system.__dict__.get(system_data_name, None)
-                if system_data_name in ["power_of_inputs","power_of_outputs"] and type(system_data) == dict:
-                    for key,value in system_data.items():
-                        if type(key) == list:
-                            plotSingle(key,)
+                for port_direction in ['input','output']:
+                    if system_data_name == f"power_of_{port_direction}s" and type(system_data) == dict:
+                        for key,value in system_data.items():
+                            if type(value) == list:
+                                plotSingle(value,title_content=f"{system_name}_{system_data_name}_{key}",save_directory=save_directory)
                 if type(system_data) == list:
                     # then we plot this!
                     plotSingle(
