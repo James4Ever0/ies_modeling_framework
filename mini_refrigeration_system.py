@@ -39,7 +39,7 @@ hotWaterLiBr = LiBrRefrigeration(
     num_hour, model, LiBr_device_max=10000 * 10000, device_price=1000, efficiency=0.9
 )
 
-hotWaterLiBr.constraints_register(model)
+hotWaterLiBr.constraints_register()
 
 
 power_highTemperatureHotWater_sum = model.continuous_var_list(

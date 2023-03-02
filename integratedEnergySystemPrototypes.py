@@ -5909,7 +5909,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
 
         self.equations(
             self.power_of_outputs[self.output_type],
-            self.sum_within_range(self.power, self.solidHeatStorage.power),
+            self.elementwise_add(self.power, self.solidHeatStorage.power),
         )
         # self.model.add_constraints(
         #     self.power[h] + self.solidHeatStorage.power[h]
@@ -6078,7 +6078,7 @@ class CitySupply(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )
 
-        self.heat_cost = self.sum_within_range(self.heat_consumed, self.running_price)
+        self.heat_cost = self.sum_within_range(self.elementwise_add(self.heat_consumed, self.running_price))
         # self.heat_cost = self.model.sum(
         #     self.heat_consumed[h] * self.running_price[h] for h in self.hourRange
         # )
