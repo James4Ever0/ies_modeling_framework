@@ -173,9 +173,9 @@ Node2.add_output(electricityLoad)
 nodeUtils = NodeUtils(model, num_hour)
 nodeUtils.fully_connected(Node1,Node2)
 
-
-Node1.build_relations()
-Node2.build_relations()
+NodeFactory.build_relations()
+# Node1.build_relations()
+# Node2.build_relations()
 
 # model.add_constraints(
 #     power_load[h]

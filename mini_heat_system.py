@@ -25,13 +25,13 @@ import numpy as np
 
 heat_load = load.get_heat_load(num_hour)
 
-heatLoad = Load('hot_water',data = heat_load)
-
 delta = 0.3
 heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
     * heat_load
 ) * 0.4
+heatLoad = Load("hot_water", data=heat_load)
+
 model = Model(name=simulation_name)
 debug = False
 
@@ -191,19 +191,23 @@ systems = [
 #                                                   |
 #                                                   WL
 
-from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
+from integratedEnergySystemPrototypes import EnergyFlowNodeFactory, NodeUtils
 
 
 electricity_type = "electricity"
 warm_water_type = "warm_water"
 warm_water_storage_type = "warm_water_storage"
+NodeFactory = EnergyFlowNodeFactory(model, num_hour, debug=debug)
 
-Node1 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
-Node2 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type=electricity_type)
 
-Node3 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = warm_water_storage_type)
+Node1 = NodeFactory.create_node(node_type="greater_equal", energy_type=electricity_type)
+Node2 = NodeFactory.create_node(node_type="greater_equal", energy_type=electricity_type)
 
-Node4 = EnergyFlowNode(model, num_hour, node_type="greater_equal", debug=debug,energy_type = warm_water_type)
+Node3 = NodeFactory.create_node(
+    node_type="greater_equal", energy_type=warm_water_storage_type
+)
+
+Node4 = NodeFactory.create_node(node_type="greater_equal", energy_type=warm_water_type)
 
 
 # in the end, we make some class called the "load class", to ensure the integrity.
@@ -215,7 +219,7 @@ Node2.add_input(gridNet)
 Node2.add_output(waterSourceHeatPumps)
 
 nodeUtil = NodeUtils(model, num_hour)
-nodeUtil.fully_connected(Node1, Node2) # ensure the energy types will match.
+nodeUtil.fully_connected(Node1, Node2)  # ensure the energy types will match.
 
 Node3.add_input(waterSourceHeatPumps)
 Node3.add_output(waterStorageTank)
@@ -225,10 +229,11 @@ Node4.add_input(waterStorageTank)
 Node4.add_input(municipalHotWater)
 Node4.add_output(heatLoad)
 
-Node1.build_relations()
-Node2.build_relations()
-Node3.build_relations()
-Node4.build_relations()
+NodeFactory.build_relations()
+# Node1.build_relations()
+# Node2.build_relations()
+# Node3.build_relations()
+# Node4.build_relations()
 
 from mini_data_log_utils import check_solve_and_log
 
