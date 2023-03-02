@@ -1617,7 +1617,7 @@ class EnergyStorageSystem(IntegratedEnergySystem):
                 / 3600
                 for i in range(1 + day_node * (day - 1), day_node * day)
             )
-
+        breakpoint()
         if self.className == EnergyStorageSystemVariable.__name__:
             self.model.add_constraint(
                 # self.model.add_constraints(
@@ -1793,13 +1793,15 @@ class EnergyStorageSystemVariable(EnergyStorageSystem):
         # # self.classSuffix += 1
         # self.input_type = input_type
         # self.output_type = output_type
+        
+        # overriding the thing? you also need to remove 
 
-        # self.device_count: List[ContinuousVarType] =self.model.continuous_var_list(
-        #     [i for i in range(0, num_hour)],
-        #     name="energyStorageSystemVariable_device_{0}".format(
-        #         self.classSuffix
-        #     ),
-        # )
+        self.device_count: List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in range(0, num_hour)],
+            name="energyStorageSystemVariable_device_{0}".format(
+                self.classSuffix
+            ),
+        )
         """
         可变容量储能系统机组每小时等效单位设备数,长度为`num_hour`,大于零的实数列表
         """
