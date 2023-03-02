@@ -732,7 +732,7 @@ class EnergyFlowNode:
                 return True
         return False
 
-    def add_port(self, port: List, target_list: List, target_id_list: List):
+    def __add_port(self, port: List, target_list: List, target_id_list: List):
         assert not self.built
         if self.check_is_var_list(port):
             self.util.add_lower_bounds(port, 0)
@@ -752,10 +752,10 @@ class EnergyFlowNode:
         # no way to check duplication?
 
     def add_input(self, input_port: List):
-        self.add_port(input_port, self.inputs, self.input_ids)
+        self.__add_port(input_port, self.inputs, self.input_ids)
 
     def add_output(self, output_port: List):
-        self.add_port(output_port, self.outputs, self.output_ids)
+        self.__add_port(output_port, self.outputs, self.output_ids)
 
     def build_relations(self):
         assert not self.built
@@ -774,6 +774,25 @@ class EnergyFlowNode:
             self.util.add_lower_bounds(inputs, outputs)
         self.built = True
 
+
+class NodeUtils:
+    index = 0
+    def __init__(self,model:Model,num_hour:int):
+        self.index = self.__class__.index
+        self.__class__.index +=1
+        self.model = model
+        self.connection_index = 0
+        self.num_hour=num_hour
+    def fully_connected(self, *nodes:EnergyFlowNode): # nodes as arguments.
+        assert len(nodes)>=2
+        for two_nodes in itertools.combinations(nodes,2):
+            for node_a, node_b in itertools.permutations(two_nodes,2):
+                assert not node_a.built
+                assert not node_b.built
+                Channel = self.model.continuous_var_list([i for i in range(self.num_hour)],lb=0,name = f'channel_{self.connection_index}_{self.__class__.__name__}_{self.index}')
+                node_a.add_input(Channel)
+                node_b.add_output(Channel)
+                self.connection_index+=1
 
 # another name for IES?
 class IntegratedEnergySystem(EnergySystemUtils):

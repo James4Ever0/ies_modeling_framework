@@ -186,15 +186,24 @@ systems = [
 #                                                   |
 #                                                 LOAD
 
-from integratedEnergySystemPrototypes import EnergyFlowNode, EnergySystemUtils
+from integratedEnergySystemPrototypes import EnergyFlowNode, NodeUtils
 
 Node1 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
 Node2 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
 Node3 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
 Node4 = EnergyFlowNode(model,num_hour, node_type="greater_equal",debug=debug)
 
+Node1.add_input(photoVoltaic.power_of_outputs['electricity'])
+Node1.add_output(gridNet.power_of_inputs['electricity'])
 
-nodeUtil
+Node2.add_input(gridNet.power_of_outputs['electricity'])
+
+nodeUtil = NodeUtils(model,num_hour)
+nodeUtil.fully_connected(Node1,Node2)
+
+Nod
+
+
 from mini_data_log_utils import check_solve_and_log
 
 check_solve_and_log(systems, model, simulation_name)
