@@ -739,6 +739,7 @@ class EnergyFlowNode:
             Literal["steam"],
             Literal["electricity"],
         ],
+        factory, # the factory object.
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
         debug: bool = False,
     ):
@@ -752,6 +753,7 @@ class EnergyFlowNode:
         self.debug = debug
         self.built = False
         self.energy_type = energy_type
+        self.factory = factory
 
     def check_is_var_list(self, var_list):
         if type(var_list) == list:
@@ -784,9 +786,12 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = input_port
         else:
+            port_id = input_port)
+            assert port_id not in self.output_ids
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
             ]
+            self.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
 
     def add_output(self, output_port, ignore_energy_type: bool = False):
@@ -828,6 +833,8 @@ class EnergyFlowNodeFactory:
         self.model = model
         self.num_hour = num_hour
         self.debug = debug
+        self.input_ids = set()
+        self.output_ids =set()
 
     def create_node(
         self,
@@ -844,9 +851,9 @@ class EnergyFlowNodeFactory:
         node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
     ):
         node = EnergyFlowNode(
-            self.model, self.num_hour, energy_type, node_type, debug=self.debug
+            self.model, self.num_hour, energy_type, node_type, debug=self.debug, factory=self
         )
-        self.nodes.append(node)
+        self.nodes.append(node) # how do you check validity? you can pass the factory object yourself.
         return node
 
     def build_relations(self):
