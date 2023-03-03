@@ -11,10 +11,10 @@ def visualizeSystemTopology(NodeFactory:EnergyFlowNodeFactory):
     G.add_node("GRID")
 
     G.add_edge("PV","[NODE1]")
+    G.add_edge("PV","BESS")
+    G.add_edge("PV","GRID")
     G.add_edge('BESS','[NODE1]')
-    G.add_edge('[NODE1]','BESS')
     G.add_edge('GRID','[NODE1]')
-    G.add_edge('[NODE1]','GRID')
     G.add_edge('[NODE1]','LOAD')
 
     nx.draw(G,with_labels=True, font_weight='bold',**draw_options

@@ -907,7 +907,7 @@ class EnergyFlowNodeFactory:
                 [input_id in self.input_ids for input_id in input_ids]
             ) and all([output_id in self.output_ids for output_id in output_ids])
             if not fully_connected:
-                ...  # ready to raise exception?
+                raise Exception(f"inputs: {[input_id in self.input_ids for input_id in input_ids]} outputs: {} of {device.__class__.__name__} not connected.")
 
     def build_relations(self, devices: List):
         assert self.built is False

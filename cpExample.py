@@ -470,27 +470,39 @@ if __name__ == "__main__":
     # )
     
     ###########
-    for device in []:
-        warmWaterNode1.add_input(device)
+    for device in [
+        
+        heatPump
+    #     + power_cooletStorage[h] # this thing is indirect. it is actually the sum of the cold water storage outputs.
+    #     + waterSourceHeatPumps
+    #     + steamPowered_LiBr
+    #     + hotWaterLiBr
+    #     + waterCoolingSpiralMachine
+    #     + iceStorage
+    #     + tripleWorkingConditionUnit
+    #     + doubleWorkingConditionUnit
+    #     == cool_load[
+    ]:
+        coldWaterNode1.add_input(device)
 
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
     # what is "_x"?
-    model.add_constraints( # cold_water input -> output
-        heatPump.power_waterSourceHeatPumps_cool[h]
-        + power_cooletStorage[h] # this thing is indirect. it is actually the sum of the cold water storage outputs.
-        + waterSourceHeatPumps.power_waterSourceHeatPumps_cool[h]
-        + steamPowered_LiBr.cool_LiBr[h]
-        + hotWaterLiBr.cool_LiBr[h]
-        + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool[h]
-        + power_iceStorage[h]
-        + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool[h]
-        + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
-        == cool_load[
-            h
-        ]  # 冷量需求 == (热泵制冷功率 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 三工况机组的制冷功率 + 双工况机组的制冷功率) + (蓄冰机组平衡输出 + 蓄冷机组平衡输出)
-        for h in range(0, num_hour)
-    )
+    # model.add_constraints( # cold_water input -> output
+    #     heatPump.power_waterSourceHeatPumps_cool[h]
+    #     + power_cooletStorage[h] # this thing is indirect. it is actually the sum of the cold water storage outputs.
+    #     + waterSourceHeatPumps.power_waterSourceHeatPumps_cool[h]
+    #     + steamPowered_LiBr.cool_LiBr[h]
+    #     + hotWaterLiBr.cool_LiBr[h]
+    #     + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool[h]
+    #     + power_iceStorage[h] # output of iceStorage.
+    #     + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool[h]
+    #     + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
+    #     == cool_load[
+    #         h
+    #     ]  # 冷量需求 == (热泵制冷功率 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 三工况机组的制冷功率 + 双工况机组的制冷功率) + (蓄冰机组平衡输出 + 蓄冷机组平衡输出)
+    #     for h in range(0, num_hour)
+    # )
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
     model.add_constraints( # warm_water input -> output
         heatPump.power_waterSourceHeatPumps_heat[h]
@@ -509,7 +521,7 @@ if __name__ == "__main__":
     model.add_constraints(
         tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
-        + iceStorage.power_energyStorageSystem[h]
+        + iceStorage.power_energyStorageSystem[h] # where you are going to use this power?
         == power_iceStorage[h]  # 蓄冰机组平衡输出 == (三工况机组的制冰功率 + 双工况机组的制冰功率) + 冰蓄能充放能功率
         for h in range(0, num_hour)
     )
