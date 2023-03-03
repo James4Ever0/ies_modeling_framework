@@ -230,7 +230,7 @@ if __name__ == "__main__":
         device_name="steamAndWater_exchanger",
         debug=debug,
         input_type="steam",
-        output_type="hot_water",
+        output_type="warm_water", # not! it is warm water?
     )
     steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
 
@@ -699,8 +699,12 @@ if __name__ == "__main__":
         phaseChangeColdWaterStorage,
         phaseChangeWarmWaterStorage,
         gridNet,
-        ######### ALL THE LOADS
-        ######### ALL THE LOADS
+        ######### ALL THE LOADS #########
+        electricityLoad,
+        coldWaterLoad,
+        warmWaterLoad,
+        steamLoad,
+        ######### ALL THE LOADS #########
     ]
     NodeFactory.build_relations(systems) # this is a failsafe.
     # check if this is built?
