@@ -411,10 +411,10 @@ def hotWaterSourcesRegistration(
         model,
         device_count_max=10000,
         device_price=350,
-        device_price_powerConversionSystem=0,  # free conversion?
+        device_price_powerConversionSystem=1000,  # free conversion?
         conversion_rate_max=0.5,
         efficiency=0.9,
-        energy_init=1,
+        energy_init=0,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
         device_name="phaseChangeHotWaterStorage",
