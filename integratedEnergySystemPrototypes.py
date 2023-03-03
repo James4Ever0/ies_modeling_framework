@@ -815,6 +815,7 @@ class EnergyFlowNode:
             ]
             if isinstance(output_port, Load):  # this is a load, the endpoint.
                 self.node_type = "greater_equal"
+            self.factory.device_id_to_device_name.update({id(output_port), output_port.device_name})
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
@@ -874,6 +875,7 @@ class EnergyFlowNodeFactory:
         self.num_hour = num_hour
         self.debug = debug
         self.device_ids = set()
+        self.device_id_to_device_name = {}
         self.input_ids = set()
         self.output_ids = set()
 
