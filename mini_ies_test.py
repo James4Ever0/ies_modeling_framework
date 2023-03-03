@@ -134,7 +134,7 @@ from integratedEnergySystemPrototypes import EnergyFlowNodeFactory
 #
 #     _ BESS _   
 #    /        \ 
-# PV - [NODE1] - LOAD       
+# PV - [NODE1] - LOAD
 #    \_ GRID _/           
 #                                   
 #
