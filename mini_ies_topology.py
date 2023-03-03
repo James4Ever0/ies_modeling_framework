@@ -3,8 +3,8 @@ import networkx as nx
 G = nx.DiGraph()
 
 G.add_nodes_from([
-    (4, {"color": "red"}),
-    (5, {"color": "green"}),
+    (PV, {"color": "red"}),
+    (BESS, {"color": "green"}),
 ])
 
 

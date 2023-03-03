@@ -2312,8 +2312,15 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.power_generated_steam: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
+            [i for i in range(0, self.num_hour)],lb=0,
             name="power_{0}".format(self.classSuffix),
+        )
+        
+        self.power_generated_steam_remained: List[
+            ContinuousVarType
+        ] = self.model.continuous_var_list(
+            [i for i in range(0, self.num_hour)],lb=0,
+            name="power_remained_{0}".format(self.classSuffix),
         )
         """
         槽式光热机组每小时产热功率 实数变量列表
@@ -2356,6 +2363,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
+            input_type='heat',
+            output_type='heat'
         )
         """
         固态储热设备初始化为`EnergyStorageSystem`
@@ -2404,13 +2413,13 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 与天气相关
         
-        self.solidHeatStorage.power_of_inputs[]
+        self.equations(self.solidHeatStorage.power_of_inputs['heat']
 
         self.equations(
             self.power_of_outputs[self.output_type],
             self.elementwise_add(
-                self.power_generated_steam,
-                self.solidHeatStorage.power,
+                self.power_generated_sum_remained,
+                self.solidHeatStorage.power_of_outputs[],
             ),
             self.hourRange,
         )
