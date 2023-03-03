@@ -274,7 +274,7 @@ if __name__ == "__main__":
         waterStorageTank,
         municipalHotWater,
         gasBoiler_hotWater,# TODO: 待定是否只能烧高温热水
-        phaseChangeHeatStorage,
+        phaseChangeHotWaterStorage,
         hotWaterElectricBoiler,
     ) = hotWaterSourcesRegistration(
         model1,
@@ -300,7 +300,7 @@ if __name__ == "__main__":
             h
         ]  # wasteGasAndHeat_？
         + platePhotothermal.power_photoVoltaic[h]
-        + phaseChangeHeatStorage.power_energyStorageSystem[h]
+        + phaseChangeHotWaterStorage.power_energyStorageSystem[h]
         + municipalHotWater.heat_citySupplied[h]
         + gasBoiler_hotWater.heat_gasBoiler[h]
         + hotWaterElectricBoiler.heat_electricBoiler[h]
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCoolingSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCoolingSpiralMachine[h]+power_iceStorage[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求
     # 采用线性化技巧,处理为下面的约束.基于每种设备要么制热,要么制冷。
-    # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeRefrigerantStorage
+    # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeColdWaterStorage
     # 供热:风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
     # heatPump = AirHeatPump(num_hour, model1, device_max=10000, device_price=1000, electricity_price=electricity_price0)
     # heatPump.constraints_register(model1)
@@ -362,8 +362,8 @@ if __name__ == "__main__":
         doubleWorkingConditionUnit,
         groundSourceHeatPump,
         iceStorage,
-        phaseChangeRefrigerantStorage,
-        lowphaseChangeHeatStorage,
+        phaseChangeColdWaterStorage,
+        phaseChangeWarmWaterStorage,
     ) = cooletIceHeatDevicesRegistration(
         model1,
         num_hour,
@@ -441,7 +441,7 @@ if __name__ == "__main__":
         + waterSourceHeatPumps.power_waterSourceHeatPumps_cooletStorage[h]
         + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cooletStorage[h]
         + waterStorageTank.power_waterStorageTank_cool[h]
-        + phaseChangeRefrigerantStorage.power_energyStorageSystem[h]
+        + phaseChangeColdWaterStorage.power_energyStorageSystem[h]
         == power_cooletStorage[
             h
         ]  # 蓄冷系统平衡功率 == (热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率) + (水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率)
@@ -458,7 +458,7 @@ if __name__ == "__main__":
             num_hour,
             model1,
             waterStorageTank.power_waterStorageTank_cool,
-            phaseChangeRefrigerantStorage.power_energyStorageSystem,
+            phaseChangeColdWaterStorage.power_energyStorageSystem,
         ),
     )
     # 蓄热逻辑组合
@@ -466,7 +466,7 @@ if __name__ == "__main__":
         heatPump.power_waterSourceHeatPumps_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
-        + lowphaseChangeHeatStorage.power_energyStorageSystem[h]
+        + phaseChangeWarmWaterStorage.power_energyStorageSystem[h]
         == power_heatStorage[
             h
         ]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
@@ -483,7 +483,7 @@ if __name__ == "__main__":
             num_hour,
             model1,
             waterStorageTank.power_waterStorageTank_heat,
-            lowphaseChangeHeatStorage.power_energyStorageSystem,
+            phaseChangeWarmWaterStorage.power_energyStorageSystem,
         ),
     )
     ##########################################
@@ -543,7 +543,7 @@ if __name__ == "__main__":
             steamAndWater_exchanger,  # qs? 气水？
             steamPowered_LiBr,  # zq? 制取？
             platePhotothermal,
-            phaseChangeHeatStorage,
+            phaseChangeHotWaterStorage,
             municipalHotWater,
             hotWaterElectricBoiler,
             gasBoiler_hotWater,
@@ -558,8 +558,8 @@ if __name__ == "__main__":
             doubleWorkingConditionUnit,
             groundSourceHeatPump,
             iceStorage,  # bx?
-            phaseChangeRefrigerantStorage,
-            lowphaseChangeHeatStorage,
+            phaseChangeColdWaterStorage,
+            phaseChangeWarmWaterStorage,
             gridNet,
         ]
     )
@@ -701,7 +701,7 @@ if __name__ == "__main__":
                     combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
                     combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange,
                     platePhotothermal.power_photoVoltaic,
-                    phaseChangeHeatStorage.power_energyStorageSystem,
+                    phaseChangeHotWaterStorage.power_energyStorageSystem,
                     municipalHotWater.heat_citySupplied,
                     gasBoiler_hotWater.heat_gasBoiler,
                     hotWaterElectricBoiler.heat_electricBoiler,
@@ -711,7 +711,7 @@ if __name__ == "__main__":
                     "combinedHeatAndPower.gasTurbineSystem_device.heat_exchangeh",
                     "wasteGasAndHeat_water_device.heat_exchange",
                     "platePhotothermal.power_photoVoltaic",
-                    "phaseChangeHeatStorage.power_energyStorageSystem",
+                    "phaseChangeHotWaterStorage.power_energyStorageSystem",
                     "municipalHotWater.heat_citySupplied",
                     "gasBoiler_hotWater.heat_gasBoiler",
                     "hotWaterElectricBoiler.heat_electricBoiler",

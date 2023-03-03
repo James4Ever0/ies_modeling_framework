@@ -266,7 +266,7 @@ def electricSystemRegistration(
         efficiency=0.8,
         device_name="PhotoVoltaic",
         debug=debug,
-        output_type='electricity'
+        output_type="electricity",
     )
     photoVoltaic.constraints_register()
 
@@ -284,8 +284,8 @@ def electricSystemRegistration(
         stateOfCharge_max=1,
         device_name="batteryEnergyStorageSystem",
         debug=debug,
-        input_type='electricity',
-        output_type='electricity'
+        input_type="electricity",
+        output_type="electricity",
     )
     # original: battery
     batteryEnergyStorageSystem.constraints_register(
@@ -353,7 +353,7 @@ def steamSourcesRegistration(
         gas_price=gas_price0,
         efficiency=0.9,
         debug=debug,
-        output_type='steam'
+        output_type="steam",
     )
     gasBoiler.constraints_register()
 
@@ -367,7 +367,7 @@ def steamSourcesRegistration(
         efficiency=0.9,
         device_name="municipalSteam",
         debug=debug,
-        output_type='steam'
+        output_type="steam",
     )
     municipalSteam.constraints_register()
     return (
@@ -401,12 +401,12 @@ def hotWaterSourcesRegistration(
         efficiency=0.8,
         device_name="platePhotothermal",
         debug=debug,
-        output_type='hot_water'
+        output_type="hot_water",
     )  # platePhotothermal
     platePhotothermal.constraints_register()
 
     # 相变蓄热
-    phaseChangeHeatStorage = EnergyStorageSystem(
+    phaseChangeHotWaterStorage = EnergyStorageSystem(
         num_hour,
         model,
         device_count_max=10000,
@@ -417,12 +417,12 @@ def hotWaterSourcesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name="phaseChangeHeatStorage",
+        device_name="phaseChangeHotWaterStorage",
         debug=debug,
-        input_type='hot_water',
-        output_type='hot_water'
+        input_type="hot_water",
+        output_type="hot_water",
     )
-    phaseChangeHeatStorage.constraints_register()
+    phaseChangeHotWaterStorage.constraints_register()
 
     # 市政热水
     municipalHotWater = CitySupply(
@@ -448,7 +448,7 @@ def hotWaterSourcesRegistration(
         efficiency=0.9,
         device_name="hotWaterElectricBoiler",
         debug=debug,
-        output_type='hot_water'
+        output_type="hot_water",
     )
     hotWaterElectricBoiler.constraints_register()
 
@@ -462,7 +462,7 @@ def hotWaterSourcesRegistration(
         efficiency=0.9,
         device_name="gasBoiler_hotWater",
         debug=debug,
-        output_type='hot_water'
+        output_type="hot_water",
     )
     gasBoiler_hotWater.constraints_register()
 
@@ -493,7 +493,7 @@ def hotWaterSourcesRegistration(
         waterStorageTank,
         municipalHotWater,
         gasBoiler_hotWater,
-        phaseChangeHeatStorage,
+        phaseChangeHotWaterStorage,
         hotWaterElectricBoiler,
     )
 
@@ -597,13 +597,13 @@ def cooletIceHeatDevicesRegistration(
         stateOfCharge_max=1,
         device_name="iceStorage",
         debug=debug,
-        input_type='ice',
-        output_type='cold_water'
+        input_type="ice",
+        output_type="cold_water",
     )
     iceStorage.constraints_register()
 
     # 相变蓄冷
-    phaseChangeRefrigerantStorage = EnergyStorageSystem(
+    phaseChangeColdWaterStorage = EnergyStorageSystem(
         num_hour,
         model,
         device_count_max=20000,
@@ -614,15 +614,15 @@ def cooletIceHeatDevicesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name="phaseChangeRefrigerantStorage",
+        device_name="phaseChangeColdWaterStorage",
         debug=debug,
         input_type="cold_water",
         output_type="cold_water",
     )
-    phaseChangeRefrigerantStorage.constraints_register()
+    phaseChangeColdWaterStorage.constraints_register()
 
     # TODO: 修改为：低温水 相变蓄热
-    lowphaseChangeHeatStorage = EnergyStorageSystem(
+    phaseChangeWarmWaterStorage = EnergyStorageSystem(
         num_hour,
         model,
         device_count_max=20000,
@@ -633,12 +633,12 @@ def cooletIceHeatDevicesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name="lowphaseChangeHeatStorage",
+        device_name="phaseChangeWarmWaterStorage",
         debug=debug,
         input_type="warm_water",
         output_type="warm_water",
     )
-    lowphaseChangeHeatStorage.constraints_register()
+    phaseChangeWarmWaterStorage.constraints_register()
 
     return (
         heatPump,
@@ -648,6 +648,6 @@ def cooletIceHeatDevicesRegistration(
         doubleWorkingConditionUnit,
         groundSourceHeatPump,
         iceStorage,
-        phaseChangeRefrigerantStorage,
-        lowphaseChangeHeatStorage,
+        phaseChangeColdWaterStorage,
+        phaseChangeWarmWaterStorage,
     )
