@@ -331,30 +331,33 @@ if __name__ == "__main__":
     SteamNode1 = NodeFactory.create_node(
         "steam"
     )  # shall we automatically determine the equation type?
+    
+    for device in [municipalSteam,combinedHeatAndPower.steam_exchanger,troughPhotoThermal,electricSteamGenerator,gasBoiler]:
+        SteamNode1.add_input(device)
 
-    model.add_constraints( # node input
-        power_steam_sum[h]
-        == municipalSteam.heat_citySupplied[h]
-        + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
-        + troughPhotoThermal.power_troughPhotoThermal_steam[h]
-        + electricSteamGenerator.power_electricSteamGenerator_steam[h]
-        + gasBoiler.heat_gasBoiler[
-            h
-        ]  # （每小时）所有产生蒸汽量的总和 = 市政热量 + CHP余气余热蒸汽 + 槽式光热产蒸汽 + 燃气锅炉产生热量
-        for h in range(0, num_hour)
-    )
-    # 高温蒸汽去处
-    model.add_constraints( # steam_load <- node output?
-        power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
-        for h in range(0, num_hour)
-    )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
+    # model.add_constraints( # node input
+    #     power_steam_sum[h]
+    #     == municipalSteam.heat_citySupplied[h]
+    #     + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
+    #     + troughPhotoThermal.power_troughPhotoThermal_steam[h]
+    #     + electricSteamGenerator.power_electricSteamGenerator_steam[h]
+    #     + gasBoiler.heat_gasBoiler[
+    #         h
+    #     ]  # （每小时）所有产生蒸汽量的总和 = 市政热量 + CHP余气余热蒸汽 + 槽式光热产蒸汽 + 燃气锅炉产生热量
+    #     for h in range(0, num_hour)
+    # )
+    # # 高温蒸汽去处
+    # model.add_constraints( # steam_load <- node output?
+    #     power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
+    #     for h in range(0, num_hour)
+    # )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
 
-    model.add_constraints( # node output
-        power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
-        >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
-        + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
-        for h in range(0, num_hour)
-    )
+    # model.add_constraints( # node output
+    #     power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
+    #     >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
+    #     + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
+    #     for h in range(0, num_hour)
+    # )
     ##########################################
 
     # 高温热水发生装置及水储能装置

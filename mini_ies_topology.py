@@ -2,9 +2,12 @@ import networkx as nx
 
 G = nx.DiGraph()
 
-G.nodes.data()
-NodeDataView({1: {'time': '5pm', 'room': 714}, 3: {'time': '2pm'}})
-
+G.add_node('PhotoVoltaic')
+G.add_node('BESS')
+G.add_node('LOAD')
+G.add_node('[NODE1]')
+G.add_node('[NODE2]')
+G.add_node('GRID')
 
 import matplotlib.pyplot as plt
 
