@@ -2762,16 +2762,16 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     == self.device_count * self.rated_power
         # )
 
-        self.add_lower_and_upper_bounds(
-            self.power_of_outputs["electricity"],
-            self.elementwise_multiply(
-                self.on_flags, self.total_rated_power * self.running_ratio_min
-            ),
-            # self.elementwise_min(
-            self.elementwise_multiply(self.on_flags, bigNumber),
-            # self.total_rated_power,
-            # ),
-        )
+        # self.add_lower_and_upper_bounds( # you cannot multiply these flags with other variables. will get you banned.
+        #     self.power_of_outputs["electricity"],
+        #     self.elementwise_multiply(
+        #         self.on_flags, self.total_rated_power * self.running_ratio_min
+        #     ),
+        #     # self.elementwise_min(
+        #     self.elementwise_multiply(self.on_flags, bigNumber),
+        #     # self.total_rated_power,
+        #     # ),
+        # )
 
         self.add_upper_bounds(
             self.power_of_outputs["electricity"], self.total_rated_power
