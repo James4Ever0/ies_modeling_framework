@@ -48,8 +48,8 @@ intensityOfIllumination0 = (
 photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
-    device_count_max=5000,  # how about let's alter this?
-    device_price=4500,
+    device_count_max=5000*1000000,  # how about let's alter this?
+    device_price=4500*0.0001,
     intensityOfIllumination=intensityOfIllumination0,
     efficiency=0.8,
     device_name="PhotoVoltaic",
