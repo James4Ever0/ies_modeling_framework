@@ -6370,6 +6370,9 @@ class GridNet(IntegratedEnergySystem):
         """
         电网发电峰值 实数
         """
+        
+        self.electricity_net_exchange =self.elementwise_subtract( self.power_of_outputs[self.output_type], self.power_of_inputs[self.input_type]) # you need to pay this much.
+        
 
         # self.electricity_net_exchange = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
@@ -6402,14 +6405,17 @@ class GridNet(IntegratedEnergySystem):
         # TODO: make sure this time we have power_input as positive number.
         
         # TODO: alter the definition of this gridnet, making it possible for upload and download at the same time.
-
-        linearization.positive_negitive_constraints_register(
-            self.num_hour,
-            self.model,
-            self.electricity_net_exchange,
-            self.electricity_download,
-            self.elementwise_multiply(self.electricity_upload, -1),
-        )
+        
+        linearization.max_zeros(x= self.elementwise_multiply(self.electricity_net_exchange,-1),y=self.electricity_upload)
+        linearization.max_zeros(x= self.electricity_net_exchange,y=self.electricity_download)
+        
+        # linearization.positive_negitive_constraints_register(
+        #     self.num_hour,
+        #     self.model,
+        #     self.electricity_net_exchange,
+        #     self.electricity_download,
+        #     self.elementwise_multiply(self.electricity_upload, -1),
+        # )
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
 
