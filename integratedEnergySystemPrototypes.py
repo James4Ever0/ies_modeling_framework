@@ -910,26 +910,29 @@ class EnergyFlowNodeFactory:
 
         for device in devices:
             input_ids = [
-                f"{id(device)}_input_{key}"
+                f"{id(device)}_output_{key}"
                 for key, _ in device.power_of_inputs.items()
-                if key not in ["heat", "energy", "energy_storage"]
             ]
             output_ids = [
-                f"{id(device)}_output_{key}"
+                f"{id(device)}_input_{key}"
                 for key, _ in device.power_of_outputs.items()
             ]
             fully_connected = all(
                 [input_id in self.input_ids for input_id in input_ids]
             ) and all([output_id in self.output_ids for output_id in output_ids])
+
             if not fully_connected:
-                raise Exception(
-                    "\n".join(
+                errorMsg = "\n".join(
                         [
-                            f"inputs: {[input_id for input_id in input_ids if input_id  not in self.input_ids]}",
+                            f"inputs: {[input_id for input_id in input_ids if input_id not in self.input_ids]}",
                             f"outputs: {[output_id for output_id in output_ids if output_id not in self.output_ids]}",
                             f"device: {device.__class__.__name__} not connected.",
                         ]
                     )
+                print(errorMsg)
+                breakpoint()
+                raise Exception(
+                    errorMsg
                 )
 
     def build_relations(self, devices: List):
