@@ -69,7 +69,7 @@ intensityOfIllumination = resource.get_radiation(
 photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
-    device_count_max=5000,  # how about let's alter this?
+    device_count_max=50000,  # how about let's alter this?
     device_price=4500,
     intensityOfIllumination=intensityOfIllumination,
     efficiency=0.8,
@@ -83,7 +83,7 @@ photoVoltaic.constraints_register()
 gridNet = GridNet(
     num_hour,
     model,
-    device_count_max=1000*100,
+    device_count_max=10000,
     device_price=0,
     electricity_price=electricity_price,
     electricity_price_upload=0.35,
@@ -97,7 +97,7 @@ gridNet.constraints_register(powerPeak_predicted=2000)
 batteryEnergyStorageSystem = EnergyStorageSystem(
     num_hour,
     model,
-    device_count_max=2000,
+    device_count_max=200000,
     device_price=1800,  # this won't save anything.
     device_price_powerConversionSystem=250,
     conversion_rate_max=2,
