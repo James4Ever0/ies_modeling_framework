@@ -129,13 +129,12 @@ from integratedEnergySystemPrototypes import EnergyFlowNodeFactory
 #
 
 ############## HOW WE CONNECT THIS ##############
-#              _<CHANNEL1>_
-#             /            \
+#
+#
 # PV - [NODE1] -> BESS -> - [NODE2] - LOAD
-#     |        |        |           |
-#     |        \_ GRID _/           |
-#     |                             |
-#      \________<CHANNEL2>_________/
+#              |        |           
+#              \_ GRID _/           
+#                                   
 #
 # TOTAL: 2 Nodes
 

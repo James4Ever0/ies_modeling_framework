@@ -48,8 +48,8 @@ intensityOfIllumination0 = (
 photoVoltaic = PhotoVoltaic(
     num_hour,
     model,
-    device_count_max=5000*1000000,  # how about let's alter this?
-    device_price=4500*0.0001,
+    device_count_max=5000 * 1000000,  # how about let's alter this?
+    device_price=4500 * 0.0001,
     intensityOfIllumination=intensityOfIllumination0,
     efficiency=0.8,
     device_name="PhotoVoltaic",
@@ -64,8 +64,8 @@ gridNet = GridNet(
     model,
     device_count_max=200000,
     device_price=0,
-    electricity_price=electricity_price0*1000,
-    electricity_price_upload=0.35*10000000000,
+    electricity_price=electricity_price0 * 1000,
+    electricity_price_upload=0.35 * 10000000000,
     debug=debug,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
@@ -120,8 +120,8 @@ hotWaterExchanger = Exchanger(
     device_price=400,
     k=50,
     device_name="hotWaterExchanger",
-    input_type='hot_water',
-    output_type='warm_water'
+    input_type="hot_water",
+    output_type="warm_water",
 )
 hotWaterExchanger.constraints_register()
 
@@ -130,9 +130,9 @@ municipalHotWater = CitySupply(
     num_hour,
     model,
     device_count_max=5000 * 10000,
-    device_price=3000*1000,
-    running_price=0.3 * np.ones(num_hour)*1000,  # run_price -> running_price
-    efficiency=0.9*0.1,
+    device_price=3000 * 1000,
+    running_price=0.3 * np.ones(num_hour) * 1000,  # run_price -> running_price
+    efficiency=0.9 * 0.1,
     output_type="hot_water",  # add output_type
     debug=debug,
 )
@@ -182,8 +182,8 @@ systems = [
     waterStorageTank,
     municipalHotWater,
     hotWaterExchanger,
-    warmWaterLoad
-] # you are going to check this under the nodeFactory.
+    warmWaterLoad,
+]  # you are going to check this under the nodeFactory.
 
 
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
@@ -198,15 +198,15 @@ systems = [
 # | hw  |    |    |    |    | s  |    | r  |
 #
 ###### SYSTEM TOPOLOGY ######
-#                                                   [NODE3] - WT
-#                                                  /          |
-#    PV - [NODE1{FC0}] -> GRID -> [NODE2{FC0}] ->  HP         |
-#                                                   \         |
-#                                                    |        |
-#                                                    |       /
-#                         MH - [NODE5] ->  EX -> [NODE4] ----
-#                                                   |
-#                                                   WL
+#                                           [NODE3] - WT
+#                                          /          |
+#    PV - [NODE1] -> GRID -> [NODE2] ->  HP           |
+#                                           \         |
+#                                            |        |
+#                                            |       /
+#                 MH - [NODE5] ->  EX -> [NODE4] ----
+#                                           |
+#                                           WL
 
 from integratedEnergySystemPrototypes import EnergyFlowNodeFactory, NodeUtils
 
@@ -218,16 +218,14 @@ warm_water_storage_type = "warm_water_storage"
 NodeFactory = EnergyFlowNodeFactory(model, num_hour, debug=debug)
 
 
-Node1 = NodeFactory.create_node(node_type="greater_equal", energy_type=electricity_type)
-Node2 = NodeFactory.create_node(node_type="greater_equal", energy_type=electricity_type)
+Node1 = NodeFactory.create_node(energy_type=electricity_type)
+Node2 = NodeFactory.create_node(energy_type=electricity_type)
 
-Node3 = NodeFactory.create_node(
-    node_type="greater_equal", energy_type=warm_water_storage_type
-)
+Node3 = NodeFactory.create_node(energy_type=warm_water_storage_type)
 
-Node4 = NodeFactory.create_node(node_type="greater_equal", energy_type=warm_water_type)
+Node4 = NodeFactory.create_node(energy_type=warm_water_type)
 
-Node5 = NodeFactory.create_node(node_type="greater_equal", energy_type=hot_water_type)
+Node5 = NodeFactory.create_node(energy_type=hot_water_type)
 
 
 # in the end, we make some class called the "load class", to ensure the integrity.
@@ -258,7 +256,7 @@ Node5.add_input(municipalHotWater)
 Node5.add_output(hotWaterExchanger)
 
 # NodeFactory.check_system_validity(systems)
-NodeFactory.build_relations(systems) # <- before you build, you check validity.
+NodeFactory.build_relations(systems)  # <- before you build, you check validity.
 # Node1.build_relations()
 # Node2.build_relations()
 # Node3.build_relations()

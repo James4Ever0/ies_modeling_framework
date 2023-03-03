@@ -120,8 +120,9 @@ cold_water_type = "cold_water"
 hot_water_type = "hot_water"
 
 NodeFactory = EnergyFlowNodeFactory(model, num_hour, debug)
-Node1 = NodeFactory.create_node(node_type="greater_equal", energy_type=hot_water_type)
-Node2 = NodeFactory.create_node(node_type="greater_equal", energy_type=cold_water_type)
+
+Node1 = NodeFactory.create_node(energy_type=hot_water_type)
+Node2 = NodeFactory.create_node(energy_type=cold_water_type)
 
 Node1.add_input(municipalHotWater)
 Node1.add_output(hotWaterLiBr)

@@ -749,7 +749,7 @@ class EnergyFlowNode:
     ):
         self.util = EnergySystemUtils(model, num_hour, debug=debug)
         # self.node_type = node_type
-        self.node_type = 'equal'
+        self.node_type = "equal"
         self.inputs = []
         self.input_ids = []
         self.outputs = []
@@ -796,7 +796,9 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
             ]
-            if input_port.power_of_inputs == {}: # this is a source, not anything in between. is it?
+            if (
+                input_port.power_of_inputs == {}
+            ):  # this is a source, not anything in between. is it?
                 self.node_type = "greater_equal"
             self.factory.device_ids.add(id(input_port))
             self.factory.output_ids.add(port_id)
@@ -811,7 +813,7 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
             ]
-            if isinstance(output_port, Load): # this is a load, the endpoint.
+            if isinstance(output_port, Load):  # this is a load, the endpoint.
                 self.node_type = "greater_equal"
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
@@ -825,8 +827,8 @@ class EnergyFlowNode:
 
         # outputs_deduplicated =  list(set(self.outputs))
         # outputs_count = len(self.outputs)
-        assert len(self.inputs)>0
-        assert len(self.outputs)>0
+        assert len(self.inputs) > 0
+        assert len(self.outputs) > 0
 
         inputs = reduce(self.util.elementwise_add, self.inputs)
         outputs = reduce(self.util.elementwise_add, self.outputs)
@@ -6416,12 +6418,17 @@ class GridNet(IntegratedEnergySystem):
 
         # TODO: alter the definition of this gridnet, making it possible for upload and download at the same time.
 
-        linearization.max_zeros(num_hour=self.num_hour,model=self.model,
+        linearization.max_zeros(
+            num_hour=self.num_hour,
+            model=self.model,
             x=self.elementwise_multiply(self.electricity_net_exchange, -1),
             y=self.electricity_upload,
         )
-        linearization.max_zeros(num_hour=self.num_hour,model=self.model,
-            x=self.electricity_net_exchange, y=self.electricity_download
+        linearization.max_zeros(
+            num_hour=self.num_hour,
+            model=self.model,
+            x=self.electricity_net_exchange,
+            y=self.electricity_download,
         )
 
         # linearization.positive_negitive_constraints_register(
