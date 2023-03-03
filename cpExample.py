@@ -447,6 +447,10 @@ if __name__ == "__main__":
 
     # 产能储能机组平衡输出功率
     ###########
+    #
+    #
+    #
+    #
     warmWaterStorageNode1 = NodeFactory.create_node("warm_water_storage")
     warmWaterNode1 = NodeFactory.create_node("warm_water")
     
@@ -466,13 +470,15 @@ if __name__ == "__main__":
     # )
     
     ###########
+    for device in []:
+        warmWaterNode1.add_input(device)
 
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
     # what is "_x"?
-    model.add_constraints(
+    model.add_constraints( # cold_water input -> output
         heatPump.power_waterSourceHeatPumps_cool[h]
-        + power_cooletStorage[h]
+        + power_cooletStorage[h] # this thing is indirect. it is actually the sum of the cold water storage outputs.
         + waterSourceHeatPumps.power_waterSourceHeatPumps_cool[h]
         + steamPowered_LiBr.cool_LiBr[h]
         + hotWaterLiBr.cool_LiBr[h]
@@ -486,9 +492,9 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
-    model.add_constraints(
+    model.add_constraints( # warm_water input -> output
         heatPump.power_waterSourceHeatPumps_heat[h]
-        + power_heatStorage[h]
+        + power_heatStorage[h] # actually sum of warm_water storage outputs.
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
         + steamAndWater_exchanger.heat_exchange[h]  # both warm water output.
         + hotWaterExchanger.heat_exchange[h]  # both warm water output.
@@ -508,7 +514,7 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     linearization = Linearization()
-    #
+    # it is right in the topology.
     linearization.max_zeros(
         # TODO: invert x/y position
         # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
