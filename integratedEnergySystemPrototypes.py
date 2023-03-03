@@ -818,8 +818,8 @@ class EnergyFlowNode:
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
-    
-    def add_input_and_output(self,input_and_output_port):
+
+    def add_input_and_output(self, input_and_output_port):
         self.add_input(input_and_output_port)
         self.add_output(input_and_output_port)
 
@@ -831,9 +831,11 @@ class EnergyFlowNode:
 
         # outputs_deduplicated =  list(set(self.outputs))
         # outputs_count = len(self.outputs)
-        input_and_output_ids_count = 
-        assert len(self.input_ids)-input_and_output_ids_count > 0
-        assert len(self.output_ids)-input_and_output_ids_count > 0
+        input_and_output_ids_count = len(
+            [port_id for port_id in self.output_ids if port_id in self.input_ids]
+        )
+        assert len(self.input_ids) - input_and_output_ids_count > 0
+        assert len(self.output_ids) - input_and_output_ids_count > 0
 
         inputs = reduce(self.util.elementwise_add, self.inputs)
         outputs = reduce(self.util.elementwise_add, self.outputs)
@@ -893,7 +895,9 @@ class EnergyFlowNodeFactory:
 
         for device in devices:
             input_ids = [
-                f"{id(device)}_input_{key}" for key, _ in device.power_of_inputs.items() if key not in ['heat', 'energy','energy_storage']
+                f"{id(device)}_input_{key}"
+                for key, _ in device.power_of_inputs.items()
+                if key not in ["heat", "energy", "energy_storage"]
             ]
             output_ids = [
                 f"{id(device)}_output_{key}"
@@ -1033,7 +1037,8 @@ class IntegratedEnergySystem(EnergySystemUtils):
             self.power_of_inputs.update(
                 {
                     energy_type: self.model.continuous_var_list(
-                        [i for i in range(0, self.num_hour)],lb=0,
+                        [i for i in range(0, self.num_hour)],
+                        lb=0,
                         name=f"power_of_input_{energy_type}_{self.classSuffix}",
                     )
                 }
@@ -1044,7 +1049,8 @@ class IntegratedEnergySystem(EnergySystemUtils):
             self.power_of_outputs.update(
                 {
                     energy_type: self.model.continuous_var_list(
-                        [i for i in range(0, self.num_hour)],lb=0,
+                        [i for i in range(0, self.num_hour)],
+                        lb=0,
                         name=f"power_of_output_{energy_type}_{self.classSuffix}",
                     )
                 }
@@ -2317,14 +2323,16 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         self.power_generated_steam: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],lb=0,
+            [i for i in range(0, self.num_hour)],
+            lb=0,
             name="power_{0}".format(self.classSuffix),
         )
-        
+
         self.power_generated_steam_remained: List[
             ContinuousVarType
         ] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],lb=0,
+            [i for i in range(0, self.num_hour)],
+            lb=0,
             name="power_remained_{0}".format(self.classSuffix),
         )
         """
@@ -2357,19 +2365,21 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.solidHeatStorage = EnergyStorageSystem( # this shall never be used directly. this is internal.
-            num_hour,
-            model,
-            self.device_count_max_solidHeatStorage,
-            self.device_price_solidHeatStorage,
-            device_price_powerConversionSystem=device_price_powerConversionSystem,
-            conversion_rate_max=2,  # change?
-            efficiency=0.9,
-            energy_init=1,
-            stateOfCharge_min=0,
-            stateOfCharge_max=1,
-            input_type=self.output_type,
-            output_type=self.output_type
+        self.solidHeatStorage = (
+            EnergyStorageSystem(  # this shall never be used directly. this is internal.
+                num_hour,
+                model,
+                self.device_count_max_solidHeatStorage,
+                self.device_price_solidHeatStorage,
+                device_price_powerConversionSystem=device_price_powerConversionSystem,
+                conversion_rate_max=2,  # change?
+                efficiency=0.9,
+                energy_init=1,
+                stateOfCharge_min=0,
+                stateOfCharge_max=1,
+                input_type=self.output_type,
+                output_type=self.output_type,
+            )
         )
         """
         固态储热设备初始化为`EnergyStorageSystem`
@@ -2417,8 +2427,14 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     * self.efficiency
         #     for h in self.hourRange
         # )  # 与天气相关
-        
-        self.equations(self.power_generated_steam, self.elementwise_add(self.power_generated_steam_remained,self.solidHeatStorage.power_of_inputs[self.output_type]))
+
+        self.equations(
+            self.power_generated_steam,
+            self.elementwise_add(
+                self.power_generated_steam_remained,
+                self.solidHeatStorage.power_of_inputs[self.output_type],
+            ),
+        )
 
         self.equations(
             self.power_of_outputs[self.output_type],
@@ -2640,10 +2656,13 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
         self.gas_to_electricity_ratio = gas_to_electricity_ratio
-        
-        self.power_of_outputs['hot_water'] = self.elementwise_add(self.hot_water_exchanger_1.power_of_outputs['hot_water'], self.hot_water_exchanger_2.power_of_outputs['hot_water'])
-        
-        self.power_of_outputs['steam'] = self.steam_exchanger.power_of_outputs['steam']
+
+        self.power_of_outputs["hot_water"] = self.elementwise_add(
+            self.hot_water_exchanger_1.power_of_outputs["hot_water"],
+            self.hot_water_exchanger_2.power_of_outputs["hot_water"],
+        )
+
+        self.power_of_outputs["steam"] = self.steam_exchanger.power_of_outputs["steam"]
 
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
