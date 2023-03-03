@@ -207,6 +207,101 @@ if __name__ == "__main__":
 
     # 以上为蒸汽发生装置
     ##########################################
+    
+    
+    # 汽水热交换器
+    steamAndWater_exchanger = Exchanger(
+        num_hour,
+        model,
+        device_count_max=20000,
+        device_price=400,
+        k=50,
+        device_name="steamAndWater_exchanger",
+    )
+    steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
+    
+    
+    # 蒸汽溴化锂
+    # TODO: 添加设备最少购买数量
+    steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
+        num_hour,
+        model,
+        device_count_max=10000,
+        device_price=1000,
+        efficiency=0.9,
+        device_name="steamPowered_LiBr",
+    )
+    steamPowered_LiBr.constraints_register()
+    
+    
+    (
+        platePhotothermal,
+        waterStorageTank,
+        municipalHotWater,
+        gasBoiler_hotWater,# TODO: 待定是否只能烧高温热水
+        phaseChangeHotWaterStorage,
+        hotWaterElectricBoiler,
+    ) = hotWaterSourcesRegistration(
+        model,
+        num_hour,
+        intensityOfIllumination,
+        day_node,
+        electricity_price0,
+        municipalHotWater_price0,
+        gas_price0,
+    )
+    
+    # 热水溴化锂，制冷
+    hotWaterLiBr = LiBrRefrigeration(
+        num_hour,
+        model,
+        device_count_max=10000,
+        device_price=1000,
+        efficiency=0.9,
+        device_name="hotWaterLiBr",
+    )
+    hotWaterLiBr.constraints_register()
+
+    # 热水交换器，吸收热量
+    hotWaterExchanger = Exchanger(
+        num_hour,
+        model,
+        device_count_max=20000,
+        device_price=400,
+        k=50,
+        device_name="hotWaterExchanger",
+    )
+    hotWaterExchanger.constraints_register()
+    
+    from demo_utils import cooletIceHeatDevicesRegistration
+
+    (
+        heatPump,
+        waterSourceHeatPumps,
+        waterCoolingSpiralMachine,
+        tripleWorkingConditionUnit,
+        doubleWorkingConditionUnit,
+        groundSourceHeatPump,
+        iceStorage,
+        phaseChangeColdWaterStorage,
+        phaseChangeWarmWaterStorage,
+    ) = cooletIceHeatDevicesRegistration(
+        model,
+        num_hour,
+        electricity_price0,
+    )
+    
+    
+    # 电网
+    gridNet = GridNet(
+        num_hour,
+        model,
+        device_count_max=200000,
+        device_price=0,
+        electricity_price=electricity_price0,
+        electricity_price_upload=0.35,
+    )
+    gridNet.constraints_register( powerPeak_predicted=2000)
 
     # 高温蒸汽去向
     ##########################################
@@ -236,29 +331,6 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
 
-    # 汽水热交换器
-    steamAndWater_exchanger = Exchanger(
-        num_hour,
-        model,
-        device_max=20000,
-        device_price=400,
-        k=50,
-        device_name="steamAndWater_exchanger",
-    )
-    steamAndWater_exchanger.constraints_register(model)  # qs - 泉水？ steamAndWater热交换器？
-
-    # 蒸汽溴化锂
-    # TODO: 添加设备最少购买数量
-    steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
-        num_hour,
-        model,
-        LiBr_device_max=10000,
-        device_price=1000,
-        efficiency=0.9,
-        device_name="steamPowered_LiBr",
-    )
-    steamPowered_LiBr.constraints_register(model)
-
     model.add_constraints(
         power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
         >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
@@ -274,22 +346,6 @@ if __name__ == "__main__":
     # 2) combinedHeatAndPower wasteGasAndHeat__to_water?
     # 3
 
-    (
-        platePhotothermal,
-        waterStorageTank,
-        municipalHotWater,
-        gasBoiler_hotWater,# TODO: 待定是否只能烧高温热水
-        phaseChangeHotWaterStorage,
-        hotWaterElectricBoiler,
-    ) = hotWaterSourcesRegistration(
-        model,
-        num_hour,
-        intensityOfIllumination,
-        day_node,
-        electricity_price0,
-        municipalHotWater_price0,
-        gas_price0,
-    )
     ##########################################
 
     # 高温热水合计
@@ -315,27 +371,6 @@ if __name__ == "__main__":
         )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放能功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
     )
 
-    # 热水溴化锂，制冷
-    hotWaterLiBr = LiBrRefrigeration(
-        num_hour,
-        model,
-        LiBr_device_max=10000,
-        device_price=1000,
-        efficiency=0.9,
-        device_name="hotWaterLiBr",
-    )
-    hotWaterLiBr.constraints_register(model)
-
-    # 热水交换器，吸收热量
-    hotWaterExchanger = Exchanger(
-        num_hour,
-        model,
-        device_max=20000,
-        device_price=400,
-        k=50,
-        device_name="hotWaterExchanger",
-    )
-    hotWaterExchanger.constraints_register(model)
 
     # 高温热水去向
     model.add_constraints(
@@ -357,23 +392,6 @@ if __name__ == "__main__":
 
     # 冷 热 冰 供给储存消耗平衡
     ##########################################
-    from demo_utils import cooletIceHeatDevicesRegistration
-
-    (
-        heatPump,
-        waterSourceHeatPumps,
-        waterCoolingSpiralMachine,
-        tripleWorkingConditionUnit,
-        doubleWorkingConditionUnit,
-        groundSourceHeatPump,
-        iceStorage,
-        phaseChangeColdWaterStorage,
-        phaseChangeWarmWaterStorage,
-    ) = cooletIceHeatDevicesRegistration(
-        model,
-        num_hour,
-        electricity_price0,
-    )
 
     # 产能储能机组平衡输出功率
     ###########
@@ -503,16 +521,6 @@ if __name__ == "__main__":
     # 电 供销平衡
     ##########################################
 
-    # 电网
-    gridNet = GridNet(
-        num_hour,
-        model,
-        gridNet_device_max=200000,
-        device_price=0,
-        electricity_price_from=electricity_price0,
-        electricity_price_to=0.35,
-    )
-    gridNet.constraints_register(model, powerPeak_pre=2000)
 
     model.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
