@@ -5547,6 +5547,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         #     [i for i in range(0, self.num_hour)],
         #     name="power_waterStorageTank_cool_{0}".format(self.classSuffix),
         # )
+        # self.waterStorageTank.power_of_inputs['energy'] = ...
+        # self.waterStorageTank.power_of_outputs['energy'] = ...
         """
         每小时水蓄能设备储能功率 蓄冷状态下
         """
