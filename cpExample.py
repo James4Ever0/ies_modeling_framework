@@ -164,10 +164,10 @@ from integratedEnergySystemPrototypes import (
     Load,
 )
 
-electricityLoad = Load('electricity',power_load)
-warmWaterLoad = Load('warm_water', heat_load)
-coldWaterLoad = Load('cold_water',cool_load)
-steamLoad = Load('steam', steam_load)
+electricityLoad = Load("electricity", power_load)
+warmWaterLoad = Load("warm_water", heat_load)
+coldWaterLoad = Load("cold_water", cool_load)
+steamLoad = Load("steam", steam_load)
 
 from mini_data_log_utils import check_solve_and_log
 
@@ -346,8 +346,8 @@ if __name__ == "__main__":
         gasBoiler,
     ]:
         SteamNode1.add_input(device)
-        
-    for device in []:
+
+    for device in [steamLoad, steamAndWater_exchanger, steamPowered_LiBr]:
         SteamNode1.add_output(device)
 
     # model.add_constraints( # node input
@@ -584,10 +584,10 @@ if __name__ == "__main__":
         batteryEnergyStorageSystem,
         troughPhotoThermal,
         electricSteamGenerator,
-        # combinedHeatAndPower,
-        combinedHeatAndPower.hot_water_exchanger_1,  # for CHP devices, we only check their heat exchangers.
-        combinedHeatAndPower.hot_water_exchanger_2,
-        combinedHeatAndPower.steam_exchanger,
+        combinedHeatAndPower,  # for CHP devices, we only check their heat exchangers. hot_water_exchanger_1 and at least one of the hot_water_exchanger_2 and steam_exchanger will be connected.
+        # combinedHeatAndPower.hot_water_exchanger_1,
+        # combinedHeatAndPower.hot_water_exchanger_2,
+        # combinedHeatAndPower.steam_exchanger,
         gasBoiler,
         steamAndWater_exchanger,  # qs? 气水？
         steamPowered_LiBr,  # zq? 制取？
