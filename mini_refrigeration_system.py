@@ -136,6 +136,7 @@ systems = [hotWaterLiBr, municipalHotWater, coldWaterLoad]
 NodeFactory.build_relations(systems)
 
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
+assert NodeFactory.built
 
 from mini_data_log_utils import solve_and_log
 

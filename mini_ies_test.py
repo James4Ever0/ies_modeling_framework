@@ -195,6 +195,7 @@ NodeFactory.build_relations(systems)
 #     for h in range(num_hour)
 # )
 
+assert NodeFactory.built
 
 from mini_data_log_utils import check_solve_and_log
 check_solve_and_log(systems, model, simulation_name)

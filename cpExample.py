@@ -699,6 +699,8 @@ if __name__ == "__main__":
         phaseChangeColdWaterStorage,
         phaseChangeWarmWaterStorage,
         gridNet,
+        ######### ALL THE LOADS
+        ######### ALL THE LOADS
     ]
     NodeFactory.build_relations(systems) # this is a failsafe.
     # check if this is built?
