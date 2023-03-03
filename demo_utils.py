@@ -84,7 +84,7 @@ class ResourceGet(object):
             intensityOfIllumination (np.array): 逐小时光照强度数据,数组形状为`(num_hour,)`
         """
         if os.path.exists(path):
-            raw_file = np.loadtxt(path, dtype=float) 
+            raw_file = np.loadtxt(path, dtype=float)
             radiation = raw_file[:, 0]
             intensityOfIllumination1 = radiation
             for loop in range(
@@ -190,7 +190,7 @@ def getResourceData(num_hour: int):
     resource = ResourceGet()
     # model_input
     intensityOfIllumination: Union[np.ndarray, List] = resource.get_radiation(
-        "jinan_changqing-hour.dat", num_hour # 光照、风速
+        "jinan_changqing-hour.dat", num_hour  # 光照、风速
     )
     # what is the output? break here.
     electricity_price0 = resource.get_electricity_price(num_hour)
@@ -237,13 +237,22 @@ from docplex.mp.model import Model
 
 
 def electricSystemRegistration(
-    model: Model, num_hour: int, intensityOfIllumination: np.ndarray, day_node: int,        debug:bool=False
+    model: Model,
+    num_hour: int,
+    intensityOfIllumination: np.ndarray,
+    day_node: int,
+    debug: bool = False,
 ):
     """ """
 
     # 柴油发电机
     dieselEngine = DieselEngine(
-        num_hour, model, device_count_max=320, device_price=750, running_price=2,        debug=debug,
+        num_hour,
+        model,
+        device_count_max=320,
+        device_price=750,
+        running_price=2,
+        debug=debug,
     )
     dieselEngine.constraints_register()
 
@@ -272,11 +281,12 @@ def electricSystemRegistration(
         energy_init=1,
         stateOfCharge_min=0,  # state of charge
         stateOfCharge_max=1,
-        device_name ="batteryEnergyStorageSystem",
-                debug=debug,
+        device_name="batteryEnergyStorageSystem",
+        debug=debug,
     )
     # original: battery
-    batteryEnergyStorageSystem.constraints_register(register_period_constraints=1, day_node=day_node
+    batteryEnergyStorageSystem.constraints_register(
+        register_period_constraints=1, day_node=day_node
     )
     return dieselEngine, photoVoltaic, batteryEnergyStorageSystem
 
@@ -288,7 +298,7 @@ def steamSourcesRegistration(
     # day_node: int,
     electricity_price0: np.ndarray,
     gas_price0: np.ndarray,
-    debug:bool=False,
+    debug: bool = False,
 ):
     """ """
 
@@ -301,7 +311,7 @@ def steamSourcesRegistration(
         troughPhotoThermalSolidHeatStorage_price=1000,
         intensityOfIllumination=intensityOfIllumination,
         efficiency=0.8,
-                debug=debug,
+        debug=debug,
     )
     troughPhotoThermal.constraints_register()
 
@@ -314,7 +324,7 @@ def steamSourcesRegistration(
         electricSteamGeneratorSolidHeatStorage_price=200,  # gtxr? SolidHeatStorage？
         electricity_price=electricity_price0,
         efficiency=0.9,
-                debug=debug,
+        debug=debug,
     )
     electricSteamGenerator.constraints_register()
 
@@ -323,11 +333,11 @@ def steamSourcesRegistration(
         num_hour,
         model,
         combinedHeatAndPower_num_max=5,
-        combinedHeatAndPower_price=2000,
+        device_price=2000,
         gas_price=gas_price0,
-        combinedHeatAndPower_single_device=2000,
+        rated_power=2000,
         power_to_heat_ratio=1.2,  # dr? 电热?
-                debug=debug,
+        debug=debug,
     )
     combinedHeatAndPower.constraints_register()
 
@@ -339,7 +349,7 @@ def steamSourcesRegistration(
         device_price=200,
         gas_price=gas_price0,
         efficiency=0.9,
-                debug=debug,
+        debug=debug,
     )
     gasBoiler.constraints_register()
 
@@ -351,8 +361,9 @@ def steamSourcesRegistration(
         device_price=3000,
         running_price=0.3 * np.ones(num_hour),
         efficiency=0.9,
-        device_name = "municipalSteam",
-                debug=debug,
+        device_name="municipalSteam",
+        debug=debug,
+        output_type='steam'
     )
     municipalSteam.constraints_register()
     return (
@@ -372,7 +383,7 @@ def hotWaterSourcesRegistration(
     electricity_price0: np.ndarray,
     municipalHotWater_price0: np.ndarray,
     gas_price0: np.ndarray,
-    debug:bool=False
+    debug: bool = False,
 ):
     """"""
 
@@ -385,7 +396,8 @@ def hotWaterSourcesRegistration(
         intensityOfIllumination=intensityOfIllumination,
         efficiency=0.8,
         device_name="platePhotothermal",
-                debug=debug,
+        debug=debug,
+        output_type='hot_water'
     )  # platePhotothermal
     platePhotothermal.constraints_register()
 
@@ -402,7 +414,9 @@ def hotWaterSourcesRegistration(
         stateOfCharge_min=0,
         stateOfCharge_max=1,
         device_name="phaseChangeHeatStorage",
-                debug=debug,
+        debug=debug,
+        input_type='hot_water',
+        output_type='hot_water'
     )
     phaseChangeHeatStorage.constraints_register()
 
@@ -414,22 +428,23 @@ def hotWaterSourcesRegistration(
         device_price=3000,
         running_price=municipalHotWater_price0,
         efficiency=0.9,
-        device_name = "municipalHotWater",
-                debug=debug,
-                output_type='hot_water'
+        device_name="municipalHotWater",
+        debug=debug,
+        output_type="hot_water",
     )
     municipalHotWater.constraints_register()
 
     # 热水电锅炉
-    hotWaterElectricBoiler = ElectricBoiler( # connect to our powergrid.
+    hotWaterElectricBoiler = ElectricBoiler(  # connect to our powergrid.
         num_hour,
         model,
         device_count_max=10000,
         device_price=200,
-        electricity_price=electricity_price0*0,
+        electricity_price=electricity_price0 * 0,
         efficiency=0.9,
-        device_name = "hotWaterElectricBoiler",
-                debug=debug,
+        device_name="hotWaterElectricBoiler",
+        debug=debug,
+        output_type='hot_water'
     )
     hotWaterElectricBoiler.constraints_register()
 
@@ -441,8 +456,9 @@ def hotWaterSourcesRegistration(
         device_price=200,
         gas_price=gas_price0,
         efficiency=0.9,
-        device_name = "gasBoiler_hotWater",
-                debug=debug,
+        device_name="gasBoiler_hotWater",
+        debug=debug,
+        output_type='hot_water'
     )
     gasBoiler_hotWater.constraints_register()
 
@@ -462,9 +478,10 @@ def hotWaterSourcesRegistration(
         ratio_warm_water=10,
         ratio_hot_water=20,
         device_name="waterStorageTank",
-                debug=debug,
+        debug=debug,
     )
-    waterStorageTank.constraints_register(register_period_constraints=1, day_node=day_node
+    waterStorageTank.constraints_register(
+        register_period_constraints=1, day_node=day_node
     )
 
     return (
@@ -485,7 +502,7 @@ def cooletIceHeatDevicesRegistration(
     electricity_price0: np.ndarray,
     # municipalHotWater_price0: np.ndarray,
     # gas_price0: np.ndarray,
-    debug:bool=False
+    debug: bool = False,
 ):
     """"""
 
@@ -498,7 +515,7 @@ def cooletIceHeatDevicesRegistration(
         electricity_price=electricity_price0,
         case_ratio=np.array([1, 1, 1, 1]),  # total four cases?
         device_name="heatPump",
-                debug=debug,
+        debug=debug,
     )
     heatPump.constraints_register()
 
@@ -511,7 +528,7 @@ def cooletIceHeatDevicesRegistration(
         electricity_price=electricity_price0,
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
-                debug=debug,
+        debug=debug,
     )
     waterSourceHeatPumps.constraints_register()
 
@@ -523,7 +540,7 @@ def cooletIceHeatDevicesRegistration(
         device_price=1000,
         electricity_price=electricity_price0,
         case_ratio=np.array([1, 0.8]),
-                debug=debug,
+        debug=debug,
     )
     waterCoolingSpiralMachine.constraints_register()
 
@@ -535,7 +552,7 @@ def cooletIceHeatDevicesRegistration(
         device_price=1000,
         electricity_price=electricity_price0,
         case_ratio=[1, 0.8, 0.8],
-                debug=debug,
+        debug=debug,
     )
     tripleWorkingConditionUnit.constraints_register()
 
@@ -547,7 +564,7 @@ def cooletIceHeatDevicesRegistration(
         device_price=1000,
         electricity_price=electricity_price0,
         case_ratio=[1, 0.8],
-                debug=debug,
+        debug=debug,
     )
     doubleWorkingConditionUnit.constraints_register()
 
@@ -558,7 +575,7 @@ def cooletIceHeatDevicesRegistration(
         device_count_max=20000,
         device_price=40000,
         electricity_price=electricity_price0,
-                debug=debug,
+        debug=debug,
     )
     groundSourceHeatPump.constraints_register()
 
@@ -574,8 +591,10 @@ def cooletIceHeatDevicesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name ="iceStorage",
-                debug=debug,
+        device_name="iceStorage",
+        debug=debug,
+        input_type='ice',
+        output_type='cold_water'
     )
     iceStorage.constraints_register()
 
@@ -591,8 +610,10 @@ def cooletIceHeatDevicesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name = "phaseChangeRefrigerantStorage",
-                debug=debug,
+        device_name="phaseChangeRefrigerantStorage",
+        debug=debug,
+        input_type="cold_water",
+        output_type="cold_water",
     )
     phaseChangeRefrigerantStorage.constraints_register()
 
@@ -608,8 +629,10 @@ def cooletIceHeatDevicesRegistration(
         energy_init=1,
         stateOfCharge_min=0,
         stateOfCharge_max=1,
-        device_name ="lowphaseChangeHeatStorage",
-                debug=debug,
+        device_name="lowphaseChangeHeatStorage",
+        debug=debug,
+        input_type="warm_water",
+        output_type="warm_water",
     )
     lowphaseChangeHeatStorage.constraints_register()
 
