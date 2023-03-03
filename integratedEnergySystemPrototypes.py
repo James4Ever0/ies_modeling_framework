@@ -6093,10 +6093,14 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricity_cost_{0}".format(self.classSuffix)
         )
-
+        
         """
         用电成本
         """
+        self.steam_remained : List[ContinuousVarType] = self.model.continuous_var_list(
+            [i for i in range(0, self.num_hour)],
+            name="steam_remained_{0}".format(self.classSuffix),
+        )
         # return val
 
     def constraints_register(self):
@@ -6127,9 +6131,11 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         # self.model.add_constraints(
         #     self.power[h] <= self.device_count for h in self.hourRange
         # )  # 与天气相关
+        
+        self.equations(self.power_of_inputs[self.input_type],self.elementwise_add(self.solidHeatStorage.power_of_inputs['heat'],self.steam_remained))
 
         self.equations(
-            self.power_of_outputs[self.output_type],
+            self.power_of_outputs[self.output_type],self.elementwise_add(self.steam_remained, self.solidHeatStorage.power_of_outputs[self.output_type])
         )
         # self.model.add_constraints(
         #     self.power[h] + self.solidHeatStorage.power[h]
@@ -6143,7 +6149,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         # )  # 约束能量不能倒流
 
         self.electricity_cost = self.sum_within_range(
-            self.elementwise_multiply(self.power, self.electricity_price)
+            self.elementwise_multiply(self.power_of_inputs[self.input_type], self.electricity_price)
         )
 
         # this is simply wrong.
