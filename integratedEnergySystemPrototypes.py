@@ -792,6 +792,7 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
             ]
+            self.factory.device_ids.add(id(input_port))
             self.factory.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
 
@@ -804,6 +805,7 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
             ]
+            self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
 
@@ -837,6 +839,7 @@ class EnergyFlowNodeFactory:
         self.model = model
         self.num_hour = num_hour
         self.debug = debug
+        self.device_ids = set()
         self.input_ids = set()
         self.output_ids = set()
 
@@ -866,6 +869,13 @@ class EnergyFlowNodeFactory:
             node
         )  # how do you check validity? you can pass the factory object yourself.
         return node
+    
+    def check_system_validity(self, devices:List):
+        device_ids = set([id(device) for device in devices])
+        assert device_ids == self.device_ids
+        for device in devices:
+            input_ids = device.power_of_inputs
+            output_ids = 
 
     def build_relations(self):
         assert self.built is False

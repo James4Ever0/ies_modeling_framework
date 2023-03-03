@@ -31,7 +31,7 @@ heat_load = (
     np.array([(1 - delta) + math.cos(i * 0.2) * delta for i in range(len(heat_load))])
     * heat_load
 ) * 0.4
-heatLoad = Load("warm_water", data=heat_load)
+warmWaterLoad = Load("warm_water", data=heat_load)
 
 model = Model(name=simulation_name)
 debug = False
@@ -182,7 +182,8 @@ systems = [
     waterStorageTank,
     municipalHotWater,
     hotWaterExchanger,
-]
+    warmWaterLoad
+] # you are going to check this under the nodeFactory.
 
 
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
@@ -246,12 +247,13 @@ Node3.add_output(waterStorageTank)
 Node4.add_input(waterSourceHeatPumps)
 Node4.add_input(waterStorageTank)
 Node4.add_input(hotWaterExchanger)
-Node4.add_output(heatLoad)
+Node4.add_output(warmWaterLoad)
 
 Node5.add_input(municipalHotWater)
 Node5.add_output(hotWaterExchanger)
 
-NodeFactory.build_relations()
+NodeFactory.check_system_validity(systems)
+NodeFactory.build_relations() # <- before you build, you check validity.
 # Node1.build_relations()
 # Node2.build_relations()
 # Node3.build_relations()
