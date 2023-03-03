@@ -238,8 +238,13 @@ Node1.add_output(gridNet)
 Node2.add_input(gridNet)
 Node2.add_output(waterSourceHeatPumps)
 
-nodeUtil = NodeUtils(model, num_hour)
-nodeUtil.fully_connected(Node1, Node2)  # ensure the energy types will match.
+# nodeUtil = NodeUtils(model, num_hour)
+# nodeUtil.fully_connected(Node1, Node2)  # ensure the energy types will match.
+
+# connected: 403607148.29181826
+# not connected: 403607193.2534507
+
+# pretty much the same?
 
 Node3.add_input(waterSourceHeatPumps)
 Node3.add_output(waterStorageTank)

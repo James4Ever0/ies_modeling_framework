@@ -170,8 +170,8 @@ Node2.add_input(batteryEnergyStorageSystem)
 Node2.add_output(electricityLoad)
 # Node2.add_output(Channel2)
 
-nodeUtils = NodeUtils(model, num_hour)
-nodeUtils.fully_connected(Node1,Node2)
+# nodeUtils = NodeUtils(model, num_hour)
+# nodeUtils.fully_connected(Node1,Node2)
 
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet, electricityLoad]
 NodeFactory.build_relations(systems)
