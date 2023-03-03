@@ -263,6 +263,9 @@ NodeFactory.build_relations(systems)  # <- before you build, you check validity.
 # Node4.build_relations()
 assert NodeFactory.built
 
+from system_topology_utils import visualizeSystemTopology
+visualizeSystemTopology(NodeFactory, system_name = 'heat')
+
 from mini_data_log_utils import check_solve_and_log
 
 check_solve_and_log(systems, model, simulation_name)

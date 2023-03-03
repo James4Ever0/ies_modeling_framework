@@ -138,6 +138,9 @@ NodeFactory.build_relations(systems)
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 assert NodeFactory.built
 
+from system_topology_utils import visualizeSystemTopology
+visualizeSystemTopology(NodeFactory, system_name = 'refrigeration')
+
 from mini_data_log_utils import solve_and_log
 
 solve_and_log(systems, model, simulation_name)

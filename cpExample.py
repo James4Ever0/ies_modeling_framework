@@ -709,6 +709,11 @@ if __name__ == "__main__":
     # check if this is built?
     assert NodeFactory.built
     
+    
+from system_topology_utils import visualizeSystemTopology
+        visualizeSystemTopology(NodeFactory, system_name = 'heat')
+
+    
     # breakpoint()
 
     check_solve_and_log(
