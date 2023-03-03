@@ -524,17 +524,17 @@ def cooletIceHeatDevicesRegistration(
     heatPump.constraints_register()
 
     # 水源热泵
-    waterSourceHeatPumps = WaterHeatPump(
+    waterSourceHeatPump = WaterHeatPump(
         num_hour,
         model,
         device_count_max=2000,
         device_price=3000,
         electricity_price=electricity_price0*0,
         case_ratio=np.ones(4),
-        device_name="waterSourceHeatPumps",
+        device_name="waterSourceHeatPump",
         debug=debug,
     )
-    waterSourceHeatPumps.constraints_register()
+    waterSourceHeatPump.constraints_register()
 
     # 水冷螺旋机
     waterCoolingSpiralMachine = WaterCoolingSpiral(
@@ -642,7 +642,7 @@ def cooletIceHeatDevicesRegistration(
 
     return (
         heatPump,
-        waterSourceHeatPumps,
+        waterSourceHeatPump,
         waterCoolingSpiralMachine,
         tripleWorkingConditionUnit,
         doubleWorkingConditionUnit,

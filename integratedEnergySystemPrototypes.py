@@ -800,6 +800,8 @@ class EnergyFlowNode:
                 input_port.power_of_inputs == {}
             ):  # this is a source, not anything in between. is it?
                 self.node_type = "greater_equal"
+                
+            self.factory.device_id_to_device_name.update({id(input_port): input_port.device_name})
             self.factory.device_ids.add(id(input_port))
             self.factory.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
@@ -815,7 +817,7 @@ class EnergyFlowNode:
             ]
             if isinstance(output_port, Load):  # this is a load, the endpoint.
                 self.node_type = "greater_equal"
-            self.factory.device_id_to_device_name.update({id(output_port), output_port.device_name})
+            self.factory.device_id_to_device_name.update({id(output_port): output_port.device_name})
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
@@ -928,7 +930,7 @@ class EnergyFlowNodeFactory:
                         [
                             f"inputs: {[input_id for input_id in input_ids if input_id not in self.input_ids]}",
                             f"outputs: {[output_id for output_id in output_ids if output_id not in self.output_ids]}",
-                            f"device: {device.__class__.__name__} not connected.",
+                            f"device {device.__class__.__name__} named {device.device_name} not connected.",
                         ]
                     )
                 # print(errorMsg)

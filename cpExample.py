@@ -393,13 +393,13 @@ if __name__ == "__main__":
     hotWaterNode1.add_inputs(
         combinedHeatAndPower,
         platePhotothermal,
-        phaseChangeHotWaterStorage,
+        # phaseChangeHotWaterStorage,
         municipalHotWater,
         gasBoiler_hotWater,
         hotWaterElectricBoiler,
     )
 
-    hotWaterNode1.add_input_and_output(waterStorageTank)
+    hotWaterNode1.add_input_and_outputs(waterStorageTank, phaseChangeHotWaterStorage)
 
     hotWaterNode1.add_outputs(hotWaterLiBr, hotWaterExchanger)
 
@@ -680,7 +680,7 @@ if __name__ == "__main__":
         steamAndWater_exchanger,  # qs? 气水？
         steamPowered_LiBr,  # zq? 制取？
         platePhotothermal,
-        phaseChangeHotWaterStorage,
+        phaseChangeHotWaterStorage, # input&output
         municipalHotWater,
         hotWaterElectricBoiler,
         gasBoiler_hotWater,
