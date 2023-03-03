@@ -814,6 +814,7 @@ class EnergyFlowNode:
     def add_output(self, output_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = output_port
+            port_id =  f"{id(output_port)}_input_{self.energy_type}"
         else:
             port_id = f"{output_port.uuid}_input_{self.energy_type}"
             assert port_id not in self.input_ids
@@ -825,7 +826,7 @@ class EnergyFlowNode:
             self.factory.device_id_to_device_name.update({output_port.uuid: output_port.device_name})
             self.factory.device_ids.add(output_port.uuid)
             self.factory.input_ids.add(port_id)
-        self.__add_port(port_data, self.outputs, port_id, self.input_ids)
+        self.__add_port(port_data,  port_id,self.outputs, self.input_ids)
 
     def add_input_and_output(self, input_and_output_port):
         self.add_input(input_and_output_port)
