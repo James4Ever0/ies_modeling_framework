@@ -888,7 +888,7 @@ class EnergyFlowNodeFactory:
 
         for device in devices:
             input_ids = [
-                f"{id(device)}_input_{key}" for key, _ in device.power_of_inputs.items()
+                f"{id(device)}_input_{key}" for key, _ in device.power_of_inputs.items() if key not in ['heat', 'energy','energy_storage']
             ]
             output_ids = [
                 f"{id(device)}_output_{key}"
@@ -2403,6 +2403,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     * self.efficiency
         #     for h in self.hourRange
         # )  # 与天气相关
+        
+        self.solidHeatStorage.power_of_inputs[]
 
         self.equations(
             self.power_of_outputs[self.output_type],

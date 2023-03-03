@@ -2,10 +2,11 @@ import networkx as nx
 
 G = nx.DiGraph()
 
-n1 =
-n2 ={'attr':'b'}
+G.add_nodes_from([
+    (4, {"color": "red"}),
+    (5, {"color": "green"}),
+])
 
-G.add_edge(n1,n2,)
 
 import matplotlib.pyplot as plt
 
