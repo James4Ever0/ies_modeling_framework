@@ -24,10 +24,12 @@ def visualizeSystemTopology(
         # G.add_node(2,"BESS")
         for input_id in node.input_ids:
             device_id = input_id.split("_")[0]
-            device_node_name = f"{device_node}_device"
+            device_node_name = f"{device_id}_device"
             G.add_edge(device_node_name,node_name)
 
         for output_id in node.output_ids:
-            input_id.split("_")[0]
-            device_node_name = f"{device_node}_device"
+            device_id = output_id.split("_")[0]
+            device_node_name = f"{device_id}_device"
             G.add_edge(node_name,device_node_name)
+    nx.draw(G,with_labels=True, font_weight='bold',**draw_options)
+    plt.show()

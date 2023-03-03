@@ -1420,7 +1420,7 @@ class DieselEngine(IntegratedEnergySystem):
         #     name="self.power_of_outputs[self.output_type]{0}".format(self.classSuffix),
         # )
         self.output_type = "electricity"
-        self.build_power_of_inputs([self.output_type])
+        self.build_power_of_outputs([self.output_type])
         """
         初始化每个小时内柴油发电机机组发电量 大于零的实数 一共`num_hour`个变量
         """
