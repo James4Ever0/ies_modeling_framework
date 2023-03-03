@@ -1,5 +1,8 @@
 import networkx as nx
 
+draw_options = {'node_color': 'yellow',
+    'node_size': 1000,}
+
 G = nx.DiGraph()
 
 G.add_node("PV")
@@ -9,11 +12,18 @@ G.add_node("[NODE1]")
 G.add_node("GRID")
 
 G.add_edge("PV","[NODE1]")
+
 G.add_edge('BESS','[NODE1]')
 G.add_edge('[NODE1]','BESS')
 
 
+G.add_edge('GRID','[NODE1]')
+G.add_edge('[NODE1]','GRID')
+
+G.add_edge('[NODE1]','LOAD')
+
 import matplotlib.pyplot as plt
 
-nx.draw(G)
+nx.draw(G,with_labels=True, font_weight='bold',**draw_options
+    )
 plt.show()
