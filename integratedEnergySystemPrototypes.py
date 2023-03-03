@@ -808,7 +808,7 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = output_port
         else:
-            port_id = f"{id(output_port)}_output_{self.energy_type}"
+            port_id = f"{id(output_port)}_input_{self.energy_type}"
             assert port_id not in self.input_ids
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
@@ -910,11 +910,11 @@ class EnergyFlowNodeFactory:
 
         for device in devices:
             input_ids = [
-                f"{id(device)}_output_{key}"
+                f"{id(device)}_input_{key}"
                 for key, _ in device.power_of_inputs.items()
             ]
             output_ids = [
-                f"{id(device)}_input_{key}"
+                f"{id(device)}_output_{key}"
                 for key, _ in device.power_of_outputs.items()
             ]
             fully_connected = all(
@@ -929,8 +929,8 @@ class EnergyFlowNodeFactory:
                             f"device: {device.__class__.__name__} not connected.",
                         ]
                     )
-                print(errorMsg)
-                breakpoint()
+                # print(errorMsg)
+                # breakpoint()
                 raise Exception(
                     errorMsg
                 )
