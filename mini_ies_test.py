@@ -132,8 +132,8 @@ from integratedEnergySystemPrototypes import EnergyFlowNodeFactory
 #
 # are you sure we can connect to the same node?
 #
-#      _ BESS _   
-#     /        \ 
+#     _ BESS _   
+#    /        \ 
 # PV - [NODE1] - LOAD       
 #    \_ GRID _/           
 #                                   
