@@ -818,6 +818,10 @@ class EnergyFlowNode:
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
+    
+    def add_input_and_output(self,input_and_output_port):
+        self.add_input(input_and_output_port)
+        self.add_output(input_and_output_port)
 
     def build_relations(self):
         assert not self.built
@@ -827,8 +831,9 @@ class EnergyFlowNode:
 
         # outputs_deduplicated =  list(set(self.outputs))
         # outputs_count = len(self.outputs)
-        assert len(self.inputs) > 0
-        assert len(self.outputs) > 0
+        input_and_output_ids_count = 
+        assert len(self.input_ids)-input_and_output_ids_count > 0
+        assert len(self.output_ids)-input_and_output_ids_count > 0
 
         inputs = reduce(self.util.elementwise_add, self.inputs)
         outputs = reduce(self.util.elementwise_add, self.outputs)
