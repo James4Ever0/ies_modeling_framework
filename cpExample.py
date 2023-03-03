@@ -540,14 +540,12 @@ if __name__ == "__main__":
     )
 
     # 蓄冷逻辑组合
-    for device in [
-        heatPump.power_waterSourceHeatPumps_cooletStorage[h]
-        ,waterSourceHeatPumps.power_waterSourceHeatPumps_cooletStorage[h]
-        ,waterCoolingSpiralMachine.
-        
-    ]:
+    for device in [heatPump, waterSourceHeatPumps, waterCoolingSpiralMachine]:
         coldWaterStorageNode1.add_input(device)
-    for device in []:
+    for device in [
+        waterStorageTank,
+        phaseChangeColdWaterStorage,
+    ]:
         coldWaterStorageNode1.add_output(device)
     model.add_constraints(
         heatPump.power_waterSourceHeatPumps_cooletStorage[h]
