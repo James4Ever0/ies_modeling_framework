@@ -326,7 +326,7 @@ if __name__ == "__main__":
     #     [i for i in range(0, num_hour)], name="power_steam_sum"
     # )
     NodeFactory = EnergyFlowNodeFactory(model=model, num_hour=num_hour, debug=debug)
-    SteamNode1 = NodeFactory.create_node('steam','equal')
+    SteamNode1 = NodeFactory.create_node('steam','equal') # shall we automatically determine the equation type?
     model.add_constraints(
         power_steam_sum[h]
         == municipalSteam.heat_citySupplied[h]

@@ -144,8 +144,8 @@ electricity_type = 'electricity'
 
 NodeFactory = EnergyFlowNodeFactory(model, num_hour,debug=debug)
 
-Node1 = NodeFactory.create_node(electricity_type,symbols.greater_equal)
-Node2 = NodeFactory.create_node(electricity_type,symbols.greater_equal)
+Node1 = NodeFactory.create_node(electricity_type)
+Node2 = NodeFactory.create_node(electricity_type)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
 from integratedEnergySystemPrototypes import NodeUtils

@@ -744,11 +744,12 @@ class EnergyFlowNode:
             Literal["electricity"],
         ],
         factory,  # the factory object.
-        node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
+        # node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
         debug: bool = False,
     ):
         self.util = EnergySystemUtils(model, num_hour, debug=debug)
-        self.node_type = node_type
+        # self.node_type = node_type
+        self.node_type = 'equal'
         self.inputs = []
         self.input_ids = []
         self.outputs = []
@@ -795,6 +796,8 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
             ]
+            if input_port.power_of_inputs == {}: # this is a source, not anything in between. is it?
+                self.node_type = "greater_equal"
             self.factory.device_ids.add(id(input_port))
             self.factory.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
@@ -808,6 +811,8 @@ class EnergyFlowNode:
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
             ]
+            if isinstance(output_port, Load): # this is a load, the endpoint.
+                self.node_type = "greater_equal"
             self.factory.device_ids.add(id(output_port))
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
@@ -820,6 +825,8 @@ class EnergyFlowNode:
 
         # outputs_deduplicated =  list(set(self.outputs))
         # outputs_count = len(self.outputs)
+        assert len(self.inputs)>0
+        assert len(self.outputs)>0
 
         inputs = reduce(self.util.elementwise_add, self.inputs)
         outputs = reduce(self.util.elementwise_add, self.outputs)
@@ -858,14 +865,14 @@ class EnergyFlowNodeFactory:
             Literal["steam"],
             Literal["electricity"],
         ],
-        node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
+        # node_type: Union[Literal["equal"], Literal["greater_equal"]] = "equal",
     ):
         node = EnergyFlowNode(
             model=self.model,
             num_hour=self.num_hour,
             energy_type=energy_type,
             factory=self,
-            node_type=node_type,
+            # node_type=node_type,
             debug=self.debug,
         )
         self.nodes.append(
