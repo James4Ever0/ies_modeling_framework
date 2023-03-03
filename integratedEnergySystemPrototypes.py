@@ -22,9 +22,12 @@ class Load:
             Literal["electricity"],
         ],
         data: Union[List, np.ndarray],
+        device_name="load"
     ):
         self.power_of_inputs = {input_type: data}
         self.power_of_outputs = {}
+        self.annualized = 0
+        self.device_name = f"{input_type}_{device_name}"
 
 
 # in our sense of "iterable", not "generally iterable".
