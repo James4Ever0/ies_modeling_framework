@@ -6028,10 +6028,10 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         """
         电蒸汽发生器机组等效单位设备数 大于零的实数
         """
-        self.power: List[ContinuousVarType] = self.model.continuous_var_list(
-            [i for i in range(0, self.num_hour)],
-            name="power_{0}".format(self.classSuffix),
-        ) # is this of our concern? the electricity?
+        # self.power: List[ContinuousVarType] = self.model.continuous_var_list(
+        #     [i for i in range(0, self.num_hour)],
+        #     name="power_{0}".format(self.classSuffix),
+        # ) # is this of our concern? the electricity?
         
         """
         电蒸汽发生器总功率
@@ -6121,7 +6121,7 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     self.device_count
         #     <= self.device_count_max
         # )
-        self.add_lower_and_upper_bounds(self.power, 0, self.device_count)
+        self.add_lower_and_upper_bounds(self.power_of_inputs[self.input_type], 0, self.device_count)
         # self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
 
         # self.model.add_constraints(
@@ -6130,7 +6130,6 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
 
         self.equations(
             self.power_of_outputs[self.output_type],
-            self.elementwise_add(self.power, self.solidHeatStorage.power),
         )
         # self.model.add_constraints(
         #     self.power[h] + self.solidHeatStorage.power[h]
