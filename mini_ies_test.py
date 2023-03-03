@@ -129,13 +129,16 @@ from integratedEnergySystemPrototypes import EnergyFlowNodeFactory
 #
 
 ############## HOW WE CONNECT THIS ##############
-#      _         
-#     /  BESS  \ 
+#
+# are you sure we can connect to the same node?
+#
+#      _ BESS _   
+#     /        \ 
 # PV - [NODE1] - LOAD       
-#              \_ GRID _/           
+#    \_ GRID _/           
 #                                   
 #
-# TOTAL: 2 Nodes
+# TOTAL: 1 Node
 
 # no checking!
 electricity_type = 'electricity'
@@ -143,10 +146,10 @@ electricity_type = 'electricity'
 NodeFactory = EnergyFlowNodeFactory(model, num_hour,debug=debug)
 
 Node1 = NodeFactory.create_node(electricity_type)
-Node2 = NodeFactory.create_node(electricity_type)
+# Node2 = NodeFactory.create_node(electricity_type)
 
 # channels here are not bidirectional, however any connection between nodes is bidirectional, and any attempt of connection between 3 and more nodes will result into interlaced connections. (fully connected)
-from integratedEnergySystemPrototypes import NodeUtils
+# from integratedEnergySystemPrototypes import NodeUtils
 
 # Channel1 = model.continuous_var_list(
 #     [i for i in range(num_hour)], lb=0, name="channel_1"
@@ -158,14 +161,16 @@ from integratedEnergySystemPrototypes import NodeUtils
 
 Node1.add_input(photoVoltaic)
 # Node1.add_input(Channel2)
-Node1.add_output(batteryEnergyStorageSystem)
+
+Node1.add_input(gridNet)
 Node1.add_output(gridNet)
 # Node1.add_output(Channel1)
 
+Node1.add_input(batteryEnergyStorageSystem)
+Node1.add_output(batteryEnergyStorageSystem)
+
 # Node2.add_input(Channel1)
-Node2.add_input(gridNet)
-Node2.add_input(batteryEnergyStorageSystem)
-Node2.add_output(electricityLoad)
+Node1.add_output(electricityLoad)
 # Node2.add_output(Channel2)
 
 # nodeUtils = NodeUtils(model, num_hour)
