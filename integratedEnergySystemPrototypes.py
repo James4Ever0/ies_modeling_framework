@@ -5444,8 +5444,9 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # ]
         self.output_types = ["cold_water", "warm_water", "hot_water"]
         self.input_types = [
-            output_type if output_type == "hot_water" else f"{output_type}_storage" for output_type in self.output_types
-        ] # false. we do not have the hot_water_storage option.
+            output_type if output_type == "hot_water" else f"{output_type}_storage"
+            for output_type in self.output_types
+        ]  # false. we do not have the hot_water_storage option.
         self.waterStorageTank = EnergyStorageSystemVariable(
             num_hour,
             model,
@@ -5794,14 +5795,18 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # （3）power_waterStorageTank_gheat[h] == power_waterStorageTank[h] * waterStorageTank_gheat_flag[h]
         # 上面的公式进行线性化后,用下面的公式替代
 
-        for output_type in self.output_types:
+        for output_type in self.output_types:  # this is wrong.
+            input_type = (
+                output_type if output_type == "hot_water" else f"{output_type}_storage"
+            )
             self.model.add_constraints(  # lower
                 -bigNumber * self.__dict__[f"{output_type}_flags"][h]
                 <= self.power_of_outputs[output_type][h]
+                - self.power_of_inputs[input_type][h]
                 for h in self.hourRange
             )
             self.model.add_constraints(  # upper
-                self.power_of_outputs[output_type][h]
+                self.power_of_outputs[output_type][h] - self.power_of_inputs[input_type][h]
                 <= bigNumber * self.__dict__[f"{output_type}_flags"][h]
                 for h in self.hourRange
             )
@@ -5809,10 +5814,11 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                 self.waterStorageTank.power[h]
                 - (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
                 <= self.power_of_outputs[output_type][h]
+                - self.power_of_inputs[input_type][h]
                 for h in self.hourRange
             )
             self.model.add_constraints(  # upper
-                self.power_of_outputs[output_type][h]
+                self.power_of_outputs[output_type][h] - self.power_of_inputs[input_type][h]
                 <= self.waterStorageTank.power[h]
                 + (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
                 for h in self.hourRange
