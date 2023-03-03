@@ -391,11 +391,22 @@ if __name__ == "__main__":
         [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
     )
     
-    for device in []:
-        hotWaterNode1.add_input()
+    for device in [
+        combinedHeatAndPower,
+    #     + platePhotothermal,
+    #     + phaseChangeHotWaterStorage,
+    #     + municipalHotWater,
+    #     + gasBoiler_hotWater,
+    #     + hotWaterElectricBoiler,
+    #     + waterStorageTank.power_waterStorageTank_gheat[h]
+        
+    ]:
+        hotWaterNode1.add_input(device)
+    
+    hotWaterNode1.add_input_and_output(waterStorageTank)
     
     for device in []:
-        hotWater
+        hotWaterNode1.add_output(device)
 
     # TODO: 这些设备能不能输出高温热水 待定
     # model.add_constraints(  # inputs
