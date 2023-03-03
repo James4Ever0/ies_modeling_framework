@@ -711,6 +711,14 @@ if __name__ == "__main__":
     
     # non-convex quadratic constraint?
     # please show me!
+    print()
+    print("#"*30)
+    for quadratic_constraint in model.iter_quadratic_constraints():
+        print("QUAD CONS?",quadratic_constraint)
+    print("#"*30)
+    print()
+    
+    breakpoint()
 
     check_solve_and_log(
         systems, model, simulation_name="fig"
