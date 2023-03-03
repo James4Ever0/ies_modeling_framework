@@ -64,8 +64,8 @@ gridNet = GridNet(
     model,
     device_count_max=200000,
     device_price=0,
-    electricity_price=electricity_price0,
-    electricity_price_upload=0.35,
+    electricity_price=electricity_price0*1000,
+    electricity_price_upload=0.35*10000000000,
     debug=debug,
 )
 gridNet.constraints_register(powerPeak_predicted=2000)
@@ -130,9 +130,9 @@ municipalHotWater = CitySupply(
     num_hour,
     model,
     device_count_max=5000 * 10000,
-    device_price=3000,
-    running_price=0.3 * np.ones(num_hour),  # run_price -> running_price
-    efficiency=0.9,
+    device_price=3000*1000,
+    running_price=0.3 * np.ones(num_hour)*1000,  # run_price -> running_price
+    efficiency=0.9*0.1,
     output_type="hot_water",  # add output_type
     debug=debug,
 )
