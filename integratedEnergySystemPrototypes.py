@@ -22,7 +22,7 @@ class Load:
             Literal["electricity"],
         ],
         data: Union[List, np.ndarray],
-        device_name="load"
+        device_name="load",
     ):
         self.power_of_inputs = {input_type: data}
         self.power_of_outputs = {}
@@ -6370,9 +6370,11 @@ class GridNet(IntegratedEnergySystem):
         """
         电网发电峰值 实数
         """
-        
-        self.electricity_net_exchange =self.elementwise_subtract( self.power_of_outputs[self.output_type], self.power_of_inputs[self.input_type]) # you need to pay this much.
-        
+
+        self.electricity_net_exchange = self.elementwise_subtract(
+            self.power_of_outputs[self.output_type],
+            self.power_of_inputs[self.input_type],
+        )  # you need to pay this much.
 
         # self.electricity_net_exchange = self.model.continuous_var_list(
         #     [i for i in range(0, num_hour)],
@@ -6381,6 +6383,7 @@ class GridNet(IntegratedEnergySystem):
         #     name=f"electricity_net_exchange_{self.classSuffix}",
         # )
         # return val
+        self.io_directions = ["input", "output"]
 
     def constraints_register(self, powerPeak_predicted: float = 2000):
         super().constraints_register()
@@ -6403,12 +6406,17 @@ class GridNet(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
-        
+
         # TODO: alter the definition of this gridnet, making it possible for upload and download at the same time.
-        
-        linearization.max_zeros(x= self.elementwise_multiply(self.electricity_net_exchange,-1),y=self.electricity_upload)
-        linearization.max_zeros(x= self.electricity_net_exchange,y=self.electricity_download)
-        
+
+        linearization.max_zeros(num_hour=self.num_hour,model=self.model,
+            x=self.elementwise_multiply(self.electricity_net_exchange, -1),
+            y=self.electricity_upload,
+        )
+        linearization.max_zeros(num_hour=self.num_hour,model=self.model,
+            x=self.electricity_net_exchange, y=self.electricity_download
+        )
+
         # linearization.positive_negitive_constraints_register(
         #     self.num_hour,
         #     self.model,
@@ -6419,7 +6427,7 @@ class GridNet(IntegratedEnergySystem):
         # self.model.add_constraint(self.device_count >= 0)
         # self.model.add_constraint(self.device_count <= self.device_count_max)
 
-        for direction, io_direction in zip(self.directions, ["input", "output"]):
+        for direction, io_direction in zip(self.directions, self.io_directions):
             self.__dict__[f"electricity_{direction}_max"] = self.model.max(
                 self.__dict__[f"power_of_{io_direction}s"][
                     self.__dict__[f"{io_direction}_type"]
