@@ -1028,7 +1028,7 @@ class IntegratedEnergySystem(EnergySystemUtils):
             self.power_of_inputs.update(
                 {
                     energy_type: self.model.continuous_var_list(
-                        [i for i in range(0, self.num_hour)],
+                        [i for i in range(0, self.num_hour)],lb=0,
                         name=f"power_of_input_{energy_type}_{self.classSuffix}",
                     )
                 }
@@ -1039,7 +1039,7 @@ class IntegratedEnergySystem(EnergySystemUtils):
             self.power_of_outputs.update(
                 {
                     energy_type: self.model.continuous_var_list(
-                        [i for i in range(0, self.num_hour)],
+                        [i for i in range(0, self.num_hour)],lb=0,
                         name=f"power_of_output_{energy_type}_{self.classSuffix}",
                     )
                 }
@@ -2352,7 +2352,7 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         """
         self.efficiency = efficiency
 
-        self.solidHeatStorage = EnergyStorageSystem(
+        self.solidHeatStorage = EnergyStorageSystem( # this shall never be used directly. this is internal.
             num_hour,
             model,
             self.device_count_max_solidHeatStorage,
@@ -2363,8 +2363,8 @@ class TroughPhotoThermal(IntegratedEnergySystem):
             energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
-            input_type='heat',
-            output_type='heat'
+            input_type=self.output_type,
+            output_type=self.output_type
         )
         """
         固态储热设备初始化为`EnergyStorageSystem`
@@ -2413,13 +2413,13 @@ class TroughPhotoThermal(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 与天气相关
         
-        self.equations(self.solidHeatStorage.power_of_inputs['heat']
+        self.equations(self.power_generated_steam, self.elementwise_add(self.power_generated_steam_remained,self.solidHeatStorage.power_of_inputs[self.output_type]))
 
         self.equations(
             self.power_of_outputs[self.output_type],
             self.elementwise_add(
-                self.power_generated_sum_remained,
-                self.solidHeatStorage.power_of_outputs[],
+                self.power_generated_steam_remained,
+                self.solidHeatStorage.power_of_outputs[self.output_type],
             ),
             self.hourRange,
         )
