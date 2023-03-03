@@ -1025,8 +1025,10 @@ class IntegratedEnergySystem(EnergySystemUtils):
         self.model = model
         self.device_name = device_name
         self.device_count_max = device_count_max
-        assert device_count_min >= 0
-        assert device_count_max >= device_count_min
+        if type(device_count_min) in common_numeral_types:
+            assert device_count_min >= 0
+            if type(device_count_max) in common_numeral_types:
+                assert device_count_max >= device_count_min # this will cause error if passed as variables.
         self.device_count_min = device_count_min
         self.device_price = device_price
         self.classSuffix = f"{self.className}_{self.classIndex}"
@@ -2587,14 +2589,15 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         """
         二元变量列表,表示热电联产在每个时段是否启动
         """
-        self.output_hot_water_flags: BinaryVarType = self.model.binary_var(
-            name="output_hot_water_flag_{0}".format(self.classSuffix)
+        self.output_hot_water_flags: BinaryVarType = self.model.binary_var_list(
+            [i for i in range(0, self.num_hour)], name="output_hot_water_flag_{0}".format(self.classSuffix)
         )
         """
         二元变量,表示热电联产是否用于供暖热水
         """
-        self.output_steam_flags: BinaryVarType = self.model.binary_var(
-            name="output_steam_flag_{0}".format(self.classSuffix)
+        # bad. this shall be list.
+        self.output_steam_flags: BinaryVarType = self.model.binary_var_list(
+            [i for i in range(0, self.num_hour)], name="output_steam_flag_{0}".format(self.classSuffix)
         )
         """
         二元变量,表示热电联产是否用于供热蒸汽
