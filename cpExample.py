@@ -504,15 +504,15 @@ if __name__ == "__main__":
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
     warmWaterNode1.add_inputs(
         heatPump,
-            ##############
-            
         ##############
-
-    ,waterSourceHeatPumps
-    ,steamAndWater_exchanger # this is for warm water?
-    ,hotWaterExchanger
-    ,tripleWorkingConditionUnit
-    ,groundSourceHeatPump
+        waterStorageTank,
+        phaseChangeWarmWaterStorage,
+        ##############
+        waterSourceHeatPumps,
+        steamAndWater_exchanger,  # this is for warm water?
+        hotWaterExchanger,
+        tripleWorkingConditionUnit,
+        groundSourceHeatPump,
     )
     warmWaterNode1.add_output(warmWaterLoad)
     # model.add_constraints(  # warm_water input -> output
@@ -529,9 +529,9 @@ if __name__ == "__main__":
     #     for h in range(0, num_hour)
     # )
     # 冰蓄冷逻辑组合
-    iceNode1.add_inputs(tripleWorkingConditionUnit,doubleWorkingConditionUnit)
+    iceNode1.add_inputs(tripleWorkingConditionUnit, doubleWorkingConditionUnit)
     iceNode1.add_output(iceStorage)
-    
+
     # model.add_constraints(
     #     tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
     #     + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
@@ -587,9 +587,9 @@ if __name__ == "__main__":
     #     ),
     # )
     # 蓄热逻辑组合
-    warmWaterStorageNode1.add_inputs(heatPump,waterSourceHeatPumps)
-    warmWaterStorageNode1.add_outputs(waterStorageTank,phaseChangeWarmWaterStorage)
-    
+    warmWaterStorageNode1.add_inputs(heatPump, waterSourceHeatPumps)
+    warmWaterStorageNode1.add_outputs(waterStorageTank, phaseChangeWarmWaterStorage)
+
     # model.add_constraints(
     #     heatPump.power_waterSourceHeatPumps_heatStorage[h]
     #     + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
