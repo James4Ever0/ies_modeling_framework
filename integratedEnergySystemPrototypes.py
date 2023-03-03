@@ -2762,9 +2762,18 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     == self.device_count * self.rated_power
         # )
 
-        # TODO: you cannot multiply these flags with other variables. will get you banned.
-        self.add_upper_bounds(self.power_of_outputs['electricity'],self.elementwise_multiply(self.on_flags, bigNumber),)
-        # self.add_lower_and_upper_bounds( 
+        # TODO: you cannot multiply these flags with other variables. will get you banned. but i still doubt this. why not apply this to `self.device_count_running?`
+        self.add_lower_bounds(
+            self.power_of_outputs["electricity"],
+            self.elementwise_multiply(
+                self.on_flags, self.rated_power * self.running_ratio_min
+            ),
+        )
+        self.add_upper_bounds(
+            self.power_of_outputs["electricity"],
+            self.elementwise_multiply(self.on_flags, bigNumber),
+        )
+        # self.add_lower_and_upper_bounds(
         #     self.power_of_outputs["electricity"],
         #     self.elementwise_multiply(
         #         self.on_flags, self.total_rated_power * self.running_ratio_min
@@ -2824,7 +2833,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     for h in self.hourRange
         # )  # 确定CombinedHeatAndPower开启台数
 
-        self.add_lower_and_upper_bounds(self.device_count_running, 0, self.device_count)
+        self.add_lower_and_upper_bounds(
+            self.device_count_running, 0, self.device_count
+        )  # maybe not?
         # self.model.add_constraints(
         #     0 <= self.device_count_running[h] for h in self.hourRange
         # )
