@@ -873,7 +873,7 @@ class EnergyFlowNodeFactory:
     def check_system_validity(self, devices: List):
         device_ids = set([id(device) for device in devices])
         assert device_ids == self.device_ids
-        
+
         for device in devices:
             input_ids = [
                 f"{id(device)}_input_{key}" for key, _ in device.power_of_inputs.items()
@@ -888,9 +888,10 @@ class EnergyFlowNodeFactory:
             if not fully_connected:
                 ...  # ready to raise exception?
 
-    def build_relations(self,devices:List):
+    def build_relations(self, devices: List):
         assert self.built is False
-        
+        self.check_system_validity(devices)
+
         for node in self.nodes:
             node.build_relations()
         self.built = True

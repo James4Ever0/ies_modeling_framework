@@ -252,8 +252,8 @@ Node4.add_output(warmWaterLoad)
 Node5.add_input(municipalHotWater)
 Node5.add_output(hotWaterExchanger)
 
-NodeFactory.check_system_validity(systems)
-NodeFactory.build_relations() # <- before you build, you check validity.
+# NodeFactory.check_system_validity(systems)
+NodeFactory.build_relations(systems) # <- before you build, you check validity.
 # Node1.build_relations()
 # Node2.build_relations()
 # Node3.build_relations()

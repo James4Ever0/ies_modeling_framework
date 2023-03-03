@@ -131,9 +131,9 @@ Node2.add_output(coldWaterLoad)
 
 # Node1.build_relations()
 # Node2.build_relations()
-NodeFactory.build_relations()
+systems = [hotWaterLiBr, municipalHotWater, coldWaterLoad]
+NodeFactory.build_relations(systems)
 
-systems = [hotWaterLiBr, municipalHotWater]
 # systems = [platePhotothermal,hotWaterLiBr,municipalHotWater]
 
 from mini_data_log_utils import solve_and_log

@@ -173,7 +173,8 @@ Node2.add_output(electricityLoad)
 nodeUtils = NodeUtils(model, num_hour)
 nodeUtils.fully_connected(Node1,Node2)
 
-NodeFactory.build_relations()
+systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet, electricityLoad]
+NodeFactory.build_relations(systems)
 # Node1.build_relations()
 # Node2.build_relations()
 
@@ -185,7 +186,6 @@ NodeFactory.build_relations()
 #     for h in range(num_hour)
 # )
 
-systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet]
 
 from mini_data_log_utils import check_solve_and_log
 check_solve_and_log(systems, model, simulation_name)

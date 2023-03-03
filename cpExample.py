@@ -132,8 +132,8 @@ power_load, cool_load, heat_load, steam_load = getPowerCoolHeatSteamLoads(num_ho
 
 # is this a test on `Linear_absolute`?
 
-# absolute1 = Linear_absolute(model1, [-5, 6], [0, 1])
-# absolute1.absolute_add_constraints(model1)
+# absolute1 = Linear_absolute(model, [-5, 6], [0, 1])
+# absolute1.absolute_add_constraints(model)
 
 from integratedEnergySystemPrototypes import (
     IntegratedEnergySystem,  # needed!
@@ -162,12 +162,12 @@ from integratedEnergySystemPrototypes import (
 )
 
 if __name__ == "__main__":
-    model1 = Model(name="buses")
+    model = Model(name="buses")
 
     # 获取光照、能源价格
     ##########################################
     (
-        intensityOfIllumination0,
+        intensityOfIllumination,
         electricity_price0,
         gas_price0,
         municipalHotWater_price0,
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     # 发电及电储能装置
     ##########################################
     dieselEngine, photoVoltaic, batteryEnergyStorageSystem = electricSystemRegistration(
-        model1, num_hour, intensityOfIllumination0, day_node
+        model, num_hour, intensityOfIllumination, day_node
     )
     ##########################################
 
@@ -192,9 +192,9 @@ if __name__ == "__main__":
         gasBoiler,
         municipalSteam,
     ) = steamSourcesRegistration(
-        model1,
+        model,
         num_hour,
-        intensityOfIllumination0,
+        intensityOfIllumination,
         # day_node,
         electricity_price0,
         gas_price0,
@@ -205,16 +205,16 @@ if __name__ == "__main__":
 
     # 高温蒸汽去向
     ##########################################
-    power_steam_used_product = model1.continuous_var_list(
+    power_steam_used_product = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_steam_used_product"
     )  # shall this be never used?
-    power_steam_used_heatcool = model1.continuous_var_list(
+    power_steam_used_heatcool = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_steam_used_heatcool"
     )
-    power_steam_sum = model1.continuous_var_list(
+    power_steam_sum = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_steam_sum"
     )
-    model1.add_constraints(
+    model.add_constraints(
         power_steam_sum[h]
         == municipalSteam.heat_citySupplied[h]
         + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
@@ -226,7 +226,7 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     # 高温蒸汽去处
-    model1.add_constraints(
+    model.add_constraints(
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour)
     )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
@@ -234,27 +234,27 @@ if __name__ == "__main__":
     # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
         num_hour,
-        model1,
+        model,
         device_max=20000,
         device_price=400,
         k=50,
         device_name="steamAndWater_exchanger",
     )
-    steamAndWater_exchanger.constraints_register(model1)  # qs - 泉水？ steamAndWater热交换器？
+    steamAndWater_exchanger.constraints_register(model)  # qs - 泉水？ steamAndWater热交换器？
 
     # 蒸汽溴化锂
     # TODO: 添加设备最少购买数量
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
         num_hour,
-        model1,
+        model,
         LiBr_device_max=10000,
         device_price=1000,
         efficiency=0.9,
         device_name="steamPowered_LiBr",
     )
-    steamPowered_LiBr.constraints_register(model1)
+    steamPowered_LiBr.constraints_register(model)
 
-    model1.add_constraints(
+    model.add_constraints(
         power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
         >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
         + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
@@ -277,9 +277,9 @@ if __name__ == "__main__":
         phaseChangeHotWaterStorage,
         hotWaterElectricBoiler,
     ) = hotWaterSourcesRegistration(
-        model1,
+        model,
         num_hour,
-        intensityOfIllumination0,
+        intensityOfIllumination,
         day_node,
         electricity_price0,
         municipalHotWater_price0,
@@ -288,12 +288,12 @@ if __name__ == "__main__":
     ##########################################
 
     # 高温热水合计
-    power_highTemperatureHotWater_sum = model1.continuous_var_list(
+    power_highTemperatureHotWater_sum = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
     )
 
     # TODO: 这些设备能不能输出高温热水 待定
-    model1.add_constraints(
+    model.add_constraints(
         power_highTemperatureHotWater_sum[h]
         == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
         + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
@@ -313,32 +313,32 @@ if __name__ == "__main__":
     # 热水溴化锂，制冷
     hotWaterLiBr = LiBrRefrigeration(
         num_hour,
-        model1,
+        model,
         LiBr_device_max=10000,
         device_price=1000,
         efficiency=0.9,
         device_name="hotWaterLiBr",
     )
-    hotWaterLiBr.constraints_register(model1)
+    hotWaterLiBr.constraints_register(model)
 
     # 热水交换器，吸收热量
     hotWaterExchanger = Exchanger(
         num_hour,
-        model1,
+        model,
         device_max=20000,
         device_price=400,
         k=50,
         device_name="hotWaterExchanger",
     )
-    hotWaterExchanger.constraints_register(model1)
+    hotWaterExchanger.constraints_register(model)
 
     # 高温热水去向
-    model1.add_constraints(
+    model.add_constraints(
         power_highTemperatureHotWater_sum[h]
         >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
         for h in range(0, num_hour)  # （每小时）高温热水总热量 >= 热水溴化锂消耗热量 + 热交换器消耗热量
     )
-    model1.add_constraints(
+    model.add_constraints(
         power_highTemperatureHotWater_sum[h] >= 0 for h in range(0, num_hour)
     )  # （每小时）高温热水总热量>=0
 
@@ -347,8 +347,8 @@ if __name__ == "__main__":
     # 采用线性化技巧,处理为下面的约束.基于每种设备要么制热,要么制冷。
     # 供冷:风冷heatPump groundSourceHeatPump 蓄能水罐 hotWaterLiBr机组 蒸汽LiBr机组 phaseChangeColdWaterStorage
     # 供热:风冷heatPump groundSourceHeatPump 蓄能水罐 地热 水水Exchanger传热
-    # heatPump = AirHeatPump(num_hour, model1, device_max=10000, device_price=1000, electricity_price=electricity_price0)
-    # heatPump.constraints_register(model1)
+    # heatPump = AirHeatPump(num_hour, model, device_max=10000, device_price=1000, electricity_price=electricity_price0)
+    # heatPump.constraints_register(model)
 
     # 冷 热 冰 供给储存消耗平衡
     ##########################################
@@ -365,20 +365,20 @@ if __name__ == "__main__":
         phaseChangeColdWaterStorage,
         phaseChangeWarmWaterStorage,
     ) = cooletIceHeatDevicesRegistration(
-        model1,
+        model,
         num_hour,
         electricity_price0,
     )
 
     # 产能储能机组平衡输出功率
     ###########
-    power_cooletStorage = model1.continuous_var_list(
+    power_cooletStorage = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_cooletStorage"
     )
-    power_heatStorage = model1.continuous_var_list(
+    power_heatStorage = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_heatStorage"
     )
-    power_iceStorage = model1.continuous_var_list(
+    power_iceStorage = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_iceStorage"
     )
     ###########
@@ -386,7 +386,7 @@ if __name__ == "__main__":
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
     # what is "_x"?
-    model1.add_constraints(
+    model.add_constraints(
         heatPump.power_waterSourceHeatPumps_cool[h]
         + power_cooletStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_cool[h]
@@ -402,7 +402,7 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
-    model1.add_constraints(
+    model.add_constraints(
         heatPump.power_waterSourceHeatPumps_heat[h]
         + power_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
@@ -416,7 +416,7 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     # 冰蓄冷逻辑组合
-    model1.add_constraints(
+    model.add_constraints(
         tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
         + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
         + iceStorage.power_energyStorageSystem[h]
@@ -430,13 +430,13 @@ if __name__ == "__main__":
         # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
         # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能（负数），制冰机组输出（正数）全部被冰蓄能装置吸收；要么制冰机组用于蓄冰的功率为0，冰蓄能装置放能（正数），蓄冰机组平衡输出（正数）全部由冰蓄能装置提供
         num_hour,
-        model1,
+        model,
         y=power_iceStorage,
         x=iceStorage.power_energyStorageSystem,
     )
 
     # 蓄冷逻辑组合
-    model1.add_constraints(
+    model.add_constraints(
         heatPump.power_waterSourceHeatPumps_cooletStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_cooletStorage[h]
         + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cooletStorage[h]
@@ -449,20 +449,20 @@ if __name__ == "__main__":
     )
     linearization.max_zeros(
         num_hour,
-        model1,
+        model,
         # TODO: invert x/y position
         # 修改之前：要么蓄冷设备不充不放，系统不产生冷量；要么消耗冷，冷量全部由蓄冷设备提供
         # 修改之后： 要么蓄冷机组平衡输出为0，蓄冷装置充能（负数），制冷机组输出（正数）全部被蓄冷装置吸收；要么制冷机组用于蓄冷的功率为0，蓄冷装置放能（正数），蓄冷机组平衡输出（正数）全部由蓄冷装置提供
         y=power_cooletStorage,
         x=linearization.add(  # （每小时）总蓄冷功率 = 水蓄冷功率 + 相变蓄冷功率
             num_hour,
-            model1,
+            model,
             waterStorageTank.power_waterStorageTank_cool,
             phaseChangeColdWaterStorage.power_energyStorageSystem,
         ),
     )
     # 蓄热逻辑组合
-    model1.add_constraints(
+    model.add_constraints(
         heatPump.power_waterSourceHeatPumps_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
         + waterStorageTank.power_waterStorageTank_heat[h]
@@ -474,14 +474,14 @@ if __name__ == "__main__":
     )
     linearization.max_zeros(
         num_hour,
-        model1,
+        model,
         # TODO: invert x/y position
         # 修改之前：要么蓄热设备不充不放，系统不产生热量；要么消耗热，热量全部由蓄热设备提供
         # 修改之后： 要么蓄热机组平衡输出为0，蓄热装置充能（负数），制热机组输出（正数）全部被蓄热装置吸收；要么制热用于蓄热的功率为0，蓄热装置放能（正数），蓄热机组平衡输出（正数）全部由蓄热装置提供
         y=power_heatStorage,
         x=linearization.add(
             num_hour,
-            model1,
+            model,
             waterStorageTank.power_waterStorageTank_heat,
             phaseChangeWarmWaterStorage.power_energyStorageSystem,
         ),
@@ -501,15 +501,15 @@ if __name__ == "__main__":
     # 电网
     gridNet = GridNet(
         num_hour,
-        model1,
+        model,
         gridNet_device_max=200000,
         device_price=0,
         electricity_price_from=electricity_price0,
         electricity_price_to=0.35,
     )
-    gridNet.constraints_register(model1, powerPeak_pre=2000)
+    gridNet.constraints_register(model, powerPeak_pre=2000)
 
-    model1.add_constraints(
+    model.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
         + heatPump.electricity_waterSourceHeatPumps[h]
@@ -570,23 +570,23 @@ if __name__ == "__main__":
         objective += integratedEnergySystem_device[ii].annualized
 
     # 使得目标值最小
-    model1.minimize(objective)
+    model.minimize(objective)
 
-    model1.print_information()
+    model.print_information()
 
     # do we have anything in conflict?
     ####
     # refiner = ConflictRefiner()  # 先实例化ConflictRefiner类
-    # res = refiner.refine_conflict(model1)  # 将模型导入该类,调用方法
+    # res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
     # res.display()  # 显示冲突约束
 
     print("start calculation:")
 
     # 1000秒以内解出 否则放弃
-    model1.set_time_limit(time_limit=1000)
+    model.set_time_limit(time_limit=1000)
 
     # 模型求解返回值 可为空
-    solution_run1: Union[None, SolveSolution] = model1.solve(
+    solution_run1: Union[None, SolveSolution] = model.solve(
         log_output=True
     )  # output some solution.
     # docplex.mp.solution.SolveSolution or None
@@ -606,7 +606,7 @@ if __name__ == "__main__":
         )
 
         printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device)
-        printDecisionVariablesFromSolution(model1)
+        printDecisionVariablesFromSolution(model)
 
         value = Value(solution_run1)
 
