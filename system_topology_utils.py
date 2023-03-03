@@ -16,7 +16,7 @@ def visualizeSystemTopology(
 
     for device_id in NodeFactory.device_ids:
         device_name = NodeFactory.device_id_to_device_name[device_id]
-        device_node_name = f"{device_name}_{device_id}_device"
+        device_node_name = f"{device_name}_{device_id[:4]}_device"
         G.add_node(device_node_name)
 
     for node in NodeFactory.nodes:
@@ -28,7 +28,7 @@ def visualizeSystemTopology(
             device_id = input_id.split("_")[0]
             try:
                 # device_id = input_id
-                device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id}_device"
+                device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id[:4]}_device"
                 G.add_edge(device_node_name,node_name)
             except:
                 breakpoint()
@@ -38,7 +38,7 @@ def visualizeSystemTopology(
             device_id = output_id.split("_")[0]
             try:
                 # device_id = output_id
-                device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id}_device"
+                device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id[:4]}_device"
                 G.add_edge(node_name,device_node_name)
             except:
                 breakpoint()

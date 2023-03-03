@@ -708,6 +708,9 @@ if __name__ == "__main__":
     NodeFactory.build_relations(systems)  # this is a failsafe.
     # check if this is built?
     assert NodeFactory.built
+    
+    # non-convex quadratic constraint?
+    # please show me!
 
     check_solve_and_log(
         systems, model, simulation_name="fig"
