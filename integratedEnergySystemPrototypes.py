@@ -6353,10 +6353,10 @@ class GridNet(IntegratedEnergySystem):
                 name=f"electricity_{direction}_{self.classSuffix}",
             )
 
-        self.equations(self.power_of_inputs[self.input_type], self.electricity_upload)
-        self.equations(
-            self.power_of_outputs[self.output_type], self.electricity_download
-        )
+        # self.equations(self.power_of_inputs[self.input_type], self.electricity_upload)
+        # self.equations(
+        #     self.power_of_outputs[self.output_type], self.electricity_download
+        # )
 
         # self.power_output_max = self.model.continuous_var(
         #     name="power_output_max_{0}".format(self.classSuffix)
@@ -6371,12 +6371,12 @@ class GridNet(IntegratedEnergySystem):
         电网发电峰值 实数
         """
 
-        self.electricity_net_exchange = self.model.continuous_var_list(
-            [i for i in range(0, num_hour)],
-            lb=0,
-            ub=bigNumber,
-            name=f"electricity_net_exchange_{self.classSuffix}",
-        )
+        # self.electricity_net_exchange = self.model.continuous_var_list(
+        #     [i for i in range(0, num_hour)],
+        #     lb=0,
+        #     ub=bigNumber,
+        #     name=f"electricity_net_exchange_{self.classSuffix}",
+        # )
         # return val
 
     def constraints_register(self, powerPeak_predicted: float = 2000):
@@ -6400,6 +6400,8 @@ class GridNet(IntegratedEnergySystem):
         # self.hourRange = range(0, self.num_hour)
         linearization = Linearization()
         # TODO: make sure this time we have power_input as positive number.
+        
+        # TODO: alter the definition of this gridnet, making it possible for upload and download at the same time.
 
         linearization.positive_negitive_constraints_register(
             self.num_hour,
