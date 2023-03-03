@@ -159,13 +159,13 @@ from integratedEnergySystemPrototypes import (
     # CitySupply,
     GridNet,
     Linearization,
-    NodeUtils, # shall we disable in-node connections
-    EnergyFlowNodeFactory
+    NodeUtils,  # shall we disable in-node connections
+    EnergyFlowNodeFactory,
 )
 
 from mini_data_log_utils import check_solve_and_log
 
-debug=False
+debug = False
 
 if __name__ == "__main__":
     model = Model(name="buses")
@@ -184,9 +184,11 @@ if __name__ == "__main__":
     # 发电及电储能装置
     ##########################################
     dieselEngine, photoVoltaic, batteryEnergyStorageSystem = electricSystemRegistration(
-        model, num_hour, intensityOfIllumination, day_node,
+        model,
+        num_hour,
+        intensityOfIllumination,
+        day_node,
         debug=debug,
-        
     )
     ##########################################
 
@@ -207,13 +209,11 @@ if __name__ == "__main__":
         electricity_price0,
         gas_price0,
         debug=debug,
-        
     )
 
     # 以上为蒸汽发生装置
     ##########################################
-    
-    
+
     # 汽水热交换器
     steamAndWater_exchanger = Exchanger(
         num_hour,
@@ -223,9 +223,11 @@ if __name__ == "__main__":
         k=50,
         device_name="steamAndWater_exchanger",
         debug=debug,
+        input_type='steam',
+        output_type='hot_water'
     )
     steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
-    
+
     # 蒸汽溴化锂
     # TODO: 添加设备最少购买数量
     steamPowered_LiBr = LiBrRefrigeration(  # 蒸汽？
@@ -238,13 +240,12 @@ if __name__ == "__main__":
         debug=debug,
     )
     steamPowered_LiBr.constraints_register()
-    
-    
+
     (
         platePhotothermal,
         waterStorageTank,
         municipalHotWater,
-        gasBoiler_hotWater,# TODO: 待定是否只能烧高温热水
+        gasBoiler_hotWater,  # TODO: 待定是否只能烧高温热水
         phaseChangeHotWaterStorage,
         hotWaterElectricBoiler,
     ) = hotWaterSourcesRegistration(
@@ -257,7 +258,7 @@ if __name__ == "__main__":
         gas_price0,
         debug=debug,
     )
-    
+
     # 热水溴化锂，制冷
     hotWaterLiBr = LiBrRefrigeration(
         num_hour,
@@ -279,9 +280,11 @@ if __name__ == "__main__":
         k=50,
         device_name="hotWaterExchanger",
         debug=debug,
+        input_type='hot_water',
+        output_type='warm_water'
     )
     hotWaterExchanger.constraints_register()
-    
+
     from demo_utils import cooletIceHeatDevicesRegistration
 
     (
@@ -300,8 +303,7 @@ if __name__ == "__main__":
         electricity_price0,
         debug=debug,
     )
-    
-    
+
     # 电网
     gridNet = GridNet(
         num_hour,
@@ -312,7 +314,7 @@ if __name__ == "__main__":
         electricity_price_upload=0.35,
         debug=debug,
     )
-    gridNet.constraints_register( powerPeak_predicted=2000)
+    gridNet.constraints_register(powerPeak_predicted=2000)
 
     # 高温蒸汽去向
     ##########################################
@@ -326,8 +328,10 @@ if __name__ == "__main__":
     #     [i for i in range(0, num_hour)], name="power_steam_sum"
     # )
     NodeFactory = EnergyFlowNodeFactory(model=model, num_hour=num_hour, debug=debug)
-    SteamNode1 = NodeFactory.create_node('steam') # shall we automatically determine the equation type?
-    
+    SteamNode1 = NodeFactory.create_node(
+        "steam"
+    )  # shall we automatically determine the equation type?
+
     model.add_constraints(
         power_steam_sum[h]
         == municipalSteam.heat_citySupplied[h]
@@ -340,12 +344,12 @@ if __name__ == "__main__":
         for h in range(0, num_hour)
     )
     # 高温蒸汽去处
-    model.add_constraints(
+    model.add_constraints( # steam_load <- node output?
         power_steam_sum[h] >= steam_load[h] + power_steam_used_heatcool[h]
         for h in range(0, num_hour)
     )  # 每小时蒸汽的总和 >= 每小时蒸汽负荷消耗量+每小时蒸汽用于制冷或者热交换的使用量
 
-    model.add_constraints(
+    model.add_constraints( # node output
         power_steam_used_heatcool[h]  # （每小时）蒸汽被使用于制冷或者热交换的量
         >= steamAndWater_exchanger.heat_exchange[h]  # 汽水热交换器得到的热量
         + steamPowered_LiBr.heat_LiBr_from[h]  # 蒸汽溴化锂得到的热量
@@ -384,7 +388,6 @@ if __name__ == "__main__":
             0, num_hour
         )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放能功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
     )
-
 
     # 高温热水去向
     model.add_constraints(
@@ -443,8 +446,8 @@ if __name__ == "__main__":
         heatPump.power_waterSourceHeatPumps_heat[h]
         + power_heatStorage[h]
         + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
-        + steamAndWater_exchanger.heat_exchange[h] # both warm water output.
-        + hotWaterExchanger.heat_exchange[h] # both warm water output.
+        + steamAndWater_exchanger.heat_exchange[h]  # both warm water output.
+        + hotWaterExchanger.heat_exchange[h]  # both warm water output.
         + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
         + groundSourceHeatPump.power_groundSourceHeatPump[h]
         == heat_load[
@@ -535,7 +538,6 @@ if __name__ == "__main__":
     # 电 供销平衡
     ##########################################
 
-
     model.add_constraints(
         groundSourceHeatPump.electricity_groundSourceHeatPump[h]
         + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
@@ -558,40 +560,40 @@ if __name__ == "__main__":
     ##########################################
 
     # 综合能源系统 所有设备集合
-    systems = (
-        [  # all constrains in IES/IntegratedEnergySystem system
-            dieselEngine,
-            photoVoltaic,
-            batteryEnergyStorageSystem,
-            troughPhotoThermal,
-            electricSteamGenerator,
-            combinedHeatAndPower,
-            gasBoiler,
-            steamAndWater_exchanger,  # qs? 气水？
-            steamPowered_LiBr,  # zq? 制取？
-            platePhotothermal,
-            phaseChangeHotWaterStorage,
-            municipalHotWater,
-            hotWaterElectricBoiler,
-            gasBoiler_hotWater,
-            waterStorageTank,
-            municipalSteam,
-            hotWaterLiBr,
-            hotWaterExchanger,
-            heatPump,
-            waterSourceHeatPumps,
-            waterCoolingSpiralMachine,
-            tripleWorkingConditionUnit,
-            doubleWorkingConditionUnit,
-            groundSourceHeatPump,
-            iceStorage,  # bx?
-            phaseChangeColdWaterStorage,
-            phaseChangeWarmWaterStorage,
-            gridNet,
-        ]
-    )
-    
-    check_solve_and_log(systems, model, simulation_name='fig') # <- assume our objective is to minimize the total annual fee.
+    systems = [  # all constrains in IES/IntegratedEnergySystem system
+        dieselEngine,
+        photoVoltaic,
+        batteryEnergyStorageSystem,
+        troughPhotoThermal,
+        electricSteamGenerator,
+        combinedHeatAndPower,
+        gasBoiler,
+        steamAndWater_exchanger,  # qs? 气水？
+        steamPowered_LiBr,  # zq? 制取？
+        platePhotothermal,
+        phaseChangeHotWaterStorage,
+        municipalHotWater,
+        hotWaterElectricBoiler,
+        gasBoiler_hotWater,
+        waterStorageTank,
+        municipalSteam,
+        hotWaterLiBr,
+        hotWaterExchanger,
+        heatPump,
+        waterSourceHeatPumps,
+        waterCoolingSpiralMachine,
+        tripleWorkingConditionUnit,
+        doubleWorkingConditionUnit,
+        groundSourceHeatPump,
+        iceStorage,  # bx?
+        phaseChangeColdWaterStorage,
+        phaseChangeWarmWaterStorage,
+        gridNet,
+    ]
+
+    check_solve_and_log(
+        systems, model, simulation_name="fig"
+    )  # <- assume our objective is to minimize the total annual fee.
 
     # # 目标值 = 所有混合能源机组年运行成本总和
     # objective = systems[0].annualized
