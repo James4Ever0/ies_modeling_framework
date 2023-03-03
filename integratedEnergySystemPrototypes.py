@@ -907,7 +907,15 @@ class EnergyFlowNodeFactory:
                 [input_id in self.input_ids for input_id in input_ids]
             ) and all([output_id in self.output_ids for output_id in output_ids])
             if not fully_connected:
-                raise Exception(f"inputs: {[input_id in self.input_ids for input_id in input_ids]} outputs: {} of {device.__class__.__name__} not connected.")
+                raise Exception(
+                    "\n".join(
+                        [
+                            f"inputs: {[input_id for input_id in input_ids if input_id  not in self.input_ids]}",
+                            f"outputs: {[output_id for output_id in output_ids if output_id not in self.output_ids]}",
+                            f"device: {device.__class__.__name__} not connected.",
+                        ]
+                    )
+                )
 
     def build_relations(self, devices: List):
         assert self.built is False
@@ -5806,7 +5814,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                 for h in self.hourRange
             )
             self.model.add_constraints(  # upper
-                self.power_of_outputs[output_type][h] - self.power_of_inputs[input_type][h]
+                self.power_of_outputs[output_type][h]
+                - self.power_of_inputs[input_type][h]
                 <= bigNumber * self.__dict__[f"{output_type}_flags"][h]
                 for h in self.hourRange
             )
@@ -5818,7 +5827,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
                 for h in self.hourRange
             )
             self.model.add_constraints(  # upper
-                self.power_of_outputs[output_type][h] - self.power_of_inputs[input_type][h]
+                self.power_of_outputs[output_type][h]
+                - self.power_of_inputs[input_type][h]
                 <= self.waterStorageTank.power[h]
                 + (1 - self.__dict__[f"{output_type}_flags"][h]) * bigNumber
                 for h in self.hourRange
