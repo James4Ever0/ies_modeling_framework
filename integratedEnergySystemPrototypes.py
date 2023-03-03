@@ -2762,7 +2762,9 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         #     == self.device_count * self.rated_power
         # )
 
-        # self.add_lower_and_upper_bounds( # you cannot multiply these flags with other variables. will get you banned.
+        # TODO: you cannot multiply these flags with other variables. will get you banned.
+        self.add_upper_bounds(self.power_of_outputs['electricity'],self.elementwise_multiply(self.on_flags, bigNumber),)
+        # self.add_lower_and_upper_bounds( 
         #     self.power_of_outputs["electricity"],
         #     self.elementwise_multiply(
         #         self.on_flags, self.total_rated_power * self.running_ratio_min
@@ -2778,6 +2780,7 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
         # TODO: guess this is not "rated_power" but "total_rated_power"
+        # guess we have to fall back then? no!
 
         # self.model.add_constraints(
         #     self.on_flags[h]
