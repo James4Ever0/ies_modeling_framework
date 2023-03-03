@@ -9,6 +9,10 @@ G.add_node('[NODE1]')
 G.add_node('[NODE2]')
 G.add_node('GRID')
 
+G.add_edge
+
+G.add_edge('PhotoVoltaic','[NODE1]')
+
 import matplotlib.pyplot as plt
 
 nx.draw(G)

@@ -161,7 +161,13 @@ from integratedEnergySystemPrototypes import (
     Linearization,
     NodeUtils,  # shall we disable in-node connections
     EnergyFlowNodeFactory,
+    Load,
 )
+
+electricityLoad = Load('electricity',power_load)
+warmWaterLoad = Load('warm_water', heat_load)
+coldWaterLoad = Load('cold_water',cool_load)
+steamLoad = Load('steam', steam_load)
 
 from mini_data_log_utils import check_solve_and_log
 
@@ -223,8 +229,8 @@ if __name__ == "__main__":
         k=50,
         device_name="steamAndWater_exchanger",
         debug=debug,
-        input_type='steam',
-        output_type='hot_water'
+        input_type="steam",
+        output_type="hot_water",
     )
     steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
 
@@ -280,8 +286,8 @@ if __name__ == "__main__":
         k=50,
         device_name="hotWaterExchanger",
         debug=debug,
-        input_type='hot_water',
-        output_type='warm_water'
+        input_type="hot_water",
+        output_type="warm_water",
     )
     hotWaterExchanger.constraints_register()
 
@@ -331,9 +337,18 @@ if __name__ == "__main__":
     SteamNode1 = NodeFactory.create_node(
         "steam"
     )  # shall we automatically determine the equation type?
-    
-    for device in [municipalSteam,combinedHeatAndPower.steam_exchanger,troughPhotoThermal,electricSteamGenerator,gasBoiler]:
+
+    for device in [
+        municipalSteam,
+        combinedHeatAndPower.steam_exchanger,
+        troughPhotoThermal,
+        electricSteamGenerator,
+        gasBoiler,
+    ]:
         SteamNode1.add_input(device)
+        
+    for device in []:
+        SteamNode1.add_output(device)
 
     # model.add_constraints( # node input
     #     power_steam_sum[h]
@@ -570,7 +585,7 @@ if __name__ == "__main__":
         troughPhotoThermal,
         electricSteamGenerator,
         # combinedHeatAndPower,
-        combinedHeatAndPower.hot_water_exchanger_1, # for CHP devices, we only check their heat exchangers.
+        combinedHeatAndPower.hot_water_exchanger_1,  # for CHP devices, we only check their heat exchangers.
         combinedHeatAndPower.hot_water_exchanger_2,
         combinedHeatAndPower.steam_exchanger,
         gasBoiler,
