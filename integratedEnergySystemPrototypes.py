@@ -8,7 +8,7 @@ from docplex.mp.solution import SolveSolution
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 import itertools
-
+import uuid
 
 class Load:
     def __init__(
@@ -24,6 +24,7 @@ class Load:
         data: Union[List, np.ndarray],
         device_name="load",
     ):
+        self.uuid = str(uuid.uuid4())
         self.power_of_inputs = {input_type: data}
         self.power_of_outputs = {}
         self.annualized = 0
@@ -750,6 +751,7 @@ class EnergyFlowNode:
         self.util = EnergySystemUtils(model, num_hour, debug=debug)
         # self.node_type = node_type
         self.node_type = "equal"
+        self.uuid = str(uuid.uuid4())
         self.inputs = []
         self.input_ids = []
         self.outputs = []
@@ -781,7 +783,7 @@ class EnergyFlowNode:
             for input_element in port:
                 assert input_element >= 0
 
-        port_id = id(port)
+        port_id = port.uuid
         if (port_id not in target_id_list) or type(port_id) in common_numeral_types:
             target_id_list.append(port_id)
             target_list.append(port)
@@ -791,7 +793,7 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = input_port
         else:
-            port_id = f"{id(input_port)}_output_{self.energy_type}"
+            port_id = f"{input_port.uuid}_output_{self.energy_type}"
             assert port_id not in self.output_ids
             port_data: Union[List, np.ndarray] = input_port.power_of_outputs[
                 self.energy_type
@@ -801,8 +803,8 @@ class EnergyFlowNode:
             ):  # this is a source, not anything in between. is it?
                 self.node_type = "greater_equal"
                 
-            self.factory.device_id_to_device_name.update({id(input_port): input_port.device_name})
-            self.factory.device_ids.add(id(input_port))
+            self.factory.device_id_to_device_name.update({input_port.uuid: input_port.device_name})
+            self.factory.device_ids.add(input_port.uuid)
             self.factory.output_ids.add(port_id)
         self.__add_port(port_data, self.inputs, self.input_ids)
 
@@ -810,15 +812,15 @@ class EnergyFlowNode:
         if ignore_energy_type:
             port_data = output_port
         else:
-            port_id = f"{id(output_port)}_input_{self.energy_type}"
+            port_id = f"{output_port.uuid}_input_{self.energy_type}"
             assert port_id not in self.input_ids
             port_data: Union[List, np.ndarray] = output_port.power_of_inputs[
                 self.energy_type
             ]
             if isinstance(output_port, Load):  # this is a load, the endpoint.
                 self.node_type = "greater_equal"
-            self.factory.device_id_to_device_name.update({id(output_port): output_port.device_name})
-            self.factory.device_ids.add(id(output_port))
+            self.factory.device_id_to_device_name.update({output_port.uuid: output_port.device_name})
+            self.factory.device_ids.add(output_port.uuid)
             self.factory.input_ids.add(port_id)
         self.__add_port(port_data, self.outputs, self.output_ids)
 
@@ -909,16 +911,16 @@ class EnergyFlowNodeFactory:
         return node
 
     def check_system_validity(self, devices: List):
-        device_ids = set([id(device) for device in devices])
+        device_ids = set([device.uuid for device in devices])
         assert device_ids == self.device_ids
 
         for device in devices:
             input_ids = [
-                f"{id(device)}_input_{key}"
+                f"{device.uuid}_input_{key}"
                 for key, _ in device.power_of_inputs.items()
             ]
             output_ids = [
-                f"{id(device)}_output_{key}"
+                f"{device.uuid}_output_{key}"
                 for key, _ in device.power_of_outputs.items()
             ]
             fully_connected = all(
@@ -963,8 +965,8 @@ class NodeUtils:
         assert len(nodes) >= 2
         for two_nodes in itertools.combinations(nodes, 2):
             for node_a, node_b in itertools.permutations(two_nodes, 2):
-                node_a_id = id(node_a)
-                node_b_id = id(node_b)
+                node_a_id = node_a.uuid
+                node_b_id = node_b.uuid
 
                 assert node_a_id != node_b_id
                 assert not node_a.built
@@ -1020,6 +1022,7 @@ class IntegratedEnergySystem(EnergySystemUtils):
         """
         新建一个综合能源系统基类,设置设备名称,设备编号加一,打印设备名称和编号
         """
+        self.uuid = str(uuid.uuid4())
         IntegratedEnergySystem.device_index += 1
         super().__init__(model, num_hour, debug=debug)
         # self.device_name = device_name
