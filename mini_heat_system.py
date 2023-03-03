@@ -261,6 +261,7 @@ NodeFactory.build_relations(systems)  # <- before you build, you check validity.
 # Node2.build_relations()
 # Node3.build_relations()
 # Node4.build_relations()
+assert NodeFactory.built
 
 from mini_data_log_utils import check_solve_and_log
 

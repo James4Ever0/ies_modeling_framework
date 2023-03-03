@@ -623,29 +623,51 @@ if __name__ == "__main__":
 
     # what is "chargeaifa" ??
 
+    electricityNode1 = NodeFactory.create_node("electricity")
+
+    electricityNode1.add_outputs(
+        groundSourceHeatPump,
+        waterCoolingSpiralMachine,
+        heatPump,
+        waterSourceHeatPumps,
+        electricityLoad,
+        electricSteamGenerator,
+        hotWaterElectricBoiler,
+        tripleWorkingConditionUnit,
+        doubleWorkingConditionUnit,
+    )
+    electricityNode1.add_inputs(
+        photoVoltaic,
+        combinedHeatAndPower,
+        dieselEngine,
+    )
+    electricityNode1.add_input_and_outputs(gridNet, batteryEnergyStorageSystem)
+
     # 电 供销平衡
     ##########################################
 
-    model.add_constraints(
-        groundSourceHeatPump.electricity_groundSourceHeatPump[h]
-        + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
-        + heatPump.electricity_waterSourceHeatPumps[h]
-        + waterSourceHeatPumps.electricity_waterSourceHeatPumps[h]
-        + power_load[h]
-        + electricSteamGenerator.power_electricSteamGenerator[h]
-        + hotWaterElectricBoiler.electricity_electricBoiler[h]
-        + tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit[h]
-        + doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit[h]
-        - batteryEnergyStorageSystem.power_energyStorageSystem[h]
-        - photoVoltaic.power_photoVoltaic[h]
-        - combinedHeatAndPower.power_combinedHeatAndPower[h]
-        - dieselEngine.power_dieselEngine[h]
-        == gridNet.total_power[h]  # 总的耗电量 == 用电量 - 放能量
-        # 用电量 == 地源热泵每小时耗电量 + 水冷螺旋机的用电量 + 每个时刻热泵用电量 + 每个时刻水源热泵用电量 + 用电需求 + 电蒸汽发生器总功率 + 电锅炉在每个时段的电消耗量 + 三工况机组的用电量 + 双工况机组的用电量
-        # 放能量 == 每小时储能装置的充放能功率 + 每个小时内光伏机组发电量 + 热电联产在每个时段的发电量 + 每个小时内柴油发电机机组发电量
-        for h in range(0, num_hour)
-    )
+    # model.add_constraints(  # outputs
+    #     groundSourceHeatPump.electricity_groundSourceHeatPump[h]
+    #     + waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine[h]
+    #     + heatPump.electricity_waterSourceHeatPumps[h]
+    #     + waterSourceHeatPumps.electricity_waterSourceHeatPumps[h]
+    #     + power_load[h]
+    #     + electricSteamGenerator.power_electricSteamGenerator[h]
+    #     + hotWaterElectricBoiler.electricity_electricBoiler[h]
+    #     + tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit[h]
+    #     + doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit[h]
+    #     - batteryEnergyStorageSystem.power_energyStorageSystem[h]  # input&output
+    #     - photoVoltaic.power_photoVoltaic[h]  # input
+    #     - combinedHeatAndPower.power_combinedHeatAndPower[h]  # input
+    #     - dieselEngine.power_dieselEngine[h]  # input
+    #     == gridNet.total_power[h]  # input&output
+    #     # 总的耗电量 == 用电量 - 放能量
+    #     # 用电量 == 地源热泵每小时耗电量 + 水冷螺旋机的用电量 + 每个时刻热泵用电量 + 每个时刻水源热泵用电量 + 用电需求 + 电蒸汽发生器总功率 + 电锅炉在每个时段的电消耗量 + 三工况机组的用电量 + 双工况机组的用电量
+    #     # 放能量 == 每小时储能装置的充放能功率 + 每个小时内光伏机组发电量 + 热电联产在每个时段的发电量 + 每个小时内柴油发电机机组发电量
+    #     for h in range(0, num_hour)
+    # )
     ##########################################
+    
 
     # 综合能源系统 所有设备集合
     systems = [  # all constrains in IES/IntegratedEnergySystem system
@@ -678,6 +700,9 @@ if __name__ == "__main__":
         phaseChangeWarmWaterStorage,
         gridNet,
     ]
+    NodeFactory.build_relations(systems) # this is a failsafe.
+    # check if this is built?
+    assert NodeFactory.built
 
     check_solve_and_log(
         systems, model, simulation_name="fig"
