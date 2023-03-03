@@ -383,10 +383,8 @@ if __name__ == "__main__":
     # 3
 
     ##########################################
-    
-    hotWaterNode1 = NodeFactory.create_node(
-        "hot_water"
-    )
+
+    hotWaterNode1 = NodeFactory.create_node("hot_water")
 
     # 高温热水合计
     power_highTemperatureHotWater_sum = model.continuous_var_list(
@@ -394,7 +392,7 @@ if __name__ == "__main__":
     )
 
     # TODO: 这些设备能不能输出高温热水 待定
-    model.add_constraints( # inputs
+    model.add_constraints(  # inputs
         power_highTemperatureHotWater_sum[h]
         == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
         + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
@@ -412,7 +410,7 @@ if __name__ == "__main__":
     )
 
     # 高温热水去向
-    model.add_constraints(
+    model.add_constraints( # output
         power_highTemperatureHotWater_sum[h]
         >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
         for h in range(0, num_hour)  # （每小时）高温热水总热量 >= 热水溴化锂消耗热量 + 热交换器消耗热量

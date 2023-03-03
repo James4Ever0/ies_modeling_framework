@@ -162,12 +162,14 @@ Node1 = NodeFactory.create_node(electricity_type)
 Node1.add_input(photoVoltaic)
 # Node1.add_input(Channel2)
 
-Node1.add_input(gridNet)
-Node1.add_output(gridNet)
+Node1.add_input_and_output(gridNet)
+# Node1.add_input(gridNet)
+# Node1.add_output(gridNet)
 # Node1.add_output(Channel1)
 
-Node1.add_input(batteryEnergyStorageSystem)
-Node1.add_output(batteryEnergyStorageSystem)
+Node1.add_input_and_output(batteryEnergyStorageSystem)
+# Node1.add_input(batteryEnergyStorageSystem)
+# Node1.add_output(batteryEnergyStorageSystem)
 
 # Node2.add_input(Channel1)
 Node1.add_output(electricityLoad)

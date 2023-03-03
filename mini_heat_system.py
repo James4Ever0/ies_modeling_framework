@@ -200,8 +200,8 @@ systems = [
 ###### SYSTEM TOPOLOGY ######
 #                                           [NODE3] - WT
 #                                          /          |
-#    PV - [NODE1] -> GRID -> [NODE2] ->  HP           |
-#                                           \         |
+#                     PV ->  [NODE2] ->  HP           |
+#                           \_ GRID _/      \         |
 #                                            |        |
 #                                            |       /
 #                 MH - [NODE5] ->  EX -> [NODE4] ----
@@ -218,7 +218,7 @@ warm_water_storage_type = "warm_water_storage"
 NodeFactory = EnergyFlowNodeFactory(model, num_hour, debug=debug)
 
 
-Node1 = NodeFactory.create_node(energy_type=electricity_type)
+# Node1 = NodeFactory.create_node(energy_type=electricity_type)
 Node2 = NodeFactory.create_node(energy_type=electricity_type)
 
 Node3 = NodeFactory.create_node(energy_type=warm_water_storage_type)
@@ -230,10 +230,12 @@ Node5 = NodeFactory.create_node(energy_type=hot_water_type)
 
 # in the end, we make some class called the "load class", to ensure the integrity.
 
-Node1.add_input(photoVoltaic)
-Node1.add_output(gridNet)
+# Node1.add_input(photoVoltaic)
+# Node1.add_output(gridNet)
 
-Node2.add_input(gridNet)
+# Node2.add_input(gridNet)
+Node2.add_input(photoVoltaic)
+Node2.add_input_and_output(gridNet)
 Node2.add_output(waterSourceHeatPumps)
 
 # nodeUtil = NodeUtils(model, num_hour)
