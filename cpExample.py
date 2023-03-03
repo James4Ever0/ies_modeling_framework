@@ -332,7 +332,7 @@ if __name__ == "__main__":
         "steam"
     )  # shall we automatically determine the equation type?
 
-    model.add_constraints(
+    model.add_constraints( # node input
         power_steam_sum[h]
         == municipalSteam.heat_citySupplied[h]
         + combinedHeatAndPower.wasteGasAndHeat_steam_device.heat_exchange[h]
