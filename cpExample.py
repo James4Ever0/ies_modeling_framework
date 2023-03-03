@@ -469,8 +469,10 @@ if __name__ == "__main__":
 
     coldWaterNode1.add_inputs(
         heatPump,
+        ##############
         waterStorageTank,
         phaseChangeColdWaterStorage,
+        ##############
         waterSourceHeatPumps,
         steamPowered_LiBr,
         hotWaterLiBr,
@@ -479,6 +481,7 @@ if __name__ == "__main__":
         tripleWorkingConditionUnit,
         doubleWorkingConditionUnit,
     )
+    coldWaterNode1.add_output(coldWaterLoad)
 
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
@@ -493,46 +496,62 @@ if __name__ == "__main__":
     #     + power_iceStorage[h] # output of iceStorage.
     #     + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool[h]
     #     + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool[h]
-    #     == cool_load[
+    #     == cool_load[ # output
     #         h
     #     ]  # 冷量需求 == (热泵制冷功率 + 水源热泵制冷功率 + 蒸汽溴化锂机组制冷量 + 热水溴化锂机组制冷量 + 水冷螺旋机的制冷功率 + 三工况机组的制冷功率 + 双工况机组的制冷功率) + (蓄冰机组平衡输出 + 蓄冷机组平衡输出)
     #     for h in range(0, num_hour)
     # )
     # power_heatPump_heat[h]+power_heatStorage[h]+power_waterSourceHeatPumps_heat[h]+power_gas_heat[h]+power_ss_heat[h]+power_groundSourceHeatPump[h]+power_tripleWorkingConditionUnit_heat[h]==heat_load[h]%热量需求
-    model.add_constraints(  # warm_water input -> output
-        heatPump.power_waterSourceHeatPumps_heat[h]
-        + power_heatStorage[h]  # actually sum of warm_water storage outputs.
-        + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
-        + steamAndWater_exchanger.heat_exchange[h]  # both warm water output.
-        + hotWaterExchanger.heat_exchange[h]  # both warm water output.
-        + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
-        + groundSourceHeatPump.power_groundSourceHeatPump[h]
-        == heat_load[
-            h
-        ]  # 热量需求 = 热泵制热功率 + 蓄热机组平衡输出 + 水源热泵制热功率 + 汽水热交换量 + 热水热交换量 + 三工况机组的制热功率 + 地源热泵输出功率
-        for h in range(0, num_hour)
+    warmWaterNode1.add_inputs(
+        heatPump,
+            ##############
+            
+        ##############
+
+    ,waterSourceHeatPumps
+    ,steamAndWater_exchanger # this is for warm water?
+    ,hotWaterExchanger
+    ,tripleWorkingConditionUnit
+    ,groundSourceHeatPump
     )
+    warmWaterNode1.add_output(warmWaterLoad)
+    # model.add_constraints(  # warm_water input -> output
+    #     heatPump.power_waterSourceHeatPumps_heat[h]
+    #     + power_heatStorage[h]  # actually sum of warm_water storage outputs.
+    #     + waterSourceHeatPumps.power_waterSourceHeatPumps_heat[h]
+    #     + steamAndWater_exchanger.heat_exchange[h]  # both warm water output.
+    #     + hotWaterExchanger.heat_exchange[h]  # both warm water output.
+    #     + tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat[h]
+    #     + groundSourceHeatPump.power_groundSourceHeatPump[h]
+    #     == heat_load[
+    #         h # output
+    #     ]  # 热量需求 = 热泵制热功率 + 蓄热机组平衡输出 + 水源热泵制热功率 + 汽水热交换量 + 热水热交换量 + 三工况机组的制热功率 + 地源热泵输出功率
+    #     for h in range(0, num_hour)
+    # )
     # 冰蓄冷逻辑组合
-    model.add_constraints(
-        tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
-        + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
-        + iceStorage.power_energyStorageSystem[
-            h
-        ]  # where you are going to use this power?
-        == power_iceStorage[h]  # 蓄冰机组平衡输出 == (三工况机组的制冰功率 + 双工况机组的制冰功率) + 冰蓄能充放能功率
-        for h in range(0, num_hour)
-    )
-    linearization = Linearization()
-    # it is right in the topology.
-    linearization.max_zeros(
-        # TODO: invert x/y position
-        # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
-        # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能（负数），制冰机组输出（正数）全部被冰蓄能装置吸收；要么制冰机组用于蓄冰的功率为0，冰蓄能装置放能（正数），蓄冰机组平衡输出（正数）全部由冰蓄能装置提供
-        num_hour,
-        model,
-        y=power_iceStorage,
-        x=iceStorage.power_energyStorageSystem,
-    )
+    iceNode1.add_inputs(tripleWorkingConditionUnit,doubleWorkingConditionUnit)
+    iceNode1.add_output(iceStorage)
+    
+    # model.add_constraints(
+    #     tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_ice[h]
+    #     + doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_ice[h]
+    #     + iceStorage.power_energyStorageSystem[
+    #         h
+    #     ]  # where you are going to use this power?
+    #     == power_iceStorage[h]  # 蓄冰机组平衡输出 == (三工况机组的制冰功率 + 双工况机组的制冰功率) + 冰蓄能充放能功率
+    #     for h in range(0, num_hour)
+    # )
+    # linearization = Linearization()
+    # # it is right in the topology.
+    # linearization.max_zeros(
+    #     # TODO: invert x/y position
+    #     # 修改之前： 要么冰蓄冷功率为0，冰蓄能装置不充不放; 要么冰蓄冷功率等于蓄冷装置充放功率（此时冰蓄能释放能量）
+    #     # 修改之后： 要么蓄冰机组平衡输出为0，冰蓄能装置充能（负数），制冰机组输出（正数）全部被冰蓄能装置吸收；要么制冰机组用于蓄冰的功率为0，冰蓄能装置放能（正数），蓄冰机组平衡输出（正数）全部由冰蓄能装置提供
+    #     num_hour,
+    #     model,
+    #     y=power_iceStorage,
+    #     x=iceStorage.power_energyStorageSystem,
+    # )
 
     # 蓄冷逻辑组合
     coldWaterStorageNode1.add_inputs(
@@ -581,20 +600,20 @@ if __name__ == "__main__":
     #     ]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
     #     for h in range(0, num_hour)
     # )
-    linearization.max_zeros(
-        num_hour,
-        model,
-        # TODO: invert x/y position
-        # 修改之前：要么蓄热设备不充不放，系统不产生热量；要么消耗热，热量全部由蓄热设备提供
-        # 修改之后： 要么蓄热机组平衡输出为0，蓄热装置充能（负数），制热机组输出（正数）全部被蓄热装置吸收；要么制热用于蓄热的功率为0，蓄热装置放能（正数），蓄热机组平衡输出（正数）全部由蓄热装置提供
-        y=power_heatStorage,
-        x=linearization.add(
-            num_hour,
-            model,
-            waterStorageTank.power_waterStorageTank_heat,
-            phaseChangeWarmWaterStorage.power_energyStorageSystem,
-        ),
-    )
+    # linearization.max_zeros(
+    #     num_hour,
+    #     model,
+    #     # TODO: invert x/y position
+    #     # 修改之前：要么蓄热设备不充不放，系统不产生热量；要么消耗热，热量全部由蓄热设备提供
+    #     # 修改之后： 要么蓄热机组平衡输出为0，蓄热装置充能（负数），制热机组输出（正数）全部被蓄热装置吸收；要么制热用于蓄热的功率为0，蓄热装置放能（正数），蓄热机组平衡输出（正数）全部由蓄热装置提供
+    #     y=power_heatStorage,
+    #     x=linearization.add(
+    #         num_hour,
+    #         model,
+    #         waterStorageTank.power_waterStorageTank_heat,
+    #         phaseChangeWarmWaterStorage.power_energyStorageSystem,
+    #     ),
+    # )
     ##########################################
 
     # 电量平衡
