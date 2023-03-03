@@ -390,22 +390,20 @@ if __name__ == "__main__":
     power_highTemperatureHotWater_sum = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
     )
-    
+
     for device in [
         combinedHeatAndPower,
-    #     + platePhotothermal,
-    #     + phaseChangeHotWaterStorage,
-    #     + municipalHotWater,
-    #     + gasBoiler_hotWater,
-    #     + hotWaterElectricBoiler,
-    #     + waterStorageTank.power_waterStorageTank_gheat[h]
-        
+        platePhotothermal,
+        phaseChangeHotWaterStorage,
+        municipalHotWater,
+        gasBoiler_hotWater,
+        hotWaterElectricBoiler,
     ]:
         hotWaterNode1.add_input(device)
-    
+
     hotWaterNode1.add_input_and_output(waterStorageTank)
-    
-    for device in []:
+
+    for device in [hotWaterLiBr, hotWaterExchanger]:
         hotWaterNode1.add_output(device)
 
     # TODO: 这些设备能不能输出高温热水 待定
@@ -449,6 +447,15 @@ if __name__ == "__main__":
 
     # 产能储能机组平衡输出功率
     ###########
+    warmWaterStorageNode1 = NodeFactory.create_node("warm_water_storage")
+    warmWaterNode1 = NodeFactory.create_node("warm_water")
+    
+    coldWaterStorageNode1 = NodeFactory.create_node("cold_water_storage")
+    coldWaterNode1 = NodeFactory.create_node("cold_water")
+    
+    iceNode1 = NodeFactory.create_node("ice")
+    
+    
     power_cooletStorage = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_cooletStorage"
     )
