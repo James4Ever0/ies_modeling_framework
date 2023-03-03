@@ -383,6 +383,10 @@ if __name__ == "__main__":
     # 3
 
     ##########################################
+    
+    hotWaterNode1 = NodeFactory.create_node(
+        "hot_water"
+    )
 
     # 高温热水合计
     power_highTemperatureHotWater_sum = model.continuous_var_list(
@@ -390,7 +394,7 @@ if __name__ == "__main__":
     )
 
     # TODO: 这些设备能不能输出高温热水 待定
-    model.add_constraints(
+    model.add_constraints( # inputs
         power_highTemperatureHotWater_sum[h]
         == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
         + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
@@ -401,7 +405,7 @@ if __name__ == "__main__":
         + municipalHotWater.heat_citySupplied[h]
         + gasBoiler_hotWater.heat_gasBoiler[h]
         + hotWaterElectricBoiler.heat_electricBoiler[h]
-        + waterStorageTank.power_waterStorageTank_gheat[h]  # 水储能设备发出的热量？
+        + waterStorageTank.power_waterStorageTank_gheat[h]  # 水储能设备发出的热量？ bidirectional!
         for h in range(
             0, num_hour
         )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放能功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
