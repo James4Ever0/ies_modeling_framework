@@ -9,7 +9,7 @@ def visualizeSystemTopology(
         "node_color": "yellow",
         "node_size": 1000,
     },
-    system_name='ies_system'
+    system_name="ies_system",
 ):
     G = nx.DiGraph()
     node_index = 0
@@ -29,7 +29,10 @@ def visualizeSystemTopology(
             try:
                 # device_id = input_id
                 device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id[:4]}_device"
-                G.add_edge(device_node_name,node_name)
+                G.add_edge(
+                    node_name,
+                    device_node_name,
+                )
             except:
                 breakpoint()
                 pass
@@ -39,12 +42,15 @@ def visualizeSystemTopology(
             try:
                 # device_id = output_id
                 device_node_name = f"{NodeFactory.device_id_to_device_name[device_id]}_{device_id[:4]}_device"
-                G.add_edge(node_name,device_node_name)
+                G.add_edge(
+                    device_node_name,
+                    node_name,
+                )
             except:
                 breakpoint()
                 pass
-    nx.draw(G,with_labels=True, font_weight='bold',**draw_options)
+    nx.draw(G, with_labels=True, font_weight="bold", **draw_options)
     # plt.show()
-    figure_path = f'topology_{system_name}.png'
+    figure_path = f"topology_{system_name}.png"
     print("Saving figure to:", figure_path)
     plt.savefig(figure_path)
