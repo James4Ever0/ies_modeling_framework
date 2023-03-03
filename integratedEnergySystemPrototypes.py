@@ -769,7 +769,7 @@ class EnergyFlowNode:
         return False
 
     def __add_port(
-        self, port: Union[List, np.ndarray], target_list: List, target_id_list: List
+        self, port: Union[List, np.ndarray], port_id:str, target_list: List, target_id_list: List
     ):
         assert not self.built
         if self.check_is_var_list(port):
@@ -782,16 +782,19 @@ class EnergyFlowNode:
         ):
             for input_element in port:
                 assert input_element >= 0
-
-        port_id = port.uuid
+        # no need!
+        # port_id = port.uuid
         if (port_id not in target_id_list) or type(port_id) in common_numeral_types:
             target_id_list.append(port_id)
             target_list.append(port)
+        else:
+            raise Exception(f"Error! duplicated port_id {port_id} in node {self.energy_type}_{self.uuid}")
         # no way to check duplication?
 
     def add_input(self, input_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = input_port
+            port_id =  f"{id(input_port)}_output_{self.energy_type}"
         else:
             port_id = f"{input_port.uuid}_output_{self.energy_type}"
             assert port_id not in self.output_ids
@@ -806,7 +809,7 @@ class EnergyFlowNode:
             self.factory.device_id_to_device_name.update({input_port.uuid: input_port.device_name})
             self.factory.device_ids.add(input_port.uuid)
             self.factory.output_ids.add(port_id)
-        self.__add_port(port_data, self.inputs, self.input_ids)
+        self.__add_port(port_data,port_id, self.inputs,  self.output_ids)
 
     def add_output(self, output_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
@@ -822,7 +825,7 @@ class EnergyFlowNode:
             self.factory.device_id_to_device_name.update({output_port.uuid: output_port.device_name})
             self.factory.device_ids.add(output_port.uuid)
             self.factory.input_ids.add(port_id)
-        self.__add_port(port_data, self.outputs, self.output_ids)
+        self.__add_port(port_data, self.outputs, port_id, self.input_ids)
 
     def add_input_and_output(self, input_and_output_port):
         self.add_input(input_and_output_port)
