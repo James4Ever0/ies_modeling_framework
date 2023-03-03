@@ -455,16 +455,16 @@ if __name__ == "__main__":
     
     iceNode1 = NodeFactory.create_node("ice")
     
+    # power_cooletStorage = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_cooletStorage"
+    # )
+    # power_heatStorage = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_heatStorage"
+    # )
+    # power_iceStorage = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_iceStorage"
+    # )
     
-    power_cooletStorage = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_cooletStorage"
-    )
-    power_heatStorage = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_heatStorage"
-    )
-    power_iceStorage = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_iceStorage"
-    )
     ###########
 
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求

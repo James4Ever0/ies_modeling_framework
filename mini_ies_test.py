@@ -181,8 +181,8 @@ Node1.add_output(electricityLoad)
 systems = [photoVoltaic, batteryEnergyStorageSystem, gridNet, electricityLoad]
 NodeFactory.build_relations(systems)
 
-# from import
-# (NodeFactory)
+# from system_topology_utils import visualizeSystemTopology
+# visualizeSystemTopology(NodeFactory)
 
 # Node1.build_relations()
 # Node2.build_relations()
