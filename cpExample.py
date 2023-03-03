@@ -710,8 +710,8 @@ if __name__ == "__main__":
     assert NodeFactory.built
     
     
-from system_topology_utils import visualizeSystemTopology
-        visualizeSystemTopology(NodeFactory, system_name = 'heat')
+    from system_topology_utils import visualizeSystemTopology
+    visualizeSystemTopology(NodeFactory, system_name = 'megatest')
 
     
     # breakpoint()

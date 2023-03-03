@@ -22,4 +22,7 @@ pandas 主要承担下列matlab任务：
 Three.Matlab 和 Python 的差异
 1、索引操作符号：A(1)，A[0]
 matlab 中访问矩阵中的元素，用圆括号做为索引操作符，像这样 A(1)，下标从1开始；而python中用方括号，像这样A[0],下表从0开始。
+2.遍历循环
+matlab中for i=1:L-1 与 python中for i in range(0,L)一样
+3.
 
