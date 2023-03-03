@@ -325,7 +325,7 @@ def steamSourcesRegistration(
         device_count_max=20000,
         device_price=200,
         device_price_solidHeatStorage=200,  # gtxr? SolidHeatStorage？
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0, # use gridnet?
         efficiency=0.9,
         debug=debug,
     )
@@ -516,7 +516,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=20000,
         device_price=1000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         case_ratio=np.array([1, 1, 1, 1]),  # total four cases?
         device_name="heatPump",
         debug=debug,
@@ -529,7 +529,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=2000,
         device_price=3000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         case_ratio=np.ones(4),
         device_name="waterSourceHeatPumps",
         debug=debug,
@@ -542,7 +542,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=2000,
         device_price=1000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         case_ratio=np.array([1, 0.8]),
         debug=debug,
     )
@@ -554,7 +554,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=20000,
         device_price=1000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         case_ratio=[1, 0.8, 0.8],
         debug=debug,
     )
@@ -566,7 +566,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=20000,
         device_price=1000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         case_ratio=[1, 0.8],
         debug=debug,
     )
@@ -578,7 +578,7 @@ def cooletIceHeatDevicesRegistration(
         model,
         device_count_max=20000,
         device_price=40000,
-        electricity_price=electricity_price0,
+        electricity_price=electricity_price0*0,
         debug=debug,
     )
     groundSourceHeatPump.constraints_register()
