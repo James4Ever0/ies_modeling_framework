@@ -7,6 +7,7 @@ from integratedEnergySystemPrototypes import IntegratedEnergySystem, check_confl
 def solve_and_log(
     systems: List[IntegratedEnergySystem], model: Model, simulation_name: str
 ):
+    
     systems_annualized = [system.annualized for system in systems]
 
     import functools
@@ -72,6 +73,21 @@ def check_solve_and_log(systems: List[IntegratedEnergySystem], model: Model, sim
     has_conflict = check_conflict(model)  # no conflict?
 
     if has_conflict:
+        print("MODEL HAS CONFLICT.")
         breakpoint()
-
+    
+    # non-convex quadratic constraint?
+    # please show me!
+    has_quad_cons = False
+    print()
+    print("#"*30)
+    for quadratic_constraint in model.iter_quadratic_constraints():
+        print("QUAD CONS?",quadratic_constraint)
+        if not has_quad_cons:
+            has_quad_cons=True
+    print("#"*30)
+    print()
+    if has_quad_cons:
+        raise Exception("You have quadratic constraints in model.")
+    
     solve_and_log(systems,model,simulation_name)

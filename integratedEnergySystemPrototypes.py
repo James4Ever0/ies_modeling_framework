@@ -10,6 +10,7 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 import itertools
 import uuid
 
+
 class Load:
     def __init__(
         self,
@@ -769,7 +770,11 @@ class EnergyFlowNode:
         return False
 
     def __add_port(
-        self, port: Union[List, np.ndarray], port_id:str, target_list: List, target_id_list: List
+        self,
+        port: Union[List, np.ndarray],
+        port_id: str,
+        target_list: List,
+        target_id_list: List,
     ):
         assert not self.built
         if self.check_is_var_list(port):
@@ -788,13 +793,15 @@ class EnergyFlowNode:
             target_id_list.append(port_id)
             target_list.append(port)
         else:
-            raise Exception(f"Error! duplicated port_id {port_id} in node {self.energy_type}_{self.uuid}")
+            raise Exception(
+                f"Error! duplicated port_id {port_id} in node {self.energy_type}_{self.uuid}"
+            )
         # no way to check duplication?
 
     def add_input(self, input_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = input_port
-            port_id =  f"{id(input_port)}_output_{self.energy_type}"
+            port_id = f"{id(input_port)}_output_{self.energy_type}"
         else:
             port_id = f"{input_port.uuid}_output_{self.energy_type}"
             assert port_id not in self.output_ids
@@ -805,16 +812,18 @@ class EnergyFlowNode:
                 input_port.power_of_inputs == {}
             ):  # this is a source, not anything in between. is it?
                 self.node_type = "greater_equal"
-                
-            self.factory.device_id_to_device_name.update({input_port.uuid: input_port.device_name})
+
+            self.factory.device_id_to_device_name.update(
+                {input_port.uuid: input_port.device_name}
+            )
             self.factory.device_ids.add(input_port.uuid)
             self.factory.output_ids.add(port_id)
-        self.__add_port(port_data,port_id, self.inputs,  self.output_ids)
+        self.__add_port(port_data, port_id, self.inputs, self.output_ids)
 
     def add_output(self, output_port, ignore_energy_type: bool = False):
         if ignore_energy_type:
             port_data = output_port
-            port_id =  f"{id(output_port)}_input_{self.energy_type}"
+            port_id = f"{id(output_port)}_input_{self.energy_type}"
         else:
             port_id = f"{output_port.uuid}_input_{self.energy_type}"
             assert port_id not in self.input_ids
@@ -823,10 +832,12 @@ class EnergyFlowNode:
             ]
             if isinstance(output_port, Load):  # this is a load, the endpoint.
                 self.node_type = "greater_equal"
-            self.factory.device_id_to_device_name.update({output_port.uuid: output_port.device_name})
+            self.factory.device_id_to_device_name.update(
+                {output_port.uuid: output_port.device_name}
+            )
             self.factory.device_ids.add(output_port.uuid)
             self.factory.input_ids.add(port_id)
-        self.__add_port(port_data,  port_id,self.outputs, self.input_ids)
+        self.__add_port(port_data, port_id, self.outputs, self.input_ids)
 
     def add_input_and_output(self, input_and_output_port):
         self.add_input(input_and_output_port)
@@ -933,17 +944,15 @@ class EnergyFlowNodeFactory:
 
             if not fully_connected:
                 errorMsg = "\n".join(
-                        [
-                            f"inputs: {[input_id for input_id in input_ids if input_id not in self.input_ids]}",
-                            f"outputs: {[output_id for output_id in output_ids if output_id not in self.output_ids]}",
-                            f"device {device.__class__.__name__} named {device.device_name} not connected.",
-                        ]
-                    )
+                    [
+                        f"inputs: {[input_id for input_id in input_ids if input_id not in self.input_ids]}",
+                        f"outputs: {[output_id for output_id in output_ids if output_id not in self.output_ids]}",
+                        f"device {device.__class__.__name__} named {device.device_name} not connected.",
+                    ]
+                )
                 # print(errorMsg)
                 # breakpoint()
-                raise Exception(
-                    errorMsg
-                )
+                raise Exception(errorMsg)
 
     def build_relations(self, devices: List):
         assert self.built is False
@@ -1039,7 +1048,9 @@ class IntegratedEnergySystem(EnergySystemUtils):
         if type(device_count_min) in common_numeral_types:
             assert device_count_min >= 0
             if type(device_count_max) in common_numeral_types:
-                assert device_count_max >= device_count_min # this will cause error if passed as variables.
+                assert (
+                    device_count_max >= device_count_min
+                )  # this will cause error if passed as variables.
         self.device_count_min = device_count_min
         self.device_price = device_price
         self.classSuffix = f"{self.className}_{self.classIndex}"
@@ -2601,14 +2612,16 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         二元变量列表,表示热电联产在每个时段是否启动
         """
         self.output_hot_water_flags: BinaryVarType = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)], name="output_hot_water_flag_{0}".format(self.classSuffix)
+            [i for i in range(0, self.num_hour)],
+            name="output_hot_water_flag_{0}".format(self.classSuffix),
         )
         """
         二元变量,表示热电联产是否用于供暖热水
         """
         # bad. this shall be list.
         self.output_steam_flags: BinaryVarType = self.model.binary_var_list(
-            [i for i in range(0, self.num_hour)], name="output_steam_flag_{0}".format(self.classSuffix)
+            [i for i in range(0, self.num_hour)],
+            name="output_steam_flag_{0}".format(self.classSuffix),
         )
         """
         二元变量,表示热电联产是否用于供热蒸汽
@@ -6043,14 +6056,14 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     [i for i in range(0, self.num_hour)],
         #     name="power_{0}".format(self.classSuffix),
         # ) # is this of our concern? the electricity?
-        
+
         """
         电蒸汽发生器总功率
         """
         self.output_type = "steam"
         self.build_power_of_outputs([self.output_type])
-        
-        self.input_type = 'electricity'
+
+        self.input_type = "electricity"
         self.build_power_of_inputs([self.input_type])
         # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
@@ -6094,8 +6107,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
-            input_type='heat',
-            output_type='steam'
+            input_type="heat",
+            output_type="steam",
         )
 
         """
@@ -6104,11 +6117,11 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.electricity_cost: ContinuousVarType = self.model.continuous_var(
             name="electricity_cost_{0}".format(self.classSuffix)
         )
-        
+
         """
         用电成本
         """
-        self.steam_remained : List[ContinuousVarType] = self.model.continuous_var_list(
+        self.steam_remained: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="steam_remained_{0}".format(self.classSuffix),
         )
@@ -6136,17 +6149,28 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         #     self.device_count
         #     <= self.device_count_max
         # )
-        self.add_lower_and_upper_bounds(self.power_of_inputs[self.input_type], 0, self.device_count)
+        self.add_lower_and_upper_bounds(
+            self.power_of_inputs[self.input_type], 0, self.device_count
+        )
         # self.model.add_constraints(self.power[h] >= 0 for h in self.hourRange)
 
         # self.model.add_constraints(
         #     self.power[h] <= self.device_count for h in self.hourRange
         # )  # 与天气相关
-        
-        self.equations(self.power_of_inputs[self.input_type],self.elementwise_add(self.solidHeatStorage.power_of_inputs['heat'],self.steam_remained))
 
         self.equations(
-            self.power_of_outputs[self.output_type],self.elementwise_add(self.steam_remained, self.solidHeatStorage.power_of_outputs[self.output_type])
+            self.power_of_inputs[self.input_type],
+            self.elementwise_add(
+                self.solidHeatStorage.power_of_inputs["heat"], self.steam_remained
+            ),
+        )
+
+        self.equations(
+            self.power_of_outputs[self.output_type],
+            self.elementwise_add(
+                self.steam_remained,
+                self.solidHeatStorage.power_of_outputs[self.output_type],
+            ),
         )
         # self.model.add_constraints(
         #     self.power[h] + self.solidHeatStorage.power[h]
@@ -6160,7 +6184,9 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         # )  # 约束能量不能倒流
 
         self.electricity_cost = self.sum_within_range(
-            self.elementwise_multiply(self.power_of_inputs[self.input_type], self.electricity_price)
+            self.elementwise_multiply(
+                self.power_of_inputs[self.input_type], self.electricity_price
+            )
         )
 
         # this is simply wrong.
