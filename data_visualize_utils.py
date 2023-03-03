@@ -44,8 +44,10 @@ def printIntegratedEnergySystemDeviceCounts(
         subitems = dir(item)
         print(f"device index: {index}")
         print(f"device class: {type(item).__name__}")
+        print()
         print("device inputs:", " ".join(list(item.power_of_inputs.keys())))
         print("device outputs:", " ".join(list(item.power_of_outputs.keys())))
+        print()
         for subitem in subitems:
             if "device_count" in subitem and not any(
                 [

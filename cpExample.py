@@ -159,7 +159,12 @@ from integratedEnergySystemPrototypes import (
     # CitySupply,
     GridNet,
     Linearization,
+    NodeUtils,
+    EnergyFlowNodeFactory
 )
+
+from mini_data_log_utils import check_solve_and_log
+
 
 if __name__ == "__main__":
     model = Model(name="buses")
@@ -531,7 +536,7 @@ if __name__ == "__main__":
     ##########################################
 
     # 综合能源系统 所有设备集合
-    integratedEnergySystem_device = (
+    systems = (
         [  # all constrains in IES/IntegratedEnergySystem system
             dieselEngine,
             photoVoltaic,
@@ -563,16 +568,18 @@ if __name__ == "__main__":
             gridNet,
         ]
     )
+    
+    check_solve_and_log(systems, model, simulation_name='fig') # <- assume our objective is to minimize the total annual fee.
 
-    # 目标值 = 所有混合能源机组年运行成本总和
-    objective = integratedEnergySystem_device[0].annualized
-    for ii in range(1, len(integratedEnergySystem_device)):
-        objective += integratedEnergySystem_device[ii].annualized
+    # # 目标值 = 所有混合能源机组年运行成本总和
+    # objective = systems[0].annualized
+    # for ii in range(1, len(systems)):
+    #     objective += systems[ii].annualized
 
-    # 使得目标值最小
-    model.minimize(objective)
+    # # 使得目标值最小
+    # model.minimize(objective)
 
-    model.print_information()
+    # model.print_information()
 
     # do we have anything in conflict?
     ####
@@ -580,153 +587,153 @@ if __name__ == "__main__":
     # res = refiner.refine_conflict(model)  # 将模型导入该类,调用方法
     # res.display()  # 显示冲突约束
 
-    print("start calculation:")
+    # print("start calculation:")
 
-    # 1000秒以内解出 否则放弃
-    model.set_time_limit(time_limit=1000)
+    # # 1000秒以内解出 否则放弃
+    # model.set_time_limit(time_limit=1000)
 
-    # 模型求解返回值 可为空
-    solution_run1: Union[None, SolveSolution] = model.solve(
-        log_output=True
-    )  # output some solution.
-    # docplex.mp.solution.SolveSolution or None
+    # # 模型求解返回值 可为空
+    # solution_run1: Union[None, SolveSolution] = model.solve(
+    #     log_output=True
+    # )  # output some solution.
+    # # docplex.mp.solution.SolveSolution or None
 
-    if solution_run1 is None:  # 没有解出来
-        # from docplex.mp.sdetails import SolveDetails
+    # if solution_run1 is None:  # 没有解出来
+    #     # from docplex.mp.sdetails import SolveDetails
 
-        print("NO SOLUTION.")
-    else:  # 解出来了
-        print("objective: annual", solution_run1.get_value(objective))  # 所有设备年运行成本总和
-        print()
+    #     print("NO SOLUTION.")
+    # else:  # 解出来了
+    #     print("objective: annual", solution_run1.get_value(objective))  # 所有设备年运行成本总和
+    #     print()
 
-        from data_visualize_utils import (
-            printDecisionVariablesFromSolution,
-            printIntegratedEnergySystemDeviceCounts,
-            plotSingle,
-        )
+    #     from data_visualize_utils import (
+    #         printDecisionVariablesFromSolution,
+    #         printIntegratedEnergySystemDeviceCounts,
+    #         plotSingle,
+    #     )
 
-        printIntegratedEnergySystemDeviceCounts(integratedEnergySystem_device)
-        printDecisionVariablesFromSolution(model)
+    #     printIntegratedEnergySystemDeviceCounts(systems)
+    #     printDecisionVariablesFromSolution(model)
 
-        value = Value(solution_run1)
+    #     value = Value(solution_run1)
 
-        plotSingle(
-            value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
-            "BatteryEnergyStorageSystem",
-        )  #  绘制电池每小时的充放能功率
+    #     plotSingle(
+    #         value.value(batteryEnergyStorageSystem.power_energyStorageSystem),
+    #         "BatteryEnergyStorageSystem",
+    #     )  #  绘制电池每小时的充放能功率
 
-        database = {
-            "electricity": {  # 发电、用电、功率相关数据
-                "list": [
-                    groundSourceHeatPump.electricity_groundSourceHeatPump,
-                    waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine,
-                    heatPump.electricity_waterSourceHeatPumps,
-                    batteryEnergyStorageSystem.power_energyStorageSystem,
-                    photoVoltaic.power_photoVoltaic,
-                    waterSourceHeatPumps.electricity_waterSourceHeatPumps,
-                    power_load,
-                    combinedHeatAndPower.power_combinedHeatAndPower,
-                    dieselEngine.power_dieselEngine,
-                    electricSteamGenerator.power_electricSteamGenerator,
-                    hotWaterElectricBoiler.electricity_electricBoiler,
-                    tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
-                    doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
-                    gridNet.total_power,
-                ],
-                "name": [
-                    "groundSourceHeatPump.electricity_groundSourceHeatPump",
-                    "waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine",
-                    "heatPump.electricity_waterSourceHeatPumps",
-                    "batteryEnergyStorageSystem.power_energyStorageSystem",
-                    "photoVoltaic.power_photoVoltaic",
-                    "waterSourceHeatPumps.electricity_waterSourceHeatPumps",
-                    "power_load",
-                    "combinedHeatAndPower.power_combinedHeatAndPower",
-                    "dieselEngine.power_dieselEngine",
-                    "electricSteamGenerator.power_electricSteamGenerator",
-                    "hotWaterElectricBoiler.electricity_electricBoiler",
-                    "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
-                    "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
-                    "gridNet.total_power",
-                ],
-            },
-            "cool": {  #  制冷相关数据
-                "list": [
-                    heatPump.power_waterSourceHeatPumps_cool,
-                    power_cooletStorage,
-                    waterSourceHeatPumps.power_waterSourceHeatPumps_cool,
-                    steamPowered_LiBr.cool_LiBr,  # cooling? 直取？
-                    hotWaterLiBr.cool_LiBr,
-                    waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool,
-                    power_iceStorage,  # consume?
-                    tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
-                    doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
-                ],
-                "name": [
-                    "heatPump.power_waterSourceHeatPumps_cool",
-                    "power_cooletStorage",
-                    "waterSourceHeatPumps.power_waterSourceHeatPumps_cool",
-                    "steamPowered_LiBr.cool_LiBr",
-                    "hotWaterLiBr.cool_LiBr",
-                    "waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool",
-                    "power_iceStorage",
-                    "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
-                    "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
-                ],
-            },
-            "heat": {  #  制热相关数据, warm water?
-                "list": [
-                    heatPump.power_waterSourceHeatPumps_heat,
-                    power_heatStorage,
-                    waterSourceHeatPumps.power_waterSourceHeatPumps_heat,
-                    steamAndWater_exchanger.heat_exchange,
-                    hotWaterExchanger.heat_exchange,
-                    tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat,
-                    groundSourceHeatPump.power_groundSourceHeatPump,
-                    heat_load,
-                ],
-                "name": [
-                    "heatPump.power_waterSourceHeatPumps_heat",
-                    "power_heatStorage",
-                    "waterSourceHeatPumps.power_waterSourceHeatPumps_heat",
-                    "steamAndWater_exchanger.heat_exchange",
-                    "hotWaterExchanger.heat_exchange",
-                    "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat",
-                    "groundSourceHeatPump.power_groundSourceHeatPump",
-                    "heat_load",
-                ],
-            },
-            "gwheat": {  # (gas) generated or wasted heat? 高温热水？
-                "list": [
-                    combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
-                    combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange,
-                    platePhotothermal.power_photoVoltaic,
-                    phaseChangeHotWaterStorage.power_energyStorageSystem,
-                    municipalHotWater.heat_citySupplied,
-                    gasBoiler_hotWater.heat_gasBoiler,
-                    hotWaterElectricBoiler.heat_electricBoiler,
-                    waterStorageTank.power_waterStorageTank_gheat,
-                ],
-                "name": [
-                    "combinedHeatAndPower.gasTurbineSystem_device.heat_exchangeh",
-                    "wasteGasAndHeat_water_device.heat_exchange",
-                    "platePhotothermal.power_photoVoltaic",
-                    "phaseChangeHotWaterStorage.power_energyStorageSystem",
-                    "municipalHotWater.heat_citySupplied",
-                    "gasBoiler_hotWater.heat_gasBoiler",
-                    "hotWaterElectricBoiler.heat_electricBoiler",
-                    "waterStorageTank.power_waterStorageTank_gheat",
-                ],
-            },
-        }
+    #     database = {
+    #         "electricity": {  # 发电、用电、功率相关数据
+    #             "list": [
+    #                 groundSourceHeatPump.electricity_groundSourceHeatPump,
+    #                 waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine,
+    #                 heatPump.electricity_waterSourceHeatPumps,
+    #                 batteryEnergyStorageSystem.power_energyStorageSystem,
+    #                 photoVoltaic.power_photoVoltaic,
+    #                 waterSourceHeatPumps.electricity_waterSourceHeatPumps,
+    #                 power_load,
+    #                 combinedHeatAndPower.power_combinedHeatAndPower,
+    #                 dieselEngine.power_dieselEngine,
+    #                 electricSteamGenerator.power_electricSteamGenerator,
+    #                 hotWaterElectricBoiler.electricity_electricBoiler,
+    #                 tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit,
+    #                 doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit,
+    #                 gridNet.total_power,
+    #             ],
+    #             "name": [
+    #                 "groundSourceHeatPump.electricity_groundSourceHeatPump",
+    #                 "waterCoolingSpiralMachine.electricity_waterCoolingSpiralMachine",
+    #                 "heatPump.electricity_waterSourceHeatPumps",
+    #                 "batteryEnergyStorageSystem.power_energyStorageSystem",
+    #                 "photoVoltaic.power_photoVoltaic",
+    #                 "waterSourceHeatPumps.electricity_waterSourceHeatPumps",
+    #                 "power_load",
+    #                 "combinedHeatAndPower.power_combinedHeatAndPower",
+    #                 "dieselEngine.power_dieselEngine",
+    #                 "electricSteamGenerator.power_electricSteamGenerator",
+    #                 "hotWaterElectricBoiler.electricity_electricBoiler",
+    #                 "tripleWorkingConditionUnit.electricity_tripleWorkingConditionUnit",
+    #                 "doubleWorkingConditionUnit.electricity_doubleWorkingConditionUnit",
+    #                 "gridNet.total_power",
+    #             ],
+    #         },
+    #         "cool": {  #  制冷相关数据
+    #             "list": [
+    #                 heatPump.power_waterSourceHeatPumps_cool,
+    #                 power_cooletStorage,
+    #                 waterSourceHeatPumps.power_waterSourceHeatPumps_cool,
+    #                 steamPowered_LiBr.cool_LiBr,  # cooling? 直取？
+    #                 hotWaterLiBr.cool_LiBr,
+    #                 waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool,
+    #                 power_iceStorage,  # consume?
+    #                 tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool,
+    #                 doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool,
+    #             ],
+    #             "name": [
+    #                 "heatPump.power_waterSourceHeatPumps_cool",
+    #                 "power_cooletStorage",
+    #                 "waterSourceHeatPumps.power_waterSourceHeatPumps_cool",
+    #                 "steamPowered_LiBr.cool_LiBr",
+    #                 "hotWaterLiBr.cool_LiBr",
+    #                 "waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cool",
+    #                 "power_iceStorage",
+    #                 "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_cool",
+    #                 "doubleWorkingConditionUnit.power_doubleWorkingConditionUnit_cool",
+    #             ],
+    #         },
+    #         "heat": {  #  制热相关数据, warm water?
+    #             "list": [
+    #                 heatPump.power_waterSourceHeatPumps_heat,
+    #                 power_heatStorage,
+    #                 waterSourceHeatPumps.power_waterSourceHeatPumps_heat,
+    #                 steamAndWater_exchanger.heat_exchange,
+    #                 hotWaterExchanger.heat_exchange,
+    #                 tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat,
+    #                 groundSourceHeatPump.power_groundSourceHeatPump,
+    #                 heat_load,
+    #             ],
+    #             "name": [
+    #                 "heatPump.power_waterSourceHeatPumps_heat",
+    #                 "power_heatStorage",
+    #                 "waterSourceHeatPumps.power_waterSourceHeatPumps_heat",
+    #                 "steamAndWater_exchanger.heat_exchange",
+    #                 "hotWaterExchanger.heat_exchange",
+    #                 "tripleWorkingConditionUnit.power_tripleWorkingConditionUnit_heat",
+    #                 "groundSourceHeatPump.power_groundSourceHeatPump",
+    #                 "heat_load",
+    #             ],
+    #         },
+    #         "gwheat": {  # (gas) generated or wasted heat? 高温热水？
+    #             "list": [
+    #                 combinedHeatAndPower.gasTurbineSystem_device.heat_exchange,
+    #                 combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange,
+    #                 platePhotothermal.power_photoVoltaic,
+    #                 phaseChangeHotWaterStorage.power_energyStorageSystem,
+    #                 municipalHotWater.heat_citySupplied,
+    #                 gasBoiler_hotWater.heat_gasBoiler,
+    #                 hotWaterElectricBoiler.heat_electricBoiler,
+    #                 waterStorageTank.power_waterStorageTank_gheat,
+    #             ],
+    #             "name": [
+    #                 "combinedHeatAndPower.gasTurbineSystem_device.heat_exchangeh",
+    #                 "wasteGasAndHeat_water_device.heat_exchange",
+    #                 "platePhotothermal.power_photoVoltaic",
+    #                 "phaseChangeHotWaterStorage.power_energyStorageSystem",
+    #                 "municipalHotWater.heat_citySupplied",
+    #                 "gasBoiler_hotWater.heat_gasBoiler",
+    #                 "hotWaterElectricBoiler.heat_electricBoiler",
+    #                 "waterStorageTank.power_waterStorageTank_gheat",
+    #             ],
+    #         },
+    #     }
 
-        # 绘制(所有?)相关数据
-        # flag = "hotWaterLiBr.cool_LiBr" # stop here!
-        for key, value in database.items():
-            datalist, names = value["list"], value["name"]
-            for data, name in zip(datalist, names):
-                # if name == flag:
-                #     print(data)
-                #     print("BREAK ON:", flag)
-                #     breakpoint()
-                plotSingle(data, name)
+    #     # 绘制(所有?)相关数据
+    #     # flag = "hotWaterLiBr.cool_LiBr" # stop here!
+    #     for key, value in database.items():
+    #         datalist, names = value["list"], value["name"]
+    #         for data, name in zip(datalist, names):
+    #             # if name == flag:
+    #             #     print(data)
+    #             #     print("BREAK ON:", flag)
+    #             #     breakpoint()
+    #             plotSingle(data, name)
