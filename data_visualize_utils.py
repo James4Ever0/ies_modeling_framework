@@ -19,15 +19,19 @@ def plotSingle(
         title_content (str): title to plot on the graph
         save_directory (str): directory to save the images
     """
-    if not os.path.exists(save_directory):
-        os.mkdir(save_directory)
     fig = plt.figure()
-    plt.plot(data)
-    plt.xlabel("Time/h")
-    plt.ylabel("Power/kW")
-    plt.title(title_content)
-    plt.savefig(f"{save_directory}/{title_content}.png")
-    plt.close(fig=fig)
+    try:
+        if not os.path.exists(save_directory):
+            os.mkdir(save_directory)
+        plt.plot(data)
+        plt.xlabel("Time/h")
+        plt.ylabel("Power/kW")
+        plt.title(title_content)
+        plt.savefig(f"{save_directory}/{title_content}.png")
+    except:
+        print("ERROR WHILE SAVING PICTURE:",title_content)
+    finally:
+        plt.close(fig=fig)
 
 
 def printIntegratedEnergySystemDeviceCounts(
