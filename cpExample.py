@@ -274,6 +274,7 @@ if __name__ == "__main__":
         efficiency=0.9,
         device_name="hotWaterLiBr",
         debug=debug,
+        input_type='hot_water'
     )
     hotWaterLiBr.constraints_register()
 
