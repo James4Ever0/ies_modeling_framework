@@ -249,7 +249,7 @@ Node2.add_output(waterSourceHeatPumps)
 Node3.add_input(waterSourceHeatPumps)
 Node3.add_output(waterStorageTank)
 
-Node4.add_inputs(waterSourceHeatPumps,waterStorageTank,hotWaterExchanger)
+Node4.add_inputs(waterSourceHeatPumps, waterStorageTank, hotWaterExchanger)
 Node4.add_output(warmWaterLoad)
 
 Node5.add_input(municipalHotWater)

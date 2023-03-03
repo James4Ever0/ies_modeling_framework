@@ -338,17 +338,15 @@ if __name__ == "__main__":
         "steam"
     )  # shall we automatically determine the equation type?
 
-    for device in [
+    SteamNode1.add_inputs(
         municipalSteam,
         combinedHeatAndPower,
         troughPhotoThermal,
         electricSteamGenerator,
         gasBoiler,
-    ]:
-        SteamNode1.add_input(device)
+    )
 
-    for device in [steamLoad, steamAndWater_exchanger, steamPowered_LiBr]:
-        SteamNode1.add_output(device)
+    SteamNode1.add_outputs(steamLoad, steamAndWater_exchanger, steamPowered_LiBr)
 
     # model.add_constraints( # node input
     #     power_steam_sum[h]
@@ -391,20 +389,18 @@ if __name__ == "__main__":
         [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
     )
 
-    for device in [
+    hotWaterNode1.add_inputs(
         combinedHeatAndPower,
         platePhotothermal,
         phaseChangeHotWaterStorage,
         municipalHotWater,
         gasBoiler_hotWater,
         hotWaterElectricBoiler,
-    ]:
-        hotWaterNode1.add_input(device)
+    )
 
     hotWaterNode1.add_input_and_output(waterStorageTank)
 
-    for device in [hotWaterLiBr, hotWaterExchanger]:
-        hotWaterNode1.add_output(device)
+    hotWaterNode1.add_outputs(hotWaterLiBr, hotWaterExchanger)
 
     # TODO: 这些设备能不能输出高温热水 待定
     # model.add_constraints(  # inputs
@@ -470,11 +466,11 @@ if __name__ == "__main__":
     # )
 
     ###########
-    for device in [
+
+    coldWaterNode1.add_inputs(
         heatPump,
         waterStorageTank,
         phaseChangeColdWaterStorage,
-        #     + power_cooletStorage[h] # this thing is indirect. it is actually the sum of the cold water storage outputs.
         waterSourceHeatPumps,
         steamPowered_LiBr,
         hotWaterLiBr,
@@ -482,8 +478,7 @@ if __name__ == "__main__":
         iceStorage,
         tripleWorkingConditionUnit,
         doubleWorkingConditionUnit,
-    ]:
-        coldWaterNode1.add_input(device)
+    )
 
     # power_heatPump_cool[h]+power_cooletStorage[h]+power_waterSourceHeatPumps_cool[h]+power_zqLiBr[h]+power_hotWaterLiBr[h]+power_waterCoolingSpiralMachine_cool[h]+power_ice[h]+power_tripleWorkingConditionUnit_cool[h]+power_doubleWorkingConditionUnit_cool[h]==cool_load[h]%冷量需求
 
@@ -540,49 +535,52 @@ if __name__ == "__main__":
     )
 
     # 蓄冷逻辑组合
-    for device in [heatPump, waterSourceHeatPumps, waterCoolingSpiralMachine]:
-        coldWaterStorageNode1.add_input(device)
-    for device in [
+    coldWaterStorageNode1.add_inputs(
+        heatPump, waterSourceHeatPumps, waterCoolingSpiralMachine
+    )
+    coldWaterStorageNode1.add_outputs(
         waterStorageTank,
         phaseChangeColdWaterStorage,
-    ]:
-        coldWaterStorageNode1.add_output(device)
-    model.add_constraints(
-        heatPump.power_waterSourceHeatPumps_cooletStorage[h]
-        + waterSourceHeatPumps.power_waterSourceHeatPumps_cooletStorage[h]
-        + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cooletStorage[h]
-        + waterStorageTank.power_waterStorageTank_cool[h]
-        + phaseChangeColdWaterStorage.power_energyStorageSystem[h]
-        == power_cooletStorage[
-            h
-        ]  # 蓄冷系统平衡功率 == (热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率) + (水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率)
-        for h in range(0, num_hour)
     )
-    linearization.max_zeros(
-        num_hour,
-        model,
-        # TODO: invert x/y position
-        # 修改之前：要么蓄冷设备不充不放，系统不产生冷量；要么消耗冷，冷量全部由蓄冷设备提供
-        # 修改之后： 要么蓄冷机组平衡输出为0，蓄冷装置充能（负数），制冷机组输出（正数）全部被蓄冷装置吸收；要么制冷机组用于蓄冷的功率为0，蓄冷装置放能（正数），蓄冷机组平衡输出（正数）全部由蓄冷装置提供
-        y=power_cooletStorage,
-        x=linearization.add(  # （每小时）总蓄冷功率 = 水蓄冷功率 + 相变蓄冷功率
-            num_hour,
-            model,
-            waterStorageTank.power_waterStorageTank_cool,
-            phaseChangeColdWaterStorage.power_energyStorageSystem,
-        ),
-    )
+    # model.add_constraints(
+    #     heatPump.power_waterSourceHeatPumps_cooletStorage[h]
+    #     + waterSourceHeatPumps.power_waterSourceHeatPumps_cooletStorage[h]
+    #     + waterCoolingSpiralMachine.power_waterCoolingSpiralMachine_cooletStorage[h]
+    #     + waterStorageTank.power_waterStorageTank_cool[h]
+    #     + phaseChangeColdWaterStorage.power_energyStorageSystem[h]
+    #     == power_cooletStorage[
+    #         h
+    #     ]  # 蓄冷系统平衡功率 == (热泵蓄冷功率 + 水源热泵蓄冷功率 + 水冷螺旋机的蓄冷功率) + (水蓄能设备蓄冷充放功率 + 相变蓄冷设备充放功率)
+    #     for h in range(0, num_hour)
+    # )
+    # linearization.max_zeros(
+    #     num_hour,
+    #     model,
+    #     # TODO: invert x/y position
+    #     # 修改之前：要么蓄冷设备不充不放，系统不产生冷量；要么消耗冷，冷量全部由蓄冷设备提供
+    #     # 修改之后： 要么蓄冷机组平衡输出为0，蓄冷装置充能（负数），制冷机组输出（正数）全部被蓄冷装置吸收；要么制冷机组用于蓄冷的功率为0，蓄冷装置放能（正数），蓄冷机组平衡输出（正数）全部由蓄冷装置提供
+    #     y=power_cooletStorage,
+    #     x=linearization.add(  # （每小时）总蓄冷功率 = 水蓄冷功率 + 相变蓄冷功率
+    #         num_hour,
+    #         model,
+    #         waterStorageTank.power_waterStorageTank_cool,
+    #         phaseChangeColdWaterStorage.power_energyStorageSystem,
+    #     ),
+    # )
     # 蓄热逻辑组合
-    model.add_constraints(
-        heatPump.power_waterSourceHeatPumps_heatStorage[h]
-        + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
-        + waterStorageTank.power_waterStorageTank_heat[h]
-        + phaseChangeWarmWaterStorage.power_energyStorageSystem[h]
-        == power_heatStorage[
-            h
-        ]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
-        for h in range(0, num_hour)
-    )
+    warmWaterStorageNode1.add_inputs(heatPump,waterSourceHeatPumps)
+    warmWaterStorageNode1.add_outputs(waterStorageTank,phaseChangeWarmWaterStorage)
+    
+    # model.add_constraints(
+    #     heatPump.power_waterSourceHeatPumps_heatStorage[h]
+    #     + waterSourceHeatPumps.power_waterSourceHeatPumps_heatStorage[h]
+    #     + waterStorageTank.power_waterStorageTank_heat[h]
+    #     + phaseChangeWarmWaterStorage.power_energyStorageSystem[h]
+    #     == power_heatStorage[
+    #         h
+    #     ]  # 蓄热系统功率 == (热泵蓄热功率 + 水源热泵蓄热功率) + (水蓄能设备储能功率 + 储热设备充放功率)
+    #     for h in range(0, num_hour)
+    # )
     linearization.max_zeros(
         num_hour,
         model,

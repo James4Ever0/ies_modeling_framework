@@ -825,17 +825,17 @@ class EnergyFlowNode:
 
     from typing import Callable
 
-    def multiplexer(self, ports: List, function: Callable):
+    def multiplexer(self, ports, function: Callable):
         for port in ports:
             function(port)
 
-    def add_inputs(self, input_ports: List):
+    def add_inputs(self, *input_ports):
         self.multiplexer(input_ports, self.add_input)
 
-    def add_outputs(self, output_ports: List):
+    def add_outputs(self, *output_ports):
         self.multiplexer(output_ports, self.add_output)
 
-    def add_input_and_outputs(self, input_and_output_ports: List):
+    def add_input_and_outputs(self, *input_and_output_ports):
         self.multiplexer(input_and_output_ports, self.add_input_and_output)
 
     def build_relations(self):
