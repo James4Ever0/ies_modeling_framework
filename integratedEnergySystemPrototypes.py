@@ -6031,13 +6031,16 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
         self.power: List[ContinuousVarType] = self.model.continuous_var_list(
             [i for i in range(0, self.num_hour)],
             name="power_{0}".format(self.classSuffix),
-        )
-
+        ) # is this of our concern? the electricity?
+        
         """
         电蒸汽发生器总功率
         """
         self.output_type = "steam"
         self.build_power_of_outputs([self.output_type])
+        
+        self.input_type = 'electricity'
+        self.build_power_of_inputs([self.input_type])
         # self.power_of_outputs[self.output_type]: List[
         #     ContinuousVarType
         # ] = self.model.continuous_var_list(
@@ -6080,6 +6083,8 @@ class ElectricSteamGenerator(IntegratedEnergySystem):
             energy_init=1,
             stateOfCharge_min=0,
             stateOfCharge_max=1,
+            input_type='heat',
+            output_type='steam'
         )
 
         """

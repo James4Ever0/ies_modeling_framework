@@ -635,7 +635,7 @@ def cooletIceHeatDevicesRegistration(
         stateOfCharge_max=1,
         device_name="phaseChangeWarmWaterStorage",
         debug=debug,
-        input_type="warm_water",
+        input_type="warm_water_storage",
         output_type="warm_water",
     )
     phaseChangeWarmWaterStorage.constraints_register()

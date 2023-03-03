@@ -230,7 +230,7 @@ if __name__ == "__main__":
         device_name="steamAndWater_exchanger",
         debug=debug,
         input_type="steam",
-        output_type="warm_water", # not! it is warm water?
+        output_type="warm_water",  # not! it is warm water?
     )
     steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
 
@@ -274,7 +274,7 @@ if __name__ == "__main__":
         efficiency=0.9,
         device_name="hotWaterLiBr",
         debug=debug,
-        input_type='hot_water'
+        input_type="hot_water",
     )
     hotWaterLiBr.constraints_register()
 
@@ -626,17 +626,16 @@ if __name__ == "__main__":
 
     electricityNode1 = NodeFactory.create_node("electricity")
 
-    electricityNode1.add_outputs(
-        groundSourceHeatPump,
-        waterCoolingSpiralMachine,
-        heatPump,
-        waterSourceHeatPumps,
-        electricityLoad,
-        electricSteamGenerator,
-        hotWaterElectricBoiler,
-        tripleWorkingConditionUnit,
-        doubleWorkingConditionUnit,
-    )
+    electricityNode1.add_output(groundSourceHeatPump)
+    electricityNode1.add_output(waterCoolingSpiralMachine)
+    electricityNode1.add_output(heatPump)
+    electricityNode1.add_output(waterSourceHeatPumps)
+    electricityNode1.add_output(electricityLoad)
+    electricityNode1.add_output(electricSteamGenerator)
+    electricityNode1.add_output(hotWaterElectricBoiler)
+    electricityNode1.add_output(tripleWorkingConditionUnit)
+    electricityNode1.add_output(doubleWorkingConditionUnit)
+
     electricityNode1.add_inputs(
         photoVoltaic,
         combinedHeatAndPower,
@@ -668,7 +667,6 @@ if __name__ == "__main__":
     #     for h in range(0, num_hour)
     # )
     ##########################################
-    
 
     # 综合能源系统 所有设备集合
     systems = [  # all constrains in IES/IntegratedEnergySystem system
@@ -707,7 +705,7 @@ if __name__ == "__main__":
         steamLoad,
         ######### ALL THE LOADS #########
     ]
-    NodeFactory.build_relations(systems) # this is a failsafe.
+    NodeFactory.build_relations(systems)  # this is a failsafe.
     # check if this is built?
     assert NodeFactory.built
 
