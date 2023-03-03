@@ -159,12 +159,13 @@ from integratedEnergySystemPrototypes import (
     # CitySupply,
     GridNet,
     Linearization,
-    NodeUtils,
+    NodeUtils, # shall we disable in-node connections
     EnergyFlowNodeFactory
 )
 
 from mini_data_log_utils import check_solve_and_log
 
+debug=False
 
 if __name__ == "__main__":
     model = Model(name="buses")
@@ -183,7 +184,9 @@ if __name__ == "__main__":
     # 发电及电储能装置
     ##########################################
     dieselEngine, photoVoltaic, batteryEnergyStorageSystem = electricSystemRegistration(
-        model, num_hour, intensityOfIllumination, day_node
+        model, num_hour, intensityOfIllumination, day_node,
+        debug=debug,
+        
     )
     ##########################################
 
@@ -203,6 +206,8 @@ if __name__ == "__main__":
         # day_node,
         electricity_price0,
         gas_price0,
+        debug=debug,
+        
     )
 
     # 以上为蒸汽发生装置
@@ -217,6 +222,7 @@ if __name__ == "__main__":
         device_price=400,
         k=50,
         device_name="steamAndWater_exchanger",
+        debug=debug,
     )
     steamAndWater_exchanger.constraints_register()  # qs - 泉水？ steamAndWater热交换器？
     
@@ -229,6 +235,7 @@ if __name__ == "__main__":
         device_price=1000,
         efficiency=0.9,
         device_name="steamPowered_LiBr",
+        debug=debug,
     )
     steamPowered_LiBr.constraints_register()
     
@@ -248,6 +255,7 @@ if __name__ == "__main__":
         electricity_price0,
         municipalHotWater_price0,
         gas_price0,
+        debug=debug,
     )
     
     # 热水溴化锂，制冷
@@ -258,6 +266,7 @@ if __name__ == "__main__":
         device_price=1000,
         efficiency=0.9,
         device_name="hotWaterLiBr",
+        debug=debug,
     )
     hotWaterLiBr.constraints_register()
 
@@ -269,6 +278,7 @@ if __name__ == "__main__":
         device_price=400,
         k=50,
         device_name="hotWaterExchanger",
+        debug=debug,
     )
     hotWaterExchanger.constraints_register()
     
@@ -288,6 +298,7 @@ if __name__ == "__main__":
         model,
         num_hour,
         electricity_price0,
+        debug=debug,
     )
     
     
@@ -299,20 +310,23 @@ if __name__ == "__main__":
         device_price=0,
         electricity_price=electricity_price0,
         electricity_price_upload=0.35,
+        debug=debug,
     )
     gridNet.constraints_register( powerPeak_predicted=2000)
 
     # 高温蒸汽去向
     ##########################################
-    power_steam_used_product = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_steam_used_product"
-    )  # shall this be never used?
-    power_steam_used_heatcool = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_steam_used_heatcool"
-    )
-    power_steam_sum = model.continuous_var_list(
-        [i for i in range(0, num_hour)], name="power_steam_sum"
-    )
+    # power_steam_used_product = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_steam_used_product"
+    # )  # shall this be never used?
+    # power_steam_used_heatcool = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_steam_used_heatcool"
+    # )
+    # power_steam_sum = model.continuous_var_list(
+    #     [i for i in range(0, num_hour)], name="power_steam_sum"
+    # )
+    NodeFactory = EnergyFlowNodeFactory(model=model, num_hour=num_hour, debug=debug)
+    SteamNode1 = NodeFactory.create_node('steam','equal')
     model.add_constraints(
         power_steam_sum[h]
         == municipalSteam.heat_citySupplied[h]
