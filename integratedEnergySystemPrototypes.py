@@ -14,7 +14,7 @@ class Load:
     def __init__(
         self,
         input_type: Union[
-            # Literal["hot_water"], 
+            # Literal["hot_water"],
             # there's no such load.
             Literal["cold_water"],
             Literal["steam"],  # is this one of the load types? not sure.
@@ -869,16 +869,28 @@ class EnergyFlowNodeFactory:
             node
         )  # how do you check validity? you can pass the factory object yourself.
         return node
-    
-    def check_system_validity(self, devices:List):
+
+    def check_system_validity(self, devices: List):
         device_ids = set([id(device) for device in devices])
         assert device_ids == self.device_ids
+        
         for device in devices:
-            input_ids = device.power_of_inputs
-            output_ids = 
+            input_ids = [
+                f"{id(device)}_input_{key}" for key, _ in device.power_of_inputs.items()
+            ]
+            output_ids = [
+                f"{id(device)}_output_{key}"
+                for key, _ in device.power_of_outputs.items()
+            ]
+            fully_connected = all(
+                [input_id in self.input_ids for input_id in input_ids]
+            ) and all([output_id in self.output_ids for output_id in output_ids])
+            if not fully_connected:
+                ...  # ready to raise exception?
 
-    def build_relations(self):
+    def build_relations(self,devices:List):
         assert self.built is False
+        
         for node in self.nodes:
             node.build_relations()
         self.built = True
@@ -3195,7 +3207,7 @@ class Exchanger(IntegratedEnergySystem):
                 self.power_of_inputs[self.input_type], self.efficiency
             ),
         )
-        self.add_upper_bounds(self.power_of_inputs[self.input_type],self.device_count)
+        self.add_upper_bounds(self.power_of_inputs[self.input_type], self.device_count)
         # self.add_lower_and_upper_bounds(self.heat_exchange,0,self.device_count)
 
         self.model.add_constraint(
