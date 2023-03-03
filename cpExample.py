@@ -390,34 +390,40 @@ if __name__ == "__main__":
     power_highTemperatureHotWater_sum = model.continuous_var_list(
         [i for i in range(0, num_hour)], name="power_highTemperatureHotWater_sum"
     )
+    
+    for device in []:
+        hotWaterNode1.add_input()
+    
+    for device in []:
+        hotWater
 
     # TODO: 这些设备能不能输出高温热水 待定
-    model.add_constraints(  # inputs
-        power_highTemperatureHotWater_sum[h]
-        == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
-        + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
-            h
-        ]  # wasteGasAndHeat_？
-        + platePhotothermal.power_photoVoltaic[h]
-        + phaseChangeHotWaterStorage.power_energyStorageSystem[h]
-        + municipalHotWater.heat_citySupplied[h]
-        + gasBoiler_hotWater.heat_gasBoiler[h]
-        + hotWaterElectricBoiler.heat_electricBoiler[h]
-        + waterStorageTank.power_waterStorageTank_gheat[h]  # 水储能设备发出的热量？ bidirectional!
-        for h in range(
-            0, num_hour
-        )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放能功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
-    )
+    # model.add_constraints(  # inputs
+    #     power_highTemperatureHotWater_sum[h]
+    #     == combinedHeatAndPower.gasTurbineSystem_device.heat_exchange[h]
+    #     + combinedHeatAndPower.wasteGasAndHeat_water_device.heat_exchange[
+    #         h
+    #     ]  # wasteGasAndHeat_？
+    #     + platePhotothermal.power_photoVoltaic[h]
+    #     + phaseChangeHotWaterStorage.power_energyStorageSystem[h]
+    #     + municipalHotWater.heat_citySupplied[h]
+    #     + gasBoiler_hotWater.heat_gasBoiler[h]
+    #     + hotWaterElectricBoiler.heat_electricBoiler[h]
+    #     + waterStorageTank.power_waterStorageTank_gheat[h]  # 水储能设备发出的热量？ bidirectional! input and output.
+    #     for h in range(
+    #         0, num_hour
+    #     )  # 高温热水 = CHP燃气轮机热交换量 + CHP供暖热水热交换量+ 平板光热发热功率 + 相变储热装置的充放能功率 + 市政热水实际消耗 + 燃气锅炉热功率 + 电锅炉热功率 + 水蓄能设备（高温？）水储能功率
+    # )
 
     # 高温热水去向
-    model.add_constraints( # output
-        power_highTemperatureHotWater_sum[h]
-        >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
-        for h in range(0, num_hour)  # （每小时）高温热水总热量 >= 热水溴化锂消耗热量 + 热交换器消耗热量
-    )
-    model.add_constraints(
-        power_highTemperatureHotWater_sum[h] >= 0 for h in range(0, num_hour)
-    )  # （每小时）高温热水总热量>=0
+    # model.add_constraints( # output
+    #     power_highTemperatureHotWater_sum[h]
+    #     >= hotWaterLiBr.heat_LiBr_from[h] + hotWaterExchanger.heat_exchange[h]
+    #     for h in range(0, num_hour)  # （每小时）高温热水总热量 >= 热水溴化锂消耗热量 + 热交换器消耗热量
+    # )
+    # model.add_constraints( # precluded.
+    #     power_highTemperatureHotWater_sum[h] >= 0 for h in range(0, num_hour)
+    # )  # （每小时）高温热水总热量>=0
 
     # power_heatPump[h]*heatPump_flag[h]+power_waterStorageTank[h]*waterStorageTank_flag[h]+power_waterCoolingSpiralMachine[h]*waterSourceHeatPumps_flag[h]+power_LiBr[h]+power_waterCoolingSpiralMachine[h]+power_iceStorage[h]==cool_load[h]%冷量需求
     # power_heatPump[h]*(1-heatPump_flag[h])+power_waterStorageTank[h]*(1-waterStorageTank_flag[h])+power_waterSourceHeatPumps[h]*(1-waterSourceHeatPumps_flag[h])+power_gas[h]+power_groundSourceHeatPump[h]==heat_load[h]%热量需求

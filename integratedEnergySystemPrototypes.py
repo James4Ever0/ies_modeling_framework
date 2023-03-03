@@ -5444,8 +5444,8 @@ class WaterEnergyStorage(IntegratedEnergySystem):
         # ]
         self.output_types = ["cold_water", "warm_water", "hot_water"]
         self.input_types = [
-            f"{output_type}_storage" for output_type in self.output_types
-        ]
+            output_type if output_type == "hot_water" else f"{output_type}_storage" for output_type in self.output_types
+        ] # false. we do not have the hot_water_storage option.
         self.waterStorageTank = EnergyStorageSystemVariable(
             num_hour,
             model,
