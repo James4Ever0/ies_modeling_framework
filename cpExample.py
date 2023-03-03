@@ -340,7 +340,7 @@ if __name__ == "__main__":
 
     for device in [
         municipalSteam,
-        combinedHeatAndPower.steam_exchanger,
+        combinedHeatAndPower,
         troughPhotoThermal,
         electricSteamGenerator,
         gasBoiler,
@@ -584,10 +584,7 @@ if __name__ == "__main__":
         batteryEnergyStorageSystem,
         troughPhotoThermal,
         electricSteamGenerator,
-        combinedHeatAndPower,  # for CHP devices, we only check their heat exchangers. hot_water_exchanger_1 and at least one of the hot_water_exchanger_2 and steam_exchanger will be connected.
-        # combinedHeatAndPower.hot_water_exchanger_1,
-        # combinedHeatAndPower.hot_water_exchanger_2,
-        # combinedHeatAndPower.steam_exchanger,
+        combinedHeatAndPower,  # for CHP outputs, electricity and hot_water are mandatory. steam is optional.
         gasBoiler,
         steamAndWater_exchanger,  # qs? 气水？
         steamPowered_LiBr,  # zq? 制取？

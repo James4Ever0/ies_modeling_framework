@@ -2635,6 +2635,10 @@ class CombinedHeatAndPower(IntegratedEnergySystem):
         )
 
         self.gas_to_electricity_ratio = gas_to_electricity_ratio
+        
+        self.power_of_outputs['hot_water'] = self.elementwise_add(self.hot_water_exchanger_1.power_of_outputs['hot_water'], self.hot_water_exchanger_2.power_of_outputs['hot_water'])
+        
+        self.power_of_outputs['steam'] = self.steam_exchanger.power_of_outputs['steam']
 
         """
         供暖蒸汽热交换器，参数包括时间步数、数学模型实例、可用的设备数量、设备单价和换热系数等。
