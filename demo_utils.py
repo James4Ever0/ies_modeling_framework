@@ -266,6 +266,7 @@ def electricSystemRegistration(
         efficiency=0.8,
         device_name="PhotoVoltaic",
         debug=debug,
+        output_type='electricity'
     )
     photoVoltaic.constraints_register()
 
@@ -283,6 +284,8 @@ def electricSystemRegistration(
         stateOfCharge_max=1,
         device_name="batteryEnergyStorageSystem",
         debug=debug,
+        input_type='electricity',
+        output_type='electricity'
     )
     # original: battery
     batteryEnergyStorageSystem.constraints_register(
@@ -306,9 +309,9 @@ def steamSourcesRegistration(
     troughPhotoThermal = TroughPhotoThermal(
         num_hour,
         model,
-        troughPhotoThermal_device_count_max=5000,
-        troughPhotoThermal_price=2000,
-        troughPhotoThermalSolidHeatStorage_price=1000,
+        device_count_max=5000,
+        device_price=2000,
+        device_price_solidHeatStorage=1000,
         intensityOfIllumination=intensityOfIllumination,
         efficiency=0.8,
         debug=debug,
@@ -319,9 +322,9 @@ def steamSourcesRegistration(
     electricSteamGenerator = ElectricSteamGenerator(
         num_hour,
         model,
-        electricSteamGenerator_device_count_max=20000,
-        electricSteamGenerator_price=200,
-        electricSteamGeneratorSolidHeatStorage_price=200,  # gtxr? SolidHeatStorage？
+        device_count_max=20000,
+        device_price=200,
+        device_price_solidHeatStorage=200,  # gtxr? SolidHeatStorage？
         electricity_price=electricity_price0,
         efficiency=0.9,
         debug=debug,
@@ -332,11 +335,11 @@ def steamSourcesRegistration(
     combinedHeatAndPower = CombinedHeatAndPower(
         num_hour,
         model,
-        combinedHeatAndPower_num_max=5,
+        device_count_max=5,
         device_price=2000,
         gas_price=gas_price0,
         rated_power=2000,
-        power_to_heat_ratio=1.2,  # dr? 电热?
+        electricity_to_heat_ratio=1.2,  # dr? 电热?
         debug=debug,
     )
     combinedHeatAndPower.constraints_register()
@@ -350,6 +353,7 @@ def steamSourcesRegistration(
         gas_price=gas_price0,
         efficiency=0.9,
         debug=debug,
+        output_type='steam'
     )
     gasBoiler.constraints_register()
 
