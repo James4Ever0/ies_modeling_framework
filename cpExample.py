@@ -566,7 +566,10 @@ if __name__ == "__main__":
         batteryEnergyStorageSystem,
         troughPhotoThermal,
         electricSteamGenerator,
-        combinedHeatAndPower,
+        # combinedHeatAndPower,
+        combinedHeatAndPower.hot_water_exchanger_1, # for CHP devices, we only check their heat exchangers.
+        combinedHeatAndPower.hot_water_exchanger_2,
+        combinedHeatAndPower.steam_exchanger,
         gasBoiler,
         steamAndWater_exchanger,  # qs? 气水？
         steamPowered_LiBr,  # zq? 制取？

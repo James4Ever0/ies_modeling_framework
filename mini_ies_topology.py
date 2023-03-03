@@ -2,10 +2,8 @@ import networkx as nx
 
 G = nx.DiGraph()
 
-G.add_nodes_from([
-    (PV, {"color": "red"}),
-    (BESS, {"color": "green"}),
-])
+G.nodes.data()
+NodeDataView({1: {'time': '5pm', 'room': 714}, 3: {'time': '2pm'}})
 
 
 import matplotlib.pyplot as plt
