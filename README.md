@@ -2,9 +2,11 @@
 
 ## dependencies preparation
 
-python 3.7
+python==3.7
 
-install cplex and docplex from 
+install `cplex` and `docplex` from IBM CPLEX Studio installation directory, run `python setup.py install` under the corresponding folders (total 2 folders)
+
+install remaining dependencies via `pip install -r requirements.txt`
 
 ## current state
 
