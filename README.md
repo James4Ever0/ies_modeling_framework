@@ -1,9 +1,16 @@
-current state:
+# IES modeling
+
+## dependencies preparation
+
+python 3.7
+
+install cplex and docplex from 
+
+## current state
 
 rudimentary IES modeling, or framework only IES modeling
 
-
-execute these commands for demo:
+## execute these commands for demo
 
 ```bash
 python cpExample.py # a huge demo
@@ -12,7 +19,7 @@ python mini_heat_system.py # warm water heating
 python mini_refrigeration_system.py # cold water cooling
 ```
 
-files content:
+## file contents
 
 |filename | content|
 |-- | -- |
