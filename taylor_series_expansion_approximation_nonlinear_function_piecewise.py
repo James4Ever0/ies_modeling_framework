@@ -18,18 +18,18 @@ pow_5_ub = y_5_ub = y_ub**5
 
 i_0_lb = (x_lb + y_lb) / 2
 i_0_ub = (x_ub + y_ub) / 2
-i_1_lb = (x_lb - y_lb) / 2
-i_1_ub = (x_ub - y_ub) / 2
+i_1_lb = (x_lb - y_ub) / 2
+i_1_ub = (x_ub - y_lb) / 2
 
 i_2_lb = (x_lb + y_3_lb) / 2
 i_2_ub = (x_ub + y_3_ub) / 2
-i_3_lb = (x_lb - y_3_lb) / 2
-i_3_ub = (x_ub - y_3_ub) / 2
+i_3_lb = (x_lb - y_3_ub) / 2
+i_3_ub = (x_ub - y_3_lb) / 2
 
 i_4_lb = (x_lb + y_5_lb) / 2
 i_4_ub = (x_ub + y_5_ub) / 2
-i_5_lb = (x_lb - y_5_lb) / 2
-i_5_ub = (x_ub - y_5_ub) / 2
+i_5_lb = (x_lb - y_5_ub) / 2
+i_5_ub = (x_ub - y_5_lb) / 2
 
 pow_2_lb = min(i_0_lb, i_1_lb, i_2_lb, i_3_lb, i_4_lb, i_5_lb)
 pow_2_ub = max(i_0_ub, i_1_ub, i_2_ub, i_3_ub, i_4_ub, i_5_ub)
@@ -87,18 +87,27 @@ def z_func_approx(x: float, y: float):
     y_3 = piecewise_pow_3(y)
     y_5 = piecewise_pow_5(y)
 
-    i_0 = (x+y)/2
-    i_1 = (x-y)/2
-    i_2 = (x+y_3)/2
-    i_3 = (x-y_3)/2
-    i_4 = (x+y_5)/2
-    i_5 = (x-y_5)/2
+    i_0 = (x + y) / 2
+    i_1 = (x - y) / 2
+    i_2 = (x + y_3) / 2
+    i_3 = (x - y_3) / 2
+    i_4 = (x + y_5) / 2
+    i_5 = (x - y_5) / 2
 
-    pow_2_i_0 =piecewise_pow_2(i_0)
-    pow_2_i_1 = piecewise_pow_2(i_1) 
+    pow_2_i_0 = piecewise_pow_2(i_0)
+    pow_2_i_1 = piecewise_pow_2(i_1)
+    pow_2_i_2 = piecewise_pow_2(i_2)
+    pow_2_i_3 = piecewise_pow_2(i_3)
+    pow_2_i_4 = piecewise_pow_2(i_4)
+    pow_2_i_5 = piecewise_pow_2(i_5)
 
-    z_approx = pow_2_i_0-pow_2_i_1- (piecewise_pow_2(i_2)-piecewise_pow_2(i_3))/math.factorial(3)+(piecewise_pow_2(i_4)-piecewise_pow_2(i_5))/math.factorial(5)
+    z_approx = (
+        (pow_2_i_0 - pow_2_i_1)
+        - (pow_2_i_2 - pow_2_i_3) / math.factorial(3)
+        + (pow_2_i_4 - pow_2_i_5) / math.factorial(5)
+    )
 
     return z_approx
 
-print(z_func_approx(1,2), np.sin(2))
+
+print(z_func_approx(1, 2), np.sin(2))
