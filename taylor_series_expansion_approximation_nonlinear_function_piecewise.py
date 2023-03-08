@@ -72,5 +72,22 @@ piecewise_pow_5 = get_piecewise_function(
     pow_5_lb, pow_5_ub, piecewise_sample_size, lambda x: x**5
 )
 
-def z_func_approx(x:float, y:float):
-    
+import math
+
+
+def z_func_approx(x: float, y: float):
+    assert x > x_lb
+    assert x < x_ub
+    assert y > y_lb
+    assert y < y_ub
+
+    y = np.array([y])
+    x = np.array([x])
+
+    y_3 = piecewise_pow_3(y)
+    y_5 = piecewise_pow_5(y)
+# i_0 = (x+y)/2, i_1 = (x-y)/2
+# i_2 = (x+y_3)/2 i_3 = (x-y_3)/2
+# i_4 = (x+y_5)/2, i_5 = (x-y_5)/2
+    z_approx = i_0**2-i_1**2 - (i_2**2-i_3**2)/math.factorial(3)+(i_4**2-i_5**2)/math.factorial(5)
+
