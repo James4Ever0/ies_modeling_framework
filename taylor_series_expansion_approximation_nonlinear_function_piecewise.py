@@ -26,7 +26,11 @@ i_2_ub = (x_ub+y_3_ub)/2
 i_3_lb = (x_lb-y_3_lb)/2
 i_3_ub = (x_ub-y_3_ub)/2
 
-i_4_lb = (x_lb+y_3_lb)/2
-i__ub = (x_ub+y_3_ub)/2
-i_3_lb = (x_lb-y_3_lb)/2
-i_3_ub = (x_ub-y_3_ub)/2
+i_4_lb = (x_lb+y_5_lb)/2
+i_4_ub = (x_ub+y_5_ub)/2
+i_5_lb = (x_lb-y_5_lb)/2
+i_5_ub = (x_ub-y_5_ub)/2
+
+import numpy as np
+
+np.piecewise()
