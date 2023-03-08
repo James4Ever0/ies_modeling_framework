@@ -23,4 +23,4 @@ from pyomo.core.kernel.piecewise_library.transforms_nd import piecewise_nd
 
 piecewise_z_func = piecewise_nd(delaunay,z_vals)
 
-breakpoint()
+# breakpoint()
