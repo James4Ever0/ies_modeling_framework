@@ -32,7 +32,7 @@ i_5_lb = (x_lb - y_5_lb) / 2
 i_5_ub = (x_ub - y_5_ub) / 2
 
 pow_2_lb = min(i_0_lb, i_1_lb, i_2_lb, i_3_lb, i_4_lb, i_5_lb)
-pow_2_ub = min(i_0_ub, i_1_ub, i_2_ub, i_3_ub, i_4_ub, i_5_ub)
+pow_2_ub = max(i_0_ub, i_1_ub, i_2_ub, i_3_ub, i_4_ub, i_5_ub)
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -55,7 +55,7 @@ def interpolate_from_input_and_output_array(x, y):
 
 
 def get_piecewise_function(lb, ub, sample_size, func):
-    input_array = np.linspace(pow_2_lb, pow_2_ub, sample_size)
+    input_array = np.linspace(lb, ub, sample_size)
     output_array = func(input_array)
     piecewise_func = interpolate_from_input_and_output_array(input_array, output_array)
     return piecewise_func
@@ -86,8 +86,16 @@ def z_func_approx(x: float, y: float):
 
     y_3 = piecewise_pow_3(y)
     y_5 = piecewise_pow_5(y)
-# i_0 = (x+y)/2, i_1 = (x-y)/2
-# i_2 = (x+y_3)/2 i_3 = (x-y_3)/2
-# i_4 = (x+y_5)/2, i_5 = (x-y_5)/2
-    z_approx = i_0**2-i_1**2 - (i_2**2-i_3**2)/math.factorial(3)+(i_4**2-i_5**2)/math.factorial(5)
 
+    i_0 = (x+y)/2
+    i_1 = (x-y)/2
+    i_2 = (x+y_3)/2
+    i_3 = (x-y_3)/2
+    i_4 = (x+y_5)/2
+    i_5 = (x-y_5)/2
+
+    z_approx = piecewise_pow_2(i_0)-piecewise_pow_2(i_1) - (piecewise_pow_2(i_2)-piecewise_pow_2(i_3))/math.factorial(3)+(piecewise_pow_2(i_4)-piecewise_pow_2(i_5))/math.factorial(5)
+
+    return z_approx
+
+print(z_func_approx(1,2), np.sin(2))
