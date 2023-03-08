@@ -1,5 +1,13 @@
 # IES modeling
 
+## linearization of nonlinear multivariate functions
+
+no matter how we try to linearize nonlinear functions, we need to know the input ranges.
+
+### analytical
+
+
+
 ## dependencies preparation
 
 python==3.7
