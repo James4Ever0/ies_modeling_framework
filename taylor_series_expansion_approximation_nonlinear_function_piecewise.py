@@ -62,7 +62,7 @@ def get_piecewise_function(lb, ub, sample_size, func):
     return piecewise_func
 
 
-piecewise_sample_size = 100
+piecewise_sample_size = 100000
 piecewise_pow_2 = get_piecewise_function(
     pow_2_lb, pow_2_ub, piecewise_sample_size, lambda x: x**2
 )
@@ -87,7 +87,7 @@ def z_func_approx(x: float, y: float):
 
     y_3 = piecewise_pow_3(y)
     y_5 = piecewise_pow_5(y)
-    breakpoint()
+    # breakpoint()
 
     i_0 = (x + y) / 2
     i_1 = (x - y) / 2
@@ -100,7 +100,7 @@ def z_func_approx(x: float, y: float):
     pow_2_i_1 = piecewise_pow_2(i_1)
     pow_2_i_2 = piecewise_pow_2(i_2)
     pow_2_i_3 = piecewise_pow_2(i_3)
-    print("I_4:",i_4)
+    # print("I_4:",i_4)
     pow_2_i_4 = piecewise_pow_2(i_4)
     pow_2_i_5 = piecewise_pow_2(i_5)
 
