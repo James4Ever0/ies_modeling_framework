@@ -10,4 +10,23 @@
 
 from linearization_config import *
 
-y_3_lb = y_
+y_3_lb = y_lb**3
+y_3_ub = y_ub**3
+
+y_5_lb = y_lb**5
+y_5_ub = y_ub**5
+
+i_0_lb = (x_lb+y_lb)/2
+i_0_ub = (x_ub+y_ub)/2
+i_1_lb = (x_lb-y_lb)/2
+i_1_ub = (x_ub-y_ub)/2
+
+i_2_lb = (x_lb+y_3_lb)/2
+i_2_ub = (x_ub+y_3_ub)/2
+i_3_lb = (x_lb-y_3_lb)/2
+i_3_ub = (x_ub-y_3_ub)/2
+
+i_4_lb = (x_lb+y_3_lb)/2
+i__ub = (x_ub+y_3_ub)/2
+i_3_lb = (x_lb-y_3_lb)/2
+i_3_ub = (x_ub-y_3_ub)/2
