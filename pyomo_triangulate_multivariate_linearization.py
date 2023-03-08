@@ -19,4 +19,6 @@ xy_points = delaunay.points  # (10000,2)
 
 z_vals = z_func(xy_points[:, 0], xy_points[:, 1])
 
-z_vals = 
+from pyomo.core.kernel.piecewise_library.transforms_nd import piecewise_nd
+
+piecewise_z_func = piecewise_nd(delaunay,z_vals)
