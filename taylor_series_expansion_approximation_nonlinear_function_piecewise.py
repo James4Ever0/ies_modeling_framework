@@ -95,8 +95,9 @@ def z_func_approx(x: float, y: float):
     i_5 = (x-y_5)/2
 
     pow_2_i_0 =piecewise_pow_2(i_0)
+    pow_2_i_1 = piecewise_pow_2(i_1) 
 
-    z_approx = pow_2_i_0-piecewise_pow_2(i_1) - (piecewise_pow_2(i_2)-piecewise_pow_2(i_3))/math.factorial(3)+(piecewise_pow_2(i_4)-piecewise_pow_2(i_5))/math.factorial(5)
+    z_approx = pow_2_i_0-pow_2_i_1- (piecewise_pow_2(i_2)-piecewise_pow_2(i_3))/math.factorial(3)+(piecewise_pow_2(i_4)-piecewise_pow_2(i_5))/math.factorial(5)
 
     return z_approx
 
