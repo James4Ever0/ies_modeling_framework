@@ -26,8 +26,10 @@ layer_depth = len(layers)
 sample_size = 100
 import random
 
+from linearization_config import *
+
 test_xy_vals = [
-    [random.uniform(0, 3), random.uniform(0, 2 * np.pi)] for _ in range(sample_size)
+    [random.uniform(x_lb, x_ub), random.uniform(y_lb, y_ub)] for _ in range(sample_size)
 ]
 
 for x_val, y_val in test_xy_vals:
@@ -41,7 +43,7 @@ for x_val, y_val in test_xy_vals:
             input_val = hard_tanh(input_val)
 
     # check the output.
-    answer = x_val * np.sin(y_val)
+    answer = z_func(x_val, y_val)
     print("XY VALS:", x_val, y_val)
     print(input_val, answer)
     print()

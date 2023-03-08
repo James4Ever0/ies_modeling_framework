@@ -9,7 +9,7 @@ y = np.linspace(y_lb, y_ub, y_sample_size)
 
 
 z = outputs = np.array(
-    [x_element * np.sin(y_element) for y_element in y for x_element in x]
+    [z_func(x_element, y_element) for y_element in y for x_element in x]
 )
 
 inputs = np.array([[x_element, y_element] for y_element in y for x_element in x])
@@ -32,7 +32,7 @@ learning_rate = 1e-4
 train_epoches = 30000
 
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-loss_fn = torch.nn.MSELoss(reduction='sum')
+loss_fn = torch.nn.MSELoss(reduction="sum")
 
 for t in range(train_epoches):
     # Forward pass: compute predicted y by passing x to the model. Module objects
