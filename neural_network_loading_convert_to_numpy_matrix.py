@@ -30,15 +30,21 @@ def hard_tanh(numpy_array: np.ndarray):  # destructive!
     numpy_array[np.where(numpy_array > 1)] = 1
     return numpy_array # you can discard it anyway.
 
-input_val =np.array([1,2]).reshape(1,-1)
 layer_depth = 3
+import random
+test_xy_vals = [[random.randrange(0,2),random.randrange()]]
+for x_val, y_val in test_xy_vals:
+    input_val =np.array([x_val,y_val]).reshape(1,-1)
 
-for i in range(layer_depth):
-    input_val = np.matmul(input_val,weight_list[i])
-    input_val+= bias_list[i].reshape(1,-1)
-    if i != layer_depth-1:
-        input_val = hard_tanh(input_val)
+    for i in range(layer_depth):
+        # breakpoint()
+        input_val = np.matmul(input_val,weight_list[i].T)
+        input_val+= bias_list[i].reshape(1,-1)
+        if i != layer_depth-1:
+            input_val = hard_tanh(input_val)
 
-# check the output.
-answer = 1*np.sin(2)
-print(input_val, answer)
+    # check the output.
+    answer = x_val*np.sin(y_val)
+    print("XY VALS:", x_val, y_val)
+    print(input_val, answer)
+    print()
