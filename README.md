@@ -11,9 +11,13 @@ first taylor series expansion around given input ranges, then using piecewise fu
 the trick:
 
 $$xy=z$$
+
 convert to
+
 $$y_1^2 - y_2^2 = z$$
+
 where
+
 $$y_1 = \frac{x+y}{2}$$
 $$y_2 = \frac{x-y}{2}$$
 
