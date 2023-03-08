@@ -11,16 +11,18 @@ model.load_state_dict(torch.load(model_save_path))
 model.eval()
 
 # input_layer.bias
+
+layers = [input_layer,hidden_layer,output_layer]
 bias_list = [
     input_layer.bias.detach().numpy(),
     hidden_layer.bias.detach().numpy(),
-    output_layer.bias.detach(),
+    output_layer.bias.detach().numpy(),
 ]
 
 weight_list = [
-    input_layer.weight.detach(),
-    hidden_layer.weight.detach(),
-    output_layer.weight.detach(),
+    input_layer.weight.detach().numpy(),
+    hidden_layer.weight.detach().numpy(),
+    output_layer.weight.detach().numpy(),
 ]
 
 
@@ -31,8 +33,10 @@ def hard_tanh(numpy_array: np.ndarray):  # destructive!
     return numpy_array # you can discard it anyway.
 
 layer_depth = 3
+sample_size = 100
 import random
-test_xy_vals = [[random.randrange(0,2),random.randrange()]]
+test_xy_vals = [[random.uniform(0,3),random.uniform(0,2*np.pi)] for _ in range(sample_size)]
+
 for x_val, y_val in test_xy_vals:
     input_val =np.array([x_val,y_val]).reshape(1,-1)
 
