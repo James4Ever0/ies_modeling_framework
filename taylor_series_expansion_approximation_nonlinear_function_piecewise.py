@@ -49,6 +49,14 @@ def interpolate_from_input_and_output_array(x,y):
 # # 打印新的输出值
 # print(y_new)
 
+def get_piecewise_function(lb, ub, sample_size,func):
+    input_array = np.linspace(pow_2_lb,pow_2_ub,sample_size)
+    output_array = func(input_array)
+    piecewise_func= interpolate_from_input_and_output_array(input_array, output_array)
+    return piecewise_func
+
 piecewise_sample_size = 100
-input_array = 
-interp_pow_2 = interpolate_from_input_and_output_array(input_array, output_array)
+piecewise_pow_2 = get_piecewise_function(pow_2_lb, pow_2_ub, piecewise_sample_size,lambda x: x**2)
+piecewise_pow_3 = get_piecewise_function(pow_3_lb, pow_3_ub, piecewise_sample_size,lambda x: x**3)
+piecewise_pow_5 = get_piecewise_function(pow_5_lb, pow_5_ub, piecewise_sample_size,lambda x: x**5)
+
