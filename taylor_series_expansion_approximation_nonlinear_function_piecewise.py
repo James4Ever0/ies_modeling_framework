@@ -55,6 +55,7 @@ def interpolate_from_input_and_output_array(x, y):
 
 
 def get_piecewise_function(lb, ub, sample_size, func):
+    print("LB:",lb, "UB:",ub)
     input_array = np.linspace(lb, ub, sample_size)
     output_array = func(input_array)
     piecewise_func = interpolate_from_input_and_output_array(input_array, output_array)
@@ -86,6 +87,7 @@ def z_func_approx(x: float, y: float):
 
     y_3 = piecewise_pow_3(y)
     y_5 = piecewise_pow_5(y)
+    breakpoint()
 
     i_0 = (x + y) / 2
     i_1 = (x - y) / 2
@@ -98,6 +100,7 @@ def z_func_approx(x: float, y: float):
     pow_2_i_1 = piecewise_pow_2(i_1)
     pow_2_i_2 = piecewise_pow_2(i_2)
     pow_2_i_3 = piecewise_pow_2(i_3)
+    print("I_4:",i_4)
     pow_2_i_4 = piecewise_pow_2(i_4)
     pow_2_i_5 = piecewise_pow_2(i_5)
 
