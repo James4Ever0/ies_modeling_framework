@@ -32,5 +32,14 @@ i_5_lb = (x_lb-y_5_lb)/2
 i_5_ub = (x_ub-y_5_ub)/2
 
 import numpy as np
-
-np.piecewise()
+from scipy.interpolate import interp1d
+# 定义输入和输出数组
+x = np.array([0, 1, 2, 3, 4, 5])
+y = np.array([0, 1, 4, 9, 16, 25])
+# 使用interp1d函数将输入和输出数组转化为分段函数
+f = interp1d(x, y, kind='linear')
+# # 使用分段函数计算新的输出值
+# x_new = np.array([1.5, 3.5])
+# y_new = f(x_new)
+# # 打印新的输出值
+# print(y_new)
