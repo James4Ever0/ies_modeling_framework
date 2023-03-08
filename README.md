@@ -14,8 +14,12 @@ $$xy=z$$
 convert to
 $$y_1^2 - y_2^2 = z$$
 where
-$$y_1 = 
-### 
+$$y_1 = \frac{x+y}{2}$$
+$$y_2 = \frac{x-y}{2}$$
+
+### sample based
+
+first sample some data points around the given mesh space, then use either neural networks or multivariate piecewise transformation by `pyomo`
 
 ## dependencies preparation
 
