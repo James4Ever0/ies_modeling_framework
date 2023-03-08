@@ -6,7 +6,16 @@ no matter how we try to linearize nonlinear functions, we need to know the input
 
 ### analytical
 
+first taylor series expansion around given input ranges, then using piecewise function as approximation, finally using multivariate linearization trick to introduce intermediate variables.
 
+the trick:
+
+$$xy=z$$
+convert to
+$$y_1^2 - y_2^2 = z$$
+where
+$$y_1 = 
+### 
 
 ## dependencies preparation
 
