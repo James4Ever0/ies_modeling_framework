@@ -11,5 +11,11 @@ model.load_state_dict(torch.load(model_save_path))
 model.eval()
 
 # input_layer.bias
-bias_list = [input_layer.bias.detach().numpy(),hidden_layer.bias.detach().numpy(),]
+bias_list = [input_layer.bias.detach().numpy(),hidden_layer.bias.detach().numpy(),output_layer.bias.detach()]
+
+weight_list = [input_layer.weight.detach(), hidden_layer.weight.detach(), output_layer.weight.detach()]
+
+# what about the hard-tanh?
+def hard_tanh(numpy_array): # destructive!
+    numpy_array[np.where()]
 breakpoint()
