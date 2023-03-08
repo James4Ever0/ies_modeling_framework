@@ -18,3 +18,5 @@ delaunay = pyomo.core.kernel.piecewise_library.util.generate_delaunay(
 xy_points = delaunay.points  # (10000,2)
 
 z_vals = z_func(xy_points[:, 0], xy_points[:, 1])
+
+z_vals = 
