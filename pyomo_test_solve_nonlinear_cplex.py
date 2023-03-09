@@ -27,8 +27,12 @@ model.c1 = Constraint(expr=model.z == model.x * sin(model.y))
 
 model.obj = Objective(expr=model.z, sense=minimize)
 
-opt = SolverFactory("mindtpy")
-opt.solve(model, mip_solver="cplex", nlp_solver="ipopt", tee=True)  # nothing returned?
+opt = SolverFactory("mindtpy")  # <- this thing does not support.
+opt.solve(model, mip_solver="cplex", 
+        #   nlp_solver="SHOT",
+          nlp_solver="ipopt",
+        #  Error: value SHOT not in domain ['ipopt', 'appsi_ipopt', 'gams', 'baron']
+          tee=True)
 model.obj.display()
 model.x.display()
 model.y.display()
