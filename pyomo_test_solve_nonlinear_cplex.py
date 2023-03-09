@@ -3,6 +3,8 @@
 # MINLP open source solvers:
 # https://pyomo.readthedocs.io/en/stable/contributed_packages/mindtpy.html
 # SHOT
+# https://projects.coin-or.org/Couenne
+# https://projects.coin-or.org/Bonmin
 
 # from pyomo.contrib.simplemodel import SimpleModel
 from math import pi  # do not use `sin` from here!
