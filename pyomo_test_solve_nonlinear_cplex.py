@@ -10,7 +10,7 @@
 from math import pi  # do not use `sin` from here!
 
 # pip install pyomocontrib_simplemodel
-from pyomo.environ import * # different approaches gives different import paths. may not always share all solvers.
+from pyomo.environ import *  # different approaches gives different import paths. may not always share all solvers.
 
 # from pyomo.core.expr import current as EXPR
 # from pyomo.core import ConcreteModel, Var, Objective, minimize, sin
@@ -30,4 +30,6 @@ model.obj = Objective(expr=model.z, sense=minimize)
 opt = SolverFactory("mindtpy")
 opt.solve(model, mip_solver="cplex", nlp_solver="ipopt", tee=True)  # nothing returned?
 model.obj.display()
+model.x.display()
+model.y.display()
 # breakpoint()
