@@ -22,7 +22,6 @@ model.z = Var()
 
 model.c1 = Constraint(expr=model.z == model.x * sin(model.y))
 
-
 # from pyomo.opt import SolverFactory # not good!
 
 model.obj = Objective(expr=model.z, sense=minimize)
@@ -36,4 +35,5 @@ opt.solve(model, mip_solver="cplex",
 model.obj.display()
 model.x.display()
 model.y.display()
+model.z.display()
 # breakpoint()
