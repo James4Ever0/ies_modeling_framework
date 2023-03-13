@@ -1,7 +1,7 @@
 import fastapi
 import time
+from test_server_client_configs import *
 
-MAX_TASK_COUNT=3
 
 def mock_calculation(sleep_time:float=20):
     """
