@@ -2,6 +2,8 @@ from fastapi import FastAPI
 import time
 from test_server_client_configs import *
 
+GLOBAL_TASK_COUNT = 0
+
 
 def mock_calculation(sleep_time: float = 20):
     """
@@ -10,7 +12,9 @@ def mock_calculation(sleep_time: float = 20):
     Args:
         sleep_time (float): the duration of our fake task, in seconds
     """
+    print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
+    print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
     return "CALCULATED RESULT"  # fake though.
 
 
@@ -20,8 +24,6 @@ app = FastAPI()
 # create some context manager? sure?
 
 # of course we will set limit to max running time per task
-
-GLOBAL_TASK_COUNT = 0
 
 # could there be multiple requests? use lock please?
 import threading
@@ -65,7 +67,7 @@ RESULT_DICT = {}
 import uuid
 
 
-def execute_and_append_result_to_dict(unique_id):
+def execute_and_append_result_to_dict(unique_id: str):
     result = mock_calculation()
     RESULT_DICT.update({unique_id: result})
 
@@ -74,12 +76,16 @@ def execute_and_append_result_to_dict(unique_id):
 def run_async():  # how do you do it async? redis cache?
     if add_one_task():
         unique_id = uuid.uuid4()
+        threading.Thread(
+            target=execute_and_append_result_to_dict, args=(unique_id,)
+        ).run()
         return unique_id
+    return "MAX TASK LIMIT"
 
 
 @app.post(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
-def get_result_async():
-    ...
+def get_result_async(unique_id: str):
+    return RESULT_DICT.get(unique_id, "NOTHING")
 
 
 import uvicorn
