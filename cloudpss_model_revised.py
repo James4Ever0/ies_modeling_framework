@@ -8,16 +8,17 @@ class 设备:
     设备额定运行参数:dict
     设备运行约束:dict
     设备经济性参数:dict
+    设备工况:dict
 
-class 光伏:
-    class 光伏设备额定运行参数(BaseModel):
+class 光伏(设备):
+    class 设备额定运行参数(BaseModel):
         光伏板面积 # 
         光电转换效率 # 
     
-    class 光伏设备运行约束(BaseModel):
+    class 设备运行约束(BaseModel):
         最大发电功率:float # (kW)
         
-    class 光伏设备经济性参数(BaseModel):
+    class 设备经济性参数(BaseModel):
         采购成本:float # (万元/台)
         固定维护成本:float#  (万元/年)
         可变维护成本:float#  (元/kWh)
