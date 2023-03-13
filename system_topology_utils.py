@@ -11,7 +11,7 @@ def visualizeSystemTopology(
     },
     system_name="ies_system",
 ):
-    G = nx.DiGraph()
+    G = nx.DiGraph(None, attrs={}) # global simulation params go here.
     node_index = 0
 
     for device_id in NodeFactory.device_ids:
@@ -52,10 +52,14 @@ def visualizeSystemTopology(
     # breakpoint() # check how to save the graph as json.
     from networkx.readwrite import json_graph
     serialized = json_graph.adjacency_data(G)
-    
+
     # import rich
     # rich.print(serialized)
     # breakpoint()
+    import json
+    serialized_string = json.dumps(serialized)
+    with open('test_graph_data.json','w+') as f:
+        f.write(serialized_string)
     nx.draw(G, with_labels=True, font_weight="bold", **draw_options)
     # plt.show()
     figure_path = f"topology_{system_name}.png"
