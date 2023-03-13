@@ -12,6 +12,7 @@ def mock_calculation(sleep_time: float = 20):
     Args:
         sleep_time (float): the duration of our fake task, in seconds
     """
+    print(f"TIME: {}")
     print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
     print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
@@ -51,7 +52,7 @@ def remove_one_task():
 
 def trick_or_treat():
     if add_one_task():
-        result = mock_calculation()
+        result = mock_calculation() # you should put error code here. no exception?
         remove_one_task()
         return result
     return server_error_code.MAX_TASK_LIMIT
