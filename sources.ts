@@ -165,7 +165,7 @@ const excelMap = {
     蒸汽轮机: {
         生产厂商: 'manufacturer',
         设备型号: 'equipType',
-        '最大蒸汽进口温度(℃': 'operationalConstraints.maxSteamInletTemp',
+        '最大蒸汽进口温度(℃)': 'operationalConstraints.maxSteamInletTemp',
         '最小蒸汽进口温度(℃)': 'operationalConstraints.miniSteamInletTemp',
         '最大发电量(kW)': 'operationalConstraints.maxPowerGenerating',
         '最小发电量(kW)': 'operationalConstraints.miniPowerGenerating',
