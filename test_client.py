@@ -8,6 +8,6 @@ with open("test_graph_data.json",'r') as f:
     data_dict = json.loads(data)
 
 
-r = requests.post(upload_url,data_dict)
+r = requests.post(upload_url,data_dict) # just upload the graph, nothing more.
 status_code = r.status_code
 r_json = r.json()

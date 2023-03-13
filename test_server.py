@@ -5,7 +5,7 @@ from test_server_client_configs import *
 
 def mock_calculation(sleep_time:float=20):
     """
-    mocking the heavy calculation of system optimization.
+    Mocking the heavy calculation of system optimization.
 
     Args:
         sleep_time (float): the duration of our fake task, in seconds
