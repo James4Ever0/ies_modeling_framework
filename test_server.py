@@ -23,25 +23,34 @@ app = FastAPI()
 GLOBAL_TASK_COUNT=0
 
 # could there be multiple requests? use lock please?
+import threading
+LOCK = threading.Lock()
 
 def add_one_task():
-    global GLOBAL_TASK_COUNT
-    if GLOBAL_TASK_COUNT < MAX_TASK_COUNT:
-        GLOBAL_TASK_COUNT+=1
-        return True
+    global GLOBAL_TASK_COUNT, LOCK
+    with LOCK:
+        if GLOBAL_TASK_COUNT < MAX_TASK_COUNT:
+            GLOBAL_TASK_COUNT+=1
+            return True
+    return False
+
+def remove_one_task():
+    global GLOBAL_TASK_COUNT, LOCK
+    with LOCK:
+        if GLOBAL_TASK_COUNT >=0 and GLOBAL_TASK_COUNT<=MAX_TASK_COUNT:
+            GLOBAL_TASK_COUNT-=1
+            return True
+    return False
 
 
 class MaxTaskLimit():
     def __init__(self):
-        
-        # print('init method called')
-         
+        ...
     def __enter__(self):
-        # print('enter method called')
         return self
      
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        # print('exit method called')
+        ...
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
 def run_sync():
