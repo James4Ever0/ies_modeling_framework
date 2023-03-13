@@ -9,7 +9,7 @@ class TestDataClass(BaseModel):
     key_3: str
 
     @validator("key_1")
-    def validate_key_1(cls, value): # validator can also process things?
+    def validate_key_1(cls, value) -> dict: # validator can also process things?
         cmp = json.loads(value)  # will raise error if it is not parseable.
         return cmp # now it is dict.
 
