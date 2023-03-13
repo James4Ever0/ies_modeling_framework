@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 import time
 from test_server_client_configs import *
 
@@ -34,8 +34,11 @@ app = FastAPI()
 
 # of course we will set limit to max running time per task
 from pydantic import BaseModel
+
+
 class DataModel(BaseModel):
-    data:dict
+    data:str
+
 
 # could there be multiple requests? use lock please?
 import threading
@@ -61,17 +64,17 @@ def remove_one_task():
     return False
 
 
-def trick_or_treat(data:dict):
+def trick_or_treat(data: dict):
     if add_one_task():
         result = mock_calculation(data)  # you should put error code here. no exception?
         remove_one_task()
         return result
     return server_error_code.MAX_TASK_LIMIT
 
-
+import json 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
-async def run_sync(info:Request):
-    data = await info.json()
+def run_sync(info: DataModel):
+    data = json.loads(info.data)
     return trick_or_treat(data)
 
 
@@ -89,8 +92,8 @@ def execute_and_append_result_to_dict(unique_id: str, data: dict):
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
-async def run_async(info:Request):  # how do you do it async? redis cache?
-    data = await info.json()
+def run_async(info: DataModel):  # how do you do it async? redis cache?
+    data = json.loads(info.data)
     if add_one_task():
         unique_id = uuid.uuid4()
         TASK_LIST.append(unique_id)
