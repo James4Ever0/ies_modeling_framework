@@ -17,11 +17,11 @@ def visualizeSystemTopology(
     for device_id in NodeFactory.device_ids:
         device_name = NodeFactory.device_id_to_device_name[device_id]
         device_node_name = f"{device_name}_{device_id[:4]}_device"
-        G.add_node(device_node_name)
+        G.add_node(device_node_name,attrs={},node_type='device')
 
     for node in NodeFactory.nodes:
         node_name = f"{node.energy_type}_io_{node_index}"
-        G.add_node(node_name)
+        G.add_node(node_name,attrs={},node_type='io') # energy i/o nodes
         node_index += 1
         # G.add_node(2,"BESS")
         for input_id in node.input_ids:
@@ -52,9 +52,10 @@ def visualizeSystemTopology(
     # breakpoint() # check how to save the graph as json.
     from networkx.readwrite import json_graph
     serialized = json_graph.adjacency_data(G)
-    import rich
-    rich.print(serialized)
-    breakpoint()
+    
+    # import rich
+    # rich.print(serialized)
+    # breakpoint()
     nx.draw(G, with_labels=True, font_weight="bold", **draw_options)
     # plt.show()
     figure_path = f"topology_{system_name}.png"
