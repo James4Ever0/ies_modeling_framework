@@ -12,7 +12,7 @@ def get_current_time_string():
     return time_string
 
 
-def mock_calculation(data: str, sleep_time: float = 20):
+def mock_calculation(data: dict, sleep_time: float = 20):
     """
     Mocking the heavy calculation of system optimization.
 
@@ -20,7 +20,7 @@ def mock_calculation(data: str, sleep_time: float = 20):
         sleep_time (float): the duration of our fake task, in seconds
     """
     print(f"TIME: {get_current_time_string()}")
-    print(f"DATA RECEIVED: {len(data)}")
+    print(f"DATA RECEIVED: {len(str(data))}")
     print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
     print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
@@ -33,6 +33,9 @@ app = FastAPI()
 # create some context manager? sure?
 
 # of course we will set limit to max running time per task
+from pydantic import BaseModel
+class DataModel(BaseModel):
+    data:dict
 
 # could there be multiple requests? use lock please?
 import threading
@@ -58,7 +61,7 @@ def remove_one_task():
     return False
 
 
-def trick_or_treat(data: str):
+def trick_or_treat(data:dict):
     if add_one_task():
         result = mock_calculation(data)  # you should put error code here. no exception?
         remove_one_task()
@@ -67,7 +70,8 @@ def trick_or_treat(data: str):
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
-def run_sync(data: str):
+async def run_sync(info:Request):
+    data = await info.json()
     return trick_or_treat(data)
 
 
@@ -77,7 +81,7 @@ TASK_LIST = []
 import uuid
 
 
-def execute_and_append_result_to_dict(unique_id: str, data: str):
+def execute_and_append_result_to_dict(unique_id: str, data: dict):
     print(f"ASYNC TASK ASSIGNED: {unique_id}")
     result = mock_calculation(data)
     RESULT_DICT.update({unique_id: result})
@@ -85,7 +89,8 @@ def execute_and_append_result_to_dict(unique_id: str, data: str):
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
-def run_async(data: str):  # how do you do it async? redis cache?
+async def run_async(info:Request):  # how do you do it async? redis cache?
+    data = await info.json()
     if add_one_task():
         unique_id = uuid.uuid4()
         TASK_LIST.append(unique_id)
