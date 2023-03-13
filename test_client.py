@@ -3,7 +3,7 @@ import json
 from test_server_client_configs import *
 
 
-with open("test_graph_data.json",'r') as f:
+with open(TEST_GRAPH_CONFIG_PATH,'r') as f:
     data = f.read()
     data_dict = json.loads(data)
 

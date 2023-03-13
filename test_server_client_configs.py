@@ -1,6 +1,6 @@
 port = 3398
 MAX_TASK_COUNT=3
-TEST_GRAPH_CONFIG
+TEST_GRAPH_CONFIG_PATH="test_graph_data.json"
 
 class endpoint_suffix:
     UPLOAD_GRAPH_ASYNC: str = "upload_graph_async"
