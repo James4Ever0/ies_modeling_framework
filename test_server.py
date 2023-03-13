@@ -37,7 +37,7 @@ from pydantic import BaseModel
 
 
 class DataModel(BaseModel):
-    data:str
+    data: str
 
 
 # could there be multiple requests? use lock please?
@@ -71,7 +71,10 @@ def trick_or_treat(data: dict):
         return result
     return server_error_code.MAX_TASK_LIMIT
 
-import json 
+
+import json
+
+
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
 def run_sync(info: DataModel):
     data = json.loads(info.data)
@@ -100,7 +103,7 @@ def run_async(info: DataModel):  # how do you do it async? redis cache?
         TASK_LIST.append(unique_id)
         threading.Thread(
             target=execute_and_append_result_to_dict, args=(unique_id, data)
-        ).start() # not "run"
+        ).start()  # not "run"
         return unique_id
     return server_error_code.MAX_TASK_LIMIT
 
@@ -108,7 +111,7 @@ def run_async(info: DataModel):  # how do you do it async? redis cache?
 @app.get(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
 def get_result_async(unique_id: str):
     print("GETTING RESULT:", unique_id)
-    print("RESULT_DICT:",RESULT_DICT)
+    print("RESULT_DICT:", RESULT_DICT)
     print("TASK_LIST:", TASK_LIST)
     return RESULT_DICT.get(
         unique_id,
