@@ -99,12 +99,12 @@ def run_async(info: DataModel):  # how do you do it async? redis cache?
         TASK_LIST.append(unique_id)
         threading.Thread(
             target=execute_and_append_result_to_dict, args=(unique_id, data)
-        ).run()
+        ).start() # not "run"
         return unique_id
     return server_error_code.MAX_TASK_LIMIT
 
 
-@app.post(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
+@app.get(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
 def get_result_async(unique_id: str):
     return RESULT_DICT.get(
         unique_id,
