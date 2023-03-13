@@ -51,7 +51,7 @@ def visualizeSystemTopology(
                 pass
     # breakpoint() # check how to save the graph as json.
     from networkx.readwrite import json_graph
-    serialized = json_graph.dumps(G)
+    serialized = json_graph.adjacency_data(G)
     import rich
     rich.print(serialized)
     breakpoint()
