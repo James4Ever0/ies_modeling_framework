@@ -1,4 +1,4 @@
-import fastapi
+from fastapi import FastAPI
 import time
 from test_server_client_configs import *
 
@@ -11,3 +11,4 @@ def mock_calculation(sleep_time:float=20):
     """
     time.sleep(sleep_time)
 
+app = FastAPI()
