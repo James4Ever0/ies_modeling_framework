@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import time
 from test_server_client_configs import *
 
@@ -20,6 +20,7 @@ def mock_calculation(data: str, sleep_time: float = 20):
         sleep_time (float): the duration of our fake task, in seconds
     """
     print(f"TIME: {get_current_time_string()}")
+    print(f"DATA RECEIVED: {len(data)}")
     print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
     print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
