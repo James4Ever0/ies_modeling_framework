@@ -49,6 +49,12 @@ def visualizeSystemTopology(
             except:
                 breakpoint()
                 pass
+    # breakpoint() # check how to save the graph as json.
+    from networkx.readwrite import json_graph
+    serialized = json_graph(G)
+    import rich
+    rich.print(serialized)
+    breakpoint()
     nx.draw(G, with_labels=True, font_weight="bold", **draw_options)
     # plt.show()
     figure_path = f"topology_{system_name}.png"
