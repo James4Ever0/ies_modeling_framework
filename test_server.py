@@ -13,3 +13,19 @@ def mock_calculation(sleep_time:float=20):
 
 app = FastAPI()
 # where is the port?
+
+@app.post()
+def run_sync():
+    ...
+
+@app.post()
+def run_async():
+    ...
+
+@app.post()
+def get_result_async():
+    ...
+
+import uvicorn
+
+uvicorn.run(app,port=port)
