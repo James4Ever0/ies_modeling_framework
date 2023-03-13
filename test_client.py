@@ -1,5 +1,5 @@
 import requests
-import json
+# import json
 from test_server_client_configs import *
 
 
@@ -7,8 +7,8 @@ with open(TEST_GRAPH_CONFIG_PATH,'r') as f:
     data = f.read()
     # data_dict = json.loads(data)
 
-
-r = requests.post(upload_url,data={'data':data}) # just upload the graph, nothing more.
+# r = requests.post(upload_url,json={'data':data})
+r = requests.post(async_url,json={'data':data}) # just upload the graph, nothing more.
 status_code = r.status_code
 r_json = r.json()
 import rich

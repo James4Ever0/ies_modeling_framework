@@ -21,9 +21,9 @@ def mock_calculation(data: dict, sleep_time: float = 20):
     """
     print(f"TIME: {get_current_time_string()}")
     print(f"DATA RECEIVED: {len(str(data))}")
-    print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
+    print(f"CALCULATING! TOTAL TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
-    print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
+    print(f"TOTAL TASK #{GLOBAL_TASK_COUNT}. DONE!")
     return "CALCULATED RESULT"  # fake though.
 
 
