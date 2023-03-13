@@ -4,15 +4,22 @@ from test_server_client_configs import *
 
 GLOBAL_TASK_COUNT = 0
 
+import datetime
 
-def mock_calculation(sleep_time: float = 20):
+
+def get_current_time_string():
+    time_string = " ".join(datetime.datetime.now().isoformat().split(".")[0].split("T"))
+    return time_string
+
+
+def mock_calculation(data: str, sleep_time: float = 20):
     """
     Mocking the heavy calculation of system optimization.
 
     Args:
         sleep_time (float): the duration of our fake task, in seconds
     """
-    print(f"TIME: {}")
+    print(f"TIME: {get_current_time_string()}")
     print(f"CALCULATING! TASK #{GLOBAL_TASK_COUNT}")
     time.sleep(sleep_time)
     print(f"TASK #{GLOBAL_TASK_COUNT} DONE!")
@@ -50,17 +57,17 @@ def remove_one_task():
     return False
 
 
-def trick_or_treat():
+def trick_or_treat(data: str):
     if add_one_task():
-        result = mock_calculation() # you should put error code here. no exception?
+        result = mock_calculation(data)  # you should put error code here. no exception?
         remove_one_task()
         return result
     return server_error_code.MAX_TASK_LIMIT
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
-def run_sync():
-    return trick_or_treat()
+def run_sync(data: str):
+    return trick_or_treat(data)
 
 
 RESULT_DICT = {}
@@ -69,19 +76,20 @@ TASK_LIST = []
 import uuid
 
 
-def execute_and_append_result_to_dict(unique_id: str):
-    result = mock_calculation()
+def execute_and_append_result_to_dict(unique_id: str, data: str):
+    print(f"ASYNC TASK ASSIGNED: {unique_id}")
+    result = mock_calculation(data)
     RESULT_DICT.update({unique_id: result})
     TASK_LIST.remove(unique_id)
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
-def run_async():  # how do you do it async? redis cache?
+def run_async(data: str):  # how do you do it async? redis cache?
     if add_one_task():
         unique_id = uuid.uuid4()
         TASK_LIST.append(unique_id)
         threading.Thread(
-            target=execute_and_append_result_to_dict, args=(unique_id,)
+            target=execute_and_append_result_to_dict, args=(unique_id, data)
         ).run()
         return unique_id
     return server_error_code.MAX_TASK_LIMIT
