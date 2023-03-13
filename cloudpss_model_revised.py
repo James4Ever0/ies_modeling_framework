@@ -6,9 +6,9 @@ class 设备:
     生产厂商:str
     生产型号:str
     设备额定运行参数:dict
-    设备运行约束:dict
-    设备经济性参数:dict
-    设备工况:dict
+    设备运行约束:dict #
+    设备经济性参数:dict # 
+    设备工况:dict # OperateParam (vue)
 
 class 光伏(设备):
     class 设备额定运行参数(BaseModel):
