@@ -85,6 +85,7 @@ import uuid
 
 
 def execute_and_append_result_to_dict(unique_id: str, data: dict):
+    global RESULT_DICT, TASK_LIST
     print(f"ASYNC TASK ASSIGNED: {unique_id}")
     result = mock_calculation(data)
     RESULT_DICT.update({unique_id: result})
@@ -95,7 +96,7 @@ def execute_and_append_result_to_dict(unique_id: str, data: dict):
 def run_async(info: DataModel):  # how do you do it async? redis cache?
     data = json.loads(info.data)
     if add_one_task():
-        unique_id = uuid.uuid4()
+        unique_id = str(uuid.uuid4())
         TASK_LIST.append(unique_id)
         threading.Thread(
             target=execute_and_append_result_to_dict, args=(unique_id, data)
@@ -106,6 +107,9 @@ def run_async(info: DataModel):  # how do you do it async? redis cache?
 
 @app.get(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
 def get_result_async(unique_id: str):
+    print("GETTING RESULT:", unique_id)
+    print("RESULT_DICT:",RESULT_DICT)
+    print("TASK_LIST:", TASK_LIST)
     return RESULT_DICT.get(
         unique_id,
         server_error_code.PENDING
