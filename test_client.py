@@ -11,3 +11,6 @@ with open(TEST_GRAPH_CONFIG_PATH,'r') as f:
 r = requests.post(upload_url,data_dict) # just upload the graph, nothing more.
 status_code = r.status_code
 r_json = r.json()
+import rich
+rich.print(r_json)
+print("___RESPONSE___")

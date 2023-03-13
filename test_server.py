@@ -54,7 +54,7 @@ def trick_or_treat():
         result = mock_calculation()
         remove_one_task()
         return result
-    return "MAX TASK LIMIT"
+    return server_error_code.MAX_TASK_LIMIT
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
@@ -63,6 +63,7 @@ def run_sync():
 
 
 RESULT_DICT = {}
+TASK_LIST = []
 
 import uuid
 
@@ -70,22 +71,29 @@ import uuid
 def execute_and_append_result_to_dict(unique_id: str):
     result = mock_calculation()
     RESULT_DICT.update({unique_id: result})
+    TASK_LIST.remove(unique_id)
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
 def run_async():  # how do you do it async? redis cache?
     if add_one_task():
         unique_id = uuid.uuid4()
+        TASK_LIST.append(unique_id)
         threading.Thread(
             target=execute_and_append_result_to_dict, args=(unique_id,)
         ).run()
         return unique_id
-    return "MAX TASK LIMIT"
+    return server_error_code.MAX_TASK_LIMIT
 
 
 @app.post(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
 def get_result_async(unique_id: str):
-    return RESULT_DICT.get(unique_id, "NOTHING")
+    return RESULT_DICT.get(
+        unique_id,
+        server_error_code.PENDING
+        if unique_id in TASK_LIST
+        else server_error_code.NOTHING,
+    )
 
 
 import uvicorn
