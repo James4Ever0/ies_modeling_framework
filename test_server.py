@@ -11,6 +11,7 @@ def mock_calculation(sleep_time: float = 20):
         sleep_time (float): the duration of our fake task, in seconds
     """
     time.sleep(sleep_time)
+    return "CALCULATED RESULT"  # fake though.
 
 
 app = FastAPI()
@@ -46,29 +47,34 @@ def remove_one_task():
     return False
 
 
-class MaxTaskLimit:
-    def __init__(self):
-        if not add_one_task():
-            WARNING = "Max Running Tasks!"
-            print(WARNING)
-            raise Exception(WARNING)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        ...
+def trick_or_treat():
+    if add_one_task():
+        result = mock_calculation()
+        remove_one_task()
+        return result
+    return "MAX TASK LIMIT"
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
 def run_sync():
-    with MaxTaskLimit():
-        
+    return trick_or_treat()
+
+
+RESULT_DICT = {}
+
+import uuid
+
+
+def execute_and_append_result_to_dict(unique_id):
+    result = mock_calculation()
+    RESULT_DICT.update({unique_id: result})
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
-def run_async():
-    ...
+def run_async():  # how do you do it async? redis cache?
+    if add_one_task():
+        unique_id = uuid.uuid4()
+        return unique_id
 
 
 @app.post(f"/{endpoint_suffix.CHECK_RESULT_ASYNC}")
