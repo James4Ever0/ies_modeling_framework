@@ -1,4 +1,4 @@
-import MessageBus from '@/Utils/message/message-bus';
+// import MessageBus from '@/Utils/message/message-bus';
 const excelMap = {
     fuels: {
         燃料类型: 'fuelType',
@@ -16,7 +16,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[] }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return [data[0].value[0]];
             },
@@ -28,7 +28,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[] }>): number[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return [...Array(data[0].value.length)].map((x, index) => index);
             },
@@ -37,7 +37,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[] }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return data[0].value;
             },
@@ -49,7 +49,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[]; quantity: string }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return data.map((x) => x.quantity);
             },
@@ -58,7 +58,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[]; quantity: string }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return data.map((x) => x.value[0]);
             },
@@ -70,7 +70,7 @@ const excelMap = {
             route: 'purchasePriceModel.params',
             deal: (data: Array<{ value: string[] }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return [...Array(24)].map((x, index) => `${index}h`);
             },
@@ -554,7 +554,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -573,7 +573,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -588,7 +588,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -605,7 +605,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -623,7 +623,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -638,7 +638,7 @@ const excelMap = {
             route: 'loadParam.single_line_load.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -654,7 +654,7 @@ const excelMap = {
             route: 'loadParam.loadCurve.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -669,7 +669,7 @@ const excelMap = {
             route: 'loadParam.loadCurve.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -684,7 +684,7 @@ const excelMap = {
             route: 'loadParam.loadCurve.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 if (data === 'rough') return ['粗略模型'];
                 else return ['详细模型'];
@@ -702,7 +702,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['典型日负荷'];
             },
@@ -719,7 +719,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['分月详细负荷'];
             },
@@ -733,7 +733,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['分月详细负荷'];
             },
@@ -747,7 +747,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['自定义负荷'];
             },
@@ -792,7 +792,7 @@ const excelMap = {
             route: 'OperateParams.params',
             deal: (data: Array<{ value: string[]; OperateStatus: string }>): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return data.map((x) => x.OperateStatus);
             },
@@ -1010,7 +1010,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['典型日负荷'];
             },
@@ -1032,7 +1032,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['分月详细负荷'];
             },
@@ -1046,7 +1046,7 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['分月详细负荷'];
             },
@@ -1060,11 +1060,10 @@ const excelMap = {
             route: 'loadParam.model',
             deal: (data: string): string[] => {
                 if (!data) {
-                    MessageBus.Notification('error', { description: '数据类型有问题，请联系管理员处理！', message: '提示' });
+                    console.log("ERROR");
                 }
                 return ['自定义负荷'];
             },
         },
     },
 };
-export default excelMap;
