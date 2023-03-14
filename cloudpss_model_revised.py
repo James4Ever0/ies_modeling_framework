@@ -23,10 +23,20 @@ class 设备:
         self.设备经济性参数 = 设备经济性参数
         self.设备工况 = 设备工况
 
+    def 设置设备额定运行参数(self):
+        ...
+    
+    def 设置设备运行约束(self):
+        ...
+    
+    def 设置设备经济性参数(self):
+        ...
+
+    def 设置设备工况(self):
+        ...
+
 
 class 光伏(设备):
-    def __init__(self, model):
-        self.model = model
 
     def 设备额定运行参数(
         self,
@@ -47,8 +57,8 @@ class 光伏(设备):
 
         self.输出功率 = min(光电转换效率 * 光照强度 * 光伏板面积, 最大输出功率) * 功率因数
 
-    class 设备运行约束(BaseModel):
-        最大发电功率: float  # (kW)
+    def 设备运行约束(self):
+        self.model.add_constraint(self.输出功率 <= self.最大输出功率)
 
     class 设备经济性参数(BaseModel):
         采购成本: float  # (万元/台)
