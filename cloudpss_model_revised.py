@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 model = ConcreteModel()
 
-
 @dataclass
 class 环境:
     温度: float  # (°C)
