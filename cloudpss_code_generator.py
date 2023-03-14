@@ -81,6 +81,9 @@ for key, value in equipmentParamDict.items():
         # selected!
         k = value.keys()
         print(key, item_name, k)
+        # 'ratedParam': list of dict ({"prop", "description"})
+        # 'operationalConstraints': list of dict ({"prop", "description"})
+        # 'economicParam': list of dict ({"prop", "description"})
 
 
 print("_____")
@@ -109,11 +112,11 @@ translationMap2 = {
     "AbsorptionChiller_ies": "吸收式制冷机",
     "CentrifugalPump_ies": "离心泵",
 }
-for key, value in equipmentParamDict2.items():
-    item_name = translationMap2.get(key)
-    # everything is included.
-    k = value.keys()
-    print(key, item_name, k)
+# for key, value in equipmentParamDict2.items():
+#     item_name = translationMap2.get(key)
+#     # everything is included.
+#     k = value.keys()
+#     print(key, item_name, k)
     # 'ratedParam': list of dict ({"prop", "description"})
     # 'operationalConstraints': list of dict ({"prop", "description"})
     # 'economicParam': list of dict ({"prop", "description"})
