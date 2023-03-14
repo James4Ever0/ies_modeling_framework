@@ -81,3 +81,11 @@ for key, value in equipmentParamDict.items():
         # selected!
         k = value.keys()
         print(key, item_name,k)
+
+
+print("_____")
+equipmentParamDict2 = data['equipmentParamDict2']
+print({k:"" for k in list(equipmentParamDict2)})
+
+# for key,value in equipmentParamDict2.items():
+    
