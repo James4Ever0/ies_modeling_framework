@@ -44,6 +44,11 @@ class 光伏(设备):
             设备经济性参数=设备经济性参数,
             设备工况=设备工况,
         )
+        ## 设置设备额定运行参数 ##
+        
+        ## 设置设备运行约束 ##
+        
+        ## 设备经济性参数 ##
 
     def 设备额定运行参数(
         self,
@@ -69,8 +74,15 @@ class 光伏(设备):
     def 设备运行约束(self):
         self.model.add_constraint(self.输出功率 <= self.最大输出功率)
 
-    class 设备经济性参数(BaseModel):
+    def 设备经济性参数(
+            self,
+            model,
+            采购成本:float,
+            固定维护成本:float,
+            可变维护成本:float,
+            设计寿命:float
+    ):
         采购成本: float  # (万元/台)
-        固定维护成本: float  #  (万元/年)
-        可变维护成本: float  #  (元/kWh)
+        固定维护成本: float  # (万元/年)
+        可变维护成本: float  # (元/kWh)
         设计寿命: float  # (年)
