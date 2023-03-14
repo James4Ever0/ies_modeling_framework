@@ -11,7 +11,7 @@ class 环境:
     空气比湿度: float  # (kg/kg)
     太阳辐射强度: float  # (W/m2)
     土壤平均温度: float  # (°C)
-    距地面10m处东向速: float  # (m/s)
+    距地面10m处东向风速: float  # (m/s)
     距地面50m处东向风速: float  # (m/s)
     距地面10m处北向风谏: float  # (m/s)
     距地面50m处北向风速: float  # (m/s)
@@ -74,18 +74,18 @@ class 光伏(设备):
         self.光电转换效率 = self.设备额定运行参数["光电转换效率"]  # (%)
         self.功率因数 = self.设备额定运行参数["功率因数"]  # (kW)
         # self.太阳辐射强度 = 太阳辐射强度 # (W/m2)
-        # where to pass?
+        # pass as "self.环境"
+        
         ## 设置设备运行约束 ##
-        self.最大发电功率 = 最大发电功率
+        self.最大发电功率 = self.设备运行约束['最大发电功率']
 
         ## 设备经济性参数 ##
+        self.采购成本 = self.设备经济性参数['采购成本']  # (万元/台)
+        self.固定维护成本 = self.设备经济性参数['固定维护成本']  # (万元/年)
+        self.可变维护成本 = self.设备经济性参数['可变维护成本']  # (元/kWh)
+        self.设计寿命 = self.设备经济性参数['设计寿命']  # (年)
 
-        self.采购成本 = 采购成本  # (万元/台)
-        self.固定维护成本 = 固定维护成本  # (万元/年)
-        self.可变维护成本 = 可变维护成本  # (元/kWh)
-        self.设计寿命 = 设计寿命  # (年)
-
-    def 设备额定运行参数(
+    def add_constraints(
         self,
         model,
         光伏板面积: float,
@@ -101,10 +101,10 @@ class 光伏(设备):
         self.光伏板面积 = 光伏板面积
         self.光电转换效率 = 光电转换效率
         self.功率因数 = 功率因数
-        self.光照强度 = 光照强度
-        self.最大输出功率 = 最大输出功率
-
-        self.输出功率 = min(光电转换效率 * 光照强度 * 光伏板面积, 最大输出功率) * 功率因数
+        光照强度 = self.环境.太阳辐射强度
+        
+        self.power_of_outputs['electricity'] <= self.单个设备配置台数 * self.光电转换效率 * 光照强度 * 光伏板面积
+        self.power_of_outputs['electricity'] <= self.最大输出功率
 
     def 设备运行约束(self):
         self.model.add_constraint(self.输出功率 <= self.最大输出功率)
