@@ -21,3 +21,4 @@ print(b)
 c = ureg.celsius
 # you cannot do this: ureg['℃']
 print(c)  # invalid charactor: ℃
+print(ureg.W, ureg.kW) # great.
