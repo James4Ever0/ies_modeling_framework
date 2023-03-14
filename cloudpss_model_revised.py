@@ -29,6 +29,8 @@ class 设备:
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
         设备工况: dict = {},  # OperateParam
+        输出类型列表:list = [],
+        输入类型列表:list = [],
     ):
         self.model = model
         self.生产厂商 = 生产厂商
@@ -43,6 +45,14 @@ class 设备:
         self.设备配置台数 = 设备配置台数 if 设备配置台数 is not None else Var(domain=NonNegativeIntegers)
         self.输入功率 = {}
         self.输出功率 = {}
+
+    def 建立输入功率(self,input_types):
+        for input_type in input_types:
+            self.输入功率[input_type] = VarList()
+
+    def 建立输出功率(self,output_types):
+        for output_type in output_types:
+            self.输出功率[output_type] = VarList()
 
 
 class 光伏(设备):
@@ -64,7 +74,10 @@ class 光伏(设备):
             设备运行约束=设备运行约束,
             设备经济性参数=设备经济性参数,
             设备工况=设备工况,
+            输出类型列表=['电']
         )
+        ## 定义输入输出 ##
+        
         ## 设置设备额定运行参数 ##
         self.单个光伏板面积 = self.设备额定运行参数["单个光伏板面积"]
         """(m²)"""
@@ -90,8 +103,9 @@ class 光伏(设备):
     def add_constraints(
         self):
         光照强度 = self.环境.太阳辐射强度
-        self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积
-        self.输出功率['电'] <= self.最大发电功率
+        self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
+        self.输出功率['电'] <= self.最大发电功率*self.功率因数
+        ###错的
 
     def 设备运行约束(self):
         self.model.add_constraint(self.输出功率 <= self.最大输出功率)
