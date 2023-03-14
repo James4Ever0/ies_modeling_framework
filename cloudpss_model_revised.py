@@ -107,21 +107,13 @@ class 光伏(设备):
     def add_constraints(
         self):
         光照强度 = self.环境.太阳辐射强度
-        self.model
-        self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
-        self.输出功率['电'] <= self.最大发电功率*self.功率因数
-        ###错的
+        self.输出功率=min()
+        Constraint(expr=self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数)
+        Constraint(expr=self.输出功率['电'] <= self.最大发电功率*self.功率因数)
+        ###还不知悔改
 
-    def 设备运行约束(self):
-        self.model.add_constraint(self.输出功率 <= self.最大输出功率)
-
-    def 设备经济性参数(self, model, 采购成本: float, 固定维护成本: float, 可变维护成本: float, 设计寿命: float):
-        self.采购成本 = 采购成本  # (万元/台)
-        self.固定维护成本 = 固定维护成本  # (万元/年)
-        self.可变维护成本 = 可变维护成本  # (元/kWh)
-        self.设计寿命 = 设计寿命  # (年)
 
     def 设备经济约束(self):
         self.成本 = (
-            self.可变维护成本 * self.输出功率 + self.固定维护成本 * self.设计寿命 + self.采购成本 * self.设备数量
+            self.可变维护成本 * self.输出功率['电'] + self.固定维护成本 * self.设计寿命 + self.采购成本 * self.设备数量
         )
