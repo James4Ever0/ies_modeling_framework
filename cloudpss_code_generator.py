@@ -27,7 +27,7 @@ dataParams = {
 
 for key, value in excelMap.items():
     if type(value) == dict:
-        if "生产厂商" in value.keys():
+        if "生产厂商" in value.keys(): # with or without unit?
             print("DEVICE NAME:", key)
             # this is a device for sure.
             # rich.print(value)
@@ -68,6 +68,13 @@ translationMap = {
     "TransferLine": "传输线",
     "Capacitance": "电容器",
     "CentrifugalPump": "离心泵",
-    "Pump": "", # unused?
-    "Pipe": "",
+    # "Pump": "", # unused?
+    # just discard this.
+    "Pipe": "管道",
 }
+
+for key, value in equipmentParamDict.items():
+    item_name = translationMap.get(key,None)
+    if item_name:
+        # selected!
+        
