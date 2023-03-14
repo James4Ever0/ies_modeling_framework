@@ -21,6 +21,9 @@ dataParams = {
 # 设备经济性参数
 # 设备工况
 
+# unknown property:
+# 燃气轮机  -> 挡位 -> dict ({"route": "OperateParams.params"})
+
 for key, value in excelMap.items():
     if type(value) == dict:
         if "生产厂商" in value.keys():
