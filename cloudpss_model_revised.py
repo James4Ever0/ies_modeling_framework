@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel
+import pyomo
 
 @dataclass
 class 设备:
@@ -12,8 +13,8 @@ class 设备:
 
 class 光伏(设备):
     class 设备额定运行参数(BaseModel):
-        光伏板面积 # 
-        光电转换效率 # 
+        光伏板面积:float # 
+        光电转换效率:float # 
     
     class 设备运行约束(BaseModel):
         最大发电功率:float # (kW)
