@@ -42,4 +42,7 @@ for key, value in excelMap.items():
                 else:
                     print(">> UNIDENTIFIED VALUE TYPE <<")
                     print(k, type(v), v)
-            print("_" * 30)
+        elif "负荷名称" in value.keys(): # load for sure.
+            for k,v in value.items():
+                ...
+        print("_" * 30)
