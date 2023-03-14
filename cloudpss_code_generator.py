@@ -14,7 +14,7 @@ dataParams = {
     "ratedParam": "设备额定运行参数",
     "operationalConstraints": "设备运行约束",
     "economicParam": "设备经济性参数",
-    "":"设备工况"
+    "": "设备工况",
 }
 
 # 设备额定运行参数
@@ -28,7 +28,7 @@ dataParams = {
 
 for key, value in excelMap.items():
     if type(value) == dict:
-        if "生产厂商" in value.keys(): # with or without unit?
+        if "生产厂商" in value.keys():  # with or without unit?
             print("DEVICE NAME:", key)
             # this is a device for sure.
             # rich.print(value)
@@ -76,16 +76,36 @@ translationMap = {
 
 print("_____")
 for key, value in equipmentParamDict.items():
-    item_name = translationMap.get(key,None)
+    item_name = translationMap.get(key, None)
     if item_name:
         # selected!
         k = value.keys()
-        print(key, item_name,k)
+        print(key, item_name, k)
 
 
 print("_____")
-equipmentParamDict2 = data['equipmentParamDict2']
-print({k:"" for k in list(equipmentParamDict2)})
-
+equipmentParamDict2 = data["equipmentParamDict2"]
+# print({k:"" for k in list(equipmentParamDict2)})
+translationMap2 = {
+    "PhotovoltaicSys_ies": "光伏",
+    "WindPowerGenerator_ies": "风机",
+    "GasEngine_ies": "燃气内燃机",
+    "SteamTurbine_ies": "蒸汽轮机",
+    "HPSolarCollector_ies": "热管式太阳能集热器",
+    "IceStorageAC_ies": "蓄冰空调",
+    "HeatStorageElectricalBoiler_ies": "蓄热电锅炉",
+    "Battery_ies": "蓄电池",
+    "WaterTank_ies": "储水罐",
+    "Transformer_ies": "变压器",
+    "TransferLine_ies": "传输线",
+    "Capacitance_ies": "电容器",
+    "MMC_ies": "模块化多电平变流器",
+    "Pipe_ies": "管道",
+    "GasTurbine_ies": "燃气轮机",
+    "HeatPump_ies": "热泵",
+    "GasBoiler_ies": "",
+    "CompRefrg_ies": "电压缩制冷机",
+    "AbsorptionChiller_ies": "",
+    "CentrifugalPump_ies": "离心泵",
+}
 # for key,value in equipmentParamDict2.items():
-    
