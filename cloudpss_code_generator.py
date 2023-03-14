@@ -86,6 +86,7 @@ for key, value in equipmentParamDict.items():
 print("_____")
 equipmentParamDict2 = data["equipmentParamDict2"]
 # print({k:"" for k in list(equipmentParamDict2)})
+# 建模仿真 不是优化
 translationMap2 = {
     "PhotovoltaicSys_ies": "光伏",
     "WindPowerGenerator_ies": "风机",
@@ -103,9 +104,13 @@ translationMap2 = {
     "Pipe_ies": "管道",
     "GasTurbine_ies": "燃气轮机",
     "HeatPump_ies": "热泵",
-    "GasBoiler_ies": "",
+    "GasBoiler_ies": "燃气锅炉",
     "CompRefrg_ies": "电压缩制冷机",
-    "AbsorptionChiller_ies": "",
+    "AbsorptionChiller_ies": "吸收式制冷机",
     "CentrifugalPump_ies": "离心泵",
 }
-# for key,value in equipmentParamDict2.items():
+for key,value in equipmentParamDict2.items():
+    item_name = translationMap2.get(key)
+    # everything is included.
+    k = value.keys()
+    print(key, item_name, k)
