@@ -12,4 +12,7 @@ excelMap = data['excelMap']
 
 for key, value in excelMap.items():
     if type(value) == dict:
-        if "" in 
+        if "生产厂商" in value.keys():
+            # this is a device for sure.
+            rich.print(value)
+            print("_"*30)
