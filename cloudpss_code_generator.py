@@ -14,6 +14,7 @@ dataParams = {
     "ratedParam": "设备额定运行参数",
     "operationalConstraints": "设备运行约束",
     "economicParam": "设备经济性参数",
+    "":"设备工况"
 }
 
 # 设备额定运行参数
@@ -73,8 +74,10 @@ translationMap = {
     "Pipe": "管道",
 }
 
+print("_____")
 for key, value in equipmentParamDict.items():
     item_name = translationMap.get(key,None)
     if item_name:
         # selected!
-        
+        k = value.keys()
+        print(key, item_name,k)
