@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from pydantic import BaseModel
 from pyomo.environ import *
+
 model=ConcreteModel()
+
 @dataclass
 class 设备:
     生产厂商:str
