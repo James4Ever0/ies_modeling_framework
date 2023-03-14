@@ -23,6 +23,7 @@ dataParams = {
 
 # unknown property:
 # 燃气轮机 -> 挡位 -> dict ({"route": "OperateParams.params"})
+# 这个参数没有用于建模仿真或者优化
 
 for key, value in excelMap.items():
     if type(value) == dict:
