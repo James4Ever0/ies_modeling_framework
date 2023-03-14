@@ -24,4 +24,4 @@ ureg.define("m2 = meter * meter")  # working or not?
 c = ureg.celsius
 # you cannot do this: ureg['℃']
 print(c)  # invalid charactor: ℃
-print(ureg.W, ureg.kW, ureg.kWh, ureg.年, ureg.MPa, ureg.m2)  # great.
+print(ureg.W, ureg.kW, ureg.kWh, ureg.年, ureg.MPa, ureg.m2, ureg.MVA,ureg.Ω,ureg.MΩ)  # great.
