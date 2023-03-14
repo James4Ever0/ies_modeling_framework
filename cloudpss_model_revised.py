@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from pyomo.environ import *
 from dataclasses import dataclass
-
+import uuid
 model = ConcreteModel()
 
 @dataclass
@@ -32,6 +32,7 @@ class 设备:
         输入类型列表:list = [],
     ):
         self.model = model
+        self.uuid = str(uuid.uuid4())
         self.生产厂商 = 生产厂商
         self.生产型号 = 生产型号
         self.设备额定运行参数 = 设备额定运行参数
@@ -51,10 +52,12 @@ class 设备:
     def 建立输入功率(self,input_types):
         for input_type in input_types:
             self.输入功率[input_type] = VarList()
+            self.model.add_component(f'{self.uuid}_输入功率_{input_type}}') = self.输入功率[input_type]
 
     def 建立输出功率(self,output_types):
         for output_type in output_types:
             self.输出功率[output_type] = VarList()
+            self.model.add_component(f'{self.uuid}_输出功率_{output_type}')=self.输出功率[output_type]
 
 
 class 光伏(设备):
@@ -105,7 +108,7 @@ class 光伏(设备):
         self):
         光照强度 = self.环境.太阳辐射强度
         self.model
-        Constraint(self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
+        self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
         self.输出功率['电'] <= self.最大发电功率*self.功率因数
         ###错的
 
