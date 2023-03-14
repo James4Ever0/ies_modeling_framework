@@ -44,11 +44,28 @@ class 光伏(设备):
             设备经济性参数=设备经济性参数,
             设备工况=设备工况,
         )
+            "单个光伏板面积(m²)": "ratedParam.singlePanelArea",
+            "光电转换效率(%)": "ratedParam.photoelectricConversionEfficiency",
+            "最大发电功率(kW)": "operationalConstraints.maxPowerGenerating",
+            "采购成本(万元/台)": "economicParam.purchaseCost",
+            "固定维护成本(万元/年)": "economicParam.fixationMaintainCost",
+            "设计寿命(年)": "economicParam.designLife"
         ## 设置设备额定运行参数 ##
-        
+        self.设备配置台数 = self.get(设备配置台数
+        self.单个光伏板面积 = 单个光伏板面积 # (m²)
+        self.光电转换效率 = 光电转换效率 # (%)
+        self.功率因数 = 功率因数 # (kW)
+        # self.光照强度 = 光照强度 # ()
+        # where?
+        self.最大发电功率 = 最大发电功率
         ## 设置设备运行约束 ##
         
         ## 设备经济性参数 ##
+        
+        self.采购成本=采购成本  # (万元/台)
+        self.固定维护成本=固定维护成本  # (万元/年)
+        self.可变维护成本=可变维护成本  # (元/kWh)
+        self.设计寿命=设计寿命 # (年)
 
     def 设备额定运行参数(
         self,
@@ -75,14 +92,14 @@ class 光伏(设备):
         self.model.add_constraint(self.输出功率 <= self.最大输出功率)
 
     def 设备经济性参数(
-            self,
-            model,
-            采购成本:float,
-            固定维护成本:float,
-            可变维护成本:float,
-            设计寿命:float
+        self,
+        model,
+        采购成本:float,
+        固定维护成本:float,
+        可变维护成本:float,
+        设计寿命:float
     ):
-        采购成本: float  # (万元/台)
-        固定维护成本: float  # (万元/年)
-        可变维护成本: float  # (元/kWh)
-        设计寿命: float  # (年)
+        self.采购成本=采购成本  # (万元/台)
+        self.固定维护成本=固定维护成本  # (万元/年)
+        self.可变维护成本=可变维护成本  # (元/kWh)
+        self.设计寿命=设计寿命 # (年)
