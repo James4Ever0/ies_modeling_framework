@@ -8,7 +8,7 @@ import Tools from '@/component/template/tools/tools';
 import MessageBus from '@/Utils/message/message-bus';
 
 /**
- *
+ * vue is not a new language.
  */
 interface ParamDict {
     /**
