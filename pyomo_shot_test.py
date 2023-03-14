@@ -4,20 +4,26 @@ from math import pi
 # this will not work.
 
 model = ConcreteModel()
-model.x = Var(bounds=(0, 3))
-model.y = Var(bounds=(0, 2 * pi))
-model.z = Var()
 
+x = Var(bounds=(0, 3))
+y = Var(bounds=(0, 2 * pi))
+z = Var()
+
+model.add_component("z_0",z)
+model.add_component("x_0",x)
+model.add_component("y_0",y)
 # model.c1 = Constraint(expr=model.z == model.x+model.y)
-model.c1 = Constraint(
-    expr=model.z == model.x * sin(model.y)
+c1 = Constraint(
+    expr=z == x * sin(y)
 )  # this is not working. sorry!
+model.add_compoent("c1_1",c1)
 
-model.obj = Objective(expr=model.z, sense=minimize)
+obj = Objective(expr=z, sense=minimize)
+model.add_compoent("obj_0",obj)
 
-# opt = SolverFactory("cplex") # not working!
-# opt.solve()
+opt = SolverFactory("ipopt") # not working!
+opt.solve(model)
 
-# model.obj.display()
-# model.x.display()
-# model.y.display()
+obj.display()
+x.display()
+y.display()
