@@ -3,6 +3,23 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
+class 环境:
+    温度(°C)
+空气比湿度
+(kg/kg)
+太阳辐射强度
+(W/m2)
+土壤平均温度
+(°C)
+距地面10m处东向
+速
+(m/s)
+距地面50m处东向
+风速 (m/s)
+距地面10m处北向
+风谏(m/s)
+距地面50m处北向
+风速(m/s)
 
 class 设备:
     def __init__(
@@ -10,10 +27,12 @@ class 设备:
         model,
         生产厂商: str,
         生产型号: str,
+        设备配置台数:int,
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
         设备工况: dict = {},  # OperateParam
+        
     ):
         self.model = model
         self.生产厂商 = 生产厂商
@@ -22,6 +41,9 @@ class 设备:
         self.设备运行约束 = 设备运行约束
         self.设备经济性参数 = 设备经济性参数
         self.设备工况 = 设备工况
+        
+        self.设备配置台数 = 设备配置台数 if 设备配置台数 is not None else Var(domain=NonNegativeIntegers) 
+        
 
 
 class 光伏(设备):
@@ -51,12 +73,11 @@ class 光伏(设备):
             "固定维护成本(万元/年)": "economicParam.fixationMaintainCost",
             "设计寿命(年)": "economicParam.designLife"
         ## 设置设备额定运行参数 ##
-        self.设备配置台数 = self.get(设备配置台数
         self.单个光伏板面积 = 单个光伏板面积 # (m²)
         self.光电转换效率 = 光电转换效率 # (%)
         self.功率因数 = 功率因数 # (kW)
-        # self.光照强度 = 光照强度 # ()
-        # where?
+        self.太阳辐射强度 = 太阳辐射强度 # (W/m2) 
+        # where to pass?
         self.最大发电功率 = 最大发电功率
         ## 设置设备运行约束 ##
         
@@ -103,3 +124,6 @@ class 光伏(设备):
         self.固定维护成本=固定维护成本  # (万元/年)
         self.可变维护成本=可变维护成本  # (元/kWh)
         self.设计寿命=设计寿命 # (年)
+
+    def 设备经济约束(self):
+        self.成本=
