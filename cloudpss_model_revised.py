@@ -1,25 +1,21 @@
 from pydantic import BaseModel
 from pyomo.environ import *
+from dataclasses import dataclass
 
 model = ConcreteModel()
 
+
+@dataclass
 class 环境:
-    温度(°C)
-空气比湿度
-(kg/kg)
-太阳辐射强度
-(W/m2)
-土壤平均温度
-(°C)
-距地面10m处东向
-速
-(m/s)
-距地面50m处东向
-风速 (m/s)
-距地面10m处北向
-风谏(m/s)
-距地面50m处北向
-风速(m/s)
+    温度: float  # (°C)
+    空气比湿度: float  # (kg/kg)
+    太阳辐射强度: float  # (W/m2)
+    土壤平均温度: float  # (°C)
+    距地面10m处东向速: float  # (m/s)
+    距地面50m处东向风速: float  # (m/s)
+    距地面10m处北向风谏: float  # (m/s)
+    距地面50m处北向风速: float  # (m/s)
+
 
 class 设备:
     def __init__(
@@ -27,12 +23,12 @@ class 设备:
         model,
         生产厂商: str,
         生产型号: str,
-        设备配置台数:int,
+        设备配置台数: int,
+        environ: 环境,
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
         设备工况: dict = {},  # OperateParam
-        
     ):
         self.model = model
         self.生产厂商 = 生产厂商
@@ -41,9 +37,10 @@ class 设备:
         self.设备运行约束 = 设备运行约束
         self.设备经济性参数 = 设备经济性参数
         self.设备工况 = 设备工况
-        
-        self.设备配置台数 = 设备配置台数 if 设备配置台数 is not None else Var(domain=NonNegativeIntegers) 
-        
+
+        self.环境 = environ
+
+        self.设备配置台数 = 设备配置台数 if 设备配置台数 is not None else Var(domain=NonNegativeIntegers)
 
 
 class 光伏(设备):
@@ -66,27 +63,27 @@ class 光伏(设备):
             设备经济性参数=设备经济性参数,
             设备工况=设备工况,
         )
-            "单个光伏板面积(m²)": "ratedParam.singlePanelArea",
-            "光电转换效率(%)": "ratedParam.photoelectricConversionEfficiency",
-            "最大发电功率(kW)": "operationalConstraints.maxPowerGenerating",
-            "采购成本(万元/台)": "economicParam.purchaseCost",
-            "固定维护成本(万元/年)": "economicParam.fixationMaintainCost",
-            "设计寿命(年)": "economicParam.designLife"
+        # "单个光伏板面积(m²)": "ratedParam.singlePanelArea",
+        # "光电转换效率(%)": "ratedParam.photoelectricConversionEfficiency",
+        # "最大发电功率(kW)": "operationalConstraints.maxPowerGenerating",
+        # "采购成本(万元/台)": "economicParam.purchaseCost",
+        # "固定维护成本(万元/年)": "economicParam.fixationMaintainCost",
+        # "设计寿命(年)": "economicParam.designLife"
         ## 设置设备额定运行参数 ##
-        self.单个光伏板面积 = 单个光伏板面积 # (m²)
-        self.光电转换效率 = 光电转换效率 # (%)
-        self.功率因数 = 功率因数 # (kW)
-        self.太阳辐射强度 = 太阳辐射强度 # (W/m2) 
+        self.单个光伏板面积 = self.设备额定运行参数["单个光伏板面积"]  # (m²)
+        self.光电转换效率 = self.设备额定运行参数["光电转换效率"]  # (%)
+        self.功率因数 = self.设备额定运行参数["功率因数"]  # (kW)
+        # self.太阳辐射强度 = 太阳辐射强度 # (W/m2)
         # where to pass?
-        self.最大发电功率 = 最大发电功率
         ## 设置设备运行约束 ##
-        
+        self.最大发电功率 = 最大发电功率
+
         ## 设备经济性参数 ##
-        
-        self.采购成本=采购成本  # (万元/台)
-        self.固定维护成本=固定维护成本  # (万元/年)
-        self.可变维护成本=可变维护成本  # (元/kWh)
-        self.设计寿命=设计寿命 # (年)
+
+        self.采购成本 = 采购成本  # (万元/台)
+        self.固定维护成本 = 固定维护成本  # (万元/年)
+        self.可变维护成本 = 可变维护成本  # (元/kWh)
+        self.设计寿命 = 设计寿命  # (年)
 
     def 设备额定运行参数(
         self,
@@ -112,18 +109,13 @@ class 光伏(设备):
     def 设备运行约束(self):
         self.model.add_constraint(self.输出功率 <= self.最大输出功率)
 
-    def 设备经济性参数(
-        self,
-        model,
-        采购成本:float,
-        固定维护成本:float,
-        可变维护成本:float,
-        设计寿命:float
-    ):
-        self.采购成本=采购成本  # (万元/台)
-        self.固定维护成本=固定维护成本  # (万元/年)
-        self.可变维护成本=可变维护成本  # (元/kWh)
-        self.设计寿命=设计寿命 # (年)
+    def 设备经济性参数(self, model, 采购成本: float, 固定维护成本: float, 可变维护成本: float, 设计寿命: float):
+        self.采购成本 = 采购成本  # (万元/台)
+        self.固定维护成本 = 固定维护成本  # (万元/年)
+        self.可变维护成本 = 可变维护成本  # (元/kWh)
+        self.设计寿命 = 设计寿命  # (年)
 
     def 设备经济约束(self):
-        self.成本=
+        self.成本 = (
+            self.可变维护成本 * self.输出功率 + self.固定维护成本 * self.设计寿命 + self.采购成本 * self.设备数量
+        )
