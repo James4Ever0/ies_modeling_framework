@@ -43,7 +43,31 @@ for key, value in excelMap.items():
                 else:
                     print(">> UNIDENTIFIED VALUE TYPE <<")
                     print(k, type(v), v)
-        elif "负荷名称" in value.keys(): # load for sure.
-            for k,v in value.items():
+        elif "负荷名称" in value.keys():  # load for sure.
+            for k, v in value.items():
                 ...
         print("_" * 30)
+
+
+equipmentParamDict = data["equipmentParamDict"]
+# print({k:"" for k in list(equipmentParamDict)})
+
+translationMap = {
+    "PhotovoltaicSys": "光伏",
+    "WindPowerGenerator": "风机",
+    "GasTurbine": "燃气轮机",
+    "GasEngine": "燃气内燃机",
+    "SteamTurbine": "蒸汽轮机",
+    "HeatPump": "热泵",
+    "HPSolarCollector": "热管式太阳能集热器",
+    "CompRefrg": "电压缩制冷机",
+    "IceStorageAC": "",
+    "HeatStorageElectricalBoiler": "",
+    "Battery": "",
+    "Transformer": "",
+    "TransferLine": "",
+    "Capacitance": "",
+    "CentrifugalPump": "",
+    "Pump": "",
+    "Pipe": "",
+}
