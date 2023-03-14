@@ -105,7 +105,7 @@ class 光伏(设备):
         self):
         光照强度 = self.环境.太阳辐射强度
         self.model
-        self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
+        Constraint(self.输出功率['电'] <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积*self.功率因数
         self.输出功率['电'] <= self.最大发电功率*self.功率因数
         ###错的
 

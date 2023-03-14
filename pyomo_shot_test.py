@@ -16,10 +16,10 @@ model.add_component("y_0",y)
 c1 = Constraint(
     expr=z == x * sin(y)
 )  # this is not working. sorry!
-model.add_compoent("c1_1",c1)
+model.add_component("c1_1",c1)
 
 obj = Objective(expr=z, sense=minimize)
-model.add_compoent("obj_0",obj)
+model.add_component("obj_0",obj)
 
 opt = SolverFactory("ipopt") # not working!
 opt.solve(model)
