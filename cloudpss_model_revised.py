@@ -14,9 +14,7 @@ class 设备:
     设备工况:dict # OperateParam (vue)
 
 class 光伏(设备):
-    class 设备额定运行参数(BaseModel):
-        光伏板面积:float # 
-        光电转换效率:float # 
+    def 设备额定运行参数(self,model,光伏板面积:float,光电转换效率:float):
         model.光伏板面积=Var(domain=NonNegativeReals)
         model.光电转换效率=Var(domain=NonNegativeReals)
     
