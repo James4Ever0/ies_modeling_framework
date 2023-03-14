@@ -10,15 +10,18 @@ print(a)  # centimeter?
 # either load from definition file or just here.
 # https://pint.readthedocs.io/en/stable/advanced/defining.html
 ureg.define("元 = [currency]")
-ureg.define("百元 = 100 * 元")
-ureg.define("千元 = 1000 * 元")
-ureg.define("万元 = 10000 * 元")
-ureg.define("亿元 = 10000 * 万元")
+ureg.define("百- = 100")
+ureg.define("千- = 1000")
+ureg.define("万- = 10000")
+ureg.define("亿- = 100000000")
 # b = ureg.dollar # not defined? let's define new units?
 b = 1 * ureg.元
 print(b)
 
+ureg.define("年 = year")
+ureg.define("m2 = meter * meter") # working or not?
+
 c = ureg.celsius
 # you cannot do this: ureg['℃']
 print(c)  # invalid charactor: ℃
-print(ureg.W, ureg.kW) # great.
+print(ureg.W, ureg.kW,ureg.kWh,ureg.年,ureg.MPa,ureg.m2) # great.
