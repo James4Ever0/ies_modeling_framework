@@ -14,7 +14,7 @@ dataParams = {
     "ratedParam": "设备额定运行参数",
     "operationalConstraints": "设备运行约束",
     "economicParam": "设备经济性参数",
-    "": "设备工况",
+    "OperateParam": "设备工况",
 }
 
 # 设备额定运行参数
@@ -109,8 +109,12 @@ translationMap2 = {
     "AbsorptionChiller_ies": "吸收式制冷机",
     "CentrifugalPump_ies": "离心泵",
 }
-for key,value in equipmentParamDict2.items():
+for key, value in equipmentParamDict2.items():
     item_name = translationMap2.get(key)
     # everything is included.
     k = value.keys()
     print(key, item_name, k)
+    # 'ratedParam': list of dict ({"prop", "description"})
+    # 'operationalConstraints': list of dict ({"prop", "description"})
+    # 'economicParam': list of dict ({"prop", "description"})
+    # 'OperateParam': list of dict ({"data", "key", "title", "type"})
