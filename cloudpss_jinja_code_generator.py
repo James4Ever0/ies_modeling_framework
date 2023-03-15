@@ -1,0 +1,1 @@
+template = open("cloudpss_model_template.py.j2",'r',encoding=encoding)
