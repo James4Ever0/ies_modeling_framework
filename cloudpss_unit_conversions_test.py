@@ -55,19 +55,22 @@ print("MYUNIT:", myUnit)
 
 # convert to preferred unit system: https://pint.readthedocs.io/en/stable/user/systems.html
 # how to create a unit system?
-conversion_dict = {""}
+target_base_units = ['万元','kWh']
 
-# what is the target unit?
-group = ureg.Group('IES_Unit_Group')
-group.add_units('万元','kWh')
+# # what is the target unit?
+# group = ureg.Group('IES_Unit_Group')
+# group.add_units('万元','kWh')
 
-system = ureg.System("IES_Unit_System")
-system.add_groups('IES_Unit_Group')
+# system = ureg.System("IES_Unit_System")
+# system.add_groups('IES_Unit_Group')
 
 val_test = ureg.Quantity(100,'元/kWh')
 print("TEST QUANTITY:",val_test)
 
-# uncertainty calculation package:
-# https://pythonhosted.org/uncertainties/
+# # uncertainty calculation package:
+# # https://pythonhosted.org/uncertainties/
 
-val_test.to_
+# ureg.default_system = "IES_Unit_System"
+
+# test_base_units = val_test.to_base_units()
+# print("TEST BASE UNITS:", test_base_units)
