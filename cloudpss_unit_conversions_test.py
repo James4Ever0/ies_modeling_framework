@@ -58,4 +58,4 @@ print("MYUNIT:", myUnit)
 conversion_dict = {""}
 
 # what is the target unit?
-ureg.sys.__addattr__("")
+
