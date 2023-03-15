@@ -1,14 +1,15 @@
 import pint
 
 # similar projects: https://pint.readthedocs.io/en/stable/getting/faq.html
-ureg = pint.UnitRegistry(filename = "currency_units.txt")
-ureg.enable_contexts()
+# ureg = pint.UnitRegistry(filename = "currency_units.txt") # not compatible? can we merge UnitRegistries?
+ureg = pint.UnitRegistry()
 # myGroup = ureg.Group("new_group")
 # ureg.define("元 = [currency]")
 # ureg.define("dollar = 7 元")
-# ureg.load_definitions("currency_units.txt")
+ureg.load_definitions("currency_units.txt")
 # ureg.define("dollar = [currency]")
 # ureg.define("million_dollar = 10000000 dollar")
+ureg.enable_contexts()
 
 # error! 
 
@@ -18,7 +19,9 @@ ureg.enable_contexts()
 print("EQUIVS:")
 print(ureg._cache.dimensional_equivalents)
 
-# compatible_units = ureg.get_compatible_units("元") # maybe in different unit system?
+compatible_units = ureg.get_compatible_units("元") # maybe in different unit system?
 
 # compatible_units = ureg.get_compatible_units("dollar")
-# print("COMPAT:", compatible_units)
+print("COMPAT:", compatible_units)
+breakpoint()
+# still working for standard units?
