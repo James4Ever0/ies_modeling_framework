@@ -10,6 +10,7 @@ print(a)  # centimeter?
 # either load from definition file or just here.
 # https://pint.readthedocs.io/en/stable/advanced/defining.html
 ureg.define("元 = [currency]")
+ureg.define("dollar = 7 元")
 ureg.define("百- = 100")
 ureg.define("千- = 1000")
 ureg.define("万- = 10000")
@@ -72,6 +73,7 @@ test_magnitude, test_unit_tuple = val_test.to_tuple()
 for unit_name, unit_power in test_unit_tuple:
     print("TEST_UNIT?", unit_name)
     compatible_units = ureg.get_compatible_units(unit_name) # shall be frozen set.
+    # why [currency] is not good?
     print("COMPATIBLE UNITS:", compatible_units)
     breakpoint()
 
