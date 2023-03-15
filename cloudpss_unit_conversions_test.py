@@ -58,4 +58,13 @@ print("MYUNIT:", myUnit)
 conversion_dict = {""}
 
 # what is the target unit?
+group = ureg.Group('IES_Unit_Group')
+group.add_units('万元','kWh')
 
+system = ureg.System("IES_Unit_System")
+system.add_groups('IES_Unit_Group')
+
+val_test = ureg.Quantity(100,'元/kWh')
+print("TEST QUANTITY:",val_test)
+
+val_test.to_
