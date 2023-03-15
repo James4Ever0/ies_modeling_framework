@@ -7,6 +7,7 @@
 | integratedEnergySystemPrototypes.py      | 线性能源规划模型               |
 | cloudpss_inputs.json                     |  IESLab输入参数               |
 | cloudpss_ieslab_connectivity_matrix.xlsx | IESLab设备连接矩阵（不含蒸汽） |
+| cloudpss_topology_screenshot.jpg         | IESLab拓扑搭建截图            |
 
 # 问题
 
