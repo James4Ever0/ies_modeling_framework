@@ -76,9 +76,10 @@ import json
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
-def run_sync(info: DataModel):
-    data = json.loads(info.data)
-    return trick_or_treat(data)
+def run_sync(info: dict):
+    # data = json.loads(info.data)
+    print("INFO:",info)
+    return trick_or_treat(info)
 
 
 RESULT_DICT = {}
@@ -96,7 +97,7 @@ def execute_and_append_result_to_dict(unique_id: str, data: dict):
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
-def run_async(info: DataModel):  # how do you do it async? redis cache?
+def run_async(info: dict):  # how do you do it async? redis cache?
     data = json.loads(info.data)
     if add_one_task():
         unique_id = str(uuid.uuid4())
