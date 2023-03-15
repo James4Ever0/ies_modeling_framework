@@ -30,6 +30,8 @@ dataParams = {
 # 燃气轮机 -> 挡位 -> dict ({"route": "OperateParams.params"})
 # 这个参数没有用于建模仿真或者优化
 
+import re
+
 for key, value in excelMap.items():
     if type(value) == dict:
         if "生产厂商" in value.keys():  # with or without unit?
@@ -56,10 +58,13 @@ def main():
     env = Environment(loader = FileSystemLoader('./'))
     tpl = env.get_template('jinja_test.j2')
     
-    with open('page.txt','w+') as fout:
-        render_content = tpl.render(mylist = ["光伏",2,3])
+    with open('cloudpss_jinja_code_output.py','w+') as fout:
+        render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
+        # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
-output_path = "cloudpss_jinja_code_output.py"
+if __name__ == '__main__':
+    main()
+#output_path = "cloudpss_jinja_code_output.py"
 
 #### GENERATE CODE, WRITE TO output_path, with encoding='utf-8'
 

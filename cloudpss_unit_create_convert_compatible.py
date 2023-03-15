@@ -8,4 +8,10 @@ ureg = pint.UnitRegistry()
 # ureg.define("dollar = 7 元")
 ureg.load_definitions("currency_units.txt")
 
-compatible_units = ureg.get_compatible_units("元") # maybe in different unit system?
+# error! 
+
+# File "D:\ProgramFiles\anaconda\envs\py37\lib\site-packages\pint\registry.py", line 939, in _get_compatible_units
+#     return self._cache.dimensional_equivalents[src_dim]
+
+
+# compatible_units = ureg.get_compatible_units("元") # maybe in different unit system?
