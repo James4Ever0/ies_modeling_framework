@@ -67,6 +67,14 @@ target_base_units = ['万元','kWh']
 val_test = ureg.Quantity(100,'元/kWh')
 print("TEST QUANTITY:",val_test)
 
+test_magnitude, test_unit_tuple = val_test.to_tuple()
+
+for unit_name, unit_power in test_unit_tuple:
+    print("TEST_UNIT?", unit_name)
+    compatible_units = ureg.get_compatible_units(unit_name) # shall be frozen set.
+    print("COMPATIBLE UNITS:", compatible_units)
+    breakpoint()
+
 # # uncertainty calculation package:
 # # https://pythonhosted.org/uncertainties/
 
