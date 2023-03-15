@@ -4,7 +4,7 @@
 |---------|--------|
 | integratedEnergySystemPrototypes.py | 线性 |
 | cloudpss_inputs.json |    |
-| .xlsx | |
+| cloudpss_ieslab_connectivity_matrix.xlsx | 设备连接矩阵（不含蒸汽）|
 
 问题:
 
