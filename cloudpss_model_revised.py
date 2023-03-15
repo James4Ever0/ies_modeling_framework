@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+# from pydantic import BaseModel
+# is the BaseModel needed?
 from pyomo.environ import *
 from dataclasses import dataclass
 import uuid
@@ -25,14 +26,14 @@ import datetime
 class 模拟参数:
     开始时间: datetime.datetime
     结束时间: datetime.datetime
-    步长: float # 单位：分钟
+    步长: float  # 单位：分钟
 
     @property
     def 仿真时长(self):
         """
         返回单位: 天
         """
-        return (self.结束时间 - self.开始时间).days # int
+        return (self.结束时间 - self.开始时间).days  # int
 
 
 @dataclass
@@ -94,17 +95,23 @@ class 光伏(设备):
         model,
         生产厂商: str,
         生产型号: str,
+        设备配置台数: int,
+        environ: 环境,
+        simulation_params: 模拟参数,
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
         设备工况: dict = {},  # OperateParam
-        输出类型列表:list=["电"],
-        输入类型列表:list=[]
+        输出类型列表: list = ["电"],
+        输入类型列表: list = [],
     ):
         super().__init__(
             model=model,
             生产厂商=生产厂商,
             生产型号=生产型号,
+            设备配置台数=设备配置台数,
+            environ=environ,
+            simulation_params=simulation_params,
             设备额定运行参数=设备额定运行参数,
             设备运行约束=设备运行约束,
             设备经济性参数=设备经济性参数,
@@ -129,7 +136,7 @@ class 光伏(设备):
         """单位：(万元/台)"""
         self.固定维护成本 = self.设备经济性参数["固定维护成本"]
         """单位：(万元/年)"""
-        self.可变维护成本 = self.设备经济性参数["可变维护成本"]/10000
+        self.可变维护成本 = self.设备经济性参数["可变维护成本"] / 10000
         """单位：(万元/kWh) <- (元/kWh)"""
         self.设计寿命 = self.设备经济性参数["设计寿命"]
         """单位：(年)"""
@@ -141,11 +148,10 @@ class 光伏(设备):
             <= self.设备配置台数 * self.光电转换效率 * 光照强度 * self.单个光伏板面积 * self.功率因数
         )
         Constraint(expr=self.输出功率["电"] <= self.最大发电功率 * self.功率因数)
-    
+
     def add_economic_constraints(self):
-        
         self.成本 = (
-            self.可变维护成本 * sum(self.输出功率["电"]) * self.模拟参数.步长/60
+            self.可变维护成本 * sum(self.输出功率["电"]) * self.模拟参数.步长 / 60
             + self.固定维护成本 * self.模拟参数.仿真时长
             + self.采购成本 * self.设备配置台数
         )
