@@ -67,4 +67,7 @@ system.add_groups('IES_Unit_Group')
 val_test = ureg.Quantity(100,'元/kWh')
 print("TEST QUANTITY:",val_test)
 
+# uncertainty calculation package:
+# https://pythonhosted.org/uncertainties/
+
 val_test.to_
