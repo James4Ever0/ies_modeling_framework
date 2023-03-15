@@ -1,6 +1,7 @@
 encoding='utf-8'
 template = open("cloudpss_model_template.py.j2",'r',encoding=encoding).read()
 
+from jinja2 import Environment,FileSystemLoader
 import jinja2
 import json
 import rich
@@ -51,7 +52,13 @@ for key, value in excelMap.items():
             for k, v in value.items():
                 ...
         print("_" * 30)
-
+def main():
+    env = Environment(loader = FileSystemLoader('./'))
+    tpl = env.get_template('jinja_test.j2')
+    
+    with open('page.txt','w+') as fout:
+        render_content = tpl.render(mylist = ["光伏",2,3])
+        fout.write(render_content)
 output_path = "cloudpss_jinja_code_output.py"
 
 #### GENERATE CODE, WRITE TO output_path, with encoding='utf-8'
