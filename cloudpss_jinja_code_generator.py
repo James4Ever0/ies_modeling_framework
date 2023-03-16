@@ -151,7 +151,7 @@ for key, value in excelMap.items():
                         #     print(f"value_name={value_name}")
                         # return value_name, unit
                         unit_hint, factor = convertToStandardUnit(unit)
-                        comment = f"单位：{unit_hint} {k0}" if unit else f"{k0}"
+                        comment = f"单位：{unit_hint} [{k0}]" if unit else f"{k0}"
                         melem = [value_name, comment, factor]
                         mylist_dict_elem[k0].append(melem)
                     else:
