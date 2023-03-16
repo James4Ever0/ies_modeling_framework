@@ -202,11 +202,14 @@ def main():
     tpl = env.get_template(template_path)
 
     with open(output_path, "w+", encoding=encoding) as fout:
+        from jinja2 import StrictUndefined
+
         render_content = tpl.render(
             mylist=mylist,
             env_param_list=env_param_list,
             env_param_converted_list=env_param_converted_list,
             ureg=getUnitRegistryAndStandardUnits()[0],
+            undefined=StrictUndefined,  # make sure there won't be blanks to fill. origin: https://ttl255.com/jinja2-tutorial-part-1-introduction-and-variable-substitution/
         )
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
