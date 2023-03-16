@@ -44,3 +44,13 @@ print(compat_units_1) # frozen set.
 # print(list(compat_units_0))
 
 ## now, the classic test?
+quantity = ureg.Quantity(1, "元/kWh")
+# quantity = ureg.Quantity(1, ureg.元/ureg.kWh)
+magnitude, units = quantity.to_tuple()
+
+standard_units = frozenset([ureg.万元])
+
+for unit, power in units:
+    print("UNIT?", unit, "POWER?", power)
+    compat_units = ureg.get_compatible_units(unit) # frozen set.
+    if compat_units.
