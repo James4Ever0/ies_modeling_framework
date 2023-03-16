@@ -61,7 +61,10 @@ def convertToStandardUnit(unit: Union[str, None]):
     # times factor, not division!
     if unit:
         ureg, standard_units = getUnitRegistryAndStandardUnits()
-        unit_hint = f"({str(ureg.Unit(unit))})"
+        try:
+            unit_hint = f"({str(ureg.Unit(unit))})"
+        except:
+            raise Exception("Invalid unit string:", unit)
         new_magnitude, new_unit_name = unitFactorCalculator(
             ureg, standard_units=standard_units, old_unit_name=unit
         )
@@ -92,15 +95,24 @@ for key, value in excelMap.items():
                     if v.split(".")[0] in dataParams.keys():
                         k0 = dataParams[v.split(".")[0]]
                         print("K0",k0, 'K',k, 'V',v.split(".")[-1])
-                        pattern = r"(\w+)\((\w+)\)"
-                        result = re.findall(pattern, k)
-                        if len(result) > 0:
-                            value_name, unit = result[0]
-                            print(f"value_name={value_name}\nunit={unit}")
+                        value_name = k.split("(")[0]
+                        unit = k.replace(value_name,"").strip()
+                        if unit.startswith("(") and unit.endswith(")"):
+                            ...
                         else:
-                            value_name = k
-                            unit = None
-                            print(f"value_name={value_name}")
+                            if len(unit)>0:
+                                raise Exception("Invalid Unit:", unit)
+                            else:
+                                unit = None
+                        # pattern = r"(\w+)\((\w+)\)"
+                        # result = re.findall(pattern, k)
+                        # if len(result) > 0:
+                        #     value_name, unit = result[0]
+                        #     print(f"value_name={value_name}\nunit={unit}")
+                        # else:
+                        #     value_name = k
+                        #     unit = None
+                        #     print(f"value_name={value_name}")
                         # return value_name, unit
                         unit_hint, factor = convertToStandardUnit(unit)
                         comment = f"单位：{unit_hint} {k0}" if unit else f"{k0}"
