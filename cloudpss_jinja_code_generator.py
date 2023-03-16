@@ -33,10 +33,14 @@ dataParams = {
 
 import re
 
+mylist =[]
+
 for key, value in excelMap.items():
     if type(value) == dict:
         if "生产厂商" in value.keys():  # with or without unit?
+            mylist_elem = []
             print("DEVICE NAME:", key)
+            mylist_elem.append(key)
             # this is a device for sure.
             # rich.print(value)
             for k, v in value.items():
@@ -66,11 +70,11 @@ def main():
     
     with open(output_path,'w+',encoding=encoding) as fout:
 
-        render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
+        render_content = tpl.render(mylist = mylist)
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
-        render_content1 = tpl.render(mylist2=["单个光伏板面积","单位：(m²)","最大发电功率","单位：(kW)","采购成本","单位：(万元/台)","固定维护成本","单位：(万元/年)","可变维护成本","单位：(万元/kWh) <- (元/kWh)","设计寿命","单位：(年)"])
-        fout.write(render_content1)
+        # render_content1 = tpl.render(mylist2=[("单个光伏板面积","单位：(m²)",""),("最大发电功率","单位：(kW)",""),"采购成本","单位：(万元/台)","固定维护成本","单位：(万元/年)","可变维护成本","单位：(万元/kWh) <- (元/kWh)","设计寿命","单位：(年)"])
+        # fout.write(render_content1)
 if __name__ == '__main__':
     main()
 
