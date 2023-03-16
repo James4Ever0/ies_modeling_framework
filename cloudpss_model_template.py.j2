@@ -1,21 +1,21 @@
-# from pydantic import BaseModel
-# is the BaseModel needed?
 from pyomo.environ import *
-{# from dataclasses import dataclass #}
+{# from dataclasses import dataclass -#}
 from pydantic import BaseModel
 import uuid
 import numpy as np
 import math
+
+
 {# the ConcreteModel is coming from outside, not here. 
-there are many "hidden" properties unknown to us. but still used in calculation, not just input and output. 
-#}
-{# @dataclass #}
+there are many "hidden" properties unknown to us. but still used in calculation, not just input and output. -#}
+{# @dataclass -#}
+{# you use that dash to prevent jinja from adding newline because of the comment. -#}
 class 环境(BaseModel):  # shall be array. not just numbers.
     {%for a, b in env_param_list%}
     _{{a}}: np.ndarray
     """单位：({{b}})
     """
-    {%endfor%}
+    {%endfor-%}
     {%for a, b, c in env_param_converted_list%}
     @property
     def {{a}}(self):
@@ -23,12 +23,12 @@ class 环境(BaseModel):  # shall be array. not just numbers.
         单位：{{b}}
         """
         return self._{{a}}{{c}}
-    {%endfor%}
+    {%endfor-%}
 
 import datetime
 
 
-{# @dataclass #}
+{# @dataclass -#}
 class 模拟参数(BaseModel):
     开始时间: datetime.datetime
     结束时间: datetime.datetime
@@ -96,7 +96,7 @@ class 设备:
 
         self.设备配置台数 = Param(initialize=设备配置台数) if type(设备配置台数) is int else Var(domain=NonNegativeIntegers)
         self.model.add_component(f"{self.uuid}_设备配置台数", self.设备配置台数)
-        {# shall you create this variable in the model please? #}
+        {# shall you create this variable in the model please? -#}
 
         self.输入功率 = {}
         self.输出功率 = {}
@@ -109,7 +109,7 @@ class 设备:
 
     def 建立输入功率(self, input_types):
         for input_type in input_types:
-            self.输入功率[input_type] = Var(self.variable_indices){# when you use `VarList`, you use varlist.add() to create variables with index starting from 1. #}
+            self.输入功率[input_type] = Var(self.variable_indices){# when you use `VarList`, you use varlist.add() to create variables with index starting from 1. -#}
             self.model.add_component(
                 f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
             )
@@ -154,7 +154,6 @@ class {{device_name}}(设备):
         )
         {% for key in ["设备额定运行参数","设备运行约束","设备经济性参数","设备工况"]%}
         ## 设置{{key}} ##
-        {{"\n        "}}
         {%- for a,b,c in mydict[key] -%}
         self.{{a}} = self.{{key}}["{{a}}"]{{c}}
         """{{b}}"""
@@ -168,4 +167,4 @@ class {{device_name}}(设备):
         ...
 
 
-{% endfor %}
+{% endfor -%}
