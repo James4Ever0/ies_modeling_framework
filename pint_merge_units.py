@@ -3,6 +3,7 @@ additionalUnitDefinitions = """
 万元 = 10000 元
 
 年 = year
+天 = day
 小时 = hour
 分钟 = minute
 秒 = second
