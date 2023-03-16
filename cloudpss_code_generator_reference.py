@@ -4,6 +4,14 @@ import rich
 
 load_path = "cloudpss_inputs.json"
 
+entry_keys = [
+    "excelMap", # 电价，燃料，负荷计价方式，设备信息
+    "equipmentParamDict",
+    "commonEconomicParams",
+    "specialEquipmentParamDict",
+    "equipmentParamDict2",
+]
+
 with open(load_path, "r", encoding="utf-8") as f:
     data = json.loads(f.read())
     # rich.print(data)
@@ -118,7 +126,7 @@ translationMap2 = {
 #     # everything is included.
 #     k = value.keys()
 #     print(key, item_name, k)
-    # 'ratedParam': list of dict ({"prop", "description"})
-    # 'operationalConstraints': list of dict ({"prop", "description"})
-    # 'economicParam': list of dict ({"prop", "description"})
-    # 'OperateParam': list of dict ({"data", "key", "title", "type"})
+# 'ratedParam': list of dict ({"prop", "description"})
+# 'operationalConstraints': list of dict ({"prop", "description"})
+# 'economicParam': list of dict ({"prop", "description"})
+# 'OperateParam': list of dict ({"data", "key", "title", "type"})

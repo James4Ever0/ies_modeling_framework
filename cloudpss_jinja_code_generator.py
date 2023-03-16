@@ -130,7 +130,13 @@ for key, value in excelMap.items():
                         k0 = dataParams[v.split(".")[0]]
                         print("K0", k0, "K", k, "V", v.split(".")[-1])
                         value_name = k.split("(")[0]
-                        unit = k.replace(value_name, "").strip()
+                        unit = (
+                            k.replace("[", "(")
+                            .replace("]", ")")
+                            .replace(value_name, "")
+                            .strip()
+                        )
+                        # replace square brackets with round brackets.
                         if unit.startswith("(") and unit.endswith(")"):
                             unit = unit[1:-1].strip()
                             if len(unit) == 0:
