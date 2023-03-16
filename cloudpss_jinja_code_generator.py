@@ -65,8 +65,8 @@ def main():
     tpl = env.get_template(template_path)
     
     with open(output_path,'w+',encoding=encoding) as fout:
-        
-        render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
+
+        render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"],mylist2=["单个光伏板面积","单位：(m²)","最大发电功率","单位：(kW)","采购成本","单位：(万元/台)","固定维护成本","单位：(万元/年)","可变维护成本","单位：(万元/kWh) <- (元/kWh)","设计寿命","单位：(年)"])
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
         # render_content1 = tpl.render(mylist2 = ["单个光伏板面积","单位：(m²)"])

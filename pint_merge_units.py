@@ -1,10 +1,11 @@
 additionalUnitDefinitions="""
 元 = [currency]
-百- = 100
-千- = 1000
-万- = 10000
-亿- = 100000000
+万元 = 10000 元
+
+
 """
+
+# by not using prefixes, you have all the units.
 
 output_path="merged_units.txt"
 
@@ -31,6 +32,8 @@ ureg = pint.UnitRegistry(output_path)
 
 compat_units_0 = ureg.get_compatible_units(ureg.万元)
 compat_units_1 = ureg.get_compatible_units(ureg.元) # there are no base units?
+
+# it will be converted to base units?
 
 print(compat_units_0)
 print("_"*20)
