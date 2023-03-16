@@ -80,7 +80,7 @@ def convertToStandardUnit(unit: Union[str, None]):
         unit = (
             unit.replace("%", "percent")
             .replace("m²", "m2")
-            .replace("m³/h",'m3/hour')
+            .replace("m³/h", "m3/hour")
             .replace("m³", "m3")
             .replace("t/h", "t/hour")
             .replace("p.u.", "p_u_")
@@ -169,6 +169,18 @@ for key, value in excelMap.items():
 
 output_path = "cloudpss_jinja_code_output.py"
 
+env_param_list = [
+    ("温度", "(°C"),
+    ("空气比湿度", "(kg/kg"),
+    ("太阳辐射强度", "(W/m2"),
+    ("土壤平均温度", "(°C"),
+    ("距地面10m处东向风速", "(m/s"),
+    ("距地面50m处东向风速", "(m/s"),
+    ("距地面10m处北向风速", "(m/s"),
+    ("距地面50m处北向风速", "(m/s"),
+]
+
+env_param_converted_list = ...
 
 #### GENERATE CODE, WRITE TO output_path, with encoding='utf-8'
 def main():
@@ -176,7 +188,7 @@ def main():
     tpl = env.get_template(template_path)
 
     with open(output_path, "w+", encoding=encoding) as fout:
-        render_content = tpl.render(mylist=mylist)
+        render_content = tpl.render(mylist=mylist, env_param_list=env_param_list,env_param_converted_list=env_param_converted_list)
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
         # render_content1 = tpl.render(mylist2=[("单个光伏板面积","单位：(m²)",""),("最大发电功率","单位：(kW)",""),"采购成本","单位：(万元/台)","固定维护成本","单位：(万元/年)","可变维护成本","单位：(万元/kWh) <- (元/kWh)","设计寿命","单位：(年)"])
