@@ -41,7 +41,7 @@ from functools import lru_cache
 @lru_cache(maxsize=1)
 def getUnitRegistryAndStandardUnits(
     unit_definition_file_path: str = "merged_units.txt",
-    standard_units_name_list: List[str] = ["万元", "kWh"],
+    standard_units_name_list: List[str] = ["万元", "kWh",'km','kW','年','MPa','V','Hz','ohm'],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
     standard_units = frozenset(
@@ -62,11 +62,12 @@ def convertToStandardUnit(unit: Union[str, None]):
     if unit:
         ureg, standard_units = getUnitRegistryAndStandardUnits()
         unit_hint = f"({str(ureg.Unit(unit))})"
-        new_magnitude, new_unit_name = unitFactorCalculator(ureg, standard_units=standard_units, old_unit_name=unit)
-        if new_magnitude == 1:
-            ...
-        else:
+        new_magnitude, new_unit_name = unitFactorCalculator(
+            ureg, standard_units=standard_units, old_unit_name=unit
+        )
+        if new_magnitude != 1:
             unit_hint = f"({new_unit_name}) <- {unit_hint}"
+            factor_string = f" * {new_magnitude}"
     return unit_hint, factor_string
 
 
