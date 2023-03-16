@@ -39,7 +39,8 @@ for key, value in excelMap.items():
     if type(value) == dict:
         if "生产厂商" in value.keys():  # with or without unit?
             mylist_elem = []
-            mylist_dict_elem = {}
+            mylist_dict_elem = {key: [] for key in ["设备额定运行参数","设备运行约束","设备经济性参数","设备工况"]}
+
             print("DEVICE NAME:", key)
             mylist_elem.append(key)
             # this is a device for sure.

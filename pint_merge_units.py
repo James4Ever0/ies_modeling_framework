@@ -50,7 +50,17 @@ magnitude, units = quantity.to_tuple()
 
 standard_units = frozenset([ureg.万元])
 
+new_units_list = []
 for unit, power in units:
     print("UNIT?", unit, "POWER?", power)
     compat_units = ureg.get_compatible_units(unit) # frozen set.
-    if compat_units.
+    intersection = compat_units.intersection(standard_units)
+    if len(intersection) !=0:
+        if len(intersection) == 1:
+            # ready to convert?
+            unit = list(intersection)[0]
+        else:
+            raise Exception("Too many intersections with standard units:", intersection)
+    new_units_list.append((unit,power))
+
+new_unit = ureg.UnitsContainer(tuple(new_units_list))
