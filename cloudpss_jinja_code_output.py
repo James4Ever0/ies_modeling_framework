@@ -86,7 +86,8 @@ class 设备:
             self.输出功率[output_type] = VarList()
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
-            )class 光伏(设备):
+            )
+class 光伏(设备):
     def __init__(
         self,
         model,
@@ -117,12 +118,9 @@ class 设备:
             输入类型列表=输入类型列表,
         )
         ## 设置设备额定运行参数 ##
+        {%for}
         self.单个光伏板面积 = self.设备额定运行参数["单个光伏板面积"]
         """单位：(m²)"""
-        self.光电转换效率 = self.设备额定运行参数["光电转换效率"]
-        """单位：(%)"""
-        self.功率因数 = self.设备额定运行参数["功率因数"]
-        """0<x<1"""
 
         ## 设置设备运行约束 ##
         self.最大发电功率 = self.设备运行约束["最大发电功率"]
