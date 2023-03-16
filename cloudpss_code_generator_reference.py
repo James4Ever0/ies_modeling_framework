@@ -6,7 +6,7 @@ load_path = "cloudpss_inputs.json"
 
 entry_keys = [
     "excelMap", # 电价，燃料，负荷计价方式，设备信息
-    "equipmentParamDict",
+    "equipmentParamDict", # ratedP
     "commonEconomicParams",
     "specialEquipmentParamDict",
     "equipmentParamDict2",
