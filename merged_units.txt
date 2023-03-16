@@ -880,4 +880,4 @@ m2 = meter ** 2
 台 = [quantity_1]
 
 one = [quantity_2]
-% = 0.01 one
+percent = 0.01 one

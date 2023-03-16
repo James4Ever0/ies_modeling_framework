@@ -71,26 +71,23 @@ def getStandardUnits():
 def convertToStandardUnit(unit: Union[str, None]):
     factor_string = unit_hint = ""
     # times factor, not division!
-    numeric_conversion_dict = {"percent": 0.01}
-    unit = unit.replace("%")
+    # numeric_conversion_dict = {"percent": 0.01}
     if unit:
+        unit = unit.replace("%", 'percent').replace("m²",'m2')
         # if unit in numeric_conversion_dict.keys():
         #     unit_hint = f"([]) <- ({unit})"
         #     factor_string = f" * {numeric_conversion_dict[unit]}"
-        if None:
-            ...
-        else:
-            ureg, standard_units = getUnitRegistryAndStandardUnits()
-            try:
-                unit_hint = f"({str(ureg.Unit(unit))})"
-            except:
-                raise Exception("Invalid unit string:", unit)
-            new_magnitude, new_unit_name = unitFactorCalculator(
-                ureg, standard_units=standard_units, old_unit_name=unit
-            )
-            if new_magnitude != 1:
-                unit_hint = f"({new_unit_name}) <- {unit_hint}"
-                factor_string = f" * {new_magnitude}"
+        ureg, standard_units = getUnitRegistryAndStandardUnits()
+        try:
+            unit_hint = f"({str(ureg.Unit(unit))})"
+        except:
+            raise Exception("Invalid unit string:", unit)
+        new_magnitude, new_unit_name = unitFactorCalculator(
+            ureg, standard_units=standard_units, old_unit_name=unit
+        )
+        if new_magnitude != 1:
+            unit_hint = f"({new_unit_name}) <- {unit_hint}"
+            factor_string = f" * {new_magnitude}"
     return unit_hint, factor_string
 
 
@@ -118,7 +115,9 @@ for key, value in excelMap.items():
                         value_name = k.split("(")[0]
                         unit = k.replace(value_name, "").strip()
                         if unit.startswith("(") and unit.endswith(")"):
-                            unit = unit[1:-1]
+                            unit = unit[1:-1].strip()
+                            if len(unit) == 0:
+                                raise Exception("Invalid Unit:", unit)
                         else:
                             if len(unit) > 0:
                                 raise Exception("Invalid Unit:", unit)
