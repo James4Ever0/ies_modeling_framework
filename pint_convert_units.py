@@ -18,8 +18,9 @@ def unitFactorCalculator(
     for unit, power in units:
         # if type(unit)!=str:
         print("UNIT?", unit, "POWER?", power)
-        compat_units = ureg.get_compatible_units(unit)  # frozen set.
-        intersection = compat_units.intersection(standard_units)
+        compat_units = ureg.get_compatible_units(unit)  # the frozen set, as the token for exchange.
+        
+        target_unit = 
         if len(intersection) != 0:
             if len(intersection) == 1:
                 # ready to convert?
