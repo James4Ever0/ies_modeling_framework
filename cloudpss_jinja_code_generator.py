@@ -54,7 +54,7 @@ def getUnitRegistryAndStandardUnits(
         "one",
         '台',
         'm2',
-        "degree_Celsius",
+        "kelvin",
         "metric_ton",
         'p_u_'
     ],
@@ -91,7 +91,7 @@ def convertToStandardUnit(unit: Union[str, None]):
         )
         if new_magnitude != 1:
             unit_hint = f"({new_unit_name}) <- {unit_hint}"
-            factor_string = f" * {new_magnitude}"
+            factor_string = f' {"*" if new_unit_name != "kelvin" else "+"} {new_magnitude}'
     return unit_hint, factor_string
 
 
@@ -106,9 +106,10 @@ for key, value in excelMap.items():
             mylist_dict_elem = {
                 key: [] for key in ["设备额定运行参数", "设备运行约束", "设备经济性参数", "设备工况"]
             }
+            
 
             print("DEVICE NAME:", key)
-            mylist_elem.append(key)
+            mylist_elem.append(key.replace("-","_"))
             # this is a device for sure.
             # rich.print(value)
             for k, v in value.items():
