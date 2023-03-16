@@ -4,6 +4,8 @@ additionalUnitDefinitions = """
 
 年 = year
 m2 = meter ** 2
+
+台 = [quantity]
 """
 
 # by not using prefixes, you have all the units.

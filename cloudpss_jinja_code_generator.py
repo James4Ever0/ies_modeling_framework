@@ -41,7 +41,17 @@ from functools import lru_cache
 @lru_cache(maxsize=1)
 def getUnitRegistryAndStandardUnits(
     unit_definition_file_path: str = "merged_units.txt",
-    standard_units_name_list: List[str] = ["万元", "kWh",'km','kW','年','MPa','V','Hz','ohm'],
+    standard_units_name_list: List[str] = [
+        "万元",
+        "kWh",
+        "km",
+        "kW",
+        "年",
+        "MPa",
+        "V",
+        "Hz",
+        "ohm",
+    ],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
     standard_units = frozenset(
@@ -59,18 +69,23 @@ def getStandardUnits():
 def convertToStandardUnit(unit: Union[str, None]):
     factor_string = unit_hint = ""
     # times factor, not division!
+    numeric_conversion_dict = {"%": 0.01}
     if unit:
-        ureg, standard_units = getUnitRegistryAndStandardUnits()
-        try:
-            unit_hint = f"({str(ureg.Unit(unit))})"
-        except:
-            raise Exception("Invalid unit string:", unit)
-        new_magnitude, new_unit_name = unitFactorCalculator(
-            ureg, standard_units=standard_units, old_unit_name=unit
-        )
-        if new_magnitude != 1:
-            unit_hint = f"({new_unit_name}) <- {unit_hint}"
-            factor_string = f" * {new_magnitude}"
+        if unit in numeric_conversion_dict.keys():
+            unit_hint = f"([]) <- ({unit})"
+            factor_string = f" * {numeric_conversion_dict[unit]}"
+        else:
+            ureg, standard_units = getUnitRegistryAndStandardUnits()
+            try:
+                unit_hint = f"({str(ureg.Unit(unit))})"
+            except:
+                raise Exception("Invalid unit string:", unit)
+            new_magnitude, new_unit_name = unitFactorCalculator(
+                ureg, standard_units=standard_units, old_unit_name=unit
+            )
+            if new_magnitude != 1:
+                unit_hint = f"({new_unit_name}) <- {unit_hint}"
+                factor_string = f" * {new_magnitude}"
     return unit_hint, factor_string
 
 
@@ -94,13 +109,13 @@ for key, value in excelMap.items():
                 if type(v) == str:
                     if v.split(".")[0] in dataParams.keys():
                         k0 = dataParams[v.split(".")[0]]
-                        print("K0",k0, 'K',k, 'V',v.split(".")[-1])
+                        print("K0", k0, "K", k, "V", v.split(".")[-1])
                         value_name = k.split("(")[0]
-                        unit = k.replace(value_name,"").strip()
+                        unit = k.replace(value_name, "").strip()
                         if unit.startswith("(") and unit.endswith(")"):
-                            ...
+                            unit = unit[1:-1]
                         else:
-                            if len(unit)>0:
+                            if len(unit) > 0:
                                 raise Exception("Invalid Unit:", unit)
                             else:
                                 unit = None
