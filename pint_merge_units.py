@@ -2,7 +2,8 @@ additionalUnitDefinitions="""
 元 = [currency]
 万元 = 10000 元
 
-
+年 = year
+m2 = meter ** 2
 """
 
 # by not using prefixes, you have all the units.
@@ -37,4 +38,9 @@ compat_units_1 = ureg.get_compatible_units(ureg.元) # there are no base units?
 
 print(compat_units_0)
 print("_"*20)
-print(compat_units_1)
+print(compat_units_1) # frozen set.
+
+# breakpoint()
+# print(list(compat_units_0))
+
+## now, the classic test?
