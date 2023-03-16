@@ -9,10 +9,7 @@ entry_keys = [
     "equipmentParamDict", # ratedParam, operationalConstraints, economicParam
     "commonEconomicParams", # 四个常见的设备经济约束
     "specialEquipmentParamDict", # 选择设备特殊类型时，设备参数如何变化 
-    "equipmentParamDict2", # ratedParam, operationalConstraints, economicParam, OperateParam"description"})
-# 'operationalConstraints': list of dict ({"prop", "description"})
-# 'economicParam': list of dict ({"prop", "description"})
-# '
+    "equipmentParamDict2", # ratedParam, operationalConstraints, economicParam, OperateParam (设备工况，挡位)
 ]
 
 with open(load_path, "r", encoding="utf-8") as f:
