@@ -45,32 +45,4 @@ print(compat_units_1)  # frozen set.
 
 # breakpoint()
 # print(list(compat_units_0))
-
-## now, the classic test?
-quantity = ureg.Quantity(1, "元/kWh")
-# quantity = ureg.Quantity(1, ureg.元/ureg.kWh)
-magnitude, units = quantity.to_tuple()
-
-standard_units = frozenset([ureg.万元])
-
-new_units_list = []
-for unit, power in units:
-    # if type(unit)!=str:
-    print("UNIT?", unit, "POWER?", power)
-    compat_units = ureg.get_compatible_units(unit)  # frozen set.
-    intersection = compat_units.intersection(standard_units)
-    if len(intersection) != 0:
-        if len(intersection) == 1:
-            # ready to convert?
-            unit = str(list(intersection)[0])
-        else:
-            raise Exception("Too many intersections with standard units:", intersection)
-    new_units_list.append((unit, power))
-
-print("NEW UNITS LIST:", new_units_list)
-new_unit = ureg.UnitsContainer(tuple(new_units_list))
-
-new_quantity = quantity.to(new_unit)
-
-print("OLD QUANTITY:", quantity)
-print("NEW QUANTITY:", new_quantity)
+from pint_convert_units import ...
