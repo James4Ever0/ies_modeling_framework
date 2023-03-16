@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import uuid
 import numpy as np
 import math
+import datetime
 
 
 {# the ConcreteModel is coming from outside, not here. 
@@ -11,7 +12,7 @@ there are many "hidden" properties unknown to us. but still used in calculation,
 {# @dataclass -#}
 {# you use that dash to prevent jinja from adding newline because of the comment. -#}
 class 环境(BaseModel):  # shall be array. not just numbers.
-    {%for a, b in env_param_list%}
+    {%for a, b in env_param_list-%}
     _{{a}}: np.ndarray
     """单位：({{b}})"""
     {%endfor-%}
@@ -20,9 +21,8 @@ class 环境(BaseModel):  # shall be array. not just numbers.
     def {{a}}(self):
         """单位：{{b}}"""
         return self._{{a}}{{c}}
-    {%endfor-%}
+    {%endfor%}
 
-import datetime
 
 
 {# @dataclass -#}
@@ -96,7 +96,7 @@ class 设备:
 
     def 建立输入功率(self, input_types):
         for input_type in input_types:
-            self.输入功率[input_type] = Var(self.variable_indices){# when you use `VarList`, you use varlist.add() to create variables with index starting from 1. -#}
+            self.输入功率[input_type] = Var(self.variable_indices){# when you use `VarList`, you use varlist.add() to create variables with index starting from 1. #}
             self.model.add_component(
                 f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
             )
@@ -108,7 +108,7 @@ class 设备:
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
             )
 
-{% for device_name, mydict in mylist -%}
+{% for device_name, mydict in mylist %}
 class {{device_name}}(设备):
     def __init__(
         self,
