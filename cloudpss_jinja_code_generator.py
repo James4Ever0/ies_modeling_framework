@@ -51,6 +51,8 @@ def getUnitRegistryAndStandardUnits(
         "V",
         "Hz",
         "ohm",
+        "one",
+        '台'
     ],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
@@ -69,11 +71,14 @@ def getStandardUnits():
 def convertToStandardUnit(unit: Union[str, None]):
     factor_string = unit_hint = ""
     # times factor, not division!
-    numeric_conversion_dict = {"%": 0.01}
+    numeric_conversion_dict = {"percent": 0.01}
+    unit = unit.replace("%")
     if unit:
-        if unit in numeric_conversion_dict.keys():
-            unit_hint = f"([]) <- ({unit})"
-            factor_string = f" * {numeric_conversion_dict[unit]}"
+        # if unit in numeric_conversion_dict.keys():
+        #     unit_hint = f"([]) <- ({unit})"
+        #     factor_string = f" * {numeric_conversion_dict[unit]}"
+        if None:
+            ...
         else:
             ureg, standard_units = getUnitRegistryAndStandardUnits()
             try:

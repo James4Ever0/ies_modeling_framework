@@ -5,7 +5,10 @@ additionalUnitDefinitions = """
 年 = year
 m2 = meter ** 2
 
-台 = [quantity]
+台 = [quantity_1]
+
+one = [quantity_2]
+percent = 0.01 one
 """
 
 # by not using prefixes, you have all the units.
@@ -51,3 +54,4 @@ from pint_convert_units import unitFactorCalculator
 
 standard_units = frozenset([ureg.万元, ureg.kWh])
 unitFactorCalculator(ureg, standard_units, old_unit_name="元/kWh")  # just a test.
+breakpoint()
