@@ -62,7 +62,7 @@ for unit, power in units:
     if len(intersection) != 0:
         if len(intersection) == 1:
             # ready to convert?
-            unit = list(intersection)[0]
+            unit = str(list(intersection)[0])
         else:
             raise Exception("Too many intersections with standard units:", intersection)
     new_units_list.append((unit, power))

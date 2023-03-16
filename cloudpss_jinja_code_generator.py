@@ -51,8 +51,16 @@ for key, value in excelMap.items():
                         k0 = dataParams[v.split(".")[0]]
                         print(k0, k, v.split(".")[-1])
                         pattern = r'(\w+)\((\w+)\)'
-                        result = re.findall(pattern, source_2)
-                        value_name, unit = 
+                        result = re.findall(pattern, k)
+                        if len(result) > 0:
+                            value_name, unit = result[0]
+                            print(f"value_name={value_name}\nunit={unit}")
+                        else:
+                            value_name=result
+                            unit = None
+                            print(f"vilue_name={value_name}")
+                        # return value_name, unit
+                        comment = f"单位：{} {k0}" if unit else f"{}
                         melem = [value_name, comment, factor]
 
                         mylist_dict_elem[k0].append(melem)
