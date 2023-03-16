@@ -6,17 +6,18 @@ import uuid
 
 model = ConcreteModel()
 
+from typing import List
 
 @dataclass
-class 环境:
-    温度: float  # (°C)
-    空气比湿度: float  # (kg/kg)
-    太阳辐射强度: float  # (W/m2)
-    土壤平均温度: float  # (°C)
-    距地面10m处东向风速: float  # (m/s)
-    距地面50m处东向风速: float  # (m/s)
-    距地面10m处北向风谏: float  # (m/s)
-    距地面50m处北向风速: float  # (m/s)
+class 环境: # shall be array. not just numbers.
+    温度: List[float]  # (°C)
+    空气比湿度: List[float]  # (kg/kg)
+    太阳辐射强度: List[float]  # (W/m2)
+    土壤平均温度: List[float]  # (°C)
+    距地面10m处东向风速: List[float]  # (m/s)
+    距地面50m处东向风速: List[float]  # (m/s)
+    距地面10m处北向风谏: List[float]  # (m/s)
+    距地面50m处北向风速: List[float]  # (m/s)
 
 
 import datetime
