@@ -33,13 +33,20 @@ dataParams = {
 # 燃气轮机 -> 挡位 -> dict ({"route": "OperateParams.params"})
 # 这个参数没有用于建模仿真或者优化
 from pint_convert_units import unitFactorCalculator
-from typing import Union
+from typing import Union, List
 from pint import UnitRegistry
 from functools import lru_cache
 
+
 @lru_cache(maxsize=1)
-def getUnitRegistryAndStandardUnits():
-    ureg = UnitRegistry("")
+def getUnitRegistryAndStandardUnits(
+    unit_definition_file_path: str = "merged_units.txt",
+    standard_units_name_list: List[str] = ["万元", "kWh"],
+):
+    ureg = UnitRegistry(unit_definition_file_path)
+    standard_units = frozenset(
+        [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
+    )
     return ureg, standard_units
 
 
@@ -48,13 +55,18 @@ def getStandardUnits():
     standard_units = frozenset([])
     return standard_units
 
+
 def convertToStandardUnit(unit: Union[str, None]):
     factor_string = unit_hint = ""
     # times factor, not division!
     if unit:
-        ureg = getUnitRegistry()
-        unit_hint = unit
-        unitFactorCalculator(ureg, standard_units=standard_units, old_unit_name = unit)
+        ureg, standard_units = getUnitRegistryAndStandardUnits()
+        unit_hint = f"({str(ureg.Unit(unit))})"
+        new_magnitude, new_unit_name = unitFactorCalculator(ureg, standard_units=standard_units, old_unit_name=unit)
+        if new_magnitude == 1:
+            ...
+        else:
+            unit_hint = f"({new_unit_name}) <- {unit_hint}"
     return unit_hint, factor_string
 
 
