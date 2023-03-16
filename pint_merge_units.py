@@ -9,6 +9,8 @@ m2 = meter ** 2
 
 one = [quantity_2]
 percent = 0.01 one
+
+p_u_ = [quantity_3]
 """
 
 # by not using prefixes, you have all the units.

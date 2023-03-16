@@ -52,7 +52,11 @@ def getUnitRegistryAndStandardUnits(
         "Hz",
         "ohm",
         "one",
-        '台'
+        '台',
+        'm2',
+        "degree_Celsius",
+        "metric_ton",
+        'p_u_'
     ],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
@@ -73,7 +77,7 @@ def convertToStandardUnit(unit: Union[str, None]):
     # times factor, not division!
     # numeric_conversion_dict = {"percent": 0.01}
     if unit:
-        unit = unit.replace("%", 'percent').replace("m²",'m2')
+        unit = unit.replace("%", 'percent').replace("m²",'m2').replace("t/h",'t/hour').replace("p.u.",'p_u_')
         # if unit in numeric_conversion_dict.keys():
         #     unit_hint = f"([]) <- ({unit})"
         #     factor_string = f" * {numeric_conversion_dict[unit]}"
