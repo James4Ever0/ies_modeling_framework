@@ -30,6 +30,9 @@ dataParams = {
 # unknown property:
 # 燃气轮机 -> 挡位 -> dict ({"route": "OperateParams.params"})
 # 这个参数没有用于建模仿真或者优化
+def convertToStandardUnit(unit):
+    factor = ""
+    return unit_hint, factor
 
 import re
 
@@ -58,9 +61,10 @@ for key, value in excelMap.items():
                         else:
                             value_name=result
                             unit = None
-                            print(f"vilue_name={value_name}")
+                            print(f"value_name={value_name}")
                         # return value_name, unit
-                        comment = f"单位：{} {k0}" if unit else f"{}
+                        unit_hint, factor = convertToStandardUnit(unit)
+                        comment = f"单位：{unit_hint} {k0}" if unit else f"{k0}"
                         melem = [value_name, comment, factor]
 
                         mylist_dict_elem[k0].append(melem)
@@ -71,6 +75,8 @@ for key, value in excelMap.items():
                 else:
                     print(">> UNIDENTIFIED VALUE TYPE <<")
                     print(k, type(v), v)
+            mylist_elem.append(mylist_dict_elem)
+            mylist.append(mylist_elem)
         elif "负荷名称" in value.keys():  # load for sure.
             for k, v in value.items():
                 ...

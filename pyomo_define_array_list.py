@@ -7,7 +7,7 @@ from pyomo.environ import *
 arr = np.arange(10)
 # 定义参数
 model = ConcreteModel()
-model.A = Param(range(10), initialize={i: arr[i] for i in range(10)}, units=units.meter)
+model.A = Param(range(10), initialize={i: arr[i] for i in range(10)})
 
 
 ##2. 定义变量组：可以使用pyomo.environ.Set组件定义变量组，并使用pyomo.environ.Var组件定义变量。例如，定义一个包含10个变量的变量组，可以使用以下代码：
