@@ -65,6 +65,7 @@ def main():
     tpl = env.get_template(template_path)
     
     with open(output_path,'w+',encoding=encoding) as fout:
+        
         render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
