@@ -6,10 +6,10 @@ load_path = "cloudpss_inputs.json"
 
 entry_keys = [
     "excelMap", # 电价，燃料，负荷计价方式，设备信息
-    "equipmentParamDict", # ratedP
-    "commonEconomicParams",
-    "specialEquipmentParamDict",
-    "equipmentParamDict2",
+    "equipmentParamDict", # ratedParam, operationalConstraints, economicParam
+    "commonEconomicParams", # 四个常见的设备经济约束
+    "specialEquipmentParamDict", # 
+    "equipmentParamDict2", # 
 ]
 
 with open(load_path, "r", encoding="utf-8") as f:
