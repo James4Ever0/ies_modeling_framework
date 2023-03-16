@@ -1,0 +1,171 @@
+# from pydantic import BaseModel
+# is the BaseModel needed?
+from pyomo.environ import *
+{# from dataclasses import dataclass #}
+from pydantic import BaseModel
+import uuid
+import numpy as np
+import math
+{# the ConcreteModel is coming from outside, not here. 
+there are many "hidden" properties unknown to us. but still used in calculation, not just input and output. 
+#}
+{# @dataclass #}
+class 环境(BaseModel):  # shall be array. not just numbers.
+    {%for a, b in env_param_list%}
+    _{{a}}: np.ndarray
+    """单位：({{b}})
+    """
+    {%endfor%}
+    {%for a, b, c in env_param_converted_list%}
+    @property
+    def {{a}}(self):
+        """
+        单位：{{b}}
+        """
+        return self._{{a}}{{c}}
+    {%endfor%}
+
+import datetime
+
+
+{# @dataclass #}
+class 模拟参数(BaseModel):
+    开始时间: datetime.datetime
+    结束时间: datetime.datetime
+    _步长: float
+    """
+    单位：分钟
+    """
+
+    @property
+    def 步长(self):
+        """
+        单位: 年
+        """
+        return self._步长 * {{(1*ureg.分钟).to(ureg.年).magnitude}}
+
+    @property
+    def _仿真时长(self):
+        """
+        单位: 天
+        """
+        return (self.结束时间 - self.开始时间).days
+
+    @property
+    def 仿真时长(self):
+        """
+        单位: 年
+        """
+        return self._仿真时长 * {{(1*ureg.天).to(ureg.年).magnitude}}
+
+    @property
+    def 仿真步数(self):
+        """
+        总仿真步数
+        """
+        return math.floor(self.仿真时长 / self.步长)
+
+
+class 设备:
+    def __init__(
+        self,
+        model: ConcreteModel,
+        生产厂商: str,
+        生产型号: str,
+        设备配置台数: int,
+        environ: 环境,
+        simulation_params: 模拟参数,
+        设备额定运行参数: dict = {},  # if any
+        设备运行约束: dict = {},  # if any
+        设备经济性参数: dict = {},  #  if any
+        设备工况: dict = {},  # OperateParam
+        输出类型列表: list = [],
+        输入类型列表: list = [],
+    ):
+        self.model = model
+        self.uuid = str(uuid.uuid4())
+        self.生产厂商 = 生产厂商
+        self.生产型号 = 生产型号
+        self.设备额定运行参数 = 设备额定运行参数
+        self.设备运行约束 = 设备运行约束
+        self.设备经济性参数 = 设备经济性参数
+        self.设备工况 = 设备工况
+
+        self.环境 = environ
+        self.模拟参数 = simulation_params
+
+        self.设备配置台数 = Param(initialize=设备配置台数) if type(设备配置台数) is int else Var(domain=NonNegativeIntegers)
+        self.model.add_component(f"{self.uuid}_设备配置台数", self.设备配置台数)
+        {# shall you create this variable in the model please? #}
+
+        self.输入功率 = {}
+        self.输出功率 = {}
+        self.输入类型列表 = 输入类型列表
+        self.输出类型列表 = 输出类型列表
+        self.建立输入功率(输入类型列表)
+        self.建立输出功率(输出类型列表)
+
+        self.variable_indices = [i for i in range(self.模拟参数.仿真步数)]
+
+    def 建立输入功率(self, input_types):
+        for input_type in input_types:
+            self.输入功率[input_type] = Var(self.variable_indices){# when you use `VarList`, you use varlist.add() to create variables with index starting from 1. #}
+            self.model.add_component(
+                f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
+            )
+
+    def 建立输出功率(self, output_types):
+        for output_type in output_types:
+            self.输出功率[output_type] = Var(self.variable_indices)
+            self.model.add_component(
+                f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
+            )
+{{"\n\n"}}
+{%- for device_name, mydict in mylist -%}
+class {{device_name}}(设备):
+    def __init__(
+        self,
+        model: ConcreteModel,
+        生产厂商: str,
+        生产型号: str,
+        设备配置台数: int,
+        environ: 环境,
+        simulation_params: 模拟参数,
+        设备额定运行参数: dict = {},  # if any
+        设备运行约束: dict = {},  # if any
+        设备经济性参数: dict = {},  #  if any
+        设备工况: dict = {},  # OperateParam 挡位
+        输出类型列表: list = [],
+        输入类型列表: list = [],
+    ):
+        super().__init__(
+            model=model,
+            生产厂商=生产厂商,
+            生产型号=生产型号,
+            设备配置台数=设备配置台数,
+            environ=environ,
+            simulation_params=simulation_params,
+            设备额定运行参数=设备额定运行参数,
+            设备运行约束=设备运行约束,
+            设备经济性参数=设备经济性参数,
+            设备工况=设备工况,
+            输出类型列表=输出类型列表,  # add this later.
+            输入类型列表=输入类型列表,
+        )
+        {% for key in ["设备额定运行参数","设备运行约束","设备经济性参数","设备工况"]%}
+        ## 设置{{key}} ##
+        {{"\n        "}}
+        {%- for a,b,c in mydict[key] -%}
+        self.{{a}} = self.{{key}}["{{a}}"]{{c}}
+        """{{b}}"""
+        {% endfor%}
+        {% endfor%}
+
+    def add_constraints(self):
+        ...
+
+    def add_economic_constraints(self):
+        ...
+
+
+{% endfor %}
