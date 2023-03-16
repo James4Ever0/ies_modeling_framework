@@ -35,7 +35,7 @@ with open(output_path, "w+", encoding="utf-8") as f:
 ureg = pint.UnitRegistry(output_path)
 
 compat_units_0 = ureg.get_compatible_units(ureg.万元)
-compat_units_1 = ureg.get_compatible_units(ureg.元)  # there are no base units?
+compat_units_1 = ureg.get_compatible_units(ureg.元) # there are no base units?
 
 # it will be converted to base units?
 
@@ -47,5 +47,5 @@ print(compat_units_1)  # frozen set.
 # print(list(compat_units_0))
 from pint_convert_units import unitFactorCalculator
 
-standard_units = frozenset([ureg.万元])
+standard_units = frozenset([ureg.万元, ureg.kWh])
 unitFactorCalculator(ureg, standard_units, old_unit_name="元/kWh")  # just a test.

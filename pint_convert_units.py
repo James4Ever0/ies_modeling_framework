@@ -7,6 +7,9 @@ def unitFactorCalculator(
     assert old_unit_name != ""
     assert type(old_unit_name) == str
     ## now, the classic test?
+    
+    standard_units_mapping = {ureg.get_compatible_units(unit):unit for unit in standard_units}
+    
     try:
         quantity = ureg.Quantity(1, old_unit_name)  # one, undoubtable.
     except:
@@ -20,17 +23,12 @@ def unitFactorCalculator(
         print("UNIT?", unit, "POWER?", power)
         compat_units = ureg.get_compatible_units(unit)  # the frozen set, as the token for exchange.
         
-        target_unit = 
-        if len(intersection) != 0:
-            if len(intersection) == 1:
-                # ready to convert?
-                unit = str(list(intersection)[0])
-            else:
-                raise Exception(
-                    "Too many intersections with standard units:", intersection
-                )
+        target_unit = standard_units_mapping.get(compat_units,None)
+        if target_unit:
+            # ready to convert?
+            unit = str(target_unit)
         else:
-            raise Exception("no common units")
+            raise Exception("No common units for:",unit)
         new_units_list.append((unit, power))
 
     print("NEW UNITS LIST:", new_units_list)

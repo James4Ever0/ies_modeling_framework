@@ -30,9 +30,13 @@ dataParams = {
 # unknown property:
 # 燃气轮机 -> 挡位 -> dict ({"route": "OperateParams.params"})
 # 这个参数没有用于建模仿真或者优化
-def convertToStandardUnit(unit):
-    factor = ""
-    return unit_hint, factor
+from pint_convert_units import unitFactorCalculator
+from typing import Union
+
+def convertToStandardUnit(unit:Union[str,None]):
+    factor_string = ""
+    # times factor, not division!
+    return unit_hint, factor_string
 
 import re
 
