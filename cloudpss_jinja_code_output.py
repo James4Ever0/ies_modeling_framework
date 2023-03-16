@@ -36,7 +36,6 @@ class 模拟参数:
         return (self.结束时间 - self.开始时间).days  # int
 
 
-@dataclass
 class 设备:
     def __init__(
         self,
@@ -86,7 +85,10 @@ class 设备:
             self.输出功率[output_type] = VarList()
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
-            )class 光伏(设备):
+            )
+
+
+class 光伏(设备):
     def __init__(
         self,
         model,

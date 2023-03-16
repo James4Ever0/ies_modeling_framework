@@ -52,11 +52,11 @@ def getUnitRegistryAndStandardUnits(
         "Hz",
         "ohm",
         "one",
-        '台',
-        'm2',
+        "台",
+        "m2",
         "kelvin",
         "metric_ton",
-        'p_u_'
+        "p_u_",
     ],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
@@ -77,7 +77,12 @@ def convertToStandardUnit(unit: Union[str, None]):
     # times factor, not division!
     # numeric_conversion_dict = {"percent": 0.01}
     if unit:
-        unit = unit.replace("%", 'percent').replace("m²",'m2').replace("t/h",'t/hour').replace("p.u.",'p_u_')
+        unit = (
+            unit.replace("%", "percent")
+            .replace("m²", "m2")
+            .replace("t/h", "t/hour")
+            .replace("p.u.", "p_u_")
+        )
         # if unit in numeric_conversion_dict.keys():
         #     unit_hint = f"([]) <- ({unit})"
         #     factor_string = f" * {numeric_conversion_dict[unit]}"
@@ -91,11 +96,13 @@ def convertToStandardUnit(unit: Union[str, None]):
         )
         if new_magnitude != 1:
             unit_hint = f"({new_unit_name}) <- {unit_hint}"
-            factor_string = f' {"*" if new_unit_name != "kelvin" else "+"} {new_magnitude}'
+            factor_string = (
+                f' {"*" if new_unit_name != "kelvin" else "+"} {new_magnitude}'
+            )
     return unit_hint, factor_string
 
 
-import re
+# import re
 
 mylist = []
 
@@ -106,10 +113,9 @@ for key, value in excelMap.items():
             mylist_dict_elem = {
                 key: [] for key in ["设备额定运行参数", "设备运行约束", "设备经济性参数", "设备工况"]
             }
-            
 
             print("DEVICE NAME:", key)
-            mylist_elem.append(key.replace("-","_"))
+            mylist_elem.append(key.replace("-", "_"))
             # this is a device for sure.
             # rich.print(value)
             for k, v in value.items():
