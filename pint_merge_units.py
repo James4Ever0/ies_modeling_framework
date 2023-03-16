@@ -3,6 +3,9 @@ additionalUnitDefinitions = """
 万元 = 10000 元
 
 年 = year
+小时 = hour
+分钟 = minute
+秒 = second
 m2 = meter ** 2
 m3 = meter ** 3
 

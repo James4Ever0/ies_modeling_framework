@@ -876,6 +876,7 @@ neper = 1 ; logbase: 2.71828182845904523536028747135266249775724709369995; logfa
 
 年 = year
 m2 = meter ** 2
+m3 = meter ** 3
 
 台 = [quantity_1]
 
