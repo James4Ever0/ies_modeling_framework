@@ -57,6 +57,7 @@ def getUnitRegistryAndStandardUnits(
         "kelvin",
         "metric_ton",
         "p_u_",
+        "dimensionless",
     ],
 ):
     ureg = UnitRegistry(unit_definition_file_path)
@@ -170,14 +171,14 @@ for key, value in excelMap.items():
 output_path = "cloudpss_jinja_code_output.py"
 
 env_param_list = [
-    ("温度", "(°C"),
-    ("空气比湿度", "(kg/kg"),
-    ("太阳辐射强度", "(W/m2"),
-    ("土壤平均温度", "(°C"),
-    ("距地面10m处东向风速", "(m/s"),
-    ("距地面50m处东向风速", "(m/s"),
-    ("距地面10m处北向风速", "(m/s"),
-    ("距地面50m处北向风速", "(m/s"),
+    ("温度", "°C"),
+    ("空气比湿度", "kg/kg"), # dimensionless. right?
+    ("太阳辐射强度", "W/m2"),
+    ("土壤平均温度", "°C"),
+    ("距地面10m处东向风速", "m/s"),
+    ("距地面50m处东向风速", "m/s"),
+    ("距地面10m处北向风速", "m/s"),
+    ("距地面50m处北向风速", "m/s"),
 ]
 
 env_param_converted_list = ...
