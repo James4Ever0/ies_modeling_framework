@@ -1,15 +1,16 @@
 import pint
 
-def unitFactorCalculator(ureg:pint.UnitRegistry, old_unit_name:str): # like "元/kWh"
+def unitFactorCalculator(ureg:pint.UnitRegistry, standard_units:frozenset,old_unit_name:str): # like "元/kWh"
+    assert old_unit_name !=""
+    assert type(old_unit_name) == str
     ## now, the classic test?
     try:
-        quantity = ureg.Quantity(1, old_unit_name)
+        quantity = ureg.Quantity(1, old_unit_name) # one, undoubtable.
     except:
         raise Exception("Unknown unit name:", old_unit_name)
     # quantity = ureg.Quantity(1, ureg.元/ureg.kWh)
     magnitude, units = quantity.to_tuple()
 
-    standard_units = frozenset([ureg.万元])
 
     new_units_list = []
     for unit, power in units:
@@ -23,6 +24,8 @@ def unitFactorCalculator(ureg:pint.UnitRegistry, old_unit_name:str): # like "元
                 unit = str(list(intersection)[0])
             else:
                 raise Exception("Too many intersections with standard units:", intersection)
+        else:
+            raise Exception("no common units")
         new_units_list.append((unit, power))
 
     print("NEW UNITS LIST:", new_units_list)

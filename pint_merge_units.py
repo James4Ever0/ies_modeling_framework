@@ -45,4 +45,7 @@ print(compat_units_1)  # frozen set.
 
 # breakpoint()
 # print(list(compat_units_0))
-from pint_convert_units import
+from pint_convert_units import unitFactorCalculator
+
+standard_units = frozenset([ureg.万元])
+unitFactorCalculator(ureg, standard_units, old_unit_name="元/kWh")  # just a test.
