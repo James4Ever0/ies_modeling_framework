@@ -180,18 +180,18 @@ class 设备:
         self.建立输入功率(输入类型列表)
         self.建立输出功率(输出类型列表)
 
-        self.variable_indices = [i for i in range(self.环境.仿真步数)]
+        self.variable_indices = [i for i in range(self.模拟参数.仿真步数)]
 
     def 建立输入功率(self, input_types):
         for input_type in input_types:
-            self.输入功率[input_type] = VarList(self.variable_indices)
+            self.输入功率[input_type] = Var(self.variable_indices)
             self.model.add_component(
                 f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
             )
 
     def 建立输出功率(self, output_types):
         for output_type in output_types:
-            self.输出功率[output_type] = VarList(self.variable_indices)
+            self.输出功率[output_type] = Var(self.variable_indices)
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
             )
