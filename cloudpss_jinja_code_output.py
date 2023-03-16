@@ -5,6 +5,7 @@ from pyomo.environ import *
 from pydantic import BaseModel
 import uuid
 import numpy as np
+import math
 
 model = ConcreteModel()
 
@@ -134,6 +135,13 @@ class 模拟参数(BaseModel):
         """
         return self._仿真时长 * 0.0027378507871321013
 
+    @property
+    def 仿真步数(self):
+        """
+        总仿真步数
+        """
+        return math.floor(self.仿真时长 / self.步长)
+
 
 class 设备:
     def __init__(
@@ -163,7 +171,9 @@ class 设备:
         self.环境 = environ
         self.模拟参数 = simulation_params
 
-        self.设备配置台数 = 设备配置台数 if 设备配置台数 is not None else Var(domain=NonNegativeIntegers)
+        self.设备配置台数 = Param(initialize=设备配置台数) if type(设备配置台数) is int else Var(domain=NonNegativeIntegers)
+        self.model.add_component(f"{self.uuid}_设备配置台数", self.设备配置台数)
+        
 
         self.输入功率 = {}
         self.输出功率 = {}
@@ -172,16 +182,18 @@ class 设备:
         self.建立输入功率(输入类型列表)
         self.建立输出功率(输出类型列表)
 
+        self.variable_indices = [i for i in range(self.environ.仿真步数)]
+
     def 建立输入功率(self, input_types):
         for input_type in input_types:
-            self.输入功率[input_type] = VarList()
+            self.输入功率[input_type] = VarList(self.variable_indices)
             self.model.add_component(
                 f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
             )
 
     def 建立输出功率(self, output_types):
         for output_type in output_types:
-            self.输出功率[output_type] = VarList()
+            self.输出功率[output_type] = VarList(self.variable_indices)
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
             )
@@ -199,7 +211,7 @@ class 光伏(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -266,7 +278,7 @@ class 风机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -339,7 +351,7 @@ class 燃气轮机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -414,7 +426,7 @@ class 燃气内燃机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -499,7 +511,7 @@ class 蒸汽轮机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -572,7 +584,7 @@ class 热泵(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -665,7 +677,7 @@ class 燃气热水锅炉(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -744,7 +756,7 @@ class 燃气蒸汽锅炉(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -819,7 +831,7 @@ class 余热热水锅炉(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -906,7 +918,7 @@ class 余热蒸汽锅炉_单压(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -991,7 +1003,7 @@ class 余热蒸汽锅炉_双压(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1080,7 +1092,7 @@ class 热管式太阳能集热器(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1157,7 +1169,7 @@ class 电压缩制冷机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1234,7 +1246,7 @@ class 热水吸收式制冷机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1339,7 +1351,7 @@ class 烟气吸收式制冷机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1444,7 +1456,7 @@ class 蒸汽吸收式制冷机(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1545,7 +1557,7 @@ class 蓄冰空调(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1626,7 +1638,7 @@ class 蓄热电锅炉(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1707,7 +1719,7 @@ class 蓄电池(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1780,7 +1792,7 @@ class 变压器(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1863,7 +1875,7 @@ class 传输线(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -1934,7 +1946,7 @@ class 电容器(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2001,7 +2013,7 @@ class 离心泵(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2076,7 +2088,7 @@ class 换热器(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2163,7 +2175,7 @@ class 管道(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2234,7 +2246,7 @@ class 光伏_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2297,7 +2309,7 @@ class 风机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2364,7 +2376,7 @@ class 燃气轮机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2427,7 +2439,7 @@ class 燃气内燃机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2506,7 +2518,7 @@ class 蒸汽轮机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2579,7 +2591,7 @@ class 热泵_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2644,7 +2656,7 @@ class 燃气热水锅炉_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2705,7 +2717,7 @@ class 燃气蒸汽锅炉_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2766,7 +2778,7 @@ class 余热热水锅炉_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2827,7 +2839,7 @@ class 余热蒸汽锅炉_单压_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2890,7 +2902,7 @@ class 余热蒸汽锅炉_双压_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -2953,7 +2965,7 @@ class 热管式太阳能集热器_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3014,7 +3026,7 @@ class 电压缩制冷机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3073,7 +3085,7 @@ class 热水吸收式制冷机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3140,7 +3152,7 @@ class 烟气吸收式制冷机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3207,7 +3219,7 @@ class 蒸汽吸收式制冷机_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3274,7 +3286,7 @@ class 蓄冰空调_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3339,7 +3351,7 @@ class 蓄热电锅炉_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3402,7 +3414,7 @@ class 蓄电池_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3469,7 +3481,7 @@ class 储水罐_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3530,7 +3542,7 @@ class 变压器_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3593,7 +3605,7 @@ class 传输线_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3654,7 +3666,7 @@ class 电容器_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3713,7 +3725,7 @@ class 模块化多电平变流器_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3770,7 +3782,7 @@ class 离心泵_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3833,7 +3845,7 @@ class 换热器_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
@@ -3894,7 +3906,7 @@ class 管道_建模仿真(设备):
         设备额定运行参数: dict = {},  # if any
         设备运行约束: dict = {},  # if any
         设备经济性参数: dict = {},  #  if any
-        设备工况: dict = {},  # OperateParam
+        设备工况: dict = {},  # OperateParam 挡位
         输出类型列表: list = [],
         输入类型列表: list = [],
     ):
