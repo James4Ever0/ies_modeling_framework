@@ -50,6 +50,12 @@ for key, value in excelMap.items():
                     if v.split(".")[0] in dataParams.keys():
                         k0 = dataParams[v.split(".")[0]]
                         print(k0, k, v.split(".")[-1])
+                        pattern = r'(\w+)\((\w+)\)'
+                        result = re.findall(pattern, source_2)
+                        value_name, unit = 
+                        melem = [value_name, comment, factor]
+
+                        mylist_dict_elem[k0].append(melem)
                     else:
                         if v not in ["manufacturer", "equipType"]:
                             print(">> UNIDENTIFIED PARAM TYPE <<")
