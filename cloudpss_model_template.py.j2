@@ -13,15 +13,12 @@ there are many "hidden" properties unknown to us. but still used in calculation,
 class 环境(BaseModel):  # shall be array. not just numbers.
     {%for a, b in env_param_list%}
     _{{a}}: np.ndarray
-    """单位：({{b}})
-    """
+    """单位：({{b}})"""
     {%endfor-%}
     {%for a, b, c in env_param_converted_list%}
     @property
     def {{a}}(self):
-        """
-        单位：{{b}}
-        """
+        """单位：{{b}}"""
         return self._{{a}}{{c}}
     {%endfor-%}
 
@@ -33,36 +30,26 @@ class 模拟参数(BaseModel):
     开始时间: datetime.datetime
     结束时间: datetime.datetime
     _步长: float
-    """
-    单位：分钟
-    """
+    """单位：分钟"""
 
     @property
     def 步长(self):
-        """
-        单位: 年
-        """
+        """单位: 年"""
         return self._步长 * {{(1*ureg.分钟).to(ureg.年).magnitude}}
 
     @property
     def _仿真时长(self):
-        """
-        单位: 天
-        """
+        """单位: 天"""
         return (self.结束时间 - self.开始时间).days
 
     @property
     def 仿真时长(self):
-        """
-        单位: 年
-        """
+        """单位: 年"""
         return self._仿真时长 * {{(1*ureg.天).to(ureg.年).magnitude}}
 
     @property
     def 仿真步数(self):
-        """
-        总仿真步数
-        """
+        """总仿真步数"""
         return math.floor(self.仿真时长 / self.步长)
 
 
@@ -120,8 +107,8 @@ class 设备:
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
             )
-{{"\n\n"}}
-{%- for device_name, mydict in mylist -%}
+
+{% for device_name, mydict in mylist -%}
 class {{device_name}}(设备):
     def __init__(
         self,
@@ -154,17 +141,16 @@ class {{device_name}}(设备):
         )
         {% for key in ["设备额定运行参数","设备运行约束","设备经济性参数","设备工况"]%}
         ## 设置{{key}} ##
-        {%- for a,b,c in mydict[key] -%}
+        {% for a,b,c in mydict[key] -%}
         self.{{a}} = self.{{key}}["{{a}}"]{{c}}
         """{{b}}"""
-        {% endfor%}
-        {% endfor%}
+        {% endfor -%}
+        {% endfor %}
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 {% endfor -%}
