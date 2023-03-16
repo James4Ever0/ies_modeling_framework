@@ -68,6 +68,8 @@ def main():
         render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
+        # render_content1 = tpl.render(mylist2 = ["单个光伏板面积","单位：(m²)"])
+        # fout.write(render_content1)
 if __name__ == '__main__':
     main()
 
