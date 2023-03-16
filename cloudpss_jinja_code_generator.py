@@ -56,7 +56,7 @@ for key, value in excelMap.items():
         print("_" * 30)
 def main():
     env = Environment(loader = FileSystemLoader('./'))
-    tpl = env.get_template('jinja_test.j2')
+    tpl = env.get_template('cloudpss_jinja_model_template.py.j2')
     
     with open('cloudpss_jinja_code_output.py','w+') as fout:
         render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
