@@ -91,14 +91,14 @@ for key, value in excelMap.items():
                 if type(v) == str:
                     if v.split(".")[0] in dataParams.keys():
                         k0 = dataParams[v.split(".")[0]]
-                        print(k0, k, v.split(".")[-1])
+                        print("K0",k0, 'K',k, 'V',v.split(".")[-1])
                         pattern = r"(\w+)\((\w+)\)"
                         result = re.findall(pattern, k)
                         if len(result) > 0:
                             value_name, unit = result[0]
                             print(f"value_name={value_name}\nunit={unit}")
                         else:
-                            value_name = result
+                            value_name = k
                             unit = None
                             print(f"value_name={value_name}")
                         # return value_name, unit
