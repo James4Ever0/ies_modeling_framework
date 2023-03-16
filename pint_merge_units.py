@@ -4,6 +4,7 @@ additionalUnitDefinitions = """
 
 年 = year
 m2 = meter ** 2
+m3 = meter ** 3
 
 台 = [quantity_1]
 

@@ -80,6 +80,8 @@ def convertToStandardUnit(unit: Union[str, None]):
         unit = (
             unit.replace("%", "percent")
             .replace("m²", "m2")
+            .replace("m³/h",'m3/hour')
+            .replace("m³", "m3")
             .replace("t/h", "t/hour")
             .replace("p.u.", "p_u_")
         )
@@ -87,10 +89,12 @@ def convertToStandardUnit(unit: Union[str, None]):
         #     unit_hint = f"([]) <- ({unit})"
         #     factor_string = f" * {numeric_conversion_dict[unit]}"
         ureg, standard_units = getUnitRegistryAndStandardUnits()
+
         try:
             unit_hint = f"({str(ureg.Unit(unit))})"
         except:
             raise Exception("Invalid unit string:", unit)
+
         new_magnitude, new_unit_name = unitFactorCalculator(
             ureg, standard_units=standard_units, old_unit_name=unit
         )
