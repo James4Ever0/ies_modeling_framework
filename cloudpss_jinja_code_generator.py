@@ -200,6 +200,9 @@ for name, unit in env_param_list:
 def main():
     env = Environment(loader=FileSystemLoader("./"))
     tpl = env.get_template(template_path)
+    # enable render option:
+    # `trim_blocks` and `lstrip_blocks`
+    # 
 
     with open(output_path, "w+", encoding=encoding) as fout:
         from jinja2 import StrictUndefined
