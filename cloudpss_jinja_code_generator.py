@@ -198,11 +198,16 @@ for name, unit in env_param_list:
 
 #### GENERATE CODE, WRITE TO output_path, with encoding='utf-8'
 def main():
-    env = Environment(loader=FileSystemLoader("./"))
-    tpl = env.get_template(template_path)
     # enable render option:
     # `trim_blocks` and `lstrip_blocks`
-    # 
+    #
+    # disable undefined passthrough:
+    # make sure there won't be blanks to fill. origin: https://ttl255.com/jinja2-tutorial-part-1-introduction-and-variable-substitution/
+    # undefined=StrictUndefined
+    #
+    env = Environment(loader=FileSystemLoader("./"),trim_blocks=True, )
+    tpl = env.get_template(template_path)
+
 
     with open(output_path, "w+", encoding=encoding) as fout:
         from jinja2 import StrictUndefined
@@ -212,7 +217,7 @@ def main():
             env_param_list=env_param_list,
             env_param_converted_list=env_param_converted_list,
             ureg=getUnitRegistryAndStandardUnits()[0],
-            undefined=StrictUndefined,  # make sure there won't be blanks to fill. origin: https://ttl255.com/jinja2-tutorial-part-1-introduction-and-variable-substitution/
+            undefined=StrictUndefined, 
         )
         # render_content = tpl.render(mylist = ["光伏","风机","燃气轮机"])
         fout.write(render_content)
