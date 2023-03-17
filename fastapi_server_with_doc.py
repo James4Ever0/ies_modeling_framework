@@ -1,6 +1,9 @@
 # test to create a server with fastapi, generate doc automatically.
 # code from: https://fastapi.tiangolo.com/tutorial/metadata/
 
+# notice: after you've done developing server, you can generate client automatically.
+# reference: https://fastapi.tiangolo.com/advanced/generate-clients/
+
 port = 9982
 
 if __name__ == "__main__":
