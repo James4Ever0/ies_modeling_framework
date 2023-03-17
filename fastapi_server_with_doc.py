@@ -39,29 +39,32 @@ if __name__ == "__main__":
         },
     )
 
-
-    @app.get("/items/") # what is dependencies anyway?
+    @app.get(
+        "/items/",
+        response_description="get response example",
+        summary="summary for get items",
+    )  # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
 
-
     from pydantic import BaseModel
     from typing import Mapping
-
 
     class Item(BaseModel):
         """
         can this item thing have any schema description?
         """
+
         name: str
         price: float
+        """
+        how to insert mock data and data entry description?
+        """
         is_offer: bool = None
-        myDict: Mapping # it is mapping, not dict.
+        myDict: Mapping  # it is mapping, not dict.
         # if it is clear, you don't have to do this. if unclear, you do something different.
 
-
     inventory = []
-
 
     class ResponseModel(BaseModel):
         ans: str
@@ -92,7 +95,6 @@ if __name__ == "__main__":
             raise HTTPException(status_code=400, detail="Item name cannot be foo.")
         inventory.append(item)
         return ResponseModel(ans="1", ans_1="2")
-
 
     # how to generate doc?
     # visit: http://<host_ip>:9981/docs
