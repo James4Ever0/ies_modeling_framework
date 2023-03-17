@@ -45,7 +45,9 @@ class Item(BaseModel):
     name: str
     price: float
     is_offer: bool = None
+
 inventory = []
+
 @app.post("/items/")
 async def create_item(item: Item):
     """
