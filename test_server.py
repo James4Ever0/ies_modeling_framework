@@ -6,13 +6,18 @@ GLOBAL_TASK_COUNT = 0
 
 import datetime
 
+# of course we will set limit to max running time per task
+from pydantic import BaseModel
+
+class DataModel(BaseModel): # use this to parse the dict passed in later.
+    data: str
 
 def get_current_time_string():
     time_string = " ".join(datetime.datetime.now().isoformat().split(".")[0].split("T"))
     return time_string
 
 
-def mock_calculation(data: dict, sleep_time: float = 20):
+def mock_calculation(data: DataModel, sleep_time: float = 20):
     """
     Mocking the heavy calculation of system optimization.
 
@@ -31,13 +36,6 @@ app = FastAPI()
 # where is the port?
 
 # create some context manager? sure?
-
-# of course we will set limit to max running time per task
-from pydantic import BaseModel
-
-
-class DataModel(BaseModel): # use this to parse the dict passed in later.
-    data: str
 
 
 # could there be multiple requests? use lock please?
@@ -64,7 +62,7 @@ def remove_one_task():
     return False
 
 
-def trick_or_treat(data: dict):
+def trick_or_treat(data: DataModel):
     if add_one_task():
         result = mock_calculation(data)  # you should put error code here. no exception?
         remove_one_task()
@@ -72,14 +70,15 @@ def trick_or_treat(data: dict):
     return server_error_code.MAX_TASK_LIMIT
 
 
-import json
+# import json
 
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH}")
 def run_sync(info: dict):
-    # data = json.loads(info.data)
     print("INFO:",info)
-    return trick_or_treat(info)
+    # data = json.loads(info.data)
+    data = DataModel(**info)
+    return trick_or_treat(data) # need a dictionary.
 
 
 RESULT_DICT = {}
@@ -88,7 +87,7 @@ TASK_LIST = []
 import uuid
 
 
-def execute_and_append_result_to_dict(unique_id: str, data: dict):
+def execute_and_append_result_to_dict(unique_id: str, data: DataModel):
     global RESULT_DICT, TASK_LIST
     print(f"ASYNC TASK ASSIGNED: {unique_id}")
     result = mock_calculation(data)
@@ -98,7 +97,11 @@ def execute_and_append_result_to_dict(unique_id: str, data: dict):
 
 @app.post(f"/{endpoint_suffix.UPLOAD_GRAPH_ASYNC}")
 def run_async(info: dict):  # how do you do it async? redis cache?
-    data = json.loads(info.data)
+    # data = info
+    # data = json.loads(info.data)
+    data = DataModel(**info)
+    # cause DataModel as type hint won't get you a full dict.
+    # you have to do parsing later.
     if add_one_task():
         unique_id = str(uuid.uuid4())
         TASK_LIST.append(unique_id)
