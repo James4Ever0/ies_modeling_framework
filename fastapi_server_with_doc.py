@@ -40,7 +40,7 @@ if __name__ == "__main__":
     )
 
 
-    @app.get("/items/")
+    @app.get("/items/") # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
 
@@ -50,6 +50,9 @@ if __name__ == "__main__":
 
 
     class Item(BaseModel):
+        """
+        can this item thing have any schema description?
+        """
         name: str
         price: float
         is_offer: bool = None
