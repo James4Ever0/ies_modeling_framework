@@ -40,3 +40,11 @@ async def read_items():
     return [{"name": "Katana"}]
 
 # how to generate doc?
+# By default, the OpenAPI schema is served at /openapi.json
+# what is that json anyway?
+
+port = 9981
+
+import uvicorn
+
+uvicorn.run(app, host='0.0.0.0' ,port=port)

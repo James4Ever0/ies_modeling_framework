@@ -45,7 +45,7 @@ LOCK = threading.Lock()
 
 
 def add_one_task():
-    global GLOBAL_TASK_COUNT, LOCK
+    global GLOBAL_TASK_COUNT, LOCK, MAX_TASK_COUNT
     with LOCK:
         if GLOBAL_TASK_COUNT < MAX_TASK_COUNT:
             GLOBAL_TASK_COUNT += 1
@@ -63,6 +63,7 @@ def remove_one_task():
 
 
 def trick_or_treat(data: DataModel):
+    global server_error_code
     if add_one_task():
         result = mock_calculation(data)  # you should put error code here. no exception?
         remove_one_task()
