@@ -3,6 +3,7 @@
 
 # notice: after you've done developing server, you can generate client automatically.
 # reference: https://fastapi.tiangolo.com/advanced/generate-clients/
+# custom the way to generate client functions.
 
 port = 9982
 
