@@ -56,7 +56,7 @@ def getUnitRegistryAndStandardUnits(
         "m2",
         "m3",
         "kelvin",
-        "metric_ton",
+        "metric_ton", # this is weight.
         "p_u_",
         "dimensionless",
     ],
