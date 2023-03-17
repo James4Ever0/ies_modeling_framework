@@ -89,6 +89,7 @@ async def create_item(item: Item):
 # how to export doc?
 #
 # By default, the OpenAPI schema is served at /openapi.json
+# this json file is needed to create project in apifox.
 # what is that json anyway?
 
 port = 9982
