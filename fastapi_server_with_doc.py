@@ -59,7 +59,8 @@ class ResponseModel(BaseModel):
     ans: str
     ans_1: str
 
-
+# when it is async, no parallelism!
+# but who needs that?
 @app.post(
     "/items/",
     description="api for creating an item",
