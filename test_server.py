@@ -36,7 +36,7 @@ app = FastAPI()
 from pydantic import BaseModel
 
 
-class DataModel(BaseModel):
+class DataModel(BaseModel): # use this to parse the dict passed in later.
     data: str
 
 
