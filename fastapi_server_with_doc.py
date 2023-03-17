@@ -12,8 +12,28 @@ if __name__ == "__main__":
     import rich
 
     AppName = "ChimichangApp"
+    tags_metadata = [
+        {
+            "name": "users",
+            "description": "Operations with users. The **login** logic is also here.",
+            "externalDocs": {
+                "description": "Items external docs",
+                "url": "https://fastapi.tiangolo.com/",
+            },
+        },
+        {
+            "name": "items",
+            "description": "Manage items. So _fancy_ they have their own docs.",
+            "externalDocs": {
+                "description": "Items external docs",
+                "url": "https://fastapi.tiangolo.com/",
+            },
+        },
+    ]
+
     description = f"""
     {AppName} API helps you do awesome stuff. 🚀
+    
 
     ## Items
 
@@ -32,6 +52,7 @@ if __name__ == "__main__":
         description=description,
         version="0.0.1",
         terms_of_service="http://example.com/terms/",
+        tags_metadata=tags_metadata,
         contact={
             "name": "Deadpoolio the Amazing",
             "url": "http://x-force.example.com/contact/",
@@ -47,6 +68,7 @@ if __name__ == "__main__":
         "/items/",
         response_description="get response example",
         summary="summary for get items",
+        tags=["users"],
     )  # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
