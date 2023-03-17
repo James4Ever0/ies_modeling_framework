@@ -16,11 +16,13 @@ class TestDataClass(BaseModel):
 
 
 # try parsing?
-obj = dict(key_1=json.dumps({"k": "abc"}), key_3="def")  # now we are talking.
+obj = dict(key_1=json.dumps({"k": "abc"}), key_3="def", key_4=[])  # now we are talking.
 TestDataClass.parse_raw(json.dumps(obj))  # this is string.
 # how to construct one though?
 # data = TestDataClass(key_1=2, key_3="10")  # invalid input! no error?
-data_1 = TestDataClass(key_1=json.dumps({"k": "abc"}), key_2="11", key_3="11", key_4=[])
+data_1 = TestDataClass(key_1=json.dumps({"k": "abc"}), key_2="11", key_3=1, key_4=[])
+# not allowed None as list, but allow number as string.
+# minor tolerance for data sources.
 # breakpoint()
 
-data_2 = TestDataClass(key_1="1", key_2="2", key_3="3", key_4=[])  # all must be filled?
+data_2 = TestDataClass(key_1="{}", key_2="2", key_3="3", key_4=[])  # all must be filled?
