@@ -41,7 +41,7 @@ async def read_items():
 
 from pydantic import BaseModel
 
-ass Item(BaseModel):
+class Item(BaseModel):
     name: str
     price: float
     is_offer: bool = None
