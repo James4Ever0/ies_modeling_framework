@@ -5,6 +5,7 @@ port = 9982
 
 if __name__ == "__main__":
     from fastapi import FastAPI, HTTPException
+    import rich
 
     AppName = "ChimichangApp"
     description = f"""
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         name: str
         price: float
         is_offer: bool = None
-        myDict: Mapping
+        myDict: Mapping # it is mapping, not dict.
 
 
     inventory = []
@@ -80,6 +81,9 @@ if __name__ == "__main__":
         ## Errors
         - **400 Bad Request**: Invalid request data.
         """
+        print("RECV ITEM:")
+        rich.print(item)
+        print()
         if item.name == "foo":
             raise HTTPException(status_code=400, detail="Item name cannot be foo.")
         inventory.append(item)
