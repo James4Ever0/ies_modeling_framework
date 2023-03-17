@@ -25,4 +25,6 @@ data_1 = TestDataClass(key_1=json.dumps({"k": "abc"}), key_2="11", key_3=1, key_
 # minor tolerance for data sources.
 # breakpoint()
 
-data_2 = TestDataClass(key_1="{}", key_2="2", key_3="3", key_4=[])  # all must be filled?
+data_2 = TestDataClass(
+    key_1="{}", key_2="2", key_3="3", key_4=[]
+)  # all must be filled?
