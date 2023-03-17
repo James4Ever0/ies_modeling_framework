@@ -54,6 +54,7 @@ if __name__ == "__main__":
         price: float
         is_offer: bool = None
         myDict: Mapping # it is mapping, not dict.
+        # if it is clear, you don't have to do this. if unclear, you do something different.
 
 
     inventory = []
