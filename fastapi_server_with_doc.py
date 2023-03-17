@@ -40,6 +40,10 @@ async def read_items():
     return [{"name": "Katana"}]
 
 # how to generate doc?
+# visit: http://<host_ip>:9981/docs
+#
+# how to export doc?
+#
 # By default, the OpenAPI schema is served at /openapi.json
 # what is that json anyway?
 
