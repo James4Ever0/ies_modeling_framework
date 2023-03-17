@@ -23,48 +23,47 @@ class 环境(BaseModel):  # shall be array. not just numbers.
     """单位：(m/s)"""
     _距地面50m处北向风速: np.ndarray
     """单位：(m/s)"""
-    
+
+
     @property
     def 温度(self):
         """单位：(kelvin) <- (degree_Celsius)"""
         return self._温度 + 274.15
-    
+
     @property
     def 空气比湿度(self):
         """单位：(dimensionless)"""
         return self._空气比湿度
-    
+
     @property
     def 太阳辐射强度(self):
         """单位：(kilowatt / m2) <- (watt / m2)"""
         return self._太阳辐射强度 * 0.001
-    
+
     @property
     def 土壤平均温度(self):
         """单位：(kelvin) <- (degree_Celsius)"""
         return self._土壤平均温度 + 274.15
-    
+
     @property
     def 距地面10m处东向风速(self):
         """单位：(kilometer / 年) <- (meter / second)"""
         return self._距地面10m处东向风速 * 31557.600000000002
-    
+
     @property
     def 距地面50m处东向风速(self):
         """单位：(kilometer / 年) <- (meter / second)"""
         return self._距地面50m处东向风速 * 31557.600000000002
-    
+
     @property
     def 距地面10m处北向风速(self):
         """单位：(kilometer / 年) <- (meter / second)"""
         return self._距地面10m处北向风速 * 31557.600000000002
-    
+
     @property
     def 距地面50m处北向风速(self):
         """单位：(kilometer / 年) <- (meter / second)"""
         return self._距地面50m处北向风速 * 31557.600000000002
-    
-
 
 
 class 模拟参数(BaseModel):
@@ -124,7 +123,7 @@ class 设备:
 
         self.设备配置台数 = Param(initialize=设备配置台数) if type(设备配置台数) is int else Var(domain=NonNegativeIntegers)
         self.model.add_component(f"{self.uuid}_设备配置台数", self.设备配置台数)
-        self.输入功率 = {}
+self.输入功率 = {}
         self.输出功率 = {}
         self.输入类型列表 = 输入类型列表
         self.输出类型列表 = 输出类型列表
@@ -135,8 +134,7 @@ class 设备:
 
     def 建立输入功率(self, input_types):
         for input_type in input_types:
-            self.输入功率[input_type] = Var(self.variable_indices)
-            self.model.add_component(
+            self.输入功率[input_type] = Var(self.variable_indices)            self.model.add_component(
                 f"{self.uuid}_输入功率_{input_type}", self.输入功率[input_type]
             )
 
@@ -146,7 +144,6 @@ class 设备:
             self.model.add_component(
                 f"{self.uuid}_输出功率_{output_type}", self.输出功率[output_type]
             )
-
 
 class 光伏(设备):
     def __init__(
@@ -198,14 +195,12 @@ class 光伏(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 风机(设备):
     def __init__(
@@ -263,14 +258,12 @@ class 风机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气轮机(设备):
     def __init__(
@@ -330,14 +323,12 @@ class 燃气轮机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气内燃机(设备):
     def __init__(
@@ -407,14 +398,12 @@ class 燃气内燃机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蒸汽轮机(设备):
     def __init__(
@@ -472,14 +461,12 @@ class 蒸汽轮机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热泵(设备):
     def __init__(
@@ -557,14 +544,12 @@ class 热泵(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气热水锅炉(设备):
     def __init__(
@@ -628,14 +613,12 @@ class 燃气热水锅炉(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气蒸汽锅炉(设备):
     def __init__(
@@ -695,14 +678,12 @@ class 燃气蒸汽锅炉(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热热水锅炉(设备):
     def __init__(
@@ -774,14 +755,12 @@ class 余热热水锅炉(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热蒸汽锅炉_单压(设备):
     def __init__(
@@ -851,14 +830,12 @@ class 余热蒸汽锅炉_单压(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热蒸汽锅炉_双压(设备):
     def __init__(
@@ -932,14 +909,12 @@ class 余热蒸汽锅炉_双压(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热管式太阳能集热器(设备):
     def __init__(
@@ -1001,14 +976,12 @@ class 热管式太阳能集热器(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 电压缩制冷机(设备):
     def __init__(
@@ -1070,14 +1043,12 @@ class 电压缩制冷机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热水吸收式制冷机(设备):
     def __init__(
@@ -1167,14 +1138,12 @@ class 热水吸收式制冷机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 烟气吸收式制冷机(设备):
     def __init__(
@@ -1264,14 +1233,12 @@ class 烟气吸收式制冷机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蒸汽吸收式制冷机(设备):
     def __init__(
@@ -1357,14 +1324,12 @@ class 蒸汽吸收式制冷机(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄冰空调(设备):
     def __init__(
@@ -1430,14 +1395,12 @@ class 蓄冰空调(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄热电锅炉(设备):
     def __init__(
@@ -1503,14 +1466,12 @@ class 蓄热电锅炉(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄电池(设备):
     def __init__(
@@ -1568,14 +1529,12 @@ class 蓄电池(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 变压器(设备):
     def __init__(
@@ -1643,14 +1602,12 @@ class 变压器(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 传输线(设备):
     def __init__(
@@ -1706,14 +1663,12 @@ class 传输线(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 电容器(设备):
     def __init__(
@@ -1765,14 +1720,12 @@ class 电容器(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 离心泵(设备):
     def __init__(
@@ -1832,14 +1785,12 @@ class 离心泵(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 换热器(设备):
     def __init__(
@@ -1911,14 +1862,12 @@ class 换热器(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 管道(设备):
     def __init__(
@@ -1974,14 +1923,12 @@ class 管道(设备):
         """单位：(年) [设备经济性参数]"""
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 光伏_建模仿真(设备):
     def __init__(
@@ -2029,14 +1976,12 @@ class 光伏_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 风机_建模仿真(设备):
     def __init__(
@@ -2088,14 +2033,12 @@ class 风机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气轮机_建模仿真(设备):
     def __init__(
@@ -2143,14 +2086,12 @@ class 燃气轮机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气内燃机_建模仿真(设备):
     def __init__(
@@ -2214,14 +2155,12 @@ class 燃气内燃机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蒸汽轮机_建模仿真(设备):
     def __init__(
@@ -2279,14 +2218,12 @@ class 蒸汽轮机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热泵_建模仿真(设备):
     def __init__(
@@ -2336,14 +2273,12 @@ class 热泵_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气热水锅炉_建模仿真(设备):
     def __init__(
@@ -2389,14 +2324,12 @@ class 燃气热水锅炉_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 燃气蒸汽锅炉_建模仿真(设备):
     def __init__(
@@ -2442,14 +2375,12 @@ class 燃气蒸汽锅炉_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热热水锅炉_建模仿真(设备):
     def __init__(
@@ -2495,14 +2426,12 @@ class 余热热水锅炉_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热蒸汽锅炉_单压_建模仿真(设备):
     def __init__(
@@ -2550,14 +2479,12 @@ class 余热蒸汽锅炉_单压_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 余热蒸汽锅炉_双压_建模仿真(设备):
     def __init__(
@@ -2605,14 +2532,12 @@ class 余热蒸汽锅炉_双压_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热管式太阳能集热器_建模仿真(设备):
     def __init__(
@@ -2658,14 +2583,12 @@ class 热管式太阳能集热器_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 电压缩制冷机_建模仿真(设备):
     def __init__(
@@ -2709,14 +2632,12 @@ class 电压缩制冷机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 热水吸收式制冷机_建模仿真(设备):
     def __init__(
@@ -2768,14 +2689,12 @@ class 热水吸收式制冷机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 烟气吸收式制冷机_建模仿真(设备):
     def __init__(
@@ -2827,14 +2746,12 @@ class 烟气吸收式制冷机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蒸汽吸收式制冷机_建模仿真(设备):
     def __init__(
@@ -2886,14 +2803,12 @@ class 蒸汽吸收式制冷机_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄冰空调_建模仿真(设备):
     def __init__(
@@ -2943,14 +2858,12 @@ class 蓄冰空调_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄热电锅炉_建模仿真(设备):
     def __init__(
@@ -2998,14 +2911,12 @@ class 蓄热电锅炉_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 蓄电池_建模仿真(设备):
     def __init__(
@@ -3057,14 +2968,12 @@ class 蓄电池_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 储水罐_建模仿真(设备):
     def __init__(
@@ -3110,14 +3019,12 @@ class 储水罐_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 变压器_建模仿真(设备):
     def __init__(
@@ -3165,14 +3072,12 @@ class 变压器_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 传输线_建模仿真(设备):
     def __init__(
@@ -3218,14 +3123,12 @@ class 传输线_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 电容器_建模仿真(设备):
     def __init__(
@@ -3269,14 +3172,12 @@ class 电容器_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 模块化多电平变流器_建模仿真(设备):
     def __init__(
@@ -3318,14 +3219,12 @@ class 模块化多电平变流器_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 离心泵_建模仿真(设备):
     def __init__(
@@ -3373,14 +3272,12 @@ class 离心泵_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 换热器_建模仿真(设备):
     def __init__(
@@ -3426,14 +3323,12 @@ class 换热器_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
 
     def add_economic_constraints(self):
         ...
-
 
 class 管道_建模仿真(设备):
     def __init__(
@@ -3481,7 +3376,6 @@ class 管道_建模仿真(设备):
         ## 设置设备经济性参数 ##
         
         ## 设置设备工况 ##
-        
 
     def add_constraints(self):
         ...
