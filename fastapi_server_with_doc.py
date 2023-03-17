@@ -2,6 +2,7 @@
 # code from: https://fastapi.tiangolo.com/tutorial/metadata/
 
 from fastapi import FastAPI, HTTPException
+
 AppName = "ChimichangApp"
 description = f"""
 {AppName} API helps you do awesome stuff. 🚀
@@ -16,7 +17,7 @@ You will be able to:
 
 * **Create users** (_not implemented_).
 * **Read users** (_not implemented_).
-""" # this is not docstring. this is passed as parameter.
+"""  # this is not docstring. this is passed as parameter.
 
 app = FastAPI(
     title=AppName,
@@ -27,7 +28,7 @@ app = FastAPI(
         "name": "Deadpoolio the Amazing",
         "url": "http://x-force.example.com/contact/",
         "email": "dp@x-force.example.com",
-    }, # contact?
+    },  # contact?
     license_info={
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
@@ -39,16 +40,32 @@ app = FastAPI(
 async def read_items():
     return [{"name": "Katana"}]
 
+
 from pydantic import BaseModel
+from typing import Mapping
+
 
 class Item(BaseModel):
     name: str
     price: float
     is_offer: bool = None
+    myDict: Mapping
+
 
 inventory = []
 
-@app.post("/items/")
+
+class ResponseModel(BaseModel):
+    ans: str
+    ans_1: str
+
+
+@app.post(
+    "/items/",
+    description="api for creating an item",
+    response_description="respond if creation is successful.",
+    response_model=ResponseModel,
+)
 async def create_item(item: Item):
     """
     Create a new item.
@@ -62,7 +79,8 @@ async def create_item(item: Item):
     if item.name == "foo":
         raise HTTPException(status_code=400, detail="Item name cannot be foo.")
     inventory.append(item)
-    return item
+    return ResponseModel(ans="1", ans_1="2")
+
 
 # how to generate doc?
 # visit: http://<host_ip>:9981/docs
@@ -72,8 +90,8 @@ async def create_item(item: Item):
 # By default, the OpenAPI schema is served at /openapi.json
 # what is that json anyway?
 
-port = 9981
+port = 9982
 
 import uvicorn
 
-uvicorn.run(app, host='0.0.0.0' ,port=port)
+uvicorn.run(app, host="0.0.0.0", port=port)
