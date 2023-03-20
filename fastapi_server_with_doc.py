@@ -76,7 +76,11 @@ if __name__ == "__main__":
         q: int = Query(
             description="magic query number",
             default=42,
-            examples=dict(e1=dict(summary='sum e1', description='desc e1',value=12), e2=dict(summary='sum e1', description='desc e1',value=23), e3=34),
+            examples=dict(
+                e1=dict(summary="sum e1", description="desc e1", value=12),
+                e2=dict(summary="sum e2", description="desc e2", value=23),
+                e3=dict(summary="sum e3", description="desc e3", value=34),
+            ),
         )
     ):
         print("MAGIC NUMBER?", q)
@@ -104,8 +108,7 @@ if __name__ == "__main__":
     from pydantic import Field
 
     class ResponseModel(BaseModel):
-        """example response model"""
-
+        """model summary or description? example response model"""
         ans: str = Field(description="pydantic description", example="ans example")
         """ans doc"""
         ans_1: str
@@ -113,7 +116,7 @@ if __name__ == "__main__":
         class Config:
             schema_extra = {"example": {"ans": "Foo", "ans_1": "ans_1 data"}}
 
-    from typing import Annotated
+    from typing_extensions import Annotated # python 3.7
     from fastapi import Body
 
     # when it is async, no parallelism!
