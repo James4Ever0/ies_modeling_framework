@@ -1,0 +1,1 @@
+import {} from "./typescript_fastapi_client";
