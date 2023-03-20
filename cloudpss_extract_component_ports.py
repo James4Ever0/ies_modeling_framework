@@ -7,7 +7,12 @@ from bs4 import BeautifulSoup
 
 content = open(source, 'r', encoding='utf-8').read()
 data = json.loads(content)
-for arry in data
+for element in data["cmp"]:
+    value=element["typename"]
+    print(value)
+    shape = element['shape']
+    xml_shape = BeautifulSoup(shape, features='lxml')
+    breakpoint()
 # assert status == 0
 # assert msg == ""
 
@@ -15,9 +20,9 @@ for arry in data
 # page start from 1
 # cmp is the main data list.
 
-for key, value in data.items():
-    print("KEY?", key)
-    # print("VAL?", value)
+# for key, value in data.items():
+#     print("KEY?", key)
+#     # print("VAL?", value)
 
 # my_dict = dict(zip(keys, values))
 # print(my_dict)
