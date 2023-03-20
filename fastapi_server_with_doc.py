@@ -116,7 +116,7 @@ if __name__ == "__main__":
         description="api for creating an item",
         summary = 'summary for creating an item',
         response_description="respond if creation is successful.",
-        response_model=Annotated(ResponseModel, examples={'normal':{}}),
+        response_model=Annotated(ResponseModel, Body(examples={'normal':{"ans":"ans_1"}})),
         name = "post_item_api_name"
     )
     async def create_item(item: Item):
