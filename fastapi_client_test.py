@@ -12,4 +12,3 @@ response = r.json()
 print("RESP:", response)
 print("STATUS_CODE", r.status_code)
 
-# let's generate the client from this json.

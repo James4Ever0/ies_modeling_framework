@@ -2,7 +2,7 @@
     "openapi": "3.0.2",
     "info": {
         "title": "ChimichangApp",
-        "description": "\n    ChimichangApp API helps you do awesome stuff. 🚀\n\n    ## Items\n\n    You can **read items**.\n\n    ## Users\n\n    You will be able to:\n\n    * **Create users** (_not implemented_).\n    * **Read users** (_not implemented_).\n    ",
+        "description": "\n    ChimichangApp API helps you do awesome stuff. 🚀\n    \n\n    ## Items\n\n    You can **read items**.\n\n    ## Users\n\n    You will be able to:\n\n    * **Create users** (_not implemented_).\n    * **Read users** (_not implemented_).\n    ",
         "termsOfService": "http://example.com/terms/",
         "contact": {
             "name": "Deadpoolio the Amazing",
@@ -18,23 +18,67 @@
     "paths": {
         "/items/": {
             "get": {
-                "summary": "Read Items",
+                "tags": [
+                    "users"
+                ],
+                "summary": "summary for get items",
                 "operationId": "read_items_items__get",
+                "parameters": [
+                    {
+                        "description": "magic query number",
+                        "required": false,
+                        "schema": {
+                            "title": "Q",
+                            "type": "integer",
+                            "description": "magic query number",
+                            "default": 42
+                        },
+                        "examples": {
+                            "e1": {
+                                "summary": "sum e1",
+                                "description": "desc e1",
+                                "value": 12
+                            },
+                            "e2": {
+                                "summary": "sum e2",
+                                "description": "desc e2",
+                                "value": 23
+                            },
+                            "e3": {
+                                "summary": "sum e3",
+                                "description": "desc e3",
+                                "value": 34
+                            }
+                        },
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "get response example",
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
                             }
                         }
                     }
                 }
             },
             "post": {
-                "summary": "Create Item",
+                "summary": "summary for creating an item",
                 "description": "api for creating an item",
-                "operationId": "create_item_items__post",
+                "operationId": "post_item_api_name_items__post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -90,6 +134,7 @@
                 "required": [
                     "name",
                     "price",
+                    "is_offer",
                     "myDict"
                 ],
                 "type": "object",
@@ -103,14 +148,16 @@
                         "type": "number"
                     },
                     "is_offer": {
-                        "title": "Is Offer",
-                        "type": "boolean"
+                        "title": "IS_OFFER_TITLE",
+                        "type": "boolean",
+                        "description": "is offer description"
                     },
                     "myDict": {
                         "title": "Mydict",
                         "type": "object"
                     }
-                }
+                },
+                "description": "can this item thing have any schema description?"
             },
             "ResponseModel": {
                 "title": "ResponseModel",
@@ -122,12 +169,19 @@
                 "properties": {
                     "ans": {
                         "title": "Ans",
-                        "type": "string"
+                        "type": "string",
+                        "description": "pydantic description",
+                        "example": "ans example"
                     },
                     "ans_1": {
                         "title": "Ans 1",
                         "type": "string"
                     }
+                },
+                "description": "model summary or description? example response model",
+                "example": {
+                    "ans": "Foo",
+                    "ans_1": "ans_1 data"
                 }
             },
             "ValidationError": {
