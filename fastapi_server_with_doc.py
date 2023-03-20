@@ -64,13 +64,20 @@ if __name__ == "__main__":
         },
     )
 
+    from fastapi import Query
+
     @app.get(
         "/items/",
         response_description="get response example",
         summary="summary for get items",
         tags=["users"],  # this gets it into a folder.
     )  # what is dependencies anyway?
-    async def read_items():
+    async def read_items(
+        q: int = Query(
+            description="magic query number", default=42, examples=[12, 23, 34]
+        )
+    ):
+        print("MAGIC NUMBER?", q)
         return [{"name": "Katana"}]
 
     from pydantic import BaseModel
