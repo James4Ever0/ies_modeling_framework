@@ -99,7 +99,7 @@ if __name__ == "__main__":
         """
         how to insert mock data and data entry description?
         """
-        is_offer: bool = None
+        is_offer: bool = Field(description='is')
         myDict: Mapping  # it is mapping, not dict.
         # if it is clear, you don't have to do this. if unclear, you do something different.
 
