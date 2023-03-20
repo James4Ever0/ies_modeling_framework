@@ -68,7 +68,7 @@ if __name__ == "__main__":
         "/items/",
         response_description="get response example",
         summary="summary for get items",
-        tags=["users"],
+        tags=["users"], # this gets it into a folder. how's the 
     )  # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
@@ -101,9 +101,9 @@ if __name__ == "__main__":
     @app.post(
         "/items/",
         description="api for creating an item",
+        summary = 'summary for creating an item',
         response_description="respond if creation is successful.",
         response_model=ResponseModel,
-        
     )
     async def create_item(item: Item):
         """
