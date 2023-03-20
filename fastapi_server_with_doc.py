@@ -68,7 +68,7 @@ if __name__ == "__main__":
         "/items/",
         response_description="get response example",
         summary="summary for get items",
-        tags=["users"], # this gets it into a folder. how's the 
+        tags=["users"], # this gets it into a folder.
     )  # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
@@ -93,7 +93,9 @@ if __name__ == "__main__":
     inventory = []
 
     class ResponseModel(BaseModel):
+        """example response model"""
         ans: str
+        """ans doc"""
         ans_1: str
 
     # when it is async, no parallelism!
@@ -104,6 +106,7 @@ if __name__ == "__main__":
         summary = 'summary for creating an item',
         response_description="respond if creation is successful.",
         response_model=ResponseModel,
+        name = "post_item_api_name"
     )
     async def create_item(item: Item):
         """
