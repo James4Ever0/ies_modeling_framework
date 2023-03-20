@@ -23,7 +23,7 @@ client = CA.Client(base_url=f"http://localhost:{{port}}", verify_ssl=False, rais
 someRandomDict=M.ItemMydict.from_dict(dict(a = 1))# strange it is
 myItem = M.Item(name='myName', price=20,is_offer=True, my_dict = someRandomDict)
 
-data = POST.sync(client=client,json_body=myItem)
+data = post_item_api_name_items_post.sync(client=client,json_body=myItem)
 
 # breakpoint()
 print("RESPONSE:", data)
