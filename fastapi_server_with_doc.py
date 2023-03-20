@@ -68,7 +68,7 @@ if __name__ == "__main__":
         "/items/",
         response_description="get response example",
         summary="summary for get items",
-        tags=["users"], # this gets it into a folder.
+        tags=["users"],  # this gets it into a folder.
     )  # what is dependencies anyway?
     async def read_items():
         return [{"name": "Katana"}]
@@ -92,34 +92,46 @@ if __name__ == "__main__":
 
     inventory = []
 
+    from pydantic import Field
+
     class ResponseModel(BaseModel):
         """example response model"""
-        ans: str
+
+        ans: str = Field(description="pydantic description", example="ans example")
         """ans doc"""
         ans_1: str
+
         class Config:
-            schema_extra = {
-                "example": {
-                    "ans": "Foo",
-                    "ans_1": "ans_1 data"
-                }
-            }
+            schema_extra = {"example": {"ans": "Foo", "ans_1": "ans_1 data"}}
+
     from typing import Annotated
     from fastapi import Body
-
-
 
     # when it is async, no parallelism!
     # but who needs that?
     @app.post(
         "/items/",
         description="api for creating an item",
-        summary = 'summary for creating an item',
+        summary="summary for creating an item",
         response_description="respond if creation is successful.",
-        response_model=Annotated(ResponseModel, Body(examples={'normal':{"ans":"ans data","ans_1":"ans_1 data"}})),
-        name = "post_item_api_name"
+        response_model=Annotated(
+            ResponseModel,
+            Body(
+                description="create item response model",
+                examples={"normal": {"ans": "ans data", "ans_1": "ans_1 data"}},
+            ),
+        ),
+        name="post_item_api_name",
     )
-    async def create_item(item: Item):
+    async def create_item(
+        item: Annotated(
+            Item,
+            Body(
+                description="create item input param item",
+                example=Item(name="name", price=2, is_offer=False, myDict={"m": 1}),
+            ),
+        )
+    ):
         """
         Create a new item.
         ## Parameters
