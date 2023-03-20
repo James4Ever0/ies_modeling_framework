@@ -97,6 +97,15 @@ if __name__ == "__main__":
         ans: str
         """ans doc"""
         ans_1: str
+        class Config:
+            schema_extra = {
+                "example": {
+                    "ans": "Foo",
+                    "ans_1": "ans_1 data"
+                }
+            }
+
+
 
     # when it is async, no parallelism!
     # but who needs that?
