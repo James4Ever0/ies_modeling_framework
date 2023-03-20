@@ -12,7 +12,11 @@ for element in data["cmp"]:
     print(value)
     shape = element['shape']
     xml_shape = BeautifulSoup(shape, features='xml')
-    breakpoint()
+    # breakpoint()
+    # xml_shape.find_all("background")[0].find_all("text")[0]['str']
+    for background in xml_shape.find_all("background"):
+        for text in background.find_all("text"):
+            string=[]t
 # assert status == 0
 # assert msg == ""
 
