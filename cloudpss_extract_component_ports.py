@@ -10,13 +10,16 @@ data = json.loads(content)
 for element in data["cmp"]:
     value=element["typename"]
     print(value)
+    print()
     shape = element['shape']
     xml_shape = BeautifulSoup(shape, features='xml')
     # breakpoint()
     # xml_shape.find_all("background")[0].find_all("text")[0]['str']
     for background in xml_shape.find_all("background"):
         for text in background.find_all("text"):
-            string=[]t
+            string = text['str']
+            print(string)
+    print("_"*20)
 # assert status == 0
 # assert msg == ""
 
