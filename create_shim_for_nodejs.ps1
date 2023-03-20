@@ -10,5 +10,9 @@ New-Item -Path C:/Users/ss/scoop/shims/tsc.shim -Value 'path = C:\ProgramData\sc
 Copy-Item -Path C:/Users/ss/scoop/shims/pandoc.exe -Destination C:/Users/ss/scoop/shims/tsc.exe
 
 
+New-Item -Path C:/Users/ss/scoop/shims/openapi.shim -Value 'path = C:\ProgramData\scoop\apps\nodejs\19.7.0\bin\openapi.cmd'
+Copy-Item -Path C:/Users/ss/scoop/shims/pandoc.exe -Destination C:/Users/ss/scoop/shims/openapi.exe
+
+
 New-Item -Path C:/Users/ss/scoop/shims/npx.shim -Value 'path = C:\ProgramData\scoop\apps\nodejs\19.7.0\npx.cmd'
 Copy-Item -Path C:/Users/ss/scoop/shims/pandoc.exe -Destination C:/Users/ss/scoop/shims/npx.cmd
