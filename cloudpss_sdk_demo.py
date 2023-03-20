@@ -3,7 +3,11 @@ SDK_TOKEN='eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjQ5NiwidXNlcm5hbWUiOiJT
 
 """
 
-# 
+# Plan on creating APIs for algo services
+
+- [create openapi doc annotation](https://fastapi.tiangolo.com/tutorial/schema-extra-example/) with fastapi
+- use [BackgroundTasks]() or [celery]() to handle comp intensive tasks
+- [investigate cloudpss sdk]() to design the overall APIs
 
 """
 
