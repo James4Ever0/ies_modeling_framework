@@ -74,7 +74,9 @@ if __name__ == "__main__":
     )  # what is dependencies anyway?
     async def read_items(
         q: int = Query(
-            description="magic query number", default=42, examples=[12, 23, 34]
+            description="magic query number",
+            default=42,
+            examples=dict(e1=dict(summary='sum e1', description='desc e1',value=12), e2=dict(summary='sum e1', description='desc e1',value=23), e3=34),
         )
     ):
         print("MAGIC NUMBER?", q)
