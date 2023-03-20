@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 content = open(source, 'r', encoding='utf-8').read()
 data = json.loads(content)
+for arry in data
 # assert status == 0
 # assert msg == ""
 
