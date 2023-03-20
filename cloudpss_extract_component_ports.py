@@ -11,7 +11,7 @@ for element in data["cmp"]:
     value=element["typename"]
     print(value)
     shape = element['shape']
-    xml_shape = BeautifulSoup(shape, features='lxml')
+    xml_shape = BeautifulSoup(shape, features='xml')
     breakpoint()
 # assert status == 0
 # assert msg == ""
