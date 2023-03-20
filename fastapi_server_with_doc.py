@@ -86,7 +86,7 @@ if __name__ == "__main__":
         print("MAGIC NUMBER?", q)
         return [{"name": "Katana"}]
 
-    from pydantic import BaseModel
+    from pydantic import BaseModel, Field
     from typing import Mapping
 
     class Item(BaseModel):
@@ -99,19 +99,21 @@ if __name__ == "__main__":
         """
         how to insert mock data and data entry description?
         """
-        is_offer: bool = Field(description='is')
+        is_offer: bool = Field(
+            title="IS_OFFER_TITLE",  # this will be generated if not passed
+            description="is offer description",
+        )
         myDict: Mapping  # it is mapping, not dict.
         # if it is clear, you don't have to do this. if unclear, you do something different.
 
     inventory = []
 
-    from pydantic import Field
 
     class ResponseModel(BaseModel):
         """model summary or description? example response model"""
 
         ans: str = Field(description="pydantic description", example="ans example")
-        """ans doc"""
+        """ans doc, not working though"""
         ans_1: str
 
         class Config:
