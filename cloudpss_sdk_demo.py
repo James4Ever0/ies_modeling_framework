@@ -6,9 +6,11 @@ SDK_TOKEN='eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjQ5NiwidXNlcm5hbWUiOiJT
 # Plan on creating APIs for algo services
 
 - [create openapi doc annotation](https://fastapi.tiangolo.com/tutorial/schema-extra-example/) with fastapi
-- use [BackgroundTasks]() or [celery]() to handle comp intensive tasks
-- [investigate cloudpss sdk]() to design the overall APIs
+- use [BackgroundTasks](https://fastapi.tiangolo.com/tutorial/background-tasks/) or [celery](https://docs.celeryq.dev/en/stable/userguide/tasks.html) (check [fastapi-celery](https://github.com/GregaVrbancic/fastapi-celery/blob/master/app/main.py)) to handle comp intensive tasks
+- [investigate cloudpss sdk](https://docs.cloudpss.net/sdk/instruction_manual/guide) to design the overall APIs
 
 """
 
 import cloudpss
+
+# cloudpss.ModelTopology
