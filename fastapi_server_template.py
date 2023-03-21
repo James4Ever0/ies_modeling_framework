@@ -6,10 +6,12 @@
 port = 9870
 
 appName = "IES Optim Server Template"
-
+version = '0.0.1'
+tags_metadata = []
 description="""
-This server provides APIs for IES System Optimization.
+This server provides APIs for IES System Simulation &Optimization.
 """
+
 
 from typing import Union
 
@@ -24,7 +26,7 @@ class Item(BaseModel):
     tax: Union[float, None] = None
 
 
-app = FastAPI()
+app = FastAPI(description=description,version=version,tags_metadata=tags_metadata)
 
 
 @app.post("/items/")
