@@ -17,6 +17,10 @@
 !*.ps1
 !*.vbs
 !*.txt
+!*.js
+!*.ts
+!*.jl
+
 # !*.log
 
 # Byte-compiled / optimized / DLL files
