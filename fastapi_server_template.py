@@ -37,12 +37,12 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 # to json: json.dumps(model.dict())
-class Item(BaseModel):
-    name: str
-    description: Union[str, None] = None
-    price: float
-    tax: Union[float, None] = None
-
+class EnergyFlowGraph(BaseModel):
+    directed: bool=False,
+    multigraph:bool=False,
+    graph: Mapping
+    nodes: List[Mapping]
+    adjacency: 
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
