@@ -34,3 +34,8 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
     if q:
         result.update({"q": q})
     return result
+
+
+import uvicorn
+
+uvicorn.run(app, host="0.0.0.0", port=port)
