@@ -34,17 +34,17 @@ This server provides APIs for IES System Simulation & Optimization.
 from typing import Union
 
 from fastapi import FastAPI
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 from typing import Mapping, List, Tuple
 
 
 # to json: json.dumps(model.dict())
 class EnergyFlowGraph(BaseModel):
-    directed: bool = False
-    multigraph: bool = False
-    graph: Mapping
-    nodes: List[Mapping]
-    adjacency: List[List[Mapping]]
+    directed: bool = Field(default=False,title="图是否有方向", description="")
+    multigraph: bool = Field(default=False,title="", description="")
+    graph: Mapping = Field(title="", description="")
+    nodes: List[Mapping] = Field(title="", description="")
+    adjacency: List[List[Mapping]] = Field(title="", description="")
     
     @validator("graph")
     def validate_graph(cls, value:Mapping) -> List[Tuple]:
