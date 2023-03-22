@@ -32,7 +32,6 @@ IES系统仿真和优化算法服务器
 
 OpenAPI描述文件：https://{host}:{port}/openapi.json
 API文档：https://{host}:{port}/docs
-
 """
 
 
@@ -50,9 +49,10 @@ class EnergyFlowGraph(BaseModel):
     """
     用于仿真和优化计算的能流拓扑图，仿真和优化所需要的参数模型和变量定义会有所不同。
     """
-    graph: Mapping = Field(title="", description="")
-    nodes: List[Mapping] = Field(title="", description="")
-    adjacency: List[List[Mapping]] = Field(title="", description="")
+    
+    graph: Mapping = Field(title="能流拓扑图", description="各设备之间的能量流动图", example = {})
+    nodes: List[Mapping] = Field(title="节点", description="由所有节点ID和属性（可选）字典组成的列表", example=[])
+    adjacency: List[List[Mapping]] = Field(title="边", description="由能流图中节点互相连接的边组成的", example=[])
 
     def to_graph(cls):
         graph: List[Tuple] = [(k, v) for k,v in cls.graph.items()]

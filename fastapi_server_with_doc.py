@@ -108,7 +108,6 @@ if __name__ == "__main__":
 
     inventory = []
 
-
     class ResponseModel(BaseModel):
         """model summary or description? example response model"""
 
