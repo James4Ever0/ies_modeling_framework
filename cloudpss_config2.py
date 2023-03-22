@@ -26,7 +26,7 @@ for source in sources:
             # if val_prefix not in ['defaultApp']+existing_vals:
             #     existing_vals.append(val_prefix)
             #     print(val_prefix)
-        component_info.append({"ID": key, "Type": val["Type"], "Position": val["position"]})
+        component_info.append({"ID": key, "Type": val.get("type"), "Position": val.get("position")})
     
     df = pd.DataFrame(component_info)
     print(f"Components in {source}:")

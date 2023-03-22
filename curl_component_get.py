@@ -27,10 +27,14 @@ import subprocess
 output_script_path = "script.sh"
 
 cmd = ['bash', output_script_path]
-access_paths = ['CPS','Heat']
-
+# access_paths = ['CPS','Heat']
+access_paths = ['Heat']
+# there is no component using 'CPS'
+# simply add a new line after each call.
+import os
 for key, template_path in template_paths.items():
     output_path = f"cloudpss_{key}.mjson"
+    os.system(f"rm -rf {output_path}")
     with open(template_path,'r', encoding='utf-8') as f:
         source = f.read()
         template = jinja2.Template(source = source, undefined=StrictUndefined)
@@ -42,3 +46,4 @@ for key, template_path in template_paths.items():
                 output = subprocess.getoutput(cmd)
                 print("ACCESS PATH:", access_path, "ID:", _id)
                 print("OUTPUT?", output[:20])
+                os.system("echo ")
