@@ -51,11 +51,13 @@ class EnergyFlowGraph(BaseModel):
     """
 
     graph: Mapping = Field(
-        title="能流拓扑图的附加属性", description="仿真和优化所需的整体模型参数字典", example={"仿真步长（分钟）":60}
+        title="能流拓扑图的附加属性",
+        description="仿真和优化所需的整体模型参数字典",
+        example={"仿真步长（分钟）": 60, "优化指标": "经济性", "开始时间": ...,"结束时间":...},
     )
     nodes: List[Mapping] = Field(
         title="节点",
-        description="由所有节点ID和属性（可选）字典组成的列表",
+        description="由所有节点ID和属性字典组成的列表",
         example=[
             {"id": "a", "node_type": "load"},
             {"id": "b", "node_type": "device"},
@@ -66,7 +68,15 @@ class EnergyFlowGraph(BaseModel):
         ],
     )
     adjacency: List[List[Mapping]] = Field(
-        title="边", description="由能流图中节点互相连接的边组成的列表", example=[[{}]]
+        title="边",
+        description="由能流图中节点互相连接的边组成的列表",
+        example=[
+            [{"id": "b"}, {"id": "d"}],
+            [{"id": "a", "id": "e"}],
+            [{"id": "c"}, {"id": "f"}],
+            [{"id": "d"}, {"id": "e"}],
+            [{"id", "d"}, {"id": "f"}],
+        ],
     )
 
     def to_graph(cls):
