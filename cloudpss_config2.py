@@ -2,8 +2,10 @@ sources = ["cloudpss_optim_config2.json", "cloudpss_simulation_config2.json"]
 
 # must place all components on the graph to get the data.
 # like: https://ies.cloudpss.net:8201/editor/getComponentForHeat/?id=157
+# or: getComponentForCPS
+
 # but not all components are HeatComponents
-# id is coming from the graph.
+# id is coming from the json containing svg.
 
 import json
 
