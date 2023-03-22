@@ -1,27 +1,29 @@
-sources_curl_get = dict(optim="cloudpss_optim.mjson", simu="cloudpss_simu.mjson")
+sources_curl_get = dict(simu="cloudpss_simu.mjson",optim="cloudpss_optim.mjson", )
 # almost the same as `cloudpss_config2.py`, with slight alternation.
 # choice = "optim"
 choices = sources_curl_get.keys()
 
 param_translate_maps = dict(
-    optim=dict(
+    simu=dict(
         参数分类=[],
         中文名称=[],  # create it later. join with "/"
         有关设备=[],  # join with ", "
     ),
-    simu=dict(参数分类=[], 中文名称=[], 有关设备=[]),
+    optim=dict(参数分类=[], 中文名称=[], 有关设备=[]),
 )
 
 prelude = """
 # 建模仿真和规划设计的输入参数和区别
 
 规划设计在设备信息库内添加了经济性参数，而建模仿真对某些设备将额定工况变为了多工况的输入。
-下面介绍在能流拓扑图中两种模式的输入项区别：
+<br><br>根据布尔表达式，有的输入项所填写的值决定其他参数是否能够填写。
+<br><br>下面介绍在能流拓扑图中两种模式的输入项区别：
+
 """
 
 print(prelude)
 
-optim_format_string = """
+simu_format_string = """
 
 ## 建模仿真参数
 
@@ -43,7 +45,7 @@ optim_format_string = """
 {detail}
 """
 
-simu_format_string = """
+optim_format_string = """
 ## 规划设计参数
 
 {table}
@@ -63,7 +65,7 @@ simu_format_string = """
 {detail}
 """
 
-format_strings = {"optim": optim_format_string, "simu": simu_format_string}
+format_strings = {"simu": simu_format_string,"optim": optim_format_string, }
 
 
 import json
