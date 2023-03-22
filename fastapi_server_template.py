@@ -50,6 +50,8 @@ class EnergyFlowGraph(BaseModel):
         graph: List[Tuple] = [(k, v) for k,v in cls.graph.items()]
         graph_dict = dict(directed=False, multigraph=False,graph=graph,nodes=cls.nodes, adjacency=cls.adjacency)
         return graph_dict
+    
+    
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
