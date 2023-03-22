@@ -40,8 +40,6 @@ from typing import Mapping, List, Tuple
 
 # to json: json.dumps(model.dict())
 class EnergyFlowGraph(BaseModel):
-    directed: bool = Field(default=False,title="图是否有方向", description="")
-    multigraph: bool = Field(default=False,title="", description="")
     graph: Mapping = Field(title="", description="")
     nodes: List[Mapping] = Field(title="", description="")
     adjacency: List[List[Mapping]] = Field(title="", description="")
@@ -50,6 +48,13 @@ class EnergyFlowGraph(BaseModel):
     def validate_graph(cls, value:Mapping) -> List[Tuple]:
         cmp = [(k, v) for k,v in value.items()]
         return cmp
+    
+    def ():
+        graph_dict = dict()
+    
+    directed: bool = Field(default=False,title="图是否有方向", description="")
+    multigraph: bool = Field(default=False,title="", description="")
+        return
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
