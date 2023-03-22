@@ -22,12 +22,17 @@
 
 
 port = 9870
+host = "0.0.0.0"
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
 tags_metadata = []
-description = """
-This server provides APIs for IES System Simulation & Optimization.
+description = f"""
+IES系统仿真和优化算法服务器
+
+OpenAPI描述文件：https://{host}:{port}/openapi.json
+API文档：https://{host}:{port}/docs
+
 """
 
 
@@ -42,6 +47,9 @@ from fastapi_server_with_doc import Item
 
 # to json: json.dumps(model.dict())
 class EnergyFlowGraph(BaseModel):
+    """
+    用于仿真和优化计算的能流拓扑图，仿真和优化所需要的参数模型和变量定义会有所不同。
+    """
     graph: Mapping = Field(title="", description="")
     nodes: List[Mapping] = Field(title="", description="")
     adjacency: List[List[Mapping]] = Field(title="", description="")
@@ -66,4 +74,4 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
 
 import uvicorn
 
-uvicorn.run(app, host="0.0.0.0", port=port)
+uvicorn.run(app, host=host, port=port)
