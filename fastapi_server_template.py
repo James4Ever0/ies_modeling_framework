@@ -26,7 +26,10 @@ host = "0.0.0.0"
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
-tags_metadata = [{"name": "async", "description": "异步接口，调用后立即返回"}]
+tags_metadata = [
+    {"name": "async", "description": "异步接口，调用后立即返回"},
+    {"name": "sync", "description": "同步接口，调用后需等待一段时间才返回"},
+]
 description = f"""
 IES系统仿真和优化算法服务器
 
