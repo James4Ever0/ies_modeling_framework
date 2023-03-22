@@ -23,7 +23,7 @@ headliner = lambda level: "#" * level
 with open(mjson_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-level_shift = 0
+level_shift = 1
 
 param_class_name_dict = {}
 
@@ -40,6 +40,14 @@ for line in lines:
             print()
             print(headliner(level_shift + 2), key_prefix)
             print()
+            
+            print(headliner(level_shift+3), "设备信息")
+            print()
+            
+            info_markdown = ...
+            print(info_markdown)
+            print()
+            
 
             pin = [v for _, v in param["pin"].items()]  # iterate through keys.
             pin_df = pd.DataFrame(pin)
@@ -56,9 +64,13 @@ for line in lines:
             input_types = list(params.keys())
             for input_type in input_types:
                 if input_type not in param_class_name_dict.keys():
-                    param_class_name_dict = {}
+                    param_class_name_dict[input_type] = {"chinese_names":set(), "related_devices":[]}
                 component_info = []
                 input_data = params[input_type]
+                
+                param_class_name_dict[input_type]['chinese_names'].add(input_data)
+                param_class_name_dict[input_type]['related_devices'].append()
+                
                 for k, v in input_data["params"].items():
                     valDict = {"ID": k}
                     valDict.update({k0: v0 for k0, v0 in v.items()})
