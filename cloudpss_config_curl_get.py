@@ -5,8 +5,8 @@ choice = "optim"
 param_translate_maps = dict(
     optim=dict(
         参数分类=[],
-        中文名称=[], # create it later. join with "/"
-        有关设备=[], # join with ", "
+        中文名称=[],  # create it later. join with "/"
+        有关设备=[],  # join with ", "
     ),
     simu=dict(参数分类=[], 中文名称=[], 有关设备=[]),
 )
@@ -40,14 +40,23 @@ for line in lines:
             print()
             print(headliner(level_shift + 2), key_prefix)
             print()
-            
-            print(headliner(level_shift+3), "设备信息")
+
+            print(headliner(level_shift + 3), "设备信息")
             print()
-            
-            info_markdown = ...
+
+            info_keys = [
+                "classname",
+                "name",
+                "type",
+                "thutype",
+                "ver",
+                "id",
+                "sym",
+            ]
+
+            info_markdown = {k: param[k] for k in info_keys}
             print(info_markdown)
             print()
-            
 
             pin = [v for _, v in param["pin"].items()]  # iterate through keys.
             pin_df = pd.DataFrame(pin)
@@ -64,13 +73,18 @@ for line in lines:
             input_types = list(params.keys())
             for input_type in input_types:
                 if input_type not in param_class_name_dict.keys():
-                    param_class_name_dict[input_type] = {"chinese_names":set(), "related_devices":[]}
+                    param_class_name_dict[input_type] = {
+                        "chinese_names": set(),
+                        "related_devices": [],
+                    }
                 component_info = []
                 input_data = params[input_type]
-                
-                param_class_name_dict[input_type]['chinese_names'].add(input_data)
-                param_class_name_dict[input_type]['related_devices'].append()
-                
+
+                param_class_name_dict[input_type]["chinese_names"].add(
+                    input_data["desc"]
+                )
+                param_class_name_dict[input_type]["related_devices"].append(key_prefix)
+
                 for k, v in input_data["params"].items():
                     valDict = {"ID": k}
                     valDict.update({k0: v0 for k0, v0 in v.items()})
@@ -87,6 +101,9 @@ for line in lines:
         # obviously we've hit something hard.
         continue
 
-print("-"*20)
+param_translate_maps[choice]['参数分类'] = list(param_class_name_dict.keys())
+中文名称 = 
+
+print("-" * 20)
 print()
 print(pd.DataFrame(param_translate_maps[choice]).to_markdown(index=False))
