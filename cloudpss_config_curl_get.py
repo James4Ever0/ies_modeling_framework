@@ -3,7 +3,20 @@ sources_curl_get = dict(optim="cloudpss_optim.mjson", simu="cloudpss_simu.mjson"
 choice = "simu"
 
 param_translate_maps = dict(
-    optim=dict(参数分类=[], 中文名称=[], 有关设备=[]), simu=dict(参数分类=[], 中文名称=[], 有关设备=[])
+    optim=dict(
+        参数分类=[
+            "BasicParameters",
+            "DeviceParameters",
+            "HouseParameters",
+            "LoadSettings",
+            "OperationParameters",
+            "OptimizationParamters", # almost the same as "OperationParameters"
+            "SimuParameters",
+        ],
+        中文名称=[], # create it later. join with "/"
+        有关设备=[], # join with ", "
+    ),
+    simu=dict(参数分类=[], 中文名称=[], 有关设备=[]),
 )
 
 
@@ -65,3 +78,7 @@ for line in lines:
     except:
         # obviously we've hit something hard.
         continue
+
+print("-"*20)
+print()
+print(pd.DataFrame(param_translate_maps[choice]).to_markdown(index=False))
