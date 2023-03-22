@@ -120,7 +120,7 @@ for choice in choices:
                 "sym",
             ]
 
-            info_markdown = pd.DataFrame([{k: param[k] for k in info_keys}]).to_markdown()
+            info_markdown = pd.DataFrame([{k: param[k] for k in info_keys}]).to_html()
             append_candidate(info_markdown)
             append_candidate()
 
@@ -128,7 +128,7 @@ for choice in choices:
             pin_df = pd.DataFrame(pin)
             append_candidate(headliner(level_shift + 3), "针脚定义")
             append_candidate()
-            append_candidate(pin_df.to_markdown())
+            append_candidate(pin_df.to_html())
             # you can also get conditional pins and connection types.
             existing_keys = []
 
@@ -160,7 +160,7 @@ for choice in choices:
                 append_candidate()
                 append_candidate(headliner(level_shift + 4), input_type)
                 append_candidate()
-                markdown_table = df.to_markdown(index=False)
+                markdown_table = df.to_html(index=False)
                 append_candidate(markdown_table)
         else:
             continue
@@ -176,7 +176,7 @@ for choice in choices:
         for k in param_translate_maps[choice]["参数分类"]
     ]
 
-    table = pd.DataFrame(param_translate_maps[choice]).to_markdown(index=False)
+    table = pd.DataFrame(param_translate_maps[choice]).to_html(index=False)
     
     detail = "\n".join(print_list)
     
