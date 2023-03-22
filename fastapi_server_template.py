@@ -89,17 +89,31 @@ class EnergyFlowGraph(BaseModel):
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
+class CalculationAsyncSubmitResult(BaseModel):
+    """
+    """
+    calculation_id: ... = Field(description="", title="")
+    submit_state: ...= Field(description="", title="")
 
 @app.post(
     "/calculate_async",
     tags=["async"],
-    description="填写数据并提交拓扑图，如果还有计算资源，提交完毕立即返回计算ID",
+    description="填写数据并提交拓扑图，如果还有计算资源，提交状态为成功，返回计算ID，否则不返回计算ID，提交状态为失败",
     summary="异步提交能流拓扑图",
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
+    response_model = CalculationAsyncSubmitResult
 )
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
+
+
+
+class CalculationAsyncResult(BaseModel):
+    """
+    """
+    calculation_result: ... = Field(description="", title="")
+    calculation_state: ...= Field(description="", title="")
 
 
 @app.get(
@@ -108,6 +122,7 @@ def calculate_async(graph: EnergyFlowGraph):
     description="提交计算ID，返回计算状态，如果计算完毕会一起返回数据，否则数据为空",
     summary="异步获取能流拓扑计算结果",
     response_description="计算状态和计算结果",
+    response_model = CalculationAsyncResult
 )
 def get_calculation_result_async(calculation_id):
     return calculation_result
