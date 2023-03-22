@@ -20,15 +20,9 @@ for source in sources:
         if key_prefix not in ['defaultApp']+existing_keys:
             existing_keys.append(key_prefix)
             print(key_prefix)
-grouped_components = {}
-for key_prefix in existing_keys:
-    group_name = "_".join(key_prefix)
-    group_components = {}
-    for key, val in components.items():
-        if key.startswith(group_name):
-            group_components[key] = val
-    grouped_components[group_name] = group_components
-print(grouped_components)
+
+        val_prefix=val.
+
 # with open('cloudpss_file.json', 'w+') as f3:
 #     json.dump(data, f3)
 
