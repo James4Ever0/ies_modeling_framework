@@ -12,14 +12,22 @@ import pandas as pd
 # question: convert pandas dataframe to markdown table.
 
 with open(mjson_path, "r", encoding="utf-8") as f:
-    data = json.loads(f.read())
-components = data["component"]
+    lines = f.readlines()
+    
+    
+for line in lines:
+    try:
+        data = json.loads(line.strip())
+    except:
+        # obviously we've hit something hard.
+        break
+param = data["ele"]['param']
 existing_keys = []
 
 headliner = lambda level: "#" * level
 
 for key, val in components.items():
-    key_prefix = key.replace("-", "_").split("_")[0]
+    key_prefix = param['']
     if key_prefix not in ["defaultApp"] + existing_keys:
         existing_keys.append(key_prefix)
         print(key_prefix)
