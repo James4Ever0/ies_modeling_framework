@@ -1,18 +1,10 @@
 sources_curl_get = dict(optim="cloudpss_optim.mjson", simu="cloudpss_simu.mjson")
 # almost the same as `cloudpss_config2.py`, with slight alternation.
-choice = "simu"
+choice = "optim"
 
 param_translate_maps = dict(
     optim=dict(
-        参数分类=[
-            "BasicParameters",
-            "DeviceParameters",
-            "HouseParameters",
-            "LoadSettings",
-            "OperationParameters",
-            "OptimizationParamters", # almost the same as "OperationParameters"
-            "SimuParameters",
-        ],
+        参数分类=[],
         中文名称=[], # create it later. join with "/"
         有关设备=[], # join with ", "
     ),
@@ -32,6 +24,8 @@ with open(mjson_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
 level_shift = 0
+
+param_class_name_dict = {}
 
 existing_keys = []
 for line in lines:
@@ -61,6 +55,8 @@ for line in lines:
             params = param["param"]
             input_types = list(params.keys())
             for input_type in input_types:
+                if input_type not in param_class_name_dict.keys():
+                    param_class_name_dict = {}
                 component_info = []
                 input_data = params[input_type]
                 for k, v in input_data["params"].items():
