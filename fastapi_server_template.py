@@ -81,9 +81,11 @@ class EnergyFlowGraph(BaseModel):
         
         转换代码：
         ```python
+        # assume `json_data` is being exported by this method
         import networkx as nx
         from networkx.readwrite import json_graph
         
+        G = json_graph.adjacency_graph(json_data, directed=False)
         ```
         
         Returns:
