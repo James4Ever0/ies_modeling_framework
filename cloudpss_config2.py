@@ -15,13 +15,17 @@ for source in sources:
     # print(data)
     components = data['component']
     existing_keys = []
+    existing_vals = []
     for key, val in components.items():
         key_prefix = key.replace("-","_").split("_")[0]
         if key_prefix not in ['defaultApp']+existing_keys:
             existing_keys.append(key_prefix)
             print(key_prefix)
-            val_prefix=val.replace("-","_").split("_")[0]
-            if val_prefix not in ['']
+            val_prefix=val
+            if val_prefix not in ['defaultApp']+existing_vals:
+                existing_vals.append(val_prefix)
+                print(val_prefix)
+
 
         
 

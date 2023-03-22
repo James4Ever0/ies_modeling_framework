@@ -3,9 +3,18 @@ template_paths = dict(
 )
 
 id_paths = dict(
-    optim="",
-    simu=""
+    optim="cloudpss_component_optimize_ports.json",
+    simu="cloudpss_component_ports.json"
 )
+import json
+
+def get_ids(id_path:str):
+    with open(id_path) as f:
+        data = json.loads(f.read())
+        cmp = data['cmp']
+        for component in cmp:
+            
+ids = {key: get_ids(val) for key, val in id_paths.items()}
 
 import jinja2
 from jinja2 import StrictUndefined
