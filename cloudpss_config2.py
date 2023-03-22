@@ -11,6 +11,8 @@ sources_curl_get = ['cloudpss_optim.mjson','cloudpss_simu.mjson']
 import json
 import pandas as pd
 
+# question: convert pandas dataframe to markdown table.
+
 for source in sources:
     with open(source, "r", encoding="utf-8") as f:
         data = json.loads(f.read())
@@ -22,7 +24,6 @@ for source in sources:
         if key_prefix not in ['defaultApp']+existing_keys:
             existing_keys.append(key_prefix)
             print(key_prefix)
-
             # val_prefix=val
             # if val_prefix not in ['defaultApp']+existing_vals:
             #     existing_vals.append(val_prefix)
@@ -31,7 +32,9 @@ for source in sources:
     
     df = pd.DataFrame(component_info)
     print(f"Components in {source}:")
-    print(df.to_string(index=False))
+    # print(df.to_string(index=False))
+    markdown_table = df.to_markdown(index=False)
+    print(markdown_table)
 
         
 
