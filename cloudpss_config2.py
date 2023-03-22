@@ -1,4 +1,5 @@
 sources = ["cloudpss_optim_config2.json", "cloudpss_simulation_config2.json"]
+sources_curl_get = ['cloudpss_optim.mjson','cloudpss_simu.mjson']
 
 # must place all components on the graph to get the data.
 # like: https://ies.cloudpss.net:8201/editor/getComponentForHeat/?id=157
@@ -26,7 +27,7 @@ for source in sources:
             # if val_prefix not in ['defaultApp']+existing_vals:
             #     existing_vals.append(val_prefix)
             #     print(val_prefix)
-        component_info.append({"ID": key, "Type": val.get("type"), "Position": val.get("position")})
+        component_info.append({"ID": key, "Name":val.get("name"),"Type": val.get("type"), "Thutype": val.get("thutype")})
     
     df = pd.DataFrame(component_info)
     print(f"Components in {source}:")

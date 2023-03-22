@@ -46,4 +46,5 @@ for key, template_path in template_paths.items():
                 output = subprocess.getoutput(cmd)
                 print("ACCESS PATH:", access_path, "ID:", _id)
                 print("OUTPUT?", output[:20])
-                os.system("echo ")
+                with open(output_path, 'a+', encoding='utf-8') as f1:
+                    f1.write('\n')
