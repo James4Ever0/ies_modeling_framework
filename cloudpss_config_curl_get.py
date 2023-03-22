@@ -1,7 +1,11 @@
 sources_curl_get = dict(optim="cloudpss_optim.mjson", simu="cloudpss_simu.mjson")
 # almost the same as `cloudpss_config2.py`, with slight alternation.
-
 choice = "simu"
+
+param_translate_maps = dict(
+    optim=dict(参数分类=[], 中文名称=[], 有关设备=[]), simu=dict(参数分类=[], 中文名称=[], 有关设备=[])
+)
+
 
 mjson_path = sources_curl_get[choice]
 
