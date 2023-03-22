@@ -92,7 +92,7 @@ class EnergyFlowGraph(BaseModel):
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 
-@app.post("/calculate_async",tags=[], description="", summary="",response_description="")
+@app.post("/calculate_async",tags=['async'], description="t", summary="异步提交能流拓扑图",response_description="返回能流")
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
