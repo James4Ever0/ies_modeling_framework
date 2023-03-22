@@ -18,31 +18,49 @@ prelude = """
 下面介绍在能流拓扑图中两种模式的输入项区别：
 """
 
-建模仿真参数
-参数分类
+optim_format_string = """
 
-基础参数
+## 建模仿真参数
+
+### 参数分类
+
+{table}
+
+#### 基础参数
 要指定设备台数
-仿真参数
+#### 仿真参数
 配电传输设备除模块化多电平变流器都不具备仿真参数，及管道、采暖制冷负荷、电负荷都不具备
-优化参数
+#### 优化参数
 具备优化参数的设备可选是否优化，部分设备优化参数具有其他参数，例如柔性电负荷的最大负荷
-运行约束
-采暖制冷负荷具备运行约束，供热\制冷最大、最小出口温度。
-详细说明
+#### 运行约束
+采暖制冷负荷具备运行约束，供热/制冷最大、最小出口温度。
 
-规划设计参数
+### 详细说明
 
-机组参数
+{detail}
+"""
+
+simu_format_string = """
+## 规划设计参数
+
+{table}
+
+### 机组参数
 在没有选择具体设备时，不能指定设备台数，但可以指定设备额定运行参数。指定了设备类型时，可以指定设备台数，但是不能指定额定运行参数。
 部分参数
-运行参数组
+### 运行参数组
 不能指定部分参数，或者可选指定部分参数
-计算参数组
+### 计算参数组
 有的设备没有计算参数组，例如吸收式制冷机，余热锅炉
-负荷设置
+### 负荷设置
 负荷元件特有的设置
 
+### 详细说明
+
+{detail}
+"""
+
+format_strings = {"optim": optim_format_string, "simu": simu_format_string}
 
 
 mjson_path = sources_curl_get[choice]
@@ -146,4 +164,4 @@ param_translate_maps[choice]["有关设备"] = [
 
 print("-" * 20)
 print()
-print(pd.DataFrame(param_translate_maps[choice]).to_markdown(index=False))
+table = pd.DataFrame(param_translate_maps[choice]).to_markdown(index=False))
