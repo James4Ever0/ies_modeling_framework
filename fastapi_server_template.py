@@ -26,7 +26,7 @@ host = "0.0.0.0"
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
-tags_metadata = []
+tags_metadata = [{"name": "async", "description": "异步接口，调用后立即返回"}]
 description = f"""
 IES系统仿真和优化算法服务器
 
@@ -37,6 +37,7 @@ API文档：https://{host}:{port}/docs
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Mapping, List, Tuple
+
 
 # to json: json.dumps(model.dict())
 class EnergyFlowGraph(BaseModel):
@@ -89,7 +90,7 @@ class EnergyFlowGraph(BaseModel):
         ],
     )
 
-    def to_graph(self):
+    def to_graph(self) -> Mapping:
         graph: List[Tuple] = [(k, v) for k, v in self.graph.items()]
         graph_dict = dict(
             directed=False,
@@ -114,6 +115,17 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
+
+
+@app.get(
+    "/get_calculation_result_async",
+    tags=["async"],
+    description="",
+    summary="",
+    response_description="",
+)
+def get_calculation_result_async(calculation_id):
+    return calculation_result
 
 
 import uvicorn
