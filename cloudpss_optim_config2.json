@@ -1,0 +1,3505 @@
+{
+    "status": 0,
+    "msg": "",
+    "owned": true,
+    "name": "",
+    "simuno": "",
+    "desc": "",
+    "share": true,
+    "diagram": "7V1rb9u4Ev01+ViDj+HrY5Km7QK9RbEpcHc/LRRHsbWrWIYkN8n99XdoUbYpUY6dSIm8aAKkNj16UOfwcGY4dM/45f3jXZLGZ/zqzL7+nEfL+X+y2zg9Y+T28Yx/PGOMciPwH9vyVLVoaqqGWZ7cOqNtw3Xyv9g1Ete6Sm7jwjMssywtk6XfOM0Wi3haem1RnmcPvtldlvpXXUazuNVwPY3Sdut/k9ty7nrB1Lb9S5zM5vWVqXT9u4mm/8zybLVw1ztj/G794+5tufwW3buL3MZ30Sotz5fLzYc/npbuw6tvn12/selTmmV51R4vZtW79YdJcR2n/gNYA5NnWVlDdBmnFpz6uVdP+FPHp5uO5/GiPOQAXh3wM0pX7s6/xFH5ezzNfsb500WGXMn/cmctyqf6ARfzaN3TRfwwR/vc2d+s7c/4xby8T/Fjii+jNJkt8PUU72j9GRqWCWL1NbqJ0+9ZkZRJZg1usrLM7ncMzt2RZbbE1tuomMf2rgm+ucsW5WWWuqfKyfoH29vdd/duzxk/+uRLo6JYbODs7nc5X5UbYG133VWSxQde06RugGaD2DbUYy7O7uMyf0IDd0NM84kbcW7AKcPqloctgalwbfNd8vJ64LhBM9ucf4s7vnDQh2kgWjS4epxHq6L8kWN/n6NAXNmWle07wn+bIBPd+eKoKK1pmiy/uMNewY7w4wgyoxNmMD7IppbLHYgNDSBc270GYdVC+GJVfEPl3wPtzapYoMU7AlqUefbPRsPlpmXH9tOnjwIu9qGbFNjVI/FuPJzjgBbEw5mZNs6UsjbQIF6Ps+nC+QP7hXMnzvXDOQ5nvP/nga5t+ga6FoUA0vwX0t1I8xeNaN5AWqvQ/DwY1rQTa/iFdTfW8BKslVLvinXbF/uRR4viLsvv9zpi5dZqJC7YIsvt43qN3xXo+pEazWFCGQHNudHAle+CcQMTrYygUhIqJGvjLGCihCGcM8IpC/jfpgf3m+rO8S1+je/u8S1exIhaTR0HRB2uvcXoDkRaF1GJUD3tD7FuKqPTDK0bPTxy6mU+XCDkoXKMofGEaaYJGMMNDmH1egA5awH4NYtu96OXosVpQrfbtz15EHK2yXJUDbTZwJoNO6mTTuw1+G6XoBDCnouJMUCp1JopwmSACYxMhAFtJCdaEQM9EAFaRPgcFYdkzGZRccqJslYv9/CCHgCyIKSZ/dKmDbIKZUYI6wHItiSvWd8dL5/+iN4X7g47ohu5Ea3HMp6hLeyX2f3y9/gun+0fz1M0y63ZaRKi1cvj5mdKqT96BQlkQXhoeiY95DWhLcO/TePrMsujWXx+uR+5ZBoXlWU0PU3wQn09Ej+g/pAESQ53sMyEgqHSSByEXPSgxiDDatyd0zp9Nd6XkhpUjSlVPvaGjMfBErIFeXw7Q7pXb21uIZtliyi92rZerNduN4DtECJ+TMo/dl7/aU0mnGlFcRLSBoAravaGsEW2yqexWwCuz/M9zhPsmuXY+pJIgfzpj/XJBa3fu4sJGyKXUT6LS3eWzRHN0/wdl+WTW1iPVmWGTdsOf80sN9e34IfgfB8Zq9t3TXXkvL4Zh33VZJ+xz9hssdjykoYJlcdpVCY//SNfhb4aAn0yIUSAAbH9K3xCgDQKFJWUKKQzPZwQ5HlCoIvhE0LpMROizkqNhBGyPZX3wggwhioFRhKuCQftEaJf/JuCgM7LSPBnIfzJuPBvp0L7UgSmKDGKEJzhJDDlKQKlGI9SDkKtE8XrMdwfJXiDEdqMhRF1ostjBB0XIwaaI9CbUZKjJ6MkE5Qa5hGCEGBcojoKahRnlYj3xwg1XkrA+1Fifeh5nkdPOwbLLFmUxc6Zv9uGXfcWuOfegmhUwzUOaGYnGvb4orqFLTs3fTmMsHogCaPShtiCcSQl50x6hAU7vTECQgLnmoLqla+mwVcME0bDVzgxvnLTzHebvXxtHQDNcs8mwdVe+1cTXLWLUq4eEW+E83v2EOfXa3T2BPOxs15a6xrLUSxmu3rCTuIdUkPY+SSOTNkwH0UZyLhpx/3eS0VVO09aLdLH+ddkEf/VXZBSOrMUzU4zWxPq6JHQNQYsr32YHejUpvZ3FzymUeZBoQ8KlDBCVQ+r0ao9EPuYj3z/GUUMg2khbJUFGC56nX2kHG1IXQ+U3dlHjcp/Vu2x2nuG7RXwH5Bio3q0KbYQ/ONKsamuSjMncN2lR/8yJX9RGREwPSYlHyRZ/pZKXuXdxqnko8+Wq0EyIe+q5FKNGf6R5UZVu4DUU7i2OvxLpVy+RMqlajrl7XjqDaXcnLyUN53y8axz1ANlxGNZk5PX8mYKe+T4j2tVQ7c3+3yOih+r/MYKHOtU8llUlJXRaep4u5PHqXi9EaOuLIRAGRqYtoabHqrQ9CCJFDMRQmtFtAYpBWE6/kD9xUkuGBhpmJRcCsb6zezTpoyPJ7iux8h4cyu6XZd4flNk+dIOtst5ktoC6u7BvIgfoo35tDI/zWHd2es95W77itla37PQLQjEj9AVoS1FYJS3FYHyHsrX9DBu3MRgtyjhqAjYQUFZQw8oNwpndK0QPbv8GRCES2l/XzCvE4q/AHh2rXEIyqZASEqE4ECUsa4FHc26dUgt+EFqUa0fv4FcmEGcPmSL0pRSoIgI50r7bJG2zkFoECA5mHAdw0vJ4jNDK8oJRz3BGAmdTjYWZvA2McTIiDFY1ZsWa43Q1A5XBR4zrOxbx4NzAZoawPEeLIW8upRmXdXmsYMdJCVGS/wrFQOp7RcweYQRHC9pQOEN4h20MoF0PHypJ/rnCNMxV/VPmLZT0Y+SSCMMKgnX+GuYH0+CEJIAN4iaQsDC8WSYLAc4osI0csNUj0dBAjUm5rCA8tWUCNd4yNrzqN2eepW3PkV1q+6oBrGOK/cww6wfo/xQKY2hkiCpuCLIG49uTDFBJLEeHdjUW9DNCdPtADdHCzleuoWWIt6Vbpq9Hd0GWa+2LrWg1D5b4FJjHO1xTQCxNcFcSSkJKuDhVJPPU62D6FvqhZg+iplQB3Sv3rs1mqlwoIpxQfxNI4SgZ63QzQalFLrSsuc8DGnsGwE2mkRMvXLyDvtGXlZiKZmnVkLvL5jkjW+faNi/umDSDLNuPwGCkgbaaLtvgRiQTcJikK7QvQaQwkZmvRK2cth3CKtGw9eQbMm3yRyGCWYa3hqI4abPwbbUodLiwDBUGw6KGNkIJg1wJqmimks7TwZ30Bi4lB8/vsBbw8kbryk5IULbbWy+50aFsns8OQWimWwnsNk78TBUmn7o9AnvIpy88V0s4KoHu2vTGwcYNy/0Jp0DbaYwdkGFaGWDXfzjL7gwnOmtn0aQdlwwEwx0w1wWz3NZ0MYOQWFGrZzmMOXsh7EBhslG6AHDaedA2XyFHGKgCcacghLpTdO9yiSvtjVuqUXIaILa0L6y96YWb0zLB0a1R8vqZgEqLKvHqiS+3X55fGW+/Yr/baP7PwD+Dw==",
+    "component": {
+        "defaultApp": {
+            "name": "defaultApp",
+            "thutype": "timing",
+            "sym": "defaultApp",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "id": 0,
+                    "label": ""
+                },
+                "1": {
+                    "node": -1,
+                    "id": 0,
+                    "label": ""
+                }
+            },
+            "param": [
+                {
+                    "Application Name": "defaultApp",
+                    "Type": "EMTP",
+                    "deltaT": "0.0001",
+                    "firstSimTime": ""
+                }
+            ],
+            "_mid": -1,
+            "ctrlable": 0,
+            "Type": "EMTP",
+            "paramProxy": {},
+            "globalParam": {
+                "$save_snapshot": "0"
+            },
+            "layer": "TimeLine"
+        },
+        "GasTurbine_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "燃气轮机",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "62": "西门子/GT-6F.01",
+                                "65": "东汽/日立/H-25(42)",
+                                "69": "南汽/GE/PG6581B"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniPowerGenerate": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小发电功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxPowerGenerate": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大发电功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "FuelPriceModel": {
+                            "type": "choice",
+                            "value": 106,
+                            "choices": {
+                                "0": "无",
+                                "106": "天然气",
+                                "107": "煤"
+                            },
+                            "desc": "燃料计价模型"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "47": "公共电网购电价格",
+                                "48": "公共电网售电价格",
+                                "51": "负荷用电价格模型"
+                            },
+                            "desc": "发电过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "ExhaustTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 1000,
+                            "value": "300",
+                            "inputType": "constant",
+                            "desc": "烟气温度"
+                        }
+                    }
+                },
+                "ComputingParameters": {
+                    "cond": "true",
+                    "desc": "计算参数组",
+                    "params": {
+                        "SlackNodeMode": {
+                            "type": "choice",
+                            "value": 2,
+                            "choices": {
+                                "0": "不是参考节点",
+                                "1": "电力系统参考节点",
+                                "2": "热力系统参考节点"
+                            },
+                            "desc": "参考节点模式"
+                        }
+                    }
+                }
+            },
+            "classname": "GasTurbine",
+            "name": "燃气轮机",
+            "type": 10000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 43
+                }
+            },
+            "note": null,
+            "ver": 21,
+            "id": 0,
+            "sym": "GasTurbine",
+            "paramProxy": {},
+            "_mid": "2",
+            "choices": {
+                "DeviceSelection": "0",
+                "FuelPriceModel": 106,
+                "PowerPriceModel": "0",
+                "SlackNodeMode": 2
+            },
+            "is_init": 0
+        },
+        "HeatRecoveryBoiler_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "余热蒸汽锅炉",
+                            "desc": "元件名称"
+                        },
+                        "BoilerType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "热水锅炉",
+                                "1": "蒸汽锅炉"
+                            },
+                            "desc": "锅炉类型"
+                        },
+                        "PressureLevel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "单压",
+                                "1": "双压"
+                            },
+                            "desc": "压力等级",
+                            "cond": "BoilerType==1"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "86": "郑锅股份/HRS-8760"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "min": 1,
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "HeatingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站供热价格"
+                            },
+                            "desc": "供热过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "WaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 80,
+                            "inputType": "constant",
+                            "desc": "供水温度",
+                            "cond": "BoilerType==0"
+                        },
+                        "SteamSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 500,
+                            "value": 180,
+                            "inputType": "constant",
+                            "desc": "蒸汽温度",
+                            "cond": "BoilerType==1&&PressureLevel==0"
+                        },
+                        "SubSteamSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 500,
+                            "value": 150,
+                            "inputType": "constant",
+                            "desc": "次高压蒸汽温度",
+                            "cond": "BoilerType==1&&PressureLevel==1"
+                        },
+                        "HighSteamSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 500,
+                            "value": 200,
+                            "inputType": "constant",
+                            "desc": "高压蒸汽温度",
+                            "cond": "BoilerType==1&&PressureLevel==1"
+                        },
+                        "IsExhaustOutletTempSpecified": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "烟气出口温度是否指定"
+                        },
+                        "ExhaustOutletTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "value": "100",
+                            "inputType": "constant",
+                            "desc": "烟气出口温度",
+                            "cond": "IsExhaustOutletTempSpecified==1"
+                        },
+                        "IsExhaustPressureSepecified": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "烟气进口压力是否指定"
+                        },
+                        "InletExhaustPressure": {
+                            "type": "real",
+                            "unit": "MPa",
+                            "min": 0,
+                            "max": 99,
+                            "value": 0.5,
+                            "inputType": "constant",
+                            "desc": "烟气进口压力",
+                            "cond": "IsExhaustPressureSepecified==1"
+                        }
+                    }
+                }
+            },
+            "classname": "HeatRecoveryBoiler",
+            "name": "余热锅炉",
+            "type": 11000,
+            "thutype": "heat",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 43
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 43
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==0",
+                    "conntype": 42
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==1&&PressureLevel==0",
+                    "conntype": 41
+                },
+                "4": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==1&&PressureLevel==1",
+                    "conntype": 41
+                },
+                "5": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==1&&PressureLevel==1",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 20,
+            "id": 0,
+            "sym": "NewHeatRecoveryBoiler",
+            "paramProxy": {},
+            "_mid": "3",
+            "choices": {
+                "BoilerType": "0",
+                "PressureLevel": "0",
+                "DeviceSelection": "0",
+                "HeatingPriceModel": "0",
+                "IsExhaustOutletTempSpecified": 1,
+                "IsExhaustPressureSepecified": 1
+            },
+            "is_init": 0
+        },
+        "ExhaustTreater_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "尾气排放装置",
+                            "desc": "元件名称"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "IsExhaustPressureSpecified": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "进口烟气压力是否指定"
+                        },
+                        "ExhaustPressure": {
+                            "type": "real",
+                            "unit": "MPa",
+                            "min": 0,
+                            "max": 99,
+                            "value": 2,
+                            "inputType": "constant",
+                            "desc": "进口烟气压力",
+                            "cond": "IsExhaustPressureSpecified==1"
+                        }
+                    }
+                }
+            },
+            "classname": "ExhaustTreater",
+            "name": "尾气排放装置",
+            "type": 16000,
+            "thutype": "heat",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 43
+                }
+            },
+            "note": null,
+            "ver": 8,
+            "id": 0,
+            "sym": "NewExhaustTreater",
+            "paramProxy": {},
+            "_mid": "5",
+            "choices": {
+                "IsExhaustPressureSpecified": 1
+            },
+            "is_init": 0
+        },
+        "BusNode_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": "230",
+                            "inputType": "constant",
+                            "desc": "额定电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角",
+                            "cond": "true"
+                        },
+                        "NodeType": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "1": "PQBus",
+                                "2": "PVBus",
+                                "3": "SlackBus"
+                            },
+                            "desc": "节点类型",
+                            "help": "节点类型"
+                        }
+                    }
+                }
+            },
+            "id": 0,
+            "sym": "BusNode",
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 1,
+            "paramProxy": {},
+            "_mid": "7",
+            "choices": {
+                "NodeType": "1"
+            },
+            "is_init": 0
+        },
+        "BusNode-2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": "230",
+                            "inputType": "constant",
+                            "desc": "额定电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角",
+                            "cond": "true"
+                        },
+                        "NodeType": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "1": "PQBus",
+                                "2": "PVBus",
+                                "3": "SlackBus"
+                            },
+                            "desc": "节点类型",
+                            "help": "节点类型"
+                        }
+                    }
+                }
+            },
+            "id": 0,
+            "sym": "BusNode",
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 1,
+            "paramProxy": {},
+            "_mid": "9",
+            "choices": {
+                "NodeType": "1"
+            },
+            "is_init": 0
+        },
+        "BusNode-3": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": "230",
+                            "inputType": "constant",
+                            "desc": "额定电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角",
+                            "cond": "true"
+                        },
+                        "NodeType": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "1": "PQBus",
+                                "2": "PVBus",
+                                "3": "SlackBus"
+                            },
+                            "desc": "节点类型",
+                            "help": "节点类型"
+                        }
+                    }
+                }
+            },
+            "id": 0,
+            "sym": "BusNode",
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 1,
+            "paramProxy": {},
+            "_mid": "10",
+            "choices": {
+                "NodeType": "1"
+            },
+            "is_init": 0
+        },
+        "BusNode-4": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": "230",
+                            "inputType": "constant",
+                            "desc": "额定电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角",
+                            "cond": "true"
+                        },
+                        "NodeType": {
+                            "type": "choice",
+                            "value": 1,
+                            "choices": {
+                                "1": "PQBus",
+                                "2": "PVBus",
+                                "3": "SlackBus"
+                            },
+                            "desc": "节点类型",
+                            "help": "节点类型"
+                        }
+                    }
+                }
+            },
+            "id": 0,
+            "sym": "BusNode",
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 1,
+            "paramProxy": {},
+            "_mid": "11",
+            "choices": {
+                "NodeType": "1"
+            },
+            "is_init": 0
+        },
+        "TransferLine_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 14,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "12",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "Transformer_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "变压器",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 18,
+                            "choices": {
+                                "18": "上海雷普/30kva"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "Transformer",
+            "name": "变压器",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 10,
+            "id": 0,
+            "sym": "Transformer",
+            "paramProxy": {},
+            "_mid": "15",
+            "choices": {
+                "DeviceSelection": 18
+            },
+            "is_init": 0
+        },
+        "BusNode-5": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": "16.5",
+                            "inputType": "constant",
+                            "desc": "额定电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角",
+                            "cond": "true"
+                        },
+                        "NodeType": {
+                            "type": "choice",
+                            "value": 3,
+                            "choices": {
+                                "1": "PQBus",
+                                "2": "PVBus",
+                                "3": "SlackBus"
+                            },
+                            "desc": "节点类型",
+                            "help": "节点类型"
+                        }
+                    }
+                }
+            },
+            "id": 0,
+            "sym": "BusNode",
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 1,
+            "paramProxy": {},
+            "_mid": "18",
+            "choices": {
+                "NodeType": 3
+            },
+            "is_init": 0
+        },
+        "ExternalPowerSource_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "外部电源(参考节点)",
+                            "desc": "元件名称"
+                        },
+                        "PowerConsumePriceModel": {
+                            "type": "choice",
+                            "value": 48,
+                            "choices": {
+                                "0": "无",
+                                "47": "公共电网购电价格",
+                                "48": "公共电网售电价格"
+                            },
+                            "desc": "上网计价模型"
+                        },
+                        "PowerSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 47,
+                            "choices": {
+                                "0": "无",
+                                "47": "公共电网购电价格",
+                                "48": "公共电网售电价格"
+                            },
+                            "desc": "供电计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "BasekV": {
+                            "type": "real",
+                            "unit": "kV",
+                            "min": 0,
+                            "value": 115,
+                            "inputType": "constant",
+                            "desc": "基准电压"
+                        },
+                        "Voltage": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角"
+                        }
+                    }
+                }
+            },
+            "classname": "ExternalPowerSource",
+            "name": "外部电源",
+            "type": 10000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 23,
+            "id": 0,
+            "sym": "ExternalPowerSource",
+            "paramProxy": {},
+            "_mid": "19",
+            "choices": {
+                "PowerConsumePriceModel": 48,
+                "PowerSupplyPriceModel": 47
+            },
+            "is_init": 0
+        },
+        "TransferLine_2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 14,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "22",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "Battery_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "蓄电池",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "53": "瓦尔塔/AGM"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "min": 0,
+                            "max": 9999,
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniPowerStorage": {
+                            "type": "real",
+                            "unit": "kWh",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小蓄电量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxPowerStorage": {
+                            "type": "real",
+                            "unit": "kWh",
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大蓄电量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "ChargingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "用电计价模型"
+                        },
+                        "DischargingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供电上网计价模型"
+                        }
+                    }
+                },
+                "ComputingParameters": {
+                    "cond": "true",
+                    "desc": "计算参数组",
+                    "params": {
+                        "IsSlackNode": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "是否作为系统参考节点"
+                        }
+                    }
+                }
+            },
+            "classname": "Battery",
+            "name": "蓄电池",
+            "type": 14000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 16,
+            "id": 0,
+            "sym": "NewBattery",
+            "paramProxy": {},
+            "_mid": "25",
+            "choices": {
+                "DeviceSelection": "0",
+                "ChargingPriceModel": "0",
+                "DischargingPriceModel": "0",
+                "IsSlackNode": "0"
+            },
+            "is_init": 0
+        },
+        "PhotovoltaicSys_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "光伏系统",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "59": "合肥阳光电源有限公司/SG 500MX"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "real",
+                            "unit": "m2",
+                            "min": 0,
+                            "max": 999999,
+                            "value": 100,
+                            "inputType": "constant",
+                            "desc": "安装台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniInstallArea": {
+                            "type": "real",
+                            "unit": "m2",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小安装面积",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxInstallArea": {
+                            "type": "real",
+                            "unit": "m2",
+                            "min": 0,
+                            "max": 99999999,
+                            "value": "65",
+                            "inputType": "constant",
+                            "desc": "最大安装面积",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1601262324443988": "公共电网售电价格",
+                                "1601262336598860": "公共电网购电价格1",
+                                "1603188471617716": "分时电价",
+                                "1603188547396905": "北京阶梯",
+                                "1603188582011190": "北京分时"
+                            },
+                            "desc": "发电上网计价模型"
+                        }
+                    }
+                }
+            },
+            "classname": "PhotovoltaicSys",
+            "name": "光伏系统",
+            "type": 10000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 18,
+            "id": 0,
+            "sym": "PhotovoltaicSys",
+            "paramProxy": {},
+            "_mid": "27",
+            "choices": {
+                "DeviceSelection": "0",
+                "PowerPriceModel": 0
+            },
+            "is_init": 0
+        },
+        "TransferLine-3": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 14,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "29",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "Load_1": {
+            "param": {
+                "LoadSettings": {
+                    "cond": "true",
+                    "desc": "负荷设置",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "负荷",
+                            "desc": "负荷名称"
+                        },
+                        "ElectircalLoad": {
+                            "type": "choice",
+                            "value": 1585896972768851,
+                            "choices": {
+                                "0": "无",
+                                "1": "居住片区电负荷",
+                                "1585896972768851": "电负荷"
+                            },
+                            "desc": "电负荷"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 1603188582011190,
+                            "choices": {
+                                "0": "无",
+                                "1601262336598860": "公共电网购电价格",
+                                "1603188547396905": "北京阶梯",
+                                "1603188582011190": "北京分时",
+                                "1606293794304787": "分时阶梯",
+                                "1606396785219784": "补贴电价"
+                            },
+                            "desc": "用电计价模型",
+                            "cond": "ElectircalLoad!=0"
+                        },
+                        "HeatingLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "沪苏产业联动集聚区管委会负荷",
+                                "2": "能源站内负荷"
+                            },
+                            "desc": "采暖负荷"
+                        },
+                        "HeatPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "采暖计价模型",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "CoolingLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "制冷负荷"
+                        },
+                        "CoolingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "制冷计价模型",
+                            "cond": "CoolingLoad!=0"
+                        },
+                        "SteamLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "江苏人酒业",
+                                "2": "明珠重工",
+                                "3": "紫菜精深加工",
+                                "4": "思凯林家居",
+                                "5": "奥为节能科技",
+                                "6": "翔牛食品",
+                                "7": "电巴新能源",
+                                "8": "海丰米业",
+                                "9": "人民医院",
+                                "10": "世贸天阶制药",
+                                "11": "维德木业",
+                                "12": "久王（铵盐）",
+                                "13": "英伦倍健"
+                            },
+                            "desc": "蒸汽制热负荷"
+                        },
+                        "SteamPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站供热价格"
+                            },
+                            "desc": "蒸气计价模型",
+                            "cond": "SteamLoad!=0"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "ReturnHeatWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 40,
+                            "inputType": "constant",
+                            "desc": "热水回水温度",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "ReturnColdWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -10,
+                            "max": 50,
+                            "value": 15,
+                            "inputType": "constant",
+                            "desc": "冷水回水温度",
+                            "cond": "CoolingLoad!=0"
+                        }
+                    }
+                }
+            },
+            "classname": "Load",
+            "name": "负荷",
+            "type": 17000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==2)&&(ElectircalLoad!=0)",
+                    "dimx": "1",
+                    "dimy": "1",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatingLoad!=0)",
+                    "conntype": 42
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(CoolingLoad!=0)",
+                    "conntype": 44
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(SteamLoad!=0)",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 59,
+            "id": 0,
+            "sym": "NewLoad",
+            "paramProxy": {},
+            "_mid": "32",
+            "choices": {
+                "ElectircalLoad": 1585896972768851,
+                "PowerPriceModel": 1603188582011190,
+                "HeatingLoad": "0",
+                "HeatPriceModel": "0",
+                "CoolingLoad": "0",
+                "CoolingPriceModel": "0",
+                "SteamLoad": "0",
+                "SteamPriceModel": "0"
+            },
+            "is_init": 0
+        },
+        "GasBoiler_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "燃气锅炉",
+                            "desc": "元件名称"
+                        },
+                        "BoilerType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "热水锅炉",
+                                "1": "蒸汽锅炉"
+                            },
+                            "desc": "锅炉类型"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "81": "中泰锅炉/ZZJ/ZLJ",
+                                "83": "山西蓝天/SXLT02"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "FuelPriceModel": {
+                            "type": "choice",
+                            "value": 106,
+                            "choices": {
+                                "0": "无",
+                                "106": "天然气",
+                                "1606293700002241": "煤",
+                                "1606396656036681": "燃气"
+                            },
+                            "desc": "燃料计价模型"
+                        },
+                        "HeatingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站供热价格"
+                            },
+                            "desc": "供热过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "SteamSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 500,
+                            "value": 180,
+                            "inputType": "constant",
+                            "desc": "蒸汽温度",
+                            "cond": "BoilerType==1"
+                        },
+                        "WaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 80,
+                            "inputType": "constant",
+                            "desc": "供水温度",
+                            "cond": "BoilerType==0"
+                        }
+                    }
+                },
+                "ComputingParameters": {
+                    "cond": "true",
+                    "desc": "计算参数组",
+                    "params": {
+                        "IsSlackNode": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "是否作为系统参考节点"
+                        }
+                    }
+                }
+            },
+            "classname": "GasBoiler",
+            "name": "燃气锅炉",
+            "type": 11000,
+            "thutype": "heat",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==0",
+                    "conntype": 42
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==1",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 90,
+            "id": 0,
+            "sym": "NewGasBoiler",
+            "paramProxy": {},
+            "_mid": "34",
+            "choices": {
+                "BoilerType": "0",
+                "DeviceSelection": 0,
+                "FuelPriceModel": 106,
+                "HeatingPriceModel": "0",
+                "IsSlackNode": "0"
+            },
+            "is_init": 0
+        },
+        "Load_2": {
+            "param": {
+                "LoadSettings": {
+                    "cond": "true",
+                    "desc": "负荷设置",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "负荷",
+                            "desc": "负荷名称"
+                        },
+                        "ElectircalLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "居住片区电负荷",
+                                "2": "滨湖核心服务区电负荷",
+                                "3": "食品生产工业片区电负荷",
+                                "4": "工业研发片区电负荷",
+                                "5": "装备制造工业片区电负荷"
+                            },
+                            "desc": "电负荷"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站含税交易电价",
+                                "2": "燃气电站含税上网电价",
+                                "3": "农光互补光伏电站含税直接交易电价",
+                                "4": "农光互补光伏电站含税上网电价",
+                                "5": "分布式光伏电站含税直接交易电价",
+                                "6": "分布式光伏电站含税上网电价",
+                                "7": "风力发电含税直接交易电价",
+                                "8": "风力发电含税上网电价",
+                                "9": "公共电网购电价"
+                            },
+                            "desc": "用电计价模型",
+                            "cond": "ElectircalLoad!=0"
+                        },
+                        "HeatingLoad": {
+                            "type": "choice",
+                            "value": 1585896882754771,
+                            "choices": {
+                                "0": "无",
+                                "1585896882754771": "采暖负荷",
+                                "1606291174568740": "零负荷",
+                                "1606361243307522": "请输入"
+                            },
+                            "desc": "采暖负荷"
+                        },
+                        "HeatPriceModel": {
+                            "type": "choice",
+                            "value": 1603697639062477,
+                            "choices": {
+                                "0": "无",
+                                "36": "楼宇供热计价模型",
+                                "1603697639062477": "热量计价模型"
+                            },
+                            "desc": "采暖计价模型",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "CoolingLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "制冷负荷"
+                        },
+                        "CoolingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "制冷计价模型",
+                            "cond": "CoolingLoad!=0"
+                        },
+                        "SteamLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "江苏人酒业",
+                                "2": "明珠重工",
+                                "3": "紫菜精深加工",
+                                "4": "思凯林家居",
+                                "5": "奥为节能科技",
+                                "6": "翔牛食品",
+                                "7": "电巴新能源",
+                                "8": "海丰米业",
+                                "9": "人民医院",
+                                "10": "世贸天阶制药",
+                                "11": "维德木业",
+                                "12": "久王（铵盐）",
+                                "13": "英伦倍健"
+                            },
+                            "desc": "蒸汽制热负荷"
+                        },
+                        "SteamPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站供热价格"
+                            },
+                            "desc": "蒸气计价模型",
+                            "cond": "SteamLoad!=0"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "ReturnHeatWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": "70",
+                            "inputType": "constant",
+                            "desc": "热水回水温度",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "ReturnColdWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -10,
+                            "max": 50,
+                            "value": 15,
+                            "inputType": "constant",
+                            "desc": "冷水回水温度",
+                            "cond": "CoolingLoad!=0"
+                        }
+                    }
+                }
+            },
+            "classname": "Load",
+            "name": "负荷",
+            "type": 17000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==2)&&(ElectircalLoad!=0)",
+                    "dimx": "1",
+                    "dimy": "1",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatingLoad!=0)",
+                    "conntype": 42
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(CoolingLoad!=0)",
+                    "conntype": 44
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(SteamLoad!=0)",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 59,
+            "id": 0,
+            "sym": "NewLoad",
+            "paramProxy": {},
+            "_mid": "35",
+            "choices": {
+                "ElectircalLoad": "0",
+                "PowerPriceModel": "0",
+                "HeatingLoad": 1585896882754771,
+                "HeatPriceModel": 1603697639062477,
+                "CoolingLoad": "0",
+                "CoolingPriceModel": "0",
+                "SteamLoad": "0",
+                "SteamPriceModel": "0"
+            },
+            "is_init": 0
+        },
+        "AbsorptionChiller_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "吸收式制冷机",
+                            "desc": "元件名称"
+                        },
+                        "HeatSourceType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "热水",
+                                "1": "蒸汽",
+                                "2": "烟气"
+                            },
+                            "desc": "热源流体类型"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "89": "汇能/RXZ-11"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小制冷功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制冷功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MiniHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小制热功率"
+                        },
+                        "MaxHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制热功率"
+                        },
+                        "HeatingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "热水用热计价模型",
+                            "cond": "HeatSourceType==0"
+                        },
+                        "SteamPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "蒸汽用热计价模型",
+                            "cond": "HeatSourceType==1"
+                        },
+                        "CoolSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供冷过网计价模型"
+                        },
+                        "HeatSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供热过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "SourceReturnTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 1000,
+                            "value": 50,
+                            "inputType": "constant",
+                            "desc": "热源流体出口温度",
+                            "cond": "HeatSourceType==0"
+                        },
+                        "IsSourcePressureSpecified": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "热源流体进口压力是否指定",
+                            "cond": "HeatSourceType==2"
+                        },
+                        "SourceInletPressure": {
+                            "type": "real",
+                            "unit": "MPa",
+                            "min": 0,
+                            "max": 99,
+                            "value": 0.5,
+                            "inputType": "constant",
+                            "desc": "热源流体进口压力",
+                            "cond": "(HeatSourceType==2&&IsSourcePressureSpecified==1)||HeatSourceType==1"
+                        },
+                        "ColdWaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -20,
+                            "max": 99,
+                            "value": 10,
+                            "inputType": "constant",
+                            "desc": "冷水出口温度"
+                        },
+                        "HeatWaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 60,
+                            "inputType": "constant",
+                            "desc": "热水出口温度"
+                        }
+                    }
+                }
+            },
+            "classname": "AbsorptionChiller",
+            "name": "吸收式制冷机",
+            "type": 11000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==0)",
+                    "conntype": 42
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==1)",
+                    "conntype": 41
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==2)",
+                    "conntype": 43
+                },
+                "4": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==2)",
+                    "conntype": 43
+                },
+                "5": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 44
+                },
+                "6": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 42
+                }
+            },
+            "note": null,
+            "ver": 51,
+            "id": 0,
+            "sym": "NewAbsorptionChiller",
+            "paramProxy": {},
+            "_mid": "38",
+            "choices": {
+                "HeatSourceType": "0",
+                "DeviceSelection": "0",
+                "HeatingPriceModel": "0",
+                "SteamPriceModel": "0",
+                "CoolSupplyPriceModel": "0",
+                "HeatSupplyPriceModel": "0",
+                "IsSourcePressureSpecified": "0"
+            },
+            "is_init": 0
+        },
+        "CompRefrg_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "电压缩制冷机",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "87": "海立/ADL"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 99999999,
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小制冷量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 99999999,
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制冷量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1601262324443988": "公共电网售电价格",
+                                "1601262336598860": "公共电网购电价格1",
+                                "1603188471617716": "分时电价",
+                                "1603188547396905": "北京阶梯",
+                                "1603188582011190": "北京分时"
+                            },
+                            "desc": "用电计价模型"
+                        },
+                        "CoolingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供冷过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "SupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -20,
+                            "max": 99,
+                            "value": "5",
+                            "inputType": "constant",
+                            "desc": "供水温度"
+                        }
+                    }
+                },
+                "ComputingParameters": {
+                    "cond": "true",
+                    "desc": "计算参数组",
+                    "params": {
+                        "IsSlackNode": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "是否作为系统参考节点"
+                        }
+                    }
+                }
+            },
+            "classname": "CompRefrg",
+            "name": "电压缩制冷机",
+            "type": 11000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 44
+                }
+            },
+            "note": null,
+            "ver": 55,
+            "id": 0,
+            "sym": "NewCompRefrg",
+            "paramProxy": {},
+            "_mid": "42",
+            "choices": {
+                "DeviceSelection": "0",
+                "PowerPriceModel": "0",
+                "CoolingPriceModel": "0",
+                "IsSlackNode": "0"
+            },
+            "is_init": 0
+        },
+        "IceStorageAC_1": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "蓄冰空调",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "16": "格兰仕/GLS100"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniCoolStorage": {
+                            "type": "real",
+                            "unit": "kWh",
+                            "min": 0,
+                            "max": 999999,
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小蓄冷量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxCoolStorage": {
+                            "type": "real",
+                            "unit": "kWh",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "1000",
+                            "inputType": "constant",
+                            "desc": "最大蓄冷量",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站含税交易电价",
+                                "2": "燃气电站含税上网电价",
+                                "3": "农光互补光伏电站含税直接交易电价",
+                                "4": "农光互补光伏电站含税上网电价",
+                                "5": "分布式光伏电站含税直接交易电价",
+                                "6": "分布式光伏电站含税上网电价",
+                                "7": "风力发电含税直接交易电价",
+                                "8": "风力发电含税上网电价",
+                                "9": "公共电网购电价"
+                            },
+                            "desc": "用电计价模型"
+                        },
+                        "CoolingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供冷过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "SupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -20,
+                            "max": 50,
+                            "value": "5",
+                            "inputType": "constant",
+                            "desc": "供水温度"
+                        }
+                    }
+                }
+            },
+            "classname": "IceStorageAC",
+            "name": "蓄冰空调",
+            "type": 14000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 44
+                }
+            },
+            "note": null,
+            "ver": 65,
+            "id": 0,
+            "sym": "NewIceStorageAC",
+            "paramProxy": {},
+            "_mid": "44",
+            "choices": {
+                "DeviceSelection": "0",
+                "PowerPriceModel": "0",
+                "CoolingPriceModel": "0"
+            },
+            "is_init": 0
+        },
+        "Load_3": {
+            "param": {
+                "LoadSettings": {
+                    "cond": "true",
+                    "desc": "负荷设置",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "负荷",
+                            "desc": "负荷名称"
+                        },
+                        "ElectircalLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "居住片区电负荷",
+                                "2": "滨湖核心服务区电负荷",
+                                "3": "食品生产工业片区电负荷",
+                                "4": "工业研发片区电负荷",
+                                "5": "装备制造工业片区电负荷"
+                            },
+                            "desc": "电负荷"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站含税交易电价",
+                                "2": "燃气电站含税上网电价",
+                                "3": "农光互补光伏电站含税直接交易电价",
+                                "4": "农光互补光伏电站含税上网电价",
+                                "5": "分布式光伏电站含税直接交易电价",
+                                "6": "分布式光伏电站含税上网电价",
+                                "7": "风力发电含税直接交易电价",
+                                "8": "风力发电含税上网电价",
+                                "9": "公共电网购电价"
+                            },
+                            "desc": "用电计价模型",
+                            "cond": "ElectircalLoad!=0"
+                        },
+                        "HeatingLoad": {
+                            "type": "choice",
+                            "value": 1606291174568740,
+                            "choices": {
+                                "0": "无",
+                                "1585896882754771": "采暖负荷",
+                                "1606291174568740": "零负荷",
+                                "1606291190475042": "测试热负荷"
+                            },
+                            "desc": "采暖负荷"
+                        },
+                        "HeatPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "36": "楼宇供热计价模型",
+                                "1603697639062477": "热量计价模型"
+                            },
+                            "desc": "采暖计价模型",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "CoolingLoad": {
+                            "type": "choice",
+                            "value": 1585896952548337,
+                            "choices": {
+                                "0": "无",
+                                "1585896952548337": "制冷负荷",
+                                "1606298158843147": "请输入"
+                            },
+                            "desc": "制冷负荷"
+                        },
+                        "CoolingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "26": "冷量计价模型",
+                                "1602320340465441": "用量计价模型",
+                                "1606396931328813": "面积"
+                            },
+                            "desc": "制冷计价模型",
+                            "cond": "CoolingLoad!=0"
+                        },
+                        "SteamLoad": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "江苏人酒业",
+                                "2": "明珠重工",
+                                "3": "紫菜精深加工",
+                                "4": "思凯林家居",
+                                "5": "奥为节能科技",
+                                "6": "翔牛食品",
+                                "7": "电巴新能源",
+                                "8": "海丰米业",
+                                "9": "人民医院",
+                                "10": "世贸天阶制药",
+                                "11": "维德木业",
+                                "12": "久王（铵盐）",
+                                "13": "英伦倍健"
+                            },
+                            "desc": "蒸汽制热负荷"
+                        },
+                        "SteamPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "蒸气计价模型",
+                            "cond": "SteamLoad!=0"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "ReturnHeatWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 40,
+                            "inputType": "constant",
+                            "desc": "热水回水温度",
+                            "cond": "HeatingLoad!=0"
+                        },
+                        "ReturnColdWaterTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -10,
+                            "max": 50,
+                            "value": 15,
+                            "inputType": "constant",
+                            "desc": "冷水回水温度",
+                            "cond": "CoolingLoad!=0"
+                        }
+                    }
+                }
+            },
+            "classname": "Load",
+            "name": "负荷",
+            "type": 17000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==2)&&(ElectircalLoad!=0)",
+                    "dimx": "1",
+                    "dimy": "1",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatingLoad!=0)",
+                    "conntype": 42
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(CoolingLoad!=0)",
+                    "conntype": 44
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(SteamLoad!=0)",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 59,
+            "id": 0,
+            "sym": "NewLoad",
+            "paramProxy": {},
+            "_mid": "46",
+            "choices": {
+                "ElectircalLoad": "0",
+                "PowerPriceModel": "0",
+                "HeatingLoad": 1606291174568740,
+                "HeatPriceModel": 0,
+                "CoolingLoad": 1585896952548337,
+                "CoolingPriceModel": 0,
+                "SteamLoad": "0",
+                "SteamPriceModel": "0"
+            },
+            "is_init": 0
+        },
+        "ExternalPowerSource_2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "外部电源(参考节点)",
+                            "desc": "元件名称"
+                        },
+                        "PowerConsumePriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "上网计价模型"
+                        },
+                        "PowerSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供电计价模型"
+                        },
+                        "FuelModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "106": "天然气",
+                                "107": "煤"
+                            },
+                            "desc": "电厂发电燃料模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "BasekV": {
+                            "type": "real",
+                            "unit": "kV",
+                            "min": 0,
+                            "value": 115,
+                            "inputType": "constant",
+                            "desc": "基准电压"
+                        },
+                        "Voltage": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角"
+                        }
+                    }
+                }
+            },
+            "classname": "ExternalPowerSource",
+            "name": "外部电源",
+            "type": 10000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 24,
+            "id": 0,
+            "sym": "ExternalPowerSource",
+            "paramProxy": {},
+            "_mid": "69",
+            "choices": {
+                "PowerConsumePriceModel": "0",
+                "PowerSupplyPriceModel": "0",
+                "FuelModel": "0"
+            }
+        },
+        "ExternalPowerSource_3": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "外部电源(参考节点)",
+                            "desc": "元件名称"
+                        },
+                        "PowerConsumePriceModel": {
+                            "type": "choice",
+                            "value": 1606293794304787,
+                            "choices": {
+                                "0": "无",
+                                "1601262336598860": "公共电网购电价格",
+                                "1603188547396905": "北京阶梯",
+                                "1603188582011190": "北京分时",
+                                "1606293794304787": "分时阶梯"
+                            },
+                            "desc": "上网计价模型"
+                        },
+                        "PowerSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 1601262336598860,
+                            "choices": {
+                                "0": "无",
+                                "1601262336598860": "公共电网购电价格",
+                                "1603188547396905": "北京阶梯",
+                                "1603188582011190": "北京分时",
+                                "1606293794304787": "分时阶梯",
+                                "1606396785219784": "补贴电价"
+                            },
+                            "desc": "供电计价模型"
+                        },
+                        "FuelModel": {
+                            "type": "choice",
+                            "value": 1606293700002241,
+                            "choices": {
+                                "0": "无",
+                                "106": "天然气",
+                                "1606293700002241": "煤"
+                            },
+                            "desc": "电厂发电燃料模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "BasekV": {
+                            "type": "real",
+                            "unit": "kV",
+                            "min": 0,
+                            "value": 115,
+                            "inputType": "constant",
+                            "desc": "基准电压"
+                        },
+                        "Voltage": {
+                            "type": "real",
+                            "unit": "pu",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "电压"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "相角"
+                        }
+                    }
+                }
+            },
+            "classname": "ExternalPowerSource",
+            "name": "外部电源",
+            "type": 10000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 24,
+            "id": 0,
+            "sym": "ExternalPowerSource",
+            "paramProxy": {},
+            "_mid": "70",
+            "choices": {
+                "PowerConsumePriceModel": 1606293794304787,
+                "PowerSupplyPriceModel": 1601262336598860,
+                "FuelModel": 1606293700002241
+            },
+            "is_init": 0
+        },
+        "GasBoiler_2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "燃气锅炉",
+                            "desc": "元件名称"
+                        },
+                        "BoilerType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "热水锅炉",
+                                "1": "蒸汽锅炉"
+                            },
+                            "desc": "锅炉类型"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "1": "泰康锅炉/SZS10-2.5-YQ",
+                                "2": "泰康锅炉/SZS40-2.5-YQ"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "FuelPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "天然气-居民"
+                            },
+                            "desc": "燃料计价模型"
+                        },
+                        "HeatingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站供热价格"
+                            },
+                            "desc": "供热过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "SteamSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 500,
+                            "value": 180,
+                            "inputType": "constant",
+                            "desc": "蒸汽温度",
+                            "cond": "BoilerType==1"
+                        },
+                        "WaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 80,
+                            "inputType": "constant",
+                            "desc": "供水温度",
+                            "cond": "BoilerType==0"
+                        },
+                        "OperationStrategy": {
+                            "type": "table",
+                            "value": [],
+                            "coldef": [
+                                "时间",
+                                "启动机组台数"
+                            ],
+                            "unit": [
+                                "h",
+                                "台"
+                            ],
+                            "minrowcount": 0,
+                            "maxrowcount": 288,
+                            "desc": "机组运行策略",
+                            "cond": "DeviceSelection!=0"
+                        }
+                    }
+                }
+            },
+            "classname": "GasBoiler",
+            "name": "燃气锅炉",
+            "type": 11000,
+            "thutype": "heat",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==0",
+                    "conntype": 42
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "BoilerType==1",
+                    "conntype": 41
+                }
+            },
+            "note": null,
+            "ver": 91,
+            "id": 0,
+            "sym": "NewGasBoiler",
+            "paramProxy": {},
+            "_mid": "72",
+            "choices": {
+                "BoilerType": "0",
+                "DeviceSelection": "0",
+                "FuelPriceModel": "0",
+                "HeatingPriceModel": "0"
+            }
+        },
+        "TransferLine_4": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "Length": {
+                            "type": "real",
+                            "unit": "km",
+                            "min": 0,
+                            "max": 9999,
+                            "value": "10",
+                            "inputType": "constant",
+                            "desc": "传输线长度"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4",
+                                "1602318709989489": "test2/test2",
+                                "1602318711008443": "test2/test2"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 15,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "72",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "TransferLine_5": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "Length": {
+                            "type": "real",
+                            "unit": "km",
+                            "min": 0,
+                            "max": 9999,
+                            "value": "5",
+                            "inputType": "constant",
+                            "desc": "传输线长度"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4",
+                                "1602318709989489": "test2/test2",
+                                "1602318711008443": "test2/test2"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 15,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "75",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "TransferLine_6": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "传输线",
+                            "desc": "元件名称"
+                        },
+                        "Length": {
+                            "type": "real",
+                            "unit": "km",
+                            "min": 0,
+                            "max": 9999,
+                            "value": "2",
+                            "inputType": "constant",
+                            "desc": "传输线长度"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 20,
+                            "choices": {
+                                "20": "德力西/TTA4",
+                                "1602318709989489": "test2/test2",
+                                "1602318711008443": "test2/test2"
+                            },
+                            "desc": "设备选型"
+                        }
+                    }
+                }
+            },
+            "classname": "TransferLine",
+            "name": "传输线",
+            "type": 15000,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "true",
+                    "conntype": 1
+                }
+            },
+            "note": null,
+            "ver": 15,
+            "id": 0,
+            "sym": "TransferLine",
+            "paramProxy": {},
+            "_mid": "78",
+            "choices": {
+                "DeviceSelection": 20
+            },
+            "is_init": 0
+        },
+        "GasTurbine_2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "燃气轮机",
+                            "desc": "元件名称"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "62": "西门子/GT-6F.01",
+                                "65": "东汽/日立/H-25(42)",
+                                "69": "南汽/GE/PG6581B"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniPowerGenerate": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "0",
+                            "inputType": "constant",
+                            "desc": "最小发电功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxPowerGenerate": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大发电功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "FuelPriceModel": {
+                            "type": "choice",
+                            "value": 1606396656036681,
+                            "choices": {
+                                "0": "无",
+                                "106": "天然气",
+                                "1606293700002241": "煤",
+                                "1606396656036681": "燃气"
+                            },
+                            "desc": "燃料计价模型"
+                        },
+                        "PowerPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无",
+                                "1": "燃气电站含税交易电价",
+                                "2": "燃气电站含税上网电价",
+                                "3": "农光互补光伏电站含税直接交易电价",
+                                "4": "农光互补光伏电站含税上网电价",
+                                "5": "分布式光伏电站含税直接交易电价",
+                                "6": "分布式光伏电站含税上网电价",
+                                "7": "风力发电含税直接交易电价",
+                                "8": "风力发电含税上网电价",
+                                "9": "公共电网购电价"
+                            },
+                            "desc": "发电过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "ExhaustTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 1000,
+                            "value": 500,
+                            "inputType": "constant",
+                            "desc": "烟气温度"
+                        }
+                    }
+                },
+                "ComputingParameters": {
+                    "cond": "true",
+                    "desc": "计算参数组",
+                    "params": {
+                        "SlackNodeMode": {
+                            "type": "choice",
+                            "value": 2,
+                            "choices": {
+                                "0": "不是参考节点",
+                                "1": "电力系统参考节点",
+                                "2": "热力系统参考节点"
+                            },
+                            "desc": "参考节点模式"
+                        }
+                    }
+                }
+            },
+            "classname": "GasTurbine",
+            "name": "燃气轮机",
+            "type": 10000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 43
+                }
+            },
+            "note": null,
+            "ver": 21,
+            "id": 0,
+            "sym": "GasTurbine",
+            "paramProxy": {},
+            "_mid": "81",
+            "choices": {
+                "DeviceSelection": 0,
+                "FuelPriceModel": 1606396656036681,
+                "SlackNodeMode": 2
+            },
+            "is_init": 0
+        },
+        "AbsorptionChiller_2": {
+            "param": {
+                "DeviceParameters": {
+                    "cond": "true",
+                    "desc": "机组参数",
+                    "params": {
+                        "CompName": {
+                            "type": "text",
+                            "value": "吸收式制冷机",
+                            "desc": "元件名称"
+                        },
+                        "HeatSourceType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "热水",
+                                "1": "蒸汽",
+                                "2": "烟气"
+                            },
+                            "desc": "热源流体类型"
+                        },
+                        "DeviceSelection": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "设备类型待选",
+                                "89": "汇能/RXZ-11"
+                            },
+                            "desc": "设备选型"
+                        },
+                        "DeviceNumber": {
+                            "type": "integer",
+                            "value": 1,
+                            "inputType": "constant",
+                            "desc": "设备台数",
+                            "cond": "DeviceSelection!=0"
+                        },
+                        "MiniCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小制冷功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxCoolSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制冷功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MiniHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": 0,
+                            "inputType": "constant",
+                            "desc": "最小制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "MaxHeatSupply": {
+                            "type": "real",
+                            "unit": "kW",
+                            "min": 0,
+                            "max": 999999,
+                            "value": "2000",
+                            "inputType": "constant",
+                            "desc": "最大制热功率",
+                            "cond": "DeviceSelection==0"
+                        },
+                        "HeatingPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "热水用热计价模型",
+                            "cond": "HeatSourceType==0"
+                        },
+                        "SteamPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "蒸汽用热计价模型",
+                            "cond": "HeatSourceType==1"
+                        },
+                        "CoolSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供冷过网计价模型"
+                        },
+                        "HeatSupplyPriceModel": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "无"
+                            },
+                            "desc": "供热过网计价模型"
+                        }
+                    }
+                },
+                "OperationParameters": {
+                    "cond": "true",
+                    "desc": "运行参数组",
+                    "params": {
+                        "IsSourceReturnTempSpecified": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "热源流体出口温度是否指定",
+                            "cond": "HeatSourceType==2"
+                        },
+                        "SourceReturnTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 1000,
+                            "value": 50,
+                            "inputType": "constant",
+                            "desc": "热源流体出口温度",
+                            "cond": "HeatSourceType==0||(HeatSourceType==2&&IsSourceReturnTempSpecified==1)"
+                        },
+                        "IsSourcePressureSpecified": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "否",
+                                "1": "是"
+                            },
+                            "desc": "热源流体进口压力是否指定",
+                            "cond": "HeatSourceType==2"
+                        },
+                        "SourceInletPressure": {
+                            "type": "real",
+                            "unit": "MPa",
+                            "min": 0,
+                            "max": 99,
+                            "value": 0.5,
+                            "inputType": "constant",
+                            "desc": "热源流体进口压力",
+                            "cond": "(HeatSourceType==2&&IsSourcePressureSpecified==1)||HeatSourceType==1"
+                        },
+                        "ColdWaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": -20,
+                            "max": 99,
+                            "value": 10,
+                            "inputType": "constant",
+                            "desc": "冷水出口温度"
+                        },
+                        "HeatWaterSupplyTemp": {
+                            "type": "real",
+                            "unit": "℃",
+                            "min": 0,
+                            "max": 200,
+                            "value": 60,
+                            "inputType": "constant",
+                            "desc": "热水出口温度"
+                        }
+                    }
+                }
+            },
+            "classname": "AbsorptionChiller",
+            "name": "吸收式制冷机",
+            "type": 11000,
+            "thutype": "heatelec",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==2",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==0)",
+                    "conntype": 42
+                },
+                "2": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==1)",
+                    "conntype": 41
+                },
+                "3": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==2)",
+                    "conntype": 43
+                },
+                "4": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "(!show_pin||show_pin==3)&&(HeatSourceType==2)",
+                    "conntype": 43
+                },
+                "5": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 44
+                },
+                "6": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "!show_pin||show_pin==3",
+                    "conntype": 42
+                }
+            },
+            "note": null,
+            "ver": 55,
+            "id": 0,
+            "sym": "NewAbsorptionChiller",
+            "paramProxy": {},
+            "_mid": "84",
+            "choices": {},
+            "is_init": 0
+        }
+    },
+    "elecount": {
+        "GasTurbine": 2,
+        "HeatRecoveryBoiler": 1,
+        "ExhaustTreater": 1,
+        "BusNode": 5,
+        "TransferLine": 6,
+        "Transformer": 1,
+        "ExternalPowerSource": 3,
+        "Battery": 1,
+        "PhotovoltaicSys": 1,
+        "Load": 3,
+        "GasBoiler": 2,
+        "AbsorptionChiller": 2,
+        "CompRefrg": 1,
+        "IceStorageAC": 1
+    },
+    "module": {},
+    "modcount": {},
+    "system": {},
+    "systemname": [],
+    "systemcount": {},
+    "timeline": {
+        "layersParam": {
+            "0": {
+                "Application Name": "defaultApp",
+                "Type": "EMTP",
+                "deltaT": "50e-6",
+                "firstSimTime": ""
+            }
+        }
+    },
+    "simuunique": {
+        "_MapLayer": []
+    },
+    "ctrl": {},
+    "ctrlcount": {},
+    "meters": {},
+    "dspgrp": [],
+    "msr": {},
+    "msrcount": {},
+    "simu_no": "",
+    "simuparam": {
+        "simuCmd": "cloudpssrun",
+        "_isSet": false,
+        "start": 0,
+        "end": 1,
+        "step": 0.0001,
+        "switch": 0.001,
+        "breakPoint": [],
+        "converge_criteria": 1e-06,
+        "environment_temperature": 10,
+        "media_heat_capacity": 4182,
+        "media_density": 958.4,
+        "total_heating_period": 24,
+        "simulation_time_step": 60,
+        "windSpeed_param": {
+            "type": "table",
+            "value": [],
+            "coldef": [
+                "时间序列",
+                "数值"
+            ],
+            "unit": [
+                "",
+                "m/s"
+            ],
+            "minrowcount": 0,
+            "maxrowcount": 2147483647,
+            "desc": "风速"
+        },
+        "atmosphereTemp_param": {
+            "type": "table",
+            "value": [],
+            "coldef": [
+                "时间序列",
+                "数值"
+            ],
+            "unit": [
+                "",
+                "℃"
+            ],
+            "minrowcount": 0,
+            "maxrowcount": 2147483647,
+            "desc": "室外温度"
+        },
+        "radIntensity": {
+            "type": "table",
+            "value": [],
+            "coldef": [
+                "时间序列",
+                "数值"
+            ],
+            "unit": [
+                "",
+                "W/m²"
+            ],
+            "minrowcount": 0,
+            "maxrowcount": 2147483647,
+            "desc": "太阳辐射强度"
+        },
+        "media_kinematical_viscosity": 9.34e-07,
+        "err": "1e-5",
+        "maxiter": "100",
+        "Sbase": "100",
+        "frequency": "60",
+        "heating_cycle": 0,
+        "globalParam": {
+            "defaultApp": {
+                "symbol": {
+                    "@": {},
+                    "$": {
+                        "$save_snapshot": "0"
+                    },
+                    "#": {}
+                }
+            }
+        },
+        "noLabel": 0
+    },
+    "snapshot": {}
+}
