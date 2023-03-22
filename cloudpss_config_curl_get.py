@@ -13,8 +13,8 @@ import pandas as pd
 
 with open(mjson_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
-    
-    
+
+
 for line in lines:
     try:
         data = json.loads(line.strip())
@@ -50,7 +50,6 @@ if key_prefix not in ["defaultApp"] + existing_keys:
         input_data = params[input_type]
         for k, v in input_data["params"].items():
             valDict = {"ID": k}
-            # valDict ={"InputType": input_type,"ID": k}
             valDict.update({k0: v0 for k0, v0 in v.items()})
             component_info.append(valDict)
 

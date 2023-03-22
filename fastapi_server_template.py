@@ -77,14 +77,14 @@ class EnergyFlowGraph(BaseModel):
         ],
     )
 
-    def to_graph(cls):
-        graph: List[Tuple] = [(k, v) for k, v in cls.graph.items()]
+    def to_graph(self):
+        graph: List[Tuple] = [(k, v) for k, v in self.graph.items()]
         graph_dict = dict(
             directed=False,
             multigraph=False,
             graph=graph,
-            nodes=cls.nodes,
-            adjacency=cls.adjacency,
+            nodes=self.nodes,
+            adjacency=self.adjacency,
         )
         return graph_dict
 
@@ -92,7 +92,7 @@ class EnergyFlowGraph(BaseModel):
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 
-@app.post("/calculate_async")
+@app.post("/calculate_async",tags=[], description="", summary="",response_description="")
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
