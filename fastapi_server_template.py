@@ -34,8 +34,10 @@ This server provides APIs for IES System Simulation & Optimization.
 from typing import Union
 
 from fastapi import FastAPI
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, Field
 from typing import Mapping, List, Tuple
+
+from fastapi_server_with_doc import Item
 
 
 # to json: json.dumps(model.dict())
@@ -43,18 +45,11 @@ class EnergyFlowGraph(BaseModel):
     graph: Mapping = Field(title="", description="")
     nodes: List[Mapping] = Field(title="", description="")
     adjacency: List[List[Mapping]] = Field(title="", description="")
-    
-    @validator("graph")
-    def validate_graph(cls, value:Mapping) -> List[Tuple]:
-        cmp = [(k, v) for k,v in value.items()]
-        return cmp
-    
-    def ():
-        graph_dict = dict()
-    
-    directed: bool = Field(default=False,title="图是否有方向", description="")
-    multigraph: bool = Field(default=False,title="", description="")
-        return
+
+    def to_graph(cls):
+        graph: List[Tuple] = [(k, v) for k,v in cls.graph.items()]
+        graph_dict = dict(directed=False, multigraph=False,graph=graph,nodes=cls.nodes, adjacency=cls.adjacency)
+        return graph_dict
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
