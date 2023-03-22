@@ -76,6 +76,19 @@ class EnergyFlowGraph(BaseModel):
     )
 
     def to_graph(self) -> Mapping:
+        """
+        输出可加载到`networkx`生成计算图的字典
+        
+        转换代码：
+        ```python
+        import networkx as nx
+        
+        
+        ```
+        
+        Returns:
+            graph_dict(Mapping): 字典，键值为`["directed", "multigraph", "graph", "nodes", "adjacency"]`
+        """
         graph: List[Tuple] = [(k, v) for k, v in self.graph.items()]
         graph_dict = dict(
             directed=False,
