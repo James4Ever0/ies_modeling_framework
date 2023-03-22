@@ -93,9 +93,9 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
 @app.post(
     "/calculate_async",
     tags=["async"],
-    description="填写数据并提交拓扑图，提交完毕立即返回计算ID",
+    description="填写数据并提交拓扑图，如果还有计算资源，提交完毕立即返回计算ID",
     summary="异步提交能流拓扑图",
-    response_description="模型计算ID,根据ID获取计算结果",
+    response_description="提交状态以及模型计算ID,根据ID获取计算结果",
 )
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
