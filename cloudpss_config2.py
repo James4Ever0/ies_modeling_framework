@@ -20,8 +20,10 @@ for source in sources:
         if key_prefix not in ['defaultApp']+existing_keys:
             existing_keys.append(key_prefix)
             print(key_prefix)
+            val_prefix=val.replace("-","_").split("_")[0]
+            if val_prefix not in ['']
 
-        val_prefix=val.
+        
 
 # with open('cloudpss_file.json', 'w+') as f3:
 #     json.dump(data, f3)
