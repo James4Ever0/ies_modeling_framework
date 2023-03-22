@@ -82,7 +82,7 @@ class EnergyFlowGraph(BaseModel):
         转换代码：
         ```python
         import networkx as nx
-        
+        from networkx.readwrite import json_graph
         
         ```
         
