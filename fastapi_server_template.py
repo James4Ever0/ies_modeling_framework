@@ -34,13 +34,9 @@ OpenAPI描述文件：https://{host}:{port}/openapi.json
 API文档：https://{host}:{port}/docs
 """
 
-
-from typing import Union
-
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Mapping, List, Tuple
-
 
 # to json: json.dumps(model.dict())
 class EnergyFlowGraph(BaseModel):
@@ -54,7 +50,7 @@ class EnergyFlowGraph(BaseModel):
         examples=dict(
             建模仿真=dict(
                 summary="建模仿真所需参数",
-                description="",
+                description="建模仿真需要知道仿真步长和起始时间",
                 value={
                     "模型类型": "建模仿真",
                     "仿真步长": 60,
@@ -63,7 +59,9 @@ class EnergyFlowGraph(BaseModel):
                 },
             ),
             规划设计=dict(
-                summary="", description="", value={"模型类型": "规划设计", "优化指标": "经济性"}
+                summary="规划设计所需参数",
+                description="规划设计不需要知道仿真步长和起始时间,会根据不同优化指标事先全部计算，不需要在此指出",
+                value={"模型类型": "规划设计"},
             ),
         ),
     )
@@ -109,9 +107,9 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
 @app.post(
     "/calculate_async",
     tags=["async"],
-    description="提交",
+    description="填写数据并提交拓扑图，提交完毕立即返回计算ID",
     summary="异步提交能流拓扑图",
-    response_description="返回能流",
+    response_description="返回模型计算ID,根据ID获取计算结果",
 )
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
