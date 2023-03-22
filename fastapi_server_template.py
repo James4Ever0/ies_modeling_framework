@@ -51,7 +51,21 @@ class EnergyFlowGraph(BaseModel):
     graph: Mapping = Field(
         title="能流拓扑图的附加属性",
         description="仿真和优化所需的模型参数字典",
-        example={"仿真步长": 60, "优化指标": "经济性", "开始时间": "2023-3-1", "结束时间": "2024-3-1"},
+        examples=dict(
+            建模仿真=dict(
+                summary="建模仿真所需参数",
+                description="",
+                value={
+                    "模型类型": "建模仿真",
+                    "仿真步长": 60,
+                    "开始时间": "2023-3-1",
+                    "结束时间": "2024-3-1",
+                },
+            ),
+            规划设计=dict(
+                summary="", description="", value={"模型类型": "规划设计", "优化指标": "经济性"}
+            ),
+        ),
     )
     nodes: List[Mapping] = Field(
         title="节点",
@@ -92,7 +106,13 @@ class EnergyFlowGraph(BaseModel):
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 
-@app.post("/calculate_async",tags=['async'], description="t", summary="异步提交能流拓扑图",response_description="返回能流")
+@app.post(
+    "/calculate_async",
+    tags=["async"],
+    description="提交",
+    summary="异步提交能流拓扑图",
+    response_description="返回能流",
+)
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
