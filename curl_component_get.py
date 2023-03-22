@@ -30,13 +30,15 @@ cmd = ['bash', output_script_path]
 access_paths = ['CPS','Heat']
 
 for key, template_path in template_paths.items():
+    output_path = f"cloudpss_{key}.mjson"
     with open(template_path,'r', encoding='utf-8') as f:
         source = f.read()
         template = jinja2.Template(source = source, undefined=StrictUndefined)
         for _id in ids[key]:
             for access_path in access_paths:
-                script_content = template.render(access_path=access_path, id=_id)
+                script_content = template.render(access_path=access_path, id=_id, output_path=output_path)
                 with open(output_script_path, 'w+') as f0:
                     f0.write(script_content)
                 output = subprocess.getoutput(cmd)
+                print("ACCESS PATH:", access_path, "ID:", _id)
                 print("OUTPUT?", output[:20])

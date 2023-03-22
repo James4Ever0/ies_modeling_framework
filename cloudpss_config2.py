@@ -8,12 +8,14 @@ sources = ["cloudpss_optim_config2.json", "cloudpss_simulation_config2.json"]
 # id is coming from the json containing svg.
 
 import json
+import pandas as pd
 
 for source in sources:
     with open(source, "r", encoding="utf-8") as f:
         data = json.loads(f.read())
     components = data['component']
     existing_keys = []
+    component_info = []
     for key, val in components.items():
         key_prefix = key.replace("-","_").split("_")[0]
         if key_prefix not in ['defaultApp']+existing_keys:
@@ -24,7 +26,7 @@ for source in sources:
             # if val_prefix not in ['defaultApp']+existing_vals:
             #     existing_vals.append(val_prefix)
             #     print(val_prefix)
-        component_info.append({"ID": key, "Type": val["type"], "Position": val["position"]})
+        component_info.append({"ID": key, "Type": val["Type"], "Position": val["position"]})
     
     df = pd.DataFrame(component_info)
     print(f"Components in {source}:")

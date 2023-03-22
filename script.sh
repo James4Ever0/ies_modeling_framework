@@ -1,4 +1,4 @@
-curl 'https://ies.cloudpss.net:8202/editor/getComponentFor{{access_path}}/?id={{id}}' \
+curl 'https://ies.cloudpss.net:8202/editor/getComponentForHeat/?id=257' \
   -H 'authority: ies.cloudpss.net:8202' \
   -H 'accept: application/json, text/javascript, */*; q=0.01' \
   -H 'accept-language: en-US,en;q=0.9' \
@@ -11,4 +11,4 @@ curl 'https://ies.cloudpss.net:8202/editor/getComponentFor{{access_path}}/?id={{
   -H 'sec-fetch-mode: cors' \
   -H 'sec-fetch-site: same-origin' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36' \
-  -H 'x-requested-with: XMLHttpRequest' >> {{output_path}}
+  -H 'x-requested-with: XMLHttpRequest' >> cloudpss_simu.mjson
