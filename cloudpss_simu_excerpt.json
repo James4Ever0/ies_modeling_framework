@@ -1,0 +1,84 @@
+{
+    "status": 0,
+    "msg": "",
+    "sym": "BusNode",
+    "thutype": "electrical",
+    "classname": "BusNode",
+    "ele": {
+        "id": 105,
+        "thutype": "electrical",
+        "shape": "<?xml version=\"1.0\" encoding=\"utf-16\"?>\n<shapes name=\"BusNode\" bus=\"true\" w=\"100\" h=\"45\" strokewidth=\"5\" aspect=\"variable\">\n    <shape w=\"100\" h=\"45\" strokewidth=\"5\" aspect=\"variable\" cond=\"true\" d-cond=\"false\">\n        <background>\n            <path>\n                <move x=\"0\" y=\"15\" />\n                <line x=\"100\" y=\"15\" />\n            </path>\n            <stroke />\n            <text str=\"${isNaN(V)?V:Number(V).toFixed(4)}∠${isNaN(Angle)?Angle:Number(Angle).toFixed(2)}°\" x=\"50\" y=\"12\" align=\"center\" valign=\"bottom\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n            <text str=\"%VBase\" x=\"50\" y=\"18\" align=\"center\" valign=\"top\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n        </background>\n        <foreground>\n            <text str=\"${Name}\" x=\"50\" y=\"32\" align=\"center\" valign=\"top\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n        </foreground>\n    </shape>\n    <shape w=\"100\" h=\"45\" strokewidth=\"5\" aspect=\"variable\" d-cond=\"true\" cond=\"false\">\n        <background>\n            <path>\n                <move x=\"0\" y=\"15\" />\n                <line x=\"100\" y=\"15\" />\n            </path>\n            <stroke />\n            <text str=\"1.0000∠0.00°\" x=\"50\" y=\"12\" align=\"center\" valign=\"bottom\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n            <text str=\"115.0 [kV]\" x=\"50\" y=\"18\" align=\"center\" valign=\"top\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n        </background>\n        <foreground>\n            <text str=\"Bus Name\" x=\"50\" y=\"32\" align=\"center\" valign=\"top\" vertical=\"0\" rotation=\"0\" localized=\"0\" align-shape=\"0\" />\n        </foreground>\n    </shape>\n</shapes>",
+        "param": {
+            "param": {
+                "BasicParameters": {
+                    "cond": "true",
+                    "desc": "母线参数",
+                    "params": {
+                        "Name": {
+                            "type": "text",
+                            "value": "",
+                            "desc": "母线名称",
+                            "cond": "true"
+                        },
+                        "CompType": {
+                            "type": "choice",
+                            "value": 0,
+                            "choices": {
+                                "0": "交流元件",
+                                "1": "直流元件"
+                            },
+                            "choiceSource": "",
+                            "desc": "元件类型"
+                        },
+                        "VBase": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": 115.0,
+                            "inputType": "constant",
+                            "desc": "基准电压",
+                            "cond": "true"
+                        },
+                        "V": {
+                            "type": "real",
+                            "unit": "kV",
+                            "value": 115.0,
+                            "inputType": "constant",
+                            "desc": "初始电压",
+                            "cond": "true"
+                        },
+                        "Angle": {
+                            "type": "real",
+                            "unit": "deg",
+                            "value": 0.0,
+                            "inputType": "constant",
+                            "desc": "初始相角",
+                            "cond": "CompType==0"
+                        }
+                    }
+                }
+            },
+            "classname": "BusNode",
+            "name": "母线",
+            "type": 15001,
+            "thutype": "electrical",
+            "pin": {
+                "0": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "CompType==0",
+                    "conntype": 1
+                },
+                "1": {
+                    "node": -1,
+                    "label": "",
+                    "cond": "CompType==1",
+                    "conntype": 44
+                }
+            },
+            "note": null,
+            "ver": 4,
+            "id": 0,
+            "sym": "BusNode"
+        }
+    }
+}
