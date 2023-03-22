@@ -1,4 +1,4 @@
-## suggestion: use fastapi for self-documented server, use cerely for task management.
+## suggestion: use fastapi for self-documented server, use celery for task management.
 
 ## question: how to convert pydantic models to json?
 
@@ -40,8 +40,6 @@ from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Mapping, List, Tuple
-
-from fastapi_server_with_doc import Item
 
 
 # to json: json.dumps(model.dict())
@@ -94,12 +92,10 @@ class EnergyFlowGraph(BaseModel):
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 
-@app.post("/items/")
-def calculate_async(item_id: int, item: EnergyFlowGraph, q: Union[str, None] = None):
-    result = {"item_id": item_id, **item.dict()}
-    if q:
-        result.update({"q": q})
-    return result
+@app.post("/calculate_async")
+def calculate_async(graph: EnergyFlowGraph):
+    # use celery
+    return calculation_id
 
 
 import uvicorn
