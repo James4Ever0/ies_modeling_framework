@@ -19,6 +19,8 @@ prelude = """
 下面介绍在能流拓扑图中两种模式的输入项区别：
 """
 
+print(prelude)
+
 optim_format_string = """
 
 ## 建模仿真参数
@@ -95,72 +97,74 @@ for choice in choices:
             param = data["ele"]["param"]
             key_prefix = name = param["name"]
 
-            if key_prefix not in existing_keys:
-                existing_keys.append(key_prefix)
-
-                append_candidate()
-                append_candidate(headliner(level_shift + 2), key_prefix)
-                append_candidate()
-
-                append_candidate(headliner(level_shift + 3), "设备信息")
-                append_candidate()
-
-                info_keys = [
-                    "classname",
-                    "name",
-                    "type",
-                    "thutype",
-                    "ver",
-                    "id",
-                    "sym",
-                ]
-
-                info_markdown = {k: param[k] for k in info_keys}
-                append_candidate(info_markdown)
-                append_candidate()
-
-                pin = [v for _, v in param["pin"].items()]  # iterate through keys.
-                pin_df = pd.DataFrame(pin)
-                append_candidate(headliner(level_shift + 3), "针脚定义")
-                append_candidate()
-                append_candidate(pin_df.to_markdown())
-                # you can also get conditional pins and connection types.
-                existing_keys = []
-
-                append_candidate()
-                append_candidate(headliner(level_shift + 3), "参数填写")
-                # shall create this table for every device.
-                params = param["param"]
-                input_types = list(params.keys())
-                for input_type in input_types:
-                    if input_type not in param_class_name_dict.keys():
-                        param_class_name_dict[input_type] = {
-                            "chinese_names": set(),
-                            "related_devices": [],
-                        }
-                    component_info = []
-                    input_data = params[input_type]
-
-                    param_class_name_dict[input_type]["chinese_names"].add(
-                        input_data["desc"]
-                    )
-                    param_class_name_dict[input_type]["related_devices"].append(key_prefix)
-
-                    for k, v in input_data["params"].items():
-                        valDict = {"ID": k}
-                        valDict.update({k0: v0 for k0, v0 in v.items()})
-                        component_info.append(valDict)
-
-                    df = pd.DataFrame(component_info)
-                    append_candidate()
-                    append_candidate(headliner(level_shift + 4), input_type)
-                    append_candidate()
-                    markdown_table = df.to_markdown(index=False)
-                    append_candidate(markdown_table)
-            append_candidate()
         except:
             # obviously we've hit something hard.
             continue
+        if key_prefix not in existing_keys:
+            existing_keys.append(key_prefix)
+
+            append_candidate()
+            append_candidate(headliner(level_shift + 2), key_prefix)
+            append_candidate()
+
+            append_candidate(headliner(level_shift + 3), "设备信息")
+            append_candidate()
+
+            info_keys = [
+                "classname",
+                "name",
+                "type",
+                "thutype",
+                "ver",
+                "id",
+                "sym",
+            ]
+
+            info_markdown = pd.DataFrame([{k: param[k] for k in info_keys}]).to_markdown()
+            append_candidate(info_markdown)
+            append_candidate()
+
+            pin = [v for _, v in param["pin"].items()]  # iterate through keys.
+            pin_df = pd.DataFrame(pin)
+            append_candidate(headliner(level_shift + 3), "针脚定义")
+            append_candidate()
+            append_candidate(pin_df.to_markdown())
+            # you can also get conditional pins and connection types.
+            existing_keys = []
+
+            append_candidate()
+            append_candidate(headliner(level_shift + 3), "参数填写")
+            # shall create this table for every device.
+            params = param["param"]
+            input_types = list(params.keys())
+            for input_type in input_types:
+                if input_type not in param_class_name_dict.keys():
+                    param_class_name_dict[input_type] = {
+                        "chinese_names": set(),
+                        "related_devices": [],
+                    }
+                component_info = []
+                input_data = params[input_type]
+
+                param_class_name_dict[input_type]["chinese_names"].add(
+                    input_data["desc"]
+                )
+                param_class_name_dict[input_type]["related_devices"].append(key_prefix)
+
+                for k, v in input_data["params"].items():
+                    valDict = {"ID": k}
+                    valDict.update({k0: v0 for k0, v0 in v.items()})
+                    component_info.append(valDict)
+
+                df = pd.DataFrame(component_info)
+                append_candidate()
+                append_candidate(headliner(level_shift + 4), input_type)
+                append_candidate()
+                markdown_table = df.to_markdown(index=False)
+                append_candidate(markdown_table)
+        else:
+            continue
+        append_candidate()
 
     param_translate_maps[choice]["参数分类"] = list(param_class_name_dict.keys())
     param_translate_maps[choice]["中文名称"] = [
