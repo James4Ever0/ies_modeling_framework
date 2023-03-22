@@ -101,8 +101,15 @@ for line in lines:
         # obviously we've hit something hard.
         continue
 
-param_translate_maps[choice]['参数分类'] = list(param_class_name_dict.keys())
-中文名称 = 
+param_translate_maps[choice]["参数分类"] = list(param_class_name_dict.keys())
+param_translate_maps[choice]["中文名称"] = [
+    ", ".join(param_class_name_dict[k]["chinese_names"])
+    for k in param_translate_maps[choice]["参数分类"]
+]
+param_translate_maps[choice]["有关设备"] = [
+    ", ".join(param_class_name_dict[k]["related_devices"])
+    for k in param_translate_maps[choice]["参数分类"]
+]
 
 print("-" * 20)
 print()
