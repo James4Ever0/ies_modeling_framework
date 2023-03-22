@@ -21,13 +21,16 @@ for line in lines:
     except:
         # obviously we've hit something hard.
         break
+
 param = data["ele"]['param']
+name = param['name']
+pin = [v for _,v in param['pin'].items()] # iterate through keys.
+# you can also get conditional pins and connection types.
 existing_keys = []
 
 headliner = lambda level: "#" * level
 
-for key, val in components.items():
-    key_prefix = param['']
+    key_prefix = param['name']
     if key_prefix not in ["defaultApp"] + existing_keys:
         existing_keys.append(key_prefix)
         print(key_prefix)
