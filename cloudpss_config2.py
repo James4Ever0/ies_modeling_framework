@@ -18,23 +18,31 @@ for source in sources:
         data = json.loads(f.read())
     components = data['component']
     existing_keys = []
-    component_info = []
+    
+    
     for key, val in components.items():
         key_prefix = key.replace("-","_").split("_")[0]
         if key_prefix not in ['defaultApp']+existing_keys:
             existing_keys.append(key_prefix)
             print(key_prefix)
+            
+            component_info = []
             # val_prefix=val
             # if val_prefix not in ['defaultApp']+existing_vals:
             #     existing_vals.append(val_prefix)
             #     print(val_prefix)
-        component_info.append({"ID": key, "Name":val.get("name"),"Type": val.get("type"), "Thutype": val.get("thutype")})
+            
+            # shall create this table for every device.
+            params = val['param']
+            input_types = list(params.keys())
+            
+            # component_info.append({"ID": key, "Name":val.get("name"),"Type": val.get("type"), "Thutype": val.get("thutype")})
     
-    df = pd.DataFrame(component_info)
-    print(f"Components in {source}:")
-    # print(df.to_string(index=False))
-    markdown_table = df.to_markdown(index=False)
-    print(markdown_table)
+            df = pd.DataFrame(component_info)
+            print(f"Data Input {input_type} in {key_prefix}:")
+            # print(df.to_string(index=False))
+            markdown_table = df.to_markdown(index=False)
+            print(markdown_table)
 
         
 
