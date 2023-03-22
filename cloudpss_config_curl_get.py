@@ -16,6 +16,7 @@ with open(mjson_path, "r", encoding="utf-8") as f:
 components = data["component"]
 existing_keys = []
 
+headliner = lambda level: "#" * level
 
 for key, val in components.items():
     key_prefix = key.replace("-", "_").split("_")[0]
