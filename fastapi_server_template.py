@@ -52,8 +52,8 @@ class EnergyFlowGraph(BaseModel):
 
     graph: Mapping = Field(
         title="能流拓扑图的附加属性",
-        description="仿真和优化所需的整体模型参数字典",
-        example={"仿真步长（分钟）": 60, "优化指标": "经济性", "开始时间": ...,"结束时间":...},
+        description="仿真和优化所需的模型参数字典",
+        example={"仿真步长": 60, "优化指标": "经济性", "开始时间": "2023-3-1", "结束时间": "2024-3-1"},
     )
     nodes: List[Mapping] = Field(
         title="节点",
@@ -72,7 +72,7 @@ class EnergyFlowGraph(BaseModel):
         description="由能流图中节点互相连接的边组成的列表",
         example=[
             [{"id": "b"}, {"id": "d"}],
-            [{"id": "a", "id": "e"}],
+            [{"id": "a"}, {"id": "e"}],
             [{"id": "c"}, {"id": "f"}],
             [{"id": "d"}, {"id": "e"}],
             [{"id", "d"}, {"id": "f"}],
@@ -95,7 +95,7 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
 
 
 @app.post("/items/")
-async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
+def calculate_async(item_id: int, item: EnergyFlowGraph, q: Union[str, None] = None):
     result = {"item_id": item_id, **item.dict()}
     if q:
         result.update({"q": q})
