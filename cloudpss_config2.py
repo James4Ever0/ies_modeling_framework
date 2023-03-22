@@ -1,5 +1,5 @@
 sources = ["cloudpss_optim_config2.json", "cloudpss_simulation_config2.json"]
-sources_curl_get = ['cloudpss_optim.mjson','cloudpss_simu.mjson']
+# sources_curl_get = ['cloudpss_optim.mjson','cloudpss_simu.mjson']
 
 # must place all components on the graph to get the data.
 # like: https://ies.cloudpss.net:8201/editor/getComponentForHeat/?id=157
