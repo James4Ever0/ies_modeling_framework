@@ -123,8 +123,8 @@ def calculate_async(graph: EnergyFlowGraph):
 @app.get(
     "/get_calculation_result_async",
     tags=["async"],
-    description="",
-    summary="",
+    description="提交计算ID，返回计算状态，如果计算完毕会一起返回数据，否则数据为空",
+    summary="异步获取能流拓扑计算结果",
     response_description="",
 )
 def get_calculation_result_async(calculation_id):
