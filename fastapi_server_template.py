@@ -20,6 +20,7 @@ API文档: https://{host}:{port}/docs
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Mapping, List, Tuple
+from networkx.readwrite import json_graph
 
 
 # question: how to convert pydantic models to json?
@@ -40,7 +41,7 @@ class EnergyFlowGraph(BaseModel):
                 value={
                     "模型类型": "建模仿真",
                     "仿真步长": 60,
-                    "开始时间": "2023-3-1",
+                    "开始时间": "2023-3-1",  # shall you parse this into `datetime.datetime`
                     "结束时间": "2024-3-1",
                 },
             ),
@@ -75,40 +76,44 @@ class EnergyFlowGraph(BaseModel):
         ],
     )
 
-    def to_graph(self) -> Mapping:
+    def to_graph(self, directed=False):
         """
-        输出可加载到`networkx`生成计算图的字典
-        
-        转换代码：
-        ```python
-        # assume `json_data` is being exported by this method
-        import networkx as nx
-        from networkx.readwrite import json_graph
-        
-        G = json_graph.adjacency_graph(json_data, directed=False)
-        ```
-        
+        输出`networkx`计算图
+
+        Arguments:
+            directed (bool): 是否返回有向图
+
         Returns:
-            graph_dict(Mapping): 字典，键值为`["directed", "multigraph", "graph", "nodes", "adjacency"]`
+            G (Graph): `networkx`计算图
         """
         graph: List[Tuple] = [(k, v) for k, v in self.graph.items()]
         graph_dict = dict(
-            directed=False,
+            directed=directed,
             multigraph=False,
             graph=graph,
             nodes=self.nodes,
             adjacency=self.adjacency,
         )
-        return graph_dict
+
+
+        G = json_graph.adjacency_graph(graph_dict, directed=directed)
+
+        return G
 
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
+from typing import Literal
 class CalculationAsyncSubmitResult(BaseModel):
     """
+    异步计算提交结果返回类
     """
-    calculation_id: ... = Field(description="", title="")
-    submit_state: ...= Field(description="", title="")
+
+    calculation_id: ... = Field(description="如果成功注册计算任务，返回ID，否则为空", title="计算ID")
+    submit_state: Literal['success','failed'] = Field(
+        description='如果成功提交，返回"success"，否则返回"failed"', title="提交状态"
+    )
+
 
 @app.post(
     "/calculate_async",
@@ -116,19 +121,18 @@ class CalculationAsyncSubmitResult(BaseModel):
     description="填写数据并提交拓扑图，如果还有计算资源，提交状态为成功，返回计算ID，否则不返回计算ID，提交状态为失败",
     summary="异步提交能流拓扑图",
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
-    response_model = CalculationAsyncSubmitResult
+    response_model=CalculationAsyncSubmitResult,
 )
 def calculate_async(graph: EnergyFlowGraph):
     # use celery
     return calculation_id
 
 
-
 class CalculationAsyncResult(BaseModel):
-    """
-    """
+    """ """
+
     calculation_result: ... = Field(description="", title="")
-    calculation_state: ...= Field(description="", title="")
+    calculation_state: ... = Field(description="", title="")
 
 
 @app.get(
@@ -137,7 +141,7 @@ class CalculationAsyncResult(BaseModel):
     description="提交计算ID，返回计算状态，如果计算完毕会一起返回数据，否则数据为空",
     summary="异步获取能流拓扑计算结果",
     response_description="计算状态和计算结果",
-    response_model = CalculationAsyncResult
+    response_model=CalculationAsyncResult,
 )
 def get_calculation_result_async(calculation_id):
     return calculation_result
