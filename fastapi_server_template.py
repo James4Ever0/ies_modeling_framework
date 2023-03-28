@@ -95,7 +95,6 @@ class EnergyFlowGraph(BaseModel):
             adjacency=self.adjacency,
         )
 
-
         G = json_graph.adjacency_graph(graph_dict, directed=directed)
 
         return G
@@ -104,13 +103,15 @@ class EnergyFlowGraph(BaseModel):
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 from typing import Literal
+
+
 class CalculationAsyncSubmitResult(BaseModel):
     """
     异步计算提交结果返回类
     """
 
     calculation_id: ... = Field(description="如果成功注册计算任务，返回ID，否则为空", title="计算ID")
-    submit_state: Literal['success','failed'] = Field(
+    submit_state: Literal["success", "failed"] = Field(
         description='如果成功提交，返回"success"，否则返回"failed"', title="提交状态"
     )
 
