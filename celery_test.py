@@ -23,6 +23,16 @@ app = Celery(
 
 # need authentication!
 
+from pydantic import BaseModel
+
+
+class AddResult(BaseModel):
+    data: int
+
+
+class AddResultNested(BaseModel):
+    nested_addresult: AddResult
+
 
 @app.task
 def add(x, y):
@@ -31,7 +41,16 @@ def add(x, y):
     import time
 
     time.sleep(10)
-    return x + y
+    obj = AddResultNested(
+        nested_addresult=AddResult(data=x + y)
+    ).dict()  # it is also dict. just to make it json serializable. do not pass pydantic data models directly.
+    # what about nested data models?
+    # it also handles the serialization correctly. nevertheless.
+    
+    return AddResultNested.parse_obj(obj).dict() # still being correct.
+    # so you can parse it and dump it.
+
+    # json in, json out.
 
 
 # print(dir(add))

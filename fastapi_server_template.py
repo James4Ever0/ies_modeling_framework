@@ -3,6 +3,7 @@
 
 port = 9870
 host = "0.0.0.0"
+import traceback
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
@@ -17,103 +18,59 @@ OpenAPI描述文件(可导入Apifox): https://{host}:{port}/openapi.json
 API文档: https://{host}:{port}/docs
 """
 
+import traceback
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
-from typing import Mapping, List, Tuple
-from networkx.readwrite import json_graph
+from fastapi_datamodel_template import (
+    CalculationAsyncResult,
+    CalculationAsyncSubmitResult,
+    EnergyFlowGraph,
+    RevokeResult,
+)
+
+import datetime
+from celery.result import AsyncResult
+from typing import Dict, Any
+
+# remember these things won't persist.
+# remove any task without any update for 24 hours.
+# celery has the default of 24 hours. you handle it again here.
+# also has default task time of 1200 seconds. you may experiment.
+taskDict: Dict[str, AsyncResult] = {}
+taskInfo: Dict[str, datetime.datetime] = {}
+taskResult: Dict[str, Any] = {}
+
+def celery_on_message(body: dict):
+    print("BODY TYPE?", type(body))
+    print("ON MESSAGE?", body)
+
+    task_id = body["task_id"]
+    status = body["status"]
+    print("TASK STATUS?", status)
+    
+    taskInfo[task_id]= datetime.datetime.now()
+
+    ###
+    # BODY TYPE? <class 'dict'>
+    # ON MESSAGE? {'status': 'STARTED', 'result': {'pid': 74297, 'hostname': 'celery@MacBook-Air-M1.local'}, 'traceback': None, 'children': [], 'date_done': None, 'task_id': 'c7a5a013-36aa-4242-842a-46fb3bb8e9fa'}
+
+    ###
+    # BODY TYPE? <class 'dict'>
+    # ON MESSAGE? {'status': 'SUCCESS', 'result': '14', 'traceback': None, 'children': [], 'date_done': '2023-03-28T09:26:50.382791', 'task_id': 'c7a5a013-36aa-4242-842a-46fb3bb8e9fa'}
 
 
-# question: how to convert pydantic models to json?
-# to json: json.dumps(model.dict())
-#
-class EnergyFlowGraph(BaseModel):
-    """
-    用于仿真和优化计算的能流拓扑图，仿真和优化所需要的参数模型和变量定义会有所不同。
-    """
+def background_on_message(task: AsyncResult):
+    value = task.get(on_message=celery_on_message, propagate=False)
+    # shall you not check here.
+    # and not the message callback.
+    # status = task.status
+    # print("TASK STATUS?", status)
+    taskResult[task.id] = value
+    print("VALUE TYPE?", type(value))  # str, '14'
+    print("TASK VALUE?", value)
 
-    graph: Mapping = Field(
-        title="能流拓扑图的附加属性",
-        description="仿真和优化所需的模型参数字典",
-        examples=dict(
-            建模仿真=dict(
-                summary="建模仿真所需参数",
-                description="建模仿真需要知道仿真步长和起始时间",
-                value={
-                    "模型类型": "建模仿真",
-                    "仿真步长": 60,
-                    "开始时间": "2023-3-1",  # shall you parse this into `datetime.datetime`
-                    "结束时间": "2024-3-1",
-                },
-            ),
-            规划设计=dict(
-                summary="规划设计所需参数",
-                description="规划设计不需要知道仿真步长和起始时间,会根据不同优化指标事先全部计算，不需要在此指出",
-                value={"模型类型": "规划设计"},
-            ),
-        ),
-    )
-    nodes: List[Mapping] = Field(
-        title="节点",
-        description="由所有节点ID和属性字典组成的列表",
-        example=[
-            {"id": "a", "node_type": "load"},
-            {"id": "b", "node_type": "device"},
-            {"id": "c", "node_type": "load"},
-            {"id": "d", "node_type": "port", "port_type": "AC"},
-            {"id": "e", "node_type": "port", "port_type": "AC"},
-            {"id": "f", "node_type": "port", "port_type": "AC"},
-        ],
-    )
-    adjacency: List[List[Mapping]] = Field(
-        title="边",
-        description="由能流图中节点互相连接的边组成的列表",
-        example=[
-            [{"id": "b"}, {"id": "d"}],
-            [{"id": "a"}, {"id": "e"}],
-            [{"id": "c"}, {"id": "f"}],
-            [{"id": "d"}, {"id": "e"}],
-            [{"id", "d"}, {"id": "f"}],
-        ],
-    )
-
-    def to_graph(self, directed=False):
-        """
-        输出`networkx`计算图
-
-        Arguments:
-            directed (bool): 是否返回有向图
-
-        Returns:
-            G (Graph): `networkx`计算图
-        """
-        graph: List[Tuple] = [(k, v) for k, v in self.graph.items()]
-        graph_dict = dict(
-            directed=directed,
-            multigraph=False,
-            graph=graph,
-            nodes=self.nodes,
-            adjacency=self.adjacency,
-        )
-
-        G = json_graph.adjacency_graph(graph_dict, directed=directed)
-
-        return G
 
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
-
-from typing import Literal
-
-
-class CalculationAsyncSubmitResult(BaseModel):
-    """
-    异步计算提交结果返回类
-    """
-
-    calculation_id: ... = Field(description="如果成功注册计算任务，返回ID，否则为空", title="计算ID")
-    submit_state: Literal["success", "failed"] = Field(
-        description='如果成功提交，返回"success"，否则返回"failed"', title="提交状态"
-    )
 
 
 @app.post(
@@ -124,17 +81,22 @@ class CalculationAsyncSubmitResult(BaseModel):
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
     response_model=CalculationAsyncSubmitResult,
 )
-def calculate_async(graph: EnergyFlowGraph):
+def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     # use celery
-    return calculation_id
+    submit_result = 'failed'
+    calculation_id = None
+    try:
+        calculation_id = ...
+    except:
+        traceback.print_exc()
+    submit_result = 'success'
+    return CalculationAsyncSubmitResult(calculation_id=calculation_id, submit_result=submit_result)
 
 
-class CalculationAsyncResult(BaseModel):
-    """ """
-
-    calculation_result: ... = Field(description="", title="")
-    calculation_state: ... = Field(description="", title="")
-
+def get_calculation_state(calculation_id:str) -> str:
+    """
+    """
+    return calculation_state
 
 @app.get(
     "/get_calculation_result_async",
@@ -144,8 +106,24 @@ class CalculationAsyncResult(BaseModel):
     response_description="计算状态和计算结果",
     response_model=CalculationAsyncResult,
 )
-def get_calculation_result_async(calculation_id):
+def get_calculation_result_async(calculation_id: str):
     return calculation_result
+
+
+@app.get(
+    "/revoke_calculation",
+    tags=["async"],
+    description="提交计算ID，撤销计算",
+    summary="撤销计算任务",
+    response_description="返回撤销计算状态",
+    response_model=RevokeResult,
+    # different code and different response models.
+    # so you would return in different models and the api will handle the code.
+    # by default there are some reserved code, for every api. no need to define your own? or the system will merge the custom response code with default ones automatically?
+    # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
+)
+def revoke_calculation(calculation_id: str):
+    return RevokeResult(revoke_result=revoke_result, calculation_state=calculation_state)
 
 
 import uvicorn
