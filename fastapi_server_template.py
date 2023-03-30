@@ -155,7 +155,7 @@ def revoke_calculation(calculation_id: str):
         print("TERMINATING TASK:", calculation_id)
         taskDict[calculation_id].revoke(terminate=True)
         revoke_result='success'
-        calculation_state = get_calculation_state()
+        calculation_state = get_calculation_state(calculation_id)
     else:
         print("TASK DOES NOT EXIST:", calculation_id)
     return RevokeResult(revoke_result=revoke_result, calculation_state=calculation_state)
