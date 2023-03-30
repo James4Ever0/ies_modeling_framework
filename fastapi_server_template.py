@@ -29,7 +29,7 @@ from fastapi_datamodel_template import (
 
 import datetime
 from celery.result import AsyncResult
-from typing import Dict, Any
+from typing import Dict, Any, Union
 from fastapi_celery_server import app as celery_app
 # remember these things won't persist.
 # remove any task without any update for 24 hours.
@@ -110,7 +110,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     return CalculationAsyncSubmitResult(calculation_id=calculation_id, submit_result=submit_result)
 
 
-def get_calculation_state(calculation_id:str) -> Union[None,str:
+def get_calculation_state(calculation_id:str) -> Union[None,str]:
     """
     根据计算ID获取计算状态
 
