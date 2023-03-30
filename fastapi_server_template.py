@@ -59,7 +59,12 @@ def remove_stale_tasks():
         if key in taskResult.keys():
             del taskResult[key]
 
-def 
+def remove_stale_tasks_decorator(function):
+    def inner_function(*args, **kwargs):
+        remove_stale_tasks()
+        return function(*args, **kwargs)
+    return inner_function
+
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
@@ -102,6 +107,7 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
     response_model=CalculationAsyncSubmitResult,
 )
+@remove_stale_tasks_decorator
 def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     # use celery
     submit_result = "failed"
