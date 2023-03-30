@@ -39,6 +39,8 @@ class AddResultNested(BaseModel):
 # import filelock # best way of limiting concurrency? or not?
 
 # LOCK_FILE = ".celery.lock"
+import multiprocessing
+multiprocessing.lock
 @app.task
 def add(x, y):
     # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
