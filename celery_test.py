@@ -38,6 +38,7 @@ class AddResultNested(BaseModel):
 
 import filelock # best way of limiting concurrency? or not?
 
+LOCK_FILE = ".celery.lock"
 @app.task
 def add(x, y):
     print("CALCULATING:", x, y)
