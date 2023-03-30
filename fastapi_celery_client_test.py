@@ -2,7 +2,7 @@ import requests
 
 LOOP_COUNT = 20
 
-base_url = "http://localhost:8010"
+base_url = "http://localhost:9870"
 url = f"{base_url}/add/2/1"
 
 r = requests.get(url)
