@@ -28,8 +28,6 @@ taskResult: Dict[str, Any] = {}
 
 
 def celery_on_message(body: dict):
-    """
-    """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
 
@@ -52,8 +50,6 @@ def celery_on_message(body: dict):
 
 
 def background_on_message(task: AsyncResult):
-    """
-    """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
     # and not the message callback.
@@ -78,7 +74,6 @@ def background_on_message(task: AsyncResult):
 
 @app.get("/add/{a}/{b}")
 def add_get(a, b, background_task: BackgroundTasks):
-    """
     # apparently it is not calling celery.
     # val = add(a,b)
     args = [a, b]
@@ -129,7 +124,7 @@ def revoke_task(task_id: str):
     return "REVOKED"
 
 
-@app.get("/task_result", response_description="", response_model=..., description="", summary="")
+@app.get("/task_result")
 def get_task_result(task_id: str):
     task_result = taskResult.get(task_id, None)
     task_status = "MISSING"
