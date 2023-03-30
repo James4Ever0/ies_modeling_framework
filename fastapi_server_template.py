@@ -149,11 +149,11 @@ def get_calculation_result_async(calculation_id: str):
 )
 def revoke_calculation(calculation_id: str):
     
-    if task_id in taskDict.keys():
-        taskDict[task_id].revoke(terminate=True)
+    if calculation_id in taskDict.keys():
+        taskDict calculation_id].revoke(terminate=True)
     else:
         return "MISSING"
-    print("TERMINATING TASK:", task_id)
+    print("TERMINATING TASK:", calculation_id)
     return "REVOKED"
     return RevokeResult(revoke_result=revoke_result, calculation_state=calculation_state)
 
