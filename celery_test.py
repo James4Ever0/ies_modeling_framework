@@ -60,21 +60,21 @@ def add(x, y):
     # with lock:
     # still the same?
     # with RedisLock(redis_instance, name="task_id"): # no one will have the lock.
-        print("CALCULATING:", x, y)
-        # but we plan to do this for 10 seconds.
-        import time
+    print("CALCULATING:", x, y)
+    # but we plan to do this for 10 seconds.
+    import time
 
-        time.sleep(10)
-        obj = AddResultNested(
-            nested_addresult=AddResult(data=x + y)
-        ).dict()  # it is also dict. just to make it json serializable. do not pass pydantic data models directly.
-        # what about nested data models?
-        # it also handles the serialization correctly. nevertheless.
-        
-        return AddResultNested.parse_obj(obj).dict() # still being correct.
-        # so you can parse it and dump it.
+    time.sleep(10)
+    obj = AddResultNested(
+        nested_addresult=AddResult(data=x + y)
+    ).dict()  # it is also dict. just to make it json serializable. do not pass pydantic data models directly.
+    # what about nested data models?
+    # it also handles the serialization correctly. nevertheless.
+    
+    return AddResultNested.parse_obj(obj).dict() # still being correct.
+    # so you can parse it and dump it.
 
-        # json in, json out.
+    # json in, json out.
 
 
 # print(dir(add))
