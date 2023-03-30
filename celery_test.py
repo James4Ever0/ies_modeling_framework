@@ -60,7 +60,7 @@ def add(x, y):
     # why not working?
     # with lock:
     # still the same?
-    with RedisLock(redis_instance, name="task_id"):
+    with RedisLock(redis_instance, name="task_id"): # no one will have the lock.
         print("CALCULATING:", x, y)
         # but we plan to do this for 10 seconds.
         import time
