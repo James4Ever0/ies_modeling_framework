@@ -30,7 +30,7 @@ for i in range(LOOP_COUNT):
     data2 = r2.json()
     print("DATA2", data2)  # STARTED.
     # till: SUCCESS.
-    r3 = requests.get(url_new, params=dict(task_id=task_id))
+    r3 = requests.get(url_new, params=dict(task_id=task_id2))
     data3 = r3.json()
     print("DATA3", data3)
     # how many status indicators can it have?
