@@ -190,7 +190,7 @@ def revoke_calculation(calculation_id: str):
         revoke_result=revoke_result, calculation_state=calculation_state
     )
 
-@app.get("/tasks")
+@app.get("/calculation_ids")
 
 import uvicorn
 
