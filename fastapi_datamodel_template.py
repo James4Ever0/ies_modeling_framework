@@ -97,7 +97,7 @@ class CalculationStateResult(BaseModel):
     """
     包含计算任务状态的数据类
     """
-    calculation_state: Literal[None, "PENDING", "RECEIVED", "STARTED", "SUCCESS", "FAILURE", "RETRY", "REVOKED"] = Field(description="Celery内置任务状态，如果是null则", title="计算任务状态")
+    calculation_state: Literal[None, "PENDING", "RECEIVED", "STARTED", "SUCCESS", "FAILURE", "RETRY", "REVOKED"] = Field(description="Celery内置任务状态，如果是null则表示不存在该任务", title="计算任务状态")
 # would you transfer this thing over celery, or you need to build it?
 # i'd rather build it.
 class CalculationAsyncResult(CalculationStateResult):
