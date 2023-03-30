@@ -101,7 +101,7 @@ def get_calculation_state(calculation_id:str) -> str:
         calculation_id (str): 计算ID
     
     Returns:
-        calculation_state (str):
+        calculation_state (str): 计算状态
     """
     return calculation_state
 
