@@ -40,8 +40,8 @@ class AddResultNested(BaseModel):
 # import filelock # best way of limiting concurrency? or not?
 
 # LOCK_FILE = ".celery.lock"
-# import multiprocessing
-# lock = multiprocessing.Lock()
+import multiprocessing
+lock = multiprocessing.Lock()
 
 
 # use redis lock.
@@ -52,12 +52,13 @@ class AddResultNested(BaseModel):
 
 REDIS_TASK_KEY = "current_task"
 
-import portalocker
+# import portalocker
+
 
 @app.task
 def add(x, y):
     # with portalocker.Lock('.celery.lock','r+', portalocker.LOCK_EX):
-    with lock:
+    with lock:  #the lock is simply working.
         # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
         # with lock:
         # why not working?
