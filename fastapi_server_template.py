@@ -117,6 +117,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
 
 @app.get(
     "/get_calculation_state",
+    tags=['async'],
     response_model=CalculationStateResult,
     response_description="Celery内置任务状态，如果是null则表示不存在该任务",
     summary="获取计算状态",
