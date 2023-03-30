@@ -13,6 +13,7 @@ from celery import Celery
 from passwords import redis_password
 
 MAIN_NAME = "tasks"
+# MAIN_NAME = "tasks"
 
 app = Celery(
     MAIN_NAME,
