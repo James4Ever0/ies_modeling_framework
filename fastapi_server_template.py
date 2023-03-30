@@ -191,7 +191,7 @@ def revoke_calculation(calculation_id: str):
     )
 from typing import List
 @app.get("/get_calculation_ids",
-    tags=["async"],response_model = List[str], response_description='缓存可查询的任务列表', description='', summary='')
+    tags=["async"],response_model = List[str], response_description='缓存中可查询的任务列表', description='', summary='')
 def get_calculation_ids()->  List[str]:
     calculation_ids = list(taskDict.keys())
     return calculation_ids
