@@ -59,6 +59,7 @@ def remove_stale_tasks():
         if key in taskResult.keys():
             del taskResult[key]
 
+def 
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
