@@ -122,7 +122,7 @@ def get_calculation_state(calculation_id:str) -> str:
     """
     task = taskDict.get(calculation_id,None)
     if task is not None:
-        calculation_state = task.state
+        calculation_state = task.status
     return calculation_state
 
 @app.get(
