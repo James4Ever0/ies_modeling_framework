@@ -81,7 +81,7 @@ def remove_stale_tasks_decorator(function):
 
 def celery_on_message(body: dict):
     """
-    
+    Celery任务信息更新hui diao han shu
     """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
