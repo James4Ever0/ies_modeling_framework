@@ -190,7 +190,8 @@ def revoke_calculation(calculation_id: str):
         revoke_result=revoke_result, calculation_state=calculation_state
     )
 
-a = Union[None, str]
+
+
 import uvicorn
 
 uvicorn.run(app, host=host, port=port)
