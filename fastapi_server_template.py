@@ -41,7 +41,7 @@ taskResult: Dict[str, Any] = {}
 
 def remove_stale_tasks():
     """
-    遍历并清除
+    遍历并清除24小时wei
     """
 
 def celery_on_message(body: dict):
