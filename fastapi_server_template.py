@@ -70,6 +70,8 @@ def remove_stale_tasks():
 
 
 def remove_stale_tasks_decorator(function):
+    """
+    """
     def inner_function(*args, **kwargs):
         remove_stale_tasks()
         return function(*args, **kwargs)
@@ -99,6 +101,8 @@ def celery_on_message(body: dict):
 
 
 def background_on_message(task: AsyncResult):
+    """
+    """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
     # and not the message callback.
