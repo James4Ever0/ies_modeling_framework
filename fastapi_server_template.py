@@ -106,7 +106,7 @@ def celery_on_message(body: dict):
 
 def background_on_message(task: AsyncResult):
     """
-    
+    后台获取
     """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
