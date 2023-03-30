@@ -28,8 +28,9 @@ def calculate_energyflow_graph(energyflow_graph:dict) -> dict:
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
 app.conf.update(worker_concurrency=1)
-memory_limit = 20_000_000
+memory_limit = 20_000_000 #kB
 app.conf.update(worker_max_memory_per_child=memory_limit)
+
 app.conf.update(worker_time_limit = time_limit)
 # limits on ram usage, concurrency, execution time
 
