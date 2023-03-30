@@ -5,6 +5,8 @@ port = 9870
 host = "0.0.0.0"
 import traceback
 
+import celery
+
 appName = "IES Optim Server Template"
 version = "0.0.1"
 tags_metadata = [
@@ -138,8 +140,8 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     submit_result = "failed"
     calculation_id = None
     try:
-        
-        calculation_id = ...
+        function_id = ""
+        calculation_id = celery_app.
     except:
         traceback.print_exc()
     submit_result = "success"
