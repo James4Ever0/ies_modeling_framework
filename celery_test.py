@@ -20,7 +20,7 @@ app = Celery(
     # we ignore the main, see if error persists?
     # the error persists. continue.
     broker="amqp://guest@localhost:5672//",
-    backend=f"redis://:{redis_password}@localhost:6379",  # already running, don't know how.
+    backend=redis_url,  # already running, don't know how.
 )
 
 # need authentication!
