@@ -143,7 +143,7 @@ def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
 
     return CalculationAsyncResult(
-        calculation_state=get_calculation_state(calculation_id),
+        calculation_state=get_calculation_state(calculation_id)['calculation_state'],
         calculation_result=calculation_result,
     )
 
