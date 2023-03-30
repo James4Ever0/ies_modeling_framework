@@ -49,7 +49,9 @@ def remove_stale_tasks():
         if (now - value).total_seconds() > 3600 * 24:
             remove_keys.append(key)
     for key in remove_keys:
-        if keydel taskDict[key]
+        if key in taskDict.keys():
+            del taskDict[key]
+        if key in taskInfo.keys():
         del taskInfo[key]
         del taskResult[key]
 
