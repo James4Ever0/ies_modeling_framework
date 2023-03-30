@@ -155,7 +155,6 @@ def revoke_calculation(calculation_id: str):
     else:
         revoke_result = 'failed'
     print("TERMINATING TASK:", calculation_id)
-    # return "REVOKED"
     return RevokeResult(revoke_result=revoke_result, calculation_state=calculation_state)
 
 
