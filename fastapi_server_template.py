@@ -25,6 +25,7 @@ from fastapi_datamodel_template import (
     CalculationAsyncSubmitResult,
     EnergyFlowGraph,
     RevokeResult,
+    CalculationStateResult
 )
 
 import datetime
