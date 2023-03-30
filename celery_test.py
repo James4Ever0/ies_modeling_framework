@@ -91,8 +91,8 @@ def add(x, y):
 
 # what is this for anyway?
 app.conf.update(task_track_started=True)  # still off?
-# print("APP CONF?", app.conf)
-# breakpoint()
+print("APP CONF?", app.conf)
+breakpoint()
 # how to limit the number of concurrencies?
 
 # just like the commandline config "-E"
