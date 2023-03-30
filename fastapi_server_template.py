@@ -120,7 +120,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     response_model=CalculationStateResult,
     response_description="",
     summary="",
-    description="",
+    description="根据计算ID获取计算状态",
 )
 def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     """
