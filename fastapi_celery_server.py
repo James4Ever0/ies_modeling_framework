@@ -30,7 +30,7 @@ app.conf.update(worker_send_task_events=True)
 app.conf.update(worker_concurrency=1)
 memory_limit = 20_000_000
 app.conf.update(worker_max_memory_per_child=memory_limit)
-
+app.conf.update(worker_time_limit = time_limit)
 # limits on ram usage, concurrency, execution time
 
 if __name__ == "__main__":
