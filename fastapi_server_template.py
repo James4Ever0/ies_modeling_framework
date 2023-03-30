@@ -81,7 +81,10 @@ def remove_stale_tasks_decorator(function):
 
 def celery_on_message(body: dict):
     """
-    Celery任务信息更新回调
+    Celery任务信息更新回调函数
+    
+    Args:
+        body (dict): 
     """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
