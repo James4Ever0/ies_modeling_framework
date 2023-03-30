@@ -102,7 +102,7 @@ app.conf.update(worker_send_task_events=True)
 app.conf.update(worker_concurrency=1) # having the same effect of holding the process-wide lock, but showing the status of "PENDING" instead.
 import pint
 ureg = pint.UnitRegistry()
-memory_limit = (20*ureg.GB).to(ureg.KB).magnitude# in KB
+memory_limit = (20*ureg.GB).to(ureg.kB).magnitude# in KB
 # memory_limit is None by default, means no limit on ram
 # app.conf.update(worker_max_memory_per_child=memory_limit)
 
