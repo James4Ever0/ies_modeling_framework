@@ -135,6 +135,7 @@ def get_calculation_state(calculation_id:str) -> Union[None,str]:
     response_model=CalculationAsyncResult,
 )
 def get_calculation_result_async(calculation_id: str):
+    calculation_result = 
     return calculation_result
 
 
