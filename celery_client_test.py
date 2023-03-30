@@ -30,6 +30,7 @@ for _ in range(LOOP_COUNT):
     print("DATA2", data2)  # STARTED.
     # till: SUCCESS.
     r3 = requests.get(url_new, params=dict(task_id=task_id))
+    
     # how many status indicators can it have?
     time.sleep(1)
 
