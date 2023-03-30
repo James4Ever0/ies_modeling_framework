@@ -53,7 +53,7 @@ class AddResultNested(BaseModel):
 REDIS_TASK_KEY = "current_task"
 
 import portalocker
-
+portalocker.Lock()
 
 @app.task
 def add(x, y):
