@@ -13,7 +13,7 @@ app = Celery(
 @app.task
 def calculate_energyflow_graph(energyflow_graph:dict) -> dict:
     """
-    
+    计算能源系统优化
     """
     calculation_result = {} # dummy result.
     return calculation_result
