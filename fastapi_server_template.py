@@ -138,6 +138,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     submit_result = "failed"
     calculation_id = None
     try:
+        
         calculation_id = ...
     except:
         traceback.print_exc()
