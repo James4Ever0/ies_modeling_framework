@@ -73,8 +73,8 @@ app.conf.update(task_track_started=True)  # still off?
 app.conf.update(worker_send_task_events=True)
 
 # better run this with celery commandline.
-# if __name__ == "__main__":
-#     worker = app.Worker()
-#     # print(dir(worker))
-#     worker.start()  # blocking for sure.
-#     # breakpoint()
+if __name__ == "__main__":
+    worker = app.Worker()
+    # print(dir(worker))
+    worker.start()  # blocking for sure.
+    # breakpoint()
