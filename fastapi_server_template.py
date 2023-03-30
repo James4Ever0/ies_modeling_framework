@@ -38,10 +38,17 @@ from fastapi_celery_server import app as celery_app
 # celery has the default of 24 hours. you handle it again here.
 # also has default task time of 1200 seconds. you may experiment.
 taskDict: Dict[str, AsyncResult] = {}
+"""
+任务ID和任务对象的字典
+"""
 taskInfo: Dict[str, datetime.datetime] = {}
 """
+任务ID和任务最近更新时间的字典
 """
 taskResult: Dict[str, Any] = {}
+"""
+任务ID和任务结果的字典
+"""
 
 
 def remove_stale_tasks():
