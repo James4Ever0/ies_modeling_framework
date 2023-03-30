@@ -45,6 +45,7 @@ def remove_stale_tasks():
     """
     now = datetime.datetime.now()
     for key, value in taskInfo.items():
+        ...
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
