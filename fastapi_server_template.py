@@ -131,7 +131,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
         calculation_id (str): 计算ID
 
     Returns:
-        calculation_state (str): 计算状态
+        calculation_state (CalculationStateResult): 计算状态
     """
     calculation_state = None
     task = taskDict.get(calculation_id, None)
