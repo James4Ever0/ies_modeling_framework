@@ -11,6 +11,8 @@ data = r.json()
 print("DATA", data)
 task_id = data["task_id"]
 
+task_id2 = data2['task_id']
+
 url_new = f"{base_url}/task_status"
 
 import time
