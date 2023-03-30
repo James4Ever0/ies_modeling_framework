@@ -59,10 +59,12 @@ def remove_stale_tasks():
         if key in taskResult.keys():
             del taskResult[key]
 
+
 def remove_stale_tasks_decorator(function):
     def inner_function(*args, **kwargs):
         remove_stale_tasks()
         return function(*args, **kwargs)
+
     return inner_function
 
 
@@ -98,6 +100,7 @@ def background_on_message(task: AsyncResult):
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
+
 @remove_stale_tasks_decorator
 @app.post(
     "/calculate_async",
@@ -120,10 +123,11 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
         calculation_id=calculation_id, submit_result=submit_result
     )
 
+
 @remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_state",
-    tags=['async'],
+    tags=["async"],
     response_model=CalculationStateResult,
     response_description="Celery内置任务状态，如果是null则表示不存在该任务",
     summary="获取计算状态",
@@ -145,6 +149,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
         calculation_state = task.state
     return CalculationStateResult(calculation_state=calculation_state)
 
+
 @remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_result_async",
@@ -161,6 +166,7 @@ def get_calculation_result_async(calculation_id: str):
         calculation_state=get_calculation_state(calculation_id).calculation_state,
         calculation_result=calculation_result,
     )
+
 
 @remove_stale_tasks_decorator
 @app.get(
@@ -189,12 +195,23 @@ def revoke_calculation(calculation_id: str):
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
     )
+
+
 from typing import List
-@app.get("/get_calculation_ids",
-    tags=["async"],response_model = List[str], response_description='缓存中可查询的任务ID列表', description='任务如果24小时内没有状态更新会被清出缓存，检查缓存中的所有可查询任务ID', summary='查询任务ID')
-def get_calculation_ids()->  List[str]:
+
+
+@app.get(
+    "/get_calculation_ids",
+    tags=["async"],
+    response_model=List[str],
+    response_description="缓存中可查询的任务ID列表",
+    description="任务如果24小时内没有状态更新会被清出缓存，检查缓存中的所有可查询任务ID",
+    summary="查询任务ID",
+)
+def get_calculation_ids() -> List[str]:
     calculation_ids = list(taskDict.keys())
     return calculation_ids
+
 
 import uvicorn
 
