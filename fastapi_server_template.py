@@ -98,7 +98,7 @@ def background_on_message(task: AsyncResult):
 
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
-
+@remove_stale_tasks_decorator
 @app.post(
     "/calculate_async",
     tags=["async"],
@@ -107,7 +107,6 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
     response_model=CalculationAsyncSubmitResult,
 )
-@remove_stale_tasks_decorator
 def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     # use celery
     submit_result = "failed"
@@ -130,7 +129,6 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     summary="获取计算状态",
     description="根据计算ID获取计算状态",
 )
-@remove_stale_tasks_decorator
 def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     """
     根据计算ID获取计算状态
