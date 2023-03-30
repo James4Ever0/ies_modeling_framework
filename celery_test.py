@@ -45,11 +45,10 @@ class AddResultNested(BaseModel):
 
 
 # use redis lock.
-from redis import Redis
-from redis.lock import Lock as RedisLock
+# from redis import Redis
+# from redis.lock import Lock as RedisLock
 
-redis_instance = Redis.from_url(redis_url)
-
+# redis_instance = Redis.from_url(redis_url)
 
 REDIS_TASK_KEY = "current_task"
 
@@ -60,7 +59,7 @@ def add(x, y):
     # why not working?
     # with lock:
     # still the same?
-    with RedisLock(redis_instance, name="task_id"): # no one will have the lock.
+    # with RedisLock(redis_instance, name="task_id"): # no one will have the lock.
         print("CALCULATING:", x, y)
         # but we plan to do this for 10 seconds.
         import time
