@@ -78,6 +78,7 @@ def background_on_message(task: AsyncResult):
 
 @app.get("/add/{a}/{b}")
 def add_get(a, b, background_task: BackgroundTasks):
+    """
     # apparently it is not calling celery.
     # val = add(a,b)
     args = [a, b]
