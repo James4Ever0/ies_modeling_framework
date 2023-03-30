@@ -41,7 +41,7 @@ import filelock # best way of limiting concurrency? or not?
 LOCK_FILE = ".celery.lock"
 @app.task
 def add(x, y):
-    with filelock.FileLock(LOCK_FILE):
+    with filelock.FileLock(LOCK_FILE): # this lock is not 
         print("CALCULATING:", x, y)
         # but we plan to do this for 10 seconds.
         import time
