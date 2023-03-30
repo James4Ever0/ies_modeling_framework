@@ -121,7 +121,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
         calculation_id=calculation_id, submit_result=submit_result
     )
 
-
+@remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_state",
     tags=['async'],
@@ -147,7 +147,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
         calculation_state = task.state
     return CalculationStateResult(calculation_state=calculation_state)
 
-
+@remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_result_async",
     tags=["async"],
@@ -156,7 +156,6 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     response_description="计算状态和计算结果",
     response_model=CalculationAsyncResult,
 )
-@remove_stale_tasks_decorator
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
 
@@ -165,7 +164,7 @@ def get_calculation_result_async(calculation_id: str):
         calculation_result=calculation_result,
     )
 
-
+@remove_stale_tasks_decorator
 @app.get(
     "/revoke_calculation",
     tags=["async"],
