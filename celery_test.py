@@ -42,6 +42,9 @@ class AddResultNested(BaseModel):
 # import multiprocessing
 # lock = multiprocessing.Lock()
 
+
+# use redis lock.
+
 @app.task
 def add(x, y):
     # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
