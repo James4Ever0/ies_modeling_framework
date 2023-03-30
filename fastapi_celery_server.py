@@ -19,6 +19,8 @@ def calculate_energyflow_graph(energyflow_graph:dict) -> dict:
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
 
+# limits on ram usage, concurrency, execution time
+
 if __name__ == "__main__":
     worker = app.Worker()
     worker.start()
