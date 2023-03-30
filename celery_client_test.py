@@ -1,6 +1,6 @@
 import requests
 
-LOOP_COUNT = 5
+LOOP_COUNT =40
 
 base_url = "http://localhost:8010"
 url = f"{base_url}/add/2/1"
