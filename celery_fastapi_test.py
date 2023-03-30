@@ -79,7 +79,7 @@ def add_get(a, b, background_task: BackgroundTasks):
     args = [a, b]
     # print("")
     # never registered. use name instead?
-    task_name = "tasks.add"
+    task_name = "celery_.add"
     task: AsyncResult = celery_app.send_task(task_name, args=args)
     # task:AsyncResult = add.apply_async(args=args)
 
