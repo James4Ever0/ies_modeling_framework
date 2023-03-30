@@ -95,6 +95,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
 
 def get_calculation_state(calculation_id:str) -> str:
     """
+    
     """
     return calculation_state
 
