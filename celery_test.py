@@ -97,7 +97,7 @@ app.conf.update(task_track_started=True)  # still off?
 
 # just like the commandline config "-E"
 app.conf.update(worker_send_task_events=True)
-
+app.conf.update(worker_concurrency=1)
 # better run this with celery commandline.
 if __name__ == "__main__":
     worker = app.Worker()
