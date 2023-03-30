@@ -44,6 +44,7 @@ class AddResultNested(BaseModel):
 
 
 # use redis lock.
+from redis import Redis
 from redis.lock import Lock as RedisLock
 
 redis_instance = Redis.from_url(task.redis_url)
