@@ -17,6 +17,9 @@ def calculate_energyflow_graph(energyflow_graph:dict) -> dict:
     
     Args:
         energyflow_graph (dict): 能流拓扑图和计算所需信息
+    
+    Returns:
+        
     """
     calculation_result = {} # dummy result.
     return calculation_result
