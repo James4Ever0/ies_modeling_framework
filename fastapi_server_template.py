@@ -190,7 +190,7 @@ def revoke_calculation(calculation_id: str):
         revoke_result=revoke_result, calculation_state=calculation_state
     )
 from typing import List
-@app.get("/get_calculation_ids",response_model = List[str], response_description='', description='' summary='')
+@app.get("/get_calculation_ids",response_model = List[str], response_description='', description='', summary='')
 def get_calculation_ids()->  List[str]:
     calculation_ids = list(taskDict.keys())
     return calculation_ids
