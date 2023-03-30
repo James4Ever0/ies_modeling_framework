@@ -1,3 +1,5 @@
+# hashicorp nomad?
+
 # test to setup celery task schedule.
 # import sys
 
