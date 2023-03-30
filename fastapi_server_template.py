@@ -78,6 +78,8 @@ def remove_stale_tasks_decorator(function):
 
 
 def celery_on_message(body: dict):
+    """
+    """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
 
