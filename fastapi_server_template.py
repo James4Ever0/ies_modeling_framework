@@ -120,6 +120,7 @@ def get_calculation_state(calculation_id:str) -> str:
     Returns:
         calculation_state (str): 计算状态
     """
+    celery_app.
     return calculation_state
 
 @app.get(
