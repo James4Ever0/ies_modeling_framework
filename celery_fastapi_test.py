@@ -52,6 +52,8 @@ def celery_on_message(body: dict):
 
 
 def background_on_message(task: AsyncResult):
+    """
+    """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
     # and not the message callback.
