@@ -16,7 +16,7 @@ def calculate_energyflow_graph(energyflow_graph:dict) -> dict:
     能源系统仿真优化计算方法
     
     Args:
-        energyflow_graph (dict): 能流拓扑图和附加信息
+        energyflow_graph (dict): 能流拓扑图和计算所需信息
     """
     calculation_result = {} # dummy result.
     return calculation_result
