@@ -151,6 +151,7 @@ def revoke_calculation(calculation_id: str):
     
     if calculation_id in taskDict.keys():
         taskDict[calculation_id].revoke(terminate=True)
+        revoke_result='success'
     else:
         revoke_result = 'failed'
     print("TERMINATING TASK:", calculation_id)
