@@ -39,6 +39,8 @@ from fastapi_celery_server import app as celery_app
 # also has default task time of 1200 seconds. you may experiment.
 taskDict: Dict[str, AsyncResult] = {}
 taskInfo: Dict[str, datetime.datetime] = {}
+"""
+"""
 taskResult: Dict[str, Any] = {}
 
 
