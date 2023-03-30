@@ -29,7 +29,7 @@ for _ in range(LOOP_COUNT):
     data2 = r2.json()
     print("DATA2", data2)  # STARTED.
     # till: SUCCESS.
-    r3 = requests.get(url_new, )
+    r3 = requests.get(url_new,params=dict() )
     # how many status indicators can it have?
     time.sleep(1)
 
