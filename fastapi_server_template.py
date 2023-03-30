@@ -54,8 +54,7 @@ def remove_stale_tasks():
         if key in taskInfo.keys():
             del taskInfo[key]
         if key in taskResult.keys():
-
-        del taskResult[key]
+            del taskResult[key]
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
