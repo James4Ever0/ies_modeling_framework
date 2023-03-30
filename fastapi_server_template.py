@@ -120,9 +120,10 @@ def get_calculation_state(calculation_id:str) -> str:
     Returns:
         calculation_state (str): 计算状态
     """
+    calculation_state = None
     task = taskDict.get(calculation_id,None)
     if task is not None:
-        calculation_state = task.status
+        calculation_state = task.state
     return calculation_state
 
 @app.get(
