@@ -40,6 +40,8 @@ class AddResultNested(BaseModel):
 
 # LOCK_FILE = ".celery.lock"
 import multiprocessing
+lock  =multiprocessing.Lock()
+lock.
 @app.task
 def add(x, y):
     # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
