@@ -124,7 +124,7 @@ def revoke_task(task_id: str):
     return "REVOKED"
 
 
-@app.get("/task_result", )
+@app.get("/task_result", response_description="", response_model=..., description="", summary="")
 def get_task_result(task_id: str):
     task_result = taskResult.get(task_id, None)
     task_status = "MISSING"
