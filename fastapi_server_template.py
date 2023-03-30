@@ -130,6 +130,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     summary="获取计算状态",
     description="根据计算ID获取计算状态",
 )
+@remove_stale_tasks_decorator
 def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     """
     根据计算ID获取计算状态
@@ -155,6 +156,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     response_description="计算状态和计算结果",
     response_model=CalculationAsyncResult,
 )
+@remove_stale_tasks_decorator
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
 
@@ -176,6 +178,7 @@ def get_calculation_result_async(calculation_id: str):
     # by default there are some reserved code, for every api. no need to define your own? or the system will merge the custom response code with default ones automatically?
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
+@remove_stale_tasks_decorator
 def revoke_calculation(calculation_id: str):
 
     revoke_result = "failed"
