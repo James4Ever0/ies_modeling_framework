@@ -4,7 +4,7 @@
 # not working.
 # sys.argv.append('-E')
 import os
-os.environ['CELERYD_CONCURRENCY']=1
+os.environ['CELERYD_CONCURRENCY']='1'
 from celery import Celery
 
 # app = Celery("tasks") # not using any broker? it is default!
