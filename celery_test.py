@@ -12,6 +12,7 @@ from celery import Celery
 # app = Celery("tasks", broker="pyamqp://guest@localhost//")
 from passwords import redis_password
 
+redis_url = f"redis://:{redis_password}@localhost:6379"
 # MAIN_NAME = "celery_test"
 MAIN_NAME = "tasks"
 
@@ -47,7 +48,7 @@ class AddResultNested(BaseModel):
 from redis import Redis
 from redis.lock import Lock as RedisLock
 
-redis_instance = Redis.from_url(task.redis_url)
+redis_instance = Redis.from_url(redis_url)
 lock = RedisLock(redis_instance, name="task_id")
 
 REDIS_TASK_KEY = "current_task"
