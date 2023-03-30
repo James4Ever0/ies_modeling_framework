@@ -31,6 +31,7 @@ import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any, Union
 from fastapi_celery_server import app as celery_app
+
 # remember these things won't persist.
 # remove any task without any update for 24 hours.
 # celery has the default of 24 hours. you handle it again here.
@@ -38,6 +39,7 @@ from fastapi_celery_server import app as celery_app
 taskDict: Dict[str, AsyncResult] = {}
 taskInfo: Dict[str, datetime.datetime] = {}
 taskResult: Dict[str, Any] = {}
+
 
 def remove_stale_tasks():
     """
@@ -56,6 +58,7 @@ def remove_stale_tasks():
         if key in taskResult.keys():
             del taskResult[key]
 
+
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
@@ -63,8 +66,8 @@ def celery_on_message(body: dict):
     task_id = body["task_id"]
     status = body["status"]
     print("TASK STATUS?", status)
-    
-    taskInfo[task_id]= datetime.datetime.now()
+
+    taskInfo[task_id] = datetime.datetime.now()
 
     ###
     # BODY TYPE? <class 'dict'>
@@ -86,7 +89,6 @@ def background_on_message(task: AsyncResult):
     print("TASK VALUE?", value)
 
 
-
 app = FastAPI(description=description, version=version, tags_metadata=tags_metadata)
 
 
@@ -100,31 +102,34 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
 )
 def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     # use celery
-    submit_result = 'failed'
+    submit_result = "failed"
     calculation_id = None
     try:
         calculation_id = ...
     except:
         traceback.print_exc()
-    submit_result = 'success'
-    return CalculationAsyncSubmitResult(calculation_id=calculation_id, submit_result=submit_result)
+    submit_result = "success"
+    return CalculationAsyncSubmitResult(
+        calculation_id=calculation_id, submit_result=submit_result
+    )
 
 
-def get_calculation_state(calculation_id:str) -> Union[None,str]:
+def get_calculation_state(calculation_id: str) -> Union[None, str]:
     """
     根据计算ID获取计算状态
 
     Args:
         calculation_id (str): 计算ID
-    
+
     Returns:
         calculation_state (str): 计算状态
     """
     calculation_state = None
-    task = taskDict.get(calculation_id,None)
+    task = taskDict.get(calculation_id, None)
     if task is not None:
         calculation_state = task.state
     return calculation_state
+
 
 @app.get(
     "/get_calculation_result_async",
@@ -136,8 +141,11 @@ def get_calculation_state(calculation_id:str) -> Union[None,str]:
 )
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
-    
-    return CalculationAsyncResult(calculation_state=get_calculation_state(calculation_id), calculation_result
+
+    return CalculationAsyncResult(
+        calculation_state=get_calculation_state(calculation_id),
+        calculation_result=calculation_result,
+    )
 
 
 @app.get(
@@ -153,17 +161,19 @@ def get_calculation_result_async(calculation_id: str):
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
-    
-    revoke_result = 'failed'
+
+    revoke_result = "failed"
     calculation_state = None
     if calculation_id in taskDict.keys():
         print("TERMINATING TASK:", calculation_id)
         taskDict[calculation_id].revoke(terminate=True)
-        revoke_result='success'
+        revoke_result = "success"
         calculation_state = get_calculation_state(calculation_id)
     else:
         print("TASK DOES NOT EXIST:", calculation_id)
-    return RevokeResult(revoke_result=revoke_result, calculation_state=calculation_state)
+    return RevokeResult(
+        revoke_result=revoke_result, calculation_state=calculation_state
+    )
 
 
 import uvicorn
