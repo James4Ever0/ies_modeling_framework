@@ -43,6 +43,7 @@ def remove_stale_tasks():
     """
     遍历并清除24小时未更新的任务
     """
+    for key in taskInfo.keys():
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
