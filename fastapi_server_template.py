@@ -52,7 +52,9 @@ def remove_stale_tasks():
         if key in taskDict.keys():
             del taskDict[key]
         if key in taskInfo.keys():
-        del taskInfo[key]
+            del taskInfo[key]
+        if key in taskResult.keys():
+
         del taskResult[key]
 
 def celery_on_message(body: dict):
