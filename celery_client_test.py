@@ -9,7 +9,7 @@ r = requests.get(url)
 data = r.json()
 
 print("DATA", data)
-task_id = data["task_id"]
+task_id = data["task_id"] 
 
 url_new = f"{base_url}/task_status"
 
