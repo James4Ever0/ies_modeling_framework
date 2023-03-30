@@ -141,7 +141,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     calculation_id = None
     try:
         function_id = ""
-        calculation_id = celery_app.send_task(function_id, args=())
+        calculation_id = celery_app.send_task(function_id, args=(graph.dict(),))
     except:
         traceback.print_exc()
     submit_result = "success"
