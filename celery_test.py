@@ -56,7 +56,8 @@ import portalocker
 
 @app.task
 def add(x, y):
-    with portalocker.Lock('.celery.lock','r+', portalocker.LOCK_EX):
+    # with portalocker.Lock('.celery.lock','r+', portalocker.LOCK_EX):
+    with lock:
         # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
         # with lock:
         # why not working?
