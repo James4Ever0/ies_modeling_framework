@@ -84,7 +84,7 @@ def celery_on_message(body: dict):
     Celery任务信息更新回调函数
     
     Args:
-        body (dict): 任务信息
+        body (dict): 更新的任务信息
     """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
@@ -106,6 +106,7 @@ def celery_on_message(body: dict):
 
 def background_on_message(task: AsyncResult):
     """
+    
     """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
