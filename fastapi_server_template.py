@@ -113,7 +113,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
         calculation_id=calculation_id, submit_result=submit_result
     )
 
-@app.get("/get_calculation_state", )
+@app.get("/get_calculation_state", response_description="",summary="", description="")
 def get_calculation_state(calculation_id: str) -> Union[None, str]:
     """
     根据计算ID获取计算状态
