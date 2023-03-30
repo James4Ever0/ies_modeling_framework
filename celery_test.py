@@ -52,6 +52,8 @@ class AddResultNested(BaseModel):
 
 REDIS_TASK_KEY = "current_task"
 
+import portalocker
+
 @app.task
 def add(x, y):
     # with filelock.FileLock(LOCK_FILE): # this lock is not sharing.
