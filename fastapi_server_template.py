@@ -44,10 +44,10 @@ def remove_stale_tasks():
     遍历并清除24小时未更新的任务
     """
     now = datetime.datetime.now()
-    
+    remove_keys = []
     for key, value in taskInfo.items():
         if (now - value).total_seconds() > 3600 * 24:
-            
+            remove_keys.append(key)
 
 
 def celery_on_message(body: dict):
