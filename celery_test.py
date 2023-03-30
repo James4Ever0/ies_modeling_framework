@@ -12,8 +12,8 @@ from celery import Celery
 # app = Celery("tasks", broker="pyamqp://guest@localhost//")
 from passwords import redis_password
 
-MAIN_NAME = "celery_test"
-# MAIN_NAME = "tasks"
+# MAIN_NAME = "celery_test"
+MAIN_NAME = "tasks"
 
 app = Celery(
     MAIN_NAME,
