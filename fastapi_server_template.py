@@ -48,7 +48,10 @@ def remove_stale_tasks():
     for key, value in taskInfo.items():
         if (now - value).total_seconds() > 3600 * 24:
             remove_keys.append(key)
-
+    for key in remove_keys:
+        del taskDict[key]
+        del taskInfo[key]
+        del taskResult[key]
 
 def celery_on_message(body: dict):
     print("BODY TYPE?", type(body))
