@@ -24,7 +24,8 @@ import time
 
 # how to limit the task threads?
 
-for _ in range(LOOP_COUNT):
+for i in range(LOOP_COUNT):
+    print(i)
     r2 = requests.get(url_new, params=dict(task_id=task_id))
     data2 = r2.json()
     print("DATA2", data2)  # STARTED.
