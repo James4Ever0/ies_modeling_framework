@@ -109,7 +109,7 @@ def background_on_message(task: AsyncResult):
     后台获取任务计算结果的方法
     
     Args:
-        task (AsyncResult): 
+        task (AsyncResult): 任务对象
     """
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
