@@ -129,7 +129,7 @@ def get_calculation_state(calculation_id: str) -> Union[None, str]:
     task = taskDict.get(calculation_id, None)
     if task is not None:
         calculation_state = task.state
-    return calculation_state
+    return CalculationStateResult(calculation_state=calculation_state)
 
 
 @app.get(
