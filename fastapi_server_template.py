@@ -191,7 +191,9 @@ def revoke_calculation(calculation_id: str):
     )
 from typing import List
 @app.get("/get_calculation_ids",response_model = List[str], response_description='', description='' summary='')
-def get_calculation_ids
+def get_calculation_ids():
+    calculation_ids = 
+    return calculation_ids
 
 import uvicorn
 
