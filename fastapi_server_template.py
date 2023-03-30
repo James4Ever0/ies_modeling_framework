@@ -84,7 +84,7 @@ def celery_on_message(body: dict):
     Celery任务信息更新回调函数
     
     Args:
-        body (dict): 
+        body (dict): 任务信息
     """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
