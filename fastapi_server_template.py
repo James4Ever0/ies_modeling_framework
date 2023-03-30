@@ -189,8 +189,8 @@ def revoke_calculation(calculation_id: str):
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
     )
-
-@app.get("/calculation_ids")
+from typing import List
+@app.get("/get_calculation_ids",response_model = List[str])
 
 import uvicorn
 
