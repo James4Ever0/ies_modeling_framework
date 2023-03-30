@@ -28,6 +28,8 @@ taskResult: Dict[str, Any] = {}
 
 
 def celery_on_message(body: dict):
+    """
+    """
     print("BODY TYPE?", type(body))
     print("ON MESSAGE?", body)
 
