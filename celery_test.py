@@ -102,9 +102,10 @@ app.conf.update(worker_send_task_events=True)
 app.conf.update(worker_concurrency=1) # having the same effect of holding the process-wide lock, but showing the status of "PENDING" instead.
 import pint
 ureg = pint.UnitRegistry()
-memory_limit = (20*ureg.GB).to(ureg.kB).magnitude# in KB
+2000,000
+memory_limit = (20*ureg.GB).to(ureg.kB).magnitude # in kB
 # memory_limit is None by default, means no limit on ram
-# app.conf.update(worker_max_memory_per_child=memory_limit)
+app.conf.update(worker_max_memory_per_child=memory_limit)
 
 # better run this with celery commandline.
 if __name__ == "__main__":
