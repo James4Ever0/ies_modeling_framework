@@ -30,7 +30,7 @@ from fastapi_datamodel_template import (
 import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any
-from fastapi_celery_server import 
+from fastapi_celery_server import app
 # remember these things won't persist.
 # remove any task without any update for 24 hours.
 # celery has the default of 24 hours. you handle it again here.
