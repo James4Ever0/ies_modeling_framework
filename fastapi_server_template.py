@@ -73,6 +73,7 @@ def remove_stale_tasks():
 
 def remove_stale_tasks_decorator(function):
     """
+    清除guo qi ren hu
     """
     def inner_function(*args, **kwargs):
         remove_stale_tasks()
