@@ -14,7 +14,7 @@ data = r.json()
 print("DATA", data)
 calculation_id = data["calculation_id"]
 
-r2 = requests.get(f'{base_url}/add/1/2')
+r2 = requests.get(f'{base_url}/calculation_async')
 data2 = r2.json()
 calculation_id2 = data2['calculation_id']
 
