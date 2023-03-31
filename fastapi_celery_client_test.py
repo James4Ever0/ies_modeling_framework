@@ -3,7 +3,7 @@ import requests
 LOOP_COUNT = 20
 
 base_url = "http://localhost:9870"
-url = f"{base_url}/add/2/1"
+url = f"{base_url}calculate_async"
 
 r = requests.get(url)
 data = r.json()
