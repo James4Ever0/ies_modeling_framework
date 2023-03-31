@@ -12,11 +12,11 @@ r = requests.post(url, json=test_graph)
 data = r.json()
 
 print("DATA", data)
-task_id = data["task_id"]
+calculation_id = data["calculation_id"]
 
 r2 = requests.get(f'{base_url}/add/1/2')
 data2 = r2.json()
-task_id2 = data2['task_id']
+calculation_id2 = data2['calculation_id']
 
 url_new = f"{base_url}/task_status"
 
@@ -29,11 +29,11 @@ import time
 
 for i in range(LOOP_COUNT):
     print(i)
-    r2 = requests.get(url_new, params=dict(task_id=task_id))
+    r2 = requests.get(url_new, params=dict(calculation_id=calculation_id))
     data2 = r2.json()
     print("DATA2", data2)  # STARTED.
     # till: SUCCESS.
-    r3 = requests.get(url_new, params=dict(task_id=task_id))
+    r3 = requests.get(url_new, params=dict(calculation_id=calculation_id))
     data3 = r3.json()
     print("DATA3", data3)
     # how many status indicators can it have?
@@ -41,15 +41,15 @@ for i in range(LOOP_COUNT):
 
 url_revoke = f"{base_url}/revoke"
 
-r3 = requests.get(url_revoke, params=dict(task_id=task_id))
+r3 = requests.get(url_revoke, params=dict(calculation_id=calculation_id))
 data3 = r3.json()
 print("REVOKE RESULT?", data3)
 
-r3 = requests.get(url_revoke, params=dict(task_id=task_id))
+r3 = requests.get(url_revoke, params=dict(calculation_id=calculation_id))
 data3 = r3.json()
 print("REVOKE RESULT?", data3)
 time.sleep(1)
-r2 = requests.get(url_new, params=dict(task_id=task_id))
+r2 = requests.get(url_new, params=dict(calculation_id=calculation_id))
 data2 = r2.json()
 print(
     "DATA2", data2
