@@ -5,7 +5,7 @@ LOOP_COUNT = 20
 base_url = "http://localhost:9870"
 url = f"{base_url}/calculate_async"
 
-r = requests.post(url, json={})
+r = requests.post(url, json=})
 data = r.json()
 
 print("DATA", data)
