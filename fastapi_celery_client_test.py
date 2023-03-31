@@ -39,7 +39,7 @@ for i in range(LOOP_COUNT):
     # how many status indicators can it have?
     time.sleep(1)
 
-url_revoke = f"{base_url}/revoke"
+url_revoke = f"{base_url}/revoke_calculation"
 
 r3 = requests.get(url_revoke, params=dict(calculation_id=calculation_id))
 data3 = r3.json()
