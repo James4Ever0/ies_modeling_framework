@@ -18,7 +18,7 @@ r2 = requests.get(f'{base_url}/calculation_async')
 data2 = r2.json()
 calculation_id2 = data2['calculation_id']
 
-url_new = f"{base_url}/task_status"
+url_new = f"{base_url}/get_calculation_state"
 
 import time
 
