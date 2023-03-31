@@ -1,10 +1,14 @@
+import json
 import requests
 
 LOOP_COUNT = 20
 
 base_url = "http://localhost:9870"
 url = f"{base_url}/calculate_async"
-test_graph = 
+import json
+with open("test_graph_data.json",'r') as f:
+    
+test_graph = json.loads(f.read())
 r = requests.post(url, json=test_graph)
 data = r.json()
 
