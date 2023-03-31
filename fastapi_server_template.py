@@ -73,7 +73,7 @@ def remove_stale_tasks():
 
 def remove_stale_tasks_decorator(function):
     """
-    清除guo qi ren hu
+    清除过期任务装饰器
     """
     def inner_function(*args, **kwargs):
         remove_stale_tasks()
