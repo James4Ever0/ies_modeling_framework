@@ -5,7 +5,7 @@ LOOP_COUNT = 20
 
 base_url = "http://localhost:9870"
 url = f"{base_url}/calculate_async"
-with open("test_graph_data.json",'r') as f:
+with open("test_graph_data.json", "r") as f:
     test_graph = json.loads(f.read())
 r = requests.post(url, json=test_graph)
 data = r.json()
@@ -13,9 +13,9 @@ data = r.json()
 print("DATA", data)
 calculation_id = data["calculation_id"]
 
-r2 = requests.get(f'{base_url}/calculation_async')
+r2 = requests.get(f"{base_url}/calculation_async")
 data2 = r2.json()
-calculation_id2 = data2['calculation_id']
+calculation_id2 = data2["calculation_id"]
 
 url_new = f"{base_url}/get_calculation_state"
 
