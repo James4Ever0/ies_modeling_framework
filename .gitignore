@@ -6,6 +6,7 @@
 !*.j2
 !*.json
 !*.mjson
+!*.jsonl
 !*.vue
 !*.ts
 !*.xlsx
