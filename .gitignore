@@ -3,6 +3,7 @@
 *
 !*/
 
+!.gitignore
 !*.j2
 !*.json
 !*.mjson
