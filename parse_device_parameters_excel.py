@@ -15,7 +15,8 @@ if type(sheet1) == Worksheet:
 
     cell1 = sheet1.cell(row=1, column=1) # cell or merged cell.
     # need to determine its type.
-    if type(cell1) == 
+    # if type(cell1) == 
+    print(type(cell1))
 
     cell1_fill = cell1.fill
     cell1_value = cell1.value
