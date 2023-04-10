@@ -25,4 +25,4 @@ if type(sheet1) == Worksheet:
     elif type(cell1) == MergedCell:
         ...
     else:
-        print("Unknown")
+        print("Unknown cell type: %s" % type(cell1))
