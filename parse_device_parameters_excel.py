@@ -8,3 +8,4 @@ excel_file =openpyxl.load_workbook(filename=filepath)
 sheet1 = excel_file['Sheet1']
 
 print(sheet1)
+print(dir(sheet1))
