@@ -11,4 +11,4 @@ print(sheet1)
 print(dir(sheet1))
 breakpoint()
 
-cell1 = sheet1.cell(row=1, column-=1)
+cell1 = sheet1.cell(row=1, column=1)
