@@ -7,15 +7,16 @@ excel_file =openpyxl.load_workbook(filename=filepath)
 from openpyxl.worksheet.worksheet import Worksheet
 sheet1= excel_file['Sheet1']
 if type(sheet1) == Worksheet:
-print(sheet1)
-print(type(sheet1))
-breakpoint()
-print(dir(sheet1))
-breakpoint()
+    print(sheet1)
+    print(type(sheet1))
+    breakpoint()
+    print(dir(sheet1))
+    breakpoint()
 
-cell1 = sheet1.cell(row=1, column=1) # cell or merged cell.
-# need to determine its type.
+    cell1 = sheet1.cell(row=1, column=1) # cell or merged cell.
+    # need to determine its type.
+    if type(cell1) == 
 
-cell1_fill = cell1.fill
-cell1_value = cell1.value
-cell1_column_letter = cell1.column_letter
+    cell1_fill = cell1.fill
+    cell1_value = cell1.value
+    cell1_column_letter = cell1.column_letter
