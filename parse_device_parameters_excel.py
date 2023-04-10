@@ -11,7 +11,7 @@ print(sheet1)
 print(dir(sheet1))
 breakpoint()
 
-cell1 = sheet1.cell(row=1, column=1)
+cell1 = sheet1.cell(row=1, column=1) # cell or merged cell.
 
 cell1_fill = cell1.fill
 cell1_value = cell1.value
