@@ -19,7 +19,7 @@ if type(sheet1) == Worksheet:
     # need to determine its type.
     if type(cell1) == Cell:
         # print(type(cell1))
-        # breakpoint()
+        breakpoint()
         cell1_fill = cell1.fill
         cell1_value = cell1.value
         cell1_column_letter = cell1.column_letter
