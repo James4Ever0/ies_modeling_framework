@@ -33,7 +33,7 @@ if type(sheet1) == Worksheet:
         print("VALUE:", cell1_value)
         font_color = cell1_font.color
         fgColor = cell1_fill.fgColor
-        fgColor = cell1_fill.fgColor
+        bgColor = cell1_fill.bgColor
         breakpoint()
     elif type(cell1) == MergedCell:
         ...
