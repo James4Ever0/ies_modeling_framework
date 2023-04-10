@@ -26,9 +26,9 @@ if type(sheet1) == Worksheet:
         cell1_column_letter = cell1.column_letter
         cell1_font = cell1.font
         print()
-        print("FONT:",cell1_font)
+        print("FONT:",cell1_font) # font color here.
         print()
-        print("FILL:", cell1_fill)
+        print("FILL:", cell1_fill) # includes fg and bg
         print()
         print("VALUE:", cell1_value)
     elif type(cell1) == MergedCell:
