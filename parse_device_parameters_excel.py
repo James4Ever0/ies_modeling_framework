@@ -31,6 +31,7 @@ if type(sheet1) == Worksheet:
         print("FILL:", cell1_fill) # includes fg and bg
         print()
         print("VALUE:", cell1_value)
+        breakpoint()
     elif type(cell1) == MergedCell:
         ...
     else:
