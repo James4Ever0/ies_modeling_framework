@@ -16,3 +16,5 @@ cell1 = sheet1.cell(row=1, column=1)
 cell1_fill = cell1.fill
 cell1_value = cell1.value
 cell1_
+
+cell1_column_letter = cell1.column_letter
