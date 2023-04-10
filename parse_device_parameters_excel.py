@@ -2,4 +2,5 @@ import openpyxl
 
 filepath = "device_parameters_v3.3.xlsx"
 
-data =openpyxl.load_workbook(filename=filepath)
+excel_file =openpyxl.load_workbook(filename=filepath)
+print(excel_file.chartsheets)
