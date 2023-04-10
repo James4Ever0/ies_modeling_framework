@@ -12,4 +12,5 @@ print(dir(sheet1))
 breakpoint()
 
 cell1 = sheet1.cell(row=1, column=1)
-cell1_color = cell1.fill
+cell1_fill = cell1.fill
+cell1.
