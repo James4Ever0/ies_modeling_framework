@@ -22,8 +22,8 @@ if type(sheet1) == Worksheet:
         cell1_fill = cell1.fill
         cell1_value = cell1.value
         cell1_column_letter = cell1.column_letter
-        print(cell1_fill)
-        print(cell1_value)
+        print('FILL:',cell1_fill)
+        print('VALUE:',cell1_value)
     elif type(cell1) == MergedCell:
         ...
     else:
