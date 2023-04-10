@@ -13,4 +13,4 @@ breakpoint()
 
 cell1 = sheet1.cell(row=1, column=1)
 cell1_fill = cell1.fill
-cell1.
+cell1.value
