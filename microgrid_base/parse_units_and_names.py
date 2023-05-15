@@ -1,5 +1,5 @@
 # path = "device_params_intermediate.json"
-path = ""
+path = "microgrid_device_params_intermediate.json"
 
 import json
 

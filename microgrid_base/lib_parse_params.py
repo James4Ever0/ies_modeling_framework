@@ -129,3 +129,5 @@ def csv_parser(filename, output_path):
                             result[dataClasses[0]][dataClasses[1]] = []
                         result[dataClasses[0]][dataClasses[1]].append(second)
     rich.print(result)
+    with open(output_path,'w+') as f:
+        f.write(json.dumps(result, indent=4, ensure_ascii=False))
