@@ -123,4 +123,9 @@ def csv_parser(filename, output_path):
                 else:
                     # now we begin to insert data.
                     if dataClasses[0] and dataClasses[1]:
-                        result
+                        if result.get(dataClasses[0], None) is None:
+                            result[dataClasses[0]] = {}
+                        if result[dataClasses[0]].get(dataClasses[1], None) is None:
+                            result[dataClasses[0]][dataClasses[1]] = []
+                        result[dataClasses[0]][dataClasses[1]].append(second)
+    rich.print(result)
