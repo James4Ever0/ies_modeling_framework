@@ -11,3 +11,6 @@ keys = list(data.keys())
 import rich
 
 rich.print(keys)
+
+for key in keys:
+    rich.print(data[key].keys())
