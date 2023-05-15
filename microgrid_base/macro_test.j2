@@ -15,7 +15,7 @@ file size: {{ b }}
 {{ mymacro(1,2)}}
 
 {% macro mycalledmacroarg(a,b) %}
-{{ caller(a,b)}}
+{{ caller(a,b) }}
 {{a}}
 {{b}}
 {% endmacro%}
@@ -35,6 +35,6 @@ abcdefg
 
 ----
 
-{% call mycalledmacroarg(3,4)%}
-{{ mymacro }}
+{% call(arg1, arg2) mycalledmacroarg(3,4)%}
+{{ mymacro(arg1, arg2) }}
 {%endcall%}
