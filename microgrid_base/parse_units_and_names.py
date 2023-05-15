@@ -14,3 +14,4 @@ rich.print(keys)
 
 for key in keys:
     rich.print(data[key].keys())
+    
