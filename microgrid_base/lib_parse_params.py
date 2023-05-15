@@ -95,7 +95,12 @@ def main_parser(filepath, sheet_name, output_path):
 def csv_parser(filename, output_path):
     df = pandas.read_csv(filename, header=None)
     dataClass = None
+    result = {}
     for index, row in df.iterrows():
         # print(row)
-        print(list(row))
+        # print(list(row))
+        list_row = list(row)
+        first, second = list_row[:2]
         # print(dir(row))
+        list_row_types = [(e, type(e)) for e in list_row]
+        print(list_row_types)
