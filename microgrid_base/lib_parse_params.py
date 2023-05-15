@@ -93,6 +93,9 @@ def main_parser(filepath, sheet_name, output_path):
 
 
 def csv_parser(filename, output_path):
-    df = pandas.read_csv(filename)
-    for row in df.iterrows():
-        print(row)
+    df = pandas.read_csv(filename, header=None)
+    dataClass = None
+    for index, row in df.iterrows():
+        # print(row)
+        print(list(row))
+        # print(dir(row))
