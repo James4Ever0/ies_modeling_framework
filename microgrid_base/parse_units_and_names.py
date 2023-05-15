@@ -36,4 +36,9 @@ for key in keys:
             val = val.strip("*").strip(":").strip("：").strip()
             val = val.replace("（","(").replace("）",")").replace(" ","")
             print(val)
-            
+            if val in CHAR_TYPE:
+                print("CHAR_TYPE")
+            elif val in META_TYPE:
+                print("META_TYPE")
+            else:
+                raise Exception("Unknown Value:", val)
