@@ -18,7 +18,7 @@ COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
 META_TYPE = ["设备额定运行参数",'设备经济性参数','设备运行约束']
 
-TRANSLATION_TABLE = {'Area'} # EnglishName: [ChineseName, ...]
+TRANSLATION_TABLE = {'Area':["光伏板面积"]} # EnglishName: [ChineseName, ...]
 
 LIST_TYPE = [] # notice, list contains multiple headings, each heading may have its own unit.
 
@@ -41,4 +41,7 @@ for key in keys:
             elif val in META_TYPE:
                 print("META_TYPE")
             else:
+                # begin to parse it.
+                import parse
+                result = parse.parse("{val_name}({val_unit})",val)
                 raise Exception("Unknown Value:", val)
