@@ -18,7 +18,9 @@ COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
 META_TYPE = ["设备额定运行参数",'设备经济性参数','设备运行约束']
 
-TRANSLATION_TABLE = {'Area':["光伏板面积"]} # EnglishName: [ChineseName, ...]
+BASE_TRANSLATION_TABLE = {'Area':["光伏板面积"]} # EnglishName: [ChineseName, ...]
+
+TRANSLATION_TABLE = { for k,v in BASE_TRANSLATION_TABLE.items()}
 
 LIST_TYPE = [] # notice, list contains multiple headings, each heading may have its own unit.
 
@@ -44,4 +46,11 @@ for key in keys:
                 # begin to parse it.
                 import parse
                 result = parse.parse("{val_name}({val_unit})",val)
+                if result:
+                    val_name, val_unit = result['val_name'], result['val_unit']
+                else:
+                    val_name = val
+                    val_unit = None
+                if val_name in TRANSLATION_TABLE.keys():
+                    print("TRANS", TRANSLATION_TABLE[val_name])
                 raise Exception("Unknown Value:", val)
