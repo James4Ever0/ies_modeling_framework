@@ -97,6 +97,7 @@ def csv_parser(filename, output_path):
     df = pandas.read_csv(filename, header=None)
     dataClasses = [None, None]
     result = {}
+    lastEmpty=True
     for index, row in df.iterrows():
         # print(row)
         # print(list(row))
@@ -104,6 +105,7 @@ def csv_parser(filename, output_path):
         first, second = list_row[:2]
         # print(dir(row))
         if first is numpy.nan and second is numpy.nan:
+            lastEmpty = True
             continue
         # list_row_types = [(e, type(e)) for e in list_row]
         # print(list_row_types)
@@ -116,4 +118,6 @@ def csv_parser(filename, output_path):
         if type(second) == str:
             second = second.strip()
             if len(second)>0:
-                dataClasses
+                if lastEmpty:
+                    dataClasses
+                    lastEmpty=False
