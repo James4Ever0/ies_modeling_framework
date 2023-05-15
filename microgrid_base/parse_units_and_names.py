@@ -12,9 +12,11 @@ import rich
 
 rich.print(keys)
 
-CHAR_TYPE = []
+CHAR_TYPE = ["生产厂商","设备型号"]
 
-META_TYPE = []
+COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
+
+META_TYPE = ["设备额定运行参数",'设备经济性参数','设备运行约束']
 
 TRANSLATION_TABLE = {} # EnglishName: [ChineseName, ...]
 
