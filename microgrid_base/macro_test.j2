@@ -1,3 +1,5 @@
+{{ test}}
+
 {% macro mymacro(a,b) -%}
 source code path: {{ a }}
 file size: {{ b }}
@@ -8,6 +10,7 @@ file size: {{ b }}
 {{caller()}}
 2nd arg: {{b}}
 {{caller()}}
+{% endmacro%}
 
 {{ mymacro(1,2)}}
 
