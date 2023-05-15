@@ -16,6 +16,11 @@ CHAR_TYPE = []
 
 META_TYPE = []
 
+TRANSLATION_TABLE = {} # EnglishName: [ChineseName, ...]
+
+LIST_TYPE = [] # notice, list contains multiple headings 
+# you need to check for units. 
+
 for key in keys:
     rich.print(data[key].keys())
     # val_list = data[key]
