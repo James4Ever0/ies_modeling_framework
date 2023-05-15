@@ -4,21 +4,11 @@ import openpyxl
 filepath = "设备信息库各参数.xlsx"
 
 excel_file = openpyxl.load_workbook(filepath)
-
-sheet1 = excel_file["设备参数"]
-
-
-
-import openpyxl
-
-filepath = "device_parameters_v3.3.xlsx"
-
-excel_file = openpyxl.load_workbook(filename=filepath)
 # print(excel_file.sheetnames) # ['Sheet1']
 from openpyxl.worksheet.worksheet import Worksheet
 # from openpyxl.cell.cell import Cell, MergedCell
 
-sheet1 = excel_file["Sheet1"]
+sheet1 = excel_file["设备参数"]
 if type(sheet1) == Worksheet:
     # order: category; name (unit), example, delete or not
     # you need to scan through all cells to find some cell with specific color.
