@@ -18,7 +18,10 @@ META_TYPE = []
 
 TRANSLATION_TABLE = {} # EnglishName: [ChineseName, ...]
 
-LIST_TYPE = [] # notice, list contains multiple headings 
+LIST_TYPE = [] # notice, list contains multiple headings, each heading may have its own unit.
+
+# you may copy this from the table, not parsing it though.
+
 # you need to check for units. 
 
 for key in keys:
