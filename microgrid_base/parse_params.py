@@ -1,14 +1,19 @@
 # first get the titles.
 import openpyxl
+from openpyxl.worksheet.worksheet import Worksheet
+import rich
+import json
 
 filepath = "设备信息库各参数.xlsx"
+sheet_name = "设备参数"
+output_path = "device_params_intermediate.json"
 
+def 
 excel_file = openpyxl.load_workbook(filepath)
 # print(excel_file.sheetnames) # ['Sheet1']
-from openpyxl.worksheet.worksheet import Worksheet
 # from openpyxl.cell.cell import Cell, MergedCell
 
-sheet1 = excel_file["设备参数"]
+sheet1 = excel_file[sheet_name]
 if type(sheet1) == Worksheet:
     # order: category; name (unit), example, delete or not
     # you need to scan through all cells to find some cell with specific color.
@@ -47,7 +52,6 @@ if type(sheet1) == Worksheet:
             mHeads.append(head)
         if prevHead:
             headMaps.update({index: prevHead})
-    import rich
 
     rich.print(headMaps)
 
@@ -83,9 +87,7 @@ if type(sheet1) == Worksheet:
     processBCD(FGH)
 
     rich.print(target_json)
-    import json
 
-    output_path = "device_params_intermediate.json"
     with open(output_path, "w+") as f:
         f.write(json.dumps(target_json, indent=4, ensure_ascii=False))
     print("WRITE TO:", output_path)
