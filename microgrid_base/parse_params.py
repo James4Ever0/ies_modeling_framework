@@ -20,3 +20,8 @@ def getColumnRangePerRow(start, end):
         yield index, [col.value for col in row[start:end]]
 
 heads = getColumnRangePerRow(0, 1)
+
+for i, cvals in heads:
+    print(i)
+    print(cvals)
+    print()
