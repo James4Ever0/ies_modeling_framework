@@ -108,4 +108,5 @@ def csv_parser(filename, output_path):
         # list_row_types = [(e, type(e)) for e in list_row]
         # print(list_row_types)
         # numpy.nan is a float, not an int, so we can't use it as a number
-        
+        if type(first) == str:
+            if 
