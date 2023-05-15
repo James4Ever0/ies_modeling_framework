@@ -94,3 +94,4 @@ def main_parser(filepath, sheet_name, output_path):
 
 def csv_parser(filename, output_path):
     df = pandas.read_csv(filename)
+    df.
