@@ -4,6 +4,7 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 import pandas
 import rich
+import numpy
 import json
 
 def main_parser(filepath, sheet_name, output_path):
@@ -102,5 +103,9 @@ def csv_parser(filename, output_path):
         list_row = list(row)
         first, second = list_row[:2]
         # print(dir(row))
-        list_row_types = [(e, type(e)) for e in list_row]
-        print(list_row_types)
+        if first is numpy.nan and second is numpy.nan:
+            continue
+        # list_row_types = [(e, type(e)) for e in list_row]
+        # print(list_row_types)
+        # numpy.nan is a float, not an int, so we can't use it as a number
+        
