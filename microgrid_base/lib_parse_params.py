@@ -95,7 +95,7 @@ def main_parser(filepath, sheet_name, output_path):
 
 def csv_parser(filename, output_path):
     df = pandas.read_csv(filename, header=None)
-    dataClass = None
+    dataClasses = [None, None]
     result = {}
     for index, row in df.iterrows():
         # print(row)
@@ -111,9 +111,9 @@ def csv_parser(filename, output_path):
         if type(first) == str:
             first = first.strip()
             if len(first)>0:
-                dataClass = first
+                dataClasses[0] = first
         
         if type(second) == str:
             second = second.strip()
             if len(second)>0:
-                ...
+                dataClasses
