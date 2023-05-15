@@ -2,6 +2,7 @@
 # 解析设备参数表 可能也适用于设备接口信息解析
 import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
+import pandas
 import rich
 import json
 
@@ -89,3 +90,7 @@ def main_parser(filepath, sheet_name, output_path):
         with open(output_path, "w+") as f:
             f.write(json.dumps(target_json, indent=4, ensure_ascii=False))
         print("WRITE TO:", output_path)
+
+
+def csv_parser(filename, output_path):
+    df = pandas.read_csv(filename)
