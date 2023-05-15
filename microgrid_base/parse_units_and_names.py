@@ -31,4 +31,9 @@ for key in keys:
     # val_list = data[key]
     for subkey in data[key].keys():
         val_list = data[key][subkey]
-        rich.print(val_list)
+        # rich.print(val_list)
+        for val in val_list:
+            val = val.strip("*").strip(":").strip("：").strip()
+            val = val.replace("（","(").replace("）",")").replace(" ","")
+            print(val)
+            
