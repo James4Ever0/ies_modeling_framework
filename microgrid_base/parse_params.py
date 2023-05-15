@@ -1,4 +1,3 @@
-
 from lib_parse_params import main_parser, csv_parser
 
 xlsx_worklist = [
@@ -12,9 +11,9 @@ for (filepath, sheet_name, output_path) in xlsx_worklist:
     print("____")
 
 csv_worklist = [
-("设备接口-微电网参数", "microgrid_device_params_intermediate"),
+    ("设备接口-微电网参数", "microgrid_device_params_intermediate"),
 ]
 
 for (filepath, output_path) in csv_worklist:
-    csv_parser(filepath, output_path)
+    csv_parser(f"{filepath}.csv", f"{output_path}.json")
     print("____")
