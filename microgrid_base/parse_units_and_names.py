@@ -1,4 +1,5 @@
-path = "device_params_intermediate.json"
+# path = "device_params_intermediate.json"
+path = ""
 
 import json
 
