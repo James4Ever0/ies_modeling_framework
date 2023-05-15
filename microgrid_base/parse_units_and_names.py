@@ -20,7 +20,7 @@ META_TYPE = ["设备额定运行参数",'设备经济性参数','设备运行约
 
 BASE_TRANSLATION_TABLE = {'Area':["光伏板面积"]} # EnglishName: [ChineseName, ...]
 
-TRANSLATION_TABLE = { for k,v in BASE_TRANSLATION_TABLE.items()}
+TRANSLATION_TABLE = {e:k for k,v in BASE_TRANSLATION_TABLE.items() for e in v }
 
 LIST_TYPE = [] # notice, list contains multiple headings, each heading may have its own unit.
 
