@@ -12,7 +12,9 @@ import rich
 
 rich.print(keys)
 
-CHAR
+CHAR_TYPE = []
+
+META_TYPE = []
 
 for key in keys:
     rich.print(data[key].keys())
