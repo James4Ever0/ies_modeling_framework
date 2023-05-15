@@ -111,7 +111,7 @@ def csv_parser(filename, output_path):
         if type(first) == str:
             first = first.strip()
             if len(first)>0:
-                ...
+                dataClass = first
         
         if type(second) == str:
             second = second.strip()
