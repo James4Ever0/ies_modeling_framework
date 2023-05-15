@@ -12,6 +12,11 @@ import rich
 
 rich.print(keys)
 
+CHAR
+
 for key in keys:
     rich.print(data[key].keys())
-    
+    # val_list = data[key]
+    for subkey in data[key].keys():
+        val_list = data[key][subkey]
+        rich.print(val_list)
