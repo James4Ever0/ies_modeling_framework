@@ -1,6 +1,6 @@
 from lib_parse_params import main_parser, csv_parser
 
-FLAGS = {"XLSX": False, "CSV":True}
+FLAGS = {"XLSX": False, "CSV": True}
 # FLAGS = {"XLSX": True, "CSV":True}
 
 xlsx_worklist = [
@@ -9,16 +9,17 @@ xlsx_worklist = [
     # ("设备接口", "微电网参数", "microgrid_device_params_intermediate"),
 ]
 
-if FLAGS['XLSX']:
-    for (filepath, sheet_name, output_path) in xlsx_worklist:
-        main_parser(f"{filepath}.xlsx", sheet_name, f"{output_path}.json")
-        print("____")
-
 csv_worklist = [
     ("设备接口-微电网参数", "microgrid_device_params_intermediate"),
 ]
 
-if FLAGS['CSV']:
+if FLAGS["XLSX"]:
+    for (filepath, sheet_name, output_path) in xlsx_worklist:
+        main_parser(f"{filepath}.xlsx", sheet_name, f"{output_path}.json")
+        print("____")
+
+
+if FLAGS["CSV"]:
     for (filepath, output_path) in csv_worklist:
         csv_parser(f"{filepath}.csv", f"{output_path}.json")
         print("____")
