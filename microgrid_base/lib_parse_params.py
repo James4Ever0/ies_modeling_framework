@@ -114,10 +114,13 @@ def csv_parser(filename, output_path):
             first = first.strip()
             if len(first)>0:
                 dataClasses[0] = first
-        
         if type(second) == str:
             second = second.strip()
             if len(second)>0:
                 if lastEmpty:
-                    dataClasses
+                    dataClasses[1] = second
                     lastEmpty=False
+                else:
+                    # now we begin to insert data.
+                    if dataClasses[0] and dataClasses[1]:
+                        result
