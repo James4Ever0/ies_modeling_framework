@@ -76,13 +76,17 @@ for key in keys:
                     print(
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
-                    for trans_source_unit, trans_target_unit in TRANS
-                    val_unit = 
-                    
-                    print("UNIT", val_unit)
-                    unit = ureg.Unit(val_unit)
-                    compatible_units = ureg.get_compatible_units(val_unit)
-                    print("COMPATIBLE UNITS", compatible_units)
-                    # parse this unit!
+                    if val_unit:
+                        for trans_source_unit, trans_target_unit in UNIT_TRANSLATION_TABLE.items():
+                            val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
+                        
+                        print("UNIT", val_unit)
+                        unit = ureg.Unit(val_unit)
+                        compatible_units = ureg.get_compatible_units(val_unit)
+                        print("COMPATIBLE UNITS", compatible_units)
+                        # parse this unit!
+                    else:
+                        # find default unit for this one.
+                        raise Exception("NO UNIT FOR:", val)
                 else:
                     raise Exception("Unknown Value:", val)
