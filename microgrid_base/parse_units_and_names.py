@@ -45,14 +45,18 @@ def parse_convert_string(convert_string:str):
     suffix = ""
     if hyphen_count == 1:
         if convert_string.startswith("-"):
+            suffix = convert_string.strip("-")
         elif convert_string.endswith("-"):
-            
+            prefix = convert_string.strip("-")
         else: # in the middle!
             prefix, suffix = convert_string.split("-")
         prefix = prefix.strip()
         suffix = suffix.strip()
-    elif hyphen_count = 0:
-        
+    elif hyphen_count == 0:
+        if len(convert_string)!=0:
+            raise Exception("")
+    else:
+        raise Exception("")
         
 
 # convert_string: "[prefix][-][suffix]"
