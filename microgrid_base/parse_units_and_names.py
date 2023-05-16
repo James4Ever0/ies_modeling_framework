@@ -55,5 +55,8 @@ for key in keys:
                     val_name = val
                     val_unit = None
                 if val_name in TRANSLATION_TABLE.keys():
-                    print("TRANS", TRANSLATION_TABLE[val_name])
+                    print(
+                        "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
+                    )
+                    print("UNIT", val_unit)
                 raise Exception("Unknown Value:", val)
