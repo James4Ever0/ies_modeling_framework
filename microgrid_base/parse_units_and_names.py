@@ -42,9 +42,9 @@ for key in keys:
     for subkey in data[key].keys():
         val_list = data[key][subkey]
         # rich.print(val_list)
-        print("____"*10+"[{}-{}]".format(key,subkey))
+        print("____" * 10 + "[{}-{}]".format(key, subkey))
         for val in val_list:
-            print("____"*10)
+            print("____" * 10)
             val = val.replace("（", "(").replace("）", ")").replace(" ", "")
             val = val.strip("*").strip(":").strip("：").strip()
             print(val)
@@ -56,7 +56,10 @@ for key in keys:
                 # begin to parse it.
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
-                    val_name, val_unit = result["val_name"].strip(), result["val_unit"].strip()
+                    val_name, val_unit = (
+                        result["val_name"].strip(),
+                        result["val_unit"].strip(),
+                    )
                 else:
                     val_name = val
                     val_unit = None
@@ -66,7 +69,7 @@ for key in keys:
                     )
                     print("UNIT", val_unit)
                     unit = ureg.Unit(val_unit)
-                    compatible_units=  ureg.get_compatible_units(val_unit)
+                    compatible_units = ureg.get_compatible_units(val_unit)
                     print("COMPATIBLE UNITS", compatible_units)
                     # parse this unit!
                 else:
