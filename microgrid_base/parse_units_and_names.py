@@ -2,6 +2,7 @@
 path = "microgrid_device_params_intermediate.json"
 
 import json
+from typing import ItemsView
 import parse
 import pint
 
@@ -75,6 +76,7 @@ for key in keys:
                     print(
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
+                    for 
                     val_unit = 
                     
                     print("UNIT", val_unit)
