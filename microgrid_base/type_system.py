@@ -25,7 +25,7 @@ coax_triplets = [
 
 types = set()
 
-types_connectivity_matrix = {} # {frozenset(start, end): generated_type}
+types_connectivity_matrix = {} # {frozenset([start, end]): generated_type}
 
 for start, end, wire_name in coax_triplets:
     connectable_wire_name, unconnectable_wire_name = (
@@ -38,4 +38,9 @@ for start, end, wire_name in coax_triplets:
     types.add(connectable_wire_name)
     types.add(unconnectable_wire_name)
     
-    types_connectivity_matrix.update({frozenset(start, end):connectable_wire_name})
+    types_connectivity_matrix.update({frozenset([start, end]):connectable_wire_name})
+    types_connectivity_matrix.update({frozenset([start, connectable_wire_name]): unconnectable_wire_name})
+
+import rich
+rich.print(types)
+{'供电端输出', '可连接储能端母线', '不可连接供电端母线', '双向变流器输入输出', '不可连接储能端母线', '可连接母线', '变流器输入', '储能端输入输出', '母线输出', '不可连接母线', '可连接供电端母线', '母线输入'}
