@@ -887,6 +887,7 @@ m3 = meter ** 3
 
 台 = [count_quantity]
 
+# to be more compatible.
 one = [base_quantity]
 percent = 0.01 one
 # % = percent
