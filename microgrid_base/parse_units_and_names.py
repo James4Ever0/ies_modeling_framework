@@ -86,6 +86,9 @@ for key in keys:
                     val_unit = None
                 if val_name in TRANSLATION_TABLE.keys():
                     base_class = TRANSLATION_TABLE[val_name]
+                    default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
+                    print("DEFAULT UNIT:", default_unit)
+                    default_unit_real = ureg.Unit(default_unit)
                     print(
                         "TRANS {} -> {}".format(val_name, base_class)
                     )
@@ -100,10 +103,13 @@ for key in keys:
 
                         # parse this unit!
                     else:
-                        val_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
+                        val_unit = default_unit
+                        print("USING DEFAULT UNIT")
                     print("UNIT", val_unit)
                     unit = ureg.Unit(val_unit)
                     compatible_units = ureg.get_compatible_units(val_unit)
-                    print("COMPATIBLE UNITS", compatible_units)
+                    # print("COMPATIBLE UNITS", compatible_units)
+                    if default_unit in compatible_units:
+                        
                 else:
                     raise Exception("Unknown Value:", val)
