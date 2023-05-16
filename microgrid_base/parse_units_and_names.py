@@ -36,14 +36,19 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     ),
 }  # EnglishName: (BaseUnit, [ChineseName, ...])
 
-BASE_CLASS_TO_UNIT_TABLE = {k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()}
+BASE_CLASS_TO_UNIT_TABLE = {
+    k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
+}
+
 
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
 
 
-TRANSLATION_TABLE = revert_dict({k: v[1] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()})
+TRANSLATION_TABLE = revert_dict(
+    {k: v[1] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()}
+)
 
 LIST_TYPE = (
     []
@@ -89,9 +94,10 @@ for key in keys:
                     default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
                     print("DEFAULT UNIT:", default_unit)
                     default_unit_real = ureg.Unit(default_unit)
-                    print(
-                        "TRANS {} -> {}".format(val_name, base_class)
+                    default_unit_compatible = ureg.get_compatible_units(
+                        default_unit_real
                     )
+                    print("TRANS {} -> {}".format(val_name, base_class))
                     if val_unit:
                         for (
                             trans_source_unit,
@@ -100,7 +106,6 @@ for key in keys:
                             val_unit = val_unit.replace(
                                 trans_source_unit, trans_target_unit
                             )
-
                         # parse this unit!
                     else:
                         val_unit = default_unit
@@ -109,7 +114,11 @@ for key in keys:
                     unit = ureg.Unit(val_unit)
                     compatible_units = ureg.get_compatible_units(val_unit)
                     # print("COMPATIBLE UNITS", compatible_units)
-                    if default_unit in compatible_units:
-                        
+                    if not default_unit_compatible == compatible_units:
+                        raise Exception(
+                            "Unit {} not compatible with default unit {}".format(
+                                val_unit, default_unit
+                            )
+                        )
                 else:
                     raise Exception("Unknown Value:", val)
