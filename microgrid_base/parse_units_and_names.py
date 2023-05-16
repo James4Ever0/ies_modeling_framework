@@ -32,13 +32,14 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         },
     ),
     "Efficiency": ("percent", {"": ["电电转换效率"]}),
-    "Power": ("kW", {"": [""]}),
+    "Power": ("kW", {"": ["组件额定功率"]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 
 # convert_string: "[prefix][-][suffix]"
 # contain either 1 or no hyphen.
 # if contain no hyphen, it must be empty string.
+
 
 def parse_convert_string(convert_string: str):
     convert_string = convert_string.strip()
@@ -61,6 +62,7 @@ def parse_convert_string(convert_string: str):
         raise Exception("Invalid convert string:", convert_string)
     return prefix, suffix
 
+
 BASE_TRANSLATION_TABLE = {}
 
 for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
@@ -72,6 +74,7 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
 BASE_CLASS_TO_UNIT_TABLE = {
     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
 }
+
 
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
