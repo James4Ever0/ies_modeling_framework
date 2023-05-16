@@ -32,6 +32,10 @@ LIST_TYPE = (
     []
 )  # notice, list contains multiple headings, each heading may have its own unit.
 
+BASE_UNIT_TRANSLATION_TABLE = {'percent':['%']}
+
+UNIT_TRANSLATION_TABLE = {}
+
 # you may copy this from the table, not parsing it though.
 
 # you need to check for units.
