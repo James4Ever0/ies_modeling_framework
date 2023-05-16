@@ -70,7 +70,6 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         k0 = prefix + k.strip() + suffix
         BASE_TRANSLATION_TABLE.update({k0: v1})
 
-
 BASE_CLASS_TO_UNIT_TABLE = {
     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
 }
