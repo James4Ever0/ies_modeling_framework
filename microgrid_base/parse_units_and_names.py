@@ -37,6 +37,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     ),
     "Efficiency": ("percent", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
+    "DeltaLimit": ("percent/second", {"":["发电爬坡率"]})
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 
@@ -66,9 +67,9 @@ def parse_convert_string(convert_string: str):
         raise Exception("Invalid convert string:", convert_string)
     return prefix, suffix
 
-
 BASE_TRANSLATION_TABLE = {}
 BASE_CLASS_TO_UNIT_TABLE = {}
+
 for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     for k1, v1 in v[1].items():
         prefix, suffix = parse_convert_string(k1)
