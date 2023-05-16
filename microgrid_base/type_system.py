@@ -23,11 +23,16 @@ coax_triplets = [
     ("母线输入", "母线输出", "母线"),
 ]
 
-matrix
+types = set()
+
+types_connectivity_triplets = []
 
 for start, end, wire_name in coax_triplets:
     connectable_wire_name, unconnectable_wire_name = (
         f"可连接{wire_name}",
         f"不可连接{wire_name}",
     )
-    
+    types.add(start)
+    types.add(end)
+    types.add(connectable_wire_name)
+    types.add(unconnectable_wire_name)
