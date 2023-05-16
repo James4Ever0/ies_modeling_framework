@@ -72,8 +72,14 @@ import json
 csv_path = "设备接口-离网型微电网.csv"
 
 lines = []
+line_sep_count = []
 with open(csv_path,'r') as f:
-    f.readline()
+    for line in f.readlines():
+        line_sep_count = line.count(",")
+        if line_sep_count == 0:
+            continue
+        lines.append(line)
+        line
 port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
 print(port_df)
