@@ -4,6 +4,8 @@ path = "microgrid_device_params_intermediate.json"
 import json
 import parse
 
+unit_def_path = "../merged_units.txt"
+
 with open(path, "r") as f:
     data = json.load(f)
 
@@ -60,5 +62,6 @@ for key in keys:
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
                     print("UNIT", val_unit)
+                    # parse this unit!
                 else:
                     raise Exception("Unknown Value:", val)
