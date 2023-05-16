@@ -884,7 +884,8 @@ m3 = meter ** 3
 
 台 = [quantity_1]
 
-one = [quantity_2]
+one = []
 percent = 0.01 one
+% = percent
 
 p_u_ = [quantity_3]
