@@ -74,7 +74,6 @@ BASE_CLASS_TO_UNIT_TABLE = {
     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
 }
 
-
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
