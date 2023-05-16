@@ -81,7 +81,8 @@ def revert_dict(mdict: dict):
     return result
 
 
-TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
+TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
+# TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
 LIST_TYPE = (
     []
