@@ -66,6 +66,8 @@ for key in keys:
                     )
                     print("UNIT", val_unit)
                     unit = ureg.Unit(val_unit)
+                    compatible_units=  ureg.get_compatible_units(val_unit)
+                    print("COMPATIBLE UNITS", compatible_units)
                     # parse this unit!
                 else:
                     raise Exception("Unknown Value:", val)
