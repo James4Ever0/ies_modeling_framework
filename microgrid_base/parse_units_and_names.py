@@ -1,6 +1,9 @@
 # path = "device_params_intermediate.json"
 path = "microgrid_device_params_intermediate.json"
 
+
+# 年放电量需求 * huan
+
 import json
 import parse
 import pint
