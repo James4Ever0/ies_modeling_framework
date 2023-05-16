@@ -25,11 +25,16 @@ COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
 META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束"]
 
-BASE_TRANSLATION_TABLE = {"Area": ["光伏板面积"]}  # EnglishName: [ChineseName, ...]
+BASE_TRANSLATION_TABLE = {
+    "Area": ["光伏板面积"],
+    "Efficiency": ["电电转换效率"],
+}  # EnglishName: [ChineseName, ...]
 
-def revert_dict(mdict:dict):
+
+def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
+
 
 TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 
@@ -37,7 +42,7 @@ LIST_TYPE = (
     []
 )  # notice, list contains multiple headings, each heading may have its own unit.
 
-BASE_UNIT_TRANSLATION_TABLE = {'percent':['%']}
+BASE_UNIT_TRANSLATION_TABLE = {"percent": ["%"]}
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
@@ -77,9 +82,14 @@ for key in keys:
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
                     if val_unit:
-                        for trans_source_unit, trans_target_unit in UNIT_TRANSLATION_TABLE.items():
-                            val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
-                        
+                        for (
+                            trans_source_unit,
+                            trans_target_unit,
+                        ) in UNIT_TRANSLATION_TABLE.items():
+                            val_unit = val_unit.replace(
+                                trans_source_unit, trans_target_unit
+                            )
+
                         print("UNIT", val_unit)
                         unit = ureg.Unit(val_unit)
                         compatible_units = ureg.get_compatible_units(val_unit)
