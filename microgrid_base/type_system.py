@@ -1,5 +1,7 @@
 
-import 
+import pandas
+
+output_path = "microgrid_type_system.xlsx"
 
 class MicrogridPortTypes:
     供电端输出
