@@ -25,14 +25,17 @@ coax_triplets = [
 
 types = set()
 
-types_connectivity_triplets = []
+types_connectivity_matrix = {} # {frozenset(start, end): generated_type}
 
 for start, end, wire_name in coax_triplets:
     connectable_wire_name, unconnectable_wire_name = (
         f"可连接{wire_name}",
         f"不可连接{wire_name}",
     )
+    
     types.add(start)
     types.add(end)
     types.add(connectable_wire_name)
     types.add(unconnectable_wire_name)
+    
+    types_connectivity_matrix.update({frozenset(start, end):connectable_wire_name})
