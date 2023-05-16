@@ -2,7 +2,6 @@
 path = "microgrid_device_params_intermediate.json"
 
 import json
-from typing import ItemsView
 import parse
 import pint
 
