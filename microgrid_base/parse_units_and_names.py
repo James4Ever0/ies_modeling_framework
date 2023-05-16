@@ -37,7 +37,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     ),
     "Efficiency": ("percent", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
-    "DeltaLimit": ("percent/second", {"":[],"Power-":["发电爬坡率"]})
+    "DeltaLimit": ("percent/second", {"":[],"Power-":["发电爬坡率"]}),
+    "Cost": ("", {"":[]})
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 

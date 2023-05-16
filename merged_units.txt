@@ -885,10 +885,11 @@ neper = 1 ; logbase: 2.71828182845904523536028747135266249775724709369995; logfa
 m2 = meter ** 2
 m3 = meter ** 3
 
-台 = [count_quantity]
+台 = []
 
 # to be more compatible.
-one = [base_quantity]
+# one = [base_quantity]
+one = []
 percent = 0.01 one
 # % = percent
 
