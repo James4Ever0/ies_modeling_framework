@@ -23,3 +23,11 @@ coax_triplets = [
     ("母线输入", "母线输出", "母线"),
 ]
 
+matrix
+
+for start, end, wire_name in coax_triplets:
+    connectable_wire_name, unconnectable_wire_name = (
+        f"可连接{wire_name}",
+        f"不可连接{wire_name}",
+    )
+    
