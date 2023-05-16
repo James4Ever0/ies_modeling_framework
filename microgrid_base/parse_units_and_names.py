@@ -76,7 +76,7 @@ for key in keys:
                     print(
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
-                    for 
+                    for trans_source_unit, trans_target_unit in TRANS
                     val_unit = 
                     
                     print("UNIT", val_unit)
