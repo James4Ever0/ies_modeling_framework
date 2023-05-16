@@ -54,7 +54,7 @@ def parse_convert_string(convert_string:str):
         suffix = suffix.strip()
     elif hyphen_count == 0:
         if len(convert_string)!=0:
-            raise Exception("")
+            raise Exception("You should pass empty string this time")
     else:
         raise Exception("")
         
