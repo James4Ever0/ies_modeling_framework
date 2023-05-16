@@ -3,8 +3,11 @@ path = "microgrid_device_params_intermediate.json"
 
 import json
 import parse
+import pint
+
 
 unit_def_path = "../merged_units.txt"
+ureg = pint.UnitRegistry(unit_def_path)
 
 with open(path, "r") as f:
     data = json.load(f)
