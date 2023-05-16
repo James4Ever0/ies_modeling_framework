@@ -2,6 +2,7 @@
 path = "microgrid_device_params_intermediate.json"
 
 import json
+import parse
 
 with open(path, "r") as f:
     data = json.load(f)
@@ -36,6 +37,7 @@ for key in keys:
     for subkey in data[key].keys():
         val_list = data[key][subkey]
         # rich.print(val_list)
+        print("____"*10+"[{}-{}]".format(key,subkey))
         for val in val_list:
             print("____"*10)
             val = val.replace("（", "(").replace("）", ")").replace(" ", "")
@@ -47,8 +49,6 @@ for key in keys:
                 print("META_TYPE")
             else:
                 # begin to parse it.
-                import parse
-
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
                     val_name, val_unit = result["val_name"].strip(), result["val_unit"].strip()
@@ -60,4 +60,5 @@ for key in keys:
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
                     print("UNIT", val_unit)
-                raise Exception("Unknown Value:", val)
+                else:
+                    raise Exception("Unknown Value:", val)
