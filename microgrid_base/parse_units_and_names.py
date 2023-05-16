@@ -26,7 +26,11 @@ META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行�
 
 BASE_TRANSLATION_TABLE = {"Area": ["光伏板面积"]}  # EnglishName: [ChineseName, ...]
 
-TRANSLATION_TABLE = {e: k for k, v in BASE_TRANSLATION_TABLE.items() for e in v}
+def revert_dict(mdict:dict):
+    result = {e: k for k, v in mdict.items() for e in v}
+    return result
+
+TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 
 LIST_TYPE = (
     []
@@ -34,7 +38,7 @@ LIST_TYPE = (
 
 BASE_UNIT_TRANSLATION_TABLE = {'percent':['%']}
 
-UNIT_TRANSLATION_TABLE = {}
+UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
 # you may copy this from the table, not parsing it though.
 
@@ -71,6 +75,8 @@ for key in keys:
                     print(
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
+                    val_unit = 
+                    
                     print("UNIT", val_unit)
                     unit = ureg.Unit(val_unit)
                     compatible_units = ureg.get_compatible_units(val_unit)
