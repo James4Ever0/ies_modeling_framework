@@ -39,8 +39,20 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
 }  # EnglishName: (BaseUnit, {convert_string:ChineseName, ...])
 
 def parse_convert_string(convert_string:str):
+    convert_string = convert_string.strip()
     hyphen_count = convert_string.count("-")
+    prefix = ""
+    suffix = ""
     if hyphen_count == 1:
+        if convert_string.startswith("-"):
+        elif convert_string.endswith("-"):
+            
+        else: # in the middle!
+            prefix, suffix = convert_string.split("-")
+        prefix = prefix.strip()
+        suffix = suffix.strip()
+    elif hyphen_count = 0:
+        
         
 
 # convert_string: "[prefix][-][suffix]"
