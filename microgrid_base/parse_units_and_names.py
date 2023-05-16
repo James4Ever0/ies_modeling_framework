@@ -28,12 +28,14 @@ META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行�
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Area": (
         "m2",
-        ["光伏板面积"],
+        {"":["光伏板面积"],
+        }
     ),
     "Efficiency": (
         "percent",
-        ["电电转换效率"],
+        {"":"电电转换效率"}
     ),
+    "Power": ("kW", {""})
 }  # EnglishName: (BaseUnit, [ChineseName, ...])
 
 BASE_CLASS_TO_UNIT_TABLE = {
