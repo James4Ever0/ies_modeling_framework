@@ -92,7 +92,7 @@ TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
 LIST_TYPE = (
-    []
+    ["嵌套表格"] # check this in the 2nd index
 )  # notice, list contains multiple headings, each heading may have its own unit.
 
 BASE_UNIT_TRANSLATION_TABLE = {"percent": ["%"]}
