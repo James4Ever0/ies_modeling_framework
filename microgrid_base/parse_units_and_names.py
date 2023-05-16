@@ -37,8 +37,9 @@ for key in keys:
         val_list = data[key][subkey]
         # rich.print(val_list)
         for val in val_list:
-            val = val.strip("*").strip(":").strip("：").strip()
+            print("____"*10)
             val = val.replace("（", "(").replace("）", ")").replace(" ", "")
+            val = val.strip("*").strip(":").strip("：").strip()
             print(val)
             if val in CHAR_TYPE:
                 print("CHAR_TYPE")
@@ -50,7 +51,7 @@ for key in keys:
 
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
-                    val_name, val_unit = result["val_name"], result["val_unit"]
+                    val_name, val_unit = result["val_name"].strip(), result["val_unit"].strip()
                 else:
                     val_name = val
                     val_unit = None
