@@ -26,17 +26,15 @@ COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束"]
 
 BASE_TRANSLATION_TABLE = {
-    "Area": ["光伏板面积"],
-    "Efficiency": ["电电转换效率"],
-}  # EnglishName: [ChineseName, ...]
-
+    "Area": (, ["光伏板面积"],)
+    "Efficiency": (, ["电电转换效率"],)
+}  # EnglishName: (BaseUnit, [ChineseName, ...])
 
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
 
-
-TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
+TRANSLATION_TABLE = revert_dict({k:v[1] for k, v in BASE_TRANSLATION_TABLE.items()})
 
 LIST_TYPE = (
     []
