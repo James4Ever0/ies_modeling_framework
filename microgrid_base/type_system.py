@@ -18,4 +18,6 @@ class MicrogridPortTypes:
 T = MicrogridPortTypes
 triplets = [(T.可连接供电端母线,,)]
 
-供电端输出, 
+(供电端输出, 变流器输入, 供电端母线),
+(储能端输入输出, 双向变流器输入输出, 储能端母线),
+()
