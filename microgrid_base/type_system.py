@@ -42,7 +42,7 @@ for start, end, wire_name in coax_triplets:
     types_connectivity_matrix.update({frozenset([start, connectable_wire_name]): unconnectable_wire_name})
 
 import rich
-rich.print(types)
+# rich.print(types)
 
 # {
 #     '母线输入',
@@ -58,3 +58,24 @@ rich.print(types)
 #     '可连接母线',
 #     '变流器输入'
 # }
+
+import json
+
+# keys = []
+# with open("microgrid_device_params_intermediate.json",'r') as f:
+#     data = json.load(f)
+#     for k,v in data.items():
+#         for k0, v0 in v.items():
+#             keys.append(k0)
+            
+# rich.print(keys)
+
+    '光伏发电',
+    '风力发电',
+    '柴油发电',
+    '锂电池',
+    '变压器',
+    '变流器',
+    '双向变流器',
+    '传输线'
+]
