@@ -65,6 +65,7 @@ for key in keys:
                         "TRANS {} -> {}".format(val_name, TRANSLATION_TABLE[val_name])
                     )
                     print("UNIT", val_unit)
+                    unit = ureg.Unit(val_unit)
                     # parse this unit!
                 else:
                     raise Exception("Unknown Value:", val)
