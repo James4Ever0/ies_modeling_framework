@@ -28,17 +28,20 @@ META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行�
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Area": (
         "m2",
-        {"":["光伏板面积"],
-        }
+        {
+            "": ["光伏板面积"],
+        },
     ),
-    "Efficiency": (
-        "percent",
-        {"":["电电转换效率"]}
-    ),
-    "Power": ("kW", {"":[""]})
+    "Efficiency": ("percent", {"": ["电电转换效率"]}),
+    "Power": ("kW", {"": [""]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
-def parse_convert_string(convert_string:str):
+
+# convert_string: "[prefix][-][suffix]"
+# contain either 1 or no hyphen.
+# if contain no hyphen, it must be empty string.
+
+def parse_convert_string(convert_string: str):
     convert_string = convert_string.strip()
     hyphen_count = convert_string.count("-")
     prefix = ""
@@ -48,25 +51,25 @@ def parse_convert_string(convert_string:str):
             suffix = convert_string.strip("-")
         elif convert_string.endswith("-"):
             prefix = convert_string.strip("-")
-        else: # in the middle!
+        else:  # in the middle!
             prefix, suffix = convert_string.split("-")
         prefix = prefix.strip()
         suffix = suffix.strip()
     elif hyphen_count == 0:
-        if len(convert_string)!=0:
+        if len(convert_string) != 0:
             raise Exception("You should pass an empty string this time")
     else:
         raise Exception("Invalid convert string:", convert_string)
     return prefix, suffix
-        
+
 BASE_TRANSLATION_TABLE = {}
 
-for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
-    v[1]
+for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
+    for k1, v1 in v[1].items():
+        prefix, suffix = parse_convert_string(k1)
+        k0 = prefix + k.strip() + suffix
+        BASE_TRANSLATION_TABLE.update({k0: v1})
 
-# convert_string: "[prefix][-][suffix]"
-# contain either 1 or no hyphen.
-# if contain no hyphen, it must be empty string.
 
 BASE_CLASS_TO_UNIT_TABLE = {
     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
@@ -78,9 +81,7 @@ def revert_dict(mdict: dict):
     return result
 
 
-TRANSLATION_TABLE = revert_dict(
-    {k: v for k, v in BASE_TRANSLATION_TABLE.items()}
-)
+TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
 LIST_TYPE = (
     []
