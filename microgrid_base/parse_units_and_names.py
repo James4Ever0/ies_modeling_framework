@@ -2,7 +2,8 @@
 path = "microgrid_device_params_intermediate.json"
 
 
-# 年放电量需求 * huan
+# 年放电量需求 * 换芯周期 <= 电池机组容量 * 循环寿命 * 0.85
+# 作为电池数量限制
 
 import json
 import parse
