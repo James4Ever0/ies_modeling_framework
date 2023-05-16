@@ -83,8 +83,12 @@ with open(csv_path,'r') as f:
 
 line_sep_count_max = max(line_sep_count_list)
 for index, line_sep_count in enumerate(line_sep_count_list):
-    lines[index]= lines[index]+","*(line_sep_count_max-line_sep_count)
+    lines[index]= lines[index].strip()+","*(line_sep_count_max-line_sep_count)
+
+with open(csv_path, 'w+') as f:
+    for line in lines:
+        f.write(line+"\n")
 
 port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
-print(port_df)
+# print(port_df)
