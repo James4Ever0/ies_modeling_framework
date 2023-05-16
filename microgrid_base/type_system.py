@@ -69,6 +69,11 @@ import json
 #             keys.append(k0)
             
 # rich.print(keys)
-port_df = pandas.read_csv("设备接口-离网型微电网.csv", header=None, on_bad_lines='warn')
+csv_path = "设备接口-离网型微电网.csv"
+
+lines = []
+with open(csv_path,'r') as f:
+    f.readline()
+port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
 print(port_df)
