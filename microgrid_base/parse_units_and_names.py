@@ -35,8 +35,17 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         "percent",
         {"":"电电转换效率"}
     ),
-    "Power": ("kW", {""})
-}  # EnglishName: (BaseUnit, [ChineseName, ...])
+    "Power": ("kW", {"":""})
+}  # EnglishName: (BaseUnit, {convert_string:ChineseName, ...])
+
+def parse_convert_string(convert_string:str):
+    hyphen_count = convert_string.count("-")
+    if hyphen_count == 1:
+        
+
+# convert_string: "[prefix][-][suffix]"
+# contain either 1 or no hyphen.
+# if contain no hyphen, it must be empty string.
 
 BASE_CLASS_TO_UNIT_TABLE = {
     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
