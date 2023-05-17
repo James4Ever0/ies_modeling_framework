@@ -89,10 +89,13 @@ for (i, o, wire_name, supertype), is_io, in [
         f"不可连接{wire_name}",
     )
 
-    types.add(start)
-    types.add(end)
-    types.add(connectable_wire_name)
-    types.add(unconnectable_wire_name)
+    if types.get(supertype, None) is None:
+        types[supertype] = set()
+    other_sets = set([ for k in types.keys() if k!=supertype for e in types[]])
+    types[supertype].add(start)
+    types[supertype].add(end)
+    types[supertype].add(connectable_wire_name)
+    types[supertype].add(unconnectable_wire_name)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
     types_connectivity_matrix.update(
