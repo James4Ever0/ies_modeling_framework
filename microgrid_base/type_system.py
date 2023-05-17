@@ -176,8 +176,9 @@ for index, row in port_df.iterrows():
         else:
             # append port?
             port_type = device_with_single_port_to_port_type.get(mydevice, None)
-            device_with_single_port_to_port_type[mydevice] = None
-            if port_type is None:
+            if port_type:
+                device_with_single_port_to_port_type[mydevice] = None
+            else:
                 ...
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
