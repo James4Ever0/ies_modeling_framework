@@ -18,6 +18,11 @@ sheet2_name = "设备端口类型表"
 # 供电端输出,变流器输入= 0
 
 
+def revert_dict(mdict: dict):
+    result = {e: k for k, v in mdict.items() for e in v}
+    return result
+
+
 def check_valid_type_base_name(type_base_name):
     assert "输" not in type_base_name
     assert "出" not in type_base_name
