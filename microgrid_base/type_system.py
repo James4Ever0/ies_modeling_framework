@@ -17,6 +17,9 @@ sheet2_name = "设备端口类型表"
 # 不可连接储能端母线 = 4
 # 供电端输出,变流器输入= 0
 
+def Input(type_base_name):
+    
+
 coax_triplets = [
     ("供电端输出", "变流器输入", "供电端母线"),
     ("储能端输入输出", "双向变流器输入输出", "储能端母线"),
@@ -96,7 +99,7 @@ port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 import numpy
 
 mycat=None
-device_port_dict = {}
+device_port_dict = {"柴油":"柴油"}
 mydevice=None
 content_split = False
 
@@ -122,4 +125,5 @@ for index, row in port_df.iterrows():
                 ...
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
-            else
+            else:
+                raise Exception("No port type definition for:",(mycat, mydevice, content))
