@@ -325,10 +325,12 @@ if not (diff_1 == set() and diff_2 == set()):
 
 import networkx
 
-G = networkx.Graph()
+G = networkx.Un
 
 for node_name in mtypes.union(set([e for k, v in wire_types.items() for e in v])):
     G.add_node(node_name)
 
-for 
-G.add_edge()
+for fzset, wire_name in types_connectivity_matrix:
+    start, end = list(fzset)
+    G.add_edge(start, wire_name)
+    G.add_edge(wire_name, end)
