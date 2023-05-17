@@ -93,6 +93,7 @@ port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
 # print(port_df)
 import numpy
+
 mycat=None
 device_port_dict = {}
 mydevice=None
@@ -110,4 +111,4 @@ for index, row in port_df.iterrows():
             mydevice = content
         else:
             # append port?
-        device_port_dict[mycat
+        device_port_dict[mycat]
