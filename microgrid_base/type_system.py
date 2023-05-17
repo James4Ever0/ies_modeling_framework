@@ -52,7 +52,7 @@ def port_type_category_register():
 coax_triplets = {  # Input, Output, ConnectionBaseName
     "电": [
         ("变流器", "供电端", "供电端母线"),
-        ("母线", "母线", "母线"),
+        ("电母线", "电母线", "电母线"),
         ("负荷电", "变压器", "负荷电母线"),
     ],
     "柴油": [
@@ -61,7 +61,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 }
 
 # IO_1, IO_2, ConnectionBaseName
-io_coax_triplets = {"电": [("储能端", "双向变流器", "储能端母线")]}
+io_coax_triplets = {"电": [("电储能端", "双向变流器", "电储能端母线")]}
 
 types = {}  # {str: set()}
 
@@ -111,10 +111,10 @@ for (i, o, wire_name, supertype), is_io, in [
     # if types.get(supertype, None) is None:
     #     types[supertype] = set()
     # other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
-    add_to_types(start)
-    add_to_types(end)
-    add_to_types(connectable_wire_name)
-    add_to_types(unconnectable_wire_name)
+    add_to_types(supertype, start)
+    add_to_types(supertype, end)
+    add_to_types(supertype, connectable_wire_name)
+    add_to_types(supertype, unconnectable_wire_name)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
     types_connectivity_matrix.update(
