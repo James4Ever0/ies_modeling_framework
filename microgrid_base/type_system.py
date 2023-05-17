@@ -173,8 +173,9 @@ from functools import reduce
 
 triplets_config = [  # triplets, is_io, forward, backward
     (source_coax_triplets, False, False, True),
-    (source_and_load_coax_triplets, False, True, True),
     (load_coax_triplets, False, True, False),
+    (source_and_load_coax_triplets, False, True, True),
+    #############################################
     (io_storage_coax_triplets, True, True, False),
 ]
 
