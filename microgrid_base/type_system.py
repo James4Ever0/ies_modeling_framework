@@ -377,8 +377,14 @@ def plot_graph(G, figure_path:str):
     plt.show()
 
 figure_path = "type_system.png"
+plot_graph(G, figure_path)
 
 G1 = networkx.Graph()
 
-g1_figure_path = ""
-for 
+figure_path = "device_connectivity_matrix.png"
+
+for fzset, wire_name in types_connectivity_matrix.items():
+    # print(fzset, wire_name)
+    start, end = list(fzset)
+    G.add_edge(start, wire_name)
+    G.add_edge(wire_name, end)
