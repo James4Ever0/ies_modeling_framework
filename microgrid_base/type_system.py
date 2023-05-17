@@ -62,11 +62,14 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 
 io_coax_triplets = {"电": [("储能端", "双向变流器", "储能端母线")]}
 
-types = set()
+types = {} # {str: set()}
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 
-for (i, o, wire_name,), is_io, in [
+def triplets_with_supertype(triplet_map):
+    
+
+for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in coax_triplets
 ] + [(e, True) for e in io_coax_triplets]:
     if is_io:
