@@ -371,7 +371,11 @@ networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
 
 figure_path = "type_system.png"
 
-print("Saving figure to:", figure_path)
+print("Saving type system graph figure to:", figure_path)
 
 plt.savefig(figure_path)
 plt.show()
+
+G1 = networkx.Graph()
+
+for 
