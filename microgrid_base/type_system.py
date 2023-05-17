@@ -96,8 +96,12 @@ def add_to_types(supertype, typename, is_wire=False):
     mtypes = get_types(is_wire)
     if mtypes.get(supertype, None) is None:
         mtypes[supertype] = set()
-    other_sets = get_other_sets(typename)
-    wire_other_sets = get_other_sets(typename, is_wire=is_wire)
+    if is_wire:
+        other_sets = set([e for k,v in types.items()]
+        wire_other_sets = get_other_sets(supertype, is_wire=is_wire)
+    else:
+        other_sets = get_other_sets(supertype)
+        wire_other_sets = wire_types
     if typename not in other_sets:
         if typename not in wire_other_sets:
             mtypes[supertype].add(typename)
