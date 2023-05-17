@@ -63,7 +63,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
 
 #
-io_to_wire = {"电": [("双向变流器母线端", "电母线")]}
+io_to_wire = {"电": [("双向变流器线路端", "电母线")]}
 
 types = {}  # {str: set()}
 wire_types = {}
@@ -97,11 +97,11 @@ def add_to_types(supertype, typename, is_wire=False):
     if mtypes.get(supertype, None) is None:
         mtypes[supertype] = set()
     if is_wire:
-        other_sets = set([e for k,v in types.items() for e in v])
+        other_sets = set([e for k, v in types.items() for e in v])
         wire_other_sets = get_other_sets(supertype, is_wire=is_wire)
     else:
         other_sets = get_other_sets(supertype)
-        wire_other_sets = set([e for k,v in wire_types.items() for e in v])
+        wire_other_sets = set([e for k, v in wire_types.items() for e in v])
     if typename not in other_sets:
         if typename not in wire_other_sets:
             mtypes[supertype].add(typename)
@@ -226,7 +226,7 @@ output_device_with_single_port_to_port_type = revert_dict(
     {
         "柴油": ["柴油"],
         "供电端": ["光伏发电", "风力发电", "柴油发电-电接口"],
-        "电母线": ["变流器-电输出"],
+        "电母线": ["变流器-电输出","传输线-电输出"],
         "变压器": ["变压器-电输出"],
     }
 )
@@ -234,12 +234,12 @@ output_device_with_single_port_to_port_type = revert_dict(
 
 # 负荷端
 input_device_with_single_port_to_port_type = revert_dict(
-    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输入"], "供电端": ["变流器-电输入"]}
+    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输入", "传输线-电输入"], "供电端": ["变流器-电输入"]}
 )
 
 # 储能端
 io_device_with_single_port_to_port_type = revert_dict(
-    {"电储能端": ["锂电池"], "双向变流器储能端": ["双向变流器-储能端"], "双向变流器母线端": ["双向变流器-线路端"]}
+    {"电储能端": ["锂电池"], "双向变流器储能端": ["双向变流器-储能端"], "双向变流器线路端": ["双向变流器-线路端"]}
 )
 
 device_with_single_port_to_port_type = {
@@ -286,9 +286,11 @@ for index, row in port_df.iterrows():
                     device_with_single_port_to_port_type[port_id] = None
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
+                mapped_types.add(port_type)
             else:
                 # rich.print(device_port_dict)
                 # breakpoint()
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
+
