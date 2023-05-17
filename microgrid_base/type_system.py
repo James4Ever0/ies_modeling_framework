@@ -54,6 +54,7 @@ def IO(type_base_name):
     return f"{type_base_name.strip()}输入输出"
 
 
+
 coax_triplets = {  # Input, Output, ConnectionBaseName
     "电": [
         ("变流器", "供电端", "供电端母线"),
