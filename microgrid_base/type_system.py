@@ -62,8 +62,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
 
 # 
-io_to_wire = {"电": [("双向变流器","电母线")]}
-
+io_to_wire = {"电": [("双向变流器母线端输出","电母线")]}
 
 types = {}  # {str: set()}
 wire_types = {}
@@ -88,7 +87,6 @@ def get_other_sets(supertype, is_wire=False):
     other_sets = set([e for k in mtypes.keys() if k != supertype for e in types[k]])
     return other_sets
 
-
 def add_to_types(supertype, typename, is_wire=False):
     mtypes = get_types(is_wire)
     if mtypes.get(supertype, None) is None:
@@ -106,6 +104,10 @@ def add_to_types(supertype, typename, is_wire=False):
         raise Exception(
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
+
+for (i, o, wire_name, supertype), is_io, in [
+    (e, False) for e in triplets_with_supertype(coax_triplets)
+]
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
