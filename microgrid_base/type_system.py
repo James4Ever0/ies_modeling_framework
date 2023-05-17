@@ -120,7 +120,6 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
     add_to_types(supertype, end,is_wire=True)
     add_to_types(supertype, created,is_wire=True)
     
-    
     types_connectivity_matrix.update({frozenset([start, end]): created})
     
     
@@ -227,7 +226,7 @@ input_device_with_single_port_to_port_type = revert_dict(
 )
 
 # 储能端
-io_device_with_single_port_to_port_type = revert_dict({"电储能端": ["锂电池"], "双向变流器":['双向变流器-电输入']})
+io_device_with_single_port_to_port_type = revert_dict({"电储能端": ["锂电池"]})
 
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
@@ -236,6 +235,8 @@ device_with_single_port_to_port_type = {
 device_with_single_port_to_port_type.update(
     {k: Output(v) for k, v in output_device_with_single_port_to_port_type.items()}
 )
+
+mapped_types = set()
 
 for index, row in port_df.iterrows():
     # print(row.tolist())
