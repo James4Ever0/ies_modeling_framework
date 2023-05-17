@@ -69,10 +69,10 @@ wire_types = {}
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 
-def triplets_with_supertype(triplet_map):
+def triplets_with_supertype(triplet_map, length=3):
     for supertype, triplet_list in triplet_map.items():
         for triplet in triplet_list:
-            assert len(triplet) == 3
+            assert len(triplet) == length
             yield (*triplet, supertype)
 
 def get_types(is_wire):
@@ -105,9 +105,9 @@ def add_to_types(supertype, typename, is_wire=False):
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
-for (i, o, wire_name, supertype), is_io, in [
-    (e, False) for e in triplets_with_supertype(coax_triplets)
-]
+for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
+    start = IO(io)
+    end = wire_name
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
