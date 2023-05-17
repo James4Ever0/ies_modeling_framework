@@ -18,11 +18,16 @@ sheet2_name = "设备端口类型表"
 # 供电端输出,变流器输入= 0
 
 def Input(type_base_name):
-    
+    return f"{type_base_name}输出"
+def Output(type_base_name):
+    return f"{type_base_name}输入"
+
+def IO(type_base_name):
+    return f"{type_base_name}输入输出"
 
 coax_triplets = [
-    ("供电端输出", "变流器输入", "供电端母线"),
-    ("储能端输入输出", "双向变流器输入输出", "储能端母线"),
+    (Output("供电端输出"), Input("变流器"), "供电端母线"),
+    (IO("储能端"), IO("双向变流器"), "储能端母线"),
     ("母线输入", "母线输出", "母线"),
     ("柴油输入", '柴油输出', "柴油母线")
 ]
