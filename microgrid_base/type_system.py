@@ -343,8 +343,16 @@ for node_name in G.nodes:
     print("NODE:", node_name)
     print("    NEIGHBOR:", [n for n in neighbors])
 
-from matplotlib.pyplot import plt
+import matplotlib.pyplot as plt
 draw_options={
         "node_color": "yellow",
         "node_size": 1000,
-    },
+    }
+
+networkx.draw_spring(G,with_labels=True, font_weight="bold", **draw_options)
+
+figure_path = "type_system.png"
+
+print("Saving figure to:", figure_path)
+plt.savefig(figure_path)
+plt.show()
