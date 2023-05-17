@@ -21,6 +21,7 @@ coax_triplets = [
     ("供电端输出", "变流器输入", "供电端母线"),
     ("储能端输入输出", "双向变流器输入输出", "储能端母线"),
     ("母线输入", "母线输出", "母线"),
+    ("燃料输入", '燃料输出', "燃料母线")
 ]
 
 types = set()
@@ -113,4 +114,5 @@ for index, row in port_df.iterrows():
             device_port_dict[mycat][mydevice] = {}
         else:
             # append port?
-            device_port_dict[mycat][mydevice][content]
+            if 燃料
+            device_port_dict[mycat][mydevice][content] = port_type
