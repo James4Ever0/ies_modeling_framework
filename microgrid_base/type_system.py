@@ -354,28 +354,31 @@ import matplotlib
 matplotlib.rcParams['font.sans-serif'] = ['Songti SC']
 import matplotlib.pyplot as plt
 
-width = 10
-height = 10
+def plot_graph(G, figure_path:str):
+    width = 10
+    height = 10
 
-plt.figure(figsize= (width, height))
+    plt.figure(figsize= (width, height))
 
-draw_options = {
-    "node_color": "yellow",
-    "node_size": 0,
-    "font_color": 'red',
-    "edge_color": 'blue',
-    # "fontproperties":WRYH
-}
+    draw_options = {
+        "node_color": "yellow",
+        "node_size": 0,
+        "font_color": 'red',
+        "edge_color": 'blue',
+        # "fontproperties":WRYH
+    }
 
-networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
+    networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
+
+
+    print("Saving graph figure to:", figure_path)
+
+    plt.savefig(figure_path)
+    plt.show()
 
 figure_path = "type_system.png"
 
-print("Saving type system graph figure to:", figure_path)
-
-plt.savefig(figure_path)
-plt.show()
-
 G1 = networkx.Graph()
 
+g1_figure_path = ""
 for 
