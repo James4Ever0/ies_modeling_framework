@@ -46,7 +46,7 @@ def IO(type_base_name):
 
 def port_type_category_register()
 
-coax_triplets = [  # Input, Output, ConnectionBaseName
+coax_triplets = {  # Input, Output, ConnectionBaseName
     ("变流器", "供电端", "供电端母线"),
     ("母线", "母线", "母线"),
     ("柴油", "柴油", "柴油母线"),
@@ -61,7 +61,7 @@ types = set()
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 
-for (i, o, wire_name), is_io in [(e, False) for e in coax_triplets] + [
+for (i, o, wire_name,), is_io,  in [(e, False) for e in coax_triplets] + [
     (e, True) for e in io_coax_triplets
 ]:
     if is_io:
