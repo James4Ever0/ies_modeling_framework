@@ -45,13 +45,11 @@ def IO(type_base_name):
     return f"{type_base_name.strip()}输入输出"
 
 
-
-
 coax_triplets = {  # Input, Output, ConnectionBaseName
     "电": [
         ("变流器", "供电端", "供电端母线"),
         ("电母线", "电母线", "电母线"),
-        ("负荷电", "变压器", "负荷电母线"), 
+        ("负荷电", "变压器", "负荷电母线"),
     ],
     "柴油": [
         ("柴油", "柴油", "柴油母线"),
@@ -61,13 +59,14 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 # IO_1, IO_2, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
 
-# 
-io_to_wire = {"电": [("双向变流器母线端输出","电母线")]}
+#
+io_to_wire = {"电": [("双向变流器母线端输出", "电母线")]}
 
 types = {}  # {str: set()}
 wire_types = {}
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
+
 
 def triplets_with_supertype(triplet_map, length=3):
     for supertype, triplet_list in triplet_map.items():
@@ -75,17 +74,20 @@ def triplets_with_supertype(triplet_map, length=3):
             assert len(triplet) == length
             yield (*triplet, supertype)
 
+
 def get_types(is_wire):
     if is_wire:
         return wire_types
     else:
         return types
 
+
 def get_other_sets(supertype, is_wire=False):
     mtypes = get_types(is_wire)
 
     other_sets = set([e for k in mtypes.keys() if k != supertype for e in types[k]])
     return other_sets
+
 
 def add_to_types(supertype, typename, is_wire=False):
     mtypes = get_types(is_wire)
@@ -98,31 +100,33 @@ def add_to_types(supertype, typename, is_wire=False):
             mtypes[supertype].add(typename)
         else:
             raise Exception(
-            f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with wire types."
-        )
+                f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with wire types."
+            )
     else:
         raise Exception(
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
+
 def Connectable(wire_name):
     return f"可连接{wire_name}"
 
+
 def Unconnectable(wire_name):
     return f"不可连接{wire_name}"
+
 
 for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
     start = IO(io)
     end = Connectable(wire_name)
     created = Unconnectable(wire_name)
-    
+
     add_to_types(supertype, start)
-    add_to_types(supertype, end,is_wire=True)
-    add_to_types(supertype, created,is_wire=True)
-    
+    add_to_types(supertype, end, is_wire=True)
+    add_to_types(supertype, created, is_wire=True)
+
     types_connectivity_matrix.update({frozenset([start, end]): created})
-    
-    
+
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
@@ -220,13 +224,16 @@ output_device_with_single_port_to_port_type = revert_dict(
     }
 )
 
+
 # 负荷端
 input_device_with_single_port_to_port_type = revert_dict(
     {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输入"], "供电端": ["变流器-电输入"]}
 )
 
 # 储能端
-io_device_with_single_port_to_port_type = revert_dict({"电储能端": ["锂电池"]})
+io_device_with_single_port_to_port_type = revert_dict(
+    {"电储能端": ["锂电池"], "双向变流器储能端": ["双向变流器-电输入"], "双向变流器母线端": ["双向变流器-电输出"]}
+)
 
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
