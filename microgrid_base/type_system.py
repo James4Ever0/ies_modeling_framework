@@ -296,5 +296,7 @@ for index, row in port_df.iterrows():
                 )
 
 if not mapped_types == types:
-mapped_types.difference(types)
-types.difference(mapped_types)
+    mtypes = set([e for k,v in types.items() for e in v])
+    print("MAPPED TYPES UNIQ:" ,mapped_types.difference(mtypes))
+    print("DEVICE TYPES UNIQ:",mtypes.difference(mapped_types))
+    raise Exception("Mapped types does not equal to existing device types")
