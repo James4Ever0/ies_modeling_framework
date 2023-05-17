@@ -9,9 +9,13 @@ import pandas
 import uuid
 
 hash_set= set()
+
 def get_uniq_hash():
     while True:
-        mhash = uuid.uuid4().split("-")[0]
+        mhash = str(uuid.uuid4()).split("-")[0]
+        if mhash not in hash_set:
+            hash_set.add(mhash)
+            return mhash
 
 output_path = "microgrid_type_system.xlsx"
 
@@ -60,12 +64,16 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
-
-
-coax_triplets = {  # Input, Output, ConnectionBaseName
-    "电": [
+source_coax_triplets = {
         ("变流器", "供电端", "供电端母线"),
+}
+
+source_and_load_coad_triplets = {
         ("电母线", "电母线", "电母线"),
+}
+
+load_coax_triplets = {  # Input, Output, ConnectionBaseName
+    "电": [
         ("负荷电", "变压器", "负荷电母线"),
     ],
     "柴油": [
