@@ -152,6 +152,8 @@ for (i, o, wire_name, supertype), is_io, in [
     # if types.get(supertype, None) is None:
     #     types[supertype] = set()
     # other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
+    if "储能端" in start:
+        breakpoint()
     add_to_types(supertype, start)
     add_to_types(supertype, end)
     add_to_types(supertype, connectable_wire_name, is_wire=True)
