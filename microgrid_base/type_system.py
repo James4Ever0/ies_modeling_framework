@@ -356,6 +356,7 @@ import matplotlib.pyplot as plt
 draw_options = {
     "node_color": "yellow",
     "node_size": 1000,
+    "font_color": 'red'
     # "fontproperties":WRYH
 }
 
