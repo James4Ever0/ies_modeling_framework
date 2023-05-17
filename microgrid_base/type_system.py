@@ -304,11 +304,11 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
-print('=========[DEVICE PORT TYPE MAPPING]=========')
+print("=========[DEVICE PORT TYPE MAPPING]=========")
 rich.print(device_port_dict)
-print('=========[CONNECTIVITY MATRIX]=========')
+print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
-print('=========[DEVICE PORT TYPES]=========')
+print("=========[DEVICE PORT TYPES]=========")
 rich.print(types)
 mtypes = set([e for k, v in types.items() for e in v])
 
@@ -344,12 +344,13 @@ for node_name in G.nodes:
     print("    NEIGHBOR:", [n for n in neighbors])
 
 import matplotlib.pyplot as plt
-draw_options={
-        "node_color": "yellow",
-        "node_size": 1000,
-    }
 
-networkx.draw_spring(G,with_labels=True, font_weight="bold", **draw_options)
+draw_options = {
+    "node_color": "yellow",
+    "node_size": 1000,
+}
+
+networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
 
 figure_path = "type_system.png"
 
