@@ -252,6 +252,8 @@ device_with_single_port_to_port_type.update(
 
 mapped_types = set()
 
+rich.print(device_with_single_port_to_port_type)
+
 for index, row in port_df.iterrows():
     # print(row.tolist())
     # print(row.tolist())
@@ -280,6 +282,8 @@ for index, row in port_df.iterrows():
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
             else:
+                # rich.print(device_port_dict)
+                breakpoint()
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
