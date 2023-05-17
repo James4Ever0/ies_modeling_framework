@@ -45,8 +45,6 @@ def IO(type_base_name):
     return f"{type_base_name.strip()}输入输出"
 
 
-def port_type_category_register():
-    ...
 
 
 coax_triplets = {  # Input, Output, ConnectionBaseName
@@ -62,6 +60,10 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 
 # IO_1, IO_2, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器", "电储能端母线")]}
+
+
+{"电": [("电储能端", "双向变流器", "电储能端母线")]}
+
 
 types = {}  # {str: set()}
 wire_types = {}
