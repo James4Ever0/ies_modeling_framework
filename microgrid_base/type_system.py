@@ -1,4 +1,3 @@
-from typing import get_type_hints
 import pandas
 
 output_path = "microgrid_type_system.xlsx"
@@ -54,7 +53,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
     "电": [
         ("变流器", "供电端", "供电端母线"),
         ("电母线", "电母线", "电母线"),
-        ("负荷电", "变压器", "负荷电母线"),
+        ("负荷电", "变压器", "负荷电母线"), # create no connection?
     ],
     "柴油": [
         ("柴油", "柴油", "柴油母线"),
@@ -65,9 +64,9 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器", "电储能端母线")]}
 
 types = {}  # {str: set()}
+wire_types = {}
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
-
 
 def triplets_with_supertype(triplet_map):
     for supertype, triplet_list in triplet_map.items():
