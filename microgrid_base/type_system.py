@@ -15,7 +15,7 @@ hash_set = set()
 
 def get_uniq_hash():
     while True:
-        mhash = str(uuid.uuid4()).split("-")[0]
+        mhash = str(uuid.uuid4()).split("-")[0][:2]
         if mhash not in hash_set:
             hash_set.add(mhash)
             return mhash
@@ -397,9 +397,11 @@ def alter_type_name(type_name):
     print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         result = type_name+get_uniq_hash()
-    result = type_name
-    print("RESULT?", result)
-    breakpoint()
+        # breakpoint()
+    else:
+        result = type_name
+    # print("RESULT?", result)
+    # breakpoint()
     return result
 
 for fzset, wire_name in types_connectivity_matrix.items():
