@@ -44,26 +44,31 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
-def port_type_category_register()
+
+def port_type_category_register():
+    ...
+
 
 coax_triplets = {  # Input, Output, ConnectionBaseName
-    ("变流器", "供电端", "供电端母线"),
-    ("母线", "母线", "母线"),
-    ("柴油", "柴油", "柴油母线"),
-    ("负荷电", "变压器", "负荷电母线"),
-]
+    "电": [
+        ("变流器", "供电端", "供电端母线"),
+        ("母线", "母线", "母线"),
+        ("负荷电", "变压器", "负荷电母线"),
+    ],
+    "柴油": [
+        ("柴油", "柴油", "柴油母线"),
+    ],
+}
 
-io_coax_triplets = [
-    ("储能端", "双向变流器", "储能端母线"),
-]
+io_coax_triplets = {"电": [("储能端", "双向变流器", "储能端母线")]}
 
 types = set()
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 
-for (i, o, wire_name,), is_io,  in [(e, False) for e in coax_triplets] + [
-    (e, True) for e in io_coax_triplets
-]:
+for (i, o, wire_name,), is_io, in [
+    (e, False) for e in coax_triplets
+] + [(e, True) for e in io_coax_triplets]:
     if is_io:
         start = IO(o)
         end = IO(o)
@@ -146,14 +151,16 @@ content_split = False
 
 # 能源端
 output_device_with_single_port_to_port_type = revert_dict(
-    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电","柴油发电-电接口"]}
+    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电", "柴油发电-电接口"]}
 )
 
 # 负荷端
-input_device_with_single_port_to_port_type = revert_dict({"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"]})
+input_device_with_single_port_to_port_type = revert_dict(
+    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"]}
+)
 
 # 储能端
-io_device_with_single_port_to_port_type = revert_dict({"储能端":["锂电池"]})
+io_device_with_single_port_to_port_type = revert_dict({"储能端": ["锂电池"]})
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
 }
