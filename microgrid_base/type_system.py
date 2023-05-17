@@ -342,19 +342,21 @@ for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
     print("NODE:", node_name)
     print("    NEIGHBOR:", [n for n in neighbors])
-import matplotlib.font_manager as fm
+    
+# import matplotlib.font_manager as fm
 
 # font_path = "/Volumes/CaseSensitive/pyjom/tests/render_and_recognize_long_text_to_filter_unwanted_characters/get_and_merge_fonts/GoNotoCurrent.ttf"
 
-font_path = "/Users/jamesbrown/Desktop/works/jubilant-adventure/GoNotoCurrent.ttf"
+# font_path = "/Users/jamesbrown/Desktop/works/jubilant-adventure/GoNotoCurrent.ttf"
 
-WRYH = fm.FontProperties(fname = '/Users/liuhuanshuo/Desktop/可视化图鉴/font/WeiRuanYaHei-1.ttf')
+# WRYH = fm.FontProperties(fname = '/Users/liuhuanshuo/Desktop/可视化图鉴/font/WeiRuanYaHei-1.ttf')
+import matplotlib
+matplotlib.rcParams['font.sans-serif'] = ['Songti SC']
 import matplotlib.pyplot as plt
-
 draw_options = {
     "node_color": "yellow",
     "node_size": 1000,
-    "fontproperties":WRYH
+    # "fontproperties":WRYH
 }
 
 networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
@@ -362,5 +364,6 @@ networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
 figure_path = "type_system.png"
 
 print("Saving figure to:", figure_path)
+
 plt.savefig(figure_path)
 plt.show()
