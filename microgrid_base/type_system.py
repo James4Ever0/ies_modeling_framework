@@ -15,7 +15,7 @@ sheet2_name = "设备端口类型表"
 # 不可连接供电端母线 = 3
 # 可连接储能端母线 = 4
 # 不可连接储能端母线 = 4
-# 供电端输出,变流器输入= 0
+# 供电端输出,变流器输入 = 0
 
 
 def revert_dict(mdict: dict):
@@ -322,3 +322,13 @@ if not (diff_1 == set() and diff_2 == set()):
 
 # now the final: validity check!
 # reachable?
+
+import networkx
+
+G = networkx.Graph()
+
+for node_name in mtypes.union(set([e for k, v in wire_types.items() for e in v])):
+    G.add_node(node_name)
+
+for 
+G.add_edge()
