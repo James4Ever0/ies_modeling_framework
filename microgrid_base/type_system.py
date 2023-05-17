@@ -103,12 +103,14 @@ for index, row in port_df.iterrows():
     cat, content = row.tolist()[:2]
     if cat != numpy.nan:
         mycat = cat
+        device_port_dict[mycat] = {} # init
     if mycat:
         if content == numpy.nan:
             content_split=True
         elif content_split:
             content_split=False
             mydevice = content
+            device_port_dict[mycat][mydevice] = {}
         else:
             # append port?
-        device_port_dict[mycat]
+            device_port_dict[mycat][mydevice][content]
