@@ -105,9 +105,17 @@ def add_to_types(supertype, typename, is_wire=False):
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
+def Connectable(wire_name):
+    return f"可连接{wire_name}"
+
+def Unconnectable(wire_name):
+    return f"不可连接{wire_name}"
+
 for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
+    add_to_types(supertype, )
+    add_to_types(supertype, ,is_wire=True)
     start = IO(io)
-    end = wire_name
+    end = Connectable(wire_name)
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
@@ -119,8 +127,8 @@ for (i, o, wire_name, supertype), is_io, in [
         start = Input(i)
         end = Output(o)
     connectable_wire_name, unconnectable_wire_name = (
-        f"可连接{wire_name}",
-        f"不可连接{wire_name}",
+        Connectable(wire_name),
+        Unconnectable(wire_name),
     )
 
     # if types.get(supertype, None) is None:
