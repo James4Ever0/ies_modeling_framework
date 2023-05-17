@@ -160,7 +160,6 @@ for index, row in port_df.iterrows():
             content_split = True
         elif content_split:
             content_split = False
-            
             mydevice = content.replace("（",'(').split("(")[0]
             device_port_dict[mycat][mydevice] = {}
         else:
