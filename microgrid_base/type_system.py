@@ -71,7 +71,7 @@ source_coax_triplets = {  # Input, Output, ConnectionBaseName
     "电": ("变流器", "供电端", "供电端母线"),
 }
 
-source_and_load_coad_triplets = {
+source_and_load_coax_triplets = {
     "电": ("电母线", "电母线", "电母线"),
 }
 
@@ -189,9 +189,12 @@ for (i, o, wire_name, supertype), is_io in [
     add_to_types(supertype, unconnectable_wire_name, is_wire=True)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
+    
+    if forward:
     types_connectivity_matrix.update(
         {frozenset([start, connectable_wire_name]): unconnectable_wire_name}
     )
+    if backward:
 
 import rich
 
