@@ -134,10 +134,12 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 
     types_connectivity_matrix.update({frozenset([start, end]): created})
 
-
-for (i, o, wire_name, supertype), is_io, in [
+a = [(e, True) for e in triplets_with_supertype(io_coax_triplets)]
+print(a)
+breakpoint()
+for (i, o, wire_name, supertype), is_io in ([
     (e, False) for e in triplets_with_supertype(coax_triplets)
-] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]:
+] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]):
     if is_io:
         start = IO(o)
         end = IO(o)
@@ -152,8 +154,8 @@ for (i, o, wire_name, supertype), is_io, in [
     # if types.get(supertype, None) is None:
     #     types[supertype] = set()
     # other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
-    if "储能端" in start:
-        breakpoint()
+    # if "储能端" in start:
+    #     breakpoint()
     add_to_types(supertype, start)
     add_to_types(supertype, end)
     add_to_types(supertype, connectable_wire_name, is_wire=True)
