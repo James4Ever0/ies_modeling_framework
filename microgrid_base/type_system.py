@@ -1,6 +1,8 @@
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
 # 增加变流器和不可连接母线的连接
 
+# 区分设备端口和连接线 端口是点 连接线是边
+
 import pandas
 
 output_path = "microgrid_type_system.xlsx"
