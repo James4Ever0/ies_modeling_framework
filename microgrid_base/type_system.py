@@ -146,7 +146,7 @@ content_split = False
 
 # 能源端
 output_device_with_single_port_to_port_type = revert_dict(
-    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电"]}
+    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电","柴油发电-燃料接口"]}
 )
 
 # 负荷端
@@ -179,7 +179,10 @@ for index, row in port_df.iterrows():
             if port_type:
                 device_with_single_port_to_port_type[mydevice] = None
             else:
-                ...
+                port_id = f"{mydevice}-{content}"
+                port_type = device_with_single_port_to_port_type.get(port_id, None)
+                if port_type:
+                    device_with_single_port_to_port_type[port_id] = None
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
             else:
