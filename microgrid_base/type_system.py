@@ -75,6 +75,15 @@ def triplets_with_supertype(triplet_map):
             yield (*triplet, supertype)
 
 
+def get_other_sets(supertype):
+    
+    other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
+    return other_sets
+
+def add_to_types(supertype, typename):
+    
+    # if types.get(supertype, None) is None:
+    #     types[supertype] = set()
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
 ] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]:
@@ -89,9 +98,10 @@ for (i, o, wire_name, supertype), is_io, in [
         f"不可连接{wire_name}",
     )
 
-    if types.get(supertype, None) is None:
-        types[supertype] = set()
-    other_sets = set([ for k in types.keys() if k!=supertype for e in types[]])
+    # if types.get(supertype, None) is None:
+    #     types[supertype] = set()
+    # other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
+    add_to_types
     types[supertype].add(start)
     types[supertype].add(end)
     types[supertype].add(connectable_wire_name)
