@@ -89,21 +89,22 @@ def get_other_sets(supertype, is_wire=False):
 
 
 def add_to_types(supertype, typename, is_wire=False):
-
+    mtypes = get_types(is_wire)
     if mtypes.get(supertype, None) is None:
         mtypes[supertype] = set()
     other_sets = get_other_sets(typename)
+    wire_other_sets = get_other_sets(typename, is_wire=is_wire)
     if typename not in other_sets:
-        mtypes[supertype].add(typename)
-    else:
-        raise Exception(
-            f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with wire_types."
+        if typename not in wire_other_sets:
+            mtypes[supertype].add(typename)
+        else:
+            raise Exception(
+            f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with wire types."
         )
-        
+    else:
         raise Exception(
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
-
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
