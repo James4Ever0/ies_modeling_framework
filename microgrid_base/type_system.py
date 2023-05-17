@@ -8,7 +8,8 @@ import pandas
 
 import uuid
 
-hash_set= set()
+hash_set = set()
+
 
 def get_uniq_hash():
     while True:
@@ -16,6 +17,7 @@ def get_uniq_hash():
         if mhash not in hash_set:
             hash_set.add(mhash)
             return mhash
+
 
 output_path = "microgrid_type_system.xlsx"
 
@@ -64,12 +66,13 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
-source_coax_triplets = {
-        ("变流器", "供电端", "供电端母线"),
+
+source_coax_triplets = {  # Input, Output, ConnectionBaseName
+    "电": ("变流器", "供电端", "供电端母线"),
 }
 
 source_and_load_coad_triplets = {
-        ("电母线", "电母线", "电母线"),
+    "电": ("电母线", "电母线", "电母线"),
 }
 
 load_coax_triplets = {  # Input, Output, ConnectionBaseName
@@ -82,7 +85,7 @@ load_coax_triplets = {  # Input, Output, ConnectionBaseName
 }
 
 # IO_1, IO_2, ConnectionBaseName
-io_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
+io_storage_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
 
 #
 io_to_wire = {"电": [("双向变流器线路端", "电母线")]}
@@ -289,7 +292,7 @@ device_with_single_port_to_port_type.update(
 )
 
 mapped_types = set()
-type_to_device_LUT = {} 
+type_to_device_LUT = {}
 
 rich.print(device_with_single_port_to_port_type)
 
@@ -321,8 +324,10 @@ for index, row in port_df.iterrows():
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
                 mapped_types.add(port_type)
-                
-                type_to_device_LUT[port_type] = type_to_device_LUT.get(port_type, [])+[f'{mydevice}-{content}']
+
+                type_to_device_LUT[port_type] = type_to_device_LUT.get(
+                    port_type, []
+                ) + [f"{mydevice}-{content}"]
             else:
                 # rich.print(device_port_dict)
                 # breakpoint()
@@ -367,7 +372,7 @@ for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
     print("NODE:", node_name)
     print("    NEIGHBOR:", [n for n in neighbors])
-    
+
 # import matplotlib.font_manager as fm
 
 # font_path = "/Volumes/CaseSensitive/pyjom/tests/render_and_recognize_long_text_to_filter_unwanted_characters/get_and_merge_fonts/GoNotoCurrent.ttf"
@@ -376,41 +381,45 @@ for node_name in G.nodes:
 
 # WRYH = fm.FontProperties(fname = '/Users/liuhuanshuo/Desktop/可视化图鉴/font/WeiRuanYaHei-1.ttf')
 import matplotlib
-matplotlib.rcParams['font.sans-serif'] = ['Songti SC']
+
+matplotlib.rcParams["font.sans-serif"] = ["Songti SC"]
 import matplotlib.pyplot as plt
 
-def plot_graph(G, figure_path:str):
+
+def plot_graph(G, figure_path: str):
     width = 10
     height = 10
 
-    plt.figure(figsize= (width, height))
+    plt.figure(figsize=(width, height))
 
     draw_options = {
         "node_color": "yellow",
         "node_size": 0,
-        "font_color": 'red',
-        "edge_color": 'blue',
+        "font_color": "red",
+        "edge_color": "blue",
         # "fontproperties":WRYH
     }
 
     networkx.draw_kamada_kawai(G, with_labels=True, font_weight="bold", **draw_options)
-
 
     print("Saving graph figure to:", figure_path)
 
     plt.savefig(figure_path)
     plt.show()
 
+
 figure_path = "type_system.png"
 plot_graph(G, figure_path)
 
 G1 = networkx.Graph()
 
+
 def lookup_type_to_device(type_name):
-    result = [e.split('-') for e in type_to_device_LUT.get(type_name,[])]
+    result = [e.split("-") for e in type_to_device_LUT.get(type_name, [])]
     if result == []:
         return [(None, type_name)]
     return result
+
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
@@ -425,6 +434,6 @@ for fzset, wire_name in types_connectivity_matrix.items():
                 G1.add_edge(de, wire_name)
             else:
                 G1.add_edge(de_port, wire_name)
-            
+
 figure_path = "device_connectivity_matrix.png"
 plot_graph(G1, figure_path)
