@@ -145,10 +145,12 @@ mydevice = None
 content_split = False
 
 # 能源端
-output_device_with_single_port_to_port_type = {"柴油": "柴油", "光伏发电": "供电端", "风力发电":"供电端"}
+output_device_with_single_port_to_port_type = revert_dict(
+    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电"]}
+)
 
 # 负荷端
-input_device_with_single_port_to_port_type = {"电负荷": "负荷电"}
+input_device_with_single_port_to_port_type = revert_dict({"负荷电": ["电负荷"]})
 
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()

@@ -37,8 +37,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     ),
     "Efficiency": ("percent", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
-    "DeltaLimit": ("percent/second", {"":[],"Power-":["发电爬坡率"]}),
-    "Cost": ("万元/kW", {"":["采购成本"]})
+    "DeltaLimit": ("percent/second", {"": [], "Power-": ["发电爬坡率"]}),
+    "Cost": ("万元/kW", {"": ["采购成本"]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 
@@ -68,6 +68,7 @@ def parse_convert_string(convert_string: str):
         raise Exception("Invalid convert string:", convert_string)
     return prefix, suffix
 
+
 BASE_TRANSLATION_TABLE = {}
 BASE_CLASS_TO_UNIT_TABLE = {}
 
@@ -91,9 +92,9 @@ def revert_dict(mdict: dict):
 TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
-LIST_TYPE = (
-    ["嵌套表格"] # check this in the 2nd index
-)  # notice, list contains multiple headings, each heading may have its own unit.
+LIST_TYPE = [
+    "嵌套表格"
+]  # check this in the 2nd index  # notice, list contains multiple headings, each heading may have its own unit.
 
 BASE_UNIT_TRANSLATION_TABLE = {"percent": ["%"]}
 
