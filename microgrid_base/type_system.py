@@ -254,8 +254,10 @@ mapped_types = set()
 
 for index, row in port_df.iterrows():
     # print(row.tolist())
+    # print(row.tolist())
     cat, content = row.tolist()[:2]
-    if cat is numpy.nan or cat is None:
+    print([cat, content])
+    if not (cat is numpy.nan or cat is None):
         mycat = cat
         device_port_dict[mycat] = {}  # init
     if mycat:
