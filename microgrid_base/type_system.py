@@ -112,10 +112,18 @@ def Unconnectable(wire_name):
     return f"不可连接{wire_name}"
 
 for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
-    add_to_types(supertype, )
-    add_to_types(supertype, ,is_wire=True)
     start = IO(io)
     end = Connectable(wire_name)
+    created = Unconnectable(wire_name)
+    
+    add_to_types(supertype, start)
+    add_to_types(supertype, end,is_wire=True)
+    add_to_types(supertype, created,is_wire=True)
+    
+    
+    types_connectivity_matrix.update({frozenset([start, end]): created})
+    
+    
 
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
