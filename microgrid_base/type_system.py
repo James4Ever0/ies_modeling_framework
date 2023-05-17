@@ -1,3 +1,4 @@
+from cgitb import lookup
 import pandas
 
 output_path = "microgrid_type_system.xlsx"
@@ -386,5 +387,7 @@ figure_path = "device_connectivity_matrix.png"
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
-    G.add_edge(start, wire_name)
-    G.add_edge(wire_name, end)
+    for ds in lookup_type_to_device(start):
+        for de in lookup_type_to_device(end):
+            G1.add_edge(start, wire_name)
+            G1.add_edge(wire_name, end)
