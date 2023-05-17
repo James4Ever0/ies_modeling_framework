@@ -1,5 +1,6 @@
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
 # 增加变流器和不可连接母线的连接
+import rich
 
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
@@ -100,7 +101,14 @@ types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 def triplets_with_supertype(triplet_map, length=3):
     for supertype, triplet_list in triplet_map.items():
         for triplet in triplet_list:
-            assert len(triplet) == length
+            try:
+                assert len(triplet) == length
+            except:
+                print()
+                print("ERROR!")
+                print()
+                rich.print(triplet_map)
+                raise Exception(f"Error when unpacking triplet map with length {length}.", )
             yield (*triplet, supertype)
 
 
@@ -217,7 +225,6 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
             {frozenset([end, connectable_wire_name]): unconnectable_wire_name}
         )
 
-import rich
 
 # rich.print(types)
 
