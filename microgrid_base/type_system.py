@@ -372,7 +372,7 @@ def plot_graph(G, figure_path:str):
         # "fontproperties":WRYH
     }
 
-    networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
+    networkx.draw_kamada_kawai(G, with_labels=True, font_weight="bold", **draw_options)
 
 
     print("Saving graph figure to:", figure_path)
