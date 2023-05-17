@@ -387,13 +387,22 @@ if not (diff_1 == set() and diff_2 == set()):
 import networkx
 
 G = networkx.Graph()
-all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
-for node_name in all_types:
-    G.add_node(node_name)
 
+all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
+
+# for node_name in all_types:
+#     G.add_node(node_name)
+
+def alter_type_name(type_name):
+    if type_name.startswith("不可连接"):
+        return type_name+get_uniq_hash()
+    return type_name
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
+    start = alter_type_name(start)
+    end = alter_type_name(end)
+     = alter_type_name()
     G.add_edge(start, wire_name)
     G.add_edge(wire_name, end)
 
