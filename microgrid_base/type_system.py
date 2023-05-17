@@ -164,12 +164,14 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 # print(a)
 # breakpoint()
 
-def transform_triplets(triplets,is_io, forward, backward):
+
+def transform_triplets(triplets, is_io, forward, backward):
     return [(e, is_io, forward, backward) for e in triplets_with_supertype(triplets)]
 
-for (i, o, wire_name, supertype), is_io, forward, backward in [
-    (e, False) for e in triplets_with_supertype(coax_triplets)
-] + [(e, ) for e in transform_triplets(io_storage_coax_triplets, True, True, False)]:
+
+for (i, o, wire_name, supertype), is_io, forward, backward in transform_triplets(
+    load_coax_triplets, False, True, False
+) + transform_triplets(io_storage_coax_triplets, True, True, False):
     if is_io:
         start = IO(i)
         end = IO(o)
@@ -194,15 +196,15 @@ for (i, o, wire_name, supertype), is_io, forward, backward in [
     add_to_types(supertype, unconnectable_wire_name, is_wire=True)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
-    
-    if forward: # original
-    types_connectivity_matrix.update(
-        {frozenset([start, connectable_wire_name]): unconnectable_wire_name}
-    )
+
+    if forward:  # original
+        types_connectivity_matrix.update(
+            {frozenset([start, connectable_wire_name]): unconnectable_wire_name}
+        )
     if backward:
         types_connectivity_matrix.update(
-        {frozenset([end, connectable_wire_name]): unconnectable_wire_name}
-    )
+            {frozenset([end, connectable_wire_name]): unconnectable_wire_name}
+        )
 
 import rich
 
