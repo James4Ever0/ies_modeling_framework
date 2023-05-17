@@ -76,14 +76,24 @@ def triplets_with_supertype(triplet_map):
 
 
 def get_other_sets(supertype):
-    
-    other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
+
+    other_sets = set([e for k in types.keys() if k != supertype for e in types[k]])
     return other_sets
 
+
 def add_to_types(supertype, typename):
-    
-    # if types.get(supertype, None) is None:
-    #     types[supertype] = set()
+
+    if types.get(supertype, None) is None:
+        types[supertype] = set()
+    other_sets = get_other_sets(typename)
+    if typename not in other_sets:
+        types[supertype].add(typename)
+    else:
+        raise Exception(
+            f"Type {typename} in category {supertype} appeared to be duplicated."
+        )
+
+
 for (i, o, wire_name, supertype), is_io, in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
 ] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]:
@@ -101,11 +111,10 @@ for (i, o, wire_name, supertype), is_io, in [
     # if types.get(supertype, None) is None:
     #     types[supertype] = set()
     # other_sets = set([e for k in types.keys() if k!=supertype for e in types[k]])
-    add_to_types
-    types[supertype].add(start)
-    types[supertype].add(end)
-    types[supertype].add(connectable_wire_name)
-    types[supertype].add(unconnectable_wire_name)
+    add_to_types(start)
+    add_to_types(end)
+    add_to_types(connectable_wire_name)
+    add_to_types(unconnectable_wire_name)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
     types_connectivity_matrix.update(
