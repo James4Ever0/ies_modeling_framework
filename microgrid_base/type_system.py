@@ -24,9 +24,10 @@ def revert_dict(mdict: dict):
 
 
 def check_valid_type_base_name(type_base_name):
-    assert "输" not in type_base_name
-    assert "出" not in type_base_name
-    assert "入" not in type_base_name
+    try:
+        assert "输" not in type_base_name
+        assert "出" not in type_base_name
+        assert "入" not in type_base_name
     return type_base_name.strip()
 
 
