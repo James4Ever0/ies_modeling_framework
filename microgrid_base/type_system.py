@@ -28,6 +28,8 @@ def check_valid_type_base_name(type_base_name):
         assert "输" not in type_base_name
         assert "出" not in type_base_name
         assert "入" not in type_base_name
+    except:
+        raise Exception("Invalid type base name:", type_base_name)
     return type_base_name.strip()
 
 
@@ -61,7 +63,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器储能端", "电储能端母线")]}
 
 #
-io_to_wire = {"电": [("双向变流器母线端输出", "电母线")]}
+io_to_wire = {"电": [("双向变流器母线端", "电母线")]}
 
 types = {}  # {str: set()}
 wire_types = {}
