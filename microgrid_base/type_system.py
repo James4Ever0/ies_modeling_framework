@@ -385,10 +385,10 @@ plot_graph(G, figure_path)
 
 G1 = networkx.Graph()
 
-figure_path = "device_connectivity_matrix.png"
-
 def lookup_type_to_device(type_name):
-    return [e.split('-') for e in type_to_device_LUT[type_name]]
+    result = [e.split('-') for e in type_to_device_LUT[type_name]]
+    if result == []:
+        return [None, type_name]
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
@@ -399,3 +399,6 @@ for fzset, wire_name in types_connectivity_matrix.items():
             G1.add_edge(de, de_port)
             G1.add_edge(ds_port, wire_name)
             G1.add_edge(wire_name, de_port)
+            
+figure_path = "device_connectivity_matrix.png"
+plot_graph(G1, figure_path)
