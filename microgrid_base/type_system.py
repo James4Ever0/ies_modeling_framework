@@ -1,3 +1,4 @@
+from typing import get_type_hints
 import pandas
 
 output_path = "microgrid_type_system.xlsx"
@@ -74,9 +75,14 @@ def triplets_with_supertype(triplet_map):
             assert len(triplet) == 3
             yield (*triplet, supertype)
 
+def get_types(is_wire):
+    if is_wire:
+        return wire_types
+    else:
+        return types
 
 def get_other_sets(supertype, is_wire=False):
-    if is_wire: mtypes = 
+    mtypes = get_types(is_wire)
 
     other_sets = set([e for k in mtypes.keys() if k != supertype for e in types[k]])
     return other_sets
@@ -91,7 +97,11 @@ def add_to_types(supertype, typename, is_wire=False):
         mtypes[supertype].add(typename)
     else:
         raise Exception(
-            f"Type {typename} in category {supertype} appeared to be duplicated."
+            f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with wire_types."
+        )
+        
+        raise Exception(
+            f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
 
