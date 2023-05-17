@@ -146,12 +146,14 @@ content_split = False
 
 # 能源端
 output_device_with_single_port_to_port_type = revert_dict(
-    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电","柴油发电-燃料接口"]}
+    {"柴油": ["柴油"], "供电端": ["光伏发电", "风力发电","柴油发电-电接口"]}
 )
 
 # 负荷端
-input_device_with_single_port_to_port_type = revert_dict({"负荷电": ["电负荷"]})
+input_device_with_single_port_to_port_type = revert_dict({"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"]})
 
+# 储能端
+io_device_with_single_port_to_port_type = revert_dict({"":[""]})
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
 }
