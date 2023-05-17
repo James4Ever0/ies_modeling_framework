@@ -341,3 +341,4 @@ for fzset, wire_name in types_connectivity_matrix.items():
 for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
     print("NODE:", node_name)
+    print("    NEIGHBOR:", [n for n in neighbors])
