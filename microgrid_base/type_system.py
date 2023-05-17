@@ -304,18 +304,21 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
-print()
+print('=========[DEVICE PORT TYPE MAPPING]=========')
 rich.print(device_port_dict)
-print()
+print('=========[CONNECTIVITY MATRIX]=========')
 rich.print(types_connectivity_matrix)
-print()
+print('=========[DEVICE PORT TYPES]=========')
 rich.print(types)
 mtypes = set([e for k, v in types.items() for e in v])
 
 diff_1 = mapped_types.difference(mtypes)
 diff_2 = mtypes.difference(mapped_types)
 
-if not(diff_1 == set() and diff_2 == set()):
+if not (diff_1 == set() and diff_2 == set()):
     print("MAPPED TYPES UNIQ:", diff_1)
     print("DEVICE TYPES UNIQ:", diff_2)
     raise Exception("Mapped types does not equal to existing device types")
+
+# now the final: validity check!
+# reachable?
