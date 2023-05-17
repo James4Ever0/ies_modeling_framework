@@ -39,12 +39,13 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
+
 # below are all electricity types
 coax_triplets = [  # Input, Output, ConnectionBaseName
     ("变流器", "供电端", "供电端母线"),
     ("母线", "母线", "母线"),
     ("柴油", "柴油", "柴油母线"),
-    ("负荷电", "变压器","负荷电母线"),
+    ("负荷电", "变压器", "负荷电母线"),
 ]
 
 io_coax_triplets = [
@@ -140,7 +141,7 @@ content_split = False
 
 output_device_with_single_port_to_port_type = {"柴油": "柴油"}
 
-input_device_with_single_port_to_port_type = {"电负荷": "电"}
+input_device_with_single_port_to_port_type = {"电负荷": "负荷电"}
 
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
@@ -161,11 +162,12 @@ for index, row in port_df.iterrows():
             content_split = True
         elif content_split:
             content_split = False
-            mydevice = content.replace("（",'(').split("(")[0]
+            mydevice = content.replace("（", "(").split("(")[0]
             device_port_dict[mycat][mydevice] = {}
         else:
             # append port?
             port_type = device_with_single_port_to_port_type.get(mydevice, None)
+            device_with_single_port_to_port_type[mydevice] = None
             if port_type is None:
                 ...
             if port_type is not None:
