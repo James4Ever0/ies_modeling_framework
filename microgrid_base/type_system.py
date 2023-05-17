@@ -137,9 +137,9 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 # a = [(e, True) for e in triplets_with_supertype(io_coax_triplets)]
 # print(a)
 # breakpoint()
-for (i, o, wire_name, supertype), is_io in ([
+for (i, o, wire_name, supertype), is_io in [
     (e, False) for e in triplets_with_supertype(coax_triplets)
-] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]):
+] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]:
     if is_io:
         start = IO(i)
         end = IO(o)
@@ -232,7 +232,7 @@ output_device_with_single_port_to_port_type = revert_dict(
     {
         "柴油": ["柴油"],
         "供电端": ["光伏发电", "风力发电", "柴油发电-电接口"],
-        "电母线": ["变流器-电输出","传输线-电输出"],
+        "电母线": ["变流器-电输出", "传输线-电输出"],
         "变压器": ["变压器-电输出"],
     }
 )
@@ -240,7 +240,12 @@ output_device_with_single_port_to_port_type = revert_dict(
 
 # 负荷端
 input_device_with_single_port_to_port_type = revert_dict(
-    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输入", "传输线-电输入"], "变流器": ["变流器-电输入"]}
+    {
+        "负荷电": ["电负荷"],
+        "柴油": ["柴油发电-燃料接口"],
+        "电母线": ["变压器-电输入", "传输线-电输入"],
+        "变流器": ["变流器-电输入"],
+    }
 )
 
 # 储能端
@@ -305,8 +310,12 @@ print()
 rich.print(types_connectivity_matrix)
 print()
 rich.print(types)
-if not mapped_types == types:
-    mtypes = set([e for k,v in types.items() for e in v])
-    print("MAPPED TYPES UNIQ:" ,mapped_types.difference(mtypes))
-    print("DEVICE TYPES UNIQ:",mtypes.difference(mapped_types))
+mtypes = set([e for k, v in types.items() for e in v])
+
+diff_1 = mapped_types.difference(mtypes)
+diff_2 = mtypes.difference(mapped_types)
+
+if not(diff_1 == set() and diff_2 == set()):
+    print("MAPPED TYPES UNIQ:", diff_1)
+    print("DEVICE TYPES UNIQ:", diff_2)
     raise Exception("Mapped types does not equal to existing device types")
