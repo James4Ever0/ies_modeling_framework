@@ -219,7 +219,7 @@ import numpy
 mycat = None
 device_port_dict = {}
 mydevice = None
-content_split = False
+content_split = True
 
 # 能源端
 output_device_with_single_port_to_port_type = revert_dict(
@@ -239,7 +239,7 @@ input_device_with_single_port_to_port_type = revert_dict(
 
 # 储能端
 io_device_with_single_port_to_port_type = revert_dict(
-    {"电储能端": ["锂电池"], "双向变流器储能端": ["双向变流器-电输入"], "双向变流器母线端": ["双向变流器-电输出"]}
+    {"电储能端": ["锂电池"], "双向变流器储能端": ["双向变流器-储能端"], "双向变流器母线端": ["双向变流器-线路端"]}
 )
 
 device_with_single_port_to_port_type = {
@@ -248,6 +248,11 @@ device_with_single_port_to_port_type = {
 
 device_with_single_port_to_port_type.update(
     {k: Output(v) for k, v in output_device_with_single_port_to_port_type.items()}
+)
+
+
+device_with_single_port_to_port_type.update(
+    {k: IO(v) for k, v in io_device_with_single_port_to_port_type.items()}
 )
 
 mapped_types = set()
@@ -283,7 +288,7 @@ for index, row in port_df.iterrows():
                 device_port_dict[mycat][mydevice][content] = port_type
             else:
                 # rich.print(device_port_dict)
-                breakpoint()
+                # breakpoint()
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
