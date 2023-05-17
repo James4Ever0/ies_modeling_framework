@@ -234,7 +234,7 @@ output_device_with_single_port_to_port_type = revert_dict(
 
 # 负荷端
 input_device_with_single_port_to_port_type = revert_dict(
-    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输出", "传输线-电输入"], "变流器": ["变流器-电输入"]}
+    {"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"], "电母线": ["变压器-电输入", "传输线-电输入"], "变流器": ["变流器-电输入"]}
 )
 
 # 储能端
