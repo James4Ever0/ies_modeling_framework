@@ -357,13 +357,13 @@ import matplotlib.pyplot as plt
 width = 10
 height = 10
 
-plt.figure (figsize= (width, height))
+plt.figure(figsize= (width, height))
 
 draw_options = {
     "node_color": "yellow",
-    "node_size": 1000,
-    "font_color": 'red'
-    "edge_color":
+    "node_size": 0,
+    "font_color": 'red',
+    "edge_color": 'blue',
     # "fontproperties":WRYH
 }
 
