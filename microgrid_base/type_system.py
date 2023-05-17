@@ -35,12 +35,12 @@ def check_valid_type_base_name(type_base_name):
 
 def Input(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
-    return f"{type_base_name.strip()}输出"
+    return f"{type_base_name.strip()}输入"
 
 
 def Output(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
-    return f"{type_base_name.strip()}输入"
+    return f"{type_base_name.strip()}输出"
 
 
 def IO(type_base_name):
@@ -294,7 +294,8 @@ for index, row in port_df.iterrows():
                     "No port type definition for:", (mycat, mydevice, content)
                 )
 rich.print(device_port_dict)
-
+print()
+rich.print(types_connectivity_matrix)
 if not mapped_types == types:
     mtypes = set([e for k,v in types.items() for e in v])
     print("MAPPED TYPES UNIQ:" ,mapped_types.difference(mtypes))
