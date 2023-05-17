@@ -137,7 +137,11 @@ device_port_dict = {}
 mydevice = None
 content_split = False
 
-device_with_single_port_to_port_type = {}
+output_device_with_single_port_to_port_type = {"柴油": Output("柴油")}
+    
+input_device_with_single_port_to_port_type = {}    
+
+device_with_single_port_to_port_type ={k:input()} | {}
 
 for index, row in port_df.iterrows():
     # print(row.tolist())
