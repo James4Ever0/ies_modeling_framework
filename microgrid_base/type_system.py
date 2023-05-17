@@ -1,4 +1,5 @@
 import pandas
+from portalocker import TemporaryFileLock
 
 output_path = "microgrid_type_system.xlsx"
 
@@ -294,3 +295,6 @@ for index, row in port_df.iterrows():
                     "No port type definition for:", (mycat, mydevice, content)
                 )
 
+if not mapped_types == types:
+mapped_types.difference(types)
+types.difference(mapped_types)
