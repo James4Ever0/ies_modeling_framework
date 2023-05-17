@@ -342,3 +342,9 @@ for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
     print("NODE:", node_name)
     print("    NEIGHBOR:", [n for n in neighbors])
+
+from matplotlib.pyplot import plt
+draw_options={
+        "node_color": "yellow",
+        "node_size": 1000,
+    },
