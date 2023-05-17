@@ -342,12 +342,15 @@ for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
     print("NODE:", node_name)
     print("    NEIGHBOR:", [n for n in neighbors])
+import matplotlib.font_manager as fm
 
+WRYH = fm.FontProperties(fname = '/Users/liuhuanshuo/Desktop/可视化图鉴/font/WeiRuanYaHei-1.ttf')
 import matplotlib.pyplot as plt
 
 draw_options = {
     "node_color": "yellow",
     "node_size": 1000,
+    "font_properties":WRYH
 }
 
 networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
