@@ -397,7 +397,7 @@ def alter_type_name(type_name):
     print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         if type_name.endswith("]"):
-            type_name = type_name[-4:]
+            type_name = type_name[:-4]
         result = copy.copy(type_name)+f"[{get_uniq_hash()}]"
         # breakpoint()
     else:
