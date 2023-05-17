@@ -400,9 +400,11 @@ def alter_type_name(type_name):
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
+
     start = alter_type_name(start)
     end = alter_type_name(end)
-     = alter_type_name()
+    wire_name = alter_type_name(wire_name)
+
     G.add_edge(start, wire_name)
     G.add_edge(wire_name, end)
 
@@ -467,6 +469,7 @@ for fzset, wire_name in types_connectivity_matrix.items():
     for ds, ds_port in lookup_type_to_device(start):
         for de, de_port in lookup_type_to_device(end):
             if ds:
+                mstart = ds
                 G1.add_edge(ds, wire_name)
             else:
                 G1.add_edge(ds_port, wire_name)
