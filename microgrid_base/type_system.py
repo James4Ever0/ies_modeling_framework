@@ -39,11 +39,12 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
-
+# below are all electricity types
 coax_triplets = [  # Input, Output, ConnectionBaseName
     ("变流器", "供电端", "供电端母线"),
     ("母线", "母线", "母线"),
     ("柴油", "柴油", "柴油母线"),
+    ("负荷电", "变压器","负荷电母线"),
 ]
 
 io_coax_triplets = [
