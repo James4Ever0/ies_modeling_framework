@@ -477,13 +477,19 @@ for fzset, wire_name in types_connectivity_matrix.items():
         for de, de_port in lookup_type_to_device(end):
             if ds:
                 mstart = ds
-                G1.add_edge(ds, wire_name)
             else:
-                G1.add_edge(ds_port, wire_name)
+                mstart = ds_port
             if de:
-                G1.add_edge(de, wire_name)
+                mend = de
             else:
-                G1.add_edge(de_port, wire_name)
+                mend = de_port
+                
+            mstart = alter_type_name(mstart)
+            mend = alter_type_name(mend)
+            wire_name = alter_type_name(wire_name)
+            
+            G1.add_edge(mstart, wire_name)
+            G1.add_edge(mend, wire_name)
 
 figure_path = "device_connectivity_matrix.png"
 plot_graph(G1, figure_path)
