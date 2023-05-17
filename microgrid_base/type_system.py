@@ -392,11 +392,13 @@ all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
 
 # for node_name in all_types:
 #     G.add_node(node_name)
-
+import copy
 def alter_type_name(type_name):
     print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
-        result = type_name.copy()+get_uniq_hash()
+        if type_name.endswith("]"):
+            type_name = type_name[-4:]
+        result = copy.copy(type_name)+f"[{get_uniq_hash()}]"
         # breakpoint()
     else:
         result = type_name
