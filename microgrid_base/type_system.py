@@ -372,7 +372,7 @@ def plot_graph(G, figure_path:str):
         # "fontproperties":WRYH
     }
 
-    networkx.draw_circular(G, with_labels=True, font_weight="bold", **draw_options)
+    networkx.draw_kamada_kawai(G, with_labels=True, font_weight="bold", **draw_options)
 
 
     print("Saving graph figure to:", figure_path)
@@ -386,17 +386,20 @@ plot_graph(G, figure_path)
 G1 = networkx.Graph()
 
 def lookup_type_to_device(type_name):
-    result = [e.split('-') for e in type_to_device_LUT[type_name]]
+    result = [e.split('-') for e in type_to_device_LUT.get(type_name,[])]
     if result == []:
-        return [None, type_name]
+        return [(None, type_name)]
+    return result
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
     for ds, ds_port in lookup_type_to_device(start):
         for de, de_port in lookup_type_to_device(end):
-            G1.add_edge(ds, ds_port)
-            G1.add_edge(de, de_port)
+            if ds:
+                G1.add_edge(ds, ds_port)
+            if de:
+                G1.add_edge(de, de_port)
             G1.add_edge(ds_port, wire_name)
             G1.add_edge(wire_name, de_port)
             
