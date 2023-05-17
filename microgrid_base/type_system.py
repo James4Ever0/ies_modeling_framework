@@ -62,7 +62,7 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
 io_coax_triplets = {"电": [("电储能端", "双向变流器", "电储能端母线")]}
 
 
-{"电": [("电储能端", "双向变流器", "电储能端母线")]}
+{"电": [("双向变流器", "双向变流器", "电母线")]}
 
 
 types = {}  # {str: set()}
