@@ -153,7 +153,7 @@ output_device_with_single_port_to_port_type = revert_dict(
 input_device_with_single_port_to_port_type = revert_dict({"负荷电": ["电负荷"], "柴油": ["柴油发电-燃料接口"]})
 
 # 储能端
-io_device_with_single_port_to_port_type = revert_dict({"":[""]})
+io_device_with_single_port_to_port_type = revert_dict({"储能端":["锂电池"]})
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
 }
