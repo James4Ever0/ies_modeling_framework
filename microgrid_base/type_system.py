@@ -97,11 +97,11 @@ def add_to_types(supertype, typename, is_wire=False):
     if mtypes.get(supertype, None) is None:
         mtypes[supertype] = set()
     if is_wire:
-        other_sets = set([e for k,v in types.items()]
+        other_sets = set([e for k,v in types.items() for e in v])
         wire_other_sets = get_other_sets(supertype, is_wire=is_wire)
     else:
         other_sets = get_other_sets(supertype)
-        wire_other_sets = wire_types
+        wire_other_sets = set([e for k,v in wire_types.items() for e in v])
     if typename not in other_sets:
         if typename not in wire_other_sets:
             mtypes[supertype].add(typename)
@@ -255,11 +255,11 @@ mapped_types = set()
 for index, row in port_df.iterrows():
     # print(row.tolist())
     cat, content = row.tolist()[:2]
-    if cat != numpy.nan:
+    if cat is numpy.nan or cat is None:
         mycat = cat
         device_port_dict[mycat] = {}  # init
     if mycat:
-        if content == numpy.nan:
+        if content is numpy.nan or content is None:
             content_split = True
         elif content_split:
             content_split = False
