@@ -6,6 +6,13 @@
 
 import pandas
 
+import uuid
+
+hash_set= set()
+def get_uniq_hash():
+    while True:
+        mhash = uuid.uuid4().split("-")[0]
+
 output_path = "microgrid_type_system.xlsx"
 
 sheet1_name = "类型连接矩阵"
