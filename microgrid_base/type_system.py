@@ -70,11 +70,11 @@ def IO(type_base_name):
 
 
 source_coax_triplets = {  # Input, Output, ConnectionBaseName
-    "电": ("变流器", "供电端", "供电端母线"),
+    "电": [("变流器", "供电端", "供电端母线")],
 }
 
 source_and_load_coax_triplets = {
-    "电": ("电母线", "电母线", "电母线"),
+    "电": [("电母线", "电母线", "电母线")],
 }
 
 load_coax_triplets = {  # Input, Output, ConnectionBaseName
