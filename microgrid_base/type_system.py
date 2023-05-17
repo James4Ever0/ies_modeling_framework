@@ -92,3 +92,6 @@ with open(csv_path, 'w+') as f:
 port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
 # print(port_df)
+
+for row in port_df.iterrows():
+    
