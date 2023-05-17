@@ -268,6 +268,7 @@ device_with_single_port_to_port_type.update(
 )
 
 mapped_types = set()
+type_to_device_LUT = {} 
 
 rich.print(device_with_single_port_to_port_type)
 
@@ -299,6 +300,8 @@ for index, row in port_df.iterrows():
             if port_type is not None:
                 device_port_dict[mycat][mydevice][content] = port_type
                 mapped_types.add(port_type)
+                
+                type_to_device_LUT[port_type] = type_to_device_LUT.get(port_type, [])+[f'{mydevice}-{content}']
             else:
                 # rich.print(device_port_dict)
                 # breakpoint()
@@ -384,11 +387,8 @@ G1 = networkx.Graph()
 
 figure_path = "device_connectivity_matrix.png"
 
-device_port_dict
-
-type_to_device_LUT = {} 
 def lookup_type_to_device(type_name):
-    
+    return type_to_device_LUT[type_name]
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
