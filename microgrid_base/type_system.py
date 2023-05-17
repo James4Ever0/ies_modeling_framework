@@ -35,18 +35,19 @@ def IO(type_base_name):
     type_base_name = check_valid_type_base_name(type_base_name)
     return f"{type_base_name.strip()}输入输出"
 
-coax_triplets = [
+coax_triplets = [ # Input, Output, ConnectionBaseName
     (Output("供电端"), Input("变流器"), "供电端母线"),
     (IO("储能端"), IO("双向变流器"), "储能端母线"),
-    ("母线输入", Output("母线"), "母线"),
-    ("柴油输入", Output('柴油'), "柴油母线")
+    (Input("母线"), Output("母线"), "母线"),
+    (Input("柴油"), Output('柴油'), "柴油母线")
 ]
 
 types = set()
 
 types_connectivity_matrix = {} # {frozenset([start, end]): generated_type}
 
-for start, end, wire_name in coax_triplets:
+for _input, _output, wire_name in coax_triplets:
+    
     connectable_wire_name, unconnectable_wire_name = (
         f"可连接{wire_name}",
         f"不可连接{wire_name}",
