@@ -21,7 +21,7 @@ coax_triplets = [
     ("供电端输出", "变流器输入", "供电端母线"),
     ("储能端输入输出", "双向变流器输入输出", "储能端母线"),
     ("母线输入", "母线输出", "母线"),
-    ("燃料输入", '燃料输出', "燃料母线")
+    ("柴油输入", '柴油输出', "柴油母线")
 ]
 
 types = set()
@@ -99,6 +99,9 @@ mycat=None
 device_port_dict = {}
 mydevice=None
 content_split = False
+
+device_with_single_port_to_port_type = {}
+
 for index, row in port_df.iterrows():
     # print(row.tolist())
     cat, content = row.tolist()[:2]
@@ -114,5 +117,6 @@ for index, row in port_df.iterrows():
             device_port_dict[mycat][mydevice] = {}
         else:
             # append port?
-            if 燃料
+            port_type = device_with_single_port_to_port_type(
+                
             device_port_dict[mycat][mydevice][content] = port_type
