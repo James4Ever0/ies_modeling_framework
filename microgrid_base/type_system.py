@@ -394,9 +394,11 @@ all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
 #     G.add_node(node_name)
 
 def alter_type_name(type_name):
+    print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         return type_name+get_uniq_hash()
     return type_name
+
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
