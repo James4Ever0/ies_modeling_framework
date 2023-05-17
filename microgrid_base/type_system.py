@@ -138,10 +138,16 @@ mydevice = None
 content_split = False
 
 output_device_with_single_port_to_port_type = {"柴油": Output("柴油")}
-    
-input_device_with_single_port_to_port_type = {}    
 
-device_with_single_port_to_port_type ={k:input()} | {}
+input_device_with_single_port_to_port_type = {}
+
+device_with_single_port_to_port_type = {
+    k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
+}
+
+device_with_single_port_to_port_type.update(
+    {k: Output(v) for k, v in output_device_with_single_port_to_port_type.items()}
+)
 
 for index, row in port_df.iterrows():
     # print(row.tolist())
