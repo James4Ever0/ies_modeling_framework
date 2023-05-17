@@ -293,9 +293,12 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
+print()
 rich.print(device_port_dict)
 print()
 rich.print(types_connectivity_matrix)
+print()
+rich.print(types)
 if not mapped_types == types:
     mtypes = set([e for k,v in types.items() for e in v])
     print("MAPPED TYPES UNIQ:" ,mapped_types.difference(mtypes))
