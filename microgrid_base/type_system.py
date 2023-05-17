@@ -134,18 +134,20 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 
     types_connectivity_matrix.update({frozenset([start, end]): created})
 
-a = [(e, True) for e in triplets_with_supertype(io_coax_triplets)]
-print(a)
-breakpoint()
+# a = [(e, True) for e in triplets_with_supertype(io_coax_triplets)]
+# print(a)
+# breakpoint()
 for (i, o, wire_name, supertype), is_io in ([
     (e, False) for e in triplets_with_supertype(coax_triplets)
 ] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]):
     if is_io:
-        start = IO(o)
+        start = IO(i)
         end = IO(o)
     else:
         start = Input(i)
         end = Output(o)
+    # print(i,o, start, end,wire_name)
+    # breakpoint()
     connectable_wire_name, unconnectable_wire_name = (
         Connectable(wire_name),
         Unconnectable(wire_name),
