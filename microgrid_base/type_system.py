@@ -60,18 +60,24 @@ coax_triplets = {  # Input, Output, ConnectionBaseName
     ],
 }
 
+# IO_1, IO_2, ConnectionBaseName
 io_coax_triplets = {"电": [("储能端", "双向变流器", "储能端母线")]}
 
-types = {} # {str: set()}
+types = {}  # {str: set()}
 
 types_connectivity_matrix = {}  # {frozenset([start, end]): generated_type}
 
+
 def triplets_with_supertype(triplet_map):
-    
+    for supertype, triplet_list in triplet_map.items():
+        for triplet in triplet_list:
+            assert len(triplet) == 3
+            yield (*triplet, supertype)
+
 
 for (i, o, wire_name, supertype), is_io, in [
-    (e, False) for e in coax_triplets
-] + [(e, True) for e in io_coax_triplets]:
+    (e, False) for e in triplets_with_supertype(coax_triplets)
+] + [(e, True) for e in triplets_with_supertype(io_coax_triplets)]:
     if is_io:
         start = IO(o)
         end = IO(o)
