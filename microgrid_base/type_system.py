@@ -133,7 +133,7 @@ port_df = pandas.read_csv(csv_path, header=None, on_bad_lines="warn")
 import numpy
 
 mycat = None
-device_port_dict = {"柴油": "柴油"}
+device_port_dict = {}
 mydevice = None
 content_split = False
 
