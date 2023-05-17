@@ -137,9 +137,9 @@ device_port_dict = {}
 mydevice = None
 content_split = False
 
-output_device_with_single_port_to_port_type = {"柴油": Output("柴油")}
+output_device_with_single_port_to_port_type = {"柴油": "柴油"}
 
-input_device_with_single_port_to_port_type = {}
+input_device_with_single_port_to_port_type = {"电负荷": "电"}
 
 device_with_single_port_to_port_type = {
     k: Input(v) for k, v in input_device_with_single_port_to_port_type.items()
@@ -160,7 +160,8 @@ for index, row in port_df.iterrows():
             content_split = True
         elif content_split:
             content_split = False
-            mydevice = content
+            
+            mydevice = content.replace("（",'(').split("(")[0]
             device_port_dict[mycat][mydevice] = {}
         else:
             # append port?
