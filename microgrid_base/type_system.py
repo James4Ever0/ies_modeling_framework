@@ -326,8 +326,8 @@ if not (diff_1 == set() and diff_2 == set()):
 import networkx
 
 G = networkx.Graph()
-
-for node_name in mtypes.union(set([e for k, v in wire_types.items() for e in v])):
+all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
+for node_name in all_types:
     G.add_node(node_name)
 
 for fzset, wire_name in types_connectivity_matrix.items():
@@ -336,6 +336,8 @@ for fzset, wire_name in types_connectivity_matrix.items():
     G.add_edge(start, wire_name)
     G.add_edge(wire_name, end)
 
-print(G.nodes)
+# print(G.nodes)
 
-G.
+for node_name in G.nodes:
+    neighbors = G.neighbors(node_name)
+    print("NODE:", node_name)
