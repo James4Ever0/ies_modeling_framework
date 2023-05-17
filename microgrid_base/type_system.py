@@ -17,19 +17,29 @@ sheet2_name = "设备端口类型表"
 # 不可连接储能端母线 = 4
 # 供电端输出,变流器输入= 0
 
+def check_valid_type_base_name(type_base_name):
+    assert "输" not in type_base_name
+    assert "出" not in type_base_name
+    assert "入" not in type_base_name
+    return type_base_name.strip()
+
 def Input(type_base_name):
-    return f"{type_base_name}输出"
+    type_base_name = check_valid_type_base_name(type_base_name)
+    return f"{type_base_name.strip()}输出"
+
 def Output(type_base_name):
-    return f"{type_base_name}输入"
+    type_base_name = check_valid_type_base_name(type_base_name)
+    return f"{type_base_name.strip()}输入"
 
 def IO(type_base_name):
-    return f"{type_base_name}输入输出"
+    type_base_name = check_valid_type_base_name(type_base_name)
+    return f"{type_base_name.strip()}输入输出"
 
 coax_triplets = [
-    (Output("供电端输出"), Input("变流器"), "供电端母线"),
+    (Output("供电端"), Input("变流器"), "供电端母线"),
     (IO("储能端"), IO("双向变流器"), "储能端母线"),
-    ("母线输入", "母线输出", "母线"),
-    ("柴油输入", '柴油输出', "柴油母线")
+    ("母线输入", Output("母线"), "母线"),
+    ("柴油输入", Output('柴油'), "柴油母线")
 ]
 
 types = set()
