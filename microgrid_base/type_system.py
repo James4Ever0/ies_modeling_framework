@@ -353,10 +353,17 @@ for node_name in G.nodes:
 import matplotlib
 matplotlib.rcParams['font.sans-serif'] = ['Songti SC']
 import matplotlib.pyplot as plt
+
+width = 10
+height = 10
+
+plt.figure (figsize= (width, height))
+
 draw_options = {
     "node_color": "yellow",
     "node_size": 1000,
     "font_color": 'red'
+    "edge_color":
     # "fontproperties":WRYH
 }
 
