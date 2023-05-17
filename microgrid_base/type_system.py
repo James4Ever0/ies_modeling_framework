@@ -92,6 +92,12 @@ with open(csv_path, 'w+') as f:
 port_df = pandas.read_csv(csv_path, header=None, on_bad_lines='warn')
 
 # print(port_df)
+import numpy
 
-for row in port_df.iterrows():
-    
+device_port_dict = {}
+for index, row in port_df.iterrows():
+    # print(row.tolist())
+    cat, content = row.tolist()[:2]
+    if cat != numpy.nan:
+        mycat = cat
+        
