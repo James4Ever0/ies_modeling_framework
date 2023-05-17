@@ -384,10 +384,16 @@ G1 = networkx.Graph()
 
 figure_path = "device_connectivity_matrix.png"
 
+device_port_dict
+
+type_to_device_LUT = {} 
+def lookup_type_to_device(type_name):
+    
+
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
     start, end = list(fzset)
-    for ds in lookup_type_to_device(start):
-        for de in lookup_type_to_device(end):
+    for ds, ds_port in lookup_type_to_device(start):
+        for de, de_port in lookup_type_to_device(end):
             G1.add_edge(start, wire_name)
             G1.add_edge(wire_name, end)
