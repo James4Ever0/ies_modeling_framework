@@ -10,7 +10,8 @@ import json
 def main_parser(filepath, sheet_name, output_path):
     excel_file = openpyxl.load_workbook(filepath)
     # excel_file = openpyxl.load_workbook(filepath, read_only=True)
-    # print(excel_file.sheetnames) # ['Sheet1']
+    print('SHEET NAMES:')
+    print(excel_file.sheetnames) # ['Sheet1']
     # from openpyxl.cell.cell import Cell, MergedCell
 
     sheet1 = excel_file[sheet_name]
