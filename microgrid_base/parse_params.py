@@ -1,7 +1,7 @@
 from lib_parse_params import main_parser, csv_parser
 
-FLAGS = {"XLSX": False, "CSV": True}
-# FLAGS = {"XLSX": True, "CSV":True}
+# FLAGS = {"XLSX": False, "CSV": True}
+FLAGS = {"XLSX": True, "CSV":True}
 
 xlsx_worklist = [
     ("设备信息库各参数", "设备参数", "device_params_intermediate"),
