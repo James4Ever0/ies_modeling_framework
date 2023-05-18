@@ -367,13 +367,14 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
+def print_with_banner(hyphen_saved_name:)
 print("=========[DEVICE PORT TYPE MAPPING]=========")
 rich.print(device_port_dict)
 print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
 print("=========[DEVICE PORT TYPES]=========")
 rich.print(types)
-print("=========[ALL TYPES]=========")
+print("=========[ALL TYPES STRUCTURED]=========")
 all_types_structured = {"设备":types,"连接线":wire_types}
 rich.print(all_types_structured)
 
