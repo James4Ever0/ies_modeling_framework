@@ -373,6 +373,10 @@ print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
 print("=========[DEVICE PORT TYPES]=========")
 rich.print(types)
+print("=========[ALL TYPES]=========")
+all_types_structured = {"设备":types,"连接线":wire_types}
+rich.print(all_types_structured)
+
 mtypes = set([e for k, v in types.items() for e in v])
 
 diff_1 = mapped_types.difference(mtypes)
