@@ -367,7 +367,15 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
-def print_with_banner(hyphen_saved_name:)
+def print_with_banner(content, hyphen_saved_name, prefix):
+    banner = hyphen_saved_name.replace("_"," ").upper()
+    print(f"=========[{banner}]=========")
+    rich.print(content)
+    filepath = ".json"
+    with open(filepath, "w+") as f:
+        str_content = json.dumps(content)
+        f.write(str_content)
+    
 print("=========[DEVICE PORT TYPE MAPPING]=========")
 rich.print(device_port_dict)
 print("=========[CONNECTIVITY MATRIX]=========")
