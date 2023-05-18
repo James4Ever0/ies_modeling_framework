@@ -379,7 +379,7 @@ def print_with_banner(content, hyphen_saved_name, prefix):
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
 print_with_banner(device_port_dict, 'device_port_type_mapping', "microgrid")
 # print("=========[CONNECTIVITY MATRIX]=========")
-types_connectivity_matrix_for_json= {}
+types_connectivity_matrix_for_json= {"{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()}
 print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix","microgrid") # must convert this one.
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
