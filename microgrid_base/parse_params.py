@@ -10,7 +10,7 @@ xlsx_worklist = [
 ]
 
 csv_worklist = [
-    ("设备接口-微电网参数", "microgrid_device_params_intermediate"),
+    ("设备接口-微电网参数", "microgrid_device_params_intermediate"), # this is not enough.
 ]
 
 if FLAGS["XLSX"]:
