@@ -373,7 +373,7 @@ def print_with_banner(content, hyphen_saved_name, prefix):
     rich.print(content)
     filepath = f"{hyphen_saved_name.strip()}.json"
     with open(filepath, "w+") as f:
-        str_content = json.dumps(content)
+        str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
     
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
