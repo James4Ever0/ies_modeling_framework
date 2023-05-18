@@ -1,5 +1,6 @@
 main_path = "device_params_intermediate.json" # data parse here. since we are changing the main table.
-device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
+# device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
+microgrid_device_name_path = ""
 
 # 锂电池
 # 年放电量需求 * 换芯周期 <= 电池机组容量 * 循环寿命 * 0.85
