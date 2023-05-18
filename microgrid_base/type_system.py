@@ -376,15 +376,15 @@ def print_with_banner(content, hyphen_saved_name, prefix):
         str_content = json.dumps(content)
         f.write(str_content)
     
-print("=========[DEVICE PORT TYPE MAPPING]=========")
+# print("=========[DEVICE PORT TYPE MAPPING]=========")
 print_with_banner(device_port_dict, 'device_port_type_mapping', "microgrid")
-print("=========[CONNECTIVITY MATRIX]=========")
+# print("=========[CONNECTIVITY MATRIX]=========")
 print_with_banner(types_connectivity_matrix, "connectivity_matrix","microgrid")
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
-print("=========[ALL TYPES STRUCTURED]=========")
+# print("=========[ALL TYPES STRUCTURED]=========")
 all_types_structured = {"设备":types,"连接线":wire_types}
-print_with_banner(all_types_structured)
+print_with_banner(all_types_structured,"all_types_structured","microgrid")
 
 mtypes = set([e for k, v in types.items() for e in v])
 
