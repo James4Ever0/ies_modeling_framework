@@ -5,6 +5,8 @@ import rich
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
 
+PLOT_ONLY = False
+
 from turtle import backward
 import pandas
 
@@ -384,7 +386,7 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix","mic
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":list(types),"连接线":wire_types}
+all_types_structured = {"设备":list(types),"连接线":list(wire_types)}
 print_with_banner(all_types_structured,"all_types_structured","microgrid")
 
 mtypes = set([e for k, v in types.items() for e in v])
@@ -455,7 +457,7 @@ import matplotlib.pyplot as plt
 
 def plot_graph(G, figure_path: str, 
     width = 10,
-    height = 20):
+    height = 20, plot_only=False):
 
     plt.figure(figsize=(width, height))
 
@@ -472,7 +474,8 @@ def plot_graph(G, figure_path: str,
     print("Saving graph figure to:", figure_path)
 
     plt.savefig(figure_path)
-    plt.show()
+    if not plot_only:
+        plt.show()
 
 
 figure_path = "type_system.png"
