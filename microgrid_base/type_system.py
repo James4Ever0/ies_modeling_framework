@@ -384,7 +384,7 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix","mic
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":types,"连接线":wire_types}
+all_types_structured = {"设备":list(types),"连接线":wire_types}
 print_with_banner(all_types_structured,"all_types_structured","microgrid")
 
 mtypes = set([e for k, v in types.items() for e in v])
