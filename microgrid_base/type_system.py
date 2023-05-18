@@ -479,7 +479,7 @@ def plot_graph(G, figure_path: str,
 
 
 figure_path = "type_system.png"
-plot_graph(G, figure_path)
+plot_graph(G, figure_path,plot_only=PLOT_ONLY)
 
 G1 = networkx.Graph()
 
@@ -513,4 +513,4 @@ for fzset, wire_name in types_connectivity_matrix.items():
             G1.add_edge(mend, wire_name)
 
 figure_path = "device_connectivity_matrix.png"
-plot_graph(G1, figure_path)
+plot_graph(G1, figure_path, plot_only=PLOT_ONLY)
