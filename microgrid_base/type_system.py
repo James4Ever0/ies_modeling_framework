@@ -368,23 +368,23 @@ for index, row in port_df.iterrows():
                     "No port type definition for:", (mycat, mydevice, content)
                 )
 def print_with_banner(content, hyphen_saved_name, prefix):
-    banner = hyphen_saved_name.replace("_"," ").upper()
+    banner = hyphen_saved_name.strip().replace("_"," ").upper().strip()
     print(f"=========[{banner}]=========")
     rich.print(content)
-    filepath = ".json"
+    filepath = f"{hyphen_saved_name.strip()}.json"
     with open(filepath, "w+") as f:
         str_content = json.dumps(content)
         f.write(str_content)
     
 print("=========[DEVICE PORT TYPE MAPPING]=========")
-rich.print(device_port_dict)
+print_with_banner(device_port_dict, 'device_port_type_mapping', "microgrid")
 print("=========[CONNECTIVITY MATRIX]=========")
-rich.print(types_connectivity_matrix)
-print("=========[DEVICE PORT TYPES]=========")
-rich.print(types)
+print_with_banner(types_connectivity_matrix, "connectivity_matrix","microgrid")
+# print("=========[DEVICE PORT TYPES]=========")
+# print_with_banner(types,'device_port_types',"microgrid")
 print("=========[ALL TYPES STRUCTURED]=========")
 all_types_structured = {"设备":types,"连接线":wire_types}
-rich.print(all_types_structured)
+print_with_banner(all_types_structured)
 
 mtypes = set([e for k, v in types.items() for e in v])
 
