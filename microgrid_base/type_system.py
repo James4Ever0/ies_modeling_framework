@@ -374,6 +374,7 @@ def print_with_banner(content, hyphen_saved_name, prefix):
     print(f"=========[{banner}]=========")
     rich.print(content)
     filepath = f"{hyphen_saved_name.strip()}.json"
+    print("SAVING TO:", filepath)
     with open(filepath, "w+") as f:
         str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
