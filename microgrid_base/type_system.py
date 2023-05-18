@@ -256,7 +256,7 @@ import json
 csv_path = "设备接口-离网型微电网.csv"
 
 from utils import fix_csv_and_return_dataframe
-port_df = fix_csv_and_
+port_df = fix_csv_and_return_dataframe(csv_path)
 # lines = []
 # line_sep_count_list = []
 # with open(csv_path, "r") as f:
