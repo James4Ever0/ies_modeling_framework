@@ -1,6 +1,8 @@
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
 # 增加变流器和不可连接母线的连接
 import rich
+import traceback
+
 
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
@@ -50,11 +52,13 @@ def revert_dict(mdict: dict):
 def check_valid_type_base_name(type_base_name):
     type_base_name = type_base_name.replace(" ","").strip()
     try:
-        assert type_base_name"可连接"
+        assert not type_base_name.startswith("可连接")
+        assert not type_base_name.startswith("不可连接")
         assert "输" not in type_base_name
         assert "出" not in type_base_name
         assert "入" not in type_base_name
     except:
+        traceback.print_exc()
         raise Exception("Invalid type base name:", type_base_name)
     return type_base_name.strip()
 
