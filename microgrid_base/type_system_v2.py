@@ -457,8 +457,13 @@ def print_with_banner(content, hyphen_saved_name, prefix):
 print_with_banner(device_port_dict, "device_port_type_mapping", SAVE_PREFIX)
 # print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
+def exp_froz(frz):
+    lf = list(frz)
+    if len(lf) == 1:
+        lf = lf+lf
+    return lf
 types_connectivity_matrix_for_json = {
-    "{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()
+    "{}_{}".format(*exp_froz(k)): v for k, v in types_connectivity_matrix.items()
 }
 print_with_banner(
     types_connectivity_matrix_for_json, "connectivity_matrix", SAVE_PREFIX
