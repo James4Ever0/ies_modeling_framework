@@ -209,11 +209,11 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
         start = IO(i)
         end = IO(o)
     else:
-        start = Input(i) # input <- 
-        end = Output(o)
+        start = Input(i) # input <- adder_output <- adder
+        end = Output(o) # output -> adder_input -> adder
     # print(i,o, start, end,wire_name)
     # breakpoint()
-    wire_types= (connectable_wire_name, unconnectable_wire_name, unconnectable_input_wire_name,unconnectable_output_wire_name,
+    wire_types = (connectable_wire_name, unconnectable_wire_name, unconnectable_input_wire_name,unconnectable_output_wire_name,
     unconnectable_io_wire_name, mergeable_wire_name) = (
         Connectable(wire_name),
         Unconnectable(wire_name),
@@ -243,7 +243,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
 
     if forward:  # original
         types_connectivity_matrix.update(
-            {frozenset([start, connectable_wire_name]): unconnectable_wire_name}
+            {frozenset([start, connectable_wire_name]): unconnectable_output_wire_name}
         )
     if backward:
         types_connectivity_matrix.update(
