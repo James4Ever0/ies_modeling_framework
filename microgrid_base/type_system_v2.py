@@ -239,7 +239,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     # add_to_types(supertype, unconnectable_output_wire_name, is_wire=True)
     # add_to_types(supertype, unconnectable_wire_name, is_wire=True)
 
-    types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
+    types_connectivity_matrix.update({frozenset([start, end]): unconnectable_wire_name})
     types_connectivity_matrix.update({frozenset([connectable_wire_name, connectable_wire_name]): mergeable_wire_name})
 
     if forward:  # original
@@ -411,7 +411,7 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},":{k:list(v) for k,v in wire_types.items()}}
+all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:list(v) for k,v in wire_types.items()},"设备连接线","特殊连接线"}
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
 print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
 
