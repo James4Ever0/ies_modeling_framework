@@ -521,7 +521,7 @@ def alter_type_name(type_name):
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
-    start, end = list(fzset)
+    start, end = exp_froz(fzset)
 
     start = alter_type_name(start)
     end = alter_type_name(end)
@@ -586,7 +586,7 @@ def lookup_type_to_device(type_name):
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
-    start, end = list(fzset)
+    start, end = exp_froz(fzset)
     for ds, ds_port in lookup_type_to_device(start):
         for de, de_port in lookup_type_to_device(end):
             if ds:
