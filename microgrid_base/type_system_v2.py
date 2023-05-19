@@ -177,7 +177,8 @@ class PrefixSuffixBase:
         else:
             name = name_with_prefix_or_suffix.strip()[:-l]
         
-        sl = set()
+        sl = set(list(name_with_prefix_or_suffix))
+        sld = {e:self.prefix_or_suffix.count(e) for e in sl}
         
         
 
