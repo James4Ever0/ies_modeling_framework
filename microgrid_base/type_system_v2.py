@@ -48,7 +48,9 @@ def revert_dict(mdict: dict):
 
 
 def check_valid_type_base_name(type_base_name):
+    type_base_name = type_base_name.replace(" ","").strip()
     try:
+        assert type_base_name"可连接"
         assert "输" not in type_base_name
         assert "出" not in type_base_name
         assert "入" not in type_base_name
