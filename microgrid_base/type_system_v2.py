@@ -440,7 +440,7 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
 wire_types_json = {k:list(v) for k,v in wire_types.items()}
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:[e for e in v if e.startswith('可连接')]},"连接线":{},}
+all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:[e for e in v if Connectable.check(e)] for k,v in wire_types.items()},"连接线":{k:[e for e in v if not Connectable.check(e)] for k,v in wire_types.items()},}
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
 print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
 
