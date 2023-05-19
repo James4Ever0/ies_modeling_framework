@@ -4,9 +4,8 @@ import rich
 import traceback
 
 
-
 def check_valid_type_base_name(type_base_name):
-    type_base_name = type_base_name.replace(" ","").strip()
+    type_base_name = type_base_name.replace(" ", "").strip()
     try:
         assert not type_base_name.startswith("可连接")
         assert not type_base_name.startswith("不可连接")
@@ -18,16 +17,18 @@ def check_valid_type_base_name(type_base_name):
         raise Exception("Invalid type base name:", type_base_name)
     return type_base_name.strip()
 
+
 class PrefixSuffixBase:
     def __init__(self, prefix_or_suffix, prefix=False):
-        self.prefix_or_suffix = check_valid_type_base_name(prefix_or_suffix)
-        self.is_prefix=prefix
-        
+        self.prefix_or_suffix = prefix_or_suffix.strip()
+        self.is_prefix = prefix
+
     def __call__(self, name):
+        name = check_valid_type_base_name(name)
         if self.is_prefix:
-            return f"{self.prefix_or_suffix}{name.strip()}"
+            return f"{self.prefix_or_suffix}{name}"
         else:
-            return f"{name.strip()}{self.prefix_or_suffix}"
+            return f"{name}{self.prefix_or_suffix}"
 
     def check(self, name_with_prefix_or_suffix):
         l = len(self.prefix_or_suffix)
@@ -35,25 +36,26 @@ class PrefixSuffixBase:
             name = name_with_prefix_or_suffix.strip()[l:]
         else:
             name = name_with_prefix_or_suffix.strip()[:-l]
-        
-        sl = set(list(name_with_prefix_or_suffix))
-        sld = {e:self.prefix_or_suffix.count(e) for e in sl}
-        nwd = {e:name_with_prefix_or_suffix.count(e) for e in sl}
 
-        nd = {e:name.count(e) for e in sl}
-        zd = {e:0 for e in sl}
+        sl = set(list(name_with_prefix_or_suffix))
+        sld = {e: self.prefix_or_suffix.count(e) for e in sl}
+        nwd = {e: name_with_prefix_or_suffix.count(e) for e in sl}
+
+        nd = {e: name.count(e) for e in sl}
+        zd = {e: 0 for e in sl}
         s1 = nd == zd
         s2 = sld == nwd
         return s1 and s2
+
 
 class Prefix(PrefixSuffixBase):
     def __init__(self, prefix):
         super().__init__(prefix, prefix=True)
 
+
 class Suffix(PrefixSuffixBase):
     def __init__(self, suffix):
         super().__init__(suffix, prefix=False)
-
 
 
 # 元件不可和自己相连 加法器之间如果相连 连线为特殊类型 合并为一个加法器之后做合理性判断
@@ -62,7 +64,7 @@ class Suffix(PrefixSuffixBase):
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
 
-SAVE_PREFIX= "microgrid_v2"
+SAVE_PREFIX = "microgrid_v2"
 PLOT_ONLY = False
 
 # from turtle import backward
@@ -152,7 +154,9 @@ def triplets_with_supertype(triplet_map, length=3):
                 print("ERROR!")
                 print()
                 rich.print(triplet_map)
-                raise Exception(f"Error when unpacking triplet map with length {length}.", )
+                raise Exception(
+                    f"Error when unpacking triplet map with length {length}.",
+                )
             yield (*triplet, supertype)
 
 
@@ -191,6 +195,8 @@ def add_to_types(supertype, typename, is_wire=False):
         raise Exception(
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
+
+
 Connectable = Prefix("可连接")
 
 Mergeable = Prefix("可合并")
@@ -237,18 +243,24 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
         start = IO(i)
         end = IO(o)
     else:
-        start = Input(i) # input <- adder_output <- adder
-        end = Output(o) # output -> adder_input -> adder
+        start = Input(i)  # input <- adder_output <- adder
+        end = Output(o)  # output -> adder_input -> adder
     # print(i,o, start, end,wire_name)
     # breakpoint()
-    mWireNames = (connectable_wire_name, unconnectable_wire_name, unconnectable_input_wire_name,unconnectable_output_wire_name,
-    unconnectable_io_wire_name, mergeable_wire_name) = (
+    mWireNames = (
+        connectable_wire_name,
+        unconnectable_wire_name,
+        unconnectable_input_wire_name,
+        unconnectable_output_wire_name,
+        unconnectable_io_wire_name,
+        mergeable_wire_name,
+    ) = (
         Connectable(wire_name),
         Unconnectable(wire_name),
         Unconnectable(Input(wire_name)),
         Unconnectable(Output(wire_name)),
         Unconnectable(IO(wire_name)),
-        Mergeable(wire_name)
+        Mergeable(wire_name),
     )
 
     # if types.get(supertype, None) is None:
@@ -258,7 +270,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     #     breakpoint()
     add_to_types(supertype, start)
     add_to_types(supertype, end)
-    
+
     for wireName in mWireNames:
         add_to_types(supertype, wireName, is_wire=True)
     # add_to_types(supertype, connectable_wire_name, is_wire=True)
@@ -268,7 +280,9 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     # add_to_types(supertype, unconnectable_wire_name, is_wire=True)
 
     types_connectivity_matrix.update({frozenset([start, end]): unconnectable_wire_name})
-    types_connectivity_matrix.update({frozenset([connectable_wire_name, connectable_wire_name]): mergeable_wire_name})
+    types_connectivity_matrix.update(
+        {frozenset([connectable_wire_name, connectable_wire_name]): mergeable_wire_name}
+    )
 
     if forward:  # original
         types_connectivity_matrix.update(
@@ -310,6 +324,7 @@ import json
 csv_path = "设备接口-离网型微电网.csv"
 
 from utils import fix_csv_and_return_dataframe
+
 port_df = fix_csv_and_return_dataframe(csv_path)
 # lines = []
 # line_sep_count_list = []
@@ -421,8 +436,10 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
+
+
 def print_with_banner(content, hyphen_saved_name, prefix):
-    banner = hyphen_saved_name.strip().replace("_"," ").upper().strip()
+    banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
     print(f"=========[{banner}]=========")
     rich.print(content)
     filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
@@ -430,19 +447,29 @@ def print_with_banner(content, hyphen_saved_name, prefix):
     with open(filepath, "w+") as f:
         str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
-    
+
+
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
-print_with_banner(device_port_dict, 'device_port_type_mapping', SAVE_PREFIX)
+print_with_banner(device_port_dict, "device_port_type_mapping", SAVE_PREFIX)
 # print("=========[CONNECTIVITY MATRIX]=========")
-types_connectivity_matrix_for_json= {"{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()}
-print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE_PREFIX) # must convert this one.
+types_connectivity_matrix_for_json = {
+    "{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()
+}
+print_with_banner(
+    types_connectivity_matrix_for_json, "connectivity_matrix", SAVE_PREFIX
+)  # must convert this one.
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-wire_types_json = {k:list(v) for k,v in wire_types.items()}
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:[e for e in v if Connectable.check(e)] for k,v in wire_types.items()},"连接线":{k:[e for e in v if not Connectable.check(e)] for k,v in wire_types.items()},}
+wire_types_json = {k: list(v) for k, v in wire_types.items()}
+all_types_structured = {
+    "设备": {k: list(v) for k, v in types.items()},
+    "加法器": {k: [e for e in v if Connectable.check(e)] for k, v in wire_types.items()},
+    "连接线": {k: [e for e in v if Unconnectable.check(e)] for k, v in wire_types.items()},
+    "合并线": {k: [e for e in v if Mergeable.check(e)] for k, v in wire_types.items()},
+}
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
-print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
+print_with_banner(all_types_structured, "all_types_structured", SAVE_PREFIX)
 
 mtypes = set([e for k, v in types.items() for e in v])
 
@@ -466,18 +493,21 @@ all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
 # for node_name in all_types:
 #     G.add_node(node_name)
 import copy
+
+
 def alter_type_name(type_name):
     print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         if type_name.endswith("]"):
             type_name = type_name[:-4]
-        result = copy.copy(type_name)+f"[{get_uniq_hash()}]"
+        result = copy.copy(type_name) + f"[{get_uniq_hash()}]"
         # breakpoint()
     else:
         result = type_name
     # print("RESULT?", result)
     # breakpoint()
     return result
+
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
@@ -510,9 +540,7 @@ matplotlib.rcParams["font.sans-serif"] = ["Songti SC"]
 import matplotlib.pyplot as plt
 
 
-def plot_graph(G, figure_path: str, 
-    width = 10,
-    height = 20, plot_only=False):
+def plot_graph(G, figure_path: str, width=10, height=20, plot_only=False):
 
     plt.figure(figsize=(width, height))
 
@@ -534,7 +562,7 @@ def plot_graph(G, figure_path: str,
 
 
 figure_path = "type_system.png"
-plot_graph(G, figure_path,plot_only=PLOT_ONLY)
+plot_graph(G, figure_path, plot_only=PLOT_ONLY)
 
 G1 = networkx.Graph()
 
@@ -559,11 +587,11 @@ for fzset, wire_name in types_connectivity_matrix.items():
                 mend = de
             else:
                 mend = de_port
-                
+
             mstart = alter_type_name(mstart)
             mend = alter_type_name(mend)
             wire_name = alter_type_name(wire_name)
-            
+
             G1.add_edge(mstart, wire_name)
             G1.add_edge(mend, wire_name)
 
