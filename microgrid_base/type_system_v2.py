@@ -160,10 +160,11 @@ def Unconnectable(wire_name):
     return f"不可连接{wire_name}"
 
 
+# handle io to adder stuff.
 for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
     start = IO(io)
     end = Connectable(wire_name)
-    created = Unconnectable(wire_name)
+    created = Unconnectable(IO(wire_name))
 
     add_to_types(supertype, start)
     add_to_types(supertype, end, is_wire=True)
