@@ -4,6 +4,7 @@ import rich
 import traceback
 
 
+
 def check_valid_type_base_name(type_base_name):
     type_base_name = type_base_name.replace(" ", "").strip()
     try:
@@ -455,6 +456,7 @@ def print_with_banner(content, hyphen_saved_name, prefix):
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
 print_with_banner(device_port_dict, "device_port_type_mapping", SAVE_PREFIX)
 # print("=========[CONNECTIVITY MATRIX]=========")
+rich.print(types_connectivity_matrix)
 types_connectivity_matrix_for_json = {
     "{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()
 }
