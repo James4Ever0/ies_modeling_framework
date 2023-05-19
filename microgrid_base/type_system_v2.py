@@ -171,8 +171,16 @@ class PrefixSuffixBase:
             return f"{name.strip()}{self.prefix_or_suffix}"
 
     def check(self, name_with_prefix_or_suffix):
+        l = len(self.prefix_or_suffix)
         if self.is_prefix:
-            
+            name = name_with_prefix_or_suffix.strip()[l:]
+        else:
+            name = name_with_prefix_or_suffix.strip()[:-l]
+        
+        sl = set()
+        
+        
+
 
 def Connectable(wire_name):
     return f"可连接{wire_name}"
