@@ -3,6 +3,8 @@
 import rich
 import traceback
 
+# 元件不可和自己相连
+# 
 
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
