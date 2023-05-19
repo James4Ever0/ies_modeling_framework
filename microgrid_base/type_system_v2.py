@@ -228,15 +228,16 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 def transform_triplets(triplets, is_io, forward, backward):
     return [(e, is_io, forward, backward) for e in triplets_with_supertype(triplets)]
 
+# forward&backward for compatibility issues. just leave it be.
 
 from functools import reduce
 
 triplets_config = [  # triplets, is_io, forward, backward
-    (source_coax_triplets, False,),
-    (load_coax_triplets, False,),
-    (source_and_load_coax_triplets, False),
+    (source_coax_triplets, False, False, True),
+    (load_coax_triplets, False, True, False),
+    (source_and_load_coax_triplets, False, True, True),
     #############################################
-    (io_storage_coax_triplets, True,),
+    (io_storage_coax_triplets, True, True, False),
 ]
 
 for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
