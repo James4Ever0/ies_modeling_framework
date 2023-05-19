@@ -2,8 +2,12 @@ main_path = "device_params_intermediate.json" # data parse here. since we are ch
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 import json
+import rich
 
 microgrid_device_port_path = "microgrid_device_port_type_mapping.json"
+
+with open(microgrid_device_port_path,'r') as f:
+    port_dict = json.load(f)
 
 all_microgrid_device_names = []
 
@@ -25,7 +29,6 @@ with open(path, "r") as f:
 
 keys = list(data.keys())
 
-import rich
 
 rich.print(keys)
 
