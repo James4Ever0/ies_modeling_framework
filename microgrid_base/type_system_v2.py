@@ -518,6 +518,8 @@ def alter_type_name(type_name):
     # breakpoint()
     return result
 
+def is_wire(name):
+    return Connectable.check(name) or Unconnectable.check(name)
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
@@ -529,8 +531,8 @@ for fzset, wire_name in types_connectivity_matrix.items():
 
     G.add_edge(start, wire_name)
     G.add_edge(wire_name, end)
-    if not Connectable(start)
-    G.add_edge(start, end)
+    if  (not is_wire(start)) and (not is_wire(end)):
+        G.add_edge(start, end)
 
 # print(G.nodes)
 
