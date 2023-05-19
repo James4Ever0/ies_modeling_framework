@@ -380,15 +380,15 @@ def print_with_banner(content, hyphen_saved_name, prefix):
         f.write(str_content)
     
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
-print_with_banner(device_port_dict, 'device_port_type_mapping', "microgrid")
+print_with_banner(device_port_dict, 'device_port_type_mapping', SAVE_PREFIX)
 # print("=========[CONNECTIVITY MATRIX]=========")
 types_connectivity_matrix_for_json= {"{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()}
-print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix","microgrid") # must convert this one.
+print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE_PREFIX) # must convert this one.
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
 all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
-print_with_banner(all_types_structured,"all_types_structured","microgrid")
+print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
 
 mtypes = set([e for k, v in types.items() for e in v])
 
