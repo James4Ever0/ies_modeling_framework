@@ -186,12 +186,16 @@ class PrefixSuffixBase:
         s1 = nd == zd
         s2 = sld == nwd
         return s1 and s2
-        
-        
 
+class Prefix(PrefixSuffixBase):
+    def __init__(self, prefix):
+        super().__init__(prefix, prefix=True)
 
-def Connectable(wire_name):
-    return f"可连接{wire_name}"
+class Suffix(PrefixSuffixBase):
+    def __init__(self, suffix):
+        super().__init__(suffix, prefix=False)
+
+Connectable = Prefix("可连接")
 
 def Mergeable(wire_name):
     return f"可合并{wire_name}"
