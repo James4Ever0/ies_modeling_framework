@@ -179,6 +179,13 @@ class PrefixSuffixBase:
         
         sl = set(list(name_with_prefix_or_suffix))
         sld = {e:self.prefix_or_suffix.count(e) for e in sl}
+        nwd = {e:name_with_prefix_or_suffix.count(e) for e in sl}
+
+        nd = {e:name.count(e) for e in sl}
+        zd = {e:0 for e in sl}
+        s1 = nd == zd
+        s2 = sld == nwd
+        return s1 and s2
         
         
 
