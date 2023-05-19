@@ -159,7 +159,10 @@ def add_to_types(supertype, typename, is_wire=False):
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
-class PrefixChecker
+class :
+    def __init__
+
+
 
 def Connectable(wire_name):
     return f"可连接{wire_name}"
