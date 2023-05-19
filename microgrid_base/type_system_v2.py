@@ -4,9 +4,23 @@ import rich
 import traceback
 
 
+
+def check_valid_type_base_name(type_base_name):
+    type_base_name = type_base_name.replace(" ","").strip()
+    try:
+        assert not type_base_name.startswith("可连接")
+        assert not type_base_name.startswith("不可连接")
+        assert "输" not in type_base_name
+        assert "出" not in type_base_name
+        assert "入" not in type_base_name
+    except:
+        traceback.print_exc()
+        raise Exception("Invalid type base name:", type_base_name)
+    return type_base_name.strip()
+
 class PrefixSuffixBase:
     def __init__(self, prefix_or_suffix, prefix=False):
-        self.prefix_or_suffix = prefix_or_suffix.strip()
+        self.prefix_or_suffix = check_valid_type_base_name(prefix_or_suffix)
         self.is_prefix=prefix
         
     def __call__(self, name):
@@ -90,33 +104,13 @@ def revert_dict(mdict: dict):
     return result
 
 
-def check_valid_type_base_name(type_base_name):
-    type_base_name = type_base_name.replace(" ","").strip()
-    try:
-        assert not type_base_name.startswith("可连接")
-        assert not type_base_name.startswith("不可连接")
-        assert "输" not in type_base_name
-        assert "出" not in type_base_name
-        assert "入" not in type_base_name
-    except:
-        traceback.print_exc()
-        raise Exception("Invalid type base name:", type_base_name)
-    return type_base_name.strip()
+Input = Suffix("输入")
 
 
-def Input(type_base_name):
-    type_base_name = check_valid_type_base_name(type_base_name)
-    return f"{type_base_name.strip()}输入"
+Output = Suffix("输出")
 
 
-def Output(type_base_name):
-    type_base_name = check_valid_type_base_name(type_base_name)
-    return f"{type_base_name.strip()}输出"
-
-
-def IO(type_base_name):
-    type_base_name = check_valid_type_base_name(type_base_name)
-    return f"{type_base_name.strip()}输入输出"
+IO = Suffix("输入输出")
 
 
 source_coax_triplets = {  # Input, Output, ConnectionBaseName
