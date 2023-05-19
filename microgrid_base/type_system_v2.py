@@ -161,12 +161,18 @@ def add_to_types(supertype, typename, is_wire=False):
 
 class PrefixSuffixBase:
     def __init__(self, prefix_or_suffix, prefix=False):
-        self.
+        self.prefix_or_suffix = prefix_or_suffix.strip()
         self.is_prefix=prefix
         
     def __call__(self, name):
-        return 
+        if self.is_prefix:
+            return f"{self.prefix_or_suffix}{name.strip()}"
+        else:
+            return f"{name.strip()}{self.prefix_or_suffix}"
 
+    def check(self, name_with_prefix_or_suffix):
+        if self.is_prefix:
+            
 
 def Connectable(wire_name):
     return f"可连接{wire_name}"
