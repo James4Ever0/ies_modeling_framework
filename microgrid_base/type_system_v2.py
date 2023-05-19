@@ -240,6 +240,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     # add_to_types(supertype, unconnectable_wire_name, is_wire=True)
 
     types_connectivity_matrix.update({frozenset([start, end]): connectable_wire_name})
+    types_connectivity_matrix.update({frozenset([connectable_wire_name, connectable_wire_name]): mergeable_wire_name})
 
     if forward:  # original
         types_connectivity_matrix.update(
@@ -247,7 +248,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
         )
     if backward:
         types_connectivity_matrix.update(
-            {frozenset([end, connectable_wire_name]): unconnectable_wire_name}
+            {frozenset([end, connectable_wire_name]): unconnectable_input_wire_name}
         )
 
 
