@@ -159,6 +159,7 @@ def add_to_types(supertype, typename, is_wire=False):
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
 
+class PrefixChecker
 
 def Connectable(wire_name):
     return f"可连接{wire_name}"
@@ -411,7 +412,8 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:list(v) for k,v in wire_types.items()},"设备连接线","特殊连接线"}
+wire_types_json = {k:list(v) for k,v in wire_types.items()}
+all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"加法器":{k:[e for e in v if e.startswith('可连接')]},"连接线":{},}
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
 print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
 
