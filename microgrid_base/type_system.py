@@ -7,8 +7,8 @@ import rich
 
 PLOT_ONLY = False
 
-from turtle import backward
-import pandas
+# from turtle import backward
+# import pandas
 
 import uuid
 
