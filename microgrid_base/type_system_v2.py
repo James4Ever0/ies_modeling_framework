@@ -24,7 +24,10 @@ class PrefixSuffixBase:
         self.is_prefix = prefix
 
     def __call__(self, name):
-        name = check_valid_type_base_name(name)
+        if not self.is_prefix:
+            name = check_valid_type_base_name(name)
+        else:
+            name = name.strip()
         if self.is_prefix:
             return f"{self.prefix_or_suffix}{name}"
         else:
