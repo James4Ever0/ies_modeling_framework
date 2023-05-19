@@ -232,11 +232,11 @@ def transform_triplets(triplets, is_io, forward, backward):
 from functools import reduce
 
 triplets_config = [  # triplets, is_io, forward, backward
-    (source_coax_triplets, False, False, True),
-    (load_coax_triplets, False, True, False),
-    (source_and_load_coax_triplets, False, True, True),
+    (source_coax_triplets, False,),
+    (load_coax_triplets, False,),
+    (source_and_load_coax_triplets, False),
     #############################################
-    (io_storage_coax_triplets, True, True, False),
+    (io_storage_coax_triplets, True,),
 ]
 
 for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
