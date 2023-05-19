@@ -550,7 +550,7 @@ matplotlib.rcParams["font.sans-serif"] = ["Songti SC"]
 import matplotlib.pyplot as plt
 
 
-def plot_graph(G, figure_path: str, width=10, height=20, plot_only=False):
+def plot_graph(G, figure_path: str, width=20, height=30, plot_only=False):
 
     plt.figure(figsize=(width, height))
 
