@@ -79,9 +79,9 @@ import uuid
 hash_set = set()
 
 
-def get_uniq_hash():
+def get_uniq_hash(hash_length=3):
     while True:
-        mhash = str(uuid.uuid4()).split("-")[0][:2]
+        mhash = str(uuid.uuid4()).split("-")[0][:hash_length]
         if mhash not in hash_set:
             hash_set.add(mhash)
             return mhash
