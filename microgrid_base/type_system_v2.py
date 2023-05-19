@@ -531,7 +531,7 @@ for fzset, wire_name in types_connectivity_matrix.items():
 
     G.add_edge(start, wire_name)
     G.add_edge(wire_name, end)
-    if     G.add_edge(start, end)
+    # G.add_edge(start, end)
 
 # print(G.nodes)
 
@@ -604,7 +604,7 @@ for fzset, wire_name in types_connectivity_matrix.items():
             mstart = alter_type_name(mstart)
             mend = alter_type_name(mend)
             wire_name = alter_type_name(wire_name)
-
+            
             G1.add_edge(mstart, wire_name)
             G1.add_edge(mend, wire_name)
 
