@@ -292,6 +292,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
         types_connectivity_matrix.update(
             {frozenset([start, connectable_wire_name]): unconnectable_output_wire_name}
         )
+        types_connectivity_matrix.update({})
     if backward:
         types_connectivity_matrix.update(
             {frozenset([end, connectable_wire_name]): unconnectable_input_wire_name}
