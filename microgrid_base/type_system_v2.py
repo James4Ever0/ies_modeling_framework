@@ -3,6 +3,45 @@
 import rich
 import traceback
 
+
+class PrefixSuffixBase:
+    def __init__(self, prefix_or_suffix, prefix=False):
+        self.prefix_or_suffix = prefix_or_suffix.strip()
+        self.is_prefix=prefix
+        
+    def __call__(self, name):
+        if self.is_prefix:
+            return f"{self.prefix_or_suffix}{name.strip()}"
+        else:
+            return f"{name.strip()}{self.prefix_or_suffix}"
+
+    def check(self, name_with_prefix_or_suffix):
+        l = len(self.prefix_or_suffix)
+        if self.is_prefix:
+            name = name_with_prefix_or_suffix.strip()[l:]
+        else:
+            name = name_with_prefix_or_suffix.strip()[:-l]
+        
+        sl = set(list(name_with_prefix_or_suffix))
+        sld = {e:self.prefix_or_suffix.count(e) for e in sl}
+        nwd = {e:name_with_prefix_or_suffix.count(e) for e in sl}
+
+        nd = {e:name.count(e) for e in sl}
+        zd = {e:0 for e in sl}
+        s1 = nd == zd
+        s2 = sld == nwd
+        return s1 and s2
+
+class Prefix(PrefixSuffixBase):
+    def __init__(self, prefix):
+        super().__init__(prefix, prefix=True)
+
+class Suffix(PrefixSuffixBase):
+    def __init__(self, suffix):
+        super().__init__(suffix, prefix=False)
+
+
+
 # 元件不可和自己相连 加法器之间如果相连 连线为特殊类型 合并为一个加法器之后做合理性判断
 # 加法器不连接元件 端口属性重置为空
 
@@ -158,50 +197,11 @@ def add_to_types(supertype, typename, is_wire=False):
         raise Exception(
             f"{'Wire ' if is_wire else ''}Type {typename} in category {supertype} appeared to be duplicated with device types."
         )
-
-class PrefixSuffixBase:
-    def __init__(self, prefix_or_suffix, prefix=False):
-        self.prefix_or_suffix = prefix_or_suffix.strip()
-        self.is_prefix=prefix
-        
-    def __call__(self, name):
-        if self.is_prefix:
-            return f"{self.prefix_or_suffix}{name.strip()}"
-        else:
-            return f"{name.strip()}{self.prefix_or_suffix}"
-
-    def check(self, name_with_prefix_or_suffix):
-        l = len(self.prefix_or_suffix)
-        if self.is_prefix:
-            name = name_with_prefix_or_suffix.strip()[l:]
-        else:
-            name = name_with_prefix_or_suffix.strip()[:-l]
-        
-        sl = set(list(name_with_prefix_or_suffix))
-        sld = {e:self.prefix_or_suffix.count(e) for e in sl}
-        nwd = {e:name_with_prefix_or_suffix.count(e) for e in sl}
-
-        nd = {e:name.count(e) for e in sl}
-        zd = {e:0 for e in sl}
-        s1 = nd == zd
-        s2 = sld == nwd
-        return s1 and s2
-
-class Prefix(PrefixSuffixBase):
-    def __init__(self, prefix):
-        super().__init__(prefix, prefix=True)
-
-class Suffix(PrefixSuffixBase):
-    def __init__(self, suffix):
-        super().__init__(suffix, prefix=False)
-
 Connectable = Prefix("可连接")
 
-def Mergeable(wire_name):
-    return f"可合并{wire_name}"
+Mergeable = Prefix("可合并")
 
-def Unconnectable(wire_name):
-    return f"不可连接{wire_name}"
+Unconnectable = Prefix("不可连接")
 
 
 # handle io to adder stuff.
