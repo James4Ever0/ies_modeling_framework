@@ -163,6 +163,8 @@ def add_to_types(supertype, typename, is_wire=False):
 def Connectable(wire_name):
     return f"可连接{wire_name}"
 
+def Mergeable(wire_name):
+    return f"可合并{wire_name}"
 
 def Unconnectable(wire_name):
     return f"不可连接{wire_name}"
@@ -217,7 +219,8 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
         Unconnectable(wire_name),
         Unconnectable(Input(wire_name)),
         Unconnectable(Output(wire_name)),
-        Unconnectable(IO(wire_name))
+        Unconnectable(IO(wire_name)),
+        Mergeable(IO(wire_name))
     )
 
     # if types.get(supertype, None) is None:
