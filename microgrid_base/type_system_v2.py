@@ -214,13 +214,13 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     # print(i,o, start, end,wire_name)
     # breakpoint()
     (connectable_wire_name, unconnectable_wire_name, unconnectable_input_wire_name,unconnectable_output_wire_name,
-    unconnectable_io_wire_name) = (
+    unconnectable_io_wire_name, mergeable_wire_name) = (
         Connectable(wire_name),
         Unconnectable(wire_name),
         Unconnectable(Input(wire_name)),
         Unconnectable(Output(wire_name)),
         Unconnectable(IO(wire_name)),
-        Mergeable(IO(wire_name))
+        Mergeable(wire_name)
     )
 
     # if types.get(supertype, None) is None:
