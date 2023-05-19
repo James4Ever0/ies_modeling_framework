@@ -411,7 +411,8 @@ print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix",SAVE
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
+all_types_structured = {"设备":{k: list(v) for k,v in types.items()},":{k:list(v) for k,v in wire_types.items()}}
+# all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
 print_with_banner(all_types_structured,"all_types_structured",SAVE_PREFIX)
 
 mtypes = set([e for k, v in types.items() for e in v])
