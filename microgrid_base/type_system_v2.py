@@ -5,6 +5,7 @@ import rich
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
 
+SAVE_PREFIX= "microgrid_v2"
 PLOT_ONLY = False
 
 from turtle import backward
