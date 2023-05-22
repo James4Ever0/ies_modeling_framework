@@ -29,6 +29,12 @@ for k, v in port_dict.items():
 
 data = {}
 data_is_excel = {}
+
+def none_fallback(e):
+    if type(e)!=str:
+        return ""
+    return e
+
 for k, v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
@@ -36,13 +42,16 @@ for k, v in device_data.items():
             vlist = []
             v_is_excel_list = []
             for v2 in v1:
-                val = v2[0]
+                v2 = [none_fallback(e) for e in v2]
+                val = v2[0].strip()
+                if val == "-": continue
                 v_is_excel = (EXCEL in v2[1]) or (EXCEL in v2[2])
                 
                 v_is_measured = MEASURE in v2[2]
                 
-                vlist.append(val)
-                v_is_excel_list.append(v_is_excel)
+                if not v_is_measured:
+                    vlist.append(val)
+                    v_is_excel_list.append(v_is_excel)
 
             data[k] = data.get(k, {})
             data[k][k1] = vlist
