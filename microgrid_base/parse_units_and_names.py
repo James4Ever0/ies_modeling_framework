@@ -156,7 +156,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
-    "Efficiency": ("one", {"": ["电电转换效率"]}),
+    "Efficiency": ("one", {"PowerConversion-": ["电电转换效率"], "Charge-":['充能效率'],'Discharge-':['放能效率']}),
     "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
@@ -327,7 +327,7 @@ for key in keys:
                 index
             ]  # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
             print("____" * 10)
-            val = val.replace("（", "(").replace("）", ")").replace(" ", "")
+            val = val.replace("（", "(").replace("）", ")").replace(" ", "").replace(";","").replace("；","")
             val = val.strip("*").strip(":").strip("：").strip()
             print(val)
             if val in CHAR_TYPE:
