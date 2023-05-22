@@ -155,7 +155,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}), # two unit system.
     "Cost": ("万元/kW", {"": ["采购成本"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
-    # "VariationalCost": ("/", {"": [""]}),
+    "VariationalCost": ("/", {"": [""]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
