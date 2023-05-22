@@ -170,13 +170,14 @@ standard_units_name_list = [
     "V",
     "Hz",
     "ohm",
-    "one",
+    # "one",
+    "percent"
     "台",
     "m2",
     "m3",
     "kelvin",
     "metric_ton",  # this is weight.
-    "p_u_",
+    # "p_u_",
     "dimensionless",
 ]
 
@@ -188,10 +189,12 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     v_unit = v[0]
     mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
     if mag != 1:
+        print("-"*20)
         print("ERROR! MAGNITUDE:", mag)
         print("KEY:", k)
         print("ORIGINAL UNIT:", v_unit)
         print("CONVERTED UNIT:", munit)
+        print("-"*20)
         raise Exception("Standard Unit Error")
 
 # TODO: check if units are compatible. set standard units.
