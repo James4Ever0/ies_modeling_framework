@@ -8,26 +8,28 @@ import rich
 
 EXCEL = "嵌套"
 
-with open(device_data_path_base, 'r') as f:
+MEASURE = "调度"
+
+with open(device_data_path_base, "r") as f:
     device_data = json.load(f)
 
 microgrid_device_port_path = "microgrid_device_port_type_mapping.json"
 
-with open(microgrid_device_port_path,'r') as f:
+with open(microgrid_device_port_path, "r") as f:
     port_dict = json.load(f)
 
 data = {}
 
 all_microgrid_device_keys = []
 
-for k,v in port_dict.items():
+for k, v in port_dict.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         all_microgrid_device_keys.append(k0)
 
 data = {}
 data_is_excel = {}
-for k,v in device_data.items():
+for k, v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         if k0 in all_microgrid_device_keys:
@@ -35,11 +37,17 @@ for k,v in device_data.items():
             v_is_excel_list = []
             for v2 in v1:
                 val = v2[0]
-            
-            data[k] = data.get(k,{})
+                v_is_excel = (EXCEL in v2[1]) or (EXCEL in v2[2])
+                
+                v_is_measured = MEASURE in v2[2]
+                
+                vlist.append(val)
+                v_is_excel_list.append(v_is_excel)
+
+            data[k] = data.get(k, {})
             data[k][k1] = vlist
-            
-            data_is_excel[k] = data_is_excel.get(k,{})
+
+            data_is_excel[k] = data_is_excel.get(k, {})
             data_is_excel[k][k1] = v_is_excel_list
         else:
             continue
