@@ -146,8 +146,9 @@ CHAR_TYPE = ["生产厂商", "设备型号"]
 
 COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
-META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束", "设计规划拓扑图右侧菜单"]  # parse this?
+META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束", ]  # parse this?
 
+SKIP_TYPE = ["设计规划拓扑图右侧菜单", "设计规划系统-拓扑图右侧菜单"]
 
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Area": (
@@ -168,7 +169,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
-    "Life": ("年", {"": ["设计寿命"]}),
+    "Life": ("年", {"": ["设计寿命"], "Battery-":["电池换芯周期"]}),
     "Capacity": ("kWh",{"Rated-":["额定容量"], "TotalDischarge-": ["生命周期总放电量"]})
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
