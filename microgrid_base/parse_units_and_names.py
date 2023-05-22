@@ -343,10 +343,12 @@ for key in keys:
                 # appending values, presumed.
                 if meta_type in SKIP_TYPE:
                     params = {"设计规划": [], "仿真模拟": []}
-                    if subkey in ["光伏发电"]:  # solar powered.
+                    if subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(("最大安装面积", "m2"))
                         params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
-                    elif:
+                    elif subkey in ['传输线']: # transfer lines, pipes
+                        params["设计规划"].append(("长度", "km"))
+                        params["仿真模拟"].append(("长度", "km"))
                     else:
                         params["设计规划"].append(("最大安装台数", "台"))
                         params["设计规划"].append(("最小安装台数", "台"))
