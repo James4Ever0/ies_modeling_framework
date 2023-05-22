@@ -475,7 +475,8 @@ print_with_banner(
 wire_types_json = {k: list(v) for k, v in wire_types.items()}
 all_types_structured = {
     "设备": {k: list(v) for k, v in types.items()},
-    "加法器": {k: [e for e in v if Connectable.check(e)] for k, v in wire_types.items()},
+    # 加法器改为母线
+    "母线": {k: [e for e in v if Connectable.check(e)] for k, v in wire_types.items()},
     "连接线": {k: [e for e in v if Unconnectable.check(e)] for k, v in wire_types.items()},
     "合并线": {k: [e for e in v if Mergeable.check(e)] for k, v in wire_types.items()},
 }
