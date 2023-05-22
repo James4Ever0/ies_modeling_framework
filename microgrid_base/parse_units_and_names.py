@@ -170,6 +170,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
+    "Load": ("percent", {"":["负载率"]}),
     "Efficiency": (
         "one",
         {
