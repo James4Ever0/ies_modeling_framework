@@ -154,6 +154,7 @@ META_TYPE = [
 ]
 
 
+
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Area": (
         "m2",
@@ -293,6 +294,7 @@ for key in keys:
         val_list = data[key][subkey]
         # rich.print(val_list)
         print("____" * 10 + "[{}-{}]".format(key, subkey))
+        meta_type = None
         for index, val in enumerate(val_list):
             val_is_table = data_is_excel[key][subkey][
                 index
@@ -305,6 +307,7 @@ for key in keys:
                 print("CHAR_TYPE")
             elif val in META_TYPE:
                 print("META_TYPE")
+                meta_type = val
             else:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
