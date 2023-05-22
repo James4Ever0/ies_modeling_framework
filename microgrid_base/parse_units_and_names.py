@@ -240,7 +240,8 @@ def parse_convert_string(convert_string: str):
     return prefix, suffix
 
 
-BASE_TRANSLATION_TABLE = {}
+TRANSLATION_TABLE = {}
+# BASE_TRANSLATION_TABLE = {}
 BASE_CLASS_TO_UNIT_TABLE = {}
 
 for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
@@ -252,7 +253,8 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         # BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
         
         BASE_CLASS_TO_UNIT_TABLE[k0] = v[0]
-        BASE_TRANSLATION_TABLE[k0] = BASE_TRANSLATION_TABLE.get(k0, []) + [v1]
+        for v2 in v1:
+        TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(k0, []) + [v1]
         # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
 # BASE_CLASS_TO_UNIT_TABLE = {
@@ -264,9 +266,10 @@ def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
 
-rich.print(BASE_TRANSLATION_TABLE)
+# rich.print(BASE_TRANSLATION_TABLE)
+rich.print(TRANSLATION_TABLE)
 breakpoint()
-TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
+# TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
 # LIST_TYPE = [
