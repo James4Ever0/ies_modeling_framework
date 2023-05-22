@@ -31,13 +31,16 @@ for k,v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         if k0 in all_microgrid_device_keys:
-            val = [v2[0] for v2 in v1]
+            vlist = []
+            v_is_excel_list = []
+            for v2 in v1:
+                val = v2[0]
             
             data[k] = data.get(k,{})
-            data[k][k1] = val
+            data[k][k1] = vlist
             
             data_is_excel[k] = data_is_excel.get(k,{})
-            data_is_excel[k][k1] = val
+            data_is_excel[k][k1] = v_is_excel_list
         else:
             continue
 # 没有其他类元件：母线和母线接口
