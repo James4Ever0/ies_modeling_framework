@@ -150,12 +150,12 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
-    "Efficiency": ("percent", {"": ["电电转换效率"]}),
+    "Efficiency": ("one", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
-    "DeltaLimit": ("percent/second", {"": [], "Power-": ["发电爬坡率"]}),
+    "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),
     "Cost": ("万元/kW", {"": ["采购成本"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
-    "VariationalCost": ("/", {"": [""]}),
+    # "VariationalCost": ("/", {"": [""]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
@@ -170,8 +170,8 @@ standard_units_name_list = [
     "V",
     "Hz",
     "ohm",
-    # "one",
-    "percent"
+    "one",
+    # "percent"
     "台",
     "m2",
     "m3",
