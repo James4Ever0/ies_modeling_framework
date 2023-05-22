@@ -308,6 +308,8 @@ for key in keys:
             elif val in META_TYPE:
                 print("META_TYPE")
                 meta_type = val
+                # appending values, presumed.
+                if subkey in []: # solar powered.
             else:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
@@ -325,7 +327,7 @@ for key in keys:
                     
                 if meta_type == META_TYPE[3]:
                     # TODO: checking metadata.
-                    ...
+                    continue
                 elif val_name in TRANSLATION_TABLE.keys():
                     base_class = TRANSLATION_TABLE[val_name]
                     default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
