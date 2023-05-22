@@ -23,11 +23,15 @@ for k,v in port_dict.items():
         k0 = f"{k}-{k1}"
         all_microgrid_device_keys.append(k0)
 
+data = {}
+
 for k,v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         if k0 in all_microgrid_device_keys:
-            print(v1)
+            val = v1[0]
+            data[k] = data.get(k,{})
+            data[k][k1] = val
         else:
             continue
 # 没有其他类元件：母线和母线接口
@@ -43,13 +47,13 @@ import pint
 unit_def_path = "../merged_units.txt"
 ureg = pint.UnitRegistry(unit_def_path)
 
-with open(path, "r") as f:
-    data = json.load(f)
+# with open(path, "r") as f:
+#     data = json.load(f)
 
 keys = list(data.keys())
 
-
 rich.print(keys)
+rich.print(data)
 
 CHAR_TYPE = ["生产厂商", "设备型号"]
 
