@@ -257,9 +257,9 @@ def revert_dict(mdict: dict):
 TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
-LIST_TYPE = [
-    "嵌套表格"
-]  # check this in the 2nd index  # notice, list contains multiple headings, each heading may have its own unit.
+# LIST_TYPE = [
+#     "嵌套表格"
+# ]  # check this in the 2nd index  # notice, list contains multiple headings, each heading may have its own unit.
 
 BASE_UNIT_TRANSLATION_TABLE = {
     "percent": ["%"],
@@ -286,7 +286,8 @@ for key in keys:
         val_list = data[key][subkey]
         # rich.print(val_list)
         print("____" * 10 + "[{}-{}]".format(key, subkey))
-        for val in val_list:
+        for index, val in enumerate(val_list):
+            val_is_table = data_is_excel[key][subkey][index] # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
             print("____" * 10)
             val = val.replace("（", "(").replace("）", ")").replace(" ", "")
             val = val.strip("*").strip(":").strip("：").strip()
