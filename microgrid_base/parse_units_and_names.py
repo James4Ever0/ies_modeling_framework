@@ -160,10 +160,11 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ('L/kWh', {"":['燃油消耗率']}),
-    "StartupPowerLimit"
+    "StartupLimit": ("percent", {"Power-": ['启动功率百分比']}),
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),  # two unit system.
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "Cost": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
+    "CosePerMachine"
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
     "Life": ("年", {"": ["设计寿命"]}),
