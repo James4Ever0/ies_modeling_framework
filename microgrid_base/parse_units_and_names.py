@@ -171,7 +171,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerPower": ("元/kWh", {"": ["可变维护成本"]}),
-    "VariationCostPerMeter": ("万元/(km*年)": {"":["维护成本"]})
+    "VariationCostPerMeter": ("万元/(km*年)", {"":["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-":["电池换芯周期"]}),
     "Capacity": ("kWh",{"Rated-":["额定容量"], "TotalDischarge-": ["生命周期总放电量"]})
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
@@ -346,12 +346,15 @@ for key in keys:
                     if subkey in ["光伏发电"]:  # solar powered.
                         params["设计规划"].append(("最大安装面积", "m2"))
                         params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
+                    elif:
                     else:
                         params["设计规划"].append(("最大安装台数", "台"))
                         params["设计规划"].append(("最小安装台数", "台"))
+                        
+                        params["仿真模拟"].append(("安装台数", "台"))
+                        
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
-                    params["仿真模拟"].append(("安装台数", "台"))
 
                     rich.print(params)
                     # str? -> str
