@@ -264,7 +264,8 @@ def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
 
-
+rich.print(BASE_TRANSLATION_TABLE)
+breakpoint()
 TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
