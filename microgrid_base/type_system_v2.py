@@ -49,6 +49,8 @@ class PrefixSuffixBase:
         zd = {e: 0 for e in sl}
         s1 = nd == zd
         s2 = sld == nwd
+        print(s1, s2)
+        breakpoint()
         return s1 and s2
 
 
@@ -60,6 +62,12 @@ class Prefix(PrefixSuffixBase):
 class Suffix(PrefixSuffixBase):
     def __init__(self, suffix):
         super().__init__(suffix, prefix=False)
+
+s0 = Prefix("s")
+d = "s1000"
+s0.check(d)
+
+breakpoint()
 
 
 # 元件不可和自己相连 加法器之间如果相连 连线为特殊类型 合并为一个加法器之后做合理性判断
