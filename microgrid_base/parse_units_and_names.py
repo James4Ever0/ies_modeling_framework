@@ -311,13 +311,13 @@ for key in keys:
                 # appending values, presumed.
                 params = {"设计规划":[], "仿真模拟":[]}
                 if subkey in ["光伏发电"]: # solar powered.
-                    params['设计规划'].append('最大安装面积')
-                    params['设计规划'].append('最小安装面积') # from excel.
+                    params['设计规划'].append(('最大安装面积', )
+                    params['设计规划'].append(('最小安装面积', ) # from excel.
                 else:
-                    params['设计规划'].append('最大安装台数')
-                    params['设计规划'].append('最小安装台数')
-                params['设计规划'].append('')
-                params['仿真模拟'].append('')
+                    params['设计规划'].append(('最大安装台数', "")
+                    params['设计规划'].append(('最小安装台数', "")
+                params['设计规划'].append('设备选型') # you may set the calculation mode.
+                params['仿真模拟'].append('设备选型')
                 if meta_type == META_TYPE[3]:
                     breakpoint()
             else:
