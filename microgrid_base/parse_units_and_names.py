@@ -283,14 +283,10 @@ BASE_UNIT_TRANSLATION_TABLE = {
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
-
-META_TRANSLATION_TABLE = {'设计规划':"DesignParams",'仿真模拟':"SimulationParams", '最大安装面积':"MaxArea", '最小安装面积':"MinArea", "MaxDeviceCount", "MinDeviceCount", "DeviceModel"}
-                    params[].append(('', ) # from excel.
-                else:
-                    params['设计规划'].append(('最大安装台数', "")
-                    params['设计规划'].append(('最小安装台数', "")
-                params['设计规划'].append('设备选型') # you may set the calculation mode.
-                params[].append('设备选型
+def add_range_translation(mdict, source, target):
+    mdict.update({f"最大{source}":f"Max{target}", f'最小{source}':f"Min{target}",}) 
+META_TRANSLATION_TABLE = {'设计规划':"DesignParams",'仿真模拟':"SimulationParams", "设备选型":"DeviceModel"}
+add_range_translation(META_TRANSLATION_TABLE,'安装面积',"Area"), '最小安装面积':"MinArea", "MaxDeviceCount", "MinDeviceCount", 
 # you may copy this from the table, not parsing it though.
 
 # you need to check for units.
