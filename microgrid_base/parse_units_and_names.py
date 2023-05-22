@@ -309,9 +309,9 @@ for key in keys:
                 print("META_TYPE")
                 meta_type = val
                 # appending values, presumed.
-
-                if subkey in [""]: # solar powered.
-                    ...
+                params = {"设计规划":[], "仿真模拟":[]}
+                if subkey in ["光伏发电"]: # solar powered.
+                    range_params = 
                 else:
                     ...
                 if meta_type == META_TYPE[3]:
