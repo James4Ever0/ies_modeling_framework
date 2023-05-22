@@ -6,10 +6,20 @@ device_data_path_base = "device_params_intermediate.json"
 import json
 import rich
 
+with open(device_data_path_base, 'r') as f:
+    device_data = json.load(f)
+
 microgrid_device_port_path = "microgrid_device_port_type_mapping.json"
 
 with open(microgrid_device_port_path,'r') as f:
     port_dict = json.load(f)
+
+data = {}
+
+for k,v in port_dict.items():
+    for k1, v1 in v.items():
+        k0 = f"{k}-{k1}"
+        
 
 all_microgrid_device_names = []
 
