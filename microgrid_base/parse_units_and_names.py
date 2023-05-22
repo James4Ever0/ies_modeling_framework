@@ -368,6 +368,7 @@ for key in keys:
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
                     base_classes = TRANSLATION_TABLE[val_name]
+                    has_exception = False
                     for base_class in base_classes:
                         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
                         # iterate through all base classes.
@@ -409,5 +410,9 @@ for key in keys:
                             print("STANDARD:", standard)
                             print("MAGNITUDE TO STANDARD:", mag)
                             break
+                    if has_exception:
+                        raise Exception(f"No compatibie unit found for {val_unit}")
+                    else:
+                        ...
                 else:
                     raise Exception("Unknown Value:", val)
