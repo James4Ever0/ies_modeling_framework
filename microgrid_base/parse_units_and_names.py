@@ -10,15 +10,18 @@ ureg = pint.UnitRegistry(unit_def_path)
 import json
 import rich
 
+
 def unitFactorCalculator(
     ureg: pint.UnitRegistry, standard_units: frozenset, old_unit_name: str
 ):  # like "元/kWh"
     assert old_unit_name != ""
     assert type(old_unit_name) == str
     ## now, the classic test?
-    
-    standard_units_mapping = {ureg.get_compatible_units(unit):unit for unit in standard_units}
-    
+
+    standard_units_mapping = {
+        ureg.get_compatible_units(unit): unit for unit in standard_units
+    }
+
     try:
         quantity = ureg.Quantity(1, old_unit_name)  # one, undoubtable.
     except:
@@ -30,14 +33,16 @@ def unitFactorCalculator(
     for unit, power in units:
         # if type(unit)!=str:
         print("UNIT?", unit, "POWER?", power)
-        compat_units = ureg.get_compatible_units(unit)  # the frozen set, as the token for exchange.
-        
-        target_unit = standard_units_mapping.get(compat_units,None)
+        compat_units = ureg.get_compatible_units(
+            unit
+        )  # the frozen set, as the token for exchange.
+
+        target_unit = standard_units_mapping.get(compat_units, None)
         if target_unit:
             # ready to convert?
             unit = str(target_unit)
         else:
-            raise Exception("No common units for:",unit)
+            raise Exception("No common units for:", unit)
         new_units_list.append((unit, power))
 
     print("NEW UNITS LIST:", new_units_list)
@@ -80,10 +85,12 @@ for k, v in port_dict.items():
 data = {}
 data_is_excel = {}
 
+
 def none_fallback(e):
-    if type(e)!=str:
+    if type(e) != str:
         return ""
     return e
+
 
 for k, v in device_data.items():
     for k1, v1 in v.items():
@@ -94,11 +101,12 @@ for k, v in device_data.items():
             for v2 in v1:
                 v2 = [none_fallback(e) for e in v2]
                 val = v2[0].strip()
-                if val == "-": continue
+                if val == "-":
+                    continue
                 v_is_excel = (EXCEL in v2[1]) or (EXCEL in v2[2])
-                
+
                 v_is_measured = MEASURE in v2[2]
-                
+
                 if not v_is_measured:
                     vlist.append(val)
                     v_is_excel_list.append(v_is_excel)
@@ -117,6 +125,7 @@ for k, v in device_data.items():
 # 作为电池数量限制的一部分
 
 import parse
+
 # import pint
 
 
@@ -145,40 +154,40 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
     "DeltaLimit": ("percent/second", {"": [], "Power-": ["发电爬坡率"]}),
     "Cost": ("万元/kW", {"": ["采购成本"]}),
-    "CostPerYear": ("万元/(kW*年)", {"":["固定维护成本"]}),
-    "VariationalCost": ("/", {"": [""]})
+    "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
+    "VariationalCost": ("/", {"": [""]}),
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
 
 standard_units_name_list = [
-        "万元",
-        "kWh",
-        "km",
-        "kW",
-        "年",
-        "MPa",
-        "V",
-        "Hz",
-        "ohm",
-        "one",
-        "台",
-        "m2",
-        "m3",
-        "kelvin",
-        "metric_ton", # this is weight.
-        "p_u_",
-        "dimensionless",
-    ]
+    "万元",
+    "kWh",
+    "km",
+    "kW",
+    "年",
+    "MPa",
+    "V",
+    "Hz",
+    "ohm",
+    "one",
+    "台",
+    "m2",
+    "m3",
+    "kelvin",
+    "metric_ton",  # this is weight.
+    "p_u_",
+    "dimensionless",
+]
 
 standard_units = frozenset(
-        [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
-    )
+    [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
+)
 
-for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
+for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     v_unit = v[0]
     mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
-    if mag!=1:
+    if mag != 1:
         print("ERROR! MAGNITUDE:", mag)
         print("KEY:", k)
         print("ORIGINAL UNIT:", v_unit)
@@ -242,7 +251,17 @@ LIST_TYPE = [
     "嵌套表格"
 ]  # check this in the 2nd index  # notice, list contains multiple headings, each heading may have its own unit.
 
-BASE_UNIT_TRANSLATION_TABLE = {"percent": ["%"]}
+BASE_UNIT_TRANSLATION_TABLE = {
+    "percent": ["%"],
+    "m2": ["m²"],
+    "/hour": [
+        "/h",
+    ],
+    "m3": ["m³"],
+    "p_u_": [
+        "p.u.",
+    ],
+}
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
