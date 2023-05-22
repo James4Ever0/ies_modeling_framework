@@ -329,7 +329,10 @@ for key in keys:
                 
                 if meta_type == META_TYPE[3]:
                     rich.print(params)
-                    breakpoint()
+                    # str? -> str
+                    # tuple -> number with unit
+                    # dict -> table
+                    # breakpoint()
             else:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
