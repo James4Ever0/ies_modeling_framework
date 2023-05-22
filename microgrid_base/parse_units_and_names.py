@@ -6,6 +6,8 @@ device_data_path_base = "device_params_intermediate.json"
 import json
 import rich
 
+EXCEL = "嵌套"
+
 with open(device_data_path_base, 'r') as f:
     device_data = json.load(f)
 
@@ -24,14 +26,18 @@ for k,v in port_dict.items():
         all_microgrid_device_keys.append(k0)
 
 data = {}
-
+data_is_excel = {}
 for k,v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         if k0 in all_microgrid_device_keys:
             val = [v2[0] for v2 in v1]
+            
             data[k] = data.get(k,{})
             data[k][k1] = val
+            
+            data_is_excel[k] = data_is_excel.get(k,{})
+            data_is_excel[k][k1] = val
         else:
             continue
 # 没有其他类元件：母线和母线接口
