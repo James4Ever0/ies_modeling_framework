@@ -102,6 +102,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "VariationalCost": ("/", {"": [""]})
 }  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
 
+# TODO: check if units are compatible. set standard units.
+##################
 
 # convert_string: "[prefix][-][suffix]"
 # contain either 1 or no hyphen.
