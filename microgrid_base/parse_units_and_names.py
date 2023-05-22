@@ -2,6 +2,7 @@
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 device_data_path_base = "device_params_intermediate.json"
+from doctest import SKIP
 import pint
 
 unit_def_path = "../merged_units.txt"
@@ -157,7 +158,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
-    "Efficiency": ("one", {"PowerConversion-": ["电电转换效率"], "Charge-":['充能效率'],'Discharge-':['放能效率']}),
+    "Efficiency": ("one", {"PowerConversion-": ["电电转换效率"], "Charge-":['充能效率'],'Discharge-':['放能效率'], "":['效率']}),
     "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
@@ -334,22 +335,22 @@ for key in keys:
             print(val)
             if val in CHAR_TYPE:
                 print("CHAR_TYPE")
-            elif val in META_TYPE:
+            elif val in META_TYPE or val in SKIP_TYPE:
                 print("META_TYPE")
                 meta_type = val
                 # appending values, presumed.
-                params = {"设计规划": [], "仿真模拟": []}
-                if subkey in ["光伏发电"]:  # solar powered.
-                    params["设计规划"].append(("最大安装面积", "m2"))
-                    params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
-                else:
-                    params["设计规划"].append(("最大安装台数", "台"))
-                    params["设计规划"].append(("最小安装台数", "台"))
-                params["设计规划"].append("设备选型")  # you may set the calculation mode.
-                params["仿真模拟"].append("设备选型")
-                params["仿真模拟"].append(("安装台数", "台"))
+                if meta_type in SKIP_TYPE:
+                    params = {"设计规划": [], "仿真模拟": []}
+                    if subkey in ["光伏发电"]:  # solar powered.
+                        params["设计规划"].append(("最大安装面积", "m2"))
+                        params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
+                    else:
+                        params["设计规划"].append(("最大安装台数", "台"))
+                        params["设计规划"].append(("最小安装台数", "台"))
+                    params["设计规划"].append("设备选型")  # you may set the calculation mode.
+                    params["仿真模拟"].append("设备选型")
+                    params["仿真模拟"].append(("安装台数", "台"))
 
-                if meta_type == META_TYPE[3]:
                     rich.print(params)
                     # str? -> str
                     # tuple -> number with unit
@@ -370,7 +371,7 @@ for key in keys:
                     val_name = val
                     val_unit = None
 
-                if meta_type == META_TYPE[3]:
+                if meta_type in SKIP_TYPE:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
