@@ -429,6 +429,8 @@ for key in keys:
                     if has_exception:
                         raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
+                        if val_is_table:
+                        table_format = get_table_format() # unit vs
                         ...
                 else:
                     raise Exception("Unknown Value:", val)
