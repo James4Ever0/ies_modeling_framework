@@ -327,5 +327,9 @@ for key in keys:
                                 val_unit, default_unit
                             )
                         )
+                    else:
+                        # get factor:
+                        mag, _ = unitFactorCalculator(ureg, standard_units, val_unit)
+                        print("MAGNITUDE TO DEFAULT:", mag)
                 else:
                     raise Exception("Unknown Value:", val)
