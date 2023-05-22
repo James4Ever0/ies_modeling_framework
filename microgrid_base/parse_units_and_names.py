@@ -85,6 +85,7 @@ for k, v in port_dict.items():
 data = {}
 data_is_excel = {}
 
+
 def none_fallback(e):
     if type(e) != str:
         return ""
@@ -145,11 +146,12 @@ CHAR_TYPE = ["生产厂商", "设备型号"]
 
 COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
-META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束", 
-             "设计规划拓扑图右侧菜单" 
-# parse this?
-             
-             ]
+META_TYPE = [
+    "设备额定运行参数",
+    "设备经济性参数",
+    "设备运行约束",
+    "设计规划拓扑图右侧菜单" # parse this?
+]
 
 
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
@@ -161,12 +163,12 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     ),
     "Efficiency": ("one", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
-    "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}), # two unit system.
-    "BuildBaseCost": ("万元", {"":["建设费用基数"]}),
-    "Cost": ("万元/kW", {"": ["采购成本"], "Build-":["建设费用系数"]}),
+    "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),  # two unit system.
+    "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
+    "Cost": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
-    "Life": ("年", {"": ["设计寿命"]})
+    "Life": ("年", {"": ["设计寿命"]}),
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
@@ -292,7 +294,9 @@ for key in keys:
         # rich.print(val_list)
         print("____" * 10 + "[{}-{}]".format(key, subkey))
         for index, val in enumerate(val_list):
-            val_is_table = data_is_excel[key][subkey][index] # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
+            val_is_table = data_is_excel[key][subkey][
+                index
+            ]  # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
             print("____" * 10)
             val = val.replace("（", "(").replace("）", ")").replace(" ", "")
             val = val.strip("*").strip(":").strip("：").strip()
@@ -347,8 +351,10 @@ for key in keys:
                         )
                     else:
                         # get factor:
-                        mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
-                        
+                        mag, standard = unitFactorCalculator(
+                            ureg, standard_units, val_unit
+                        )
+
                         print("STANDARD:", standard)
                         print("MAGNITUDE TO STANDARD:", mag)
                 else:
