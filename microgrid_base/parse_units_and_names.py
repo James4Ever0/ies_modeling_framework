@@ -66,10 +66,13 @@ EXCEL = "嵌套"
 
 MEASURE = "调度"
 
+
 def get_table_format(k, u):
-    t = {'燃油消耗率': {str(ureg.Unit('m3 / kilowatt_hour')):负载率（%）},
+    t = {
+        "燃油消耗率": {str(ureg.Unit("m3 / kilowatt_hour")): ("负载率", "%")},
     }
-    return t[k][str(u)]
+    return t[k][str(u)] # name, unit
+
 
 with open(device_data_path_base, "r") as f:
     device_data = json.load(f)
@@ -152,7 +155,11 @@ CHAR_TYPE = ["生产厂商", "设备型号"]
 
 COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
-META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束", ]  # parse this?
+META_TYPE = [
+    "设备额定运行参数",
+    "设备经济性参数",
+    "设备运行约束",
+]  # parse this?
 
 SKIP_TYPE = ["设计规划拓扑图右侧菜单", "设计规划系统-拓扑图右侧菜单"]
 
@@ -163,22 +170,42 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
-    "Efficiency": ("one", {"PowerConversion-": ["电电转换效率"], "Charge-":['充能效率'],'Discharge-':['放能效率'], "":['效率']}),
-    "Power": ("kW", {"Rated-": ["额定功率", "变压器容量"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
+    "Efficiency": (
+        "one",
+        {
+            "PowerConversion-": ["电电转换效率"],
+            "Charge-": ["充能效率"],
+            "Discharge-": ["放能效率"],
+            "": ["效率"],
+        },
+    ),
+    "Power": (
+        "kW",
+        {"Rated-": ["额定功率", "变压器容量"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]},
+    ),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
     "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
-    "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率",], "Battery-":["电池充放电倍率"]}),  # two unit system.
-    "StorageDecay": ("percent/hour", {"Battery-":["存储衰减"]}),
-    "TransferDecay":("kW/km", {"Power-":['能量衰减系数']}),
+    "DeltaLimit": (
+        "one/second",
+        {
+            "": [],
+            "Power-": [
+                "发电爬坡率",
+            ],
+            "Battery-": ["电池充放电倍率"],
+        },
+    ),  # two unit system.
+    "StorageDecay": ("percent/hour", {"Battery-": ["存储衰减"]}),
+    "TransferDecay": ("kW/km", {"Power-": ["能量衰减系数"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "CostPerWatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerPower": ("元/kWh", {"": ["可变维护成本"]}),
-    "VariationCostPerMeter": ("万元/(km*年)", {"":["维护成本"]}),
-    "Life": ("年", {"": ["设计寿命"], "Battery-":["电池换芯周期"]}),
-    "Capacity": ("kWh",{"Rated-":["额定容量"], "TotalDischarge-": ["生命周期总放电量"]})
+    "VariationCostPerMeter": ("万元/(km*年)", {"": ["维护成本"]}),
+    "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
+    "Capacity": ("kWh", {"Rated-": ["额定容量"], "TotalDischarge-": ["生命周期总放电量"]}),
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
@@ -259,10 +286,10 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     for k1, v1 in v[1].items():
         prefix, suffix = parse_convert_string(k1)
         k0 = prefix + k.strip() + suffix
-        
+
         # BASE_TRANSLATION_TABLE.update({k0: v1})
         # BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
-        
+
         BASE_CLASS_TO_UNIT_TABLE[k0] = v[0]
         for v2 in v1:
             TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(v2, []) + [k0]
@@ -276,6 +303,7 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
+
 
 # rich.print(BASE_TRANSLATION_TABLE)
 # rich.print(TRANSLATION_TABLE)
@@ -337,7 +365,13 @@ for key in keys:
                 index
             ]  # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
             print("____" * 10)
-            val = val.replace("（", "(").replace("）", ")").replace(" ", "").replace(";","").replace("；","")
+            val = (
+                val.replace("（", "(")
+                .replace("）", ")")
+                .replace(" ", "")
+                .replace(";", "")
+                .replace("；", "")
+            )
             val = val.strip("*").strip(":").strip("：").strip()
             print(val)
             if val in CHAR_TYPE:
@@ -351,15 +385,15 @@ for key in keys:
                     if subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(("最大安装面积", "m2"))
                         params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
-                    elif subkey in ['传输线']: # transfer lines, pipes
+                    elif subkey in ["传输线"]:  # transfer lines, pipes
                         params["设计规划"].append(("长度", "km"))
                         params["仿真模拟"].append(("长度", "km"))
                     else:
                         params["设计规划"].append(("最大安装台数", "台"))
                         params["设计规划"].append(("最小安装台数", "台"))
-                        
+
                         params["仿真模拟"].append(("安装台数", "台"))
-                        
+
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
 
@@ -429,14 +463,16 @@ for key in keys:
                             )
                             print("STANDARD:", standard)
                             print("MAGNITUDE TO STANDARD:", mag)
-                            has_exception=False
+                            has_exception = False
                             break
                     if has_exception:
                         raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
                         if val_is_table:
                             print("TABLE VALUE:", val_name, standard)
-                            table_format = get_table_format(val_name, standard) # unit vs
+                            table_format = get_table_format(
+                                val_name, standard
+                            )  # unit vs
                         ...
                 else:
                     raise Exception("Unknown Value:", val)
