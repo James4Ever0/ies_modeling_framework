@@ -85,7 +85,6 @@ for k, v in port_dict.items():
 data = {}
 data_is_excel = {}
 
-
 def none_fallback(e):
     if type(e) != str:
         return ""
@@ -119,6 +118,11 @@ for k, v in device_data.items():
         else:
             continue
 # 没有其他类元件：母线和母线接口
+
+
+rich.print(data_is_excel)
+breakpoint()
+
 
 # 锂电池
 # 年放电量需求 * 换芯周期 <= 电池机组容量 * 循环寿命 * 0.85
