@@ -1,4 +1,4 @@
-main_path = "device_params_intermediate.json" # data parse here. since we are changing the main table.
+# main_path = "device_params_intermediate.json" # data parse here. since we are changing the main table.
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 device_data_path_base = "device_params_intermediate.json"
