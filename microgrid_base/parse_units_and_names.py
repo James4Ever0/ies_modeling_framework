@@ -175,7 +175,7 @@ standard_units_name_list = [
     "台",
     "m2",
     "m3",
-    "kelvin",
+    "celsius",
     "metric_ton",  # this is weight.
     # "p_u_",
     "dimensionless",
