@@ -146,13 +146,7 @@ CHAR_TYPE = ["生产厂商", "设备型号"]
 
 COMMENT_TYPE = ["从文件导入、保存数据、从典型库导入"]
 
-META_TYPE = [
-    "设备额定运行参数",
-    "设备经济性参数",
-    "设备运行约束",
-    "设计规划拓扑图右侧菜单" # parse this?
-]
-
+META_TYPE = ["设备额定运行参数", "设备经济性参数", "设备运行约束", "设计规划拓扑图右侧菜单"]  # parse this?
 
 
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
@@ -163,8 +157,10 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         },
     ),
     "Efficiency": ("one", {"": ["电电转换效率"]}),
-    "Power": ("kW", {"Rated-": ['额定功率'], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
-    'WindSpeed': ('m/s', {'Rated-':['额定风速'], 'Min-':['切入风速']}),
+    "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
+    "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
+    "DieselToPower": ('L/kWh', {"":['燃油消耗率']}),
+    "StartupPowerLimit"
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),  # two unit system.
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "Cost": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
@@ -284,11 +280,23 @@ BASE_UNIT_TRANSLATION_TABLE = {
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
+
 def add_range_translation(mdict, source, target):
-    mdict.update({f"最大{source}":f"Max{target}", f'最小{source}':f"Min{target}",}) 
-META_TRANSLATION_TABLE = {'设计规划':"DesignParams",'仿真模拟':"SimulationParams", "设备选型":"DeviceModel"}
-add_range_translation(META_TRANSLATION_TABLE,'安装面积',"Area")
-add_range_translation(META_TRANSLATION_TABLE,'安装台数',"DeviceCount")
+    mdict.update(
+        {
+            f"最大{source}": f"Max{target}",
+            f"最小{source}": f"Min{target}",
+        }
+    )
+
+
+META_TRANSLATION_TABLE = {
+    "设计规划": "DesignParams",
+    "仿真模拟": "SimulationParams",
+    "设备选型": "DeviceModel",
+}
+add_range_translation(META_TRANSLATION_TABLE, "安装面积", "Area")
+add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 # you may copy this from the table, not parsing it though.
 
 # you need to check for units.
@@ -317,17 +325,17 @@ for key in keys:
                 print("META_TYPE")
                 meta_type = val
                 # appending values, presumed.
-                params = {"设计规划":[], "仿真模拟":[]}
-                if subkey in ["光伏发电"]: # solar powered.
-                    params['设计规划'].append(('最大安装面积', 'm2'))
-                    params['设计规划'].append(('最小安装面积', 'm2')) # from excel.
+                params = {"设计规划": [], "仿真模拟": []}
+                if subkey in ["光伏发电"]:  # solar powered.
+                    params["设计规划"].append(("最大安装面积", "m2"))
+                    params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
                 else:
-                    params['设计规划'].append(('最大安装台数', "台"))
-                    params['设计规划'].append(('最小安装台数', "台"))
-                params['设计规划'].append('设备选型') # you may set the calculation mode.
-                params['仿真模拟'].append('设备选型')
-                params['仿真模拟'].append(('安装台数', "台"))
-                
+                    params["设计规划"].append(("最大安装台数", "台"))
+                    params["设计规划"].append(("最小安装台数", "台"))
+                params["设计规划"].append("设备选型")  # you may set the calculation mode.
+                params["仿真模拟"].append("设备选型")
+                params["仿真模拟"].append(("安装台数", "台"))
+
                 if meta_type == META_TYPE[3]:
                     rich.print(params)
                     # str? -> str
@@ -338,7 +346,7 @@ for key in keys:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
                     continue
-                
+
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
                     val_name, val_unit = (
@@ -348,7 +356,7 @@ for key in keys:
                 else:
                     val_name = val
                     val_unit = None
-                    
+
                 if meta_type == META_TYPE[3]:
                     # TODO: checking metadata.
                     continue
