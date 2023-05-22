@@ -66,6 +66,11 @@ EXCEL = "嵌套"
 
 MEASURE = "调度"
 
+def get_table_format(k, u):
+    t = {'燃油消耗率': {str(ureg.Unit('m3 / kilowatt_hour')):},
+    }
+    return t[k][str(u)]
+
 with open(device_data_path_base, "r") as f:
     device_data = json.load(f)
 
