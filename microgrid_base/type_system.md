@@ -2,8 +2,9 @@
 
 |  文件名  |  内容  | 格式 ｜
 | -- | -- | -- ｜
-|    |    |    ｜
-
+| microgrid_v2_all_types_structured.json |    |    ｜
+| microgrid_v2_connectivity_matrix.json |    |    ｜
+| microgrid_v2_device_port_type_mapping.json |    |    ｜
 # 类型命名规则
 
 类型分为设备类型、设备锚点类型、母线类型、连接线类型、合并线类型。
