@@ -309,7 +309,13 @@ for key in keys:
                 print("META_TYPE")
                 meta_type = val
                 # appending values, presumed.
-                if subkey in []: # solar powered.
+
+                if subkey in [""]: # solar powered.
+                    ...
+                else:
+                    ...
+                if meta_type == META_TYPE[3]:
+                    breakpoint()
             else:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
