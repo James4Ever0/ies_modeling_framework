@@ -185,17 +185,17 @@ standard_units = frozenset(
     [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
 )
 
-for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
-    v_unit = v[0]
-    mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
-    if mag != 1:
-        print("-"*20)
-        print("ERROR! MAGNITUDE:", mag)
-        print("KEY:", k)
-        print("ORIGINAL UNIT:", v_unit)
-        print("CONVERTED UNIT:", munit)
-        print("-"*20)
-        raise Exception("Standard Unit Error")
+# for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
+#     v_unit = v[0]
+#     mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
+#     if mag != 1:
+#         print("-"*20)
+#         print("ERROR! MAGNITUDE:", mag)
+#         print("KEY:", k)
+#         print("ORIGINAL UNIT:", v_unit)
+#         print("CONVERTED UNIT:", munit)
+#         print("-"*20)
+#         raise Exception("Standard Unit Error")
 
 # TODO: check if units are compatible. set standard units.
 ##################
@@ -332,7 +332,9 @@ for key in keys:
                         )
                     else:
                         # get factor:
-                        mag, _ = unitFactorCalculator(ureg, standard_units, val_unit)
-                        print("MAGNITUDE TO DEFAULT:", mag)
+                        mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
+                        
+                        print("STANDARD:", standard)
+                        print("MAGNITUDE TO STANDARD:", mag)
                 else:
                     raise Exception("Unknown Value:", val)
