@@ -29,7 +29,7 @@ for k,v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
         if k0 in all_microgrid_device_keys:
-            val = v1[0]
+            val = [v2[0] for v2 in v1]
             data[k] = data.get(k,{})
             data[k][k1] = val
         else:
