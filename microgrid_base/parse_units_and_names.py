@@ -164,7 +164,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),  # two unit system.
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "CostPerWatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
-    "CostPerMachine": ("万元/台", {"": ["采购成本"]}),
+    "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
     "Life": ("年", {"": ["设计寿命"]}),
@@ -254,7 +254,7 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         
         BASE_CLASS_TO_UNIT_TABLE[k0] = v[0]
         for v2 in v1:
-        TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(k0, []) + [v1]
+            TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(v2, []) + [k0]
         # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
 # BASE_CLASS_TO_UNIT_TABLE = {
@@ -267,8 +267,8 @@ def revert_dict(mdict: dict):
     return result
 
 # rich.print(BASE_TRANSLATION_TABLE)
-rich.print(TRANSLATION_TABLE)
-breakpoint()
+# rich.print(TRANSLATION_TABLE)
+# breakpoint()
 # TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
 
@@ -413,6 +413,7 @@ for key in keys:
                             )
                             print("STANDARD:", standard)
                             print("MAGNITUDE TO STANDARD:", mag)
+                            has_exception=False
                             break
                     if has_exception:
                         raise Exception(f"No compatibie unit found for {val_unit}")
