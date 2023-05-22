@@ -41,7 +41,8 @@ class PrefixSuffixBase:
         else:
             name = name_with_prefix_or_suffix.strip()[:-l]
 
-        sl = set(list(name_with_prefix_or_suffix))
+        sl = set(list(self.prefix_or_suffix))
+        # sl = set(list(name_with_prefix_or_suffix))
         sld = {e: self.prefix_or_suffix.count(e) for e in sl}
         nwd = {e: name_with_prefix_or_suffix.count(e) for e in sl}
 
@@ -49,8 +50,8 @@ class PrefixSuffixBase:
         zd = {e: 0 for e in sl}
         s1 = nd == zd
         s2 = sld == nwd
-        print(s1, s2)
-        breakpoint()
+        # print(s1, s2)
+        # breakpoint()
         return s1 and s2
 
 
@@ -63,11 +64,11 @@ class Suffix(PrefixSuffixBase):
     def __init__(self, suffix):
         super().__init__(suffix, prefix=False)
 
-s0 = Prefix("s")
-d = "s1000"
-s0.check(d)
+# s0 = Prefix("s")
+# d = "s1000"
+# s0.check(d)
 
-breakpoint()
+# breakpoint()
 
 
 # 元件不可和自己相连 加法器之间如果相连 连线为特殊类型 合并为一个加法器之后做合理性判断
@@ -481,8 +482,10 @@ print_with_banner(
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
 wire_types_json = {k: list(v) for k, v in wire_types.items()}
+
 print(wire_types_json)
 breakpoint()
+
 all_types_structured = {
     "设备": {k: list(v) for k, v in types.items()},
     # 加法器改为母线
