@@ -151,11 +151,33 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
 
 # checking these units.
 
+standard_units_name_list = [
+        "万元",
+        "kWh",
+        "km",
+        "kW",
+        "年",
+        "MPa",
+        "V",
+        "Hz",
+        "ohm",
+        "one",
+        "台",
+        "m2",
+        "m3",
+        "kelvin",
+        "metric_ton", # this is weight.
+        "p_u_",
+        "dimensionless",
+    ]
 
+standard_units = frozenset(
+        [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
+    )
 
 for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     v_unit = v[0]
-    
+    unitFactorCalculator(ureg, standard_units, v_unit)
 
 # TODO: check if units are compatible. set standard units.
 ##################
