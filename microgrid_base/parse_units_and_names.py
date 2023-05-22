@@ -177,7 +177,13 @@ standard_units = frozenset(
 
 for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     v_unit = v[0]
-    unitFactorCalculator(ureg, standard_units, v_unit)
+    mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
+    if mag!=1:
+        print("ERROR! MAGNITUDE:", mag)
+        print("KEY:", k)
+        print("ORIGINAL UNIT:", v_unit)
+        print("CONVERTED UNIT:", munit)
+        raise Exception("Standard Unit Error")
 
 # TODO: check if units are compatible. set standard units.
 ##################
