@@ -67,7 +67,7 @@ EXCEL = "嵌套"
 MEASURE = "调度"
 
 def get_table_format(k, u):
-    t = {'燃油消耗率': {str(ureg.Unit('m3 / kilowatt_hour')):},
+    t = {'燃油消耗率': {str(ureg.Unit('m3 / kilowatt_hour')):负载率（%）},
     }
     return t[k][str(u)]
 
