@@ -885,7 +885,7 @@ neper = 1 ; logbase: 2.71828182845904523536028747135266249775724709369995; logfa
 m2 = meter ** 2
 m3 = meter ** 3
 
-台 = []
+台 = [device_count]
 
 # to be more compatible.
 # one = [base_quantity]

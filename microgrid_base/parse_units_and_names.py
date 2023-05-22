@@ -159,7 +159,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         },
     ),
     "Efficiency": ("one", {"PowerConversion-": ["电电转换效率"], "Charge-":['充能效率'],'Discharge-':['放能效率'], "":['效率']}),
-    "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
+    "Power": ("kW", {"Rated-": ["额定功率", "变压器容量"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
     "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
