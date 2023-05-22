@@ -153,11 +153,12 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Efficiency": ("one", {"": ["电电转换效率"]}),
     "Power": ("kW", {"": [], "Unit-": ["组件额定功率"], "MaxUnit-": ["最大发电功率"]}),
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}), # two unit system.
-    "Cost": ("万元/kW", {"": ["采购成本"]}),
+    "BuildBaseCost": ("万元", {"":["建设费用基数"]}),
+    "Cost": ("万元/kW", {"": ["采购成本"], "Build-":["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
     "Life": ("年", {"": ["设计寿命"]})
-}  # EnglishName: (BaseUnit, {convert_string:[ChineseName, ...], ...})
+}  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
 # they shall never be going too far.
