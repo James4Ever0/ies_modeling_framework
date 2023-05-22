@@ -2,7 +2,7 @@
 
 |  文件名  |  内容  | 格式 ｜
 | -- | -- | -- ｜
-| microgrid_v2_all_types_structured.json | 类型分类表（不包含设备分类）  |    ｜
+| microgrid_v2_all_types_structured.json | 类型分类表（不包含设备分类） |    ｜
 | microgrid_v2_connectivity_matrix.json |    |    ｜
 | microgrid_v2_device_port_type_mapping.json |    |    ｜
 # 类型命名规则
