@@ -1,7 +1,6 @@
 import pandas
 
 def fix_csv_and_return_dataframe(csv_path):
-
     lines = []
     line_sep_count_list = []
     with open(csv_path, "r") as f:
