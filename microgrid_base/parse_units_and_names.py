@@ -244,6 +244,7 @@ BASE_TRANSLATION_TABLE = {}
 BASE_CLASS_TO_UNIT_TABLE = {}
 
 for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
+    BASE_CLASS_TO_UNIT_TABLE[k] = v[0]
     for k1, v1 in v[1].items():
         prefix, suffix = parse_convert_string(k1)
         k0 = prefix + k.strip() + suffix
@@ -251,7 +252,7 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         # BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
 
         BASE_TRANSLATION_TABLE[k0] = BASE_TRANSLATION_TABLE.get(k0, []) + [v1]
-        BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
+        # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
 # BASE_CLASS_TO_UNIT_TABLE = {
 #     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
