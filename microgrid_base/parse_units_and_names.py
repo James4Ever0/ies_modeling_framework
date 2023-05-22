@@ -430,8 +430,8 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
                         if val_is_table:
-                            print("TABLE VALUE:", val_name, val_unit)
-                            table_format = get_table_format(val_name, val_unit) # unit vs
+                            print("TABLE VALUE:", val_name, standard)
+                            table_format = get_table_format(val_name, standard) # unit vs
                         ...
                 else:
                     raise Exception("Unknown Value:", val)
