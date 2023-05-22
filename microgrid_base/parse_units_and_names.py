@@ -293,6 +293,8 @@ for key in keys:
                 print("META_TYPE")
             else:
                 # begin to parse it.
+                if val in COMMENT_TYPE:
+                    continue
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
                     val_name, val_unit = (
