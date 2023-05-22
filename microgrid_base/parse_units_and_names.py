@@ -16,13 +16,20 @@ with open(microgrid_device_port_path,'r') as f:
 
 data = {}
 
+all_microgrid_device_keys = []
+
 for k,v in port_dict.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
-        
+        all_microgrid_device_keys.append(k0)
 
-all_microgrid_device_names = []
-
+for k,v in device_data.items():
+    for k1, v1 in v.items():
+        k0 = f"{k}-{k1}"
+        if k0 in all_microgrid_device_keys:
+            print(v1)
+        else:
+            continue
 # 没有其他类元件：母线和母线接口
 
 # 锂电池
