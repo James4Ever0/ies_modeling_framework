@@ -473,6 +473,8 @@ print_with_banner(
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
 wire_types_json = {k: list(v) for k, v in wire_types.items()}
+print(wire_types_json)
+breakpoint()
 all_types_structured = {
     "设备": {k: list(v) for k, v in types.items()},
     # 加法器改为母线
