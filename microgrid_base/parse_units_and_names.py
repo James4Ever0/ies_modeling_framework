@@ -162,14 +162,14 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
     "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率",], "Battery-":["电池充放电倍率"]}),  # two unit system.
-    "StorageDecay": ("percent/h", {"Battery-":["存储衰减"]}),
+    "StorageDecay": ("percent/hour", {"Battery-":["存储衰减"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "CostPerWatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCost": ("元/kWh", {"": ["可变维护成本"]}),
     "Life": ("年", {"": ["设计寿命"]}),
-    "Capacity": ("kWh",{"Rated-":["额定容量"]})
+    "Capacity": ("kWh",{"Rated-":["额定容量"], "TotalDischarge-": ["生命周期总放电量"]})
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
