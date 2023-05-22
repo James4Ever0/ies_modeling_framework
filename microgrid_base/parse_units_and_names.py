@@ -2,10 +2,13 @@
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 device_data_path_base = "device_params_intermediate.json"
+import pint
+
+unit_def_path = "../merged_units.txt"
+ureg = pint.UnitRegistry(unit_def_path)
 
 import json
 import rich
-import pint
 
 def unitFactorCalculator(
     ureg: pint.UnitRegistry, standard_units: frozenset, old_unit_name: str
@@ -114,11 +117,8 @@ for k, v in device_data.items():
 # 作为电池数量限制的一部分
 
 import parse
-import pint
+# import pint
 
-
-unit_def_path = "../merged_units.txt"
-ureg = pint.UnitRegistry(unit_def_path)
 
 # with open(path, "r") as f:
 #     data = json.load(f)
@@ -151,7 +151,9 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
 
 # checking these units.
 
-for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT
+for k,v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
+    v_unit = v[0]
+    
 
 # TODO: check if units are compatible. set standard units.
 ##################
