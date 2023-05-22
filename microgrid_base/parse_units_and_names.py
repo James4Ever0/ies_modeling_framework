@@ -312,6 +312,7 @@ for key in keys:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
                     continue
+                
                 result = parse.parse("{val_name}({val_unit})", val)
                 if result:
                     val_name, val_unit = (
@@ -321,7 +322,11 @@ for key in keys:
                 else:
                     val_name = val
                     val_unit = None
-                if val_name in TRANSLATION_TABLE.keys():
+                    
+                if meta_type == META_TYPE[3]:
+                    # TODO: checking metadata.
+                    ...
+                elif val_name in TRANSLATION_TABLE.keys():
                     base_class = TRANSLATION_TABLE[val_name]
                     default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
                     print("DEFAULT UNIT:", default_unit)
