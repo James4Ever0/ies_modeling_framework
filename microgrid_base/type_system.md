@@ -3,7 +3,7 @@
 |  文件名  |  内容  | 格式 |
 | -- | -- | -- |
 | microgrid_v2_all_types_structured.json | 类型分类表（不包含设备分类） |  分类->能源->类型  |
-| microgrid_v2_connectivity_matrix.json |  连接类型映射表  | "端点1_端点2"->   |
+| microgrid_v2_connectivity_matrix.json |  连接类型映射表  | "端点1_端点2"->生成连接类型   |
 | microgrid_v2_device_port_type_mapping.json |    |    |
 # 类型命名规则
 
