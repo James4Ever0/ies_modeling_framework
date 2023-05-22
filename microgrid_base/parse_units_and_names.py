@@ -159,8 +159,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Efficiency": ("one", {"": ["电电转换效率"]}),
     "Power": ("kW", {"Rated-": ["额定功率"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
-    "DieselToPower": ('L/kWh', {"":['燃油消耗率']}),
-    "StartupLimit": ("percent", {"Power-": ['启动功率百分比']}),
+    "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
+    "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
     "DeltaLimit": ("one/second", {"": [], "Power-": ["发电爬坡率"]}),  # two unit system.
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
     "CostPerWatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
@@ -247,8 +247,11 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
     for k1, v1 in v[1].items():
         prefix, suffix = parse_convert_string(k1)
         k0 = prefix + k.strip() + suffix
-        BASE_TRANSLATION_TABLE.update({k0: v1})
-        BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
+        # BASE_TRANSLATION_TABLE.update({k0: v1})
+        # BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
+
+        BASE_TRANSLATION_TABLE[k0] = BASE_TRANSLATION_TABLE.get(k0, []) + [v1]
+        BASE_CLASS_TO_UNIT_TABLE[k0] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
 # BASE_CLASS_TO_UNIT_TABLE = {
 #     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
@@ -362,8 +365,9 @@ for key in keys:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
-                    base_class = TRANSLATION_TABLE[val_name]
-                    default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
+                    base_classes = TRANSLATION_TABLE[val_name]
+                    default_units = BASE_CLASS_TO_UNIT_TABLE[base_class]
+                    for (base_class, default_unit) in zip(base_classes, default_units, default_units):
                     # iterate through all base classes.
                     print("DEFAULT UNIT:", default_unit)
                     default_unit_real = ureg.Unit(default_unit)
