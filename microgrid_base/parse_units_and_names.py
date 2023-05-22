@@ -251,7 +251,7 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         # BASE_CLASS_TO_UNIT_TABLE.update({k0: v[0]})
 
         BASE_TRANSLATION_TABLE[k0] = BASE_TRANSLATION_TABLE.get(k0, []) + [v1]
-        BASE_CLASS_TO_UNIT_TABLE[k0] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
+        BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
 # BASE_CLASS_TO_UNIT_TABLE = {
 #     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
@@ -366,44 +366,46 @@ for key in keys:
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
                     base_classes = TRANSLATION_TABLE[val_name]
-                    default_units = BASE_CLASS_TO_UNIT_TABLE[base_class]
-                    for (base_class, default_unit) in zip(base_classes, default_units, default_units):
-                    # iterate through all base classes.
-                    print("DEFAULT UNIT:", default_unit)
-                    default_unit_real = ureg.Unit(default_unit)
-                    default_unit_compatible = ureg.get_compatible_units(
-                        default_unit_real
-                    )
-                    print("TRANS {} -> {}".format(val_name, base_class))
-                    if val_unit:
-                        for (
-                            trans_source_unit,
-                            trans_target_unit,
-                        ) in UNIT_TRANSLATION_TABLE.items():
-                            val_unit = val_unit.replace(
-                                trans_source_unit, trans_target_unit
-                            )
-                        # parse this unit!
-                    else:
-                        val_unit = default_unit
-                        print("USING DEFAULT UNIT")
-                    print("UNIT", val_unit)
-                    unit = ureg.Unit(val_unit)
-                    compatible_units = ureg.get_compatible_units(val_unit)
-                    # print("COMPATIBLE UNITS", compatible_units)
-                    if not default_unit_compatible == compatible_units:
-                        raise Exception(
-                            "Unit {} not compatible with default unit {}".format(
-                                val_unit, default_unit
-                            )
+                    for base_class in base_classes:
+                        default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
+                        # iterate through all base classes.
+                        print("DEFAULT UNIT:", default_unit)
+                        default_unit_real = ureg.Unit(default_unit)
+                        default_unit_compatible = ureg.get_compatible_units(
+                            default_unit_real
                         )
-                    else:
-                        # get factor:
-                        mag, standard = unitFactorCalculator(
-                            ureg, standard_units, val_unit
-                        )
-
-                        print("STANDARD:", standard)
-                        print("MAGNITUDE TO STANDARD:", mag)
+                        print("TRANS {} -> {}".format(val_name, base_class))
+                        if val_unit:
+                            for (
+                                trans_source_unit,
+                                trans_target_unit,
+                            ) in UNIT_TRANSLATION_TABLE.items():
+                                val_unit = val_unit.replace(
+                                    trans_source_unit, trans_target_unit
+                                )
+                            # parse this unit!
+                        else:
+                            val_unit = default_unit
+                            print("USING DEFAULT UNIT")
+                        print("UNIT", val_unit)
+                        unit = ureg.Unit(val_unit)
+                        compatible_units = ureg.get_compatible_units(val_unit)
+                        # print("COMPATIBLE UNITS", compatible_units)
+                        if not default_unit_compatible == compatible_units:
+                            has_exception = True
+                            print(
+                                "Unit {} not compatible with default unit {}".format(
+                                    val_unit, default_unit
+                                )
+                            )
+                            continue
+                        else:
+                            # get factor:
+                            mag, standard = unitFactorCalculator(
+                                ureg, standard_units, val_unit
+                            )
+                            print("STANDARD:", standard)
+                            print("MAGNITUDE TO STANDARD:", mag)
+                            break
                 else:
                     raise Exception("Unknown Value:", val)
