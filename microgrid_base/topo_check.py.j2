@@ -1,9 +1,14 @@
 from pydantic import BaseModel
+import networkx
 
 class 拓扑图(BaseModel):
     def __init__(self, ):
-    self.node_count
-    def add_node(self,):
+        self.node_count = 0
+        self.graph = networkx.Graph()
+
+    def add_node(self,**kwargs):
+        self.graph.add_node(self.node_count,**kwargs)
+        self.node_count+=1
     # monotonically adding a node.
     def to_json(self,):
     def from_json(self,):
