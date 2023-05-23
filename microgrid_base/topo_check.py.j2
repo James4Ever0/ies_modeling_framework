@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 import networkx
 
+# when to check topology:
+# 	1.  Building topology
+# 	2.  Importing topology
+
 class 拓扑图(BaseModel):
     def __init__(self, **kwargs):
         self.node_count = 0
