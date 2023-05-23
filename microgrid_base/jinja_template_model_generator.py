@@ -18,7 +18,7 @@ type_sys = {
     ),  # 设备分类->设备名称->锚点名称->锚点类型
 }
 
-dparam_path = ""
+dparam_path = "microgrid_jinja_param_base.json"
 dparam = read_json(dparam_path)
 
 def code_and_template_path(base_name):
@@ -43,10 +43,12 @@ def load_template(template_path):
 
 tpl = load_template(topo_code_template_path)
 result = tpl.render(type_sys=type_sys)
-
+print()
+print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
 
 tpl = load_template(ies_optim_code_output_path)
-result = tpl.render(type_sys=type_sys, ...=...)
-
+result = tpl.render(type_sys=type_sys, dparam=dparam)
+print()
+print("______________________[{}]".format("IES CODE"))
 print(result)
