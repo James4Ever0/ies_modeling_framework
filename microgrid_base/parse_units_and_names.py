@@ -401,8 +401,8 @@ def getUnitConverted(val_name):
             print("STANDARD:", standard)
             print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
-            return has_exception, (val_unit, mag, standard)
-    return True, (None, None, None)
+            return has_exception, (base_class, val_unit, mag, standard)
+    return True, (None, None, None, None)
 
 
 
@@ -482,7 +482,7 @@ for key in keys:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
-                    has_exception, (val_unit, mag, standard) = getUnitConverted(val_name)
+                    has_exception, (base_class, val_unit, mag, standard) = getUnitConverted(val_name)
                     # base_classes = TRANSLATION_TABLE[val_name]
                     # has_exception = False
                     # for base_class in base_classes:
@@ -536,7 +536,7 @@ for key in keys:
                             table_format = get_table_format( # 基本上都是负载率
                                 val_name, standard
                             )  # unit vs
-                            new_param = {():()}
+                            new_param = {(base_class, val_name, ):()}
                             # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
                             # normal values.
