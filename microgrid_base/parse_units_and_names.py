@@ -400,6 +400,12 @@ def getUnitConverted(val_name, val_unit):
     return True, (None, None, None, None)
 
 
+def getValueParam(uc, val_name):
+    (base_class, val_unit, mag, standard) = uc
+    vparam = (base_class, val_name, val_unit, standard, mag)
+    return vparam
+
+
 for key in keys:
     rich.print(data[key].keys())
     # val_list = data[key]
@@ -525,11 +531,6 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_name}")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
-
-                        def getValueParam(uc, val_name):
-                            (base_class, val_unit, mag, standard) = uc
-                            vparam = (base_class, val_name, val_unit, standard, mag)
-                            return vparam
 
                         v_param = getValueParam(uc, val_name)
                         if val_is_table:
