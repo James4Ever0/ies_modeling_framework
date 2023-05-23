@@ -18,11 +18,14 @@ type_sys = {
     ),  # 设备分类->设备名称->锚点名称->锚点类型
 }
 
+def code_and_template_path(base_name):
+    code_path = f"{base_name}.py"
+    template_path = f"{code_path}.j2"
+    return code_path, template_path
 
-topo_code_output_path = "topo_check.py"
-topo_code_template_path = f"{topo_code_output_path}.j2"
+topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
 
-
+ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path("ies_optim")
 
 import jinja2
 
