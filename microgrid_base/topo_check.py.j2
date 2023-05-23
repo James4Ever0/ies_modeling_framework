@@ -19,10 +19,14 @@ class 拓扑图(BaseModel):
 # 下面的都需要传拓扑图进来
 
 class 节点(BaseModel):
-    def __init__(self, ):
+    def __init__(self, graph:networkx.Graph, **kwargs):
+        self.graph = graph
+        self.kwargs = kwargs
 
 class 母线(节点):
-    def __init__(self, ):
+    def __init__(self, graph:networkx.Graph, **kwargs):
+        super().__init__(graph, **kwargs)
 
 class 设备(节点):
-    def __init__(self, ):
+    def __init__(self, graph:networkx.Graph, **kwargs):
+        super().__init__(graph, **kwargs)
