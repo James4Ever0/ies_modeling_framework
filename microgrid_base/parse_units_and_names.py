@@ -357,7 +357,7 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
 
-def getUnitConverted(val_name):
+def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
     has_exception = False
     for base_class in base_classes:
@@ -482,7 +482,7 @@ for key in keys:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
-                    has_exception, (base_class, val_unit, mag, standard) = getUnitConverted(val_name)
+                    has_exception, (base_class, val_unit, mag, standard) = getUnitConverted(val_name, val_unit)
                     # base_classes = TRANSLATION_TABLE[val_name]
                     # has_exception = False
                     # for base_class in base_classes:
@@ -531,16 +531,22 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_name}")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
+                        vparam = (base_class, val_name, val_unit, standard, mag)
                         if val_is_table:
                             print("TABLE VALUE:", val_name, standard)
                             table_format = get_table_format( # 基本上都是负载率
                                 val_name, standard
                             )  # unit vs
-                            new_param = {(base_class, val_name, ):()}
+                            
+                            tname, tunit = table_format
+                            
+                            has_exception, 
+                            
+                            new_param = {vparam:tparam}
                             # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
                             # normal values.
-                            new_param = ()
+                            new_param = vparam
                         output_data[key][subkey]["设备参数"].append(new_param)
                 else:
                     raise Exception("Unknown Value:", val)
