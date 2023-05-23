@@ -47,3 +47,8 @@ graph_load = graph.from_json(mdict) # static method
 
 # how to check error now?
 # all connected?
+
+## COMPUTE THIS GRAPH ##
+# use devs, adders
+
+graph_data = graph.get_graph_data()
