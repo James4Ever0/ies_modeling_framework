@@ -1,0 +1,1 @@
+# serialized connectivity matrix -> connectivity matrix -> verify matrix -> calculation model -> calculate
