@@ -34,5 +34,7 @@ mdict = graph.to_json()
 # load from dict
 ###############
 
+graph_load = graph.from_json(mdict) # static method
+
 # how to check error now?
 # all connected?

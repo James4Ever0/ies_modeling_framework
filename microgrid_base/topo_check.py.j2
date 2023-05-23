@@ -21,8 +21,13 @@ class 拓扑图(BaseModel):
         return is_consistent
     def to_json(self) -> dict:
         return json_data
-    def from_json(self,json_data) -> dict:
+    @staticmethod
+    def from_json(json_data) -> dict:
         # load data to graph
+        kwargs = ...
+        graph = 拓扑图(**kwargs)
+        graph.add
+        return graph
     # with checking.
     # iterate through all nodes.
 # 下面的都需要传拓扑图进来
