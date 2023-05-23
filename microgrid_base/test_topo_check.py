@@ -56,6 +56,6 @@ graph_data = graph.get_graph_data()
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 
-from ... import compute
+from ies_optim import compute
 
 result = compute(devs,adders, graph_data)
