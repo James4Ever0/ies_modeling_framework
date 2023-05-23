@@ -574,3 +574,6 @@ for key in keys:
 
 print()
 rich.print(output_data)
+
+# write documents for api?
+# or just a whole bunch of generated documents inserted into places?
