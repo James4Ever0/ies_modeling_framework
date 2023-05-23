@@ -40,3 +40,11 @@ class 设备(节点):
         super().__init__(graph, **kwargs)
         for port_name, port_type in port_definition.items():
             self.graph.add_node()
+
+class 连接线(节点):
+    def __init__(self, graph:拓扑图, **kwargs):
+        super().__init__(graph, **kwargs)
+        self.graph.add_node(self.node_id,**kwargs)
+
+class 合并线(节点):
+    def 
