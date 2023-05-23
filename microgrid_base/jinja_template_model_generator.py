@@ -27,7 +27,7 @@ def load_template(template_path):
     try:
         assert template_path.endswith(".j2")
     except:
-        Exception("jinja template path '{}' is malformed.")
+        Exception(f"jinja template path '{template_path}' is malformed.")
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("./"),trim_blocks=True, lstrip_blocks=True, undefined=jinja2.StrictUndefined)
     tpl = env.get_template(template_path)
     return tpl
