@@ -406,6 +406,7 @@ for key in keys:
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
                     
+                    output_data[key][subkey].update(params)
 
                     rich.print(params)
                     # str? -> str
@@ -483,6 +484,9 @@ for key in keys:
                             table_format = get_table_format(
                                 val_name, standard
                             )  # unit vs
-                        ...
+                            output_data[key][subkey]["设备参数"].append()
+                        else:
+                            output_data[key][subkey]["设备参数"].append(new_param)
+                            # normal values.
                 else:
                     raise Exception("Unknown Value:", val)
