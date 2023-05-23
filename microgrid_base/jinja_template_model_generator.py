@@ -18,4 +18,9 @@ type_sys = {
     ),  # 设备分类->设备名称->锚点名称->锚点类型
 }
 
+topo_code_output_path = "topo_check.py"
+topo_code_template_path = "topo_check.py.j2"
+
 import jinja2
+
+jinja2.FileSystemLoader
