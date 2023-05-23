@@ -2,16 +2,18 @@ from pydantic import BaseModel
 import networkx
 
 class 拓扑图(BaseModel):
-    def __init__(self, ):
+    def __init__(self, **kwargs):
         self.node_count = 0
-        self.graph = networkx.Graph()
+        self.graph = networkx.Graph(**kwargs)
 
-    def add_node(self,**kwargs):
+    def add_node(self, **kwargs):
         self.graph.add_node(self.node_count,**kwargs)
         self.node_count+=1
     # monotonically adding a node.
-    def to_json(self,):
-    def from_json(self,):
+    def to_json(self,) -> dict:
+        return json_data
+    def from_json(self,json_data):dict:
+        # load data to graph
     # with checking.
     # iterate through all nodes.
 # 下面的都需要传拓扑图进来
