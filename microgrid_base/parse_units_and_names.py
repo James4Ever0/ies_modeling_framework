@@ -385,6 +385,7 @@ for key in keys:
             print(val)
             if val in CHAR_TYPE:
                 print("CHAR_TYPE")
+                output_data[key][subkey]["设备参数"].append(val)
             elif val in META_TYPE or val in SKIP_TYPE:
                 print("META_TYPE")
                 meta_type = val
