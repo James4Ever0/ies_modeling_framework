@@ -18,6 +18,7 @@ class 拓扑图(BaseModel):
         return node_id
     # monotonically adding a node.
     def check_consistency(self) -> bool:
+        for node in 
         return is_consistent
     def to_json(self) -> dict:
         return json_data
@@ -37,8 +38,6 @@ class 母线(节点):
     def __init__(self, graph:拓扑图, **kwargs):
         super().__init__(graph, **kwargs)
         # infinite ports.
-    def check_consistency(self):
-        
 
 class 设备(节点):
     def __init__(self, graph:拓扑图, device_type:str, port_definition:dict,**kwargs):
