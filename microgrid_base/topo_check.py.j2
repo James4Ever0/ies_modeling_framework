@@ -36,6 +36,7 @@ class 节点(BaseModel):
 class 母线(节点):
     def __init__(self, graph:拓扑图, **kwargs):
         super().__init__(graph, **kwargs)
+        self.max_edge = 99
         # infinite ports.
 
 class 设备(节点):
