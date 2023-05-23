@@ -5,7 +5,7 @@ from topo_check import ...
 ###############
 graph = 拓扑图()
 
-PV1 = graph.添加光伏发电(**kwargs)
+PV1 = graph.光伏发电(**kwargs) # 这种默认是增加新的光伏发电
 
 graph.连接线(PV1.电接口, LOAD.电接口) # connected?
 
