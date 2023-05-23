@@ -170,6 +170,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         "m2",
         {
             "": ["光伏板面积"],
+            "MaxInstall-": ["最大安装面积"],
+            "MinInstall-": ["最小安装面积"] 
         },
     ),
     "Load": ("percent", {"": ["负载率"]}),
@@ -408,7 +410,7 @@ def getValueParam(uc, val_name):
 def wrapper_uc_vp(val_name, val_unit):
     has_exception, uc = getUnitConverted(val_name, val_unit)
     if has_exception:
-        raise Exception("")
+        raise Exception(f"No compatibie unit found for {val_name} with unit {val_unit}")
     vparam = getValueParam(uc, val_name)
     return vparam
 
@@ -449,16 +451,16 @@ for key in keys:
                 if meta_type in SKIP_TYPE:
                     params = {"设计规划": [], "仿真模拟": []}
                     if subkey in ["光伏发电"]:  # solar power.
-                        params["设计规划"].append(("最大安装面积", "m2"))
-                        params["设计规划"].append(("最小安装面积", "m2"))  # from excel.
+                        params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
+                        params["设计规划"].append(wrapper_uc_vp("最小安装面积", "m2"))  # from excel.
                     elif subkey in ["传输线"]:  # transfer lines, pipes
-                        params["设计规划"].append(("长度", "km"))
-                        params["仿真模拟"].append(("长度", "km"))
+                        params["设计规划"].append(wrapper_uc_vp("长度", "km"))
+                        params["仿真模拟"].append(wrapper_uc_vp("长度", "km"))
                     else:
-                        params["设计规划"].append(("最大安装台数", "台"))
-                        params["设计规划"].append(("最小安装台数", "台"))
+                        params["设计规划"].append(wrapper_uc_vp("最大安装台数", "台"))
+                        params["设计规划"].append(wrapper_uc_vp("最小安装台数", "台"))
 
-                        params["仿真模拟"].append(("安装台数", "台"))
+                        params["仿真模拟"].append(wrapper_uc_vp("安装台数", "台"))
 
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
