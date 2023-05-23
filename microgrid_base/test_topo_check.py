@@ -5,7 +5,7 @@ from topo_check import ...
 ###############
 graph = 拓扑图()
 
-graph.insert_
+ = 设备(graph, "光伏发电", )
 
 ###############
 # dump to dict
