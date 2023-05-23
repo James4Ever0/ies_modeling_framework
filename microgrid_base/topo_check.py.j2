@@ -5,8 +5,6 @@ import networkx
 # 	1.  Building topology
 # 	2.  Importing topology
 
-device_types = {{ device_types }}
-
 class 拓扑图(BaseModel):
     def __init__(self, **kwargs):
         self.node_count = 0
@@ -42,7 +40,6 @@ class 母线(节点):
 
 class 设备(节点):
     def __init__(self, graph:拓扑图, device_type:str, port_definition:dict,**kwargs):
-        assert device_type in device_types
         # check if device type is one of the common types.
         super().__init__(graph, **kwargs)
         self.ports = {}
