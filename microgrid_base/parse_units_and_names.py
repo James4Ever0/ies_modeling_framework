@@ -482,7 +482,7 @@ for key in keys:
                     else:
                         if val_is_table:
                             print("TABLE VALUE:", val_name, standard)
-                            table_format = get_table_format(
+                            table_format = get_table_format( # 基本上都是负载率
                                 val_name, standard
                             )  # unit vs
                             new_param = {():()}
