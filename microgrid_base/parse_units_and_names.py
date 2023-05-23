@@ -482,7 +482,7 @@ for key in keys:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
-                    has_exception,d0 = getUnitConverted(val_name, val_unit)
+                    has_exception, uc = getUnitConverted(val_name, val_unit)
                     # base_classes = TRANSLATION_TABLE[val_name]
                     # has_exception = False
                     # for base_class in base_classes:
@@ -531,9 +531,13 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_name}")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
-                        def getValueParam()
-                        vparam = (base_class, val_name, val_unit, standard, mag)
+                        def getValueParam(uc, val_name):
+                            (base_class, val_unit, mag, standard) = uc
+                            vparam = (base_class, val_name, val_unit, standard, mag)
+                            return vparam
+                        vparam = getValueParam(uc, val_name)
                         if val_is_table:
+                            (_,_,_, standard) = uc
                             print("TABLE VALUE:", val_name, standard)
                             table_format = get_table_format( # 基本上都是负载率
                                 val_name, standard
@@ -541,7 +545,7 @@ for key in keys:
                             
                             tname, tunit = table_format
                             
-                            has_exception, (t_base_class, t_val_unit, t_mag, t_standard) = 
+                            has_exception, tuc = 
                             
                             if has_exception:
                                 raise Exception("")
