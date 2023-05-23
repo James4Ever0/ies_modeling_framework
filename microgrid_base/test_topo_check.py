@@ -23,9 +23,15 @@ conn_merge = 合并线(L0, L1) # what do you do?
 
 # shall raise error.
 
+# methods for computing.
+
 devs = graph.get_all_devices()
 
+# device, ports, device_data
+
 adders = graph.get_all_adders()
+
+# input, output, io
 
 ###############
 # dump to dict
