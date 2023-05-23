@@ -357,6 +357,7 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
 
+
 def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
     has_exception = False
@@ -365,18 +366,14 @@ def getUnitConverted(val_name, val_unit):
         # iterate through all base classes.
         print("DEFAULT UNIT:", default_unit)
         default_unit_real = ureg.Unit(default_unit)
-        default_unit_compatible = ureg.get_compatible_units(
-            default_unit_real
-        )
+        default_unit_compatible = ureg.get_compatible_units(default_unit_real)
         print("TRANS {} -> {}".format(val_name, base_class))
         if val_unit:
             for (
                 trans_source_unit,
                 trans_target_unit,
             ) in UNIT_TRANSLATION_TABLE.items():
-                val_unit = val_unit.replace(
-                    trans_source_unit, trans_target_unit
-                )
+                val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
             # parse this unit!
         else:
             val_unit = default_unit
@@ -395,15 +392,12 @@ def getUnitConverted(val_name, val_unit):
             continue
         else:
             # get factor:
-            mag, standard = unitFactorCalculator(
-                ureg, standard_units, val_unit
-            )
+            mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
             print("STANDARD:", standard)
             print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
             return has_exception, (base_class, val_unit, mag, standard)
     return True, (None, None, None, None)
-
 
 
 for key in keys:
@@ -455,7 +449,7 @@ for key in keys:
 
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
-                    
+
                     output_data[key][subkey].update(params)
 
                     rich.print(params)
@@ -531,31 +525,36 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_name}")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
+
                         def getValueParam(uc, val_name):
                             (base_class, val_unit, mag, standard) = uc
                             vparam = (base_class, val_name, val_unit, standard, mag)
                             return vparam
-                        vparam = getValueParam(uc, val_name)
+
+                        v_param = getValueParam(uc, val_name)
                         if val_is_table:
-                            (_,_,_, standard) = uc
+                            (_, _, _, standard) = uc
                             print("TABLE VALUE:", val_name, standard)
-                            table_format = get_table_format( # 基本上都是负载率
+                            table_format = get_table_format(  # 基本上都是负载率
                                 val_name, standard
                             )  # unit vs
-                            
-                            tname, tunit = table_format
-                            
-                            has_exception, tuc = 
-                            
+
+                            t_name, t_unit = table_format
+
+                            has_exception, t_uc = getUnitConverted(t_name, t_unit)
+
                             if has_exception:
                                 raise Exception("")
-                            t_param = base_class, val_name, val_unit, standard, mag
-                            
-                            new_param = {vparam:tparam}
+
+                            t_param = getValueParam(t_uc, t_name)
+                            new_param = {v_param: t_param}
                             # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
                             # normal values.
-                            new_param = vparam
+                            new_param = v_param
                         output_data[key][subkey]["设备参数"].append(new_param)
                 else:
                     raise Exception("Unknown Value:", val)
+
+print()
+rich.print(output_data)
