@@ -397,12 +397,19 @@ def getUnitConverted(val_name, val_unit):
             print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
             return has_exception, (base_class, val_unit, mag, standard)
-    return True, (None, None, None, None)
+    return True, (None, None, None, None) # has_exception, uc
 
 
 def getValueParam(uc, val_name):
     (base_class, val_unit, mag, standard) = uc
     vparam = (base_class, val_name, val_unit, standard, mag)
+    return vparam
+
+def wrapper_uc_vp(val_name, val_unit):
+    has_exception, uc = getUnitConverted(val_name, val_unit)
+    if has_exception:
+        raise Exception("")
+    vparam = getValueParam(uc, val_name)
     return vparam
 
 
