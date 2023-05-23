@@ -23,4 +23,13 @@ topo_code_template_path = "topo_check.py.j2"
 
 import jinja2
 
-jinja2.FileSystemLoader
+def load_template(template_path):
+    try:
+        assert template_path.endswith(".j2")
+    except:
+        Exception("jinja template path '{}' is malformed.")
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("./"),trim_blocks=True, lstrip_blocks=True, undefined=jinja2.StrictUndefined)
+    tpl = env.get_template(template_path)
+    return tpl
+
+tpl = load_template(topo_code_template_path)
