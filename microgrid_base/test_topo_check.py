@@ -9,9 +9,10 @@ PV = 设备(graph, "光伏发电", port_definition = {"电接口":"供电端输�
 
 LOAD = 设备(graph, "电负荷", port_definition = {"电接口":"供电端输出"})
 
-# maintain device -> port -> conn -> port -> device
-
 conn = 连接线(PV.ports['电接口'], LOAD.ports['电接口'])
+# walk over all connections.
+
+L1 = 母线(graph, "母线")
 
 conn_merge = 合并线(L0, L1)
 
@@ -20,6 +21,7 @@ conn_merge = 合并线(L0, L1)
 ###############
 # dump to dict
 ###############
+
 
 
 ###############
