@@ -184,6 +184,8 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["效率"],
         },
     ),
+    "Count": ("台", {"Device-":["安装台数"],"MaxDevice-":["最大安装台数"], "MinDevice-":["最小安装台数"]}),
+    "Length": ("km", {"": ["长度"]}),
     "Power": (
         "kW",
         {"Rated-": ["额定功率", "变压器容量"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]},
