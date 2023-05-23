@@ -168,11 +168,7 @@ SKIP_TYPE = ["设计规划拓扑图右侧菜单", "设计规划系统-拓扑图�
 BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Area": (
         "m2",
-        {
-            "": ["光伏板面积"],
-            "MaxInstall-": ["最大安装面积"],
-            "MinInstall-": ["最小安装面积"] 
-        },
+        {"": ["光伏板面积"], "MaxInstall-": ["最大安装面积"], "MinInstall-": ["最小安装面积"]},
     ),
     "Load": ("percent", {"": ["负载率"]}),
     "Efficiency": (
@@ -184,7 +180,10 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["效率"],
         },
     ),
-    "Count": ("台", {"Device-":["安装台数"],"MaxDevice-":["最大安装台数"], "MinDevice-":["最小安装台数"]}),
+    "Count": (
+        "台",
+        {"Device-": ["安装台数"], "MaxDevice-": ["最大安装台数"], "MinDevice-": ["最小安装台数"]},
+    ),
     "Length": ("km", {"": ["长度"]}),
     "Power": (
         "kW",
@@ -401,13 +400,14 @@ def getUnitConverted(val_name, val_unit):
             print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
             return has_exception, (base_class, val_unit, mag, standard)
-    return True, (None, None, None, None) # has_exception, uc
+    return True, (None, None, None, None)  # has_exception, uc
 
 
 def getValueParam(uc, val_name):
     (base_class, val_unit, mag, standard) = uc
     vparam = (base_class, val_name, val_unit, standard, mag)
     return vparam
+
 
 def wrapper_uc_vp(val_name, val_unit):
     has_exception, uc = getUnitConverted(val_name, val_unit)
@@ -454,7 +454,9 @@ for key in keys:
                     params = {"设计规划": [], "仿真模拟": []}
                     if subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
-                        params["设计规划"].append(wrapper_uc_vp("最小安装面积", "m2"))  # from excel.
+                        params["设计规划"].append(
+                            wrapper_uc_vp("最小安装面积", "m2")
+                        )  # from excel.
                     elif subkey in ["传输线"]:  # transfer lines, pipes
                         params["设计规划"].append(wrapper_uc_vp("长度", "km"))
                         params["仿真模拟"].append(wrapper_uc_vp("长度", "km"))
@@ -556,7 +558,9 @@ for key in keys:
                             has_exception, t_uc = getUnitConverted(t_name, t_unit)
 
                             if has_exception:
-                                raise Exception("")
+                                raise Exception(
+                                    "No table format found for:", val_name, val_unit
+                                )
 
                             t_param = getValueParam(t_uc, t_name)
                             new_param = {v_param: t_param}
