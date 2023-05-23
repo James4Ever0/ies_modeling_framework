@@ -3,7 +3,9 @@ from topo_check import ...
 ###############
 # build from code.
 ###############
-graph = 拓扑图()
+
+compute_data = ...
+graph = 拓扑图(**compute_data) # with structure?
 
 PV1 = graph.光伏发电(**kwargs) # 这种是增加新的光伏发电
 
