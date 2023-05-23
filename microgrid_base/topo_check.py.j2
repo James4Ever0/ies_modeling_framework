@@ -9,6 +9,7 @@ class 拓扑图(BaseModel):
     def __init__(self, **kwargs):
         self.node_count = 0
         self.graph = networkx.Graph(**kwargs)
+        self.graph_objects = []
 
     def add_node(self, **kwargs):
         self.graph.add_node(self.node_count,**kwargs)
