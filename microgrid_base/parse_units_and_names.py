@@ -485,10 +485,10 @@ for key in keys:
                             table_format = get_table_format(
                                 val_name, standard
                             )  # unit vs
-                            new_param = ...
+                            new_param = {():()}
                         else:
                             # normal values.
-                            new_param = ...
+                            new_param = ()
                         output_data[key][subkey]["设备参数"].append(new_param)
                 else:
                     raise Exception("Unknown Value:", val)
