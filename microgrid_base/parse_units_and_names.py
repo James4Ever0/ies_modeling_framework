@@ -2,7 +2,6 @@
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 device_data_path_base = "device_params_intermediate.json"
-from doctest import SKIP
 import pint
 
 unit_def_path = "../merged_units.txt"
