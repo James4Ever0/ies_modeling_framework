@@ -355,6 +355,10 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 # output_data = {"unit_conversion", ""}
 
+output_data = {} # category -> device_name -> 
+
+# device name translation table?
+
 for key in keys:
     rich.print(data[key].keys())
     # val_list = data[key]
