@@ -31,7 +31,7 @@ class 节点(BaseModel):
     def __init__(self, graph:拓扑图, **kwargs):
         self.graph = graph
         self.kwargs = kwargs
-        self.node_id = self.graph.add_node(**kwargs)
+        self.id = self.graph.add_node(**kwargs)
 
 class 母线(节点):
     def __init__(self, graph:拓扑图, **kwargs):
@@ -41,8 +41,10 @@ class 母线(节点):
 class 设备(节点):
     def __init__(self, graph:拓扑图, device_type:str, port_definition:dict,**kwargs):
         super().__init__(graph, **kwargs)
+        self.ports = {}
         for port_name, port_type in port_definition.items():
-            self.graph.add_node()
+            node_id = self.graph.add_node()
+            self.ports.update({port_name: {"type": port_type, "id": node_id}})
 
 class 连接线(节点):
     def __init__(self, graph:拓扑图, **kwargs):
