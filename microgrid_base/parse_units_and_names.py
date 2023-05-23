@@ -360,9 +360,11 @@ output_data = {} # category -> device_name -> {设备参数, 设计规划, 仿�
 for key in keys:
     rich.print(data[key].keys())
     # val_list = data[key]
+    output_data[key] = {}
     # print(key)
     # breakpoint()
     for subkey in data[key].keys():
+        output_data[key][subkey] = {}
         val_list = data[key][subkey]
         # rich.print(val_list)
         print("____" * 10 + "[{}-{}]".format(key, subkey))
