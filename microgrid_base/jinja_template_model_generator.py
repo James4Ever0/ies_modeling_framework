@@ -39,6 +39,11 @@ def load_template(template_path):
     return tpl
 
 tpl = load_template(topo_code_template_path)
-result = tpl.render(...)
+result = tpl.render(type_sys=type_sys)
+
+print(result)
+
+tpl = load_template(ies_optim_code_output_path)
+result = tpl.render(type_sys=type_sys, ...=...)
 
 print(result)
