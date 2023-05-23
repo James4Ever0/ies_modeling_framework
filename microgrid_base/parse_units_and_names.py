@@ -482,7 +482,7 @@ for key in keys:
                     # TODO: checking metadata.
                     continue
                 elif val_name in TRANSLATION_TABLE.keys():
-                    getUnitConverted(val_name)
+                    has_exception, (val_unit, mag, standard) = getUnitConverted(val_name)
                     # base_classes = TRANSLATION_TABLE[val_name]
                     # has_exception = False
                     # for base_class in base_classes:
