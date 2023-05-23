@@ -18,6 +18,9 @@ type_sys = {
     ),  # 设备分类->设备名称->锚点名称->锚点类型
 }
 
+dparam_path = ""
+dparam = read_json(dparam_path)
+
 def code_and_template_path(base_name):
     code_path = f"{base_name}.py"
     template_path = f"{code_path}.j2"
