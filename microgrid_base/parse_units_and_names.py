@@ -486,7 +486,7 @@ for key in keys:
                                 val_name, standard
                             )  # unit vs
                             new_param = {():()}
-                            # (name, original_unit, standard_unit, magnitude)
+                            # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
                             # normal values.
                             new_param = ()
