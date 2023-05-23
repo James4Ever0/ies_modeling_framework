@@ -14,12 +14,14 @@ class 拓扑图(BaseModel):
     def add_node(self, **kwargs):
         self.graph.add_node(self.node_count,**kwargs)
         node_id = self.node_count
-        self.node_count+=1
+        self.node_count += 1
         return node_id
     # monotonically adding a node.
-    def to_json(self,) -> dict:
+    def check_consistency(self) -> bool:
+        return is_consistent
+    def to_json(self) -> dict:
         return json_data
-    def from_json(self,json_data):dict:
+    def from_json(self,json_data) -> dict:
         # load data to graph
     # with checking.
     # iterate through all nodes.
@@ -48,4 +50,4 @@ class 连接线(节点):
         self.graph.add_node(self.node_id,**kwargs)
 
 class 合并线(节点):
-    def 
+    def __init__(self)
