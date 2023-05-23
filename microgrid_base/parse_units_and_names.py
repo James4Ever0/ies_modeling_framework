@@ -71,7 +71,7 @@ def get_table_format(k, u):
         t = {
             "燃油消耗率": {str(ureg.Unit("m3 / kilowatt_hour")): ("负载率", "%")},
         }
-        return t[k][str(u)] # name, unit
+        return t[k][str(u)]  # name, unit
     except:
         raise Exception("No table format for", k, u)
 
@@ -172,7 +172,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["光伏板面积"],
         },
     ),
-    "Load": ("percent", {"":["负载率"]}),
+    "Load": ("percent", {"": ["负载率"]}),
     "Efficiency": (
         "one",
         {
@@ -355,7 +355,7 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 # output_data = {"unit_conversion", ""}
 
-output_data = {} # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
+output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
 
 for key in keys:
     rich.print(data[key].keys())
@@ -364,7 +364,7 @@ for key in keys:
     # print(key)
     # breakpoint()
     for subkey in data[key].keys():
-        output_data[key][subkey] = {}
+        output_data[key][subkey] = {"设备参数": [], "设计规划": [], "仿真模拟": []}
         val_list = data[key][subkey]
         # rich.print(val_list)
         print("____" * 10 + "[{}-{}]".format(key, subkey))
