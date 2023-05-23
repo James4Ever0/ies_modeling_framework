@@ -5,6 +5,10 @@ from topo_check import ...
 ###############
 graph = 拓扑图()
 
+PV1 = graph.添加光伏发电(**kwargs)
+
+graph.连接线(PV1.电接口, LOAD.电接口) # connected?
+
 PV = 设备(graph, "光伏发电", port_definition = {"电接口":"供电端输出"})
 
 LOAD = 设备(graph, "电负荷", port_definition = {"电接口":"供电端输出"})
