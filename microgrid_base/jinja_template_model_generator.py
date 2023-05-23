@@ -33,3 +33,6 @@ def load_template(template_path):
     return tpl
 
 tpl = load_template(topo_code_template_path)
+result = tpl.render(...)
+
+print(result)
