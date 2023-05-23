@@ -528,7 +528,8 @@ for key in keys:
                     #         has_exception = False
                     #         break
                     if has_exception:
-                        raise Exception(f"No compatibie unit found for {val_unit}")
+                        raise Exception(f"No compatibie unit found for {val_name}")
+                        # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
                         if val_is_table:
                             print("TABLE VALUE:", val_name, standard)
