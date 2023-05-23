@@ -12,7 +12,9 @@ class 拓扑图(BaseModel):
 
     def add_node(self, **kwargs):
         self.graph.add_node(self.node_count,**kwargs)
+        node_id = self.node_count
         self.node_count+=1
+        return node_id
     # monotonically adding a node.
     def to_json(self,) -> dict:
         return json_data
@@ -23,14 +25,16 @@ class 拓扑图(BaseModel):
 # 下面的都需要传拓扑图进来
 
 class 节点(BaseModel):
-    def __init__(self, graph:networkx.Graph, **kwargs):
+    def __init__(self, graph:拓扑图, **kwargs):
         self.graph = graph
         self.kwargs = kwargs
+        self.node_id = self.graph.add_node(**kwargs)
 
 class 母线(节点):
-    def __init__(self, graph:networkx.Graph, **kwargs):
+    def __init__(self, graph:拓扑图, **kwargs):
         super().__init__(graph, **kwargs)
 
 class 设备(节点):
-    def __init__(self, graph:networkx.Graph, **kwargs):
+    def __init__(self, graph:拓扑图, **kwargs):
         super().__init__(graph, **kwargs)
+        # more ports?
