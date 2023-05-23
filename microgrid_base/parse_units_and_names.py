@@ -67,10 +67,13 @@ MEASURE = "调度"
 
 
 def get_table_format(k, u):
-    t = {
-        "燃油消耗率": {str(ureg.Unit("m3 / kilowatt_hour")): ("负载率", "%")},
-    }
-    return t[k][str(u)] # name, unit
+    try:
+        t = {
+            "燃油消耗率": {str(ureg.Unit("m3 / kilowatt_hour")): ("负载率", "%")},
+        }
+        return t[k][str(u)] # name, unit
+    except:
+        raise Exception("No table format for", k, u)
 
 
 with open(device_data_path_base, "r") as f:
