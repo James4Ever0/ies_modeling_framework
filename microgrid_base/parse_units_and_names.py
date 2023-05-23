@@ -405,7 +405,8 @@ def getUnitConverted(val_name, val_unit):
 
 def getValueParam(uc, val_name):
     (base_class, val_unit, mag, standard) = uc
-    vparam = (base_class, val_name, val_unit, standard, mag)
+    vparam = [base_class, val_name, val_unit, standard, mag] # to list. instead of tuple, for serialization
+    # vparam = (base_class, val_name, val_unit, standard, mag)
     return vparam
 
 
@@ -563,7 +564,8 @@ for key in keys:
                                 )
 
                             t_param = getValueParam(t_uc, t_name)
-                            new_param = {v_param: t_param}
+                            new_param = {"MAIN":v_param, "SUB":t_param}
+                            # new_param = {v_param: t_param}
                             # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
                             # normal values.

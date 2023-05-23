@@ -1,0 +1,785 @@
+{
+    "发电设备": {
+        "光伏发电": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "Area",
+                    "光伏板面积",
+                    "m2",
+                    "m2",
+                    1
+                ],
+                [
+                    "PowerConversionEfficiency",
+                    "电电转换效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "MaxPower",
+                    "最大发电功率",
+                    "kWp",
+                    "kilowatt",
+                    1.0
+                ],
+                [
+                    "PowerDeltaLimit",
+                    "发电爬坡率",
+                    "percent/s",
+                    "one / 年",
+                    315575.99999999994
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kWp",
+                    "万元 / kilowatt",
+                    1.0
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kWp*年)",
+                    "万元 / kilowatt / 年",
+                    1.0
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kWp",
+                    "万元 / kilowatt",
+                    1.0
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxInstallArea",
+                    "最大安装面积",
+                    "m2",
+                    "m2",
+                    1
+                ],
+                [
+                    "MinInstallArea",
+                    "最小安装面积",
+                    "m2",
+                    "m2",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                "设备选型"
+            ]
+        },
+        "风力发电": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedPower",
+                    "额定功率",
+                    "kWp",
+                    "kilowatt",
+                    1.0
+                ],
+                [
+                    "RatedWindSpeed",
+                    "额定风速",
+                    "m/s",
+                    "kilometer / 年",
+                    31557.600000000002
+                ],
+                [
+                    "MinWindSpeed",
+                    "切入风速",
+                    "m/s",
+                    "kilometer / 年",
+                    31557.600000000002
+                ],
+                [
+                    "MaxWindSpeed",
+                    "切出风速",
+                    "m/s",
+                    "kilometer / 年",
+                    31557.600000000002
+                ],
+                [
+                    "PowerDeltaLimit",
+                    "发电爬坡率",
+                    "percent/s",
+                    "one / 年",
+                    315575.99999999994
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kWp",
+                    "万元 / kilowatt",
+                    1.0
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kWp*年)",
+                    "万元 / kilowatt / 年",
+                    1.0
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kWp",
+                    "万元 / kilowatt",
+                    1.0
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        },
+        "柴油发电": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedPower",
+                    "额定功率",
+                    "kW",
+                    "kilowatt",
+                    1
+                ],
+                {
+                    "MAIN": [
+                        "DieselToPower",
+                        "燃油消耗率",
+                        "L/kWh",
+                        "m3 / kilowatt_hour",
+                        0.0010000000000000002
+                    ],
+                    "SUB": [
+                        "Load",
+                        "负载率",
+                        "percent",
+                        "one",
+                        0.01
+                    ]
+                },
+                [
+                    "PowerDeltaLimit",
+                    "发电爬坡率",
+                    "percent/s",
+                    "one / 年",
+                    315575.99999999994
+                ],
+                [
+                    "PowerStartupLimit",
+                    "启动功率百分比",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/台",
+                    "万元 / 台",
+                    1
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(台*年)",
+                    "万元 / 台 / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/台",
+                    "万元 / 台",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        }
+    },
+    "储能设备": {
+        "锂电池": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedCapacity",
+                    "额定容量",
+                    "kWh",
+                    "kilowatt_hour",
+                    1
+                ],
+                [
+                    "BatteryDeltaLimit",
+                    "电池充放电倍率",
+                    "1/hour",
+                    "1 / 年",
+                    8766.0
+                ],
+                [
+                    "ChargeEfficiency",
+                    "充能效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "DischargeEfficiency",
+                    "放能效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "BatteryStorageDecay",
+                    "存储衰减",
+                    "percent/hour",
+                    "one / 年",
+                    87.66
+                ],
+                [
+                    "TotalDischargeCapacity",
+                    "生命周期总放电量",
+                    "kWh",
+                    "kilowatt_hour",
+                    1
+                ],
+                [
+                    "BatteryLife",
+                    "电池换芯周期",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kWh",
+                    "万元 / kilowatt_hour",
+                    1
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kWh*年)",
+                    "万元 / kilowatt_hour / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kWh",
+                    "万元 / kilowatt_hour",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        }
+    },
+    "配电传输": {
+        "变压器": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "Efficiency",
+                    "效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "RatedPower",
+                    "变压器容量",
+                    "kW",
+                    "kilowatt",
+                    1
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kW*年)",
+                    "万元 / kilowatt / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        },
+        "变流器": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedPower",
+                    "额定功率",
+                    "kW",
+                    "kilowatt",
+                    1
+                ],
+                [
+                    "Efficiency",
+                    "效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kW*年)",
+                    "万元 / kilowatt / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        },
+        "双向变流器": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedPower",
+                    "额定功率",
+                    "kW",
+                    "kilowatt",
+                    1
+                ],
+                [
+                    "Efficiency",
+                    "效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "CostPerYear",
+                    "固定维护成本",
+                    "万元/(kW*年)",
+                    "万元 / kilowatt / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerPower",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kilowatt_hour",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/kW",
+                    "万元 / kilowatt",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        },
+        "传输线": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "PowerTransferDecay",
+                    "能量衰减系数",
+                    "kW/km",
+                    "kilowatt / kilometer",
+                    1
+                ],
+                [
+                    "CostPerWatt",
+                    "采购成本",
+                    "万元/km",
+                    "万元 / kilometer",
+                    1
+                ],
+                [
+                    "VariationCostPerMeter",
+                    "维护成本",
+                    "万元/(km*年)",
+                    "万元 / kilometer / 年",
+                    1
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerWatt",
+                    "建设费用系数",
+                    "万元/km",
+                    "万元 / kilometer",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "Length",
+                    "长度",
+                    "km",
+                    "kilometer",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "Length",
+                    "长度",
+                    "km",
+                    "kilometer",
+                    1
+                ],
+                "设备选型"
+            ]
+        }
+    }
+}
