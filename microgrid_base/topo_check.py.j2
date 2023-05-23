@@ -1,13 +1,20 @@
 from pydantic import BaseModel
 
-class 拓扑图():
-    def add_node
-    def to_json
-    def from_json
+class 拓扑图(BaseModel):
+    def __init__(self, ):
+    def add_node(self,):
+    # monotonically adding a node.
+    def to_json(self,):
+    def from_json(self,):
+    # with checking.
+    # iterate through all nodes.
 # 下面的都需要传拓扑图进来
 
-class 点():
+class 节点(BaseModel):
+    def __init__(self, ):
 
-class 母线():
+class 母线(节点):
+    def __init__(self, ):
 
-class 设备():
+class 设备(节点):
+    def __init__(self, ):
