@@ -577,3 +577,8 @@ rich.print(output_data)
 
 # write documents for api?
 # or just a whole bunch of generated documents inserted into places?
+output_path = "microgrid_jinja_param_base.json"
+with open(output_path,'w+') as f:
+    f.write(json.dumps(output_data, indent=4, ensure_ascii=False))
+
+print("SAVED TO:", output_path)
