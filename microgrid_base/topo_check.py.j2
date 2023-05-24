@@ -37,7 +37,7 @@ class 拓扑图:
         self.G = networkx.Graph(**kwargs)
         self.合并母线ID集合列表 = []
 
-    def get_all_devices(self):
+    def get_all_devices(self) -> list:
         devs = []
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data['type']
@@ -45,11 +45,11 @@ class 拓扑图:
                 devs.append(node_data)
         return devs
 
-    def get_all_adders(self): # don't care about types here.
+    def get_all_adders(self) -> list: # don't care about types here.
         adders = [] # 用到：合并母线ID集合列表
         return adders
 
-    def get_graph_data(self): # primary data. shall be found somewhere.
+    def get_graph_data(self) -> dict: # primary data. shall be found somewhere.
         graph_data = self.G.graph
         return graph_data
 
