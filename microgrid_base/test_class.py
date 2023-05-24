@@ -25,6 +25,7 @@ G.add_node(3, **{"val":1, "val2":2})
 G.add_edge(1,2)
 G.add_edge(2,3)
 
+G.add_node()
 # G.neighbors(node_id)
 for n_with_items in G.nodes.items():
     n,d = n_with_items
@@ -38,4 +39,6 @@ G.nodes[2]['attr2'] = 2
 print(G.nodes[2]) # attrs of this node.
 
 print()
-print(list(G.neighbors(1)))
+# print(list(G.neighbors(1)))
+components = list(nx.connected_components(G))
+print(components)
