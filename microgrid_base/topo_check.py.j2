@@ -12,9 +12,10 @@ type_sys = {{type_sys}} # will work?
 # 母线最多99个对接的接口
 
 # better use some template.
-{{}}类型 = ...
-母线类型 = ...
-母线类型 = ...
+{% for ... in ... %}
+{{}}类型 = {{}}
+
+{% endfor %}
 
 def getMainAndSubtype(data):
     mainType = data['type']
@@ -56,11 +57,13 @@ class 拓扑图:
                     else:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
-                ... 
+                assert node_subtype in 设备类型
             elif node_type == "连接线":
-                ... 
+                assert node_subtype in 连接线类型
+                for n in neighbors
             elif node_type == "合并线":
-                ...
+                assert node_subtype in 合并线类型
+                for n in neighbors
             else:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.graph.subgraph(母线ID列表) # check again.
