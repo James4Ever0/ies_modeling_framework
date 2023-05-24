@@ -30,3 +30,7 @@ for n_with_items in G.nodes.items():
     print("NODE", n, type(n))
     print("DATA", d, type(d))
     # G.nodes[n]
+
+print()
+
+print(G.nodes[2]) # attrs of this node.
