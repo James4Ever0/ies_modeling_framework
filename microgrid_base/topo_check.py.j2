@@ -61,16 +61,16 @@ class 设备(节点):
             self.ports.update({port_name: {"port_type":port_type,"id":node_id}})
 
 class 连接节点(节点):
-    def __init__(self, topo:拓扑图,conn_type:str,conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, type=conn_type, conn_subtype = conn_subtype, **kwargs)
+    def __init__(self, topo:拓扑图,type:str,subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
+        super().__init__(topo, type=type, subtype = subtype, **kwargs)
         self.topo.graph.add_edge(conn_start_id, self.id)
         self.topo.graph.add_edge(self.id, conn_end_id)
 
 {% macro makeConnNodeInstance(className) -%}
 
 class {{className}}(连接节点)
-    def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
+    def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
+        super().__init__(topo, type=self.__class__.__name__, subtype = subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
 
 {% endmacro %}
 
