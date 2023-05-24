@@ -26,18 +26,17 @@ class 拓扑图:
         return node_id
     # monotonically adding a node.
     def check_consistency(self) -> bool:
-        合并母线ID集合列表 = [] # list of sets.
+        #  use subgraph
+        # 提取所有母线ID
         for node_id, node_data in self.graph.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
             neighbors = self.graph.neighbors(node_id)
             if node_type == "母线":
-                # lazy check.
                 for n in neighbors:
                     ne_data = self.graph[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
                     if ne_type == "合并线":
-                        for index, nid_set in 合并母线ID集合列表:
-                            if nid_set
+                        ...
                     elif ne_type == "连接线":
                         ...
                     else:
