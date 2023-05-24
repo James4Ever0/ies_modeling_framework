@@ -18,6 +18,7 @@ type_sys = {{type_sys}} # will work?
 {% endfor %}
 
 设备接口集合 = {{}}
+连接类型映射表 = {{}}
 
 def getMainAndSubtype(data):
     mainType = data['type']
@@ -74,11 +75,13 @@ class 拓扑图:
                 assert node_subtype in 连接线类型
                 assert len(neighbors) == 2
                 dev_ids = set()
+                subtypes = []
                 {{neighborIterator()}}
                     assert ne_type in ["锚点","母线"]
+                    subtypes.append(ne_subtype)
                     dev_ids.add(ne_data['device_id'])
                 assert len(dev_ids) == 2 # no self-connection.
-                
+                assert 连接类型映射表[frozenset(subtypes)] == node_subtype
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
