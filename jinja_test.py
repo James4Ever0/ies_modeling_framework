@@ -1,8 +1,8 @@
 from jinja2 import Environment, FileSystemLoader
 
-#template = open('jinja_test.j2','r').read()
+# template = open('jinja_test.j2','r').read()
 
-#mylist = [1,2,3]
+# mylist = [1,2,3]
 def main():
     env = Environment(loader = FileSystemLoader('./'))
     tpl = env.get_template('jinja_test.j2')
