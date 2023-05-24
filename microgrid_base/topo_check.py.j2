@@ -35,7 +35,8 @@ class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
         self.G = networkx.Graph(**kwargs)
-        self.合并母线ID集合列表 = [] 
+        self.合并母线ID集合列表 = []
+        self.is_valid = False
 
     def get_all_devices(self) -> list:
         devs = []
@@ -144,6 +145,7 @@ class 拓扑图:
                     print("OUTPUT:", has_output)
                     print()
                     raise Exception(f"母线组{id_set}未实现至少一进一出")
+        self.is_valid = True
     def to_json(self) -> dict:
         return json_data
     @staticmethod
@@ -152,6 +154,7 @@ class 拓扑图:
         kwargs = ...
         graph = 拓扑图(**kwargs)
         graph.add
+        self.check_consistency()
         return graph
     # with checking.
     # iterate through all nodes.
