@@ -48,6 +48,10 @@ class 拓扑图:
     def get_all_adders(self) -> list: # don't care about types here.
         adders = [] # 用到：合并母线ID集合列表
         # format: {"input":input_ids, "output": output_ids, "IO": IO_ids}
+        for node_index, node_data in self.G.nodes.items():
+            node_type = node_data["type"]
+            if node_type == "连接线":
+                #  检查连接线两端
         return adders
 
     def get_graph_data(self) -> dict: # primary data. shall be found somewhere.
