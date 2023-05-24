@@ -57,10 +57,13 @@ class 拓扑图:
                 left_type = self.G.nodes[left_id]['type']
                 right_type = self.G.nodes[right_id]['type']
                 if left_type == "锚点" and right_type == "锚点":
-                if left_type == "锚点" and right_type == "锚点":
-                if left_type == "锚点" and right_type == "锚点":
-                elif left_type == ""
-                elif left_type == ""
+                    ...
+                if left_type == "母线" and right_type == "锚点":
+                    ...
+                if left_type == "锚点" and right_type == "母线":
+                    ...
+                else:
+                    raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
         return adders
 
     def get_graph_data(self) -> dict: # primary data. shall be found somewhere.
