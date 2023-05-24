@@ -48,3 +48,6 @@ print()
 # print(list(G.neighbors(1)))
 components = list(nx.connected_components(G))
 print(components)
+
+print()
+print(G, type(G))
