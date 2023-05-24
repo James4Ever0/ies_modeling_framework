@@ -123,7 +123,6 @@ class 拓扑图:
                     print("OUTPUT:", has_output)
                     print()
                     raise Exception(f"母线组{id_set}未实现至少一进一出")
-        return is_consistent
     def to_json(self) -> dict:
         return json_data
     @staticmethod
