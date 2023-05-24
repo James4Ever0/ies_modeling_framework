@@ -42,11 +42,11 @@ class 拓扑图:
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data['type']
             if node_type == "设备":
-                
+                devs.update({node_index: node_data})
         return devs
 
     def get_all_adders(self): # don't care about types here.
-        adders = 
+        adders = []
         return adders
 
     def get_graph_data(self): # primary data. shall be found somewhere.
