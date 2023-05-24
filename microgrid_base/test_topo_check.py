@@ -34,8 +34,7 @@ devs = graph.get_all_devices()
 adders = graph.get_all_adders()
 
 # input, output, io
-get_all_devices
-get_all_adders
+
 ###############
 # dump to dict
 ###############

@@ -37,6 +37,12 @@ class 拓扑图:
         self.graph = networkx.Graph(**kwargs)
         self.合并母线ID集合列表 = []
 
+    def get_all_devices(self):
+        return devs
+    def get_all_adders(self):
+        return adders
+    def get_graph_data(self):
+        return graph_data
     def add_node(self, **kwargs):
         self.graph.add_node(self.node_count,**kwargs)
         node_id = self.node_count
