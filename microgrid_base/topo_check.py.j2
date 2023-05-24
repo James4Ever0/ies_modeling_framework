@@ -43,7 +43,7 @@ class 拓扑图:
         self.node_count += 1
         return node_id
     # monotonically adding a node.
-    def check_consistency(self) -> bool:
+    def check_consistency(self): # return nothing.
         #  use subgraph
         # 提取所有母线ID
         母线ID列表 = []
