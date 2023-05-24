@@ -44,13 +44,13 @@ class 节点(BaseModel):
 
 class 母线(节点):
     def __init__(self, topo:拓扑图, **kwargs):
-        super().__init__(topo, type='母线', **kwargs)
+        super().__init__(topo, type=self.__class__.__name__, **kwargs)
         # infinite ports.
 
 class 设备(节点):
     def __init__(self, topo:拓扑图, device_type:str, port_definition:dict,**kwargs):
         # check if device type is one of the common types.
-        super().__init__(topo, type='设备', **kwargs)
+        super().__init__(topo, type=self.__class__.__name__, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", port_type=port_type)
@@ -64,11 +64,11 @@ class 连接节点(节点):
 
 class 连接线(连接节点): # you might want to check here.
     def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type="连接线", conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id,**kwargs)
+        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id,**kwargs)
 
 class 合并线(连接节点): # how to merge this? to verify the validity?
 # the graph needs to go through transformation, to check validity and generate info to compute.
 # but we only save the graph before transformation.
  # you might want to check here.
     def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type="合并线", conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id,**kwargs)
+        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
