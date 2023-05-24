@@ -1,4 +1,4 @@
-from jinja2 import Environment,FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 #template = open('jinja_test.j2','r').read()
 
