@@ -74,14 +74,12 @@ class 拓扑图:
                 assert node_subtype in 连接线类型
                 assert len(neighbors) == 2
                 {{neighborIterator()}}
-
-                    
+                    assert ne_type == "锚点"
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
                 {{neighborIterator()}}
-
-                    
+                    assert ne_type == "母线"
             else:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.graph.subgraph(母线ID列表) # check again.
