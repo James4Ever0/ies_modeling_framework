@@ -23,8 +23,16 @@ class 拓扑图:
     def check_consistency(self) -> bool:
         for node_id, node_data in self.graph.nodes.items():
             node_type = node_data['type']
-            if node_type == "":
+            if node_type == "母线": 
                 ...
+            elif node_type == "设备":
+                ... 
+            elif node_type == "连接线":
+                ... 
+            elif node_type == "合并线":
+                ...
+            else:
+                raise Exception("unknown node type:", node_type)
         return is_consistent
     def to_json(self) -> dict:
         return json_data
