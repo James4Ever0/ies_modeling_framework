@@ -113,10 +113,15 @@ class 拓扑图:
                 if has_input and has_output:
                     ...
                 else:
+                    print()
+                    print("============ERROR LOG============")
+                    print()
                     for n in id_set:
-                    print 
+                        print("母线:", self.graph.nodes[n])
+                    print()
                     print("INPUT:", has_input)
                     print("OUTPUT:", has_output)
+                    print()
                     raise Exception(f"母线组{id_set}未实现至少一进一出")
         return is_consistent
     def to_json(self) -> dict:
