@@ -44,13 +44,13 @@ class 节点(BaseModel):
 
 class 母线(节点):
     def __init__(self, graph:拓扑图, **kwargs):
-        super().__init__(graph, **kwargs)
+        super().__init__(graph, type='母线', **kwargs)
         # infinite ports.
 
 class 设备(节点):
     def __init__(self, graph:拓扑图, device_type:str, port_definition:dict,**kwargs):
         # check if device type is one of the common types.
-        super().__init__(graph, **kwargs)
+        super().__init__(graph, type='设备', **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.graph.add_node()
