@@ -43,12 +43,13 @@ class 拓扑图:
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
                     if ne_type == "合并线":
                         # just check type.
-                        assert ne_type in 合并线类型
-                        assert 
+                        assert ne_subtype in 合并线类型
+                        assert ne_subtype.replace("合并", "连接") == node_subtype
                     elif ne_type == "连接线":
-                        ...
+                        assert ne_subtype in 连接线类型
+                        assert ne_subtype.replace('不可','可').replace("输入","".replace("输出","") == node_subtype
                     else:
-                        raise Exception("母线连接未知类型节点：",ne_type)
+                        raise Exception("{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
