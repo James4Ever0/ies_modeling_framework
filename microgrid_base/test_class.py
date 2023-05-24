@@ -29,4 +29,4 @@ for n_with_items in G.nodes.items():
     n,d = n_with_items
     print("NODE", n, type(n))
     print("DATA", d, type(d))
-    
+    # G.nodes[n]

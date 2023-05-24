@@ -25,7 +25,8 @@ class 拓扑图:
             node_type = node_data['type']
             neighbors = self.graph.neighbors(node_id)
             if node_type == "母线":
-                ...
+                for n in neighbors:
+                    n_data = self.graph[n]
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
