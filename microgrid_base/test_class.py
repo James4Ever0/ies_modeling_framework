@@ -32,5 +32,6 @@ for n_with_items in G.nodes.items():
     # G.nodes[n]
 
 print()
+G.nodes[2]['attr2'] = 2
 
 print(G.nodes[2]) # attrs of this node.
