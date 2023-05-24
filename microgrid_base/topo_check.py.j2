@@ -96,7 +96,9 @@ class 拓扑图:
             subgraph = self.graph.subgraph(母线ID列表) # check again.
             self.合并母线ID集合列表 = networkx.connected_components(subgraph)
             for id_set in self.合并母线ID集合列表:
-                subgraph, 
+                for node_id in id_set:
+                    node_data = self.graph.nodes[node_id]
+                    conn = node_data['conn']
         return is_consistent
     def to_json(self) -> dict:
         return json_data
