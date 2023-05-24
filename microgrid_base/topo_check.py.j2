@@ -28,10 +28,12 @@ class 拓扑图:
     def check_consistency(self) -> bool:
         #  use subgraph
         # 提取所有母线ID
+        母线ID列表 = []
         for node_id, node_data in self.graph.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
             neighbors = self.graph.neighbors(node_id)
             if node_type == "母线":
+                母线ID列表.append(node_id)
                 assert len(neighbors) <= 99
                 for n in neighbors:
                     ne_data = self.graph[n]
@@ -40,7 +42,7 @@ class 拓扑图:
                         # just check type.
                         ...
                     elif ne_type == "连接线":
-                        ...
+                        ... # store more data to the node. later we will verify that.
                     else:
                         raise Exception("母线连接未知类型节点：",ne_type)
             elif node_type == "设备":
