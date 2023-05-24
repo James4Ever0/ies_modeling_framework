@@ -55,8 +55,8 @@ class 设备(节点):
             node_id = self.graph.add_node(type="锚点", port_type=port_type)
 
 class 连接线(节点): # you might want to check here.
-    def __init__(self, graph:拓扑图, **kwargs):
-        super().__init__(graph, **kwargs)
+    def __init__(self, graph:拓扑图, conn_start_id, conn_end_id, conn_type,**kwargs):
+        super().__init__(graph, type="连接线", conn_type = conn_type, **kwargs)
 
 class 合并线(节点): # how to merge this? to verify the validity?
 # the graph needs to go through transformation, to check validity and generate info to compute.
