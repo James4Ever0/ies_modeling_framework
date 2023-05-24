@@ -35,7 +35,7 @@ class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
         self.G = networkx.Graph(**kwargs)
-        self.合并母线ID集合列表 = []
+        self.合并母线ID集合列表 = [] 
 
     def get_all_devices(self) -> list:
         devs = []
