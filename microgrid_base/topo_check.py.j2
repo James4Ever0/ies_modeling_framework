@@ -54,7 +54,7 @@ class 拓扑图:
             if node_type == "连接线":
                 #  检查连接线两端
                 left_id, right_id = self.G.neighbors(node_index)
-                
+
                 left_type = self.G.nodes[left_id]['type']
                 right_type = self.G.nodes[right_id]['type']
 
@@ -62,7 +62,10 @@ class 拓扑图:
                 right_subtype = self.G.nodes[right_id]['subtype']
 
                 if left_type == "锚点" and right_type == "锚点":
-                    if left_subtype
+                    if left_subtype.endswith("输入输出"):
+                    elif left_subtype.endswith("输入"):
+                    else:
+
                 if left_type == "母线" and right_type == "锚点":
                     ...
                 if left_type == "锚点" and right_type == "母线":
