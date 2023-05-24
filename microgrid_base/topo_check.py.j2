@@ -100,8 +100,15 @@ class 拓扑图:
                 has_output=False
                 for node_id in id_set:
                     node_data = self.graph.nodes[node_id]
-                    conn = node_data['conn']
-                    if conn.endswith("输入输出"):
+                    conn = node_data['conn'] # list.
+                    for c in conn:
+                        if not c.endswith("输入输出"):
+                            if c.endswith("输入"):
+                                ...
+                            elif c.endswith("输入"):
+                                ...
+                            else:
+                                raise Exception(f"{self.graph.nodes[node_id]['type']}不可接受的连接类型: {c}")
         return is_consistent
     def to_json(self) -> dict:
         return json_data
