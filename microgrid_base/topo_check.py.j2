@@ -38,15 +38,19 @@ class 拓扑图:
         self.合并母线ID集合列表 = []
 
     def get_all_devices(self):
+        devs = []
+        for node_index, node_data in self.G.nodes.items():
+            devs.append()
         return devs
 
     def get_all_adders(self):
+        adders = 
         return adders
 
     def get_graph_data(self): # primary data. shall be found somewhere.
         graph_data = self.G.graph
         return graph_data
-        
+
     def add_node(self, **kwargs):
         self.G.add_node(self.node_count,**kwargs)
         node_id = self.node_count
