@@ -26,6 +26,7 @@ class 拓扑图:
         return node_id
     # monotonically adding a node.
     def check_consistency(self) -> bool:
+        merge_targets = 
         for node_id, node_data in self.graph.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
             neighbors = self.graph.neighbors(node_id)
@@ -33,7 +34,12 @@ class 拓扑图:
                 for n in neighbors:
                     ne_data = self.graph[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
-                    assert ne_type
+                    if ne_type == "合并线":
+                        ...
+                    elif ne_type == "连接线":
+                        ...
+                    else:
+                        raise Exception("母线连接未知类型节点：",ne_type)
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
