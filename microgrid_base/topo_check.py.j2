@@ -75,9 +75,10 @@ class 拓扑图:
                 assert len(neighbors) == 2
                 dev_ids = set()
                 {{neighborIterator()}}
-                    assert ne_type == "锚点"
+                    assert ne_type in ["锚点","母线"]
                     dev_ids.add(ne_data['device_id'])
                 assert len(dev_ids) == 2 # no self-connection.
+                
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
@@ -90,7 +91,7 @@ class 拓扑图:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.graph.subgraph(母线ID列表) # check again.
             for node_id, node_data in subgraph.nodes.items():
-                
+                subgraph
         return is_consistent
     def to_json(self) -> dict:
         return json_data
