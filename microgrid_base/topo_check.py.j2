@@ -58,11 +58,14 @@ class 拓扑图:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
                 assert node_subtype in 设备类型
+                port_set = set()
                 for n in neighbors:
                     ne_data = self.graph[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                    port_name = ne_data['port_name']
                     assert ne_type == "锚点"
-                    assert ne_subtype == 
+                    port_set.add((port_name, port_type))
+                assert port_set == 
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
                 for n in neighbors:
@@ -105,7 +108,7 @@ class 设备(节点):
         super().__init__(topo, type=self.__class__.__name__, subtype=device_type, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
-            node_id = self.topo.add_node(type="锚点", subtype=port_type)
+            node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type)
             self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
 
 class 连接节点(节点):
