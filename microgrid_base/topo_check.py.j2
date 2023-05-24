@@ -17,6 +17,8 @@ type_sys = {{type_sys}} # will work?
 
 {% endfor %}
 
+设备接口集合 = {{}}
+
 def getMainAndSubtype(data):
     mainType = data['type']
     subType = data['subtype']
@@ -65,7 +67,7 @@ class 拓扑图:
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
                     port_set.add((port_name, port_type))
-                assert port_set == 
+                assert port_set == 设备接口集合[node_subtype]
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
                 for n in neighbors:
