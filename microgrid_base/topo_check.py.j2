@@ -28,7 +28,7 @@ def getMainAndSubtype(data):
                 for n in neighbors:
                     ne_data = self.graph[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
-{% endmacro%}
+{% endmacro %}
 
 class 拓扑图:
     def __init__(self, **kwargs):
@@ -81,11 +81,15 @@ class 拓扑图:
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
+                node_ids = set()
                 {{neighborIterator()}}
                     assert ne_type == "母线"
+                    node_ids.add(n)
+                assert len(node_ids) == 2
             else:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.graph.subgraph(母线ID列表) # check again.
+            ...
         return is_consistent
     def to_json(self) -> dict:
         return json_data
