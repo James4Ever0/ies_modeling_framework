@@ -9,6 +9,12 @@ import networkx
 
 # 母线最多99个对接的接口
 
+def getMainAndSubtype(data):
+mainType=data['type']
+            node_subtype = data['subtype']
+subType = 
+    return mainType, subType
+
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
@@ -23,10 +29,12 @@ class 拓扑图:
     def check_consistency(self) -> bool:
         for node_id, node_data in self.graph.nodes.items():
             node_type = node_data['type']
+            node_subtype = node_data['subtype']
             neighbors = self.graph.neighbors(node_id)
             if node_type == "母线":
                 for n in neighbors:
-                    n_data = self.graph[n]
+                    ne_data = self.graph[n]
+                    ne_type = ne_data[]
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
