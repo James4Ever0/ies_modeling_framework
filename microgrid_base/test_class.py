@@ -24,6 +24,7 @@ G.add_node(3, **{"val":1, "val2":2})
 
 G.add_edge(1,2)
 
+# G.neighbors(node_id)
 for n_with_items in G.nodes.items():
     n,d = n_with_items
     print("NODE", n, type(n))

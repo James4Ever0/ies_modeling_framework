@@ -23,7 +23,8 @@ class 拓扑图:
     def check_consistency(self) -> bool:
         for node_id, node_data in self.graph.nodes.items():
             node_type = node_data['type']
-            if node_type == "母线": 
+            neighbors = self.graph.neighbors(node_id)
+            if node_type == "母线":
                 ...
             elif node_type == "设备":
                 ... 
