@@ -21,8 +21,10 @@ class 拓扑图:
         return node_id
     # monotonically adding a node.
     def check_consistency(self) -> bool:
-        for node in self.graph.nodes():
-            ...
+        for node_id, node_data in self.graph.nodes.items():
+            node_type = node_data['type']
+            if node_type == "":
+                ...
         return is_consistent
     def to_json(self) -> dict:
         return json_data
