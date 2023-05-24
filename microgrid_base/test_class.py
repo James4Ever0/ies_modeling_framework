@@ -16,6 +16,7 @@ b = a.B()
 
 import networkx as nx
 
+graph_data = {"a": 1, "b":2}
 G = nx.Graph()
 
 G.add_node(1, **{"val":1, "val2":2})
