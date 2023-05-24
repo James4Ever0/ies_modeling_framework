@@ -51,15 +51,12 @@ class 设备(节点):
     def __init__(self, graph:拓扑图, device_type:str, port_definition:dict,**kwargs):
         # check if device type is one of the common types.
         super().__init__(graph, type='设备', **kwargs)
-        self.ports = {}
         for port_name, port_type in port_definition.items():
-            node_id = self.graph.add_node()
-            self.ports.update({port_name: {"type": port_type, "id": node_id}})
+            node_id = self.graph.add_node(type="锚点", port_type=port_type)
 
 class 连接线(节点): # you might want to check here.
     def __init__(self, graph:拓扑图, **kwargs):
         super().__init__(graph, **kwargs)
-        self.graph.add_node(self.node_id, **kwargs)
 
 class 合并线(节点): # how to merge this? to verify the validity?
 # the graph needs to go through transformation, to check validity and generate info to compute.
