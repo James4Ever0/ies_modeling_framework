@@ -53,6 +53,14 @@ class 拓扑图:
             node_type = node_data["type"]
             if node_type == "连接线":
                 #  检查连接线两端
+                left_id, right_id = self.G.neighbors(node_index)
+                left_type = self.G.nodes[left_id]['type']
+                right_type = self.G.nodes[right_id]['type']
+                if left_type == "锚点" and right_type == "锚点":
+                if left_type == "锚点" and right_type == "锚点":
+                if left_type == "锚点" and right_type == "锚点":
+                elif left_type == ""
+                elif left_type == ""
         return adders
 
     def get_graph_data(self) -> dict: # primary data. shall be found somewhere.
