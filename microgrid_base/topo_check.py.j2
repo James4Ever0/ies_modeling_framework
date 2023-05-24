@@ -73,8 +73,11 @@ class 拓扑图:
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
                 assert len(neighbors) == 2
+                dev_ids = set()
                 {{neighborIterator()}}
                     assert ne_type == "锚点"
+                    dev_ids.add(ne_data['device_id'])
+                assert len(dev_ids) == 2
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
@@ -116,7 +119,7 @@ class 设备(节点):
         super().__init__(topo, type=self.__class__.__name__, subtype=device_type, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
-            node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type)
+            node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
             self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
 
 class 连接节点(节点):
