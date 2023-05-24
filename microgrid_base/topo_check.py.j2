@@ -52,13 +52,13 @@ class 母线(节点):
         # infinite ports.
 
 class 设备(节点):
-    def __init__(self, topo:拓扑图, device_type:str, port_definition:dict,**kwargs):
+    def __init__(self, topo:拓扑图, subtype:str, port_definition:dict,**kwargs):
         # check if device type is one of the common types.
-        super().__init__(topo, type=self.__class__.__name__, **kwargs)
+        super().__init__(topo, type=self.__class__.__name__, subtype=subtype, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", port_type=port_type)
-            self.ports.update({port_name: {"port_type":port_type,"id":node_id}})
+            self.ports.update({port_name: {"subtype":port_type,"id":node_id}})
 
 class 连接节点(节点):
     def __init__(self, topo:拓扑图,type:str,subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
