@@ -40,7 +40,7 @@ class 拓扑图:
     def get_all_devices(self):
         devs = []
         for node_index, node_data in self.G.nodes.items():
-            devs.append()
+            self.G.nodes.
         return devs
 
     def get_all_adders(self):
@@ -166,11 +166,12 @@ class 母线(节点):
 class 设备(节点):
     def __init__(self, topo:拓扑图, device_type:str, port_definition:dict,**kwargs):
         # check if device type is one of the common types.
-        super().__init__(topo, type=self.__class__.__name__, subtype=device_type, **kwargs)
+        super().__init__(topo, type=self.__class__.__name__, subtype=device_type, ports={}, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
             self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
+        self.topo.G[self.id]['ports'] = self.ports
 
 class 连接节点(节点):
     def __init__(self, topo:拓扑图, type:str, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
