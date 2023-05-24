@@ -46,8 +46,10 @@ class 拓扑图:
                 devs.append(node_data)
         return devs
 
-    def get_all_adders(self) -> list: # don't care about types here.
-        adders = [] # 用到：合并母线ID集合列表
+    def get_all_adders(self) -> dict: # don't care about types here.
+        # use adder ids. adder starts with -1
+        adders = {} # 用到：合并母线ID集合列表
+        adder_id = -1
         # format: {"input":input_ids, "output": output_ids, "IO": IO_ids}
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data["type"]
@@ -67,7 +69,9 @@ class 拓扑图:
                     else:
 
                 if left_type == "母线" and right_type == "锚点":
-                    ...
+                    if left_subtype.endswith("输入输出"):
+                    elif left_subtype.endswith("输入"):
+                    else:
                 if left_type == "锚点" and right_type == "母线":
                     ...
                 else:
