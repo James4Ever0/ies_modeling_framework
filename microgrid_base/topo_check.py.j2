@@ -32,10 +32,12 @@ class 拓扑图:
             node_type, node_subtype = getMainAndSubType(node_data)
             neighbors = self.graph.neighbors(node_id)
             if node_type == "母线":
+                assert len(neighbors) <= 99
                 for n in neighbors:
                     ne_data = self.graph[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
                     if ne_type == "合并线":
+                        # just check type.
                         ...
                     elif ne_type == "连接线":
                         ...
