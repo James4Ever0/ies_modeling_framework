@@ -24,6 +24,12 @@ def getMainAndSubtype(data):
     subType = data['subtype']
     return mainType, subType
 
+{%macro neighborIterator() %}
+                for n in neighbors:
+                    ne_data = self.graph[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+{% endmacro%}
+
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
@@ -46,9 +52,7 @@ class 拓扑图:
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
                 assert len(neighbors) <= 99
-                for n in neighbors:
-                    ne_data = self.graph[n]
-                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                {{neighborIterator()}}
                     if ne_type == "合并线":
                         # just check type.
                         assert ne_subtype in 合并线类型
@@ -61,9 +65,7 @@ class 拓扑图:
             elif node_type == "设备":
                 assert node_subtype in 设备类型
                 port_set = set()
-                for n in neighbors:
-                    ne_data = self.graph[n]
-                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                {{neighborIterator()}}
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
                     port_set.add((port_name, port_type))
@@ -71,12 +73,14 @@ class 拓扑图:
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
                 assert len(neighbors) == 2
-                for n in neighbors:
+                {{neighborIterator()}}
+
                     
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
-                for n in neighbors:
+                {{neighborIterator()}}
+
                     
             else:
                 raise Exception("unknown node type:", node_type)
