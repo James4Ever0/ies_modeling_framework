@@ -50,4 +50,4 @@ components = list(nx.connected_components(G))
 print(components)
 
 print()
-print(G, type(G))
+print(G.graph, type(G.graph)) # this is dict.

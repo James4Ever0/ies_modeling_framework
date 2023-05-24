@@ -27,24 +27,28 @@ def getMainAndSubtype(data):
 
 {%macro neighborIterator() %}
                 for n in neighbors:
-                    ne_data = self.graph[n]
+                    ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
 {% endmacro %}
 
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
-        self.graph = networkx.Graph(**kwargs)
+        self.G = networkx.Graph(**kwargs)
         self.合并母线ID集合列表 = []
 
     def get_all_devices(self):
         return devs
+
     def get_all_adders(self):
         return adders
+
     def get_graph_data(self): # primary data. shall be found somewhere.
+        graph_data = self.G.graph
         return graph_data
+        
     def add_node(self, **kwargs):
-        self.graph.add_node(self.node_count,**kwargs)
+        self.G.add_node(self.node_count,**kwargs)
         node_id = self.node_count
         self.node_count += 1
         return node_id
@@ -53,9 +57,9 @@ class 拓扑图:
         #  use subgraph
         # 提取所有母线ID
         母线ID列表 = []
-        for node_id, node_data in self.graph.nodes.items():
+        for node_id, node_data in self.G.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
-            neighbors = self.graph.neighbors(node_id)
+            neighbors = self.G.neighbors(node_id)
             if node_type == "母线":
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
@@ -76,7 +80,7 @@ class 拓扑图:
                 {{neighborIterator()}}
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
-                    assert len(self.graph.neighbors(n)) == 2
+                    assert len(self.G.neighbors(n)) == 2
                     port_set.add((port_name, port_type))
                 assert port_set == 设备接口集合[node_subtype]
             elif node_type == "连接线":
@@ -100,13 +104,13 @@ class 拓扑图:
                 assert len(node_ids) == 2
             else:
                 raise Exception("unknown node type:", node_type)
-            subgraph = self.graph.subgraph(母线ID列表) # check again.
+            subgraph = self.G.subgraph(母线ID列表) # check again.
             self.合并母线ID集合列表 = networkx.connected_components(subgraph)
             for id_set in self.合并母线ID集合列表:
                 has_input = False
                 has_output = False
                 for node_id in id_set:
-                    node_data = self.graph.nodes[node_id]
+                    node_data = self.G.nodes[node_id]
                     conn = node_data['conn'] # list.
                     for c in conn:
                         if not c.endswith("输入输出"):
@@ -115,7 +119,7 @@ class 拓扑图:
                             elif c.endswith("输出"):
                                 has_output=True
                             else:
-                                raise Exception(f"{self.graph.nodes[node_id]['type']}不可接受的连接类型: {c}")
+                                raise Exception(f"{self.G.nodes[node_id]['type']}不可接受的连接类型: {c}")
                 if has_input and has_output:
                     ...
                 else:
@@ -123,7 +127,7 @@ class 拓扑图:
                     print("============ERROR LOG============")
                     print()
                     for n in id_set:
-                        print("母线:", self.graph.nodes[n])
+                        print("母线:", self.G.nodes[n])
                     print()
                     print("INPUT:", has_input)
                     print("OUTPUT:", has_output)
