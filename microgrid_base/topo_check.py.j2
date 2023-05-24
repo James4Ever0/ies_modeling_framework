@@ -42,7 +42,7 @@ class 拓扑图:
                         # just check type.
                         ...
                     elif ne_type == "连接线":
-                        ... # store more data to the node. later we will verify that.
+                        ...
                     else:
                         raise Exception("母线连接未知类型节点：",ne_type)
             elif node_type == "设备":
@@ -78,6 +78,7 @@ class 母线(节点):
     def __init__(self, topo:拓扑图, **kwargs):
         super().__init__(topo, type=self.__class__.__name__, **kwargs)
         # infinite ports.
+        
 
 class 设备(节点):
     def __init__(self, topo:拓扑图, device_type:str, port_definition:dict,**kwargs):
