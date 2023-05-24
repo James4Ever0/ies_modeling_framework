@@ -53,6 +53,7 @@ class 拓扑图:
                 ...
             else:
                 raise Exception("unknown node type:", node_type)
+            subgraph = self.graph.subgraph(母线ID列表) # check again.
         return is_consistent
     def to_json(self) -> dict:
         return json_data
