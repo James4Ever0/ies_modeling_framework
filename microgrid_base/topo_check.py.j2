@@ -32,7 +32,8 @@ class 拓扑图:
             if node_type == "母线":
                 for n in neighbors:
                     ne_data = self.graph[n]
-                    ne_type = ne_data[]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                    assert ne_type
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
@@ -74,7 +75,7 @@ class 设备(节点):
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", subtype=port_type)
-            self.ports.update({port_name: {"subtype":port_type,"id":node_id}})
+            self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
 
 class 连接节点(节点):
     def __init__(self, topo:拓扑图,type:str,subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
