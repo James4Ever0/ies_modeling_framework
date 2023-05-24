@@ -56,14 +56,22 @@ class 设备(节点):
             node_id = self.topo.add_node(type="锚点", port_type=port_type)
             self.ports.update({port_name: {"port_type":port_type,"id":node_id}})
 
-class 连接线(节点): # you might want to check here.
+class 连接节点(节点):
+    def __init__(self, topo:拓扑图,conn_type:str,conn_subtype:str, conn_start_id:int, conn_end_id:int, ,**kwargs):
+        super().__init__(topo, type=mtype, conn_type = conn_type, **kwargs)
+        self.topo.graph.add_edge(conn_start_id, self.id)
+        self.topo.graph.add_edge(self.id, conn_end_id)
+
+class 连接线(连接节点): # you might want to check here.
     def __init__(self, topo:拓扑图, conn_start_id:int, conn_end_id:int, conn_type,**kwargs):
         super().__init__(topo, type="连接线", conn_type = conn_type, **kwargs)
         self.topo.graph.add_edge(conn_start_id, self.id)
         self.topo.graph.add_edge(self.id, conn_end_id)
 
-class 合并线(节点): # how to merge this? to verify the validity?
+class 合并线(连接节点): # how to merge this? to verify the validity?
 # the graph needs to go through transformation, to check validity and generate info to compute.
 # but we only save the graph before transformation.
-    def __init__(self, graph:拓扑图, merge_type:str, **kwargs):
+    def __init__(self, graph:拓扑图, merge_start_id:int, merge_end_id:int, merge_type:str, **kwargs):
         super().__init__(graph, type="合并线", merge_type=merge_type, **kwargs)
+        self.topo.graph.add_edge(conn_start_id, self.id)
+        self.topo.graph.add_edge(self.id, conn_end_id)
