@@ -38,4 +38,4 @@ G.nodes[2]['attr2'] = 2
 print(G.nodes[2]) # attrs of this node.
 
 print()
-print(G.neighbors(1))
+print(list(G.neighbors(1)))
