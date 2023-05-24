@@ -34,7 +34,8 @@ devs = graph.get_all_devices()
 adders = graph.get_all_adders()
 
 # input, output, io
-
+get_all_devices
+get_all_adders
 ###############
 # dump to dict
 ###############
@@ -60,4 +61,4 @@ graph_data = graph.get_graph_data()
 
 from ies_optim import compute
 
-result = compute(devs,adders, graph_data)
+result = compute(devs, adders, graph_data)
