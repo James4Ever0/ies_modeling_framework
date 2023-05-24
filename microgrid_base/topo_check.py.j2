@@ -58,12 +58,17 @@ class 拓扑图:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
                 assert node_subtype in 设备类型
+                for n in neighbors:
+                    ne_data = self.graph[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                    assert ne_type == "锚点"
+                    assert ne_subtype == 
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
-                for n in neighbors
+                for n in neighbors:
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
-                for n in neighbors
+                for n in neighbors:
             else:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.graph.subgraph(母线ID列表) # check again.
