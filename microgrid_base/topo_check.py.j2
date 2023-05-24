@@ -77,7 +77,7 @@ class 拓扑图:
                 {{neighborIterator()}}
                     assert ne_type == "锚点"
                     dev_ids.add(ne_data['device_id'])
-                assert len(dev_ids) == 2
+                assert len(dev_ids) == 2 # no self-connection.
             elif node_type == "合并线":
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
