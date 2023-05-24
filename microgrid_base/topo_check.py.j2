@@ -9,7 +9,7 @@ import networkx
 
 # 母线最多99个对接的接口
 
-class 拓扑图(BaseModel):
+class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
         self.graph = networkx.Graph(**kwargs)
@@ -34,6 +34,7 @@ class 拓扑图(BaseModel):
         return graph
     # with checking.
     # iterate through all nodes.
+
 # 下面的都需要传拓扑图进来
 
 class 节点(BaseModel):
@@ -62,22 +63,14 @@ class 连接节点(节点):
         self.topo.graph.add_edge(conn_start_id, self.id)
         self.topo.graph.add_edge(self.id, conn_end_id)
 
-
-
 {% macro makeConnNodeInstance(className) -%}
 
 class {{className}}(连接节点)
     def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id,**kwargs)
+        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
 
 {% endmacro %}
 
+{{ makeConnNodeInstance("连接线") }}
 
-{{ makeConnNodeInstance() }}
-class 连接线(连接节点): # you might want to check here.
-    def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id,**kwargs)
-
-class 合并线(连接节点):
-    def __init__(self, topo:拓扑图, conn_subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
-        super().__init__(topo, conn_type=self.__class__.__name__, conn_subtype = conn_subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
+{{ makeConnNodeInstance("合并线") }}
