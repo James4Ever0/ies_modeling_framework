@@ -11,6 +11,11 @@ type_sys = {{type_sys}} # will work?
 
 # 母线最多99个对接的接口
 
+# better use some template.
+{{}}类型 = ...
+母线类型 = ...
+母线类型 = ...
+
 def getMainAndSubtype(data):
     mainType = data['type']
     subType = data['subtype']
@@ -49,7 +54,7 @@ class 拓扑图:
                         assert ne_subtype in 连接线类型
                         assert ne_subtype.replace('不可','可').replace("输入","".replace("输出","") == node_subtype
                     else:
-                        raise Exception("{node_subtype}连接非法类型节点：",ne_type)
+                        raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
                 ... 
             elif node_type == "连接线":
