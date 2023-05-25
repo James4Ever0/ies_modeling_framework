@@ -21,14 +21,17 @@ DEL1 = 变流器(topo)
 DEL2 = 变压器(topo)
 LOAD = 电负荷(topo, 功率=3000)
 
-A1 = 
-A2 = 
+A1 = 母线(topo, )
+A2 = 母线(topo, )
 
-连接线(topo, "不可连接供电端母线", PV1.电接口, DEL1.电输入)
 连接线(topo, "不可连接电母线", DEL1.电输出, DEL2.电输入)
 连接线(topo, "不可连接负荷电母线",DEL2.电输出, LOAD.电接口)
 
-合并线(topo, "", )
+连接线(topo, "", A1, PV1.电接口)
+连接线(topo, "", A2,  PV2.电接口)
+连接线(topo, "", A2, DEL1.电输入)
+
+合并线(topo, "", A1, A2)
 
 # L1 = 母线(graph)
 
