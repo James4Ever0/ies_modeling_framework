@@ -51,3 +51,7 @@ print(components)
 
 print()
 print(G.graph, type(G.graph)) # this is dict.
+
+from networkx.readwrite import json_graph
+
+json_graph.
