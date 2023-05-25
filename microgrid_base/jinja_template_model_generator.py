@@ -95,7 +95,7 @@ def load_render_and_format(template_path: str, render_params: dict, banner: str)
 
         traceback.print_exc()
         raise Exception("Syntax Failed.")
-    print("="*20)
+    print("="*40)
 
 
 load_render_and_format(
