@@ -123,6 +123,10 @@ class 拓扑图:
             print("NODE TYPE:", node_type)
             print("NODE SUBTYPE:", node_subtype)
             neighbors = self.G.neighbors(node_id)
+            print("NEIGHBORS:", list(neighbors))
+            for n in neighbors:
+                print(self.G.nodes[n])
+            print("="*40)
             if node_type == "母线":
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
