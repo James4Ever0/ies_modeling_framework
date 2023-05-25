@@ -54,7 +54,10 @@ def load_template(template_path):
 
 
 tpl = load_template(topo_code_template_path)
-设备接口集合 = [set((k, v)) for _, d in type_sys["设备锚点类型表"].items() for k, v in d.items()]
+设备接口集合 = {set((k, v)) for _, d in type_sys["设备锚点类型表"].items() for k, v in d.items()}
+import rich
+rich.print(设备接口集合)
+breakpoint()
 连接类型映射表 = {
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
