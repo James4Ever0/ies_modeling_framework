@@ -23,17 +23,17 @@ LOAD = 电负荷(topo, 功率=3000)
 # conn = 连接线(graph, PV.ports["电接口"], LOAD.ports["电接口"])
 
 # conn_merge = 合并线(L0, L1)  # what do you do?
-
+topo.check_consistency()
 # shall raise error.
 
 # methods for computing.
 
 devs = topo.get_all_devices()
-
+rich.print(devs)
 # device, ports, device_data
 
 adders = topo.get_all_adders()
-
+rich.print(adders)
 # input, output, io
 
 ###############
@@ -41,13 +41,13 @@ adders = topo.get_all_adders()
 ###############
 
 mdict = topo.to_json()
-
+rich.print(mdict)
 ###############
 # load from dict
 ###############
 
 graph_load = topo.from_json(mdict)  # static method
-
+rich.print(graph_load)
 # how to check error now?
 # all connected?
 
@@ -55,7 +55,7 @@ graph_load = topo.from_json(mdict)  # static method
 # use devs, adders
 
 graph_data = topo.get_graph_data()
-
+rich.print(graph_data)
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 
