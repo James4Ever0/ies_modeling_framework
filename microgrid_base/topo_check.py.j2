@@ -119,6 +119,8 @@ class 拓扑图:
         母线ID列表 = []
         for node_id, node_data in self.G.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
+            print("NODE TYPE:", node_type)
+            print("NODE SUBTYPE:", node_subtype)
             neighbors = self.G.neighbors(node_id)
             if node_type == "母线":
                 母线ID列表.append(node_id)
