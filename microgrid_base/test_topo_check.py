@@ -4,6 +4,9 @@ import rich
 # build from code.
 ###############
 
+def print_with_banner(data, banner:str):
+    print(data)
+
 # you may need pydantic here. verify then import to compute graph.
 topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
 
@@ -29,11 +32,11 @@ topo.check_consistency()
 # methods for computing.
 
 devs = topo.get_all_devices()
-rich.print(devs)
+print_with_banner(devs)
 # device, ports, device_data
 
 adders = topo.get_all_adders()
-rich.print(adders)
+print_with_banner(adders)
 # input, output, io
 
 ###############
@@ -41,13 +44,13 @@ rich.print(adders)
 ###############
 
 mdict = topo.to_json()
-rich.print(mdict)
+print_with_banner(mdict)
 ###############
 # load from dict
 ###############
 
 graph_load = topo.from_json(mdict)  # static method
-rich.print(graph_load)
+print_with_banner(graph_load)
 # how to check error now?
 # all connected?
 
@@ -55,7 +58,7 @@ rich.print(graph_load)
 # use devs, adders
 
 graph_data = topo.get_graph_data()
-rich.print(graph_data)
+print_with_banner(graph_data)
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 
