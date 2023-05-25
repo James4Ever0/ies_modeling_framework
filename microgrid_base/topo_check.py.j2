@@ -19,7 +19,7 @@ type_sys = {{str(type_sys)}} # will work?
 {% endfor %}
 
 设备接口集合 = {{ str([set((k,v)) for _, d in type_sys["设备锚点类型表"].items() for k,v in d.items()])}}
-连接类型映射表 = {{str({frozenset(c1, c2): c for (c1, c2), c in type_sys['']})}}
+连接类型映射表 = {{str({frozenset(c1, c2): c for (c1, c2), c in [(k.split("_"), v) for k,v in type_sys['连接类型映射表'].items()]})}}
 
 def getMainAndSubtype(data):
     mainType = data['type']
@@ -41,7 +41,7 @@ def getMainAndSubtype(data):
                         {{target}}['input'].append({{source_id}})
                     else:
                         raise Exception("Unknown type:", {{source_subtype}})
-{%endmacro%}
+{% endmacro %}
 
 class 拓扑图:
     def __init__(self, **kwargs):
@@ -232,8 +232,7 @@ class 连接节点(节点):
         if self.topo.graph.nodes[conn_end_id]["type"] == "母线":
             self.topo.graph.nodes[conn_end_id]["conn"].append(subtype)
 
-
-{% macro makeConnNodeInstance(className) -%}
+{% macro makeConnNodeInstance(className) %}
 
 class {{className}}(连接节点)
     def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
