@@ -4,10 +4,10 @@ from topo_check import *
 # build from code.
 ###############
 
-compute_data = dict(计算步长="分钟", '') # you may need pydantic here. verify then import to compute graph.
+compute_data = dict(计算步长="小时", 计算模式 ="典型日") # you may need pydantic here. verify then import to compute graph.
 topo = 拓扑图(**compute_data) # with structure?
 
-PV1 = 光伏发电(**kwargs) # 这种是增加新的光伏发电
+PV1 = 光伏发电(topo, dict()) # 这种是增加新的光伏发电
 
 graph.连接线(PV1.电接口, LOAD.电接口) # connected?
 
