@@ -57,6 +57,11 @@ class 拓扑图:
             if node_type == "设备":
                 devs.append(node_data)
         return devs
+    
+    {% for ... in ... %}
+    def ...(self):
+        ...
+    {% endfor%}
 
     def get_all_adders(self) -> dict: # don't care about types here.
         # use adder ids. adder starts with -1
@@ -185,6 +190,7 @@ class 拓扑图:
                     print()
                     raise Exception(f"母线组{id_set}未实现至少一进一出")
         self.is_valid = True
+    
     def to_json(self) -> dict:
         return json_data
     @staticmethod
