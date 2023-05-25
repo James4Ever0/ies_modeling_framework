@@ -21,7 +21,7 @@ def getMainAndSubType(data):
 
 {% endfor %}
 
-设备接口集合 = {{ 设备接口集合}}
+设备接口集合 = {{ 设备接口集合 }}
 连接类型映射表 = {{连接类型映射表}}
 
 def getMainAndSubtype(data):
@@ -37,7 +37,7 @@ def getMainAndSubtype(data):
 
 {% endmacro %}
 
-{%macro adderMacro(source_subtype, source_id, target)%}
+{% macro adderMacro(source_subtype, source_id, target)%}
 
                     if {{source_subtype}}.endswith("输入输出"):
                         {{target}}['IO'].append({{source_id}})
@@ -194,6 +194,7 @@ class 拓扑图:
         self.is_valid = True
     
     def to_json(self) -> dict:
+        json_data = self.G
         return json_data
     @staticmethod
     def from_json(json_data) -> dict:
