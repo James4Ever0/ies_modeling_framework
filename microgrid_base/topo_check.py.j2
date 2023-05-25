@@ -256,18 +256,18 @@ class {{className}}(连接节点):
 
 {{ makeConnNodeInstance("合并线") }}
 
-{% macro makeDevice(device_name, device_port_def) %}
+{% macro makeDevice(device_name, port_definition) %}
 class {{device_name}}(设备):
     def __init__(self, topo:拓扑图, **kwargs):
         super().__init__(topo=topo, device_type="{{device_type}}",  port_definition={{port_definition}}, **kwargs)
 
-        {% for ... in ... %}
-        self.{{ ... }} = {{ ... }}
+        {% for port_name, port_type in port_definition.items() %}
+        self.{{ port_name }} = self.{{ ... }}
         {% endfor %}
 {% endmacro %}
 
-{% for device_name, device_port_def in ...%}
+{% for device_name, port_definition in ...%}
 
-{{makeDevice()}}
+{{makeDevice(device_name, port_definition)}}
 
 {% endfor %}
