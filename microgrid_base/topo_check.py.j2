@@ -12,6 +12,7 @@ type_sys = {{type_sys}} # will work?
 # 母线最多99个对接的接口
 
 # better use some template.
+# 设备、母线、连接线、合并线
 {% for ... in ... %}
 {{}}类型 = {{}}
 
@@ -77,9 +78,9 @@ class 拓扑图:
                 right_subtype = self.G.nodes[right_id]['subtype']
 
                 if left_type == "锚点" and right_type == "锚点":
-{{ adderMacro("left_subtype", "left_id", "adder")}}
+{{ adderMacro("left_subtype", "left_id", "adder") }}
                     adders[adder_id] = adder
-                    adder_id -=1
+                    adder_id -= 1
 
                 if left_type == "母线" and right_type == "锚点":
                     (left_id, left_type, left_subtype), (right_id, right_type,right_subtype) = (right_id, right_type,right_subtype), (left_id, left_type, left_subtype)
