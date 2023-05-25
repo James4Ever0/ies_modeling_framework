@@ -122,8 +122,8 @@ class 拓扑图:
             node_type, node_subtype = getMainAndSubType(node_data)
             print("NODE TYPE:", node_type)
             print("NODE SUBTYPE:", node_subtype)
-            neighbors = self.G.neighbors(node_id)
-            print("NEIGHBORS:", list(neighbors))
+            neighbors = list(self.G.neighbors(node_id))
+            print("NEIGHBORS:", neighbors)
             for n in neighbors:
                 print(self.G.nodes[n])
             print("="*40)
