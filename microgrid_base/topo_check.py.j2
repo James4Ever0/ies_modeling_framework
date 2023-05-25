@@ -54,6 +54,7 @@ class 拓扑图:
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data["type"]
             if node_type == "连接线":
+                adder = {"input":[], "output":[], "IO":[]}
                 #  检查连接线两端
                 left_id, right_id = self.G.neighbors(node_index)
 
@@ -76,6 +77,7 @@ class 拓扑图:
                     ...
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
+                adders.append(adder)
         return adders
 
     def get_graph_data(self) -> dict: # primary data. shall be found somewhere.
