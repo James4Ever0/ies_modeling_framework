@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 import networkx
+from networkx.readwrite import json_graph
 
 # when to check topology:
 # 	1.  Building topology <- which the frontend does the job
@@ -64,31 +65,31 @@ def getMainAndSubType(data):
     "电负荷": {("电接口", "负荷电输入")},
     "光伏发电": {("电接口", "供电端输出")},
     "风力发电": {("电接口", "供电端输出")},
-    "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
+    "柴油发电": {("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
     "锂电池": {("电接口", "电储能端输入输出")},
     "变压器": {("电输出", "变压器输出"), ("电输入", "电母线输入")},
-    "变流器": {("电输出", "电母线输出"), ("电输入", "变流器输入")},
-    "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
-    "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
+    "变流器": {("电输入", "变流器输入"), ("电输出", "电母线输出")},
+    "双向变流器": {("储能端", "双向变流器储能端输入输出"), ("线路端", "双向变流器线路端输入输出")},
+    "传输线": {("电输出", "电母线输出"), ("电输入", "电母线输入")},
 }
 连接类型映射表 = {
-    frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
+    frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
     frozenset({"变流器输入", "供电端输出"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
     frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
     frozenset({"供电端输出", "可连接供电端母线"}): "不可连接供电端母线输入",
     frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
-    frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
-    frozenset({"可连接负荷电母线", "变压器输出"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
+    frozenset({"负荷电输入", "可连接负荷电母线"}): "不可连接负荷电母线输出",
+    frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
+    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
     frozenset({"柴油输入", "可连接柴油母线"}): "不可连接柴油母线输出",
-    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
+    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
     frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
     frozenset({"可连接电母线", "电母线输入"}): "不可连接电母线输出",
-    frozenset({"可连接电母线", "电母线输出"}): "不可连接电母线输入",
+    frozenset({"电母线输出", "可连接电母线"}): "不可连接电母线输入",
     frozenset({"双向变流器储能端输入输出", "电储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
     frozenset({"可连接电储能端母线", "电储能端输入输出"}): "不可连接电储能端母线输出",
@@ -296,17 +297,18 @@ class 拓扑图:
         self.is_valid = True
 
     def to_json(self) -> dict:
-        json_data = self.G
-        return json_data
+        data = json_graph.adjacency_data(self.G)
+        return data
 
     @staticmethod
-    def from_json(json_data) -> dict:
+    def from_json(data):
         # load data to graph
-        kwargs = ...
-        graph = 拓扑图(**kwargs)
-        graph.add
-        self.check_consistency()
-        return graph
+        G = json_graph.adjacency_graph(data)
+        kwargs = G.graph
+        topo = 拓扑图(**kwargs)
+        topo.G = G
+        topo.check_consistency()
+        return topo
 
     # with checking.
     # iterate through all nodes.

@@ -197,14 +197,16 @@ class 拓扑图:
     def to_json(self) -> dict:
         data = json_graph.adjacency_data(self.G)
         return data
+
     @staticmethod
-    def from_json(data) -> dict:
+    def from_json(data):
         # load data to graph
-        kwargs = ...
-        graph = 拓扑图(**kwargs)
-        graph.add
-        self.check_consistency()
-        return graph
+        G = json_graph.adjacency_graph(data)
+        kwargs = G.graph
+        topo = 拓扑图(**kwargs)
+        topo.G = G
+        topo.check_consistency()
+        return topo
     # with checking.
     # iterate through all nodes.
 
