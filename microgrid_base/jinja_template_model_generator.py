@@ -112,6 +112,7 @@ load_render_and_format(
 # run test code.
 import subprocess
 
+def test()
 cmd = ["python3", "test_topo_check.py"]
 p = subprocess.run(cmd)
 p.check_returncode()
