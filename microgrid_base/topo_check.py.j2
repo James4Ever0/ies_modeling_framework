@@ -87,20 +87,22 @@ class 拓扑图:
                 left_subtype = self.G.nodes[left_id]['subtype']
                 right_subtype = self.G.nodes[right_id]['subtype']
 
+
+                if left_type == "母线" and right_type == "锚点":
+                    (left_id, left_type, left_subtype), (right_id, right_type,right_subtype) = (right_id, right_type,right_subtype), (left_id, left_type, left_subtype)
+
                 if left_type == "锚点" and right_type == "锚点":
 {{ adderMacro("left_subtype", "left_id", "adder") }}
                     adders[adder_id] = adder
                     adder_id -= 1
 
-                if left_type == "母线" and right_type == "锚点":
-                    (left_id, left_type, left_subtype), (right_id, right_type,right_subtype) = (right_id, right_type,right_subtype), (left_id, left_type, left_subtype)
-                    
+                        
                 if left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
-{{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
+    {{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
 
-                else:
-                    raise Exception(f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]")
+                    else:
+                        raise Exception(f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]")
                 {# adders.append(adder) #}
         return adders
 
