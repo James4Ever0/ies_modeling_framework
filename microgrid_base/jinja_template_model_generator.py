@@ -54,6 +54,8 @@ def load_template(template_path):
 
 
 tpl = load_template(topo_code_template_path)
+TMP1 = 
+[(mkey, [e for (k,v) in mdata.items() for e in v])  for mkey, mdata in 
 设备接口集合 = {set((k, v)) for _, d in type_sys["设备锚点类型表"].items() for k, v in d.items()}
 import rich
 rich.print(设备接口集合)

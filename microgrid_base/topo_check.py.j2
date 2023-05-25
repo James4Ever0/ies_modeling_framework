@@ -13,8 +13,8 @@ import networkx
 
 # better use some template.
 # 设备、母线、连接线、合并线
-{% for mtype, mdata in type_sys['类型分类表'].items() %}
-{{mtype}}类型 = {{str([e for (k,v) in mdata.items() for e in v])}}
+{% for mtype, mdata in 类型集合分类 %}
+{{mtype}}类型 = {{str(mdata)}}
 
 {% endfor %}
 
