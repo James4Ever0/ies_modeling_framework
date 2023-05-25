@@ -183,7 +183,7 @@ class 拓扑图:
                 continue
             else:
                 raise Exception("unknown node type:", node_type)
-        subgraph = self.G.subgraph(母线ID列表) # check again.
+        subgraph = self.G.subgraph(母线ID列表+合并线ID列表) # check again.
         print("母线ID列表:", 母线ID列表)
         {# breakpoint() #}
         self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
@@ -193,6 +193,7 @@ class 拓扑图:
             has_output = False
             for node_id in id_set:
                 node_data = self.G.nodes[node_id]
+                if node_data['type'] == '连接线': continue
                 conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
                 merge = [e for e in node_data['conn'] if e.startswith("可合并")]
                 assert len(merge)<=2
