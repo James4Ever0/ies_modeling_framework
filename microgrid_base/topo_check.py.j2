@@ -213,7 +213,7 @@ class 拓扑图:
 
 # 下面的都需要传拓扑图进来
 
-class 节点(BaseModel):
+class 节点:
     def __init__(self, topo:拓扑图, **kwargs):
         self.topo = topo
         self.kwargs = kwargs
@@ -229,7 +229,7 @@ class 设备(节点):
     def __init__(self, topo:拓扑图, device_type:str, port_definition, # iterable. 
     **kwargs):
         # check if device type is one of the common types.
-        super().__init__(topo, type=self.__class__.__name__, subtype=device_type, ports={}, **kwargs)
+        super().__init__(topo, type=设备, subtype=device_type, ports={}, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition:
             node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
