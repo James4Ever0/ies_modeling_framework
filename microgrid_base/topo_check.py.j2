@@ -256,7 +256,7 @@ class {{className}}(连接节点):
 
 {{ makeConnNodeInstance("合并线") }}
 
-{% macro makeDevice() %}
+{% macro makeDevice(device_name) %}
 class {{device_name}}(设备):
 ...
 {% endmacro %}
