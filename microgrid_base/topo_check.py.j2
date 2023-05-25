@@ -68,13 +68,12 @@ class 拓扑图:
                 if left_type == "锚点" and right_type == "锚点":
                     if left_subtype.endswith("输入输出"):
                         adder['IO'].append(left_id)
-                        adder['IO'].append(right_id)
                     elif left_subtype.endswith("输入"):
                         adder['output'].append(left_id)
-                        adder['input'].append(right_id)
-                    else:
-                        adder['output'].append(right_id)
+                    elif left_subtype.endswith("输出"):
                         adder['input'].append(left_id)
+                    else:
+                        raise Exception("Unknown type:", left_subtype)
                     adders[adder_id] = adder
                     adder_id -=1
 
@@ -87,8 +86,10 @@ class 拓扑图:
                         adders[madder_id]['IO'].append(left_id)
                     elif left_subtype.endswith("输入"):
                         adders[madder_id]['output'].append(left_id)
-                    else:
+                    elif left_subtype.endswith("输出"):
                         adders[madder_id]['input'].append(left_id)
+                    else:
+                        raise Exception("Unknown type:", left_subtype)
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
                 adders.append(adder)
