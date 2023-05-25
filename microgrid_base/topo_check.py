@@ -69,33 +69,33 @@ def getMainAndSubType(data):
     "风力发电": {("电接口", "供电端输出")},
     "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
     "锂电池": {("电接口", "电储能端输入输出")},
-    "变压器": {("电输入", "电母线输入"), ("电输出", "变压器输出")},
-    "变流器": {("电输入", "变流器输入"), ("电输出", "电母线输出")},
+    "变压器": {("电输出", "变压器输出"), ("电输入", "电母线输入")},
+    "变流器": {("电输出", "电母线输出"), ("电输入", "变流器输入")},
     "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
     "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
 }
 连接类型映射表 = {
-    frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
-    frozenset({"变流器输入", "供电端输出"}): "不可连接供电端母线",
+    frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
+    frozenset({"供电端输出", "变流器输入"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
-    frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
+    frozenset({"可连接供电端母线", "变流器输入"}): "不可连接供电端母线输出",
     frozenset({"可连接供电端母线", "供电端输出"}): "不可连接供电端母线输入",
-    frozenset({"负荷电输入", "变压器输出"}): "不可连接负荷电母线",
+    frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
-    frozenset({"负荷电输入", "可连接负荷电母线"}): "不可连接负荷电母线输出",
+    frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
     frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
+    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
-    frozenset({"可连接柴油母线", "柴油输入"}): "不可连接柴油母线输出",
-    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
+    frozenset({"柴油输入", "可连接柴油母线"}): "不可连接柴油母线输出",
+    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
     frozenset({"电母线输入", "电母线输出"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
-    frozenset({"电母线输入", "可连接电母线"}): "不可连接电母线输出",
+    frozenset({"可连接电母线", "电母线输入"}): "不可连接电母线输出",
     frozenset({"可连接电母线", "电母线输出"}): "不可连接电母线输入",
-    frozenset({"双向变流器储能端输入输出", "电储能端输入输出"}): "不可连接电储能端母线",
+    frozenset({"电储能端输入输出", "双向变流器储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
     frozenset({"可连接电储能端母线", "电储能端输入输出"}): "不可连接电储能端母线输出",
-    frozenset({"双向变流器储能端输入输出", "可连接电储能端母线"}): "不可连接电储能端母线输入",
+    frozenset({"可连接电储能端母线", "双向变流器储能端输入输出"}): "不可连接电储能端母线输入",
 }
 
 
@@ -135,6 +135,17 @@ class 拓扑图:
                 left_subtype = self.G.nodes[left_id]["subtype"]
                 right_subtype = self.G.nodes[right_id]["subtype"]
 
+                if left_type == "母线" and right_type == "锚点":
+                    (left_id, left_type, left_subtype), (
+                        right_id,
+                        right_type,
+                        right_subtype,
+                    ) = (right_id, right_type, right_subtype), (
+                        left_id,
+                        left_type,
+                        left_subtype,
+                    )
+
                 if left_type == "锚点" and right_type == "锚点":
 
                     if left_subtype.endswith("输入输出"):
@@ -149,18 +160,7 @@ class 拓扑图:
                     adders[adder_id] = adder
                     adder_id -= 1
 
-                if left_type == "母线" and right_type == "锚点":
-                    (left_id, left_type, left_subtype), (
-                        right_id,
-                        right_type,
-                        right_subtype,
-                    ) = (right_id, right_type, right_subtype), (
-                        left_id,
-                        left_type,
-                        left_subtype,
-                    )
-
-                if left_type == "锚点" and right_type == "母线":
+                elif left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
 
                     if left_subtype.endswith("输入输出"):
@@ -176,6 +176,7 @@ class 拓扑图:
                     raise Exception(
                         f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]"
                     )
+
         return adders
 
     def get_graph_data(self) -> dict:  # primary data. shall be found somewhere.
@@ -470,12 +471,12 @@ class 变压器(设备):
         super().__init__(
             topo=topo,
             device_type="变压器",
-            port_definition={("电输入", "电母线输入"), ("电输出", "变压器输出")},
+            port_definition={("电输出", "变压器输出"), ("电输入", "电母线输入")},
             **kwargs,
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 变流器(设备):
@@ -483,12 +484,12 @@ class 变流器(设备):
         super().__init__(
             topo=topo,
             device_type="变流器",
-            port_definition={("电输入", "变流器输入"), ("电输出", "电母线输出")},
+            port_definition={("电输出", "电母线输出"), ("电输入", "变流器输入")},
             **kwargs,
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 双向变流器(设备):
