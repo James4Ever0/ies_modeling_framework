@@ -144,7 +144,12 @@ class 拓扑图:
                     assert ne_type == "锚点"
                     assert len(self.G.neighbors(n)) == 2
                     port_set.add((port_name, ne_subtype))
-                assert port_set == 设备接口集合[node_subtype]
+                try:
+                    assert port_set == 设备接口集合[node_subtype]
+                except:
+                    print("PORT SET:", port_set)
+                    print('TARGET:', 设备接口集合[node_subtype])
+                    raise Exception()
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型
                 assert len(neighbors) == 2
