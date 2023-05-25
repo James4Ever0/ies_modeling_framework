@@ -72,31 +72,40 @@ def load_template(template_path):
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
 }
-template_path = topo_code_template_path
-render_params = dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
-banner = "TOPO CHECK CODE"
 
-def load_render_and_format()
-tpl = load_template(template_path)
-result = tpl.render(**render_params)
 
-print()
-print("______________________[{}]".format(banner))
-print(result)
+def load_render_and_format(template_path: str, render_params: dict, banner: str):
+    tpl = load_template(template_path)
+    result = tpl.render(**render_params)
 
-# import black.Mode
-with open(topo_code_output_path, "w+") as f:
-    f.write(result)
-try:
-    result = black.format_str(result, mode=black.Mode())
+    print()
+    print("______________________[{}]".format(banner))
+    print(result)
+
+    # import black.Mode
     with open(topo_code_output_path, "w+") as f:
         f.write(result)
-    print("Syntax Ok.")
-except:
-    import traceback
-    traceback.print_exc()
-    print("Syntax Failed.")
+    try:
+        result = black.format_str(result, mode=black.Mode())
+        with open(topo_code_output_path, "w+") as f:
+            f.write(result)
+        print("Syntax Ok.")
+    except:
+        import traceback
 
+        traceback.print_exc()
+        print("Syntax Failed.")
+
+
+load_render_and_format(
+    template_path=topo_code_template_path,
+    render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
+    banner="TOPO CHECK CODE",
+)
+
+# run test code.
+import subprocess
+cmd = ['python3', '']
 
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
