@@ -228,7 +228,7 @@ class 设备(节点):
         self.ports = {}
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
-            self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
+            self.ports.update({port_name: {"subtype": port_type,"device_id":node_id}})
         self.topo.G.nodes[self.id]['ports'] = self.ports
 
 class 连接节点(节点):

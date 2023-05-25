@@ -64,3 +64,5 @@ rich.print(data)
 G0 = json_graph.adjacency_graph(data)
 
 print("GRAPH DATA?",G0.graph)
+
+# attribute just do not collide with id.
