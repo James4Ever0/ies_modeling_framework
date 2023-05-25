@@ -120,6 +120,7 @@ class 拓扑图:
         #  use subgraph
         # 提取所有母线ID
         母线ID列表 = []
+        合并线ID列表 = []
         for node_id, node_data in self.G.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
             print("NODE TYPE:", node_type)
@@ -172,6 +173,7 @@ class 拓扑图:
                 assert len(dev_ids) == 2 # no self-connection.
                 assert 连接类型映射表[frozenset(subtypes)] == node_subtype
             elif node_type == "合并线":
+                合并线ID列表.append(node_id)
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
                 node_ids = set()
@@ -187,13 +189,14 @@ class 拓扑图:
         print("母线ID列表:", 母线ID列表)
         {# breakpoint() #}
         self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
+        self.合并母线ID集合列表 = [set([i for i in e if i not in 合并线ID列表]) for e in self.合并母线ID集合列表]
         print("合并母线ID集合列表:", self.合并母线ID集合列表)
         for id_set in self.合并母线ID集合列表:
             has_input = False
             has_output = False
             for node_id in id_set:
                 node_data = self.G.nodes[node_id]
-                if node_data['type'] == '连接线': continue
+                {# if node_data['type'] == '合并线': continue #}
                 conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
                 merge = [e for e in node_data['conn'] if e.startswith("可合并")]
                 assert len(merge)<=2
