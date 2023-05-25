@@ -76,10 +76,13 @@ result = tpl.render(类型集合分类=类型集合分类, 设备接口集合=�
 print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
+import black
 
 with open(topo_code_output_path, "w+") as f:
     f.write(result)
 
+syntax_ok = black.format_file_in_place(topo_code_output_path,fast=False, model=)
+if not syntax_ok:
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
 # print()
