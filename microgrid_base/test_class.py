@@ -16,7 +16,9 @@ class B:
 a = A()
 b = a.B()
 
+import json
 import networkx as nx
+import rich
 
 graph_data = {"a": 1, "b": 2}
 G = nx.Graph(**graph_data)
@@ -54,4 +56,11 @@ print(G.graph, type(G.graph)) # this is dict.
 
 from networkx.readwrite import json_graph
 
-json_graph.
+data = json_graph.adjacency_data(G)
+
+print()
+rich.print(data)
+
+G0 = json_graph.adjacency_graph(data)
+
+print("GRAPH DATA?",G0.graph)
