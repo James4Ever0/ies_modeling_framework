@@ -5,6 +5,7 @@
 # the test code may not be generated.
 import json
 import rich
+import black
 
 
 def read_json(path):
@@ -54,7 +55,6 @@ def load_template(template_path):
     return tpl
 
 
-tpl = load_template(topo_code_template_path)
 类型集合分类 = [
     (mkey, [e for (k, v) in mdata.items() for e in v])
     for mkey, mdata in type_sys["类型分类表"].items()
@@ -72,12 +72,17 @@ tpl = load_template(topo_code_template_path)
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
 }
-result = tpl.render(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
+template_path = topo_code_template_path
+render_params = dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
+banner = "TOPO CHECK CODE"
+
+def load_render_and_format()
+tpl = load_template(template_path)
+result = tpl.render(**render_params)
 
 print()
-print("______________________[{}]".format("TOPO CHECK CODE"))
+print("______________________[{}]".format(banner))
 print(result)
-import black
 
 # import black.Mode
 with open(topo_code_output_path, "w+") as f:
@@ -89,7 +94,6 @@ try:
     print("Syntax Ok.")
 except:
     import traceback
-
     traceback.print_exc()
     print("Syntax Failed.")
 
