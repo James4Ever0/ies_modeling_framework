@@ -57,11 +57,6 @@ class 拓扑图:
             if node_type == "设备":
                 devs.append(node_data)
         return devs
-    
-    {% for ... in ... %}
-    def ...(self):
-        ...
-    {% endfor%}
 
     def get_all_adders(self) -> dict: # don't care about types here.
         # use adder ids. adder starts with -1
