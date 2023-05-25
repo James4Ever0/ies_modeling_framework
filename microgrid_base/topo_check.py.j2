@@ -236,7 +236,7 @@ class 节点:
         self.id = self.topo.add_node(**kwargs)
 
 class 母线(节点):
-    def __init__(self, topo:拓扑图,subtype:str **kwargs):
+    def __init__(self, topo:拓扑图,subtype:str, **kwargs):
         super().__init__(topo, type="母线",subtype=subtype ,conn = [],**kwargs)
         # infinite ports.
         
