@@ -31,7 +31,7 @@ def getMainAndSubtype(data):
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
 {% endmacro %}
 
-{%macro adderMacro()%}
+{%macro adderMacro(source_subtype, source_id, target)%}
                     if {{source_subtype}}.endswith("输入输出"):
                         {{target}}['IO'].append({{source_id}})
                     elif {{source_subtype}}.endswith("输入"):
@@ -77,14 +77,7 @@ class 拓扑图:
                 right_subtype = self.G.nodes[right_id]['subtype']
 
                 if left_type == "锚点" and right_type == "锚点":
-                    if left_subtype.endswith("输入输出"):
-                        adder['IO'].append(left_id)
-                    elif left_subtype.endswith("输入"):
-                        adder['output'].append(left_id)
-                    elif left_subtype.endswith("输出"):
-                        adder['input'].append(left_id)
-                    else:
-                        raise Exception("Unknown type:", left_subtype)
+{{ adderMacro("left_subtype", "left_id", "adder")}}
                     adders[adder_id] = adder
                     adder_id -=1
 
@@ -93,14 +86,8 @@ class 拓扑图:
                     
                 if left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
-                    if left_subtype.endswith("输入输出"):
-                        adders[madder_id]['IO'].append(left_id)
-                    elif left_subtype.endswith("输入"):
-                        adders[madder_id]['output'].append(left_id)
-                    elif left_subtype.endswith("输出"):
-                        adders[madder_id]['input'].append(left_id)
-                    else:
-                        raise Exception("Unknown type:", left_subtype)
+{{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
+
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
                 adders.append(adder)
