@@ -13,8 +13,8 @@ type_sys = {{type_sys}} # will work?
 
 # better use some template.
 # 设备、母线、连接线、合并线
-{% for ... in ... %}
-{{}}类型 = {{}}
+{% for mtype in type_sys['类型分类表'].keys() %}
+{{mtype}}类型 = {{}}
 
 {% endfor %}
 
