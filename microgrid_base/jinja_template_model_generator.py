@@ -77,12 +77,16 @@ print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
 import black
+# import black.Mode
+try:
+    result = black.format_str(result, mode=black.Mode())
+    with open(topo_code_output_path, "w+") as f:
+        f.write(result)
+    print("Syntax Ok.")
+except:
+    print("Syntax Failed.")
 
-with open(topo_code_output_path, "w+") as f:
-    f.write(result)
 
-syntax_ok = black.format_file_in_place(topo_code_output_path,fast=False, model=)
-if not syntax_ok:
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
 # print()
