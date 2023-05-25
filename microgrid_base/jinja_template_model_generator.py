@@ -78,12 +78,16 @@ print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
 import black
 # import black.Mode
+with open(topo_code_output_path, "w+") as f:
+    f.write(result)
 try:
     result = black.format_str(result, mode=black.Mode())
     with open(topo_code_output_path, "w+") as f:
         f.write(result)
     print("Syntax Ok.")
 except:
+    import traceback
+    traceback.print_exc()
     print("Syntax Failed.")
 
 
