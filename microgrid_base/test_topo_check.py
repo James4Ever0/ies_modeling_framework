@@ -4,16 +4,16 @@ from topo_check import *
 # build from code.
 ###############
 
-compute_data = dict(计算步长="小时", 计算模式 ="典型日") # you may need pydantic here. verify then import to compute graph.
+compute_data = dict() # you may need pydantic here. verify then import to compute graph.
 topo = 拓扑图(**compute_data) # with structure?
 
-PV1 = 光伏发电(topo, dict()) # 这种是增加新的光伏发电
+PV1 = 光伏发电(topo, 面积=2) # 这种是增加新的光伏发电
+LOAD = 电负荷(topo, 功率=3000)
 
-graph.连接线(PV1.电接口, LOAD.电接口) # connected?
+连接线(topo, PV1.电接口, LOAD.电接口) # connected?
 
 PV = 设备(graph, "光伏发电", port_definition = {"电接口":"供电端输出"})
 
-LOAD = 设备(graph, "电负荷", port_definition = {"电接口":"供电端输出"})
 
 L1 = 母线(graph)
 
