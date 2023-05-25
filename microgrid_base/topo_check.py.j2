@@ -50,6 +50,7 @@ class 拓扑图:
         # use adder ids. adder starts with -1
         adders = {} # 用到：合并母线ID集合列表
         adder_id = -1
+        母线ID
         # format: {"input":input_ids, "output": output_ids, "IO": IO_ids}
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data["type"]
@@ -74,15 +75,17 @@ class 拓扑图:
                     else:
                         adder['output'].append(right_id)
                         adder['input'].append(left_id)
+                    adders[adder_id] = adder
+                    adder_id -=1
 
                 if left_type == "母线" and right_type == "锚点":
                     (left_id, left_type, left_subtype), (right_id, right_type,right_subtype) = (right_id, right_type,right_subtype), (left_id, left_type, left_subtype)
+                    
+                if left_type == "锚点" and right_type == "母线":
+                    madder_id = 
                     if left_subtype.endswith("输入输出"):
                     elif left_subtype.endswith("输入"):
                     else:
-                    
-                if left_type == "锚点" and right_type == "母线":
-                    ...
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
                 adders.append(adder)
