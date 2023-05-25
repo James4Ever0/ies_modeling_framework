@@ -165,7 +165,10 @@ class 拓扑图:
                 {{neighborIterator()}}
                     assert ne_type in ["锚点","母线"]
                     subtypes.append(ne_subtype)
-                    dev_ids.add(ne_data['device_id'])
+                    if ne_type == "锚点":
+                        dev_ids.add(ne_data['device_id'])
+                    else:
+                        dev_ids.add(n)
                 assert len(dev_ids) == 2 # no self-connection.
                 assert 连接类型映射表[frozenset(subtypes)] == node_subtype
             elif node_type == "合并线":
