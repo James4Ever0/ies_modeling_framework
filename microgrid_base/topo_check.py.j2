@@ -180,39 +180,40 @@ class 拓扑图:
                 continue
             else:
                 raise Exception("unknown node type:", node_type)
-            subgraph = self.G.subgraph(母线ID列表) # check again.
-            print("母线ID列表:", 母线ID列表)
-            self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
-            print("合并母线ID集合列表:", self.合并母线ID集合列表)
-            for id_set in self.合并母线ID集合列表:
-                has_input = False
-                has_output = False
-                for node_id in id_set:
-                    node_data = self.G.nodes[node_id]
-                    conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
-                    merge = [e for e in node_data['conn'] if e.startswith("可合并")]
-                    assert len(merge)<=2
-                    for c in conn:
-                        if not c.endswith("输入输出"):
-                            if c.endswith("输入"):
-                                has_input=True
-                            elif c.endswith("输出"):
-                                has_output=True
-                            else:
-                                raise Exception(f"{self.G.nodes[node_id]['type']}不可接受的连接类型: {c}")
-                if has_input and has_output:
-                    ...
-                else:
-                    print()
-                    print("============ERROR LOG============")
-                    print()
-                    for n in id_set:
-                        print("母线:", self.G.nodes[n])
-                    print()
-                    print("INPUT:", has_input)
-                    print("OUTPUT:", has_output)
-                    print()
-                    raise Exception(f"母线组{id_set}未实现至少一进一出")
+        subgraph = self.G.subgraph(母线ID列表) # check again.
+        print("母线ID列表:", 母线ID列表)
+        {# breakpoint() #}
+        self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
+        print("合并母线ID集合列表:", self.合并母线ID集合列表)
+        for id_set in self.合并母线ID集合列表:
+            has_input = False
+            has_output = False
+            for node_id in id_set:
+                node_data = self.G.nodes[node_id]
+                conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
+                merge = [e for e in node_data['conn'] if e.startswith("可合并")]
+                assert len(merge)<=2
+                for c in conn:
+                    if not c.endswith("输入输出"):
+                        if c.endswith("输入"):
+                            has_input=True
+                        elif c.endswith("输出"):
+                            has_output=True
+                        else:
+                            raise Exception(f"{self.G.nodes[node_id]['type']}不可接受的连接类型: {c}")
+            if has_input and has_output:
+                ...
+            else:
+                print()
+                print("============ERROR LOG============")
+                print()
+                for n in id_set:
+                    print("母线:", self.G.nodes[n])
+                print()
+                print("INPUT:", has_input)
+                print("OUTPUT:", has_output)
+                print()
+                raise Exception(f"母线组{id_set}未实现至少一进一出")
         self.is_valid = True
     
     def to_json(self) -> dict:
