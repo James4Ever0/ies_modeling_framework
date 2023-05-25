@@ -228,21 +228,21 @@ class 设备(节点):
         for port_name, port_type in port_definition.items():
             node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
             self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
-        self.topo.G[self.id]['ports'] = self.ports
+        self.topo.G.nodes[self.id]['ports'] = self.ports
 
 class 连接节点(节点):
     def __init__(self, topo:拓扑图, type:str, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
         super().__init__(topo, type=type, subtype = subtype, **kwargs)
-        self.topo.graph.add_edge(conn_start_id, self.id)
-        self.topo.graph.add_edge(self.id, conn_end_id)
-        if self.topo.graph.nodes[conn_start_id]["type"] == "母线":
-            self.topo.graph.nodes[conn_start_id]["conn"].append(subtype)
-        if self.topo.graph.nodes[conn_end_id]["type"] == "母线":
-            self.topo.graph.nodes[conn_end_id]["conn"].append(subtype)
+        self.topo.G.add_edge(conn_start_id, self.id)
+        self.topo.G.add_edge(self.id, conn_end_id)
+        if self.topo.G.nodes[conn_start_id]["type"] == "母线":
+            self.topo.G.nodes[conn_start_id]["conn"].append(subtype)
+        if self.topo.G.nodes[conn_end_id]["type"] == "母线":
+            self.topo.G.nodes[conn_end_id]["conn"].append(subtype)
 
 {% macro makeConnNodeInstance(className) %}
 
-class {{className}}(连接节点)
+class {{className}}(连接节点):
     def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
         super().__init__(topo, type=self.__class__.__name__, subtype = subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
 
