@@ -30,12 +30,15 @@ def getMainAndSubtype(data):
     return mainType, subType
 
 {% macro neighborIterator() %}
+
                 for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
 {% endmacro %}
 
 {%macro adderMacro(source_subtype, source_id, target)%}
+
                     if {{source_subtype}}.endswith("输入输出"):
                         {{target}}['IO'].append({{source_id}})
                     elif {{source_subtype}}.endswith("输入"):
@@ -44,6 +47,7 @@ def getMainAndSubtype(data):
                         {{target}}['input'].append({{source_id}})
                     else:
                         raise Exception("Unknown type:", {{source_subtype}})
+
 {% endmacro %}
 
 class 拓扑图:
@@ -131,7 +135,7 @@ class 拓扑图:
             elif node_type == "设备":
                 assert node_subtype in 设备类型
                 port_set = set()
-                {{neighborIterator()}}
+{{neighborIterator()}}
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
                     assert len(self.G.neighbors(n)) == 2

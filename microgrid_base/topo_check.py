@@ -24,8 +24,8 @@ def getMainAndSubType(data):
 合并线类型 = ['可合并供电端母线', '可合并电母线', '可合并电储能端母线', '可合并负荷电母线', '可合并柴油母线']
 
 
-设备接口集合 = {'柴油': {('燃料接口', '柴油输出')}, '电负荷': {('电接口', '负荷电输入')}, '光伏发电': {('电接口', '供电端输出')}, '风力发电': {('电接口', '供电端输出')}, '柴油发电': {('电接口', '供电端输出'), ('燃料接口', '柴油输入')}, '锂电池': {('电接口', '电储能端输入输出')}, '变压器': {('电输出', '变压器输出'), ('电输入', '电母线输入')}, '变流器': {('电输入', '变流器输入'), ('电输出', '电母线输出')}, '双向变流器': {('线路端', '双向变流器线路端输入输出'), ('储能端', '双向变流器储能端输入输出')}, '传输线': {('电输出', '电母线输出'), ('电输入', '电母线输入')}}
-连接类型映射表 = {frozenset({'双向变流器线路端输入输出', '可连接电母线'}): '不可连接电母线输入输出', frozenset({'供电端输出', '变流器输入'}): '不可连接供电端母线', frozenset({'可连接供电端母线'}): '可合并供电端母线', frozenset({'可连接供电端母线', '变流器输入'}): '不可连接供电端母线输出', frozenset({'供电端输出', '可连接供电端母线'}): '不可连接供电端母线输入', frozenset({'变压器输出', '负荷电输入'}): '不可连接负荷电母线', frozenset({'可连接负荷电母线'}): '可合并负荷电母线', frozenset({'负荷电输入', '可连接负荷电母线'}): '不可连接负荷电母线输出', frozenset({'变压器输出', '可连接负荷电母线'}): '不可连接负荷电母线输入', frozenset({'柴油输出', '柴油输入'}): '不可连接柴油母线', frozenset({'可连接柴油母线'}): '可合并柴油母线', frozenset({'可连接柴油母线', '柴油输入'}): '不可连接柴油母线输出', frozenset({'可连接柴油母线', '柴油输出'}): '不可连接柴油母线输入', frozenset({'电母线输出', '电母线输入'}): '不可连接电母线', frozenset({'可连接电母线'}): '可合并电母线', frozenset({'电母线输入', '可连接电母线'}): '不可连接电母线输出', frozenset({'电母线输出', '可连接电母线'}): '不可连接电母线输入', frozenset({'电储能端输入输出', '双向变流器储能端输入输出'}): '不可连接电储能端母线', frozenset({'可连接电储能端母线'}): '可合并电储能端母线', frozenset({'可连接电储能端母线', '电储能端输入输出'}): '不可连接电储能端母线输出', frozenset({'可连接电储能端母线', '双向变流器储能端输入输出'}): '不可连接电储能端母线输入'}
+设备接口集合 = {'柴油': {('燃料接口', '柴油输出')}, '电负荷': {('电接口', '负荷电输入')}, '光伏发电': {('电接口', '供电端输出')}, '风力发电': {('电接口', '供电端输出')}, '柴油发电': {('燃料接口', '柴油输入'), ('电接口', '供电端输出')}, '锂电池': {('电接口', '电储能端输入输出')}, '变压器': {('电输出', '变压器输出'), ('电输入', '电母线输入')}, '变流器': {('电输入', '变流器输入'), ('电输出', '电母线输出')}, '双向变流器': {('线路端', '双向变流器线路端输入输出'), ('储能端', '双向变流器储能端输入输出')}, '传输线': {('电输入', '电母线输入'), ('电输出', '电母线输出')}}
+连接类型映射表 = {frozenset({'可连接电母线', '双向变流器线路端输入输出'}): '不可连接电母线输入输出', frozenset({'变流器输入', '供电端输出'}): '不可连接供电端母线', frozenset({'可连接供电端母线'}): '可合并供电端母线', frozenset({'变流器输入', '可连接供电端母线'}): '不可连接供电端母线输出', frozenset({'供电端输出', '可连接供电端母线'}): '不可连接供电端母线输入', frozenset({'变压器输出', '负荷电输入'}): '不可连接负荷电母线', frozenset({'可连接负荷电母线'}): '可合并负荷电母线', frozenset({'负荷电输入', '可连接负荷电母线'}): '不可连接负荷电母线输出', frozenset({'变压器输出', '可连接负荷电母线'}): '不可连接负荷电母线输入', frozenset({'柴油输入', '柴油输出'}): '不可连接柴油母线', frozenset({'可连接柴油母线'}): '可合并柴油母线', frozenset({'柴油输入', '可连接柴油母线'}): '不可连接柴油母线输出', frozenset({'可连接柴油母线', '柴油输出'}): '不可连接柴油母线输入', frozenset({'电母线输出', '电母线输入'}): '不可连接电母线', frozenset({'可连接电母线'}): '可合并电母线', frozenset({'可连接电母线', '电母线输入'}): '不可连接电母线输出', frozenset({'电母线输出', '可连接电母线'}): '不可连接电母线输入', frozenset({'电储能端输入输出', '双向变流器储能端输入输出'}): '不可连接电储能端母线', frozenset({'可连接电储能端母线'}): '可合并电储能端母线', frozenset({'电储能端输入输出', '可连接电储能端母线'}): '不可连接电储能端母线输出', frozenset({'可连接电储能端母线', '双向变流器储能端输入输出'}): '不可连接电储能端母线输入'}
 
 def getMainAndSubtype(data):
     mainType = data['type']
@@ -69,6 +69,7 @@ class 拓扑图:
                 right_subtype = self.G.nodes[right_id]['subtype']
 
                 if left_type == "锚点" and right_type == "锚点":
+
                     if left_subtype.endswith("输入输出"):
                         adder['IO'].append(left_id)
                     elif left_subtype.endswith("输入"):
@@ -78,6 +79,7 @@ class 拓扑图:
                     else:
                         raise Exception("Unknown type:", left_subtype)
 
+
                     adders[adder_id] = adder
                     adder_id -= 1
 
@@ -86,6 +88,7 @@ class 拓扑图:
                     
                 if left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
+
                     if left_subtype.endswith("输入输出"):
                         adders[madder_id]['IO'].append(left_id)
                     elif left_subtype.endswith("输入"):
@@ -94,6 +97,7 @@ class 拓扑图:
                         adders[madder_id]['input'].append(left_id)
                     else:
                         raise Exception("Unknown type:", left_subtype)
+
 
 
                 else:
@@ -121,9 +125,11 @@ class 拓扑图:
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
                 assert len(neighbors) <= 99
+
                 for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
 
                     if ne_type == "合并线":
                         # just check type.
@@ -137,9 +143,11 @@ class 拓扑图:
             elif node_type == "设备":
                 assert node_subtype in 设备类型
                 port_set = set()
-                                for n in neighbors:
+
+                for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
 
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
@@ -151,9 +159,11 @@ class 拓扑图:
                 assert len(neighbors) == 2
                 dev_ids = set()
                 subtypes = []
-                                for n in neighbors:
+                
+                for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
 
                     assert ne_type in ["锚点","母线"]
                     subtypes.append(ne_subtype)
@@ -164,9 +174,11 @@ class 拓扑图:
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
                 node_ids = set()
-                                for n in neighbors:
+                
+                for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
 
                     assert ne_type == "母线"
                     node_ids.add(n)
