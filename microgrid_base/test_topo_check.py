@@ -16,13 +16,19 @@ def print_with_banner(data, banner:str):
 topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
 
 PV1 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
+PV2 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
 DEL1 = 变流器(topo)
 DEL2 = 变压器(topo)
 LOAD = 电负荷(topo, 功率=3000)
 
+A1 = 
+A2 = 
+
 连接线(topo, "不可连接供电端母线", PV1.电接口, DEL1.电输入)
 连接线(topo, "不可连接电母线", DEL1.电输出, DEL2.电输入)
 连接线(topo, "不可连接负荷电母线",DEL2.电输出, LOAD.电接口)
+
+合并线(topo, "", )
 
 # L1 = 母线(graph)
 
