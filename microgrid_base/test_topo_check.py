@@ -8,8 +8,12 @@ from topo_check import *
 topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
 
 PV1 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
+DEL1 = 变流器(topo)
+DEL2 = 变压器(topo)
 LOAD = 电负荷(topo, 功率=3000)
 
+连接线(topo, "", PV1.电接口, DEL1.电输入)  # connected?
+连接线(topo, "", DEL1.电输出, LOAD.电接口)  # connected?
 连接线(topo, "", PV1.电接口, LOAD.电接口)  # connected?
 
 L1 = 母线(graph)
