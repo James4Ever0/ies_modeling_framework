@@ -93,6 +93,7 @@ class 拓扑图:
 
                 if left_type == "锚点" and right_type == "锚点":
 {{ adderMacro("left_subtype", "left_id", "adder") }}
+{{ adderMacro("right_subtype", "right_id", "adder") }}
                     adders[adder_id] = adder
                     adder_id -= 1
      
@@ -102,7 +103,7 @@ class 拓扑图:
 
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]")
-                    
+
                 {# adders.append(adder) #}
         return adders
 
