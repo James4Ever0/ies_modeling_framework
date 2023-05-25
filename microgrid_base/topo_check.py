@@ -7,41 +7,29 @@ import networkx
 
 # so here we only check topo when importing. we don't check validity during the building.
 
-{# type_sys = {{str(type_sys)}} # will work? #}
 
 # 母线最多99个对接的接口
 
 # better use some template.
 # 设备、母线、连接线、合并线
-{% for mtype, mdata in 类型集合分类 %}
-{{mtype}}类型 = {{mdata}}
+设备类型 = ['变流器输入', '变压器输出', '供电端输出', '电母线输入', '电储能端输入输出', '双向变流器储能端输入输出', '电母线输出', '双向变流器线路端输入输出', '负荷电输入', '柴油输入', '柴油输出']
 
-{% endfor %}
+母线类型 = ['可连接电储能端母线', '可连接供电端母线', '可连接负荷电母线', '可连接电母线', '可连接柴油母线']
 
-设备接口集合 = {{ 设备接口集合}}
-连接类型映射表 = {{连接类型映射表}}
+连接线类型 = ['不可连接电储能端母线输出', '不可连接负荷电母线', '不可连接电母线', '不可连接电母线输入输出', '不可连接供电端母线输入', '不可连接电储能端母线输入', '不可连接负荷电母线输入', '不可连接供电端母线输入输出', '不可连接负荷电母线输出', '不可连接电母线输出', '不可连接电储能端母线', '不可连接供电端母线输出', '不可连接负荷电母线输入输出', '不可连接电储能端母线输入输出', '不可连接电母线输入', '不可连接供电端母线', '不可连接柴油母线', '不可连接柴油母线输入输出', '不可连接柴油母线输出', '不可连接柴油母线输入']
+
+合并线类型 = ['可合并供电端母线', '可合并电母线', '可合并电储能端母线', '可合并负荷电母线', '可合并柴油母线']
+
+
+设备接口集合 = {'柴油': {('燃料接口', '柴油输出')}, '电负荷': {('电接口', '负荷电输入')}, '光伏发电': {('电接口', '供电端输出')}, '风力发电': {('电接口', '供电端输出')}, '柴油发电': {('燃料接口', '柴油输入'), ('电接口', '供电端输出')}, '锂电池': {('电接口', '电储能端输入输出')}, '变压器': {('电输出', '变压器输出'), ('电输入', '电母线输入')}, '变流器': {('电输出', '电母线输出'), ('电输入', '变流器输入')}, '双向变流器': {('储能端', '双向变流器储能端输入输出'), ('线路端', '双向变流器线路端输入输出')}, '传输线': {('电输出', '电母线输出'), ('电输入', '电母线输入')}}
+连接类型映射表 = {frozenset({'可连接电母线', '双向变流器线路端输入输出'}): '不可连接电母线输入输出', frozenset({'变流器输入', '供电端输出'}): '不可连接供电端母线', frozenset({'可连接供电端母线'}): '可合并供电端母线', frozenset({'变流器输入', '可连接供电端母线'}): '不可连接供电端母线输出', frozenset({'供电端输出', '可连接供电端母线'}): '不可连接供电端母线输入', frozenset({'变压器输出', '负荷电输入'}): '不可连接负荷电母线', frozenset({'可连接负荷电母线'}): '可合并负荷电母线', frozenset({'可连接负荷电母线', '负荷电输入'}): '不可连接负荷电母线输出', frozenset({'可连接负荷电母线', '变压器输出'}): '不可连接负荷电母线输入', frozenset({'柴油输出', '柴油输入'}): '不可连接柴油母线', frozenset({'可连接柴油母线'}): '可合并柴油母线', frozenset({'可连接柴油母线', '柴油输入'}): '不可连接柴油母线输出', frozenset({'可连接柴油母线', '柴油输出'}): '不可连接柴油母线输入', frozenset({'电母线输入', '电母线输出'}): '不可连接电母线', frozenset({'可连接电母线'}): '可合并电母线', frozenset({'可连接电母线', '电母线输入'}): '不可连接电母线输出', frozenset({'可连接电母线', '电母线输出'}): '不可连接电母线输入', frozenset({'双向变流器储能端输入输出', '电储能端输入输出'}): '不可连接电储能端母线', frozenset({'可连接电储能端母线'}): '可合并电储能端母线', frozenset({'电储能端输入输出', '可连接电储能端母线'}): '不可连接电储能端母线输出', frozenset({'双向变流器储能端输入输出', '可连接电储能端母线'}): '不可连接电储能端母线输入'}
 
 def getMainAndSubtype(data):
     mainType = data['type']
     subType = data['subtype']
     return mainType, subType
 
-{% macro neighborIterator() %}
-                for n in neighbors:
-                    ne_data = self.G[n]
-                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
-{% endmacro %}
 
-{%macro adderMacro(source_subtype, source_id, target)%}
-                    if {{source_subtype}}.endswith("输入输出"):
-                        {{target}}['IO'].append({{source_id}})
-                    elif {{source_subtype}}.endswith("输入"):
-                        {{target}}['output'].append({{source_id}})
-                    elif {{source_subtype}}.endswith("输出"):
-                        {{target}}['input'].append({{source_id}})
-                    else:
-                        raise Exception("Unknown type:", {{source_subtype}})
-{% endmacro %}
 
 class 拓扑图:
     def __init__(self, **kwargs):
@@ -78,7 +66,15 @@ class 拓扑图:
                 right_subtype = self.G.nodes[right_id]['subtype']
 
                 if left_type == "锚点" and right_type == "锚点":
-{{ adderMacro("left_subtype", "left_id", "adder") }}
+                    if left_subtype.endswith("输入输出"):
+                        adder['IO'].append(left_id)
+                    elif left_subtype.endswith("输入"):
+                        adder['output'].append(left_id)
+                    elif left_subtype.endswith("输出"):
+                        adder['input'].append(left_id)
+                    else:
+                        raise Exception("Unknown type:", left_subtype)
+
                     adders[adder_id] = adder
                     adder_id -= 1
 
@@ -87,7 +83,15 @@ class 拓扑图:
                     
                 if left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
-{{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
+                    if left_subtype.endswith("输入输出"):
+                        adders[madder_id]['IO'].append(left_id)
+                    elif left_subtype.endswith("输入"):
+                        adders[madder_id]['output'].append(left_id)
+                    elif left_subtype.endswith("输出"):
+                        adders[madder_id]['input'].append(left_id)
+                    else:
+                        raise Exception("Unknown type:", left_subtype)
+
 
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
@@ -115,7 +119,10 @@ class 拓扑图:
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
                 assert len(neighbors) <= 99
-                {{neighborIterator()}}
+                                for n in neighbors:
+                    ne_data = self.G[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
                     if ne_type == "合并线":
                         # just check type.
                         assert ne_subtype in 合并线类型
@@ -128,7 +135,10 @@ class 拓扑图:
             elif node_type == "设备":
                 assert node_subtype in 设备类型
                 port_set = set()
-                {{neighborIterator()}}
+                                for n in neighbors:
+                    ne_data = self.G[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
                     port_name = ne_data['port_name']
                     assert ne_type == "锚点"
                     assert len(self.G.neighbors(n)) == 2
@@ -139,7 +149,10 @@ class 拓扑图:
                 assert len(neighbors) == 2
                 dev_ids = set()
                 subtypes = []
-                {{neighborIterator()}}
+                                for n in neighbors:
+                    ne_data = self.G[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
                     assert ne_type in ["锚点","母线"]
                     subtypes.append(ne_subtype)
                     dev_ids.add(ne_data['device_id'])
@@ -149,7 +162,10 @@ class 拓扑图:
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
                 node_ids = set()
-                {{neighborIterator()}}
+                                for n in neighbors:
+                    ne_data = self.G[n]
+                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+
                     assert ne_type == "母线"
                     node_ids.add(n)
                 assert len(node_ids) == 2
@@ -233,14 +249,16 @@ class 连接节点(节点):
         if self.topo.graph.nodes[conn_end_id]["type"] == "母线":
             self.topo.graph.nodes[conn_end_id]["conn"].append(subtype)
 
-{% macro makeConnNodeInstance(className) %}
 
-class {{className}}(连接节点)
+
+class 连接线(连接节点)
     def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
         super().__init__(topo, type=self.__class__.__name__, subtype = subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
 
-{% endmacro %}
 
-{{ makeConnNodeInstance("连接线") }}
 
-{{ makeConnNodeInstance("合并线") }}
+
+class 合并线(连接节点)
+    def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
+        super().__init__(topo, type=self.__class__.__name__, subtype = subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
+

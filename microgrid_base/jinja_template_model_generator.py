@@ -65,13 +65,14 @@ tpl = load_template(topo_code_template_path)
 }
 import rich
 
-rich.print(设备接口集合)
-breakpoint()
+# rich.print(设备接口集合)
+# breakpoint()
 连接类型映射表 = {
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
 }
 result = tpl.render(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
+
 print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
