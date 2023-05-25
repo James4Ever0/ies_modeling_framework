@@ -66,9 +66,14 @@ class 拓扑图:
 
                 if left_type == "锚点" and right_type == "锚点":
                     if left_subtype.endswith("输入输出"):
-                        
+                        adder['IO'].append(left_id)
+                        adder['IO'].append(right_id)
                     elif left_subtype.endswith("输入"):
+                        adder['output'].append(left_id)
+                        adder['input'].append(right_id)
                     else:
+                        adder['output'].append(right_id)
+                        adder['input'].append(left_id)
 
                 if left_type == "母线" and right_type == "锚点":
                     if left_subtype.endswith("输入输出"):
