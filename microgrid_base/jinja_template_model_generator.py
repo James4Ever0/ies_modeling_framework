@@ -56,11 +56,13 @@ def load_template(template_path):
 
 
 类型集合分类 = [
-    (mkey.replace('设备', "锚点"), [e for (k, v) in mdata.items() for e in v])
+    (mkey.replace("设备", "锚点"), [e for (k, v) in mdata.items() for e in v])
     for mkey, mdata in type_sys["类型分类表"].items()
 ]
 
-类型集合分类.append(('设备', []))
+类型集合分类.append(
+    ("设备", [dev for cat, devs in type_sys["设备锚点类型表"].items() for dev in devs.keys()])
+)
 
 设备接口集合 = {
     dev_name: set([(port_name, port_type) for port_name, port_type in ports.items()])
@@ -98,7 +100,7 @@ def load_render_and_format(template_path: str, render_params: dict, banner: str)
 
         traceback.print_exc()
         raise Exception("Syntax Failed.")
-    print("="*40)
+    print("=" * 40)
 
 
 load_render_and_format(
@@ -109,7 +111,8 @@ load_render_and_format(
 
 # run test code.
 import subprocess
-cmd = ['python3', 'test_topo_check.py']
+
+cmd = ["python3", "test_topo_check.py"]
 p = subprocess.run(cmd)
 p.check_returncode()
 
