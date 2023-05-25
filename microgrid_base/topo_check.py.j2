@@ -195,10 +195,10 @@ class 拓扑图:
         self.is_valid = True
     
     def to_json(self) -> dict:
-        json_data = self.G
-        return json_data
+        data = json_graph.adjacency_data(self.G)
+        return data
     @staticmethod
-    def from_json(json_data) -> dict:
+    def from_json(data) -> dict:
         # load data to graph
         kwargs = ...
         graph = 拓扑图(**kwargs)
