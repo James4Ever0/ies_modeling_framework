@@ -26,17 +26,17 @@ def getMainAndSubType(data):
 
 设备接口集合 = {{ 设备接口集合 }}
 连接类型映射表 = {{连接类型映射表}}
-
-def getMainAndSubtype(data):
+{# 
+def getMainAndSubType(data):
     mainType = data['type']
     subType = data['subtype']
-    return mainType, subType
+    return mainType, subType #}
 
 {% macro neighborIterator() %}
 
                 for n in neighbors:
-                    ne_data = self.G[n]
-                    ne_type, ne_subtype = getMainAndSubtype(ne_data)
+                    ne_data = self.G.nodes[n]
+                    ne_type, ne_subtype = getMainAndSubType(ne_data)
 
 {% endmacro %}
 
