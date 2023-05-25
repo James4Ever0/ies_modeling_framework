@@ -47,8 +47,14 @@ print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
 
-tpl = load_template(ies_optim_code_output_path)
-result = tpl.render(type_sys=type_sys, dparam=dparam)
-print()
-print("______________________[{}]".format("IES CODE"))
-print(result)
+with open(topo_code_output_path, "w+") as f:
+    f.write(result)
+
+# tpl = load_template(ies_optim_code_output_path)
+# result = tpl.render(type_sys=type_sys, dparam=dparam)
+# print()
+# print("______________________[{}]".format("IES CODE"))
+# print(result)
+
+# with open(ies_optim_code_output_path, "w+") as f:
+#     f.write(result)
