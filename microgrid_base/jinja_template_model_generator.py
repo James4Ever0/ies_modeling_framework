@@ -65,8 +65,8 @@ tpl = load_template(topo_code_template_path)
 }
 import rich
 #########################
-rich.print(设备接口集合)
-breakpoint()
+# rich.print(设备接口集合)
+# breakpoint()
 #########################
 连接类型映射表 = {
     frozenset((c1, c2)): c

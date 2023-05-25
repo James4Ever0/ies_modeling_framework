@@ -225,11 +225,12 @@ class 母线(节点):
         
 
 class 设备(节点):
-    def __init__(self, topo:拓扑图, device_type:str, port_definition:dict,**kwargs):
+    def __init__(self, topo:拓扑图, device_type:str, port_definition, # iterable. 
+    **kwargs):
         # check if device type is one of the common types.
         super().__init__(topo, type=self.__class__.__name__, subtype=device_type, ports={}, **kwargs)
         self.ports = {}
-        for port_name, port_type in port_definition.items():
+        for port_name, port_type in port_definition:
             node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
             self.ports.update({port_name: {"subtype": port_type,"id":node_id}})
         self.topo.G.nodes[self.id]['ports'] = self.ports
@@ -266,7 +267,7 @@ class {{device_name}}(设备):
         {% endfor %}
 {% endmacro %}
 
-{% for device_name, port_definition in 设备接口集合 %}
+{% for device_name, port_definition in 设备接口集合.items() %}
 
 {{makeDevice(device_name, port_definition)}}
 
