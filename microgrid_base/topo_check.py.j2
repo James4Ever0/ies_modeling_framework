@@ -181,7 +181,9 @@ class 拓扑图:
             else:
                 raise Exception("unknown node type:", node_type)
             subgraph = self.G.subgraph(母线ID列表) # check again.
+            print("母线ID列表:", 母线ID列表)
             self.合并母线ID集合列表 = networkx.connected_components(subgraph)
+            print("合并母线ID集合列表:", self.合并母线ID集合列表)
             for id_set in self.合并母线ID集合列表:
                 has_input = False
                 has_output = False
