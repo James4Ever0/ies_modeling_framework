@@ -12,6 +12,7 @@ from networkx.readwrite import json_graph
 
 
 def getMainAndSubType(data):
+    print("DATA:", data)
     return data["type"], data["subtype"]
 
 
@@ -69,32 +70,32 @@ def getMainAndSubType(data):
     "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
     "锂电池": {("电接口", "电储能端输入输出")},
     "变压器": {("电输入", "电母线输入"), ("电输出", "变压器输出")},
-    "变流器": {("电输入", "变流器输入"), ("电输出", "电母线输出")},
+    "变流器": {("电输出", "电母线输出"), ("电输入", "变流器输入")},
     "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
     "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
 }
 连接类型映射表 = {
-    frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
+    frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
     frozenset({"供电端输出", "变流器输入"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
-    frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
-    frozenset({"供电端输出", "可连接供电端母线"}): "不可连接供电端母线输入",
-    frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
+    frozenset({"可连接供电端母线", "变流器输入"}): "不可连接供电端母线输出",
+    frozenset({"可连接供电端母线", "供电端输出"}): "不可连接供电端母线输入",
+    frozenset({"负荷电输入", "变压器输出"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
     frozenset({"负荷电输入", "可连接负荷电母线"}): "不可连接负荷电母线输出",
     frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
+    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
     frozenset({"柴油输入", "可连接柴油母线"}): "不可连接柴油母线输出",
-    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
-    frozenset({"电母线输入", "电母线输出"}): "不可连接电母线",
+    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
+    frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
-    frozenset({"电母线输入", "可连接电母线"}): "不可连接电母线输出",
+    frozenset({"可连接电母线", "电母线输入"}): "不可连接电母线输出",
     frozenset({"电母线输出", "可连接电母线"}): "不可连接电母线输入",
     frozenset({"电储能端输入输出", "双向变流器储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
-    frozenset({"可连接电储能端母线", "电储能端输入输出"}): "不可连接电储能端母线输出",
-    frozenset({"可连接电储能端母线", "双向变流器储能端输入输出"}): "不可连接电储能端母线输入",
+    frozenset({"电储能端输入输出", "可连接电储能端母线"}): "不可连接电储能端母线输出",
+    frozenset({"双向变流器储能端输入输出", "可连接电储能端母线"}): "不可连接电储能端母线输入",
 }
 
 
@@ -346,10 +347,11 @@ class 设备(节点):
         super().__init__(topo, type="设备", subtype=device_type, ports={}, **kwargs)
         self.ports = {}
         for port_name, port_type in port_definition:
-            node_id = self.topo.add_node(
+            port_node_id = self.topo.add_node(
                 type="锚点", port_name=port_name, subtype=port_type, device_id=self.id
             )
-            self.ports.update({port_name: {"subtype": port_type, "id": node_id}})
+            self.ports.update({port_name: {"subtype": port_type, "id": port_node_id}})
+            self.topo.G.add_edge(self.id, port_node_id)
         self.topo.G.nodes[self.id]["ports"] = self.ports
 
 
@@ -479,12 +481,12 @@ class 变流器(设备):
         super().__init__(
             topo=topo,
             device_type="变流器",
-            port_definition={("电输入", "变流器输入"), ("电输出", "电母线输出")},
+            port_definition={("电输出", "电母线输出"), ("电输入", "变流器输入")},
             **kwargs,
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 双向变流器(设备):
