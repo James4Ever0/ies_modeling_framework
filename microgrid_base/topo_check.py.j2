@@ -100,7 +100,7 @@ class 拓扑图:
 {{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
 
                 else:
-                    raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
+                    raise Exception(f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]")
                 {# adders.append(adder) #}
         return adders
 
