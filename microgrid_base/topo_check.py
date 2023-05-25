@@ -67,7 +67,7 @@ def getMainAndSubType(data):
     "电负荷": {("电接口", "负荷电输入")},
     "光伏发电": {("电接口", "供电端输出")},
     "风力发电": {("电接口", "供电端输出")},
-    "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
+    "柴油发电": {("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
     "锂电池": {("电接口", "电储能端输入输出")},
     "变压器": {("电输入", "电母线输入"), ("电输出", "变压器输出")},
     "变流器": {("电输出", "电母线输出"), ("电输入", "变流器输入")},
@@ -75,23 +75,23 @@ def getMainAndSubType(data):
     "传输线": {("电输出", "电母线输出"), ("电输入", "电母线输入")},
 }
 连接类型映射表 = {
-    frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
+    frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
     frozenset({"供电端输出", "变流器输入"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
-    frozenset({"可连接供电端母线", "变流器输入"}): "不可连接供电端母线输出",
-    frozenset({"可连接供电端母线", "供电端输出"}): "不可连接供电端母线输入",
-    frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
+    frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
+    frozenset({"供电端输出", "可连接供电端母线"}): "不可连接供电端母线输入",
+    frozenset({"负荷电输入", "变压器输出"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
     frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
-    frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
+    frozenset({"可连接负荷电母线", "变压器输出"}): "不可连接负荷电母线输入",
+    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
     frozenset({"可连接柴油母线", "柴油输入"}): "不可连接柴油母线输出",
-    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
-    frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
+    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
+    frozenset({"电母线输入", "电母线输出"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
     frozenset({"电母线输入", "可连接电母线"}): "不可连接电母线输出",
-    frozenset({"电母线输出", "可连接电母线"}): "不可连接电母线输入",
+    frozenset({"可连接电母线", "电母线输出"}): "不可连接电母线输入",
     frozenset({"双向变流器储能端输入输出", "电储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
     frozenset({"可连接电储能端母线", "电储能端输入输出"}): "不可连接电储能端母线输出",
@@ -203,6 +203,7 @@ class 拓扑图:
         #  use subgraph
         # 提取所有母线ID
         母线ID列表 = []
+        合并线ID列表 = []
         for node_id, node_data in self.G.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
             print("NODE TYPE:", node_type)
@@ -272,6 +273,7 @@ class 拓扑图:
                 assert len(dev_ids) == 2  # no self-connection.
                 assert 连接类型映射表[frozenset(subtypes)] == node_subtype
             elif node_type == "合并线":
+                合并线ID列表.append(node_id)
                 assert node_subtype in 合并线类型
                 assert len(neighbors) == 2
                 node_ids = set()
@@ -287,9 +289,12 @@ class 拓扑图:
                 continue
             else:
                 raise Exception("unknown node type:", node_type)
-        subgraph = self.G.subgraph(母线ID列表)  # check again.
+        subgraph = self.G.subgraph(母线ID列表 + 合并线ID列表)  # check again.
         print("母线ID列表:", 母线ID列表)
         self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
+        self.合并母线ID集合列表 = [
+            set([i for i in e if i not in 合并线ID列表]) for e in self.合并母线ID集合列表
+        ]
         print("合并母线ID集合列表:", self.合并母线ID集合列表)
         for id_set in self.合并母线ID集合列表:
             has_input = False
@@ -464,12 +469,12 @@ class 柴油发电(设备):
         super().__init__(
             topo=topo,
             device_type="柴油发电",
-            port_definition={("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
+            port_definition={("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.燃料接口 = self.ports["燃料接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 锂电池(设备):
