@@ -5,6 +5,7 @@
 # the test code may not be generated.
 import json
 
+
 def read_json(path):
     with open(path, "r") as f:
         return json.load(f)
@@ -21,28 +22,44 @@ type_sys = {
 dparam_path = "microgrid_jinja_param_base.json"
 dparam = read_json(dparam_path)
 
+
 def code_and_template_path(base_name):
     code_path = f"{base_name}.py"
     template_path = f"{code_path}.j2"
     return code_path, template_path
 
+
 topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
 
-ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path("ies_optim")
+ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
+    "ies_optim"
+)
 
 import jinja2
+
 
 def load_template(template_path):
     try:
         assert template_path.endswith(".j2")
     except:
         Exception(f"jinja template path '{template_path}' is malformed.")
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader("./"),trim_blocks=True, lstrip_blocks=True, undefined=jinja2.StrictUndefined)
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader("./"),
+        trim_blocks=True,
+        lstrip_blocks=True,
+        undefined=jinja2.StrictUndefined,
+    )
     tpl = env.get_template(template_path)
     return tpl
 
+
 tpl = load_template(topo_code_template_path)
-result = tpl.render(type_sys=type_sys)
+设备接口集合 = [set((k, v)) for _, d in type_sys["设备锚点类型表"].items() for k, v in d.items()]
+连接类型映射表 = {
+    frozenset((c1, c2)): c
+    for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
+}
+result = tpl.render(type_sys=type_sys, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
 print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
