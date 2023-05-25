@@ -5,7 +5,10 @@ import rich
 ###############
 
 def print_with_banner(data, banner:str):
+    print()
+    print("="*40+f"[{banner}]")
     print(data)
+    print()
 
 # you may need pydantic here. verify then import to compute graph.
 topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
@@ -32,11 +35,11 @@ topo.check_consistency()
 # methods for computing.
 
 devs = topo.get_all_devices()
-print_with_banner(devs)
+print_with_banner(devs, "设备")
 # device, ports, device_data
 
 adders = topo.get_all_adders()
-print_with_banner(adders)
+print_with_banner(adders, "加法器")
 # input, output, io
 
 ###############
@@ -44,13 +47,13 @@ print_with_banner(adders)
 ###############
 
 mdict = topo.to_json()
-print_with_banner(mdict)
+print_with_banner(mdict, "图序列化")
 ###############
 # load from dict
 ###############
 
 graph_load = topo.from_json(mdict)  # static method
-print_with_banner(graph_load)
+print_with_banner(graph_load, "图对象")
 # how to check error now?
 # all connected?
 
@@ -58,7 +61,7 @@ print_with_banner(graph_load)
 # use devs, adders
 
 graph_data = topo.get_graph_data()
-print_with_banner(graph_data)
+print_with_banner(graph_data, "图序列化")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 
