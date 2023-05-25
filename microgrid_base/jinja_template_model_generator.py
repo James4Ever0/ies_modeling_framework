@@ -94,7 +94,8 @@ def load_render_and_format(template_path: str, render_params: dict, banner: str)
         import traceback
 
         traceback.print_exc()
-        print("Syntax Failed.")
+        raise Exception("Syntax Failed.")
+    print("="*20)
 
 
 load_render_and_format(
@@ -105,7 +106,9 @@ load_render_and_format(
 
 # run test code.
 import subprocess
-cmd = ['python3', '']
+cmd = ['python3', 'test_topo_check.py']
+p = subprocess.run(cmd)
+p.check_returncode()
 
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
