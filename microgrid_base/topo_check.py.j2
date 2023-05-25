@@ -25,7 +25,7 @@ def getMainAndSubtype(data):
     subType = data['subtype']
     return mainType, subType
 
-{%macro neighborIterator() %}
+{% macro neighborIterator() %}
                 for n in neighbors:
                     ne_data = self.G[n]
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
