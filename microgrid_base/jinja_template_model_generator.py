@@ -4,6 +4,7 @@
 
 # the test code may not be generated.
 import json
+import rich
 
 
 def read_json(path):
@@ -63,7 +64,6 @@ tpl = load_template(topo_code_template_path)
     for cat0, devs in type_sys["设备锚点类型表"].items()
     for dev_name, ports in devs.items()
 }
-import rich
 #########################
 # rich.print(设备接口集合)
 # breakpoint()
