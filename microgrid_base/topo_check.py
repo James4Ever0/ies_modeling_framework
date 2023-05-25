@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 import networkx
 from networkx.readwrite import json_graph
 
@@ -65,31 +64,31 @@ def getMainAndSubType(data):
     "电负荷": {("电接口", "负荷电输入")},
     "光伏发电": {("电接口", "供电端输出")},
     "风力发电": {("电接口", "供电端输出")},
-    "柴油发电": {("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
+    "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
     "锂电池": {("电接口", "电储能端输入输出")},
     "变压器": {("电输出", "变压器输出"), ("电输入", "电母线输入")},
     "变流器": {("电输入", "变流器输入"), ("电输出", "电母线输出")},
     "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
-    "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
+    "传输线": {("电输出", "电母线输出"), ("电输入", "电母线输入")},
 }
 连接类型映射表 = {
-    frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
-    frozenset({"变流器输入", "供电端输出"}): "不可连接供电端母线",
+    frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
+    frozenset({"供电端输出", "变流器输入"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
-    frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
-    frozenset({"可连接供电端母线", "供电端输出"}): "不可连接供电端母线输入",
+    frozenset({"可连接供电端母线", "变流器输入"}): "不可连接供电端母线输出",
+    frozenset({"供电端输出", "可连接供电端母线"}): "不可连接供电端母线输入",
     frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
-    frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
-    frozenset({"可连接负荷电母线", "变压器输出"}): "不可连接负荷电母线输入",
+    frozenset({"负荷电输入", "可连接负荷电母线"}): "不可连接负荷电母线输出",
+    frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
     frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
-    frozenset({"可连接柴油母线", "柴油输入"}): "不可连接柴油母线输出",
+    frozenset({"柴油输入", "可连接柴油母线"}): "不可连接柴油母线输出",
     frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
-    frozenset({"电母线输入", "电母线输出"}): "不可连接电母线",
+    frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
     frozenset({"可连接电母线", "电母线输入"}): "不可连接电母线输出",
-    frozenset({"可连接电母线", "电母线输出"}): "不可连接电母线输入",
+    frozenset({"电母线输出", "可连接电母线"}): "不可连接电母线输入",
     frozenset({"电储能端输入输出", "双向变流器储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
     frozenset({"电储能端输入输出", "可连接电储能端母线"}): "不可连接电储能端母线输出",
@@ -331,13 +330,15 @@ class 母线(节点):
 
 
 class 设备(节点):
-    def __init__(self, topo: 拓扑图, device_type: str, port_definition: dict, **kwargs):
+    def __init__(
+        self, topo: 拓扑图, device_type: str, port_definition, **kwargs  # iterable.
+    ):
         # check if device type is one of the common types.
         super().__init__(
             topo, type=self.__class__.__name__, subtype=device_type, ports={}, **kwargs
         )
         self.ports = {}
-        for port_name, port_type in port_definition.items():
+        for port_name, port_type in port_definition:
             node_id = self.topo.add_node(
                 type="锚点", port_name=port_name, subtype=port_type, device_id=self.id
             )
@@ -433,12 +434,12 @@ class 柴油发电(设备):
         super().__init__(
             topo=topo,
             device_type="柴油发电",
-            port_definition={("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
+            port_definition={("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
             **kwargs,
         )
 
-        self.燃料接口 = self.ports["燃料接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
+        self.燃料接口 = self.ports["燃料接口"]["id"]
 
 
 class 锂电池(设备):
@@ -497,9 +498,9 @@ class 传输线(设备):
         super().__init__(
             topo=topo,
             device_type="传输线",
-            port_definition={("电输入", "电母线输入"), ("电输出", "电母线输出")},
+            port_definition={("电输出", "电母线输出"), ("电输入", "电母线输入")},
             **kwargs,
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
