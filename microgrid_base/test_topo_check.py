@@ -7,7 +7,7 @@ import rich
 def print_with_banner(data, banner:str):
     print()
     print("="*40+f"[{banner}]")
-    print(data)
+    rich.print(data)
     print()
 
 # you may need pydantic here. verify then import to compute graph.
@@ -52,16 +52,17 @@ print_with_banner(mdict, "图序列化")
 # load from dict
 ###############
 
-graph_load = topo.from_json(mdict)  # static method
-print_with_banner(graph_load, "图对象")
+topo_load = topo.from_json(mdict)  # static method
+print_with_banner(topo_load, "图对象")
 # how to check error now?
 # all connected?
 
+topo_load.check_consistency() # may still be good.
 ## COMPUTE THIS GRAPH ##
 # use devs, adders
 
 graph_data = topo.get_graph_data()
-print_with_banner(graph_data, "图序列化")
+print_with_banner(graph_data, "图元数据")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 
