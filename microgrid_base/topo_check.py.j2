@@ -50,7 +50,7 @@ class 拓扑图:
         # use adder ids. adder starts with -1
         adders = {} # 用到：合并母线ID集合列表
         adder_id = -1
-        母线ID
+        母线ID映射表 = {: for s in self.合并母线ID集合列表}
         # format: {"input":input_ids, "output": output_ids, "IO": IO_ids}
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data["type"]
