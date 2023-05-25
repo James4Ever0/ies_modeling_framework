@@ -31,6 +31,17 @@ def getMainAndSubtype(data):
                     ne_type, ne_subtype = getMainAndSubtype(ne_data)
 {% endmacro %}
 
+{%macro adderMacro()%}
+                    if {{source_subtype}}.endswith("输入输出"):
+                        {{target}}['IO'].append({{source_id}})
+                    elif {{source_subtype}}.endswith("输入"):
+                        {{target}}['output'].append({{source_id}})
+                    elif {{source_subtype}}.endswith("输出"):
+                        {{target}}['input'].append({{source_id}})
+                    else:
+                        raise Exception("Unknown type:", {{source_subtype}})
+{%endmacro%}
+
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
