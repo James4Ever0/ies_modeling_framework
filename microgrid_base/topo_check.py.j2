@@ -76,6 +76,7 @@ class 拓扑图:
                         adder['input'].append(left_id)
 
                 if left_type == "母线" and right_type == "锚点":
+                    left_id, left_type, left_subtype, right_id, right_type,right_subtype = right_id, right_type, 
                     if left_subtype.endswith("输入输出"):
                     elif left_subtype.endswith("输入"):
                     else:
