@@ -258,7 +258,9 @@ class {{className}}(连接节点):
 
 {% macro makeDevice(device_name) %}
 class {{device_name}}(设备):
-...
+    def __init__(self, topo:拓扑图, **kwargs):
+    super().__init__(topo=topo, device_type="{{device_type}}", 
+    topo:拓扑图, device_type:str, port_definition={{port_definition}}, **kwargs)
 {% endmacro %}
 
 {% for device_name, device_port_def in ...%}
