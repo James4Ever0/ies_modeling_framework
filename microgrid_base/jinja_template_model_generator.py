@@ -56,9 +56,12 @@ def load_template(template_path):
 
 
 类型集合分类 = [
-    (mkey, [e for (k, v) in mdata.items() for e in v])
+    (mkey.replace('设备', "锚点"), [e for (k, v) in mdata.items() for e in v])
     for mkey, mdata in type_sys["类型分类表"].items()
 ]
+
+类型集合分类.append(('设备', []))
+
 设备接口集合 = {
     dev_name: set([(port_name, port_type) for port_name, port_type in ports.items()])
     for cat0, devs in type_sys["设备锚点类型表"].items()
