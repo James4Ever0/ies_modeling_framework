@@ -249,9 +249,6 @@ class 连接节点(节点):
 class {{className}}(连接节点):
     def __init__(self, topo:拓扑图, subtype:str, conn_start_id:int, conn_end_id:int, **kwargs):
         super().__init__(topo, _type=self.__class__.__name__, subtype = subtype, conn_start_id= conn_start_id, conn_end_id=conn_end_id, **kwargs)
-        {% for ... in ... %}
-        self.{{ ... }} = {{ ... }}
-        {% endfor %}
 
 {% endmacro %}
 
@@ -259,13 +256,18 @@ class {{className}}(连接节点):
 
 {{ makeConnNodeInstance("合并线") }}
 
-{% macro makeDevice(device_name) %}
+{% macro makeDevice(device_name, device_port_def) %}
 class {{device_name}}(设备):
     def __init__(self, topo:拓扑图, **kwargs):
-    super().__init__(topo=topo, device_type="{{device_type}}", 
-    topo:拓扑图, device_type:str, port_definition={{port_definition}}, **kwargs)
+        super().__init__(topo=topo, device_type="{{device_type}}",  port_definition={{port_definition}}, **kwargs)
+
+        {% for ... in ... %}
+        self.{{ ... }} = {{ ... }}
+        {% endfor %}
 {% endmacro %}
 
 {% for device_name, device_port_def in ...%}
+
+{{makeDevice()}}
 
 {% endfor %}
