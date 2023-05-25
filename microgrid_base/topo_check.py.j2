@@ -259,14 +259,14 @@ class {{className}}(连接节点):
 {% macro makeDevice(device_name, port_definition) %}
 class {{device_name}}(设备):
     def __init__(self, topo:拓扑图, **kwargs):
-        super().__init__(topo=topo, device_type="{{device_type}}",  port_definition={{port_definition}}, **kwargs)
+        super().__init__(topo=topo, device_type="{{device_name}}",  port_definition={{port_definition}}, **kwargs)
 
         {% for port_name, port_type in port_definition %}
         self.{{ port_name }} = self.ports["{{port_name}}"]['id']
         {% endfor %}
 {% endmacro %}
 
-{% for device_name, port_definition in 设备接口定义表 %}
+{% for device_name, port_definition in 设备接口集合 %}
 
 {{makeDevice(device_name, port_definition)}}
 

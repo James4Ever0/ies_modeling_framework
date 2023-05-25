@@ -64,9 +64,10 @@ tpl = load_template(topo_code_template_path)
     for dev_name, ports in devs.items()
 }
 import rich
-
-# rich.print(设备接口集合)
-# breakpoint()
+#########################
+rich.print(设备接口集合)
+breakpoint()
+#########################
 连接类型映射表 = {
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
@@ -77,6 +78,7 @@ print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
 import black
+
 # import black.Mode
 with open(topo_code_output_path, "w+") as f:
     f.write(result)
@@ -87,6 +89,7 @@ try:
     print("Syntax Ok.")
 except:
     import traceback
+
     traceback.print_exc()
     print("Syntax Failed.")
 
