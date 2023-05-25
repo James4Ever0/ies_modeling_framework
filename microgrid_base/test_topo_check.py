@@ -4,24 +4,21 @@ from topo_check import *
 # build from code.
 ###############
 
-compute_data = dict() # you may need pydantic here. verify then import to compute graph.
-topo = 拓扑图(**compute_data) # with structure?
+# you may need pydantic here. verify then import to compute graph.
+topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
 
-PV1 = 光伏发电(topo, 面积=2) # 这种是增加新的光伏发电
+PV1 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
 LOAD = 电负荷(topo, 功率=3000)
 
-连接线(topo, PV1.电接口, LOAD.电接口) # connected?
-
-PV = 设备(graph, "光伏发电", port_definition = {"电接口":"供电端输出"})
-
+连接线(topo, "", PV1.电接口, LOAD.电接口)  # connected?
 
 L1 = 母线(graph)
 
 # walk over all connections.
 
-conn = 连接线(graph, PV.ports['电接口'], LOAD.ports['电接口'])
+conn = 连接线(graph, PV.ports["电接口"], LOAD.ports["电接口"])
 
-conn_merge = 合并线(L0, L1) # what do you do?
+conn_merge = 合并线(L0, L1)  # what do you do?
 
 # shall raise error.
 
@@ -45,7 +42,7 @@ mdict = graph.to_json()
 # load from dict
 ###############
 
-graph_load = graph.from_json(mdict) # static method
+graph_load = graph.from_json(mdict)  # static method
 
 # how to check error now?
 # all connected?
