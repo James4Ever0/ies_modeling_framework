@@ -11,6 +11,9 @@ import networkx
 
 # 母线最多99个对接的接口
 
+def getMainAndSubType(data):
+    return data['type'], data['subtype']
+
 # better use some template.
 # 设备、母线、连接线、合并线
 {% for mtype, mdata in 类型集合分类 %}
@@ -115,14 +118,14 @@ class 拓扑图:
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
                 assert len(neighbors) <= 99
-                {{neighborIterator()}}
+{{ neighborIterator()}}
                     if ne_type == "合并线":
                         # just check type.
                         assert ne_subtype in 合并线类型
                         assert ne_subtype.replace("合并", "连接") == node_subtype
                     elif ne_type == "连接线":
                         assert ne_subtype in 连接线类型
-                        assert ne_subtype.replace('不可','可').replace("输入","".replace("输出","") == node_subtype
+                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype
                     else:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
