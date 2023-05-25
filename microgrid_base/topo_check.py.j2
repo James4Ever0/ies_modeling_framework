@@ -7,14 +7,14 @@ import networkx
 
 # so here we only check topo when importing. we don't check validity during the building.
 
-type_sys = {{type_sys}} # will work?
+type_sys = {{str(type_sys)}} # will work?
 
 # 母线最多99个对接的接口
 
 # better use some template.
 # 设备、母线、连接线、合并线
-{% for mtype in type_sys['类型分类表'].keys() %}
-{{mtype}}类型 = {{}}
+{% for mtype, mdata in type_sys['类型分类表'].items() %}
+{{mtype}}类型 = {{str([e for (k,v) in mdata.items() for e in v])}}
 
 {% endfor %}
 
