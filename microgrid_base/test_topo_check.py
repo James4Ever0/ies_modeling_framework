@@ -4,7 +4,7 @@ import rich
 # build from code.
 ###############
 
-# TODO: 加法器没有输出
+# FIXED: 加法器没有"output"
 
 def print_with_banner(data, banner:str):
     print()

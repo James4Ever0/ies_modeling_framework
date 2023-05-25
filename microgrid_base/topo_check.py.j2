@@ -100,7 +100,6 @@ class 拓扑图:
                 elif left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
 {{ adderMacro("left_subtype", "left_id", "adders[madder_id]") }}
-
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}[{left_subtype}]-{right_type}[{right_subtype}]")
 
