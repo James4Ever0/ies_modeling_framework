@@ -4,6 +4,8 @@ import rich
 # build from code.
 ###############
 
+# TODO: 加法器没有输出
+
 def print_with_banner(data, banner:str):
     print()
     print("="*40+f"[{banner}]")
