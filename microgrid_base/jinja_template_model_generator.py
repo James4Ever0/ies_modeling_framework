@@ -54,16 +54,24 @@ def load_template(template_path):
 
 
 tpl = load_template(topo_code_template_path)
-类型集合分类 = [(mkey, [e for (k,v) in mdata.items() for e in v])  for mkey, mdata in type_sys['类型分类表'].items()]
-设备接口集合 = {set((k, v)) for cat0, d in type_sys["设备锚点类型表"].items() for k, v in d.items()}
+类型集合分类 = [
+    (mkey, [e for (k, v) in mdata.items() for e in v])
+    for mkey, mdata in type_sys["类型分类表"].items()
+]
+设备接口集合 = {
+    dev_name: set([(port_name, port_type) for port_name, port_type in ports.items()])
+    for cat0, devs in type_sys["设备锚点类型表"].items()
+    for dev_name, ports in devs.items()
+}
 import rich
+
 rich.print(设备接口集合)
 breakpoint()
 连接类型映射表 = {
     frozenset((c1, c2)): c
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
 }
-result = tpl.render(类型集合分类 = 类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
+result = tpl.render(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表)
 print()
 print("______________________[{}]".format("TOPO CHECK CODE"))
 print(result)
