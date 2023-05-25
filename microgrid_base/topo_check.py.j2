@@ -18,8 +18,8 @@ type_sys = {{str(type_sys)}} # will work?
 
 {% endfor %}
 
-设备接口集合 = {{}}
-连接类型映射表 = {{}}
+设备接口集合 = {{str(type_sys[])}}
+连接类型映射表 = {{str(type_sys[])}}
 
 def getMainAndSubtype(data):
     mainType = data['type']
