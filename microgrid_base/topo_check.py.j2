@@ -48,7 +48,7 @@ class 拓扑图:
 
     def get_all_adders(self) -> dict: # don't care about types here.
         # use adder ids. adder starts with -1
-        adders = {} # 用到：合并母线ID集合列表
+        adders = {min(s):{"input":[], "output":[], "IO":[]} for s in self.合并母线ID集合列表} # 用到：合并母线ID集合列表
         adder_id = -1
         母线ID映射表 = {e:min(s) for s in self.合并母线ID集合列表 for e in s}
         # format: {"input":input_ids, "output": output_ids, "IO": IO_ids}
@@ -84,9 +84,11 @@ class 拓扑图:
                 if left_type == "锚点" and right_type == "母线":
                     madder_id = 母线ID映射表[right_id]
                     if left_subtype.endswith("输入输出"):
+                        adders[madder_id]['IO'].append(left_id)
                     elif left_subtype.endswith("输入"):
+                        adders[madder_id]['output'].append(left_id)
                     else:
-                    
+                        adders[madder_id]['input'].append(left_id)
                 else:
                     raise Exception(f"不合理的连接线两端：{left_type}-{right_type}")
                 adders.append(adder)
