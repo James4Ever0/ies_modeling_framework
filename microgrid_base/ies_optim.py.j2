@@ -22,7 +22,12 @@ from typing import List
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}ID(BaseModel):
-    {{}}: int
+    {% for port_name, port_type in []%}
+    {{ port_name }}: int
+    """
+    类型: {{ port_type }}
+    """
+    {% endfor %}
 
 class {{class_name}}数据(BaseModel): # {{super_class}}
     {% for mstr in mstrs %}
