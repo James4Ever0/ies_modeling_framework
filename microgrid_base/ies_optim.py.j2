@@ -102,7 +102,7 @@ class 设备模型:
         return varList
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
-class {{class_name}}模型():
+class {{class_name}}模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(model=model, 计算参数=计算参数实例, ID= 设备ID.id)
         self.设备ID = 设备ID
