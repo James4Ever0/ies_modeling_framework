@@ -115,15 +115,15 @@ class 计算参数(BaseModel):
     # like: (tday_index, tday_data, tday_count)
 
 class 设备模型:
-    def __init__(self, model:ConcreteModel, 计算参数实例: ..., ID):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, ID):
         self.model = model
         self.计算参数 = 计算参数实例
         self.ID = ID
 
-    def getVarName(self, varName:str):
+    def getVarName(self, varName: str):
         return f"DI[{self.ID}]_VN[{varName}]"
 
-    def 单变量(self, varName:str):
+    def 单变量(self, varName: str):
         return self.model.__dict__[self.getVarName(varName)] = Var()
 
     def 变量列表(self, varName:str):
@@ -138,7 +138,7 @@ class 设备模型:
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
