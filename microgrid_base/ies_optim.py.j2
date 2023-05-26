@@ -101,5 +101,5 @@ class {{class_name}}():
         {% endfor %}
     
     def constraints_register(self):
-        ...
+        self.model.__dict__['{{}}'] = Var()
 {% endfor %}
