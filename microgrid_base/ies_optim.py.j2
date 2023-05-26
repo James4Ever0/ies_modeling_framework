@@ -76,6 +76,8 @@ class {{class_name}}():
     def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         {% for mdigit in mdigits %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
@@ -97,4 +99,6 @@ class {{class_name}}():
         """
 
         {% endfor %}
+    
+    def 
 {% endfor %}
