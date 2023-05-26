@@ -82,6 +82,7 @@ from typing import Union, Literal, List
 
 # 需要单位明确
 class 计算参数(BaseModel):
+    典型日ID: Union[int, None] = None
     计算步长: Union[Literal["小时"], Literal['秒']]
     计算模式: Union[Literal['典型日'],None]
     风资源: List[float]
@@ -103,7 +104,7 @@ class 计算参数(BaseModel):
             steps = 7200
         elif self.计算步长 == "小时" and self.计算模式 is None:
             steps = 8760
-        else:
+        elif self.计算步长 == "小时" and self.计算模式 is None
             return None
         assert len(self.风资源) == steps
         assert len(self.光资源) == steps
