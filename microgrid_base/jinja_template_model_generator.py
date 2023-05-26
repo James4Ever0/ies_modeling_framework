@@ -111,10 +111,12 @@ load_render_and_format(
 
 import subprocess
 
-def test(cmd:list, exec = "python3"):
-    cmd = [exec]+cmd
+
+def test(cmd: list, exec="python3"):
+    cmd = [exec] + cmd
     p = subprocess.run(cmd)
     p.check_returncode()
+
 
 # run test code.
 test(["test_topo_check.py"])
@@ -124,9 +126,10 @@ render_params = dict()
 load_render_and_format(
     template_path=ies_optim_code_output_path,
     render_params=render_params,
-    banner="TOPO CHECK CODE",
+    banner="IES OPTIM CODE",
 )
 
+test(["test_topo_check.py", "-f"])
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
 # print()
