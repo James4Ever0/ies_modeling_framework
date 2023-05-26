@@ -224,13 +224,13 @@ class 拓扑图:
         self.is_valid = True
     
     def to_json(self) -> dict:
-        data = json_graph.adjacency_data(self.G)
+        data = json_graph.node_link_data(self.G)
         return data
 
     @staticmethod
     def from_json(data):
         # load data to graph
-        G = json_graph.adjacency_graph(data)
+        G = json_graph.node_link_graph(data)
         kwargs = G.graph
         topo = 拓扑图(**kwargs)
         topo.G = G

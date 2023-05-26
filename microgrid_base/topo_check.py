@@ -72,22 +72,22 @@ def getMainAndSubType(data):
     "变压器": {("电输入", "电母线输入"), ("电输出", "变压器输出")},
     "变流器": {("电输出", "电母线输出"), ("电输入", "变流器输入")},
     "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
-    "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
+    "传输线": {("电输出", "电母线输出"), ("电输入", "电母线输入")},
 }
 连接类型映射表 = {
     frozenset({"双向变流器线路端输入输出", "可连接电母线"}): "不可连接电母线输入输出",
-    frozenset({"供电端输出", "变流器输入"}): "不可连接供电端母线",
+    frozenset({"变流器输入", "供电端输出"}): "不可连接供电端母线",
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
-    frozenset({"可连接供电端母线", "变流器输入"}): "不可连接供电端母线输出",
+    frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
     frozenset({"供电端输出", "可连接供电端母线"}): "不可连接供电端母线输入",
     frozenset({"负荷电输入", "变压器输出"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
-    frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
-    frozenset({"可连接负荷电母线", "变压器输出"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
+    frozenset({"负荷电输入", "可连接负荷电母线"}): "不可连接负荷电母线输出",
+    frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
+    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
     frozenset({"柴油输入", "可连接柴油母线"}): "不可连接柴油母线输出",
-    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
+    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
     frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
     frozenset({"电母线输入", "可连接电母线"}): "不可连接电母线输出",
@@ -332,13 +332,13 @@ class 拓扑图:
         self.is_valid = True
 
     def to_json(self) -> dict:
-        data = json_graph.adjacency_data(self.G)
+        data = json_graph.node_link_data(self.G)
         return data
 
     @staticmethod
     def from_json(data):
         # load data to graph
-        G = json_graph.adjacency_graph(data)
+        G = json_graph.node_link_graph(data)
         kwargs = G.graph
         topo = 拓扑图(**kwargs)
         topo.G = G
@@ -378,8 +378,6 @@ class 设备(节点):
             )
             self.ports.update({port_name: {"subtype": port_type, "id": port_node_id}})
             self.topo.G.add_edge(self.id, port_node_id)
-            print("EDGE IDS:", self.id, port_node_id)
-            breakpoint()
         self.topo.G.nodes[self.id]["ports"] = self.ports
 
 
@@ -535,9 +533,9 @@ class 传输线(设备):
         super().__init__(
             topo=topo,
             device_type="传输线",
-            port_definition={("电输入", "电母线输入"), ("电输出", "电母线输出")},
+            port_definition={("电输出", "电母线输出"), ("电输入", "电母线输入")},
             **kwargs,
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
