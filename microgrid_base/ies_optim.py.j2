@@ -96,9 +96,13 @@ class 计算参数(BaseModel):
     """
     @property
     def 迭代步数(self):
+        if self.计算步长 == "秒":
+            return 7200
+        elif self.计算步长 == "小时":
+            return 8760
     @property
     def 典型日列表(self):
-    # like: (day_index, day_data, day_count)
+    # like: (tday_index, tday_data, tday_count)
 
 class 设备模型:
     def __init__(self, model:ConcreteModel, 计算参数实例: ..., ID):
