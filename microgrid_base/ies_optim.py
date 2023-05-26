@@ -477,13 +477,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     设备: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -555,13 +555,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     设备: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -693,15 +693,18 @@ class 传输线信息(BaseModel):  # 配电传输
 
 # model structure.
 
-import pyomo
+from pyomo.environ import *
 
 # first convert the unit.
+# assign variables.
 
 
 class 光伏发电:
-    def __init__(self, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.Area: float = 设备信息.Area * 1
         """
@@ -775,11 +778,16 @@ class 光伏发电:
         单位: m2 <- m2
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 风力发电:
-    def __init__(self, 设备ID: 风力发电ID, 设备信息: 风力发电信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 风力发电ID, 设备信息: 风力发电信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1.0
         """
@@ -859,11 +867,16 @@ class 风力发电:
         单位: 台 <- 台
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 柴油发电:
-    def __init__(self, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -943,11 +956,16 @@ class 柴油发电:
         单位: percent
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 锂电池:
-    def __init__(self, 设备ID: 锂电池ID, 设备信息: 锂电池信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 锂电池ID, 设备信息: 锂电池信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.RatedCapacity: float = 设备信息.RatedCapacity * 1
         """
@@ -1039,11 +1057,16 @@ class 锂电池:
         单位: 台 <- 台
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 变压器:
-    def __init__(self, 设备ID: 变压器ID, 设备信息: 变压器信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 变压器ID, 设备信息: 变压器信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.Efficiency: float = 设备信息.Efficiency * 0.01
         """
@@ -1105,11 +1128,16 @@ class 变压器:
         单位: 台 <- 台
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 变流器:
-    def __init__(self, 设备ID: 变流器ID, 设备信息: 变流器信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 变流器ID, 设备信息: 变流器信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -1170,12 +1198,17 @@ class 变流器:
         名称: 最小安装台数
         单位: 台 <- 台
         """
+
+    def constraints_register(self):
+        ...
 
 
 class 双向变流器:
-    def __init__(self, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 双向变流器ID, 设备信息: 双向变流器信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -1237,11 +1270,16 @@ class 双向变流器:
         单位: 台 <- 台
         """
 
+    def constraints_register(self):
+        ...
+
 
 class 传输线:
-    def __init__(self, 设备ID: 传输线ID, 设备信息: 传输线信息):
+    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 传输线ID, 设备信息: 传输线信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
+        self.model = model
+        self.计算参数 = 计算参数
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
         """
@@ -1284,3 +1322,6 @@ class 传输线:
         名称: 长度
         单位: kilometer <- km
         """
+
+    def constraints_register(self):
+        ...
