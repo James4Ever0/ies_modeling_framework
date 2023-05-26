@@ -43,18 +43,22 @@ class {{class_name}}信息(BaseModel): # {{super_class}}
     {% endfor %}
     
     {% for mdigit in mdigits %}
-    {{ mdigit[1] }}: float
+    {{ mdigit[0] }}: float
     """
+    名称: {{ mdigit[1]}}
     单位: {{mdigit[2]}}
     """
 
     {% endfor %}
 
     {% for mtable in mtables %}
-    {{ mtable[0][1]}}_{{ mtable[1][1]}} : List[List[float]]
+    {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
     """
-    {{ mtable[0][1]}} 单位: {{ mtable[0][2]}}
-    {{ mtable[1][1]}} 单位: {{ mtable[1][2]}}
+    {{ mtable[0][0]}}: {{ mtable[0][1]}}
+    单位: {{ mtable[0][2]}}
+
+    {{ mtable[1][0]}}: {{ mtable[1][1]}}
+    单位: {{ mtable[1][2]}}
     """
 
     {% endfor %}
