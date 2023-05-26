@@ -148,6 +148,7 @@ class 设备模型:
 # output: positive
 # IO: Real
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
+
 class {{class_name}}模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
@@ -177,7 +178,7 @@ class {{class_name}}模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        {% for port_name, port_type in [class_name] %}
+        {% for port_name, port_type in 设备接口集合[class_name] %}
         {% if port_type.endswith("输入输出") %}
         self.变量列表({{port_name}}, within=Reals)
         {% elif port_type.endswith("输入")%}

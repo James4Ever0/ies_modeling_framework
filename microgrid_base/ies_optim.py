@@ -204,13 +204,13 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    燃料接口: int
-    """
-    类型: 柴油输入
-    """
     电接口: int
     """
     类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
     """
 
 
@@ -709,6 +709,7 @@ from typing import Union, Literal, List
 
 # 需要单位明确
 class 计算参数(BaseModel):
+    典型日ID: Union[int, None] = None
     计算步长: Union[Literal["小时"], Literal["秒"]]
     计算模式: Union[Literal["典型日"], None]
     风资源: List[float]
@@ -726,23 +727,18 @@ class 计算参数(BaseModel):
 
     @property
     def 迭代步数(self):
-        steps = None
         if self.计算步长 == "秒":
             steps = 7200
         elif self.计算步长 == "小时" and self.计算模式 is None:
             steps = 8760
+        elif self.计算步长 == "小时" and self.计算模式 is "典型日":
+            steps = 24
         else:
-            return None
+            raise Exception("未知计算参数:", self.计算步长, self.计算模式)
         assert len(self.风资源) == steps
         assert len(self.光资源) == steps
         assert len(self.气温) == steps
         return steps
-
-    @property  # 提前计算好了
-    def 典型日列表(self):  #
-        ...
-
-    # like: (tday_index, tday_data, tday_count)
 
 
 class 设备模型:
@@ -752,24 +748,25 @@ class 设备模型:
         self.ID = ID
 
     def getVarName(self, varName: str):
-        return f"DI[{self.ID}]_VN[{varName}]"
+        VN = f"DI_{self.ID}_VN_{varName}"  # use underscore.
+        if self.计算参数.典型日ID:
+            VN = f"TD_{self.计算参数.典型日ID}_" + VN
+        return VN
 
-    def 单变量(self, varName: str):
-        var = self.model.__dict__[self.getVarName(varName)] = Var()
+    def 单变量(self, varName: str, **kwargs):
+        var = self.model.__dict__[self.getVarName(varName)] = Var(**kwargs)
         return var
 
-    def 变量列表(self, varName: str):
-        var = self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数))
+    def 变量列表(self, varName: str, **kwargs):
+        var = self.model.__dict__[self.getVarName(varName)] = Var(
+            range(self.计算参数.迭代步数), **kwargs
+        )
         return var
 
-    def 典型日变量列表(self, varName: str):
-        varList = []
-        for i in range(len(self.计算参数.典型日列表)):
-            var = self.model.__dict__[f"典型日[{i}]_" + self.getVarName(varName)] = Var(
-                range(24)
-            )
-            varList.append(var)
-        return varList
+
+# input: negative
+# output: positive
+# IO: Real
 
 
 class 光伏发电模型(设备模型):
@@ -848,6 +845,13 @@ class 光伏发电模型(设备模型):
         """
         名称: 最小安装面积
         单位: m2 <- m2
+        """
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电接口, within=NonNegativeReals)
+        """
+        类型: 供电端输出
         """
 
     def constraints_register(self):
@@ -938,6 +942,13 @@ class 风力发电模型(设备模型):
         单位: 台 <- 台
         """
 
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电接口, within=NonNegativeReals)
+        """
+        类型: 供电端输出
+        """
+
     def constraints_register(self):
         ...
 
@@ -1024,6 +1035,17 @@ class 柴油发电模型(设备模型):
 
         Load: 负载率
         单位: percent
+        """
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电接口, within=NonNegativeReals)
+        """
+        类型: 供电端输出
+        """
+        self.变量列表(燃料接口, within=NegativeReals)
+        """
+        类型: 柴油输入
         """
 
     def constraints_register(self):
@@ -1126,6 +1148,13 @@ class 锂电池模型(设备模型):
         单位: 台 <- 台
         """
 
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电接口, within=Reals)
+        """
+        类型: 电储能端输入输出
+        """
+
     def constraints_register(self):
         ...
 
@@ -1196,6 +1225,17 @@ class 变压器模型(设备模型):
         单位: 台 <- 台
         """
 
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电输入, within=NegativeReals)
+        """
+        类型: 电母线输入
+        """
+        self.变量列表(电输出, within=NonNegativeReals)
+        """
+        类型: 变压器输出
+        """
+
     def constraints_register(self):
         ...
 
@@ -1264,6 +1304,17 @@ class 变流器模型(设备模型):
         """
         名称: 最小安装台数
         单位: 台 <- 台
+        """
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电输出, within=NonNegativeReals)
+        """
+        类型: 电母线输出
+        """
+        self.变量列表(电输入, within=NegativeReals)
+        """
+        类型: 变流器输入
         """
 
     def constraints_register(self):
@@ -1338,6 +1389,17 @@ class 双向变流器模型(设备模型):
         单位: 台 <- 台
         """
 
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(线路端, within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
+        """
+        self.变量列表(储能端, within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
+        """
+
     def constraints_register(self):
         ...
 
@@ -1388,6 +1450,17 @@ class 传输线模型(设备模型):
         """
         名称: 长度
         单位: kilometer <- km
+        """
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.变量列表(电输出, within=NonNegativeReals)
+        """
+        类型: 电母线输出
+        """
+        self.变量列表(电输入, within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
     def constraints_register(self):
