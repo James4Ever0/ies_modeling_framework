@@ -36,7 +36,7 @@ class {{class_name}}ID(BaseModel):
     """
     {% endfor %}
 
-class {{class_name}}数据(BaseModel): # {{super_class}}
+class {{class_name}}信息(BaseModel): # {{super_class}}
     {% for mstr in mstrs %}
     {{ mstr }}: str
 
@@ -68,6 +68,6 @@ import pyomo
 
 {% for ... in ... %}
 class {{class_name}}():
-    def __init__(self, 设备ID: {{ }}, 设备信息: {{ }}):
+    def __init__(self, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
 
 {% endfor %}
