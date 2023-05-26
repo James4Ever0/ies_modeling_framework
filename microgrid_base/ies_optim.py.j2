@@ -70,7 +70,7 @@ import pyomo
 
 # first convert the unit.
 
-{% for super_class, class_name, mstrs, mdigits, mtables in 设备库  %}
+{% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}():
     def __init__(self, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
@@ -79,8 +79,8 @@ class {{class_name}}():
         {% for mdigit in mdigits %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
         """
-        名称: {{ mdigit[1]}}
-        单位: {{ mdigit[3]}} <- {{mdigit[2]}}
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
         """
 
         {% endfor %}
