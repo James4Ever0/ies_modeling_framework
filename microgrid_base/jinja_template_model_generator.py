@@ -108,19 +108,24 @@ load_render_and_format(
     render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
     banner="TOPO CHECK CODE",
 )
+
 import subprocess
 
 def test(cmd:list, exec = "python3"):
-    
-cmd = ["python3", "test_topo_check.py"]
-p = subprocess.run(cmd)
-p.check_returncode()
+    cmd = [exec]+cmd
+    p = subprocess.run(cmd)
+    p.check_returncode()
 
 # run test code.
+test(["test_topo_check.py"])
 
-load
 
-
+render_params = dict()
+load_render_and_format(
+    template_path=ies_optim_code_output_path,
+    render_params=render_params,
+    banner="TOPO CHECK CODE",
+)
 
 # tpl = load_template(ies_optim_code_output_path)
 # result = tpl.render(type_sys=type_sys, dparam=dparam)
