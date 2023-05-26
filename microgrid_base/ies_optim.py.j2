@@ -74,4 +74,26 @@ import pyomo
 class {{class_name}}():
     def __init__(self, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
+        self.设备信息 = 设备信息
+        
+        {% for mdigit in mdigits %}
+        {{ mdigit[0] }}: float
+        """
+        名称: {{ mdigit[1]}}
+        单位: {{mdigit[2]}}
+        """
+
+        {% endfor %}
+
+        {% for mtable in mtables %}
+        {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
+        """
+        {{ mtable[0][0]}}: {{ mtable[0][1]}}
+        单位: {{ mtable[0][2]}}
+
+        {{ mtable[1][0]}}: {{ mtable[1][1]}}
+        单位: {{ mtable[1][2]}}
+        """
+
+        {% endfor %}
 {% endfor %}
