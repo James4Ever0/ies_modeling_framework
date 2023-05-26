@@ -1283,8 +1283,11 @@ class 传输线:
         
         计算步长 = "小时"
         计算模式 = "全年" # 8760 points
+        计算模式 = "典型日" # fewer points, 24 as a unit
         
-        self.model.var
+        for _ in 典型日range
+        self.model.__dict__['典型日{n}'] = Var(range(24))
+        self.model.__dict__[''] = Var(range(8760))
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
         """
