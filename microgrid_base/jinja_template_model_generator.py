@@ -124,8 +124,9 @@ test(["test_topo_check.py"])
 
 设备库 = []
 
-for ...:
-    设备库.append((class_name, mstrs, mdigits, mtables))
+for super_class, v0 in dparam.items():
+    for class_name, v1 in v0.items():
+    设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库)
 load_render_and_format(
