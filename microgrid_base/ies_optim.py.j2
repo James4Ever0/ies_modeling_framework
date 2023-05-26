@@ -173,12 +173,15 @@ class {{class_name}}模型(设备模型):
         
         {% for port_name, port_type in [class_name] %}
         {% if port_type.endswith("输入输出") %}
-        self.
+        self.变量列表({{port_name}}, within=Reals)
         {% elif port_type.endswith("输入")%}
-        self.
+        self.变量列表({{port_name}}, within=NegativeReals)
         {% elif port_type.endswith("输出")%}
-        self.
+        self.变量列表({{port_name}}, within=NonNegativeReals)
         {% endif %}
+        """
+        类型: {{port_type}}
+        """
         {% endfor %}
     
     def constraints_register(self):
