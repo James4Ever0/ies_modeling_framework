@@ -139,8 +139,12 @@ for super_class, v0 in dparam.items():
                     if type(item) == str:
                         mstrs.append(item)
                     elif type(item) == list:
-                    elif type(item) == dict
-        设备库.append((super_class, class_name, mstrs, mdigits, mtables))
+                        mdigits.append(item)
+                    elif type(item) == dict:
+                        main = item['MAIN']
+                        sub = item['SUB']
+                        mtables.append((main, sub))
+        设备库.append((super_class, class_name, param_super_class, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库)
 load_render_and_format(
