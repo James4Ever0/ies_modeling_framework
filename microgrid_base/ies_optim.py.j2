@@ -73,10 +73,16 @@ from pyomo.environ import *
 
 # shall you assign port with variables.
 
+class 计算参数(BaseModel):
+    @property
+    def 迭代步数(self):
+    @property
+    def 典型日列表(self):
+
 class 设备模型:
-    def __init__(self, model:ConcreteModel, 计算参数: ..., ID):
+    def __init__(self, model:ConcreteModel, 计算参数实例: ..., ID):
         self.model = model
-        self.计算参数 = 计算参数
+        self.计算参数 = 计算参数实例
         self.ID = ID
 
     def getVarName(self, varName:str):
@@ -97,8 +103,8 @@ class 设备模型:
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型():
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
-        super().__init__(model=model, 计算参数=计算参数, ID= 设备ID.id)
+    def __init__(self, model: ConcreteModel, 计算参数实例: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID= 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
