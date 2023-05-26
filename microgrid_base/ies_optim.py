@@ -1281,7 +1281,10 @@ class 传输线:
         self.model = model
         self.计算参数 = 计算参数
         
-        self.model.
+        计算步长 = "小时"
+        计算模式 = "全年" # 8760 points
+        
+        self.model.var
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
         """
