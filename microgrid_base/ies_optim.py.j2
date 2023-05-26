@@ -138,6 +138,9 @@ class 设备模型:
             varList.append(var)
         return varList
 
+# input: negative
+# output: positive
+# IO: Real
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
@@ -170,6 +173,11 @@ class {{class_name}}模型(设备模型):
         
         {% for port_name, port_type in [class_name] %}
         {% if port_type.endswith("输入输出") %}
+        self.
+        {% elif port_type.endswith("输入")%}
+        self.
+        {% elif port_type.endswith("输出")%}
+        self.
         {% endif %}
         {% endfor %}
     
