@@ -78,18 +78,18 @@ class 设备模型:
         self.model = model
         self.计算参数 = 计算参数
         self.ID = ID
-        
+
     def getVarName(self, varName:str):
         return f"DI[{self.ID}]_VN[{varName}]"
 
     def 单变量(self, varName:str):
-        return self.model.__dict__[varName] = Var(self.getVarName(varName))
+        return self.model.__dict__[self.getVarName(varName)] = Var()
 
     def 变量列表(self, varName:str):
-        return self.model.__dict__[varName] = Var(self.getVarName(varName))
+        return self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数))
 
     def 典型日变量列表(self, varName:str):
-        return self.model.__dict__[varName] = Var(self.getVarName(varName))
+        return self.model.__dict__["典型日[{}]_"self.getVarName(varName)] = Var(range(24))
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型():
