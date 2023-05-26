@@ -72,7 +72,7 @@ from pyomo.environ import *
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}():
-    def __init__(self, model: p, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+    def __init__(self, model: ConcreteModel , 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
