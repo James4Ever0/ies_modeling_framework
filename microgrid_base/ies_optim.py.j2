@@ -75,18 +75,19 @@ class {{class_name}}():
     def __init__(self, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        
+
         {% for mdigit in mdigits %}
-        {{ mdigit[0] }}: float
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
         """
         名称: {{ mdigit[1]}}
-        单位: {{mdigit[2]}}
+        单位: {{mdigit[3]}} <- {{mdigit[2]}}
         """
 
         {% endfor %}
 
         {% for mtable in mtables %}
-        {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
+        self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}
+        
         """
         {{ mtable[0][0]}}: {{ mtable[0][1]}}
         单位: {{ mtable[0][2]}}
