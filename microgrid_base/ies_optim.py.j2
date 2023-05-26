@@ -30,7 +30,7 @@ class 加法器ID(BaseModel):
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
 class {{class_name}}ID(BaseModel):
-    设备: int
+    ID: int
     {% for port_name, port_type in 设备接口集合[class_name]%}
     {{ port_name }}: int
     """
@@ -121,7 +121,7 @@ class 设备模型:
         self.ID = ID
 
     def getVarName(self, varName: str):
-        return f"DI[{self.ID}]_VN[{varName}]"
+        return f"DI_{self.ID}_VN_{varName}"
 
     def 单变量(self, varName: str):
         var= self.model.__dict__[self.getVarName(varName)] = Var()
@@ -141,7 +141,7 @@ class 设备模型:
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID = 设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 

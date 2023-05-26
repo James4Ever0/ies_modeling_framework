@@ -25,7 +25,7 @@ from typing import List
 
 
 class 光伏发电ID(BaseModel):
-    设备: int
+    ID: int
     电接口: int
     """
     类型: 供电端输出
@@ -111,7 +111,7 @@ class 光伏发电信息(BaseModel):  # 发电设备
 
 
 class 风力发电ID(BaseModel):
-    设备: int
+    ID: int
     电接口: int
     """
     类型: 供电端输出
@@ -203,14 +203,14 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 
 class 柴油发电ID(BaseModel):
-    设备: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
+    ID: int
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -296,7 +296,7 @@ class 柴油发电信息(BaseModel):  # 发电设备
 
 
 class 锂电池ID(BaseModel):
-    设备: int
+    ID: int
     电接口: int
     """
     类型: 电储能端输入输出
@@ -400,7 +400,7 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 
 class 变压器ID(BaseModel):
-    设备: int
+    ID: int
     电输入: int
     """
     类型: 电母线输入
@@ -478,7 +478,7 @@ class 变压器信息(BaseModel):  # 配电传输
 
 
 class 变流器ID(BaseModel):
-    设备: int
+    ID: int
     电输出: int
     """
     类型: 电母线输出
@@ -556,14 +556,14 @@ class 变流器信息(BaseModel):  # 配电传输
 
 
 class 双向变流器ID(BaseModel):
-    设备: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
+    ID: int
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -634,7 +634,7 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 
 class 传输线ID(BaseModel):
-    设备: int
+    ID: int
     电输出: int
     """
     类型: 电母线输出
@@ -774,7 +774,7 @@ class 设备模型:
 
 class 光伏发电模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -856,7 +856,7 @@ class 光伏发电模型(设备模型):
 
 class 风力发电模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -944,7 +944,7 @@ class 风力发电模型(设备模型):
 
 class 柴油发电模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1032,7 +1032,7 @@ class 柴油发电模型(设备模型):
 
 class 锂电池模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1132,7 +1132,7 @@ class 锂电池模型(设备模型):
 
 class 变压器模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1202,7 +1202,7 @@ class 变压器模型(设备模型):
 
 class 变流器模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1274,7 +1274,7 @@ class 双向变流器模型(设备模型):
     def __init__(
         self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息
     ):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1344,7 +1344,7 @@ class 双向变流器模型(设备模型):
 
 class 传输线模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.id)
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
