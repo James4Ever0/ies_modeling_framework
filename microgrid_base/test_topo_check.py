@@ -1,3 +1,4 @@
+import json
 from topo_check import *
 import rich
 ###############
@@ -69,6 +70,8 @@ print_with_banner(adders, "加法器")
 
 mdict = topo.to_json()
 print_with_banner(mdict, "图序列化")
+with open("template_input.json",'w+') as f:
+    f.write(json.dumps(mdict, ensure_ascii=False, indent=4))
 ###############
 # load from dict
 ###############
