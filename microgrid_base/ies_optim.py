@@ -1280,6 +1280,8 @@ class 传输线:
         self.设备信息 = 设备信息
         self.model = model
         self.计算参数 = 计算参数
+        
+        self.model.
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
         """
