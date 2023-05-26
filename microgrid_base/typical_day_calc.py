@@ -7,6 +7,8 @@ lfs = [load_format, load_format1]
 
 # 温度聚类 -> 9 sets -> avg wind/solar
 
+# shape: 1x365
+
 for lf in lfs:
     wd, hd = set(lf['workday']), set(lf['hoilday'])
     assert wd.intersection(hd) == set()
