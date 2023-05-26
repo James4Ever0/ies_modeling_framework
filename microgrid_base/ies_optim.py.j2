@@ -77,11 +77,15 @@ class 设备模型:
     def __init__(self, model:ConcreteModel, 计算参数: ...):
         self.model = model
         self.计算参数 = 计算参数
+    
+    def 单变量(self):
+    def 变量列表(self):
+    def 典型日变量列表(self):
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型():
     def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
-    
+        super().__init__(model=model, 计算参数=计算参数)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
