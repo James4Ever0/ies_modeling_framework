@@ -148,7 +148,7 @@ for super_class, v0 in dparam.items():
 
 render_params = dict(设备库=设备库)
 load_render_and_format(
-    template_path=ies_optim_code_output_path,
+    template_path=ies_optim_code_template_path,
     render_params=render_params,
     banner="IES OPTIM CODE",
 )
