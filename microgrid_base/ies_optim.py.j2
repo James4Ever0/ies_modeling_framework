@@ -89,7 +89,11 @@ class 设备模型:
         return self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数))
 
     def 典型日变量列表(self, varName:str):
-        return self.model.__dict__["典型日[{}]_"self.getVarName(varName)] = Var(range(24))
+        varList = []
+        for i in range(len(self.计算参数.典型日列表)):
+            var = self.model.__dict__[f"典型日[{i}]_"self.getVarName(varName)] = Var(range(24))
+            varList.append(var)
+        return varList
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型():
