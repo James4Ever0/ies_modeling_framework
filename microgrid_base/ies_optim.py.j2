@@ -156,11 +156,19 @@ class {{class_name}}模型(设备模型):
         self.设备信息 = 设备信息
 
         {% for mdigit in mdigits %}
+        {% if mdigit[4] == 1%}
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
+        """
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }}
+        """
+        {%else%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
         """
         名称: {{ mdigit[1] }}
         单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
         """
+        {%endif%}
 
         {% endfor %}
 

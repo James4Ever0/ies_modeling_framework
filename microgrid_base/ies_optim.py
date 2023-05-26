@@ -557,13 +557,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -775,10 +775,10 @@ class 光伏发电模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.Area: float = 设备信息.Area * 1
+        self.Area: float = 设备信息.Area
         """
         名称: 光伏板面积
-        单位: m2 <- m2
+        单位: m2
         """
 
         self.PowerConversionEfficiency: float = 设备信息.PowerConversionEfficiency * 0.01
@@ -787,10 +787,10 @@ class 光伏发电模型(设备模型):
         单位: one <- percent
         """
 
-        self.MaxPower: float = 设备信息.MaxPower * 1.0
+        self.MaxPower: float = 设备信息.MaxPower
         """
         名称: 最大发电功率
-        单位: kilowatt <- kWp
+        单位: kilowatt
         """
 
         self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit * 315575.99999999994
@@ -799,16 +799,16 @@ class 光伏发电模型(设备模型):
         单位: one / 年 <- percent/s
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1.0
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt <- 万元/kWp
+        单位: 万元 / kilowatt
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1.0
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt / 年 <- 万元/(kWp*年)
+        单位: 万元 / kilowatt / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -817,34 +817,34 @@ class 光伏发电模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1.0
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt <- 万元/kWp
+        单位: 万元 / kilowatt
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxInstallArea: float = 设备信息.MaxInstallArea * 1
+        self.MaxInstallArea: float = 设备信息.MaxInstallArea
         """
         名称: 最大安装面积
-        单位: m2 <- m2
+        单位: m2
         """
 
-        self.MinInstallArea: float = 设备信息.MinInstallArea * 1
+        self.MinInstallArea: float = 设备信息.MinInstallArea
         """
         名称: 最小安装面积
-        单位: m2 <- m2
+        单位: m2
         """
 
         ##### PORT VARIABLE DEFINITION ####
@@ -864,10 +864,10 @@ class 风力发电模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.RatedPower: float = 设备信息.RatedPower * 1.0
+        self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
-        单位: kilowatt <- kWp
+        单位: kilowatt
         """
 
         self.RatedWindSpeed: float = 设备信息.RatedWindSpeed * 31557.600000000002
@@ -894,16 +894,16 @@ class 风力发电模型(设备模型):
         单位: one / 年 <- percent/s
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1.0
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt <- 万元/kWp
+        单位: 万元 / kilowatt
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1.0
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt / 年 <- 万元/(kWp*年)
+        单位: 万元 / kilowatt / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -912,34 +912,34 @@ class 风力发电模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1.0
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt <- 万元/kWp
+        单位: 万元 / kilowatt
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         ##### PORT VARIABLE DEFINITION ####
@@ -959,10 +959,10 @@ class 柴油发电模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.RatedPower: float = 设备信息.RatedPower * 1
+        self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
-        单位: kilowatt <- kW
+        单位: kilowatt
         """
 
         self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit * 315575.99999999994
@@ -977,16 +977,16 @@ class 柴油发电模型(设备模型):
         单位: one <- percent
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / 台 <- 万元/台
+        单位: 万元 / 台
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / 台 / 年 <- 万元/(台*年)
+        单位: 万元 / 台 / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -995,34 +995,34 @@ class 柴油发电模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / 台 <- 万元/台
+        单位: 万元 / 台
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         self.DieselToPower_Load: List[List[float]] = [
@@ -1059,10 +1059,10 @@ class 锂电池模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.RatedCapacity: float = 设备信息.RatedCapacity * 1
+        self.RatedCapacity: float = 设备信息.RatedCapacity
         """
         名称: 额定容量
-        单位: kilowatt_hour <- kWh
+        单位: kilowatt_hour
         """
 
         self.BatteryDeltaLimit: float = 设备信息.BatteryDeltaLimit * 8766.0
@@ -1089,28 +1089,28 @@ class 锂电池模型(设备模型):
         单位: one / 年 <- percent/hour
         """
 
-        self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity * 1
+        self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity
         """
         名称: 生命周期总放电量
-        单位: kilowatt_hour <- kWh
+        单位: kilowatt_hour
         """
 
-        self.BatteryLife: float = 设备信息.BatteryLife * 1
+        self.BatteryLife: float = 设备信息.BatteryLife
         """
         名称: 电池换芯周期
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt_hour <- 万元/kWh
+        单位: 万元 / kilowatt_hour
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt_hour / 年 <- 万元/(kWh*年)
+        单位: 万元 / kilowatt_hour / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -1119,34 +1119,34 @@ class 锂电池模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt_hour <- 万元/kWh
+        单位: 万元 / kilowatt_hour
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         ##### PORT VARIABLE DEFINITION ####
@@ -1172,22 +1172,22 @@ class 变压器模型(设备模型):
         单位: one <- percent
         """
 
-        self.RatedPower: float = 设备信息.RatedPower * 1
+        self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 变压器容量
-        单位: kilowatt <- kW
+        单位: kilowatt
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt / 年 <- 万元/(kW*年)
+        单位: 万元 / kilowatt / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -1196,34 +1196,34 @@ class 变压器模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         ##### PORT VARIABLE DEFINITION ####
@@ -1248,10 +1248,10 @@ class 变流器模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.RatedPower: float = 设备信息.RatedPower * 1
+        self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
-        单位: kilowatt <- kW
+        单位: kilowatt
         """
 
         self.Efficiency: float = 设备信息.Efficiency * 0.01
@@ -1260,16 +1260,16 @@ class 变流器模型(设备模型):
         单位: one <- percent
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt / 年 <- 万元/(kW*年)
+        单位: 万元 / kilowatt / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -1278,34 +1278,34 @@ class 变流器模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         ##### PORT VARIABLE DEFINITION ####
@@ -1332,10 +1332,10 @@ class 双向变流器模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.RatedPower: float = 设备信息.RatedPower * 1
+        self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
-        单位: kilowatt <- kW
+        单位: kilowatt
         """
 
         self.Efficiency: float = 设备信息.Efficiency * 0.01
@@ -1344,16 +1344,16 @@ class 双向变流器模型(设备模型):
         单位: one <- percent
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.CostPerYear: float = 设备信息.CostPerYear * 1
+        self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt / 年 <- 万元/(kW*年)
+        单位: 万元 / kilowatt / 年
         """
 
         self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
@@ -1362,46 +1362,46 @@ class 双向变流器模型(设备模型):
         单位: 万元 / kilowatt_hour <- 元/kWh
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt <- 万元/kW
+        单位: 万元 / kilowatt
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount * 1
+        self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
-        self.MinDeviceCount: float = 设备信息.MinDeviceCount * 1
+        self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
-        单位: 台 <- 台
+        单位: 台
         """
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
     def constraints_register(self):
@@ -1414,46 +1414,46 @@ class 传输线模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
+        self.PowerTransferDecay: float = 设备信息.PowerTransferDecay
         """
         名称: 能量衰减系数
-        单位: kilowatt / kilometer <- kW/km
+        单位: kilowatt / kilometer
         """
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt * 1
+        self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
-        单位: 万元 / kilometer <- 万元/km
+        单位: 万元 / kilometer
         """
 
-        self.VariationCostPerMeter: float = 设备信息.VariationCostPerMeter * 1
+        self.VariationCostPerMeter: float = 设备信息.VariationCostPerMeter
         """
         名称: 维护成本
-        单位: 万元 / kilometer / 年 <- 万元/(km*年)
+        单位: 万元 / kilometer / 年
         """
 
-        self.Life: float = 设备信息.Life * 1
+        self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
-        单位: 年 <- 年
+        单位: 年
         """
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt * 1
+        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
-        单位: 万元 / kilometer <- 万元/km
+        单位: 万元 / kilometer
         """
 
-        self.BuildBaseCost: float = 设备信息.BuildBaseCost * 1
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
-        单位: 万元 <- 万元
+        单位: 万元
         """
 
-        self.Length: float = 设备信息.Length * 1
+        self.Length: float = 设备信息.Length
         """
         名称: 长度
-        单位: kilometer <- km
+        单位: kilometer
         """
 
         ##### PORT VARIABLE DEFINITION ####
