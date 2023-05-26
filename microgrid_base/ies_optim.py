@@ -30,68 +30,80 @@ class 光伏发电ID(BaseModel):
     """
 
 
-class 光伏发电数据(BaseModel):  # 发电设备
+class 光伏发电信息(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
 
-    光伏板面积: float
+    Area: float
     """
+    名称: 光伏板面积
     单位: m2
     """
 
-    电电转换效率: float
+    PowerConversionEfficiency: float
     """
+    名称: 电电转换效率
     单位: percent
     """
 
-    最大发电功率: float
+    MaxPower: float
     """
+    名称: 最大发电功率
     单位: kWp
     """
 
-    发电爬坡率: float
+    PowerDeltaLimit: float
     """
+    名称: 发电爬坡率
     单位: percent/s
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kWp
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kWp
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装面积: float
+    MaxInstallArea: float
     """
+    名称: 最大安装面积
     单位: m2
     """
 
-    最小安装面积: float
+    MinInstallArea: float
     """
+    名称: 最小安装面积
     单位: m2
     """
 
@@ -104,73 +116,86 @@ class 风力发电ID(BaseModel):
     """
 
 
-class 风力发电数据(BaseModel):  # 发电设备
+class 风力发电信息(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
 
-    额定功率: float
+    RatedPower: float
     """
+    名称: 额定功率
     单位: kWp
     """
 
-    额定风速: float
+    RatedWindSpeed: float
     """
+    名称: 额定风速
     单位: m/s
     """
 
-    切入风速: float
+    MinWindSpeed: float
     """
+    名称: 切入风速
     单位: m/s
     """
 
-    切出风速: float
+    MaxWindSpeed: float
     """
+    名称: 切出风速
     单位: m/s
     """
 
-    发电爬坡率: float
+    PowerDeltaLimit: float
     """
+    名称: 发电爬坡率
     单位: percent/s
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kWp
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kWp
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
@@ -187,70 +212,84 @@ class 柴油发电ID(BaseModel):
     """
 
 
-class 柴油发电数据(BaseModel):  # 发电设备
+class 柴油发电信息(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
 
-    额定功率: float
+    RatedPower: float
     """
+    名称: 额定功率
     单位: kW
     """
 
-    发电爬坡率: float
+    PowerDeltaLimit: float
     """
+    名称: 发电爬坡率
     单位: percent/s
     """
 
-    启动功率百分比: float
+    PowerStartupLimit: float
     """
+    名称: 启动功率百分比
     单位: percent
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/台
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(台*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/台
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
-    燃油消耗率_负载率: List[List[float]]
+    DieselToPower_Load: List[List[float]]
     """
-    燃油消耗率 单位: L/kWh
-    负载率 单位: percent
+    DieselToPower: 燃油消耗率
+    单位: L/kWh
+
+    Load: 负载率
+    单位: percent
     """
 
 
@@ -262,219 +301,254 @@ class 锂电池ID(BaseModel):
     """
 
 
-class 锂电池数据(BaseModel):  # 储能设备
+class 锂电池信息(BaseModel):  # 储能设备
     生产厂商: str
 
     设备型号: str
 
-    额定容量: float
+    RatedCapacity: float
     """
+    名称: 额定容量
     单位: kWh
     """
 
-    电池充放电倍率: float
+    BatteryDeltaLimit: float
     """
+    名称: 电池充放电倍率
     单位: 1/hour
     """
 
-    充能效率: float
+    ChargeEfficiency: float
     """
+    名称: 充能效率
     单位: percent
     """
 
-    放能效率: float
+    DischargeEfficiency: float
     """
+    名称: 放能效率
     单位: percent
     """
 
-    存储衰减: float
+    BatteryStorageDecay: float
     """
+    名称: 存储衰减
     单位: percent/hour
     """
 
-    生命周期总放电量: float
+    TotalDischargeCapacity: float
     """
+    名称: 生命周期总放电量
     单位: kWh
     """
 
-    电池换芯周期: float
+    BatteryLife: float
     """
+    名称: 电池换芯周期
     单位: 年
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kWh
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kWh*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kWh
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
 
 class 变压器ID(BaseModel):
     设备: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
     """
+    电输入: int
+    """
+    类型: 电母线输入
+    """
 
 
-class 变压器数据(BaseModel):  # 配电传输
+class 变压器信息(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
 
-    效率: float
+    Efficiency: float
     """
+    名称: 效率
     单位: percent
     """
 
-    变压器容量: float
+    RatedPower: float
     """
+    名称: 变压器容量
     单位: kW
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kW
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kW
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
 
 class 变流器ID(BaseModel):
     设备: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
     """
+    电输入: int
+    """
+    类型: 变流器输入
+    """
 
 
-class 变流器数据(BaseModel):  # 配电传输
+class 变流器信息(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
 
-    额定功率: float
+    RatedPower: float
     """
+    名称: 额定功率
     单位: kW
     """
 
-    效率: float
+    Efficiency: float
     """
+    名称: 效率
     单位: percent
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kW
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kW
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
@@ -491,58 +565,68 @@ class 双向变流器ID(BaseModel):
     """
 
 
-class 双向变流器数据(BaseModel):  # 配电传输
+class 双向变流器信息(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
 
-    额定功率: float
+    RatedPower: float
     """
+    名称: 额定功率
     单位: kW
     """
 
-    效率: float
+    Efficiency: float
     """
+    名称: 效率
     单位: percent
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/kW
     """
 
-    固定维护成本: float
+    CostPerYear: float
     """
+    名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    可变维护成本: float
+    VariationalCostPerPower: float
     """
+    名称: 可变维护成本
     单位: 元/kWh
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/kW
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    最大安装台数: float
+    MaxDeviceCount: float
     """
+    名称: 最大安装台数
     单位: 台
     """
 
-    最小安装台数: float
+    MinDeviceCount: float
     """
+    名称: 最小安装台数
     单位: 台
     """
 
@@ -559,42 +643,96 @@ class 传输线ID(BaseModel):
     """
 
 
-class 传输线数据(BaseModel):  # 配电传输
+class 传输线信息(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
 
-    能量衰减系数: float
+    PowerTransferDecay: float
     """
+    名称: 能量衰减系数
     单位: kW/km
     """
 
-    采购成本: float
+    CostPerWatt: float
     """
+    名称: 采购成本
     单位: 万元/km
     """
 
-    维护成本: float
+    VariationCostPerMeter: float
     """
+    名称: 维护成本
     单位: 万元/(km*年)
     """
 
-    设计寿命: float
+    Life: float
     """
+    名称: 设计寿命
     单位: 年
     """
 
-    建设费用系数: float
+    BuildCostPerWatt: float
     """
+    名称: 建设费用系数
     单位: 万元/km
     """
 
-    建设费用基数: float
+    BuildBaseCost: float
     """
+    名称: 建设费用基数
     单位: 万元
     """
 
-    长度: float
+    Length: float
     """
+    名称: 长度
     单位: km
     """
+
+
+# model structure.
+
+import pyomo
+
+# first convert the unit.
+
+
+class 光伏发电:
+    def __init__(self, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
+        ...
+
+
+class 风力发电:
+    def __init__(self, 设备ID: 风力发电ID, 设备信息: 风力发电信息):
+        ...
+
+
+class 柴油发电:
+    def __init__(self, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
+        ...
+
+
+class 锂电池:
+    def __init__(self, 设备ID: 锂电池ID, 设备信息: 锂电池信息):
+        ...
+
+
+class 变压器:
+    def __init__(self, 设备ID: 变压器ID, 设备信息: 变压器信息):
+        ...
+
+
+class 变流器:
+    def __init__(self, 设备ID: 变流器ID, 设备信息: 变流器信息):
+        ...
+
+
+class 双向变流器:
+    def __init__(self, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息):
+        ...
+
+
+class 传输线:
+    def __init__(self, 设备ID: 传输线ID, 设备信息: 传输线信息):
+        ...
