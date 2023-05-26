@@ -17,7 +17,9 @@
 
 from pydantic import BaseModel
 
+# string, digits, tables.
+
 {% for class_name in 设备库 %}
-class {{class_name}}():
+class {{class_name}}(BaseModel):
     ...
 {% endfor %}
