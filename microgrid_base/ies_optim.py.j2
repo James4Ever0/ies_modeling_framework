@@ -80,14 +80,13 @@ class {{class_name}}():
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
         """
         名称: {{ mdigit[1]}}
-        单位: {{mdigit[3]}} <- {{mdigit[2]}}
+        单位: {{ mdigit[3]}} <- {{mdigit[2]}}
         """
 
         {% endfor %}
 
         {% for mtable in mtables %}
-        self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}
-        
+        self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = [[v1 * {{mtable[0][4]}}, v2 * {{mtable[1][4]}}] for v1, v2 in 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}]
         """
         {{ mtable[0][0]}}: {{ mtable[0][1]}}
         单位: {{ mtable[0][2]}}
