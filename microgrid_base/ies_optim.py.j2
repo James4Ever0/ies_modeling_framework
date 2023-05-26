@@ -21,9 +21,10 @@ from typing import List
 # you can dump and load from json.
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
-class {{class_name}}(BaseModel):
+class {{class_name}}信息(BaseModel): # {{super_class}}
     {% for mstr in mstrs %}
     {{ mstr }}: str
+
     {% endfor %}
     
     {% for mdigit in mdigits %}
@@ -31,6 +32,7 @@ class {{class_name}}(BaseModel):
     """
     单位: {{mdigit[2]}}
     """
+
     {% endfor %}
 
     {% for mtable in mtables %}
@@ -39,5 +41,7 @@ class {{class_name}}(BaseModel):
     {{ mtable[0][1]}} 单位: {{ mtable[0][2]}}
     {{ mtable[1][1]}} 单位: {{ mtable[1][2]}}
     """
+
     {% endfor %}
 {% endfor %}
+
