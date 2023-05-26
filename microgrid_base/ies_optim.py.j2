@@ -109,8 +109,8 @@ class 计算参数(BaseModel):
         assert len(self.光资源) == steps
         assert len(self.气温) == steps
         return steps
-    @property
-    def 典型日列表(self):
+    @property # 提前计算好了
+    def 典型日列表(self): # 
         ...
     # like: (tday_index, tday_data, tday_count)
 
