@@ -124,17 +124,17 @@ class 设备模型:
         return f"DI_{self.ID}_VN_{varName}" # use underscore.
 
     def 单变量(self, varName: str,**kwargs):
-        var= self.model.__dict__[self.getVarName(varName)] = Var()
+        var= self.model.__dict__[self.getVarName(varName)] = Var(**kwargs)
         return var
 
     def 变量列表(self, varName: str,**kwargs):
-        var= self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数))
+        var= self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数), **kwargs)
         return var
 
     def 典型日变量列表(self, varName: str,**kwargs):
         varList = []
         for i in range(len(self.计算参数.典型日列表)):
-            var = self.model.__dict__[f"典型日[{i}]_"+self.getVarName(varName)] = Var(range(24))
+            var = self.model.__dict__[f"典型日[{i}]_"+self.getVarName(varName)] = Var(range(24), **kwargs)
             varList.append(var)
         return varList
 
