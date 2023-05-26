@@ -99,21 +99,23 @@ class 计算参数(BaseModel):
     """
     @property
     def 迭代步数(self):
-        steps = None
+        {# steps = None #}
         if self.计算步长 == "秒":
             steps = 7200
         elif self.计算步长 == "小时" and self.计算模式 is None:
             steps = 8760
-        elif self.计算步长 == "小时" and self.计算模式 is None
-            return None
+        elif self.计算步长 == "小时" and self.计算模式 is "典型日":
+            steps = 24
+        else:
+            raise Exception("未知计算参数:", self.计算步长, self.计算模式)
         assert len(self.风资源) == steps
         assert len(self.光资源) == steps
         assert len(self.气温) == steps
         return steps
-    @property # 提前计算好了
+    {# @property # 提前计算好了
     def 典型日列表(self): # 
-        ...
-    # like: (tday_index, tday_data, tday_count)
+        ... #}
+    {# # like: (tday_index, tday_data, tday_count) #}
 
 class 设备模型:
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, ID):
