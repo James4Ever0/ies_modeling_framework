@@ -1285,9 +1285,10 @@ class 传输线:
         计算模式 = "全年" # 8760 points
         计算模式 = "典型日" # fewer points, 24 as a unit
         
+        # access with 
         for _ in range(典型日):
             # shall be superscript.
-        self.model.__dict__['典型日{n}_'+suffix] = Var(range(24))
+            self.model.__dict__['典型日{n}_'+suffix] = Var(range(24))
         # device index, var name, port index
         self.model.__dict__["DI[{}]_VN[{}]"] = Var(range(8760))
         self.model.__dict__["DI[{}]_PI[{}]"] = Var(range(8760))
