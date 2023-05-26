@@ -64,7 +64,9 @@ class {{class_name}}信息(BaseModel): # {{super_class}}
     {% endfor %}
 {% endfor %}
 
-# model structure.
+###################
+# model structure #
+###################
 
 from pyomo.environ import *
 
@@ -74,10 +76,13 @@ from pyomo.environ import *
 # shall you assign port with variables.
 
 # 风、光资源
-from typing import Union, Literal
+from typing import Union, Literal, List
+
 class 计算参数(BaseModel):
     计算步长: Union[Literal["小时"], Literal['秒']]
-    计算模式
+    计算模式: Union[Literal['典型日'],None]
+    风资源: List[float]
+    光资源: List[float]
     @property
     def 迭代步数(self):
     @property
