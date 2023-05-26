@@ -4,6 +4,7 @@
 
 # the test code may not be generated.
 import json
+from numpy import append
 import rich
 import black
 
@@ -121,8 +122,12 @@ def test(cmd: list, exec="python3"):
 # run test code.
 test(["test_topo_check.py"])
 
+设备库 = []
 
-render_params = dict()
+for ...:
+    设备库.append((class_name, mstrs, mdigits, mtables))
+
+render_params = dict(设备库=设备库)
 load_render_and_format(
     template_path=ies_optim_code_output_path,
     render_params=render_params,

@@ -20,7 +20,7 @@ from pydantic import BaseModel
 # string, digits, tables.
 # you can dump and load from json.
 
-{% for class_name in 设备库 %}
+{% for class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}(BaseModel):
     {% for mstr in mstrs %}
     ...
