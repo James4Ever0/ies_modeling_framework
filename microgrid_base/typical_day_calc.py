@@ -22,13 +22,12 @@ month_days[4 - 1] = month_days[6 - 1] = month_days[9 - 1] = month_days[11 - 1] =
 mdr = numpy.cumsum(month_days)
 print(mdr)
 
-spring_days = [d for d in range(mdr[2], mdr[5])]
-summer_days = [d for d in range(mdr[5], mdr[8])]
-autumn_days = [d for d in range(mdr[8], mdr[11])]
+spring_days = [d for d in range(mdr[1], mdr[4])]
+summer_days = [d for d in range(mdr[4], mdr[7])]
+autumn_days = [d for d in range(mdr[7], mdr[10])]
 winter_days = [
     d for d in range(365) if d not in spring_days + summer_days + autumn_days
 ]
-
 
 # {day_index: {"main": main_category, ""}}
 
