@@ -79,15 +79,12 @@ class 设备模型:
         self.计算参数 = 计算参数
         self.ID = ID
     
-    def 单变量(self, varName):
-        varName = ""
-        return self.model.__dict__[varName] = Var(f"DI[{self.ID}]_VN[varName)
-    def 变量列表(self):
-        varName = ""
-        return self.model.__dict__[varName] = Var()
-    def 典型日变量列表(self):
-        varName = ""
-        return self.model.__dict__[varName] = Var()
+    def 单变量(self, varName:str):
+        return self.model.__dict__[varName] = Var(f"DI[{self.ID}]_VN[{varName}]")
+    def 变量列表(self, varName:str):
+        return self.model.__dict__[varName] = Var(f"DI[{self.ID}]")
+    def 典型日变量列表(self, varName:str):
+        return self.model.__dict__[varName] = Var(f"DI[{self.ID}]")
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}模型():
