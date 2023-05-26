@@ -144,7 +144,7 @@ for super_class, v0 in dparam.items():
                         main = item['MAIN']
                         sub = item['SUB']
                         mtables.append((main, sub))
-        设备库.append((super_class, class_name, param_super_class, mstrs, mdigits, mtables))
+        设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库)
 load_render_and_format(
