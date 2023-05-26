@@ -263,8 +263,8 @@ class 设备(节点):
             port_node_id = self.topo.add_node(type="锚点", port_name=port_name, subtype=port_type, device_id = self.id)
             self.ports.update({port_name: {"subtype": port_type,"id":port_node_id}})
             self.topo.G.add_edge(self.id, port_node_id)
-            print("EDGE IDS:", self.id, port_node_id)
-            breakpoint()
+            {# print("EDGE IDS:", self.id, port_node_id)
+            breakpoint() #}
         self.topo.G.nodes[self.id]['ports'] = self.ports
 
 class 连接节点(节点):

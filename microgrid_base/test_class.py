@@ -56,12 +56,12 @@ print(G.graph, type(G.graph)) # this is dict.
 
 from networkx.readwrite import json_graph
 
-data = json_graph.adjacency_data(G)
+data = json_graph.node_link_data(G)
 
 print()
 rich.print(data)
 
-G0 = json_graph.adjacency_graph(data)
+G0 = json_graph.node_link_graph(data)
 
 print("GRAPH DATA?",G0.graph)
 
