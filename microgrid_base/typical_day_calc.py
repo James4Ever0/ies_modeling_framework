@@ -22,6 +22,12 @@ month_days[4-1] = month_days[6-1] = month_days[9-1] = month_days[11-1]=30
 mdr = numpy.cumsum(month_days)
 print(mdr)
 
+spring_days = [d for d in range(mdr[2],mdr[5])]
+summer_days = [d for d in range(mdr[5], mdr[8])]
+autumn_days = [d for d in range()]
+winter_days = []
+
+
 # {day_index: {"main": main_category, ""}}
 
 # append by keys.
