@@ -71,6 +71,8 @@ from pyomo.environ import *
 # first convert the unit.
 # assign variables.
 
+# shall you assign port with variables.
+
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}():
     def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):

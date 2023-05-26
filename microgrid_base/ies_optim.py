@@ -1287,9 +1287,9 @@ class 传输线:
         
         for _ in range(典型日):
         self.model.__dict__['典型日{n}'] = Var(range(24))
-        self.model.__dict__[''] = Var(range(8760))
+        # device index, var name, port index
+        self.model.__dict__["DI[{}]_VN[{}]_PI[{}]'] = Var(range(8760))
         self.model.__dict__[''] = Var(range(7200))
-        
         
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
