@@ -201,6 +201,8 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
     
     def constraints_register(self):
-        ...
+        {% if class_name in ['光伏发电']%}
+        self. = 
+        {% endif%}
         {# self.model.__dict__['{{}}'] = Var() #}
 {% endfor %}
