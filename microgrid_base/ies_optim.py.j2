@@ -16,7 +16,7 @@
 # iterate through all device-port pairs, then retrieve attributes from another dict.
 
 from pydantic import BaseModel
-
+from typing import List
 # string, digits, tables.
 # you can dump and load from json.
 
@@ -34,6 +34,10 @@ class {{class_name}}(BaseModel):
     {% endfor %}
 
     {% for mtable in mtables %}
-    {{ }}
+    {{ mtable[0][1]}}_{{ mtable[1][1]}} : List[List[float]]
+    """
+    {{ mtable[0][1]}} 单位: {{ mtable[0][2]}}
+    {{ mtable[1][1]}} 单位: {{ mtable[1][2]}}
+    """
     {% endfor %}
 {% endfor %}
