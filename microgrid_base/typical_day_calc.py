@@ -5,6 +5,8 @@ lfs = [load_format, load_format1]
 
 # assert day in range(7)
 
+# 温度聚类 -> 9 sets -> avg wind/solar
+
 for lf in lfs:
     wd, hd = set(lf['workday']), set(lf['hoilday'])
     assert wd.intersection(hd) == set()
