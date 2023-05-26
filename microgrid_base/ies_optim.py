@@ -23,6 +23,7 @@ from typing import List
 
 
 class 光伏发电ID(BaseModel):
+    设备: int
     电接口: int
     """
     类型: 供电端输出
@@ -96,6 +97,7 @@ class 光伏发电数据(BaseModel):  # 发电设备
 
 
 class 风力发电ID(BaseModel):
+    设备: int
     电接口: int
     """
     类型: 供电端输出
@@ -174,13 +176,14 @@ class 风力发电数据(BaseModel):  # 发电设备
 
 
 class 柴油发电ID(BaseModel):
-    燃料接口: int
-    """
-    类型: 柴油输入
-    """
+    设备: int
     电接口: int
     """
     类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
     """
 
 
@@ -252,6 +255,7 @@ class 柴油发电数据(BaseModel):  # 发电设备
 
 
 class 锂电池ID(BaseModel):
+    设备: int
     电接口: int
     """
     类型: 电储能端输入输出
@@ -340,13 +344,14 @@ class 锂电池数据(BaseModel):  # 储能设备
 
 
 class 变压器ID(BaseModel):
-    电输出: int
-    """
-    类型: 变压器输出
-    """
+    设备: int
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -407,6 +412,7 @@ class 变压器数据(BaseModel):  # 配电传输
 
 
 class 变流器ID(BaseModel):
+    设备: int
     电输入: int
     """
     类型: 变流器输入
@@ -474,6 +480,7 @@ class 变流器数据(BaseModel):  # 配电传输
 
 
 class 双向变流器ID(BaseModel):
+    设备: int
     线路端: int
     """
     类型: 双向变流器线路端输入输出
@@ -541,13 +548,14 @@ class 双向变流器数据(BaseModel):  # 配电传输
 
 
 class 传输线ID(BaseModel):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
+    设备: int
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 

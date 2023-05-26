@@ -19,10 +19,16 @@ from pydantic import BaseModel
 from typing import List
 # string, digits, tables.
 # you can dump and load from json.
+{# 
+class 加法器ID(BaseModel):
+    输入:int
+    输出:int
+    输入输出: int #}
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
 class {{class_name}}ID(BaseModel):
+    设备: int
     {% for port_name, port_type in 设备接口集合[class_name]%}
     {{ port_name }}: int
     """
