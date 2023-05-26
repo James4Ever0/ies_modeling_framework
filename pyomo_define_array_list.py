@@ -20,6 +20,8 @@ model.x = Var([0, 1], bounds=(-10, 10))  # indexes, other keywords
 # model.x = Var(model.I, initialize=0, domain=(-10,10)) # index from 0 to 1
 ##在上述代码中，我们定义了一个变量组I，其中包含10个变量，然后使用pyomo.environ.Var组件定义了一个变量x，它是变量组I中的每个变量。
 # breakpoint()
+
+# model.
 # model.Y = Var()
 
 # Constraint(model.I[1] == 2*model.x)
