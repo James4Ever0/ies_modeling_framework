@@ -89,7 +89,7 @@ graph_data = topo.get_graph_data()
 print_with_banner(graph_data, "图元数据")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
-
-# from ies_optim import compute
-
-# result = compute(devs, adders, graph_data)
+import sys
+if sys.argv[-1] in ['-f',"--full"]:
+    from ies_optim import compute
+    result = compute(devs, adders, graph_data)
