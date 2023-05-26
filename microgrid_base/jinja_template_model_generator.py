@@ -89,11 +89,11 @@ def load_render_and_format(template_path: str, render_params: dict, banner: str)
     print(result)
 
     # import black.Mode
-    with open(topo_code_output_path, "w+") as f:
+    with open(output_path, "w+") as f:
         f.write(result)
     try:
         result = black.format_str(result, mode=black.Mode())
-        with open(topo_code_output_path, "w+") as f:
+        with open(output_path, "w+") as f:
             f.write(result)
         print("Syntax Ok.")
     except:
@@ -146,7 +146,7 @@ for super_class, v0 in dparam.items():
                         mtables.append((main, sub))
         设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
-render_params = dict(设备库=设备库)
+render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)
 load_render_and_format(
     template_path=ies_optim_code_template_path,
     render_params=render_params,

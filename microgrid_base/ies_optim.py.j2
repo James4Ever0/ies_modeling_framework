@@ -21,8 +21,9 @@ from typing import List
 # you can dump and load from json.
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
+
 class {{class_name}}ID(BaseModel):
-    {% for port_name, port_type in []%}
+    {% for port_name, port_type in 设备接口集合[class_name]%}
     {{ port_name }}: int
     """
     类型: {{ port_type }}

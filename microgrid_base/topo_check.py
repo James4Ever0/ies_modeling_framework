@@ -22,7 +22,14 @@ from typing import List
 # you can dump and load from json.
 
 
-class 光伏发电信息(BaseModel):  # 发电设备
+class 光伏发电ID(BaseModel):
+    电接口: int
+    """
+    类型: 供电端输出
+    """
+
+
+class 光伏发电数据(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
@@ -88,7 +95,14 @@ class 光伏发电信息(BaseModel):  # 发电设备
     """
 
 
-class 风力发电信息(BaseModel):  # 发电设备
+class 风力发电ID(BaseModel):
+    电接口: int
+    """
+    类型: 供电端输出
+    """
+
+
+class 风力发电数据(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
@@ -159,7 +173,18 @@ class 风力发电信息(BaseModel):  # 发电设备
     """
 
 
-class 柴油发电信息(BaseModel):  # 发电设备
+class 柴油发电ID(BaseModel):
+    电接口: int
+    """
+    类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
+    """
+
+
+class 柴油发电数据(BaseModel):  # 发电设备
     生产厂商: str
 
     设备型号: str
@@ -226,7 +251,14 @@ class 柴油发电信息(BaseModel):  # 发电设备
     """
 
 
-class 锂电池信息(BaseModel):  # 储能设备
+class 锂电池ID(BaseModel):
+    电接口: int
+    """
+    类型: 电储能端输入输出
+    """
+
+
+class 锂电池数据(BaseModel):  # 储能设备
     生产厂商: str
 
     设备型号: str
@@ -307,7 +339,18 @@ class 锂电池信息(BaseModel):  # 储能设备
     """
 
 
-class 变压器信息(BaseModel):  # 配电传输
+class 变压器ID(BaseModel):
+    电输入: int
+    """
+    类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
+    """
+
+
+class 变压器数据(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
@@ -363,7 +406,18 @@ class 变压器信息(BaseModel):  # 配电传输
     """
 
 
-class 变流器信息(BaseModel):  # 配电传输
+class 变流器ID(BaseModel):
+    电输出: int
+    """
+    类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
+    """
+
+
+class 变流器数据(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
@@ -419,7 +473,18 @@ class 变流器信息(BaseModel):  # 配电传输
     """
 
 
-class 双向变流器信息(BaseModel):  # 配电传输
+class 双向变流器ID(BaseModel):
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
+    """
+
+
+class 双向变流器数据(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
@@ -475,7 +540,18 @@ class 双向变流器信息(BaseModel):  # 配电传输
     """
 
 
-class 传输线信息(BaseModel):  # 配电传输
+class 传输线ID(BaseModel):
+    电输入: int
+    """
+    类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
+    """
+
+
+class 传输线数据(BaseModel):  # 配电传输
     生产厂商: str
 
     设备型号: str
