@@ -169,7 +169,8 @@ class {{class_name}}模型(设备模型):
         ##### PORT VARIABLE DEFINITION ####
         
         {% for port_name, port_type in [class_name] %}
-        {% if %}
+        {% if port_type.endswith("输入输出") %}
+        {% endif %}
         {% endfor %}
     
     def constraints_register(self):
