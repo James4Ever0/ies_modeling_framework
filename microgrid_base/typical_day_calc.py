@@ -9,6 +9,9 @@ lfs = [load_format, load_format1]
 
 # shape: 1x365
 
+# append by keys.
+# {data_key: [index, ...]}
+
 for lf in lfs:
     wd, hd = set(lf['workday']), set(lf['hoilday'])
     assert wd.intersection(hd) == set()
