@@ -21,5 +21,11 @@ from pydantic import BaseModel
 
 {% for class_name in 设备库 %}
 class {{class_name}}(BaseModel):
+    {% for mstr in mstrs %}
     ...
+    {% endfor %}
+    
+    {% for mdigit in mdigits %}
+    ...
+    {% endfor %}
 {% endfor %}
