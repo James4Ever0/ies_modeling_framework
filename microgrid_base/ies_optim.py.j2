@@ -66,13 +66,13 @@ class {{class_name}}信息(BaseModel): # {{super_class}}
 
 # model structure.
 
-import pyomo
+from pyomo.environ import *
 
 # first convert the unit.
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}():
-    def __init__(self, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+    def __init__(self, model: p, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
