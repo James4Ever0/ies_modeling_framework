@@ -23,14 +23,16 @@ from pydantic import BaseModel
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 class {{class_name}}(BaseModel):
     {% for mstr in mstrs %}
-    {{ }} = {{ }}
+    {{ mstr }}: str
     {% endfor %}
     
     {% for mdigit in mdigits %}
-    ...
+    {{ mdigit[1] }}: float
+    """
+    """
     {% endfor %}
 
     {% for mtable in mtables%}
-    ...
+    {{}}
     {% endfor %}
 {% endfor %}
