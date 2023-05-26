@@ -1,3 +1,5 @@
+# TODO: 典型日 最终输出结果需要展开为8760
+
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
@@ -17,7 +19,6 @@
 
 from pydantic import BaseModel
 from typing import List
-
 # string, digits, tables.
 # you can dump and load from json.
 
@@ -29,12 +30,12 @@ class 光伏发电ID(BaseModel):
     类型: 供电端输出
     """
 
-
-class 光伏发电信息(BaseModel):  # 发电设备
+class 光伏发电信息(BaseModel): # 发电设备
     生产厂商: str
 
     设备型号: str
 
+    
     Area: float
     """
     名称: 光伏板面积
@@ -108,6 +109,7 @@ class 光伏发电信息(BaseModel):  # 发电设备
     """
 
 
+
 class 风力发电ID(BaseModel):
     设备: int
     电接口: int
@@ -115,12 +117,12 @@ class 风力发电ID(BaseModel):
     类型: 供电端输出
     """
 
-
-class 风力发电信息(BaseModel):  # 发电设备
+class 风力发电信息(BaseModel): # 发电设备
     生产厂商: str
 
     设备型号: str
 
+    
     RatedPower: float
     """
     名称: 额定功率
@@ -200,23 +202,24 @@ class 风力发电信息(BaseModel):  # 发电设备
     """
 
 
+
 class 柴油发电ID(BaseModel):
     设备: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
     """
+    电接口: int
+    """
+    类型: 供电端输出
+    """
 
-
-class 柴油发电信息(BaseModel):  # 发电设备
+class 柴油发电信息(BaseModel): # 发电设备
     生产厂商: str
 
     设备型号: str
 
+    
     RatedPower: float
     """
     名称: 额定功率
@@ -283,7 +286,8 @@ class 柴油发电信息(BaseModel):  # 发电设备
     单位: 台
     """
 
-    DieselToPower_Load: List[List[float]]
+
+    DieselToPower_Load : List[List[float]]
     """
     DieselToPower: 燃油消耗率
     单位: L/kWh
@@ -300,12 +304,12 @@ class 锂电池ID(BaseModel):
     类型: 电储能端输入输出
     """
 
-
-class 锂电池信息(BaseModel):  # 储能设备
+class 锂电池信息(BaseModel): # 储能设备
     生产厂商: str
 
     设备型号: str
 
+    
     RatedCapacity: float
     """
     名称: 额定容量
@@ -397,6 +401,7 @@ class 锂电池信息(BaseModel):  # 储能设备
     """
 
 
+
 class 变压器ID(BaseModel):
     设备: int
     电输出: int
@@ -408,12 +413,12 @@ class 变压器ID(BaseModel):
     类型: 电母线输入
     """
 
-
-class 变压器信息(BaseModel):  # 配电传输
+class 变压器信息(BaseModel): # 配电传输
     生产厂商: str
 
     设备型号: str
 
+    
     Efficiency: float
     """
     名称: 效率
@@ -475,23 +480,24 @@ class 变压器信息(BaseModel):  # 配电传输
     """
 
 
+
 class 变流器ID(BaseModel):
     设备: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
     """
+    电输入: int
+    """
+    类型: 变流器输入
+    """
 
-
-class 变流器信息(BaseModel):  # 配电传输
+class 变流器信息(BaseModel): # 配电传输
     生产厂商: str
 
     设备型号: str
 
+    
     RatedPower: float
     """
     名称: 额定功率
@@ -551,25 +557,26 @@ class 变流器信息(BaseModel):  # 配电传输
     名称: 最小安装台数
     单位: 台
     """
+
 
 
 class 双向变流器ID(BaseModel):
     设备: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
     """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
+    """
 
-
-class 双向变流器信息(BaseModel):  # 配电传输
+class 双向变流器信息(BaseModel): # 配电传输
     生产厂商: str
 
     设备型号: str
 
+    
     RatedPower: float
     """
     名称: 额定功率
@@ -629,6 +636,7 @@ class 双向变流器信息(BaseModel):  # 配电传输
     名称: 最小安装台数
     单位: 台
     """
+
 
 
 class 传输线ID(BaseModel):
@@ -642,12 +650,12 @@ class 传输线ID(BaseModel):
     类型: 电母线输入
     """
 
-
-class 传输线信息(BaseModel):  # 配电传输
+class 传输线信息(BaseModel): # 配电传输
     生产厂商: str
 
     设备型号: str
 
+    
     PowerTransferDecay: float
     """
     名称: 能量衰减系数
@@ -691,20 +699,82 @@ class 传输线信息(BaseModel):  # 配电传输
     """
 
 
-# model structure.
+
+####################
+# model definition #
+####################
 
 from pyomo.environ import *
 
 # first convert the unit.
 # assign variables.
 
+# shall you assign port with variables.
 
-class 光伏发电:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
+# 风、光资源
+from typing import Union, Literal, List
+
+# 需要单位明确
+class 计算参数(BaseModel):
+    计算步长: Union[Literal["小时"], Literal['秒']]
+    计算模式: Union[Literal['典型日'],None]
+    风资源: List[float]
+    """
+    单位: m/s
+    """
+    光资源: List[float]
+    """
+    单位: kW/m2
+    """
+    气温: List[float]
+    """
+    单位: 摄氏度
+    """
+    @property
+    def 迭代步数(self):
+        steps = None
+        if self.计算步长 == "秒":
+            steps = 7200
+        elif self.计算步长 == "小时" and self.计算模式 is None:
+            steps = 8760
+        else:
+            return None
+        assert len(self.风资源) == steps
+        assert len(self.光资源) == steps
+        assert len(self.气温) == steps
+        return steps
+    @property # 提前计算好了
+    def 典型日列表(self): # 
+        ...
+    # like: (tday_index, tday_data, tday_count)
+
+class 设备模型:
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, ID):
+        self.model = model
+        self.计算参数 = 计算参数实例
+        self.ID = ID
+
+    def getVarName(self, varName: str):
+        return f"DI[{self.ID}]_VN[{varName}]"
+
+    def 单变量(self, varName: str):
+        return self.model.__dict__[self.getVarName(varName)] = Var()
+
+    def 变量列表(self, varName: str):
+        return self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数))
+
+    def 典型日变量列表(self, varName: str):
+        varList = []
+        for i in range(len(self.计算参数.典型日列表)):
+            var = self.model.__dict__[f"典型日[{i}]_"+self.getVarName(varName)] = Var(range(24))
+            varList.append(var)
+        return varList
+
+class 光伏发电模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.Area: float = 设备信息.Area * 1
         """
@@ -778,16 +848,15 @@ class 光伏发电:
         单位: m2 <- m2
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 风力发电:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 风力发电ID, 设备信息: 风力发电信息):
+class 风力发电模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1.0
         """
@@ -867,16 +936,15 @@ class 风力发电:
         单位: 台 <- 台
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 柴油发电:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
+class 柴油发电模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -944,10 +1012,8 @@ class 柴油发电:
         单位: 台 <- 台
         """
 
-        self.DieselToPower_Load: List[List[float]] = [
-            [v1 * 0.0010000000000000002, v2 * 0.01]
-            for v1, v2 in 设备信息.DieselToPower_Load
-        ]
+
+        self.DieselToPower_Load : List[List[float]] = [[v1 * 0.0010000000000000002, v2 * 0.01] for v1, v2 in 设备信息.DieselToPower_Load]
         """
         DieselToPower: 燃油消耗率
         单位: L/kWh
@@ -956,16 +1022,14 @@ class 柴油发电:
         单位: percent
         """
 
+    
     def constraints_register(self):
         ...
-
-
-class 锂电池:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 锂电池ID, 设备信息: 锂电池信息):
+class 锂电池模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.RatedCapacity: float = 设备信息.RatedCapacity * 1
         """
@@ -1057,16 +1121,15 @@ class 锂电池:
         单位: 台 <- 台
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 变压器:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 变压器ID, 设备信息: 变压器信息):
+class 变压器模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.Efficiency: float = 设备信息.Efficiency * 0.01
         """
@@ -1128,16 +1191,15 @@ class 变压器:
         单位: 台 <- 台
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 变流器:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 变流器ID, 设备信息: 变流器信息):
+class 变流器模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -1199,16 +1261,15 @@ class 变流器:
         单位: 台 <- 台
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 双向变流器:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 双向变流器ID, 设备信息: 双向变流器信息):
+class 双向变流器模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
 
         self.RatedPower: float = 设备信息.RatedPower * 1
         """
@@ -1270,30 +1331,15 @@ class 双向变流器:
         单位: 台 <- 台
         """
 
+
+    
     def constraints_register(self):
         ...
-
-
-class 传输线:
-    def __init__(self, model: ConcreteModel, 计算参数: ..., 设备ID: 传输线ID, 设备信息: 传输线信息):
+class 传输线模型(设备模型):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息):
+        super().__init__(model=model, 计算参数=计算参数实例, ID = 设备ID.id)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
-        self.model = model
-        self.计算参数 = 计算参数
-        
-        计算步长 = "小时"
-        计算模式 = "全年" # 8760 points
-        计算模式 = "典型日" # fewer points, 24 as a unit
-        
-        # access with iteration.
-        for _ in range(典型日):
-            # shall be superscript.
-            self.model.__dict__['典型日{n}_'+suffix] = Var(range(24))
-        # device index, var name, port index
-        self.model.__dict__["DI[{}]_VN[{}]"] = Var(range(8760))
-        self.model.__dict__["DI[{}]_PI[{}]"] = Var(range(8760))
-        self.model.__dict__[''] = Var(range(7200))
-        
 
         self.PowerTransferDecay: float = 设备信息.PowerTransferDecay * 1
         """
@@ -1337,5 +1383,7 @@ class 传输线:
         单位: kilometer <- km
         """
 
+
+    
     def constraints_register(self):
         ...
