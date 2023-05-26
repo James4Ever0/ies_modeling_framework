@@ -29,10 +29,11 @@ class {{class_name}}(BaseModel):
     {% for mdigit in mdigits %}
     {{ mdigit[1] }}: float
     """
+    单位: {{mdigit[2]}}
     """
     {% endfor %}
 
-    {% for mtable in mtables%}
-    {{}}
+    {% for mtable in mtables %}
+    {{ }}
     {% endfor %}
 {% endfor %}
