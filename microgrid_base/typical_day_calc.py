@@ -9,6 +9,8 @@ lfs = [load_format, load_format1]
 
 # shape: 1x365
 
+{day_index: {"main": main_category, ""}}
+
 # append by keys.
 # {data_key: [index, ...]}
 
