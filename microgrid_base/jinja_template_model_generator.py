@@ -126,6 +126,11 @@ test(["test_topo_check.py"])
 
 for super_class, v0 in dparam.items():
     for class_name, v1 in v0.items():
+        for param_super_class, v2 in v1.items():
+            if param_super_class == "仿真模拟":
+                continue
+            for item in v2:
+                if item == ""
     设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库)
