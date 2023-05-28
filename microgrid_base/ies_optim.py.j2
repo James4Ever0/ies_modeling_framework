@@ -170,7 +170,7 @@ class {{class_name}}模型(设备模型):
         名称: {{ mdigit[1] }}
         单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
         """
-        {%endif%}
+        {% endif %}
 
         {% endfor %}
 
@@ -178,10 +178,10 @@ class {{class_name}}模型(设备模型):
         self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = [[v1 * {{mtable[0][4]}}, v2 * {{mtable[1][4]}}] for v1, v2 in 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}]
         """
         {{ mtable[0][0]}}: {{ mtable[0][1]}}
-        单位: {{ mtable[0][2]}}
+        单位: {{ mtable[0][3]}} <- {{ mtable[0][2]}}
 
         {{ mtable[1][0]}}: {{ mtable[1][1]}}
-        单位: {{ mtable[1][2]}}
+        单位: {{ mtable[1][3]}} <- {{ mtable[1][2]}}
         """
 
         {% endfor %}
