@@ -155,6 +155,8 @@ class {{class_name}}模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
+        self.DeviceCount = 
+
         {% for mdigit in mdigits %}
         {% if mdigit[4] == 1%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
@@ -202,7 +204,6 @@ class {{class_name}}模型(设备模型):
     
     def constraints_register(self):
         {% if class_name in ['光伏发电'] %}
-        if self.计算参数.
         self. = 
         {% endif%}
         {# self.model.__dict__['{{}}'] = Var() #}
