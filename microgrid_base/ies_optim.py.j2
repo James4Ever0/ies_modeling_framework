@@ -155,7 +155,7 @@ class {{class_name}}模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.DeviceCount = self.单变量('DeviceCount', )
+        self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
         {% for mdigit in mdigits %}
         {% if mdigit[4] == 1%}
