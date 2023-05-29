@@ -216,6 +216,7 @@ class {{class_name}}模型(设备模型):
 
         {% for mtable in mtables %}
         self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = [[v1 * {{mtable[0][4]}}, v2 * {{mtable[1][4]}}] for v1, v2 in 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}]
+        self.{{ mtable[0][0]}}_{{ mtable[1][0]}}.sort(key=lambda x: x[1])
         """
         {{ mtable[0][0]}}: {{ mtable[0][1]}}
         单位: {{ mtable[0][3]}} <- {{ mtable[0][2]}}
@@ -262,7 +263,8 @@ class {{class_name}}模型(设备模型):
                 return 0
             elif windspeed > self.MinWindSpeed and windspeed <= self.RatedWindSpeed:
                 return 发电曲线参数 * ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
-            elif windspeed >=
+            elif windspeed > self.RatedWindSpeed and windspeed < self.MaxWindSpeed:
+            elif windspeed >= self.
         {% endif %}
 
         if self.计算参数.计算模式 == "仿真模拟":
