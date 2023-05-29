@@ -182,8 +182,8 @@ class 设备模型:
             varList.append(var)
         return varList #}
     
-    def 变量列表_带指示变量(self, varName:str) -> POSNEG:
-        x = self.变量列表(varName, within = Reals)
+    def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
+        x = self.变量列表(varName,within=within )
 
         x_pos = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
         x_neg = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
@@ -296,8 +296,6 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（变量）
         {% if class_name == "柴油发电" %}
         
-        self.启停状态 = self.变量列表("启停状态", within = Boolean) # 是否满足最小启动功率
-
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
 
         mposneg = self.变量列表_带指示变量("电功率中转")
@@ -305,9 +303,8 @@ class {{class_name}}模型(设备模型):
         self.原电输出 = mposneg.x 
         总最大输出功率 = self.RatedPower * self.DeviceCount
 
-        for i in range(self.计算参数.迭代步长):
-            Constraint(self.原电输出[i] >= 0)
-            Constraint(self.原电输出[i] <= 总最大输出功率)
+        self.RangeConstraintMulti(self.原电输出, lambda x: x >= 0)
+        self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率)
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
