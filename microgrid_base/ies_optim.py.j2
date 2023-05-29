@@ -303,15 +303,15 @@ class {{class_name}}模型(设备模型):
         mposneg = self.变量列表_带指示变量("电功率中转")
 
         self.原电输出 = mposneg.x 
-        总最大输出 = self.RatedPower * self.DeviceCount
+        总最大输出功率 = self.RatedPower * self.DeviceCount
 
         for i in range(self.计算参数.迭代步长):
             Constraint(self.原电输出[i] >= 0)
-            Constraint(self.原电输出[i] <= 总最大输出)
+            Constraint(self.原电输出[i] <= 总最大输出功率)
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
-        self.Piecewise(,,[x[0] for x in self.DieselToPower_Load],[x[1] for x in self.DieselToPower_Load])
+        self.Piecewise(,,[x[0]*总最大功率*x[1] for x in self.DieselToPower_Load],[总最大功率*x[1] for x in self.DieselToPower_Load])
 
         self.柴油输入 # 变量
 
@@ -323,7 +323,7 @@ class {{class_name}}模型(设备模型):
 
         self.负载率 = self.变量列表("负载率", within = NonNegativeReals)
 
-        self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/ 总最大输出)
+        self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/ 总最大输出功率)
         {%endif%}
 
     def constraints_register(self):
