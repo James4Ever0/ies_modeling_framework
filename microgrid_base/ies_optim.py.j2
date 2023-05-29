@@ -233,7 +233,10 @@ class 设备模型:
         l0, r0 = min_mx + min_my, max_mx+max_my
         l1, r1 = min_mx - max_my, max_mx-min_my
 
-        l0_ = 
+        if l0*r0 >=0:
+            l0,r0 = abs(l0), abs(r0)
+        else:
+            l0, r0 = abs(l0), abs(r0)
 
         mx_my_sum = np.linspace(max([0,min_mx + min_my]), max_mx+max_my, precision).tolist()
 
