@@ -163,6 +163,7 @@ class 设备模型:
 # input: negative
 # output: positive
 # IO: Real
+import numpy as np
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
@@ -259,6 +260,8 @@ class {{class_name}}模型(设备模型):
         发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
         # windspeed (m/s) -> current power per device (kW)
+        WS = np.array(self.计算参数.风速)
+        np.piecewise(WS, [WS], [])
         def 发电曲线(windspeed: float):
             if windspeed <= self.MinWindSpeed:
                 return 0
