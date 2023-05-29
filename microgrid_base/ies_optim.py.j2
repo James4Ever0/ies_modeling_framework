@@ -326,6 +326,10 @@ class {{class_name}}模型(设备模型):
 
         self.Piecewise(mx_my_minus_var, mx_my_minus_pow2_var, pw_pts = mx_my_minus, f_rule = mx_my_minus_pow2)
 
+        mx_my_multiply = self.变量列表()
+
+        mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/2)
+
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
