@@ -291,10 +291,10 @@ class {{class_name}}模型(设备模型):
 
         # 输出输入功率约束
         {% if class_name in ['光伏发电'] %}
-        光电转换效率 = self.MaxPower / self.Area # 一块光伏板，1kw/m2光照
+        光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 单位kW/m2
         总最大功率 = self.MaxPower * self.DeviceCount
 
-        self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency*光电转换效率 >= y)
+        self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x/光电转换效率*self.PowerConversionEfficiency >= y)
         {% elif class_name in ['风力发电'] %}
         self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >=y)
         {% endif %}
