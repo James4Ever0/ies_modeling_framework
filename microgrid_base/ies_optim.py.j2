@@ -122,6 +122,7 @@ class 计算参数(BaseModel):
         ... #}
     {# # like: (tday_index, tday_data, tday_count) #}
 
+from functools import reduce
 class 设备模型:
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, ID):
         self.model = model
@@ -149,7 +150,9 @@ class 设备模型:
     def CustomRangeConstraint(var_1, var_2, customRange, expression):
         for i in range(customRange):
             Constraint(expression(var_1, var_2, i))
-
+    
+    def SumRange(var_1):
+        return reduce([])
     {# def 典型日变量列表(self, varName: str,**kwargs):
         varList = []
         for i in range(len(self.计算参数.典型日列表)):
@@ -160,6 +163,7 @@ class 设备模型:
 # input: negative
 # output: positive
 # IO: Real
+
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
 class {{class_name}}模型(设备模型):
