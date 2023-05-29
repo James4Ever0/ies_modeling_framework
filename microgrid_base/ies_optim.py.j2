@@ -292,8 +292,12 @@ class {{class_name}}模型(设备模型):
         self.启停状态 = self.变量列表("启停状态", within = Boolean) # 是否满足最小启动功率
 
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
+
         mposneg = self.变量列表_带指示变量("电功率中转")
+
         原电输出 - 总最小启动功率
+        self.RangeConstraint(mposneg.x, , lambda x,y:x == y - 总最小启动功率)
+        self.RangeConstraint(mposneg.x_pos, self.电输出, lambda x,y: x == y)
         {%endif%}
 
     def constraints_register(self):
