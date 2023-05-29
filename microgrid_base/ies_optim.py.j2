@@ -285,7 +285,7 @@ class {{class_name}}模型(设备模型):
             {% endif %}
             assert self.{{ mdigit[0] }} >=0
         {% else %}
-        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit"] %}
+        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay"] %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
         名称: {{ mdigit[1] }}
