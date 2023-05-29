@@ -316,10 +316,11 @@ class {{class_name}}模型(设备模型):
             raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
-    {% if class_name in ['光伏发电'] %}
-    Life = self.Life
-    {%else%}
+    {% if class_name in ['锂电池'] %} 
     ...
+    # 锂电池如果要在事后计算年化
+    {%else%}
+    Life = self.Life
     {%endif%}
     年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
     # unit: one
