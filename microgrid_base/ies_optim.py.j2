@@ -258,8 +258,8 @@ class {{class_name}}模型(设备模型):
 
         发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
-        # windspeed -> current power per device
-        def 发电曲线(windspeed):
+        # windspeed (m/s) -> current power per device (kW)
+        def 发电曲线(windspeed: float):
             if windspeed <= self.MinWindSpeed:
                 return 0
             elif windspeed > self.MinWindSpeed and windspeed <= self.RatedWindSpeed:
@@ -267,7 +267,7 @@ class {{class_name}}模型(设备模型):
             elif windspeed > self.RatedWindSpeed and windspeed < self.MaxWindSpeed:
                 return self.RatedPower
             elif windspeed >= self.MaxWindSpeed:
-                return 0 
+                return 0
             else:
                 print("RatedWindSpeed:", self.RatedWindSpeed)
                 print("MinWindSpeed:", self.MinWindSpeed)
