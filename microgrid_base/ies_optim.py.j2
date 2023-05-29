@@ -132,12 +132,18 @@ class 设备模型:
         self.model = model
         self.计算参数 = 计算参数实例
         self.ID = ID
+        self.SID = 0
 
     def getVarName(self, varName: str):
         VN = f"DI_{self.ID}_VN_{varName}" # use underscore.
         if self.计算参数.典型日ID:
             VN = f"TD_{self.计算参数.典型日ID}_"+VN
         return VN
+    
+    def getSpecialVarName(self):
+        specialVarName = f"SP_{self.SID}"
+        self.SID +=1
+        return specialVarName
 
     def 单变量(self, varName: str, **kwargs):
         var = self.model.__dict__[self.getVarName(varName)] = Var(**kwargs)
@@ -164,7 +170,8 @@ class 设备模型:
             varList.append(var)
         return varList #}
     
-    def PositiveNegativeLimit()
+    def PositiveNegativeLimit(self):
+        
 
 # input: negative
 # output: positive
