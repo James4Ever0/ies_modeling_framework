@@ -258,5 +258,10 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency*光电转换效率 >= y)
         {%endif%}
 
-        if self.
+        if self.计算参数.计算步长 == "秒":
+            ...
+        elif self.计算参数.计算步长 == "小时":
+            ...
+        else:
+            raise Exception("未知计算步长:", self.计算参数.计算步长)
 {% endfor %}
