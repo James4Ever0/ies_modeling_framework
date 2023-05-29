@@ -303,7 +303,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
-            {% if class_name in ['光伏发电'] %}
+            {% if class_name in ['光伏发电', '风力发电'] %}
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
