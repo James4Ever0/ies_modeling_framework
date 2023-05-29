@@ -361,7 +361,7 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(mposneg.x_pos, self.电输出, mposneg.b_pos ,lambda x,y,z: x + 总最小启动功率*z == y)
 
         {# self.负载率 = self.变量列表("负载率", within = NonNegativeReals) #}
-        {# self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/ 总最大输出功率) #}
+        {# self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/总最大输出功率) #}
         {%endif%}
 
     def constraints_register(self):
@@ -431,7 +431,7 @@ class {{class_name}}模型(设备模型):
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
-            {%endif%}
+            {% endif %}
         elif self.计算参数.计算步长 == "小时":
             ...
         else:
