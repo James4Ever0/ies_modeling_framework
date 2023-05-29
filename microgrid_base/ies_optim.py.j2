@@ -297,15 +297,14 @@ class {{class_name}}模型(设备模型):
         {% if class_name == "柴油发电" %}
         
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
+        总最大输出功率 = self.RatedPower * self.DeviceCount
 
         mposneg = self.变量列表_带指示变量("电功率中转")
         
-        self.原电输出 = self.
-        mposneg.x 
-        总最大输出功率 = self.RatedPower * self.DeviceCount
-
-        {# self.RangeConstraintMulti(self.原电输出, lambda x: x >= 0) #}
+        self.原电输出 = self.变量列表("原电输出", within=NonNegativeReals)
+        self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y+ 总最小启动功率)
         self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率)
+
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
