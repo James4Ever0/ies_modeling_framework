@@ -190,7 +190,7 @@ class 设备模型:
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
-        return {(b_pos, b_neg) , (x_pos, x_neg), x}
+        return (b_pos, b_neg) , (x_pos, x_neg), x
 
 # input: negative
 # output: positive
