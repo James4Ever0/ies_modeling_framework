@@ -155,6 +155,7 @@ class {{class_name}}模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
+        if self.计算参数.计算类型 == "设计规划":
         self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
         {% for mdigit in mdigits %}

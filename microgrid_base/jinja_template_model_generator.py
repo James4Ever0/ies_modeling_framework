@@ -131,8 +131,8 @@ for super_class, v0 in dparam.items():
         mdigits = []
         mtables = []
         for param_super_class, v2 in v1.items():
-            if param_super_class == "仿真模拟":
-                continue
+            # if param_super_class == "仿真模拟":
+            #     continue
             for item in v2:
                 if item == "设备选型":
                     continue
