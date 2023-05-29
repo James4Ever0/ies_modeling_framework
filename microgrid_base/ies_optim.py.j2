@@ -234,7 +234,7 @@ class 设备模型:
 
         mx_my_sum_pow2 = [x**2 for x in mx_my_sum]
 
-        mx_my_minus = np.linspace(max([0,min_mx - max_my]), max_mx-min_my, precision).tolist()
+        mx_my_minus = np.linspace(max([0,min_mx - max_my]), max([abs(max_mx-min_my), abs(min_mx - max_my]), precision).tolist()
 
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
