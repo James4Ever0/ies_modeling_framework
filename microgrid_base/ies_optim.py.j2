@@ -159,13 +159,26 @@ class {{class_name}}模型(设备模型):
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
         {% for mdigit in mdigits %}
+        {% if super_class in ["仿真模拟","设计规划"] %}
         {% if super_class == "仿真模拟" %}
         if self.计算参数.计算类型 == "仿真模拟":
-            self.{{mdigit[0]}} = float = 设备信息.{{ mdigit[0] }}
-            """
-            名称: {{ mdigit[1] }}
-            单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
-            """
+        {% elif super_class == "设计规划" %}
+        if self.计算参数.计算类型 == "仿真模拟":
+        {%endif%}
+
+        {% if mdigit[4] == 1%}
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
+        """
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }}
+        """
+        {%else%}
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
+        """
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
+        """
+        {% endif %}
         {% else %}
         {% if mdigit[4] == 1%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
