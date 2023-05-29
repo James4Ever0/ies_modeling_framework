@@ -174,12 +174,15 @@ class 设备模型:
             varList.append(var)
         return varList #}
     
-    def 变量列表_带(self, varName:str):
-        x = self.变量列表(varName)
-        x_pos = self.变量列表(self.getSpecialVarName(varName))
-        x_neg = self.变量列表(self.getSpecialVarName(varName))
-        b_pos = self.变量列表(self.getSpecialVarName(varName))
-        b_neg = self.变量列表(self.getSpecialVarName(varName))
+    def 变量列表_带指示变量(self, varName:str):
+        x = self.变量列表(varName, within = Reals)
+
+        x_pos = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
+        x_neg = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
+
+        b_pos = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
+        b_neg = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
+
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
 
         self.RangeConstraint(b_pos, x_pos, lambda x,y: x*self.BigM >= x_pos)
@@ -187,7 +190,7 @@ class 设备模型:
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
-        return ( b_pos, b_neg) , (x_pos, x_neg), x
+        return (b_pos, b_neg) , (x_pos, x_neg), x
 
 # input: negative
 # output: positive
