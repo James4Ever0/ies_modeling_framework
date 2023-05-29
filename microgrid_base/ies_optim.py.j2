@@ -153,7 +153,11 @@ class 设备模型:
         var = self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数), **kwargs)
         return var
 
-    def RangeConstraint(*vars, expression):
+    def RangeConstraint(var_1, var_2, expression):
+        for i in range(self.计算参数.迭代步数):
+            Constraint(expression(var_1, var_2))
+
+    def RangeConstraintMulti(*vars, expression): # keyword argument now.
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(*[var[i] for var in vars]))
 
@@ -172,9 +176,11 @@ class 设备模型:
     
     def AbsoluteRangeLimit(self):
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
+        
         self.RangeConstraint(b_pos, x_pos, lambda x,y: x*self.BigM >= x_pos)
         self.RangeConstraint(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
-        self.RangeConstraint(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
+
+        self.RangeConstraintMulti(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
 
         return ( b_pos, b_neg) , (x_pos, x_neg), x
 
