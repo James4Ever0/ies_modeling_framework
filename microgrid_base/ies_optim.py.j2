@@ -241,11 +241,11 @@ class 设备模型:
                 l, r = 0, max([l0, r0])
             return l, r
 
-        mx_my_sum = np.linspace(*getBound(min_mx + min_my, max_mx+max_my), precision).tolist()
+        mx_my_sum = np.linspace(*getBound(l0, r0), precision).tolist()
 
         mx_my_sum_pow2 = [x**2 for x in mx_my_sum]
 
-        mx_my_minus = np.linspace(*getBound(min_mx - max_my, max_mx-min_my), abs(min_mx - max_my]), precision).tolist()
+        mx_my_minus = np.linspace(*getBound(l1, r1), abs(min_mx - max_my]), precision).tolist()
 
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
@@ -353,6 +353,8 @@ class {{class_name}}模型(设备模型):
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
+
+        if 
 
         self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
 
