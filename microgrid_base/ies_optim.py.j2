@@ -237,8 +237,12 @@ class {{class_name}}模型(设备模型):
             self.DeviceCount
             assert MinDeviceCount>=0
             assert MaxDeviceCount>=MinDeviceCount
-            se
+
+            Constraint(self.DeviceCount <= MaxDeviceCount)
+            Constraint(self.DeviceCount >= MinDeviceCount)
             {% else %}
+            Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            Constraint(self.DeviceCount >= self.MinDeviceCount)
             {% endif %}
         else:
             raise Exception("未知计算模式:", self.计算参数.计算模式)
