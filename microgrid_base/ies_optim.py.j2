@@ -346,7 +346,6 @@ class {{class_name}}模型(设备模型):
         self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
         self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
 
-
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
@@ -362,7 +361,7 @@ class {{class_name}}模型(设备模型):
         {# self.RangeConstraintMulti(self.燃油消耗率, self.原电输出, self.柴油输入, expression = lambda x,y,z: x*y == z) #}
 
 
-        self.RangeConstraint(self.原电输出, mposneg.x , lambda x,y: x == y - 总最小启动功率)
+        {# self.RangeConstraint(self.原电输出, mposneg.x , lambda x,y: x == y - 总最小启动功率) #}
 
         self.RangeConstraint(mposneg.x_pos, self.电输出, mposneg.b_pos ,lambda x,y,z: x + 总最小启动功率*z == y)
 
