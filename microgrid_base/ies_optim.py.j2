@@ -244,6 +244,7 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
     
     def constraints_register(self):
+        # 设备特有约束
         {% if class_name == "风力发电"%}
         # define a single-variate piecewise function
         # 
@@ -274,6 +275,7 @@ class {{class_name}}模型(设备模型):
                 raise Exception("Unknown windspeed:", windspeed)
         {% endif %}
 
+        # 设备台数约束
         if self.计算参数.计算模式 == "仿真模拟":
             {% if class_name in ['光伏发电'] %}
             ...
