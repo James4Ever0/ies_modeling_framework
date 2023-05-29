@@ -139,7 +139,8 @@ class 设备模型:
         return var
 
     def RangeConstraint(var_1, var_2, expression):
-        for i in range(range(self.计算参数.迭代步数)
+        for i in range(self.计算参数.迭代步数):
+            Constraint(expression(var_1[i], var_2[i]))
 
     {# def 典型日变量列表(self, varName: str,**kwargs):
         varList = []
@@ -253,6 +254,6 @@ class {{class_name}}模型(设备模型):
 
 
         {% if class_name in ['光伏发电'] %}
-        Constraint(self.计算参数.光照[0]
+        self.RangeConstraint(self.计算参数.光照, self., lambda x,y: x*self.PowerConversionEfficiency >= y)
         {%endif%}
 {% endfor %}
