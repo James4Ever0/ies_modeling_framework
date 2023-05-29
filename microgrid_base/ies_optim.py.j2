@@ -196,7 +196,7 @@ class {{class_name}}模型(设备模型):
             """
             {% endif %}
         {% else %}
-        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MaxWindSpeed"] %}
+        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed"] %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
         名称: {{ mdigit[1] }}
@@ -241,6 +241,9 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
     
     def constraints_register(self):
+        {% if class_name == ""%}
+        {}
+
         if self.计算参数.计算模式 == "仿真模拟":
             {% if class_name in ['光伏发电'] %}
             ...
