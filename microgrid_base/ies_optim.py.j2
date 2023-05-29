@@ -263,6 +263,7 @@ class {{class_name}}模型(设备模型):
         WS = np.array(self.计算参数.风速)
         单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, WS > self.MinWindSpeed and WS <= self.RatedWindSpeed , WS > self.RatedWindSpeed and WS < self.MaxWindSpeed, WS >= self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
         单台发电功率 = 单台发电功率.tolist()
+        {%elif class_name == ""%}
         {% endif %}
 
         # 设备台数约束
@@ -299,10 +300,11 @@ class {{class_name}}模型(设备模型):
         # (kW/m2) * m2 * one * one -> kW
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
         {% elif class_name in ['风力发电'] %}
-        self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >=y)
-        {% elif class_name in ['柴油发电']%}
-        self.
-        self.RangeConstraint(,self.电输出, lambda x,y:x >= y)
+        self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
+        {% elif class_name in ['柴油发电'] %}
+        self.RangeConstraint(, , lambda x,y: x*BigM >= )
+        self.RangeConstraint(, , lambda x,y: -x*BigM <= )
+        self.RangeConstraint( ,self.电输出, lambda x,y: x >= y)
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
