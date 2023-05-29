@@ -98,6 +98,10 @@ class 计算参数(BaseModel):
     """
     单位: 摄氏度
     """
+    年利率: Union[float, None]
+    """
+    单位: percent
+    """
     @property
     def 迭代步数(self):
         {# steps = None #}
