@@ -202,8 +202,10 @@ class 设备模型:
 
         return posneg
     
-    def Piecewise(self,range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
-    self.model.__dict__[piecewise_name] = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+    def Piecewise(self, range_list:List[int], var_0, var_1, pw_pts:List[float], f_rule:List[float], pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
+    piecewise_name = self.getSpecialVarName("PW")
+    self.model.__dict__[piecewise_name] = PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+    return PW
 
 # input: negative
 # output: positive
@@ -302,6 +304,7 @@ class {{class_name}}模型(设备模型):
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
+        self.Piecewise()
 
         self.RangeConstraint(self.原电输出, ... , lambda x,y:x == y - 总最小启动功率)
         self.RangeConstraint(mposneg.x_pos, self.电输出, lambda x,y: x == y)
