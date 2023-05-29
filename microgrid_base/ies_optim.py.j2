@@ -232,17 +232,20 @@ class 设备模型:
 
         l0, r0 = min_mx + min_my, max_mx+max_my
         l1, r1 = min_mx - max_my, max_mx-min_my
+        def getBound(l0, r0):
+            if l0*r0 >=0:
+                l0,r0 = abs(l0), abs(r0)
+                l, r = min([l0, r0]), max([l0, r0])
+            else:
+                l0, r0 = abs(l0), abs(r0)
+                l, r = 0, max([l0, r0])
+            return l, r
 
-        if l0*r0 >=0:
-            l0,r0 = abs(l0), abs(r0)
-        else:
-            l0, r0 = abs(l0), abs(r0)
-
-        mx_my_sum = np.linspace(max([0,min_mx + min_my]), max_mx+max_my, precision).tolist()
+        mx_my_sum = np.linspace(*getBound(min_mx + min_my, max_mx+max_my), precision).tolist()
 
         mx_my_sum_pow2 = [x**2 for x in mx_my_sum]
 
-        mx_my_minus = np.linspace(max([0,min_mx - max_my]), max([abs(max_mx-min_my), abs(min_mx - max_my]), precision).tolist()
+        mx_my_minus = np.linspace(*getBound(min_mx - max_my, max_mx-min_my), abs(min_mx - max_my]), precision).tolist()
 
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
