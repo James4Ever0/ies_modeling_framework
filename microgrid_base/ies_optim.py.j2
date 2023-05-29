@@ -215,7 +215,8 @@ class 设备模型:
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeExpressionMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
-        mx_my_sum_var = m1posneg.x_pos
+        mx_my_sum_var = self.变量列表()
+        m1posneg.x_pos + m1posneg.x_neg
         mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
         m2posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
