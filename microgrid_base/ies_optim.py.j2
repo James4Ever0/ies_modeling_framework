@@ -142,6 +142,12 @@ class 设备模型:
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(var_1[i], var_2[i]))
 
+
+
+    def CustomRangeConstraint(var_1, var_2,  customRange, expression,):
+        for i in range(customRange):
+            Constraint(expression(var_1[i], var_2[i], i))
+
     {# def 典型日变量列表(self, varName: str,**kwargs):
         varList = []
         for i in range(len(self.计算参数.典型日列表)):
