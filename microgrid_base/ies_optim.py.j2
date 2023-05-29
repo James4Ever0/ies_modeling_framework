@@ -302,16 +302,16 @@ class {{class_name}}模型(设备模型):
         mposneg = self.变量列表_带指示变量("电功率中转")
         
         self.原电输出 = self.变量列表("原电输出", within=NonNegativeReals)
-        self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y+ 总最小启动功率)
+        self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
         self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率)
 
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
         {# Register to model.#}
 
-        self.单台柴油输入 = self.
+        self.柴油输入 = self.
         
-        self.Piecewise(self.单台柴油输入 ,self.单台原电输出, [x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load],[self.RatedPower*x[1] for x in self.DieselToPower_Load])
+        self.Piecewise(self.单台柴油输入, self.单台原电输出, [x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load],[self.RatedPower*x[1] for x in self.DieselToPower_Load])
 
         self.RangeConstraint(self.原电输出, 电输出_ , lambda x,y:x == y - 总最小启动功率)
 
