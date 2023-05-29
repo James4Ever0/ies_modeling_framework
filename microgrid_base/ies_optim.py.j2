@@ -152,7 +152,7 @@ class 设备模型:
             Constraint(expression(var_1, var_2, i))
     
     def SumRange(var_1):
-        return reduce([])
+        return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x,y: x+y)
     {# def 典型日变量列表(self, varName: str,**kwargs):
         varList = []
         for i in range(len(self.计算参数.典型日列表)):
@@ -293,9 +293,11 @@ class {{class_name}}模型(设备模型):
     # unit: one
     if 计算参数.计算模式 == "规划设计":
         {% if class_name in ['光伏发电'] %}
-        总采购成本年化 = self.CostPerWatt * 总最大功率 * 年化率
-        总固定维护成本年化 = self.CostPerYear * 总最大功率 * 年化率
-        总可变维护成本年化 = self. * (8760/ self.计算参数.迭代步数)
+        总采购成本 = self.CostPerWatt * 总最大功率 
+        总固定维护成本 = self.CostPerYear * 总最大功率 
+        总建设费用 = 
+
+        总可变维护成本年化 = self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数)
         {% else %}
         {% endif %}
 {% endfor %}
