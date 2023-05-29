@@ -166,7 +166,8 @@ class 设备模型:
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(var_1, var_2))
 
-    def RangeConstraintMulti(*vars, expression): # keyword argument now.
+    def RangeConstraintMulti(*vars, expression=None): # keyword argument now.
+        assert expression is not None
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(*[var[i] for var in vars]))
 
@@ -215,6 +216,7 @@ class 设备模型:
         return PW
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
+    #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
 
@@ -242,7 +244,7 @@ class 设备模型:
 
         mx_my_multiply = self.变量列表(varName, within=within)
 
-        mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/2)
+        mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/4)
 
         return mx_my_multiply
 
