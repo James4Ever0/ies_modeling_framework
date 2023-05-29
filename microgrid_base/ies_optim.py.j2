@@ -357,12 +357,12 @@ class {{class_name}}模型(设备模型):
             self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
         {% elif class_name  == '锂电池'%}
         self.StateOfCharge = self.变量列表('StateOfChange', within=NonNegativeReals)
-         self.计算参数.计算模式 == "设计规划":
-        self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.StateOfCharge, min=self.MinStateOfCharge, max=self.MaxStageOfCharge)))
 
-        self.总SOC = self.变量列表('总SOC', within=NonNegativeReals)
-
-        self.RangeConstraint(self.总SOC, self.StateOfCharge, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity)
+        if self.计算参数.计算模式 == "设计规划":
+            self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.StateOfCharge, min=self.MinStateOfCharge, max=self.MaxStageOfCharge)))
+        else:
+            self.总SOC = self.变量列表('总SOC', within=NonNegativeReals)
+            self.RangeConstraint(self.总SOC, self.StateOfCharge, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity)
         {%endif%}
 
     def constraints_register(self):
