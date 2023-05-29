@@ -213,6 +213,7 @@ class 设备模型:
 # output: positive
 # IO: Real
 import numpy as np
+import math
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
@@ -311,7 +312,7 @@ class {{class_name}}模型(设备模型):
 
         {# self.负载率 = self.单台发电功率 / self.额定功率 #}
         {# self.原电输出 = self.单台发电功率 * self.DeviceCount #}
-        self.燃油消耗率 = 
+        self.燃油消耗率 = math.mean[x[0] for x in self.DieselToPower_Load]
 
         {# self.Piecewise(self.燃油消耗率, self.负载率, [x[0] for x in self.DieselToPower_Load],[x[1] for x in self.DieselToPower_Load]) #}
         {# self.RangeConstraintMulti(self.燃油消耗率, self.原电输出, self.柴油输入, expression = lambda x,y,z: x*y == z) #}
