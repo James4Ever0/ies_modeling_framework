@@ -203,26 +203,25 @@ class 设备模型:
         return posneg
     
     def Piecewise(self, var_0, var_1, pw_pts:List[float], f_rule:List[float], range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
-    if range_list is None:
-        range_list = list(range(self.计算参数.迭代步数))
-    piecewise_name = self.getSpecialVarName("PW")
-    self.model.__dict__[piecewise_name] = PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
-    return PW
+        if range_list is None:
+            range_list = list(range(self.计算参数.迭代步数))
+        piecewise_name = self.getSpecialVarName("PW")
+        self.model.__dict__[piecewise_name] = PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+        return PW
 
-        
-    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10):
+    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
 
-        m1posneg = self.变量列表_带指示变量()
+        m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeExpressionMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
         mx_my_sum_var = m1posneg.x_pos
-        mx_my_sum_pow2_var = self.变量列表()
+        mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
-        m2posneg = self.变量列表_带指示变量()
+        m2posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeExpressionMulti(m2posneg.x , mx, my , expression = lambda x,y,z: x = y-z)
         mx_my_minus_var = m2posneg.x_pos
-        mx_my_minus_pow2_var = self.变量列表()
+        mx_my_minus_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
         mx_my_sum = np.linspace(max([0,min_mx + min_my]), max_mx+max_my, precision).tolist()
 
@@ -236,7 +235,7 @@ class 设备模型:
 
         self.Piecewise(mx_my_minus_var, mx_my_minus_pow2_var, pw_pts = mx_my_minus, f_rule = mx_my_minus_pow2)
 
-        mx_my_multiply = self.变量列表()
+        mx_my_multiply = self.变量列表(varName, within=within)
 
         mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/2)
 
@@ -340,6 +339,8 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
         {# self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率) #}
         self.RangeConstraintMulti(self.单台发电功率, lambda x: x <= self.额定功率)
+
+        self.Multiply(dict(var=self.单台发电功率,max=, min=0), dict(var=,max=, min=))
 
 
         # piecewise function.
