@@ -300,6 +300,8 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
         {% elif class_name in ['风力发电'] %}
         self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >=y)
+        {% elif class_name in ['柴油发电']%}
+        self.RangeConstraint(, lambda x,y:)
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
