@@ -311,7 +311,7 @@ class {{class_name}}模型(设备模型):
 
         self.柴油输入 = self.
         
-        self.Piecewise(self.单台柴油输入, self.单台原电输出, [x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load],[self.RatedPower*x[1] for x in self.DieselToPower_Load])
+        self.Piecewise(self.柴油输入, self.单台原电输出, [x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load],[self.RatedPower*x[1] for x in self.DieselToPower_Load])
 
         self.RangeConstraint(self.原电输出, 电输出_ , lambda x,y: x == y - 总最小启动功率)
 
