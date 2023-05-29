@@ -77,7 +77,7 @@ from pyomo.environ import *
 
 # shall you assign port with variables.
 
-# 风、光资源
+# 风、光照
 from typing import Union, Literal, List
 
 # 需要单位明确
@@ -86,11 +86,11 @@ class 计算参数(BaseModel):
     计算步长: Union[Literal["小时"], Literal['秒']]
     计算模式: Union[Literal['典型日'],None]
     计算类型: Union[Literal['仿真模拟'],Literal['设计规划']]
-    风资源: List[float]
+    风速: List[float]
     """
     单位: m/s
     """
-    光资源: List[float]
+    光照: List[float]
     """
     单位: kW/m2
     """
@@ -109,8 +109,8 @@ class 计算参数(BaseModel):
             steps = 24
         else:
             raise Exception("未知计算参数:", self.计算步长, self.计算模式)
-        assert len(self.风资源) == steps
-        assert len(self.光资源) == steps
+        assert len(self.风速) == steps
+        assert len(self.光照) == steps
         assert len(self.气温) == steps
         return steps
     {# @property # 提前计算好了
@@ -248,5 +248,8 @@ class {{class_name}}模型(设备模型):
             raise Exception("未知计算模式:", self.计算参数.计算模式)
         {# self.model.__dict__['{{}}'] = Var() #}
 
-        {%%%}
+
+        {% if class_name in ['光伏发电'] %}
+        Constraint(self.计算参数.光照[0]
+        {%endif%}
 {% endfor %}
