@@ -190,7 +190,7 @@ class 设备模型:
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
-        return (b_pos, b_neg) , (x_pos, x_neg), x
+        return {(b_pos, b_neg) , (x_pos, x_neg), x}
 
 # input: negative
 # output: positive
@@ -281,7 +281,9 @@ class {{class_name}}模型(设备模型):
         
         self.启停状态 = self.变量列表("启停状态", within = Boolean) # 是否满足最小启动功率
 
-        self.PowerStartupLimit
+        总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
+        电输出,  = self.变量列表_带指示变量
+        原电输出 - 总最小启动功率
         {%endif%}
 
     def constraints_register(self):
