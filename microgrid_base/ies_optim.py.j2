@@ -243,6 +243,12 @@ class {{class_name}}模型(设备模型):
     def constraints_register(self):
         {% if class_name == "风力发电"%}
         # define a single-variate piecewise function
+        # 
+        #         ____
+        #        /    |
+        #       /     |
+        #  ----/      |______
+        # 
         发电曲线 = ... # windspeed -> current power per device
         {% endif%}
 
