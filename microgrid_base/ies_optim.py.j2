@@ -201,6 +201,8 @@ class 设备模型:
         posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg)
 
         return posneg
+    
+    def Piecewiserange_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True
 
 # input: negative
 # output: positive
@@ -295,13 +297,11 @@ class {{class_name}}模型(设备模型):
 
         mposneg = self.变量列表_带指示变量("电功率中转")
 
-         - 总最小启动功率
         self.原电输出 = mposneg.x 
         # piecewise function.
-        {# Piecewise(range_list, var_0, var_1, pw_pts,  f_rule,
-    pw_repn='SOS2',
-    pw_constr_type='EQ',
-    unbounded_domain_var=True) #}
+        {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
+        {# Register to model.#}
+
         self.RangeConstraint(self.原电输出, ... , lambda x,y:x == y - 总最小启动功率)
         self.RangeConstraint(mposneg.x_pos, self.电输出, lambda x,y: x == y)
         {%endif%}
