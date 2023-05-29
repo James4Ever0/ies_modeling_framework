@@ -102,6 +102,9 @@ class 计算参数(BaseModel):
     """
     单位: percent
     """
+    BigM = 1e+10
+    """
+    """
     @property
     def 迭代步数(self):
         {# steps = None #}
@@ -243,9 +246,14 @@ class {{class_name}}模型(设备模型):
         """
 
         {% endfor %}
-    
+        
+        # 设备特有约束（变量）
+        {% if class_name == "柴油发电" %}
+        self. = self.变量列表("", within = Binary)
+        {%endif%}
+
     def constraints_register(self):
-        # 设备特有约束
+        # 设备特有约束（非变量）
         {% if class_name == "风力发电" %}
         # define a single-variate piecewise function
         # 
@@ -263,7 +271,6 @@ class {{class_name}}模型(设备模型):
         WS = np.array(self.计算参数.风速)
         单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, WS > self.MinWindSpeed and WS <= self.RatedWindSpeed , WS > self.RatedWindSpeed and WS < self.MaxWindSpeed, WS >= self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
         单台发电功率 = 单台发电功率.tolist()
-        {%elif class_name == ""%}
         {% endif %}
 
         # 设备台数约束
