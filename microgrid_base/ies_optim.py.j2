@@ -250,8 +250,14 @@ class {{class_name}}模型(设备模型):
         #  ----/      |______
         # 
         发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
-        发电曲线 = ... # windspeed -> current power per device
-        {% endif%}
+
+        # windspeed -> current power per device
+        def 发电曲线(windspeed):
+            if windspeed <= self.MinWindSpeed:
+                return 0
+            elif windspeed > self.MinWindSpeed:
+                return 发电曲线参数 * ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
+        {% endif %}
 
         if self.计算参数.计算模式 == "仿真模拟":
             {% if class_name in ['光伏发电'] %}
