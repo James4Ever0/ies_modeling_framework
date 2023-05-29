@@ -104,6 +104,7 @@ class 计算参数(BaseModel):
     """
     BigM = 1e+10
     """
+    一个大数
     """
     @property
     def 迭代步数(self):
@@ -249,7 +250,7 @@ class {{class_name}}模型(设备模型):
         
         # 设备特有约束（变量）
         {% if class_name == "柴油发电" %}
-        self. = self.变量列表("", within = Binary)
+        self.启停状态 = self.变量列表("启停状态", within = Binary) # 是否满足最小启动功率
         {%endif%}
 
     def constraints_register(self):
