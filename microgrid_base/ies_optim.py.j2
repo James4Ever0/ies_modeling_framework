@@ -261,21 +261,7 @@ class {{class_name}}模型(设备模型):
 
         # windspeed (m/s) -> current power per device (kW)
         WS = np.array(self.计算参数.风速)
-        np.piecewise(WS, [WS], [])
-        def 发电曲线(windspeed: float):
-            if windspeed <= self.MinWindSpeed:
-                return 0
-            elif windspeed > self.MinWindSpeed and windspeed <= self.RatedWindSpeed:
-                return 发电曲线参数 * ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
-            elif windspeed > self.RatedWindSpeed and windspeed < self.MaxWindSpeed:
-                return self.RatedPower
-            elif windspeed >= self.MaxWindSpeed:
-                return 0
-            else:
-                print("RatedWindSpeed:", self.RatedWindSpeed)
-                print("MinWindSpeed:", self.MinWindSpeed)
-                print("MaxWindSpeed:", self.MaxWindSpeed)
-                raise Exception("Unknown windspeed:", windspeed)
+        np.piecewise(WS, [WS<=self.MinWindSpeed, WS > self.MinWindSpeed and WS <= self.RatedWindSpeed , WS > self.RatedWindSpeed and WS < self.MaxWindSpeed, WS >= self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
         {% endif %}
 
         # 设备台数约束
