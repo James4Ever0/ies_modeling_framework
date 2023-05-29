@@ -346,8 +346,6 @@ class {{class_name}}模型(设备模型):
         
         # 设备特有约束（变量）
         {% if class_name == "柴油发电" %}
-        
-
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
@@ -357,7 +355,8 @@ class {{class_name}}模型(设备模型):
         else:
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
             self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
-
+        {%elif class_name  == '锂电池'%}
+        self.
         {%endif%}
 
     def constraints_register(self):
@@ -446,7 +445,7 @@ class {{class_name}}模型(设备模型):
     年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
     # unit: one
     if 计算参数.计算模式 == "规划设计":
-        {% if class_name in ['光伏发电','风力发电'] %}
+        {% if class_name in ['光伏发电','风力发电','柴油发电'] %}
         总采购成本 = self.CostPerWatt * 总最大功率 
         总固定维护成本 = self.CostPerYear * 总最大功率 
         总建设费用 = self.BuildCostPerWatt * 总最大功率 + self.BuildBaseCost
