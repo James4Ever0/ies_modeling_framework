@@ -436,7 +436,7 @@ class {{class_name}}模型(设备模型):
             self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
             {% endif %}
         elif self.计算参数.计算步长 == "小时":
-            ...
+            ... # skip it.
         else:
             raise Exception("未知计算步长:", self.计算参数.计算步长)
     
