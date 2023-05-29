@@ -307,6 +307,9 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
         {# self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率) #}
         self.RangeConstraintMulti(self.单台发电功率, lambda x: x <= self.额定功率)
+        mx_my_sum = np.linspace(min_mx + min_my, max_mx+max_my, 10)
+        m
+        self.Piecewise(mx_my_sum, mx_my_sum_pow2, pw_pts, f_rule)
 
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
