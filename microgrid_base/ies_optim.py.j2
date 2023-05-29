@@ -355,8 +355,9 @@ class {{class_name}}模型(设备模型):
         else:
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
             self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
-        {%elif class_name  == '锂电池'%}
-        self.StateOfCharge = 
+        {% elif class_name  == '锂电池'%}
+        self.StateOfCharge = self.变量列表('StateOfChange', within=NonNegativeReals)
+        self.
         {%endif%}
 
     def constraints_register(self):
