@@ -254,7 +254,7 @@ class {{class_name}}模型(设备模型):
 
 
         {% if class_name in ['光伏发电'] %}
-        光电转换效率 = self.MaxPower / 1000
+        光电转换效率 = self.MaxPower / 1000 # 一块光伏板，1000kw
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency >= y)
         {%endif%}
 {% endfor %}
