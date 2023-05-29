@@ -195,6 +195,7 @@ class {{class_name}}模型(设备模型):
             单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
             """
             {% endif %}
+            assert self.{{ mdigit[0] }} >=0
         {% else %}
         {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed"] %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
@@ -208,6 +209,7 @@ class {{class_name}}模型(设备模型):
         名称: {{ mdigit[1] }}
         单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
         """
+        assert self.{{ mdigit[0] }} >=0
         {% endif %}
 
         {% endfor %}
@@ -251,7 +253,7 @@ class {{class_name}}模型(设备模型):
         #
         assert self.RatedWindSpeed > self.MinWindSpeed
         assert self.MaxWindSpeed > self.RatedWindSpeed
-        
+
         发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
         # windspeed -> current power per device
