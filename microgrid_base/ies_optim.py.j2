@@ -202,7 +202,8 @@ class 设备模型:
 
         return posneg
     
-    def Piecewiserange_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True
+    def Piecewise(self,range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
+    self.model.__dict__[piecewise_name] = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
 
 # input: negative
 # output: positive
