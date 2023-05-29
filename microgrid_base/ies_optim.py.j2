@@ -175,12 +175,17 @@ class 设备模型:
         return varList #}
     
     def AbsoluteRangeLimit(self):
+        x = self.变量列表(self.getSpecialVarName())
+        x_pos = self.变量列表(self.getSpecialVarName())
+        x_neg = self.变量列表(self.getSpecialVarName())
+        b_pos = self.变量列表(self.getSpecialVarName())
+        b_neg = self.变量列表(self.getSpecialVarName())
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
-        
+
         self.RangeConstraint(b_pos, x_pos, lambda x,y: x*self.BigM >= x_pos)
         self.RangeConstraint(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
 
-        self.RangeConstraintMulti(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
+        self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
         return ( b_pos, b_neg) , (x_pos, x_neg), x
 
