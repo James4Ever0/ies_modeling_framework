@@ -249,7 +249,7 @@ class {{class_name}}模型(设备模型):
         #       /     | ax^3
         #  ----/      |______
         # 
-        发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) **3)
+        发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
         发电曲线 = ... # windspeed -> current power per device
         {% endif%}
 
