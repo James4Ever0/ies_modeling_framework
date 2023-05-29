@@ -265,7 +265,8 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算步长 == "秒":
             {% if class_name in ['光伏发电'] %}
-            self.CustomRangeConstraint(, ,lambda x,y,i:)
+            self.CustomRangeConstraint(self. , self.PowerDeltaLimit, lambda x,y,i:x[i+1] - x[i] < self.PowerDeltaLimit)
+            self.CustomRangeConstraint(self. , self.PowerDeltaLimit, lambda x,y,i:x[i+1] - x[i] > -self.PowerDeltaLimit)
             {%endif%}
         elif self.计算参数.计算步长 == "小时":
             ...
