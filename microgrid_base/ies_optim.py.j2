@@ -140,8 +140,8 @@ class 设备模型:
             VN = f"TD_{self.计算参数.典型日ID}_"+VN
         return VN
     
-    def getSpecialVarName(self):
-        specialVarName = f"SP_{self.SID}"
+    def getSpecialVarName(self, varName:str):
+        specialVarName = f"SP_{self.SID}_{varName}"
         self.SID +=1
         return specialVarName
 
@@ -174,12 +174,12 @@ class 设备模型:
             varList.append(var)
         return varList #}
     
-    def AbsoluteRangeLimit(self):
-        x = self.变量列表(self.getSpecialVarName())
-        x_pos = self.变量列表(self.getSpecialVarName())
-        x_neg = self.变量列表(self.getSpecialVarName())
-        b_pos = self.变量列表(self.getSpecialVarName())
-        b_neg = self.变量列表(self.getSpecialVarName())
+    def 变量列表_带(self, varName:str):
+        x = self.变量列表(varName)
+        x_pos = self.变量列表(self.getSpecialVarName(varName))
+        x_neg = self.变量列表(self.getSpecialVarName(varName))
+        b_pos = self.变量列表(self.getSpecialVarName(varName))
+        b_neg = self.变量列表(self.getSpecialVarName(varName))
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
 
         self.RangeConstraint(b_pos, x_pos, lambda x,y: x*self.BigM >= x_pos)
