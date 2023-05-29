@@ -260,15 +260,15 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower /self.Area # 一块光伏板，1kw/m2光照
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency*光电转换效率 >= y)
-        {% elif class_name in []%}
+        {% elif class_name in [] %}
         {%endif%}
 
         if self.计算参数.计算步长 == "秒":
             {% if class_name in ['光伏发电'] %}
             总最大功率 = self.MaxPower * self.DeviceCount
-            最大功率变化 = 总最大功率 / 100
-            self.CustomRangeConstraint(self. , self.PowerDeltaLimit, lambda x,y,i:x[i+1] - x[i] <= self.PowerDeltaLimit)
-            self.CustomRangeConstraint(self. , self.PowerDeltaLimit, lambda x,y,i:x[i+1] - x[i] >= -self.PowerDeltaLimit)
+            最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
+            self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
+            self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
             {%endif%}
         elif self.计算参数.计算步长 == "小时":
             ...
