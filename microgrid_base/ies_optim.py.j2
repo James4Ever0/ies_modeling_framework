@@ -228,8 +228,13 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算模式 == "仿真模拟":
             {% if class_name in ['光伏发电'] %}
             self. = 
-            {% endif%}
+            {% else %}
+            {% endif %}
         elif self.计算参数.计算模式 == "规划设计":
+            {% if class_name in ['光伏发电'] %}
+            self. = 
+            {% else %}
+            {% endif %}
         else:
             raise Exception("未知计算模式:", self.计算参数.计算模式)
         {# self.model.__dict__['{{}}'] = Var() #}
