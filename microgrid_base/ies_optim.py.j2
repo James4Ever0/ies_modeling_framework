@@ -123,12 +123,13 @@ class 计算参数(BaseModel):
     {# # like: (tday_index, tday_data, tday_count) #}
 
 class POSNEG:
-    def __init__(self, x, x_pos, x_neg, b_pos, b_neg):
+    def __init__(self, x, x_pos, x_neg, b_pos, b_neg, x_abs):
         self.x = x
         self.x_pos = x_pos
         self.b_pos = b_pos
         self.x_neg = x_neg
         self.b_neg = b_neg
+        self.x_abs=x_abs
 
 from functools import reduce
 class 设备模型:
@@ -198,7 +199,11 @@ class 设备模型:
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
-        posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg)
+        x_abs = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
+
+        self.RangeConstraintMulti(x_pos, x_neg, x_abs, lambda x,y,z : z == x+y)
+
+        posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg, x_abs)
 
         return posneg
     
@@ -208,9 +213,6 @@ class 设备模型:
         piecewise_name = self.getSpecialVarName("PW")
         self.model.__dict__[piecewise_name] = PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
         return PW
-    
-    def 单绝对值变量():
-    def 绝对值变量列表():
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
