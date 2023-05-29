@@ -298,7 +298,7 @@ class {{class_name}}模型(设备模型):
             {% endif %}
             assert self.{{ mdigit[0] }} >=0
         {% else %}
-        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay"] %}
+        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit'] %}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
         名称: {{ mdigit[1] }}
@@ -356,7 +356,7 @@ class {{class_name}}模型(设备模型):
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
             self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
         {%elif class_name  == '锂电池'%}
-        self.
+        self.StateOfCharge = 
         {%endif%}
 
     def constraints_register(self):
