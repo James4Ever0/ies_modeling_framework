@@ -266,7 +266,7 @@ class {{class_name}}模型(设备模型):
 
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency*光电转换效率 >= y)
         {% elif class_name in [] %}
-        {%endif%}
+        {% endif %}
 
         if self.计算参数.计算步长 == "秒":
             {% if class_name in ['光伏发电'] %}
@@ -282,6 +282,7 @@ class {{class_name}}模型(设备模型):
     # 计算年化
     if 计算参数.计算模式 == "规划设计":
         {% if class_name in ['光伏发电'] %}
+        self.CostPerWatt
         {% else %}
         {% endif %}
 {% endfor %}
