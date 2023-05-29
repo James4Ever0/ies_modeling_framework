@@ -265,7 +265,7 @@ class {{class_name}}模型(设备模型):
         {# self.model.__dict__['{{}}'] = Var() #}
 
         {% if class_name in ['光伏发电'] %}
-        光电转换效率 = self.MaxPower /self.Area # 一块光伏板，1kw/m2光照
+        光电转换效率 = self.MaxPower / self.Area # 一块光伏板，1kw/m2光照
         总最大功率 = self.MaxPower * self.DeviceCount
 
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*self.PowerConversionEfficiency*光电转换效率 >= y)
@@ -295,7 +295,9 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电'] %}
         总采购成本 = self.CostPerWatt * 总最大功率 
         总固定维护成本 = self.CostPerYear * 总最大功率 
-        总建设费用 = 
+        总建设费用 = self.BuildCostPerWatt * 总最大功率 + self.BuildBaseCost
+
+        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用)*年化率
 
         总可变维护成本年化 = self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数)
         {% else %}
