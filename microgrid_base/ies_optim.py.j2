@@ -280,11 +280,17 @@ class {{class_name}}模型(设备模型):
             raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
-    年化
+    {% if class_name in ['光伏发电'] %}
+    Life = self.Life
+    {%else%}
+    ...
+    {%endif%}
+    年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
+    # unit: one
     if 计算参数.计算模式 == "规划设计":
         {% if class_name in ['光伏发电'] %}
-        总采购成本 = self.CostPerWatt * 总最大功率
-        总固定维护成本 = self.CostPerYear * 总最大功率 * ((1+self.计算参数.年利率)** self.Life)
+        总采购成本年化 = self.CostPerWatt * 总最大功率 * 年化率
+        总固定维护成本年化 = self.CostPerYear * 总最大功率 * 年化率
         {% else %}
         {% endif %}
 {% endfor %}
