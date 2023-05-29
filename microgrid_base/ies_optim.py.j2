@@ -123,7 +123,12 @@ class 计算参数(BaseModel):
     {# # like: (tday_index, tday_data, tday_count) #}
 
 class POSNEG:
-    def __init__(self, x)
+    def __init__(self, x, x_pos, x_neg, b_pos, b_neg):
+        self.x = x
+        self.x_pos = x_pos
+        self.b_pos = b_pos
+        self.x_neg = x_neg
+        self.b_neg = b_neg
 
 from functools import reduce
 class 设备模型:
@@ -177,7 +182,7 @@ class 设备模型:
             varList.append(var)
         return varList #}
     
-    def 变量列表_带指示变量(self, varName:str):
+    def 变量列表_带指示变量(self, varName:str) -> POSNEG:
         x = self.变量列表(varName, within = Reals)
 
         x_pos = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
@@ -193,7 +198,9 @@ class 设备模型:
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
-        return (b_pos, b_neg) , (x_pos, x_neg), x
+        posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg)
+
+        return posneg
 
 # input: negative
 # output: positive
@@ -285,7 +292,7 @@ class {{class_name}}模型(设备模型):
         self.启停状态 = self.变量列表("启停状态", within = Boolean) # 是否满足最小启动功率
 
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
-        电输出,  = self.变量列表_带指示变量
+        mposneg = self.变量列表_带指示变量("电功率中转")
         原电输出 - 总最小启动功率
         {%endif%}
 
