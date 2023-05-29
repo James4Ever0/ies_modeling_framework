@@ -310,7 +310,10 @@ class {{class_name}}模型(设备模型):
 
         self.柴油输入 # 变量
 
-        self.RangeConstraint(self.原电输出, ... , lambda x,y:x == y - 总最小启动功率)
+        电输出 =  self.柴油输入 
+
+        self.RangeConstraint(self.原电输出, 电输出 , lambda x,y:x == y - 总最小启动功率)
+
         self.RangeConstraint(mposneg.x_pos, self.电输出, mposneg.b_pos ,lambda x,y,z: x + 总最小启动功率*z == y)
         {%endif%}
 
