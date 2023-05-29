@@ -153,9 +153,9 @@ class 设备模型:
         var = self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数), **kwargs)
         return var
 
-    def RangeConstraint(var_1, var_2, expression):
+    def RangeConstraint(*vars, expression):
         for i in range(self.计算参数.迭代步数):
-            Constraint(expression(var_1[i], var_2[i]))
+            Constraint(expression(*[var[i] for var in vars]))
 
     def CustomRangeConstraint(var_1, var_2, customRange, expression):
         for i in range(customRange):
