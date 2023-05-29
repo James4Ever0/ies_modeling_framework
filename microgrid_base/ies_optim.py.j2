@@ -251,6 +251,7 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（变量）
         {% if class_name == "柴油发电" %}
         self.启停状态 = self.变量列表("启停状态", within = Binary) # 是否满足最小启动功率
+        self.RangeConstraint()
         {%endif%}
 
     def constraints_register(self):
