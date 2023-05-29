@@ -298,12 +298,12 @@ class {{class_name}}模型(设备模型):
         
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
 
-        mposneg = self.变量列表_带指示变量("电功率中转")
-
+        mposneg = self.变量列表_带指示变量("电功率中转", within=NonNegativeReals)
+        
         self.原电输出 = mposneg.x 
         总最大输出功率 = self.RatedPower * self.DeviceCount
 
-        self.RangeConstraintMulti(self.原电输出, lambda x: x >= 0)
+        {# self.RangeConstraintMulti(self.原电输出, lambda x: x >= 0) #}
         self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率)
         # piecewise function.
         {# Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True) #}
@@ -311,13 +311,12 @@ class {{class_name}}模型(设备模型):
         
         self.Piecewise(self.柴油输入 ,self.原电输出,[x[0]*总最大功率*x[1] for x in self.DieselToPower_Load],[总最大功率*x[1] for x in self.DieselToPower_Load])
 
-        self.RangeConstraint(self.原电输出, 电输出 , lambda x,y:x == y - 总最小启动功率)
+        self.RangeConstraint(self.原电输出, self.电输出 , lambda x,y:x == y - 总最小启动功率)
 
         self.RangeConstraint(mposneg.x_pos, self.电输出, mposneg.b_pos ,lambda x,y,z: x + 总最小启动功率*z == y)
 
-        self.负载率 = self.变量列表("负载率", within = NonNegativeReals)
-
-        self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/ 总最大输出功率)
+        {# self.负载率 = self.变量列表("负载率", within = NonNegativeReals) #}
+        {# self.RangeConstraint( self.负载率,self.原电输出, lambda x,y: x == y/ 总最大输出功率) #}
         {%endif%}
 
     def constraints_register(self):
