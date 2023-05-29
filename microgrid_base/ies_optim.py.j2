@@ -334,13 +334,12 @@ class {{class_name}}模型(设备模型):
 
         mposneg = self.变量列表_带指示变量("电功率中转")
         
-        self.原电输出 = self.变量列表("原电输出", within=NonNegativeReals)
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
-        self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
         {# self.RangeConstraintMulti(self.原电输出, lambda x: x <= 总最大输出功率) #}
         self.RangeConstraintMulti(self.单台发电功率, lambda x: x <= self.额定功率)
 
-        self.Multiply(dict(var=self.单台发电功率,max=, min=0), dict(var=,max=, min=))
+        self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
+        self.RangeConstraint(self.原电输出, mposneg.x ,lambda x,y: x = y + 总最小启动功率)
 
 
         # piecewise function.
@@ -353,7 +352,7 @@ class {{class_name}}模型(设备模型):
         {# self.原电输出 = self.单台发电功率 * self.DeviceCount #}
         {# self.燃油消耗率 = math.mean([x[0] for x in self.DieselToPower_Load]) #}
 
-        {# self.Piecewise(self.燃油消耗率, self.负载率, [x[0] for x in self.DieselToPower_Load],[x[1] for x in self.DieselToPower_Load]) #}
+        self.Piecewise(self.燃油消耗率, self.负载率, [x[0] for x in self.DieselToPower_Load],[*x[1] for x in self.DieselToPower_Load])
         {# self.RangeConstraintMulti(self.燃油消耗率, self.原电输出, self.柴油输入, expression = lambda x,y,z: x*y == z) #}
 
 
