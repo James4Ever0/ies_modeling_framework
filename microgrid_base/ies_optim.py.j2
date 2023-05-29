@@ -278,4 +278,10 @@ class {{class_name}}模型(设备模型):
             ...
         else:
             raise Exception("未知计算步长:", self.计算参数.计算步长)
+    
+    # 计算年化
+    if 计算参数.计算模式 == "规划设计":
+        {% if class_name in ['光伏发电'] %}
+        {% else %}
+        {% endif %}
 {% endfor %}
