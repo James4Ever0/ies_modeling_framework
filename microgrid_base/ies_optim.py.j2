@@ -354,9 +354,11 @@ class {{class_name}}模型(设备模型):
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
 
-        if 
-
-        self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
+        if self.计算参数.计算模式 == "设计规划":
+            self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
+        else:
+            self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
+            self. ,self.单台发电功率, lambda x,y: x = y*self.DeviceCount)
 
         self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.额定功率)
 
