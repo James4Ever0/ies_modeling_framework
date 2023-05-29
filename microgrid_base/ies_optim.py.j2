@@ -291,6 +291,7 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电'] %}
         总采购成本年化 = self.CostPerWatt * 总最大功率 * 年化率
         总固定维护成本年化 = self.CostPerYear * 总最大功率 * 年化率
+        总可变维护成本年化 = self. * (8760/ self.计算参数.迭代步数)
         {% else %}
         {% endif %}
 {% endfor %}
