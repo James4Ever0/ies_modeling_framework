@@ -282,7 +282,8 @@ class {{class_name}}模型(设备模型):
     # 计算年化
     if 计算参数.计算模式 == "规划设计":
         {% if class_name in ['光伏发电'] %}
-        self.CostPerWatt
+        总采购成本 = self.CostPerWatt * 总最大功率
+        总固定维护成本 = self.CostPerYear * 总最大功率 * 
         {% else %}
         {% endif %}
 {% endfor %}
