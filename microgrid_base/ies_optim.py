@@ -212,13 +212,13 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -505,13 +505,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 
@@ -589,13 +589,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -840,20 +840,20 @@ class 设备模型:
         )
         return var
 
-    def RangeConstraint(var_1, var_2, expression):
+    def RangeConstraint(self, var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(var_1, var_2))
 
-    def RangeConstraintMulti(*vars, expression=None):  # keyword argument now.
+    def RangeConstraintMulti(self, *vars, expression=None):  # keyword argument now.
         assert expression is not None
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(var_1, var_2, customRange: range, expression):
+    def CustomRangeConstraint(self, var_1, var_2, customRange: range, expression):
         for i in customRange:
             Constraint(expression(var_1, var_2, i))
 
-    def SumRange(var_1):
+    def SumRange(self, var_1):
         return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x, y: x + y)
 
     def 变量列表_带指示变量(self, varName: str, within=Reals) -> POSNEG:
@@ -1086,13 +1086,9 @@ class 光伏发电模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         光电转换效率 = self.MaxPower / self.Area  # 1kW/m2光照下能产生的能量 省略除以1 单位: one
@@ -1288,13 +1284,9 @@ class 风力发电模型(设备模型):
         单台发电功率 = 单台发电功率.tolist()
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
@@ -1446,14 +1438,14 @@ class 柴油发电模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
-        """
-        类型: 供电端输出
-        """
-
         self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
         """
         类型: 柴油输入
+        """
+
+        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -1497,13 +1489,9 @@ class 柴油发电模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
@@ -1738,13 +1726,9 @@ class 锂电池模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         self.RangeConstraintMulti(
@@ -1951,13 +1935,9 @@ class 变压器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         self.RangedConstraint(self.电输入, self.电输出, lambda x, y: x=-y * self.Efficiency)
@@ -2077,14 +2057,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 变流器输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2093,13 +2073,9 @@ class 变流器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         self.RangedConstraint(self.电输入, self.电输出, lambda x, y: x=-y * self.Efficiency)
@@ -2221,14 +2197,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2239,13 +2215,9 @@ class 双向变流器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
 
@@ -2367,12 +2339,6 @@ class 传输线模型(设备模型):
         # 设备特有约束（非变量）
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-        elif self.计算参数.计算类型 == "规划设计":
-            ...
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
 
         # 输出输入功率约束
         TotalDecayPerStep = (

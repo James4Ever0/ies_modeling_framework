@@ -188,20 +188,20 @@ class 设备模型:
         var = self.model.__dict__[self.getVarName(varName)] = Var(range(self.计算参数.迭代步数), **kwargs)
         return var
 
-    def RangeConstraint(var_1, var_2, expression):
+    def RangeConstraint(self,var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(var_1, var_2))
 
-    def RangeConstraintMulti(*vars, expression=None): # keyword argument now.
+    def RangeConstraintMulti(self, *vars, expression=None): # keyword argument now.
         assert expression is not None
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(var_1, var_2, customRange:range, expression):
+    def CustomRangeConstraint(self,var_1, var_2, customRange:range, expression):
         for i in customRange:
             Constraint(expression(var_1, var_2, i))
     
-    def SumRange(var_1):
+    def SumRange(self,var_1):
         return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x,y: x+y)
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
@@ -234,7 +234,7 @@ class 设备模型:
         return PW
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
-    #  (x+y)^2 - (x-y)^2 = 4xy
+        #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
 
