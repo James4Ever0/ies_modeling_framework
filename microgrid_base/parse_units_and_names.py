@@ -457,6 +457,10 @@ for key in keys:
                     if subkey in ['锂电池']:
                         params["设计规划"].append(wrapper_uc_vp("初始SOC", "percent"))
                         params["设计规划"].append('循环边界条件')
+                        params["设计规划"].append(wrapper_uc_vp("最大设备容量", "kWh")) # 总容量
+                        params["设计规划"].append(
+                            wrapper_uc_vp("最小设备容量", "kWh")
+                        )  # from excel.
                     elif subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
                         params["设计规划"].append(
