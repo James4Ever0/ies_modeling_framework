@@ -459,7 +459,7 @@ class {{class_name}}模型(设备模型):
 
         Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.MinDeviceCount)
 
-        self.电接口 = 
+        self.CustomRangeConstraint( self.电接口, self.CurrentTotalActualCapacity, range(self.迭代步长-1), lambda x,y,i: x == y[i] - y[i+1])
 
         self.RangeConstraintMulti(self.Cu)
 
