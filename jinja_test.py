@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # mylist = [1,2,3]
 def main():
-    env = Environment(loader = FileSystemLoader('./'))
+    env = Environment(loader = FileSystemLoader('./'), extensions=['jinja2_error.ErrorExtension'])
     tpl = env.get_template('jinja_test.j2')
     
     with open('page.txt','w+') as fout:
