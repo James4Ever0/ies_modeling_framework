@@ -357,7 +357,11 @@ class {{class_name}}模型(设备模型):
             self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
         {% elif class_name  == '锂电池' %}
         self.SOC = self.变量列表('SOC', within=NonNegativeReals)
-        self.RatedCapacity * (self.MaxSOC -self.MinSOC)
+        self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
+
+        #   初始SOC
+        assert self.InitSOC >= self.MinSOC
+        self.初始总电量 = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
         if self.计算参数.计算模式 == "设计规划":
             self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC)))
