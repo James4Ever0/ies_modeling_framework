@@ -340,7 +340,7 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
         
         # 设备特有约束（变量）
-        {% if class_name in ['光伏发电']%}
+        {% if class_name in ['光伏发电','风力发电','柴油发电']%}
         self.电输出 = self.电接口
         if self.计算参数.计算类型== "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
@@ -503,64 +503,64 @@ class {{class_name}}模型(设备模型):
             ... # skip it.
         else:
             raise Exception("未知计算步长:", self.计算参数.计算步长) #}
-    
-    # 计算年化
-    # unit: one
-    {# if 计算参数.计算类型 == "规划设计": #}
-    {# 规划设计和仿真模拟都需要计算年化 #}
-    {%with%}
-    {% if class_name in ['锂电池'] %} 
-    计算范围内总电变化量 = (self.SumRange(self.原电接口.x_pos)
-    +self.SumRange(self.原电接口.x_neg))
-    +self.TotalStorageDecay*self.计算参数.迭代步数
-    一小时总电变化量 = 计算范围内总电变化量 * {{时间步长参数}}
-    {# 一小时总电变化量 = 计算范围内总电变化量 #}
-    一年总电变化量 = 一小时总电变化量 * 8760
-    
-    Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
-    assert self.BatteryLife >=1
-    assert self.Life >= self.BatteryLife
-    Life = self.BatteryLife
-    {%else%}
-    Life = self.Life
-    {%endif%}
+        
+        # 计算年化
+        # unit: one
+        {# if 计算参数.计算类型 == "规划设计": #}
+        {# 规划设计和仿真模拟都需要计算年化 #}
+        {%with%}
+        {% if class_name in ['锂电池'] %} 
+        计算范围内总电变化量 = (self.SumRange(self.原电接口.x_pos)
+        +self.SumRange(self.原电接口.x_neg))
+        +self.TotalStorageDecay*self.计算参数.迭代步数
+        一小时总电变化量 = 计算范围内总电变化量 * {{时间步长参数}}
+        {# 一小时总电变化量 = 计算范围内总电变化量 #}
+        一年总电变化量 = 一小时总电变化量 * 8760
+        
+        Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
+        assert self.BatteryLife >=1
+        assert self.Life >= self.BatteryLife
+        Life = self.BatteryLife
+        {%else%}
+        Life = self.Life
+        {%endif%}
 
-    年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
-    {% if class_name in ['光伏发电'] %}
-        {% set m='总最大功率'%}
-    {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
-        {% set m='self.DeviceCount * self.RatedPower'%}
-    {% elif class_name in ["锂电池"]%}
-        {% set m='self.DeviceCount * self.RatedCapacity'%}
-    {% elif class_name in ['传输线'] %}
-        {% set m='self.Length'%}
-    {% else%}
-        {% error("不支持的设备类型:", class_name) %}
-    {% endif %}
+        年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
+        {% if class_name in ['光伏发电'] %}
+            {% set m='总最大功率'%}
+        {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
+            {% set m='self.DeviceCount * self.RatedPower'%}
+        {% elif class_name in ["锂电池"]%}
+            {% set m='self.DeviceCount * self.RatedCapacity'%}
+        {% elif class_name in ['传输线'] %}
+            {% set m='self.Length'%}
+        {% else%}
+            {% error("不支持的设备类型:", class_name) %}
+        {% endif %}
 
-    总采购成本 = self.CostPerWatt * ({{ m}}) 
-    总固定维护成本 = self.CostPerYear * ({{ m}})
-    总建设费用 = self.BuildCostPerWatt * ({{ m}}) + self.BuildBaseCost
+        总采购成本 = self.CostPerWatt * ({{ m}}) 
+        总固定维护成本 = self.CostPerYear * ({{ m}})
+        总建设费用 = self.BuildCostPerWatt * ({{ m}}) + self.BuildBaseCost
 
-    总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
 
-    {% if class_name in ['光伏发电','风力发电','柴油发电']%}
-        {% set m1="self.SumRange(self.电输出)"%}
-    {% elif class_name in ['锂电池']%}
-        {% set m1="计算范围总电变化量"%}
-    {% elif class_name in 单向变电器列表+['传输线']%}
-        {% set m1='-self.SumRange(self.电输入)'%}
-    {% elif class_name in ['双向变流器']%}
-        {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
-    {%elif class_name in ['传输线'] %}
-        {% set m1='0'%}
-    {% else%}
-        {% error("不支持的类型:", class_name) %}
-    {% endif %}
+        {% if class_name in ['光伏发电','风力发电','柴油发电']%}
+            {% set m1="self.SumRange(self.电输出)"%}
+        {% elif class_name in ['锂电池']%}
+            {% set m1="计算范围总电变化量"%}
+        {% elif class_name in 单向变电器列表+['传输线']%}
+            {% set m1='-self.SumRange(self.电输入)'%}
+        {% elif class_name in ['双向变流器']%}
+            {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
+        {%elif class_name in ['传输线'] %}
+            {% set m1='0'%}
+        {% else%}
+            {% error("不支持的类型:", class_name) %}
+        {% endif %}
 
-    总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPerPower
+        总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPerPower
 
-    总成本年化 = 总固定成本年化 + 总可变维护成本年化
-    {% endwith%}
+        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        {% endwith%}
 {% endfor %}
