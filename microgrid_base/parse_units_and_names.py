@@ -456,6 +456,7 @@ for key in keys:
                     params = {"设计规划": [], "仿真模拟": []}
                     if subkey in ['锂电池']:
                         params["设计规划"].append(wrapper_uc_vp("初始SOC", "percent"))
+                        params["设计规划"].append('循环边界条件')
                     elif subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
                         params["设计规划"].append(

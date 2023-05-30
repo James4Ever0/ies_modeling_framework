@@ -365,6 +365,7 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算模式 == "设计规划":
             #  初始SOC
+            if self.
             assert self.InitSOC >= self.MinSOC
             assert self.InitSOC <= self.MaxSOC
             self.InitCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
