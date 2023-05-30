@@ -370,14 +370,9 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
-        self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.DeviceCount * self.ActualCapacityPerUnit)
 
         if self.计算参数.计算模式 == "设计规划":
             #  初始SOC
-            {# if self.计算参数.计算模式 == "设计规划": #}
-            {# if 设备信息.循环边界条件 == '日间独立':
-            elif 设备信息.循环边界条件 == '日间连接':
-            else: #}
             assert self.InitSOC >= self.MinSOC
             assert self.InitSOC <= self.MaxSOC
             self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
@@ -456,7 +451,13 @@ class {{class_name}}模型(设备模型):
         self.Piecewise(self.单台柴油输入, self.单台发电功率, [-x[0]*self.额定功率*x[1] for x in self.DieselToPower_Load], [self.额定功率*x[1] for x in self.DieselToPower_Load])
         self.RangeConstraint(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, lambda x,y,z: x + 总最小启动功率*z == y)
         {%elif class_name in ['锂电池']%}
-        self.TotalCapacity
+        self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.TotalActualCapacity)
+
+        if self.计算参数.计算模式 == "设计规划":
+            if self.设备信息.循环边界条件 == '日间独立':
+            elif self.设备信息.循环边界条件 == '日间连接':
+            else:
+            raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
