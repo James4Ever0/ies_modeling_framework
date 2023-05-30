@@ -474,10 +474,11 @@ class {{class_name}}模型(设备模型):
                 Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1] < self.MaxTotalCapacityDelta)
                 Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1] > -self.MaxTotalCapacityDelta)
 
-                self.电接口[0] = self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1]
+                self.电接口[0] = self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1] - self.CurrentTotalActualCapacity[0] 
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
-            if self.
+        elif self.计算参数.计算类型 == "仿真模拟":
+            ...
            
         {% endif %}
 
