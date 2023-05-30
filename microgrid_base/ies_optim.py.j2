@@ -503,9 +503,10 @@ class {{class_name}}模型(设备模型):
         一年总放电量 = 一小时总放电量 * 8760
         
         Constraint(一年总放电量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
-
-        {%endif%}
+        
+{%else%}
         Life = self.Life
+        {%endif%}
 
         年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
         {% if class_name in ['光伏发电','风力发电','柴油发电'] %}
