@@ -301,12 +301,12 @@ class {{class_name}}模型(设备模型):
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
         
         {%with%}
-        {% set mpflag = {"仿真模拟":false, "设计规划":false}%}
+        {% set mpflag = {"仿真模拟":False, "设计规划":False}%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"]%}
         {% if mpflag[psc] == False%}
         if self.计算参数.计算类型 == "{{psc}}":
-        {% set mpflag[psc] == True%}
+        {% set mpflag[psc] == True %}
         {% endif %}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
