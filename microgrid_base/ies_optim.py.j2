@@ -411,12 +411,12 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         # 设备台数约束
-        if self.计算参数.计算模式 == "仿真模拟":
+        if self.计算参数.计算类型 == "仿真模拟":
             {% if class_name in ['光伏发电'] %}
             ...
             {% else %}
             {% endif %}
-        elif self.计算参数.计算模式 == "规划设计":
+        elif self.计算参数.计算类型 == "规划设计":
             {% if class_name in ['光伏发电'] %}
             MaxDeviceCount = self.MaxInstallArea/self.Area
             MinDeviceCount = self.MinInstallArea/self.Area
@@ -431,7 +431,7 @@ class {{class_name}}模型(设备模型):
             Constraint(self.DeviceCount >= self.MinDeviceCount)
             {% endif %}
         else:
-            raise Exception("未知计算模式:", self.计算参数.计算模式)
+            raise Exception("未知计算模式:", self.计算参数.计算类型)
         {# self.model.__dict__['{{}}'] = Var() #}
 
         # 输出输入功率约束
@@ -453,14 +453,17 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
         self.Piecewise(self.单台柴油输入, self.单台发电功率, [-x[0]*self.额定功率*x[1] for x in self.DieselToPower_Load], [self.额定功率*x[1] for x in self.DieselToPower_Load])
         self.RangeConstraint(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, lambda x,y,z: x + 总最小启动功率*z == y)
-        {%elif class_name in ['锂电池']%}
+        {%elif class_name in ['锂电池'] %}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.TotalActualCapacity)
+
+        if not (self.计算参数.计算模式 == "设计规划" and self.计算参数
         self.CurrentTotalActualCapacity[0] = self.InitActualCapacityPerUnit * self.DeviceCount
         self.RangeConstraintMulti(self.Cu)
 
         if self.计算参数.计算模式 == "设计规划":
+            if self.
             if self.设备信息.循环边界条件 == '日间独立':
-                
+                ...
             elif self.设备信息.循环边界条件 == '日间连接':
                 ...
             else:
