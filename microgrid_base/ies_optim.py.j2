@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-
+import rich
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
@@ -112,7 +112,8 @@ class 计算参数(BaseModel):
         elif self.计算步长 == "小时" and self.典型日 is True:
             steps = 24
         else:
-            raise Exception("未知计算参数:", self.计算步长, self.计算模式)
+            rich.print(self)
+            raise Exception("未知计算参数")
         assert len(self.风速) == steps
         assert len(self.光照) == steps
         assert len(self.气温) == steps
@@ -456,18 +457,20 @@ class {{class_name}}模型(设备模型):
         {%elif class_name in ['锂电池'] %}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.TotalActualCapacity)
 
-        if not (self.计算参数.计算类型 == "设计规划" and self.计算参数.典型日
-        self.CurrentTotalActualCapacity[0] = self.InitActualCapacityPerUnit * self.DeviceCount
+        if not (self.计算参数.计算类型 == "设计规划" and self.计算参数.典型日):
+            self.CurrentTotalActualCapacity[0] = self.InitActualCapacityPerUnit * self.DeviceCount
+        else:
+            if self.设备信息.循环边界条件 == '日间独立':
+                ...
+            elif self.设备信息.循环边界条件 == '日间连接':
+                
+            else:
+                raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         self.RangeConstraintMulti(self.Cu)
 
         if self.计算参数.计算类型 == "设计规划":
             if self.
-            if self.设备信息.循环边界条件 == '日间独立':
-                ...
-            elif self.设备信息.循环边界条件 == '日间连接':
-                ...
-            else:
-                raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
+           
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
