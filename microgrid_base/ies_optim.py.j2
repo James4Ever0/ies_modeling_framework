@@ -506,7 +506,7 @@ class {{class_name}}模型(设备模型):
     {% elif class_name in ["锂电池"]%}
     {% set m='self.DeviceCount * self.RatedCapacity'%}
     {% else %}
-    {%endif%}
+    {% endif %}
 
     {% if class_name in ['光伏发电','风力发电','柴油发电']%}
     {# {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * %s"| format(时间步长参数)%} #}
