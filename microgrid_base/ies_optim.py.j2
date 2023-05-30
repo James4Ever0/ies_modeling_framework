@@ -463,7 +463,7 @@ class {{class_name}}模型(设备模型):
 
         self.原电接口 = self.变量列表_带指示变量("原电接口") # 正 放电 负 充电
         
-        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口 ,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency- x_neg/self.ChargeEfficiency == y)
+        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency- x_neg/self.ChargeEfficiency == y)
 
         self.MaxTotalCapacityDelta = self.BatteryDeltaLimit*( 1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
 
