@@ -379,9 +379,9 @@ class {{class_name}}模型(设备模型):
 
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
 
-        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit*(1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
+        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit/({{时间步长参数}}) * self.TotalCapacity
 
-        self.TotalStorageDecay = self.BatteryStorageDecay /100* (1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
+        self.TotalStorageDecay = self.BatteryStorageDecay /100/({{时间步长参数}}) * self.TotalCapacity
 
         {%elif class_name in ['双向变流器']%}
         self.线路端_ = self.变量列表_带指示变量("线路端_") 
