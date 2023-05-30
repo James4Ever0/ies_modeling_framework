@@ -378,7 +378,9 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
+        self.TotalCapacity= self.DeviceCount * self.RatedCapacity
 
+        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
         if self.计算参数.计算类型 == "设计规划":
             #  初始SOC
             assert self.InitSOC >= self.MinSOC
@@ -386,12 +388,6 @@ class {{class_name}}模型(设备模型):
             self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
             {# self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC))) #}
-            self.TotalActualCapacity = self.单变量("TotalActualCapacity")
-            Constraint(self.TotalActualCapacity == self.DeviceCount * self.ActualCapacityPerUnit)
-        else:
-            {# self.总SOC = self.变量列表('总SOC', within=NonNegativeReals) #}
-            self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
-            {# self.RangeConstraint(self.总SOC, self.SOC, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity) #}
         {%endif%}
 
     def constraints_register(self):
