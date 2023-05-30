@@ -509,9 +509,12 @@ class {{class_name}}模型(设备模型):
     {%endif%}
 
     {% if class_name in ['光伏发电','风力发电','柴油发电']%}
-    {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * %s"| format(时间步长参数)%}
+    {# {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * %s"| format(时间步长参数)%} #}
+    {% set m1="self.SumRange(self.电输出)"%}
     {% elif class_name in ['锂电池']%}
-    {% set m1="一年总放电量"%}
+    {#其实是总电量变化量#}
+    {% set m1="计算范围总放电量"%}
+    {# {% set m1="一年总放电量"%} #}
     {% else %}
     {% endif %}
     总采购成本 = self.CostPerWatt * {{ m}} 
@@ -520,7 +523,7 @@ class {{class_name}}模型(设备模型):
 
     总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
-    总可变维护成本年化 = {{m1}} *self.VariationalCostPerPower # 由于是小时步长 不用乘时间
+    总可变维护成本年化 = {{m1}} * (8760 / self.计算参数.迭代步数) * {{时间步长参数}} *self.VariationalCostPerPower # 由于是小时步长 不用乘时间
     {% elif %}
     {% endif %}
 
