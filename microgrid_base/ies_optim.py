@@ -421,13 +421,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -854,7 +854,10 @@ class 设备模型:
             Constraint(expression(var_1, var_2, i))
 
     def SumRange(self, var_1):
-        return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x, y: x + y)
+        return reduce(
+            sequence=[var_1[i] for i in range(self.计算参数.迭代步数)],
+            function=lambda x, y: x + y,
+        )
 
     def 变量列表_带指示变量(self, varName: str, within=Reals) -> POSNEG:
         x = self.变量列表(varName, within=within)
@@ -1919,14 +1922,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）

@@ -202,7 +202,7 @@ class 设备模型:
             Constraint(expression(var_1, var_2, i))
     
     def SumRange(self,var_1):
-        return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x,y: x+y)
+        return reduce(sequence = [var_1[i] for i in range(self.计算参数.迭代步数)], function = lambda x,y: x+y)
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
