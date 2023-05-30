@@ -521,13 +521,20 @@ class {{class_name}}模型(设备模型):
         {% set m='self.DeviceCount * self.RatedCapacity'%}
         {% else %}
         {%endif%}
+
+        {% if class_name in []%}
+        {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数)"%}
+        {% elif class_name in []%}
+        {% set m1=""%}
+        {% else%}
+        {% endif%}
         总采购成本 = self.CostPerWatt * {{ m}} 
         总固定维护成本 = self.CostPerYear * {{ m}}
         总建设费用 = self.BuildCostPerWatt * {{ m}} + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
-        总可变维护成本年化 = self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) *self.VariationalCostPerPower # 由于是小时步长 不用乘时间
+        总可变维护成本年化 = {{m1}} *self.VariationalCostPerPower # 由于是小时步长 不用乘时间
         {% elif %}
         {% endif %}
 
