@@ -388,7 +388,7 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
-        self.TotalCapacity= self.DeviceCount * self.RatedCapacity
+        self.TotalCapacity = self.DeviceCount * self.RatedCapacity
 
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
 
@@ -396,7 +396,6 @@ class {{class_name}}模型(设备模型):
 
         self.TotalStorageDecay = self.BatteryStorageDecay /100* (1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
 
-            {# self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC))) #}
         {%endif%}
 
     def constraints_register(self):
@@ -470,7 +469,7 @@ class {{class_name}}模型(设备模型):
 
         self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步长-1), lambda x,y,i: x == y[i] - y[i+1])
         
-        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency - x_neg/self.ChargeEfficiency - self.TotalStorageDecay/self.ChargeEfficiency == y)
+        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency - (x_neg+ self.TotalStorageDecay)*self.ChargeEfficiency == y)
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
