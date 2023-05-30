@@ -335,7 +335,8 @@ class {{class_name}}模型(设备模型):
         
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电']%}
-        if self.计算参数.计算模式== "设计规划":
+        self.电输出 = self.电接口
+        if self.计算参数.计算类型== "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
             self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
             assert self.MinDeviceCount>=0
@@ -425,8 +426,6 @@ class {{class_name}}模型(设备模型):
         self.RangedConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
         self.RangedConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
         {%elif class_name in ['双向变流器']%}
-        {# self.线路端_ = self.变量列表_带指示变量("线路端_")  #}
-        {# self.储能端_ = self.变量列表_带指示变量("储能端_")  #}
 
         self.RangedConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
         self.RangedConstraint(self.储能端_.x , self.储能端, lambda x,y: x==y)

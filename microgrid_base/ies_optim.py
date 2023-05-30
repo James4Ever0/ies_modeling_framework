@@ -589,13 +589,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -673,13 +673,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1081,9 +1081,10 @@ class 光伏发电模型(设备模型):
         """
 
         # 设备特有约束（变量）
-        if self.计算参数.计算模式 == "设计规划":
+        self.电输出 = self.电接口
+        if self.计算参数.计算类型 == "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea / self.Area)
-            self.MinDeviceCount = math.celi(self.MinInstallArea / self.Area)
+            self.MinDeviceCount = math.ceil(self.MinInstallArea / self.Area)
             assert self.MinDeviceCount >= 0
             assert self.MaxDeviceCount >= self.MinDeviceCount
 
@@ -1113,13 +1114,13 @@ class 光伏发电模型(设备模型):
             self.CustomRangeConstraint(
                 self.电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] <= 最大功率变化,
             )
             self.CustomRangeConstraint(
                 self.电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] >= -最大功率变化,
             )
 
@@ -1304,13 +1305,13 @@ class 风力发电模型(设备模型):
             self.CustomRangeConstraint(
                 self.电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] <= 最大功率变化,
             )
             self.CustomRangeConstraint(
                 self.电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] >= -最大功率变化,
             )
 
@@ -1530,13 +1531,13 @@ class 柴油发电模型(设备模型):
             self.CustomRangeConstraint(
                 self.原电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] <= 最大功率变化,
             )
             self.CustomRangeConstraint(
                 self.原电输出,
                 self.PowerDeltaLimit,
-                range(self.计算参数.迭代步长 - 1),
+                range(self.计算参数.迭代步数 - 1),
                 lambda x, y, i: x[i + 1] - x[i] >= -最大功率变化,
             )
 
@@ -1703,7 +1704,7 @@ class 锂电池模型(设备模型):
             ) * self.RatedCapacity
 
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
-            self.MinDeviceCount = math.celi(self.MinTotalCapacity / self.RatedCapacity)
+            self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
 
         assert self.MaxSOC > self.MinSOC
         assert self.MaxSOC <= 1
@@ -1756,7 +1757,7 @@ class 锂电池模型(设备模型):
         self.CustomRangeConstraint(
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
-            range(self.计算参数.迭代步长 - 1),
+            range(self.计算参数.迭代步数 - 1),
             lambda x, y, i: x == y[i] - y[i + 1],
         )
 
@@ -1769,7 +1770,7 @@ class 锂电池模型(设备模型):
             == y,
         )
 
-        for i in range(self.计算参数.迭代步长 - 1):
+        for i in range(self.计算参数.迭代步数 - 1):
             Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
                 - self.CurrentTotalActualCapacity[i]
@@ -1787,19 +1788,19 @@ class 锂电池模型(设备模型):
             elif self.设备信息.循环边界条件 == "日间连接":
                 Constraint(
                     self.CurrentTotalActualCapacity[0]
-                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步长 - 1]
+                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     < self.MaxTotalCapacityDelta
                 )
 
                 Constraint(
                     self.CurrentTotalActualCapacity[0]
-                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步长 - 1]
+                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     > -self.MaxTotalCapacityDelta
                 )
 
                 Constraint(
                     self.原电接口.x[0]
-                    == self.CurrentTotalActualCapacity[self.计算参数.迭代步长 - 1]
+                    == self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     - self.CurrentTotalActualCapacity[0]
                 )
             else:
@@ -1811,7 +1812,7 @@ class 锂电池模型(设备模型):
     # unit: one
 
     计算范围内总电变化量 = self.SumRange(self.原电接口.x_pos) + self.SumRange(self.原电接口.x_neg)
-    +self.TotalStorageDecay * self.计算参数.迭代步长
+    +self.TotalStorageDecay * self.计算参数.迭代步数
     一小时总电变化量 = 计算范围内总电变化量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
     一年总电变化量 = 一小时总电变化量 * 8760
 
@@ -2218,14 +2219,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2345,14 +2346,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
