@@ -329,7 +329,13 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
         
         # 设备特有约束（变量）
-        {% if class_name == "柴油发电" %}
+        {% if class_name in ['光伏发电']%}
+        if self.计算参数.计算模式== "设计规划":
+            self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
+            self.MinDeviceCount = math.celi(self.MinInstallArea/self.Area)
+            assert self.MinDeviceCount>=0
+            assert self.MaxDeviceCount>=self.MinDeviceCount
+        {% elif class_name == "柴油发电" %}
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
@@ -405,18 +411,11 @@ class {{class_name}}模型(设备模型):
             {% else %}
             {% endif %} #}
         elif self.计算参数.计算类型 == "规划设计":
-            {% if class_name in ['光伏发电'] %}
-            self.MaxDeviceCount = self.MaxInstallArea/self.Area
-            self.MinDeviceCount = self.MinInstallArea/self.Area
-            self.DeviceCount
-            assert self.MinDeviceCount>=0
-            assert self.MaxDeviceCount>=self.MinDeviceCount
-
-            Constraint(self.DeviceCount <= MaxDeviceCount)
-            Constraint(self.DeviceCount >= MinDeviceCount)
-            {% else %}
+            {% if class_name in ['光伏发电',''] %}
+            
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
+            {%else%}
             {% endif %}
         else:
             raise Exception("未知计算类型:", self.计算参数.计算类型)
