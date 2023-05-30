@@ -1535,7 +1535,7 @@ class 柴油发电模型(设备模型):
         )
 
         if self.计算参数.计算步长 == "秒":
-            总最大功率 = self.MaxPower * self.DeviceCount
+            总最大功率 = self. * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(
                 self.原电输出,
