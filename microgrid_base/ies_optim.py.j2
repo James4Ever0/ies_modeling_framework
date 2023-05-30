@@ -68,6 +68,7 @@ class {{class_name}}信息(BaseModel): # {{super_class}}
 
     {% endfor %}
     
+    
     {% for psc, mdigit in mdigits %}
     {{ mdigit[0] }}: float
     """
@@ -299,22 +300,15 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-        
-        {%with%}
-        {% set mpflag = {"仿真模拟":False, "设计规划":False}%}
         {% for psc, mdigit in mdigits %}
-        {% if psc in ["仿真模拟","设计规划"]%}
-        {% if mpflag[psc] == False%}
+        {% if psc in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{psc}}":
-        {% set mpflag[psc] == True %}
-        {% endif %}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
 {{expand_unit_conversion(mdigit,设备参数例外列表) }}
         {% endif %}
         {% endfor %}
-        {% endwith%}
 
         {% for psc, main, sub in mtables %}
         {% set mtable=(main, sub)%}
