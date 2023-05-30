@@ -471,6 +471,8 @@ class {{class_name}}模型(设备模型):
         
         self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency - (x_neg+ self.TotalStorageDecay)*self.ChargeEfficiency == y)
 
+        , range()
+
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
                 self.原电接口.x[0] = self.EPS
