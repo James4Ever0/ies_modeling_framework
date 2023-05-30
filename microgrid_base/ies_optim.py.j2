@@ -219,12 +219,12 @@ class 设备模型:
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
-        self.RangeExpressionMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
+        self.RangeConstraintMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
         mx_my_sum_var = m1posneg.x_abs
         mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
         m2posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
-        self.RangeExpressionMulti(m2posneg.x, mx, my, expression = lambda x,y,z: x = y-z)
+        self.RangeConstraintMulti(m2posneg.x, mx, my, expression = lambda x,y,z: x = y-z)
         mx_my_minus_var = m2posneg.x_abs
         mx_my_minus_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
@@ -562,8 +562,6 @@ class {{class_name}}模型(设备模型):
     {% endif %}
 
     总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPerPower
-    {% elif %}
-    {% endif %}
 
     总成本年化 = 总固定成本年化 + 总可变维护成本年化
     {% endwith%}
