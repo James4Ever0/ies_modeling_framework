@@ -192,6 +192,11 @@ class 设备模型:
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
 
+        {% for flag in ['pos', 'neg']%}
+        b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
+        x_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
+
+        {%endfor%}
         x_pos = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
         x_neg = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
