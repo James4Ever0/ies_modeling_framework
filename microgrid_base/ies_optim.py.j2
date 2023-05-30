@@ -6,19 +6,19 @@ import rich
 
 
 {%macro expand_unit_conversion(mdigit, exceptionList=[])%}
-{% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
-self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
-"""
+        {% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
+        """
         名称: {{ mdigit[1] }}
         单位: {{ mdigit[3] }}
         """
-{%else%}
+        {%else%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
         """
         名称: {{ mdigit[1] }}
         单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
         """
-{% endif %}
+        {% endif %}
         assert self.{{ mdigit[0] }} >=0
 {%endmacro%}
 
@@ -297,10 +297,10 @@ class {{class_name}}模型(设备模型):
         {% if super_class in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{super_class}}":
         if self.计算参数.计算类型 == "仿真模拟":
-        {{expand_unit_conversion(mdigit)}}
+        {{- expand_unit_conversion(mdigit)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
-        {{ expand_unit_conversion(mdigit,设备参数例外列表) }}
+        {{-  expand_unit_conversion(mdigit,设备参数例外列表) }}
         {% endif %}
         {% endfor %}
 
