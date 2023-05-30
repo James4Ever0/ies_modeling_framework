@@ -84,7 +84,7 @@ from typing import Union, Literal, List
 class 计算参数(BaseModel):
     典型日ID: Union[int, None] = None
     计算步长: Union[Literal["小时"], Literal['秒']]
-    计算模式: Union[Literal['典型日'],None]
+    典型日: bool
     计算类型: Union[Literal['仿真模拟'],Literal['设计规划']]
     风速: List[float]
     """
@@ -107,9 +107,9 @@ class 计算参数(BaseModel):
         {# steps = None #}
         if self.计算步长 == "秒":
             steps = 7200
-        elif self.计算步长 == "小时" and self.计算模式 is None:
+        elif self.计算步长 == "小时" and self.典型日 is False:
             steps = 8760
-        elif self.计算步长 == "小时" and self.计算模式 is "典型日":
+        elif self.计算步长 == "小时" and self.典型日 is True:
             steps = 24
         else:
             raise Exception("未知计算参数:", self.计算步长, self.计算模式)
@@ -351,7 +351,7 @@ class {{class_name}}模型(设备模型):
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
 
-        if self.计算参数.计算模式 == "设计规划":
+        if self.计算参数.计算类型 == "设计规划":
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
             self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.额定功率, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
@@ -374,7 +374,7 @@ class {{class_name}}模型(设备模型):
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
 
-        if self.计算参数.计算模式 == "设计规划":
+        if self.计算参数.计算类型 == "设计规划":
             #  初始SOC
             assert self.InitSOC >= self.MinSOC
             assert self.InitSOC <= self.MaxSOC
@@ -431,7 +431,7 @@ class {{class_name}}模型(设备模型):
             Constraint(self.DeviceCount >= self.MinDeviceCount)
             {% endif %}
         else:
-            raise Exception("未知计算模式:", self.计算参数.计算类型)
+            raise Exception("未知计算类型:", self.计算参数.计算类型)
         {# self.model.__dict__['{{}}'] = Var() #}
 
         # 输出输入功率约束
@@ -456,11 +456,11 @@ class {{class_name}}模型(设备模型):
         {%elif class_name in ['锂电池'] %}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.TotalActualCapacity)
 
-        if not (self.计算参数.计算模式 == "设计规划" and self.计算参数
+        if not (self.计算参数.计算类型 == "设计规划" and self.计算参数.典型日
         self.CurrentTotalActualCapacity[0] = self.InitActualCapacityPerUnit * self.DeviceCount
         self.RangeConstraintMulti(self.Cu)
 
-        if self.计算参数.计算模式 == "设计规划":
+        if self.计算参数.计算类型 == "设计规划":
             if self.
             if self.设备信息.循环边界条件 == '日间独立':
                 ...
@@ -489,7 +489,7 @@ class {{class_name}}模型(设备模型):
     {%endif%}
     年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
     # unit: one
-    if 计算参数.计算模式 == "规划设计":
+    if 计算参数.计算类型 == "规划设计":
         {% if class_name in ['光伏发电','风力发电','柴油发电'] %}
         总采购成本 = self.CostPerWatt * 总最大功率 
         总固定维护成本 = self.CostPerYear * 总最大功率 
