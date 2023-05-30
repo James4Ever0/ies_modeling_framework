@@ -555,8 +555,10 @@ class {{class_name}}模型(设备模型):
     {% set m1='-self.SumRange(self.电输入)'%}
     {% elif class_name in ['双向变流器']%}
     {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
-    {%elif %}
+    {%elif class_name in ['传输线'] %}
     {% set m1='0'%}
+    {% else%}
+    {% exceptions.raise_compiler_error("不支持的类型:", class_name) %}
     {% endif %}
 
     总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPerPower
