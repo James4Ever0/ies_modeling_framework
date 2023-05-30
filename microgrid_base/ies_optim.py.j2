@@ -480,11 +480,13 @@ class {{class_name}}模型(设备模型):
     # unit: one
     {# if 计算参数.计算类型 == "规划设计": #}
     {# 规划设计和仿真模拟都需要计算年化 #}
+    {%with%}
     {% if class_name in ['锂电池'] %} 
+    {% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%}
     计算范围内总放电量 = (self.SumRange(self.原电接口.x_pos)
     +self.SumRange(self.原电接口.x_neg))
     +self.TotalStorageDecay*self.计算参数.迭代步长)
-    一小时总放电量 = 计算范围内总放电量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
+    一小时总放电量 = 计算范围内总放电量 * {{时间步长参数}}
     {# 一小时总放电量 = 计算范围内总放电量 #}
     一年总放电量 = 一小时总放电量 * 8760
     
@@ -497,7 +499,6 @@ class {{class_name}}模型(设备模型):
     {%endif%}
 
     年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
-    {% with%}
     {% if class_name in ['光伏发电'] %}
     {% set m='总最大功率'%}
     {%elif class_name in ['风力发电','柴油发电']%}
@@ -508,7 +509,7 @@ class {{class_name}}模型(设备模型):
     {%endif%}
 
     {% if class_name in ['光伏发电','风力发电','柴油发电']%}
-    {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * ()"%}
+    {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * %s"| format(时间步长参数)%}
     {% elif class_name in ['锂电池']%}
     {% set m1="一年总放电量"%}
     {% else %}
