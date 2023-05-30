@@ -421,13 +421,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -673,13 +673,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1269,6 +1269,12 @@ class 风力发电模型(设备模型):
         """
 
         # 设备特有约束（变量）
+        self.电输出 = self.电接口
+        if self.计算参数.计算类型 == "设计规划":
+            self.MaxDeviceCount = math.floor(self.MaxInstallArea / self.Area)
+            self.MinDeviceCount = math.ceil(self.MinInstallArea / self.Area)
+            assert self.MinDeviceCount >= 0
+            assert self.MaxDeviceCount >= self.MinDeviceCount
 
     def constraints_register(self):
         # 设备特有约束（非变量）
@@ -1465,41 +1471,12 @@ class 柴油发电模型(设备模型):
         """
 
         # 设备特有约束（变量）
-        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
-
-        self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
-        self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
-
+        self.电输出 = self.电接口
         if self.计算参数.计算类型 == "设计规划":
-            self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
-
-            self.原电输出 = self.Multiply(
-                dict(var=self.单台发电功率, max=self.RatedPower, min=0),
-                dict(
-                    var=self.DeviceCount,
-                    max=self.MaxDeviceCount,
-                    min=self.MinDeviceCount,
-                ),
-                "原电输出",
-                within=NonNegativeReals,
-            )
-
-            self.柴油输入_ = self.Multiply(
-                dict(var=self.单台柴油输入, max=0, min=-self.RatedPower * self.最大油耗率),
-                dict(
-                    var=self.DeviceCount,
-                    max=self.MaxDeviceCount,
-                    min=self.MinDeviceCount,
-                ),
-                "柴油输入_",
-                within=NonPositiveReals,
-            )
-            self.RangeConstraint(self.柴油输入_, self.柴油输入, lambda x, y: x == y)
-        else:
-            self.原电输出 = self.变量列表("原电输出", within=NonNegativeReals)
-            self.RangeConstraint(
-                self.原电输出, self.单台发电功率, lambda x, y: x == y * self.DeviceCount
-            )
+            self.MaxDeviceCount = math.floor(self.MaxInstallArea / self.Area)
+            self.MinDeviceCount = math.ceil(self.MinInstallArea / self.Area)
+            assert self.MinDeviceCount >= 0
+            assert self.MaxDeviceCount >= self.MinDeviceCount
 
     def constraints_register(self):
         # 设备特有约束（非变量）
@@ -1937,14 +1914,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2348,14 +2325,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
