@@ -515,7 +515,7 @@ class {{class_name}}模型(设备模型):
         
         Constraint(一年总放电量 * self.BatteryLife <= self.DeviceCount * self.RatedCapacity * self.Life * 0.85)
 
-        
+
         {%endif%}
         Life = self.Life
 
@@ -528,6 +528,6 @@ class {{class_name}}模型(设备模型):
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用)*年化率
 
         总可变维护成本年化 = self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) # 由于是小时步长 不用乘时间
-        {% else %}
+        {% elif %}
         {% endif %}
 {% endfor %}
