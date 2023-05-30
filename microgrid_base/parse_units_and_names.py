@@ -202,7 +202,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "Battery-": ["电池充放电倍率"],
         },
     ),  # two unit system.
-    "SOC":("percent", {"Min-":['最小SOC'],"Max-":['最大SOC'],}),
+    "SOC":("percent", {"Min-":['最小SOC'],"Max-":['最大SOC'],"Init-" :["初始SOC"]}),
     "StorageDecay": ("percent/hour", {"Battery-": ["存储衰减"]}),
     "TransferDecay": ("kW/km", {"Power-": ["能量衰减系数"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
@@ -454,7 +454,9 @@ for key in keys:
                 # appending values, presumed.
                 if meta_type in SKIP_TYPE:
                     params = {"设计规划": [], "仿真模拟": []}
-                    if subkey in ["光伏发电"]:  # solar power.
+                    if subkey in ['锂电池']:
+                        params["设计规划"].append(wrapper_uc_vp("初始SOC", "percent"))
+                    elif subkey in ["光伏发电"]:  # solar power.
                         params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
                         params["设计规划"].append(
                             wrapper_uc_vp("最小安装面积", "m2")
