@@ -413,20 +413,11 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            ...
-            {# {% if class_name in ['光伏发电'] %}
-            {% else %}
-            {% endif %} #}
-        elif self.计算参数.计算类型 == "规划设计":
-            {% if class_name in ['传输线'] %}
-            
-            {%else%}
+        {% if class_name not in ['传输线'] %}
+        if self.计算参数.计算类型 == "规划设计":
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-            {% endif %}
-        else:
-            raise Exception("未知计算类型:", self.计算参数.计算类型)
+        {% endif %}
         
         # 输出输入功率约束
         {%if class_name in ['传输线']%}
