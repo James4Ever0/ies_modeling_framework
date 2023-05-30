@@ -274,7 +274,7 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
-        {%defmacro expand_unit_conversion(mdigit, exceptionList=[])%}
+        {%macro expand_unit_conversion(mdigit, exceptionList=[])%}
         {% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
