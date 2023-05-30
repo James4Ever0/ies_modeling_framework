@@ -139,7 +139,6 @@ for k, v in device_data.items():
 # 锂电池
 # 年放电量需求(kWh) * 换芯周期(年) <= 电池机组容量(kWh) * 循环寿命(年) * 0.85
 # 作为电池数量限制的一部分
-# 保证寿命是
 
 import parse
 
