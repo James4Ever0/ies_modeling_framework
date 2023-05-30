@@ -699,13 +699,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -1905,7 +1905,7 @@ class 锂电池模型(设备模型):
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
         总可变维护成本年化 = (
-            (计算范围总电变化量)
+            (计算范围内总电变化量)
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
             * self.VariationalCostPerPower
@@ -2026,8 +2026,8 @@ class 变压器模型(设备模型):
             Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
-        self.RangedConstraint(self.电输入, self.电输出, lambda x, y: x=-y * self.Efficiency)
-        self.RangedConstraintMulti(
+        self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x == -y * self.Efficiency)
+        self.RangeConstraintMulti(
             self.电输入, expression=lambda x: -x <= self.RatedPower * self.DeviceCount
         )
 
@@ -2168,8 +2168,8 @@ class 变流器模型(设备模型):
             Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
-        self.RangedConstraint(self.电输入, self.电输出, lambda x, y: x=-y * self.Efficiency)
-        self.RangedConstraintMulti(
+        self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x == -y * self.Efficiency)
+        self.RangeConstraintMulti(
             self.电输入, expression=lambda x: -x <= self.RatedPower * self.DeviceCount
         )
 
@@ -2315,14 +2315,14 @@ class 双向变流器模型(设备模型):
 
         # 输出输入功率约束
 
-        self.RangedConstraint(self.线路端_.x, self.线路端, lambda x, y: x == y)
-        self.RangedConstraint(self.储能端_.x, self.储能端, lambda x, y: x == y)
+        self.RangeConstraint(self.线路端_.x, self.线路端, lambda x, y: x == y)
+        self.RangeConstraint(self.储能端_.x, self.储能端, lambda x, y: x == y)
 
-        self.RangedConstraint(
-            self.线路端_.x_neg, self.储能端_.x_pos, lambda x, y: x=y * self.Efficiency
+        self.RangeConstraint(
+            self.线路端_.x_neg, self.储能端_.x_pos, lambda x, y: x == y * self.Efficiency
         )
-        self.RangedConstraint(
-            self.储能端_.x_neg, self.线路端_.x_pos, lambda x, y: x=y * self.Efficiency
+        self.RangeConstraint(
+            self.储能端_.x_neg, self.线路端_.x_pos, lambda x, y: x == y * self.Efficiency
         )
 
         # 计算年化
@@ -2419,14 +2419,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2443,10 +2443,10 @@ class 传输线模型(设备模型):
             * self.PowerTransferDecay
             / (1 if self.计算参数.计算步长 == "小时" else 3600)
         )
-        self.RangedConstraint(
+        self.RangeConstraint(
             self.电输入_去除损耗.x, self.电输入, lambda x, y: x == y + TotalDecayPerStep
         )
-        self.RangedConstraint(self.电输入_去除损耗.x_neg, self.电输出, lambda x, y: x == y)
+        self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出, lambda x, y: x == y)
 
         # 计算年化
         # unit: one
