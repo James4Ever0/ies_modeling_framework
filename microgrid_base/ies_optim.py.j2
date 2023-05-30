@@ -426,7 +426,10 @@ class {{class_name}}模型(设备模型):
             raise Exception("未知计算类型:", self.计算参数.计算类型)
         
         # 输出输入功率约束
-        {%if class_name in ['双向变流器']%}
+        {%if class_name in ['传输线']%}
+        TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}} 
+        self.RangedConstraint
+        {%elif class_name in ['双向变流器']%}
         {# self.线路端_ = self.变量列表_带指示变量("线路端_")  #}
         {# self.储能端_ = self.变量列表_带指示变量("储能端_")  #}
 
