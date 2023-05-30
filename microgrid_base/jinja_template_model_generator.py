@@ -144,7 +144,7 @@ for super_class, v0 in dparam.items():
                     elif type(item) == dict:
                         main = item['MAIN']
                         sub = item['SUB']
-                        mtables.append((param_super_class,(main, sub)))
+                        mtables.append((param_super_class,main, sub))
         设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)

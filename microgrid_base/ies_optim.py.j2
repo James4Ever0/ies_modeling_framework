@@ -296,6 +296,7 @@ class {{class_name}}模型(设备模型):
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{psc}}":
+        
         {{- expand_unit_conversion(mdigit) | indent(4)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
@@ -303,7 +304,8 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         {% endfor %}
 
-        {% for psc, mtable in mtables %}
+        {% for psc, main, sub in mtables %}
+        {% set mtable=(main, sub)%}
         self.{{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = [[v1 * {{mtable[0][4]}}, v2 * {{mtable[1][4]}}] for v1, v2 in 设备信息.{{ mtable[0][0]}}_{{ mtable[1][0]}}]
         self.{{ mtable[0][0]}}_{{ mtable[1][0]}}.sort(key=lambda x: x[1])
         """
