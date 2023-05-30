@@ -534,7 +534,7 @@ class {{class_name}}模型(设备模型):
     {% set m='self.DeviceCount * self.RatedPower'%}
     {% elif class_name in ["锂电池"]%}
     {% set m='self.DeviceCount * self.RatedCapacity'%}
-    {% else %}
+    {% elif class_name in [] %}
     {% endif %}
 
     {% if class_name in ['光伏发电','风力发电','柴油发电']%}
