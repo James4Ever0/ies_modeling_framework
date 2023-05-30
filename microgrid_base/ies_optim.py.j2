@@ -192,16 +192,18 @@ class 设备模型:
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(var_1, var_2))
 
-    def RangeConstraintMulti(self, *vars, expression=None): # keyword argument now.
-        assert expression is not None
+    def RangeConstraintMulti(self, *vars, expression=...): # keyword argument now.
+        assert expression is not ...
         for i in range(self.计算参数.迭代步数):
             Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(self,var_1, var_2, customRange:range, expression):
+    def CustomRangeConstraint(self, var_1, var_2, customRange:range, expression):
         for i in customRange:
             Constraint(expression(var_1, var_2, i))
     
-    def CustomRangeConstraintMulti(self,*vars, customRange:range=None, expression=...):
+    def CustomRangeConstraintMulti(self, *vars, customRange:range=..., expression=...):
+        assert expression is not ...
+        assert customRange is not ...
         for i in customRange:
             Constraint(expression(var_1, var_2, i))
     
@@ -494,8 +496,8 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
         if self.计算参数.计算步长 == "秒":
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
-            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , self.PowerDeltaLimit, range(self.计算参数.迭代步数-1),lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
-            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , self.PowerDeltaLimit, range(self.计算参数.迭代步数-1),lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
+            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
+            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
         {% endif %}
         {# elif self.计算参数.计算步长 == "小时":
             ... # skip it.
