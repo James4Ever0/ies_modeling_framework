@@ -342,6 +342,8 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
         self.电输出 = self.电接口
+        {% endif%}
+        {% if class_name in ['光伏发电']%}
         if self.计算参数.计算类型== "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
             self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
@@ -495,6 +497,7 @@ class {{class_name}}模型(设备模型):
         {# 秒级功率变化限制，有特定的变量限制 #}
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
         if self.计算参数.计算步长 == "秒":
+            总最大功率 = self.MaxPower * self.DeviceCount
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
