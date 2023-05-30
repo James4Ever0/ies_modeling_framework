@@ -359,17 +359,20 @@ class {{class_name}}模型(设备模型):
         self.SOC = self.变量列表('SOC', within=NonNegativeReals)
         self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
 
-        #   初始SOC
-        assert self.InitSOC >= self.MinSOC
-        assert self.InitSOC <= self.MaxSOC
         assert self.MaxSOC > self.MinSOC
-        self.InitCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
         if self.计算参数.计算模式 == "设计规划":
-            self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC)))
+            #   初始SOC
+            assert self.InitSOC >= self.MinSOC
+            assert self.InitSOC <= self.MaxSOC
+            self.InitCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
+
+            {# self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC))) #}
+            self.TotalCapacity = self.变量列表
         else:
-            self.总SOC = self.变量列表('总SOC', within=NonNegativeReals)
-            self.RangeConstraint(self.总SOC, self.SOC, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity)
+            {# self.总SOC = self.变量列表('总SOC', within=NonNegativeReals) #}
+            self.TotalCapacity = self.DeviceCount * self.ActualCapacityPerUnit
+            {# self.RangeConstraint(self.总SOC, self.SOC, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity) #}
         {%endif%}
 
     def constraints_register(self):
