@@ -537,7 +537,7 @@ class {{class_name}}模型(设备模型):
     {% elif class_name in ['传输线'] %}
     {% set m='self.Length'%}
     {% else%}
-    {% exception.raise_compiler_error("不支持的设备类型:", class_name) %}
+    {% exceptions.raise_compiler_error("不支持的设备类型:", class_name) %}
     {% endif %}
 
     总采购成本 = self.CostPerWatt * ({{ m}}) 
