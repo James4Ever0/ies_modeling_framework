@@ -296,7 +296,6 @@ class {{class_name}}模型(设备模型):
         {% for mdigit in mdigits %}
         {% if super_class in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{super_class}}":
-        if self.计算参数.计算类型 == "仿真模拟":
         {{- expand_unit_conversion(mdigit) | indent(4)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
