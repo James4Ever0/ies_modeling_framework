@@ -364,8 +364,8 @@ class {{class_name}}模型(设备模型):
         {% elif class_name  == '锂电池' %}
         {# self.SOC = self.变量列表('SOC', within=NonNegativeReals) #}
         assert self.MaxSOC > self.MinSOC
-        assert self.MaxSOC <=1
-        assert self.MinSOC >=0
+        assert self.MaxSOC <= 1
+        assert self.MinSOC >= 0
         self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
 
 
@@ -451,6 +451,8 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
         self.Piecewise(self.单台柴油输入, self.单台发电功率, [-x[0]*self.额定功率*x[1] for x in self.DieselToPower_Load], [self.额定功率*x[1] for x in self.DieselToPower_Load])
         self.RangeConstraint(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, lambda x,y,z: x + 总最小启动功率*z == y)
+        {%elif class_name in ['锂电池']%}
+        
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
