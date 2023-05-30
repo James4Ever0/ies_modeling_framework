@@ -353,6 +353,20 @@
                     0.01
                 ],
                 [
+                    "MaxSOC",
+                    "最大SOC",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "MinSOC",
+                    "最小SOC",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
                     "BatteryStorageDecay",
                     "存储衰减",
                     "percent/hour",

@@ -202,6 +202,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "Battery-": ["电池充放电倍率"],
         },
     ),  # two unit system.
+    "SOC":("percent", {"Min-":['最小SOC'],"Max-":['最大SOC'],}),
     "StorageDecay": ("percent/hour", {"Battery-": ["存储衰减"]}),
     "TransferDecay": ("kW/km", {"Power-": ["能量衰减系数"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
