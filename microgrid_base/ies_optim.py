@@ -5,6 +5,10 @@ import rich
 # three computation modes:
 
 
+
+
+
+
 # 8760 hours of data
 # several days of data to compute a year
 
@@ -423,13 +427,13 @@ class 锂电池信息(BaseModel): # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 class 变压器信息(BaseModel): # 配电传输
@@ -508,13 +512,13 @@ class 变压器信息(BaseModel): # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 class 变流器信息(BaseModel): # 配电传输
@@ -593,13 +597,13 @@ class 变流器信息(BaseModel): # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 class 双向变流器信息(BaseModel): # 配电传输
@@ -945,9 +949,7 @@ class 光伏发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.Area: float = 设备信息.Area
+            self.Area: float = 设备信息.Area
         """
         名称: 光伏板面积
         单位: m2
@@ -961,28 +963,28 @@ class 光伏发电模型(设备模型):
         """
         assert self.PowerConversionEfficiency >=0
 
-                self.MaxPower: float = 设备信息.MaxPower
+            self.MaxPower: float = 设备信息.MaxPower
         """
         名称: 最大发电功率
         单位: kilowatt
         """
         assert self.MaxPower >=0
 
-                self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
+            self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
         """
         名称: 发电爬坡率
         单位: one / 年
         """
         assert self.PowerDeltaLimit >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
@@ -996,35 +998,35 @@ class 光伏发电模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxInstallArea: float = 设备信息.MaxInstallArea
+            self.MaxInstallArea: float = 设备信息.MaxInstallArea
         """
         名称: 最大安装面积
         单位: m2
         """
         assert self.MaxInstallArea >=0
 
-                self.MinInstallArea: float = 设备信息.MinInstallArea
+            self.MinInstallArea: float = 设备信息.MinInstallArea
         """
         名称: 最小安装面积
         单位: m2
@@ -1105,51 +1107,49 @@ class 风力发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.RatedPower: float = 设备信息.RatedPower
+            self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
         单位: kilowatt
         """
         assert self.RatedPower >=0
 
-                self.RatedWindSpeed: float = 设备信息.RatedWindSpeed
+            self.RatedWindSpeed: float = 设备信息.RatedWindSpeed
         """
         名称: 额定风速
         单位: kilometer / 年
         """
         assert self.RatedWindSpeed >=0
 
-                self.MinWindSpeed: float = 设备信息.MinWindSpeed
+            self.MinWindSpeed: float = 设备信息.MinWindSpeed
         """
         名称: 切入风速
         单位: kilometer / 年
         """
         assert self.MinWindSpeed >=0
 
-                self.MaxWindSpeed: float = 设备信息.MaxWindSpeed
+            self.MaxWindSpeed: float = 设备信息.MaxWindSpeed
         """
         名称: 切出风速
         单位: kilometer / 年
         """
         assert self.MaxWindSpeed >=0
 
-                self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
+            self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
         """
         名称: 发电爬坡率
         单位: one / 年
         """
         assert self.PowerDeltaLimit >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
@@ -1163,42 +1163,42 @@ class 风力发电模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
         单位: 台
         """
         assert self.MaxDeviceCount >=0
 
-                self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
         单位: 台
         """
         assert self.MinDeviceCount >=0
 
-                self.DeviceCount: float = 设备信息.DeviceCount
+            self.DeviceCount: float = 设备信息.DeviceCount
         """
         名称: 安装台数
         单位: 台
@@ -1284,16 +1284,14 @@ class 柴油发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.RatedPower: float = 设备信息.RatedPower
+            self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
         单位: kilowatt
         """
         assert self.RatedPower >=0
 
-                self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
+            self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
         """
         名称: 发电爬坡率
         单位: one / 年
@@ -1307,14 +1305,14 @@ class 柴油发电模型(设备模型):
         """
         assert self.PowerStartupLimit >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / 台
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / 台 / 年
@@ -1328,42 +1326,42 @@ class 柴油发电模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / 台
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
         单位: 台
         """
         assert self.MaxDeviceCount >=0
 
-                self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
         单位: 台
         """
         assert self.MinDeviceCount >=0
 
-                self.DeviceCount: float = 设备信息.DeviceCount
+            self.DeviceCount: float = 设备信息.DeviceCount
         """
         名称: 安装台数
         单位: 台
@@ -1469,16 +1467,14 @@ class 锂电池模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.RatedCapacity: float = 设备信息.RatedCapacity
+            self.RatedCapacity: float = 设备信息.RatedCapacity
         """
         名称: 额定容量
         单位: kilowatt_hour
         """
         assert self.RatedCapacity >=0
 
-                self.BatteryDeltaLimit: float = 设备信息.BatteryDeltaLimit
+            self.BatteryDeltaLimit: float = 设备信息.BatteryDeltaLimit
         """
         名称: 电池充放电倍率
         单位: 1 / 年
@@ -1513,35 +1509,35 @@ class 锂电池模型(设备模型):
         """
         assert self.MinSOC >=0
 
-                self.BatteryStorageDecay: float = 设备信息.BatteryStorageDecay
+            self.BatteryStorageDecay: float = 设备信息.BatteryStorageDecay
         """
         名称: 存储衰减
         单位: one / 年
         """
         assert self.BatteryStorageDecay >=0
 
-                self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity
+            self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity
         """
         名称: 生命周期总放电量
         单位: kilowatt_hour
         """
         assert self.TotalDischargeCapacity >=0
 
-                self.BatteryLife: float = 设备信息.BatteryLife
+            self.BatteryLife: float = 设备信息.BatteryLife
         """
         名称: 电池换芯周期
         单位: 年
         """
         assert self.BatteryLife >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt_hour
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt_hour / 年
@@ -1555,21 +1551,21 @@ class 锂电池模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt_hour
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
@@ -1704,8 +1700,6 @@ class 变压器模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
                 self.Efficiency: float = 设备信息.Efficiency * 0.01
         """
         名称: 效率
@@ -1713,21 +1707,21 @@ class 变压器模型(设备模型):
         """
         assert self.Efficiency >=0
 
-                self.RatedPower: float = 设备信息.RatedPower
+            self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 变压器容量
         单位: kilowatt
         """
         assert self.RatedPower >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
@@ -1741,42 +1735,42 @@ class 变压器模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
         单位: 台
         """
         assert self.MaxDeviceCount >=0
 
-                self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
         单位: 台
         """
         assert self.MinDeviceCount >=0
 
-                self.DeviceCount: float = 设备信息.DeviceCount
+            self.DeviceCount: float = 设备信息.DeviceCount
         """
         名称: 安装台数
         单位: 台
@@ -1787,14 +1781,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         
@@ -1848,9 +1842,7 @@ class 变流器模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.RatedPower: float = 设备信息.RatedPower
+            self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
         单位: kilowatt
@@ -1864,14 +1856,14 @@ class 变流器模型(设备模型):
         """
         assert self.Efficiency >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
@@ -1885,42 +1877,42 @@ class 变流器模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
         单位: 台
         """
         assert self.MaxDeviceCount >=0
 
-                self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
         单位: 台
         """
         assert self.MinDeviceCount >=0
 
-                self.DeviceCount: float = 设备信息.DeviceCount
+            self.DeviceCount: float = 设备信息.DeviceCount
         """
         名称: 安装台数
         单位: 台
@@ -1931,14 +1923,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 变流器输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         
@@ -1992,9 +1984,7 @@ class 双向变流器模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.RatedPower: float = 设备信息.RatedPower
+            self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
         单位: kilowatt
@@ -2008,14 +1998,14 @@ class 双向变流器模型(设备模型):
         """
         assert self.Efficiency >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
         assert self.CostPerWatt >=0
 
-                self.CostPerYear: float = 设备信息.CostPerYear
+            self.CostPerYear: float = 设备信息.CostPerYear
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
@@ -2029,42 +2019,42 @@ class 双向变流器模型(设备模型):
         """
         assert self.VariationalCostPerPower >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
         """
         名称: 最大安装台数
         单位: 台
         """
         assert self.MaxDeviceCount >=0
 
-                self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
         """
         名称: 最小安装台数
         单位: 台
         """
         assert self.MinDeviceCount >=0
 
-                self.DeviceCount: float = 设备信息.DeviceCount
+            self.DeviceCount: float = 设备信息.DeviceCount
         """
         名称: 安装台数
         单位: 台
@@ -2075,14 +2065,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         
@@ -2143,58 +2133,56 @@ class 传输线模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-
-
-                self.PowerTransferDecay: float = 设备信息.PowerTransferDecay
+            self.PowerTransferDecay: float = 设备信息.PowerTransferDecay
         """
         名称: 能量衰减系数
         单位: kilowatt / kilometer
         """
         assert self.PowerTransferDecay >=0
 
-                self.CostPerWatt: float = 设备信息.CostPerWatt
+            self.CostPerWatt: float = 设备信息.CostPerWatt
         """
         名称: 采购成本
         单位: 万元 / kilometer
         """
         assert self.CostPerWatt >=0
 
-                self.VariationCostPerMeter: float = 设备信息.VariationCostPerMeter
+            self.VariationCostPerMeter: float = 设备信息.VariationCostPerMeter
         """
         名称: 维护成本
         单位: 万元 / kilometer / 年
         """
         assert self.VariationCostPerMeter >=0
 
-                self.Life: float = 设备信息.Life
+            self.Life: float = 设备信息.Life
         """
         名称: 设计寿命
         单位: 年
         """
         assert self.Life >=0
 
-                self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+            self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
         """
         名称: 建设费用系数
         单位: 万元 / kilometer
         """
         assert self.BuildCostPerWatt >=0
 
-                self.BuildBaseCost: float = 设备信息.BuildBaseCost
+            self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
         名称: 建设费用基数
         单位: 万元
         """
         assert self.BuildBaseCost >=0
 
-                self.Length: float = 设备信息.Length
+            self.Length: float = 设备信息.Length
         """
         名称: 长度
         单位: kilometer
         """
         assert self.Length >=0
 
-                self.Length: float = 设备信息.Length
+            self.Length: float = 设备信息.Length
         """
         名称: 长度
         单位: kilometer

@@ -3,6 +3,26 @@ import rich
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
+
+
+{%macro expand_unit_conversion(mdigit, exceptionList=[])%}
+{% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
+self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
+"""
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }}
+        """
+{%else%}
+        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
+        """
+        名称: {{ mdigit[1] }}
+        单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
+        """
+{% endif %}
+        assert self.{{ mdigit[0] }} >=0
+{%endmacro%}
+
+
 {% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%}
 
 {% set 单向变电器列表 = ['变压器', '变流器']%}
