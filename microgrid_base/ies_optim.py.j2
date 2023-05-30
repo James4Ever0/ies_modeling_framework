@@ -496,8 +496,8 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
         if self.计算参数.计算步长 == "秒":
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
-            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
-            self.CustomRangeConstraint(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
+            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
+            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
         {% endif %}
         {# elif self.计算参数.计算步长 == "小时":
             ... # skip it.
