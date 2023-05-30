@@ -452,12 +452,16 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, lambda x,y,z: x + 总最小启动功率*z == y)
         {%elif class_name in ['锂电池']%}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.TotalActualCapacity)
+        self.CurrentTotalActualCapacity[0] = self.InitActualCapacityPerUnit * self.DeviceCount
+        self.RangeConstraintMulti(self.Cu)
 
         if self.计算参数.计算模式 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
+                
             elif self.设备信息.循环边界条件 == '日间连接':
+                ...
             else:
-            raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
+                raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         {% endif %}
 
         if self.计算参数.计算步长 == "秒":
