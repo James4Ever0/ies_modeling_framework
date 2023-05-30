@@ -374,6 +374,10 @@ class {{class_name}}模型(设备模型):
 
         self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
         self.MinDeviceCount = math.celi(self.MinTotalCapacity / self.RatedCapacity)
+
+
+        self.原电接口 = self.变量列表_带指示变量("原电接口") # 正 放电 负 充电
+
         self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
@@ -381,11 +385,11 @@ class {{class_name}}模型(设备模型):
         self.TotalCapacity= self.DeviceCount * self.RatedCapacity
 
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
-        if self.计算参数.计算类型 == "设计规划":
-            #  初始SOC
-            assert self.InitSOC >= self.MinSOC
-            assert self.InitSOC <= self.MaxSOC
-            self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
+
+
+        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit*( 1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
+
+        self.TotalStorageDecay = self.BatteryStorageDecay /100* (1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
 
             {# self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC))) #}
         {%endif%}
@@ -460,14 +464,8 @@ class {{class_name}}模型(设备模型):
         Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.DeviceCount)
 
         self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步长-1), lambda x,y,i: x == y[i] - y[i+1])
-
-        self.原电接口 = self.变量列表_带指示变量("原电接口") # 正 放电 负 充电
         
         self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficiency- x_neg/self.ChargeEfficiency + self.TotalStorageDecay == y)
-
-        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit*( 1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
-
-        self.TotalStorageDecay = self.BatteryStorageDecay /100* (1 if self.计算参数.计算步长 == "小时" else 1/3600) * self.TotalCapacity
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
