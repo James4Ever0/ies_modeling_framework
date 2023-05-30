@@ -517,9 +517,10 @@ class {{class_name}}模型(设备模型):
         {% set m='总最大功率'%}
         {%elif class_name in ['风力发电','柴油发电']%}
         {% set m='self.DeviceCount * self.RatedPower'%}
-        {% else%}
-        {%endif%}
+        {% elif class_name in ["锂电池"]%}
         {% set m='self.DeviceCount * self.RatedCapacity'%}
+        {% else %}
+        {%endif%}
         总采购成本 = self.CostPerWatt * {{ m}} 
         总固定维护成本 = self.CostPerYear * {{ m}}
         总建设费用 = self.BuildCostPerWatt * {{ m}} + self.BuildBaseCost
