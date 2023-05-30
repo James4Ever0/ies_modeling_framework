@@ -337,7 +337,7 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电']%}
         if self.计算参数.计算模式== "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
-            self.MinDeviceCount = math.celi(self.MinInstallArea/self.Area)
+            self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
             assert self.MinDeviceCount>=0
             assert self.MaxDeviceCount>=self.MinDeviceCount
         {% elif class_name == "柴油发电" %}
@@ -364,7 +364,7 @@ class {{class_name}}模型(设备模型):
             self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
-            self.MinDeviceCount = math.celi(self.MinTotalCapacity / self.RatedCapacity)
+            self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
 
         assert self.MaxSOC > self.MinSOC
         assert self.MaxSOC <= 1
