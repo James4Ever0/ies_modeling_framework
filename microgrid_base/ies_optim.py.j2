@@ -537,7 +537,7 @@ class {{class_name}}模型(设备模型):
     {% elif class_name in 单向变电器列表 %}
     {% set m=''%}
     {% else%}
-    {% exception.raise_compiler_error("未设置")%}
+    {% exception.raise_compiler_error("不支持的设备类型:", class_name) %}
     {% endif %}
 
     {% if class_name in ['光伏发电','风力发电','柴油发电']%}
