@@ -504,10 +504,10 @@ class {{class_name}}模型(设备模型):
     
     # 计算年化
     {% if class_name in ['锂电池'] %} 
-    ...
-    {%else%}
-    Life = self.Life
+    (kWh) * BatteryLife(年) <= 电池机组容量(kWh) * 循环寿命(年) * 0.85
     {%endif%}
+    Life = self.Life
+
     年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
     # unit: one
     if 计算参数.计算类型 == "规划设计":
