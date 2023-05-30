@@ -513,9 +513,11 @@ class {{class_name}}模型(设备模型):
 
         年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
         {% if class_name in ['光伏发电','风力发电','柴油发电'] %}
-        总采购成本 = self.CostPerWatt * 总最大功率 
-        总固定维护成本 = self.CostPerYear * 总最大功率
-        总建设费用 = self.BuildCostPerWatt * 总最大功率 + self.BuildBaseCost
+        {% set m='总最大功率'%}
+        {% set m='self.DeviceCount * self.额定功率'%}
+        总采购成本 = self.CostPerWatt * {{ m}} 
+        总固定维护成本 = self.CostPerYear * {{ m}}
+        总建设费用 = self.BuildCostPerWatt * {{ m}} + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
