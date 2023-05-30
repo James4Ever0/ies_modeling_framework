@@ -512,9 +512,10 @@ class {{class_name}}模型(设备模型):
         {%endif%}
 
         年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
-        {% if class_name in ['光伏发电']'风力发电','柴油发电'] %}
+        {% with%}
+        {% if class_name in ['光伏发电'] %}
         {% set m='总最大功率'%}
-        {%elif class_name in []%}
+        {%elif class_name in ['风力发电','柴油发电']%}
         {% set m='self.DeviceCount * self.RatedPower'%}
         {% else%}
         {%endif%}
@@ -530,4 +531,5 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        {% endwith%}
 {% endfor %}
