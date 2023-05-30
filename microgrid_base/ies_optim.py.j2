@@ -370,6 +370,8 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
+        self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x<= self.DeviceCount * self.ActualCapacityPerUnit)
+
         if self.计算参数.计算模式 == "设计规划":
             #  初始SOC
             {# if self.计算参数.计算模式 == "设计规划": #}
