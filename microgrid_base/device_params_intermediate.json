@@ -3988,6 +3988,16 @@
                 null
             ],
             [
+                "最大SOC（%）：",
+                null,
+                null
+            ],
+            [
+                "最小SOC（%）：",
+                null,
+                null
+            ],
+            [
                 "*存储衰减（%/h）：",
                 null,
                 null
