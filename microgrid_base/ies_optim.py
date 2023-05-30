@@ -421,13 +421,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -505,13 +505,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 
@@ -673,13 +673,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -1309,7 +1309,7 @@ class 风力发电模型(设备模型):
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
 
         if self.计算参数.计算步长 == "秒":
-            总最大功率 = self.MaxPower * self.DeviceCount
+            总最大功率 = self.RatedPower * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(
                 self.电输出,
@@ -1527,15 +1527,15 @@ class 柴油发电模型(设备模型):
             [-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
             [self.RatedPower * x[1] for x in self.DieselToPower_Load],
         )
-        self.RangeConstraint(
+        self.RangeConstraintMulti(
             self.电功率中转.x_pos,
             self.电输出,
             self.电功率中转.b_pos,
-            lambda x, y, z: x + 总最小启动功率 * z == y,
+            expression=lambda x, y, z: x + 总最小启动功率 * z == y,
         )
 
         if self.计算参数.计算步长 == "秒":
-            总最大功率 = self. * self.DeviceCount
+            总最大功率 = self.RatedPower * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(
                 self.原电输出,
@@ -1942,14 +1942,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2083,14 +2083,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 变流器输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2353,14 +2353,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）

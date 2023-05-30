@@ -463,7 +463,7 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
         self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
         self.Piecewise(self.单台柴油输入, self.单台发电功率, [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], [self.RatedPower*x[1] for x in self.DieselToPower_Load])
-        self.RangeConstraint(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, lambda x,y,z: x + 总最小启动功率*z == y)
+        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + 总最小启动功率*z == y)
 
         {%elif class_name in ['锂电池'] %}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity)
@@ -497,7 +497,7 @@ class {{class_name}}模型(设备模型):
         {# 秒级功率变化限制，有特定的变量限制 #}
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
         if self.计算参数.计算步长 == "秒":
-            总最大功率 = {{'self.MaxPower' if class_name in [] else 'self.RatedPower'} * self.DeviceCount
+            总最大功率 = {{'self.MaxPower' if class_name in ['光伏发电'] else 'self.RatedPower'}} * self.DeviceCount
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
