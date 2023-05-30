@@ -368,9 +368,11 @@ class {{class_name}}模型(设备模型):
         assert self.MinSOC >= 0
         self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
 
+        self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
         if self.计算参数.计算模式 == "设计规划":
             #  初始SOC
+            {# if self.计算参数.计算模式 == "设计规划": #}
             {# if 设备信息.循环边界条件 == '日间独立':
             elif 设备信息.循环边界条件 == '日间连接':
             else: #}
@@ -385,7 +387,6 @@ class {{class_name}}模型(设备模型):
             {# self.总SOC = self.变量列表('总SOC', within=NonNegativeReals) #}
             self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
             {# self.RangeConstraint(self.总SOC, self.SOC, lambda x,y : x == y*self.DeviceCount*self.RatedCapacity) #}
-        self.CurrentTotalActualCapacity = self.变量列表()
         {%endif%}
 
     def constraints_register(self):
