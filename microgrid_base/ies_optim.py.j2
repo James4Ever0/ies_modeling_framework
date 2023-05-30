@@ -211,11 +211,21 @@ class 设备模型:
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
     #  (x+y)^2 - (x-y)^2 = 4xy
-        mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
-        my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
+        {% for i,f in [(1,'x'),(2, 'y')]%}
+        m{{f}}, max_m{{f}}, min_m{{f}} = dict_m{{f}}['var'], dict_m{{f}}['max'], dict_m{{f}}['min']
+
+
+        m{{i}}posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
+        self.RangeExpressionMulti(m{{i}}posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
+        
+        mx_my_sum_var = m1posneg.x_abs
+        mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
+
+        {% endfor%}
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeExpressionMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x = y+z)
+
         mx_my_sum_var = m1posneg.x_abs
         mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
