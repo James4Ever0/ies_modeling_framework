@@ -521,7 +521,9 @@ class {{class_name}}模型(设备模型):
     {% elif class_name in ['锂电池']%}
     {% set m1="计算范围总电变化量"%}
     {# {% set m1="一年总放电量"%} #}
-    {% else %}
+    {% elif class_name in ['变压器','变流器']%}
+    {% set m1='-self.SumRange(self.电输入)'%}
+    {%else%}
     {% endif %}
     总采购成本 = self.CostPerWatt * {{ m}} 
     总固定维护成本 = self.CostPerYear * {{ m}}
