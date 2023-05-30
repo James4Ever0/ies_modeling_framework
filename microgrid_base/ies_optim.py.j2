@@ -504,7 +504,10 @@ class {{class_name}}模型(设备模型):
     
     # 计算年化
     {% if class_name in ['锂电池'] %} 
-    (kWh) * BatteryLife(年) <= 电池机组容量(kWh) * 循环寿命(年) * 0.85
+    self.SumRange(self.原电接口.x_pos)
+    +self.SumRange(self.原电接口.x_neg)
+    +self.TotalStorageDecay*self.
+    (kWh) * self.BatteryLife <= self.DeviceCount* self.RatedCapacity * self.Life* 0.85
     {%endif%}
     Life = self.Life
 
