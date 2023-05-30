@@ -3,7 +3,7 @@ import rich
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
-
+{%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit']%}
 # 8760 hours of data
 # several days of data to compute a year
 
@@ -295,8 +295,8 @@ class {{class_name}}模型(设备模型):
         {%endif%}
         {{expand_unit_conversion(mdigit) | indent(4)}}
         {% else %}
-        {{ expand_unit_conversion(mdigit,["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit'] }}
-
+        {{ expand_unit_conversion(mdigit,设备参数例外列表) }}
+        {%endif%}
         {% endfor %}
 
         {% for mtable in mtables %}
