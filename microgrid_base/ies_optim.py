@@ -216,13 +216,13 @@ class 风力发电信息(BaseModel): # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    燃料接口: int
-    """
-    类型: 柴油输入
-    """
     电接口: int
     """
     类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
     """
 
 class 柴油发电信息(BaseModel): # 发电设备
@@ -427,13 +427,13 @@ class 锂电池信息(BaseModel): # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 class 变压器信息(BaseModel): # 配电传输
@@ -682,13 +682,13 @@ class 双向变流器信息(BaseModel): # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 class 传输线信息(BaseModel): # 配电传输
@@ -1076,10 +1076,6 @@ class 光伏发电模型(设备模型):
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -1253,10 +1249,6 @@ class 风力发电模型(设备模型):
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraint(self.电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -1382,14 +1374,14 @@ class 柴油发电模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
-        """
-        类型: 柴油输入
-        """
-
         self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
         """
         类型: 供电端输出
+        """
+
+        self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
+        """
+        类型: 柴油输入
         """
 
         
@@ -1436,10 +1428,6 @@ class 柴油发电模型(设备模型):
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
             self.CustomRangeConstraint(self.原电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] <= 最大功率变化)
             self.CustomRangeConstraint(self.原电输出 , self.PowerDeltaLimit, range(self.计算参数.迭代步长-1),lambda x,y,i: x[i+1] - x[i] >= -最大功率变化)
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -1658,18 +1646,13 @@ class 锂电池模型(设备模型):
             Constraint(self.原电接口.x[0] == self.EPS)
 
 
-        if self.计算参数.计算步长 == "秒":
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
  
     计算范围内总电变化量 = (self.SumRange(self.原电接口.x_pos)
     +self.SumRange(self.原电接口.x_neg))
-    +self.TotalStorageDecay*self.计算参数.迭代步长)
+    +self.TotalStorageDecay*self.计算参数.迭代步长
     一小时总电变化量 = 计算范围内总电变化量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
     一年总电变化量 = 一小时总电变化量 * 8760
     
@@ -1781,14 +1764,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         
@@ -1810,11 +1793,6 @@ class 变压器模型(设备模型):
         self.RangedConstraint(self.电输入, self.电输出, lambda x,y: x = -y* self.Efficiency)
         self.RangedConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
 
-        if self.计算参数.计算步长 == "秒":
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -1952,11 +1930,6 @@ class 变流器模型(设备模型):
         self.RangedConstraint(self.电输入, self.电输出, lambda x,y: x = -y* self.Efficiency)
         self.RangedConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
 
-        if self.计算参数.计算步长 == "秒":
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -2101,11 +2074,6 @@ class 双向变流器模型(设备模型):
         self.RangedConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x = y*self.Efficiency)
 
 
-        if self.计算参数.计算步长 == "秒":
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
@@ -2193,14 +2161,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         
@@ -2223,11 +2191,6 @@ class 传输线模型(设备模型):
         self.RangedConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
         self.RangedConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
 
-        if self.计算参数.计算步长 == "秒":
-        elif self.计算参数.计算步长 == "小时":
-            ... # skip it.
-        else:
-            raise Exception("未知计算步长:", self.计算参数.计算步长)
     
     # 计算年化
     # unit: one
