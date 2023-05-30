@@ -409,11 +409,11 @@ class {{class_name}}模型(设备模型):
             {% else %}
             {% endif %} #}
         elif self.计算参数.计算类型 == "规划设计":
-            {% if class_name in ['光伏发电',''] %}
+            {% if class_name in ['传输线'] %}
             
+            {%else%}
             Constraint(self.DeviceCount <= self.MaxDeviceCount)
             Constraint(self.DeviceCount >= self.MinDeviceCount)
-            {%else%}
             {% endif %}
         else:
             raise Exception("未知计算类型:", self.计算参数.计算类型)
