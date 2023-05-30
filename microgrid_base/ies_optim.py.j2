@@ -386,8 +386,8 @@ class {{class_name}}模型(设备模型):
             self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
             {# self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC))) #}
-            self.TotalActualCapacity = self.单变量("TotalCapacity")
-            Constraint(self.TotalCapacity == self.DeviceCount * self.ActualCapacityPerUnit)
+            self.TotalActualCapacity = self.单变量("TotalActualCapacity")
+            Constraint(self.TotalActualCapacity == self.DeviceCount * self.ActualCapacityPerUnit)
         else:
             {# self.总SOC = self.变量列表('总SOC', within=NonNegativeReals) #}
             self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
@@ -469,7 +469,7 @@ class {{class_name}}模型(设备模型):
         
         self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口 ,expression = lambda x_pos, x_neg, y:x_pos*self.DischargeEfficicy- x_neg/self.ChargeEfficiency == y)
 
-        self.MaxTOtalCapacityDelta = self.BatteryDeltaLimit
+        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit*( 1 if self.计算参数.计算步长 == "小时" else  1/3600) * self.TotalCapacity
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
