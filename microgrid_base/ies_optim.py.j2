@@ -141,7 +141,11 @@ class 设备模型:
         self.SID = 0
         self.BigM = 1e+10
         """
-        一个大数
+        一个极大数
+        """
+        self.EPS = 1e-4
+        """
+        一个极小数
         """
 
     def getVarName(self, varName: str):
@@ -465,10 +469,12 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
-                ...
+                self.电接口[0] = self.EPS
             elif self.设备信息.循环边界条件 == '日间连接':
                 Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1] < self.MaxTotalCapacityDelta)
                 Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1] > -self.MaxTotalCapacityDelta)
+
+                self.电接口[0] = self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步长-1]
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
             if self.
