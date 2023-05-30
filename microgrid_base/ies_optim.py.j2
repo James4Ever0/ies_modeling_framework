@@ -270,8 +270,8 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
-        {%defmacro expand_unit_conversion(mdigit)%}
-        {% if mdigit[4] == 1%}
+        {%defmacro expand_unit_conversion(mdigit, exceptionList=[])%}
+        {% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
         名称: {{ mdigit[1] }}
@@ -293,22 +293,9 @@ class {{class_name}}模型(设备模型):
         {% elif super_class == "设计规划" %}
         if self.计算参数.计算类型 == "仿真模拟":
         {%endif%}
-        {{expand_unit_conversion | indent(4)}}
+        {{expand_unit_conversion(mdigit) | indent(4)}}
         {% else %}
-        {% if mdigit[4] == 1 or mdigit[0] in ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit'] %}
-        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
-        """
-        名称: {{ mdigit[1] }}
-        单位: {{ mdigit[3] }}
-        """
-        {%else%}
-        self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
-        """
-        名称: {{ mdigit[1] }}
-        单位: {{ mdigit[3] }} <- {{ mdigit[2] }}
-        """
-        assert self.{{ mdigit[0] }} >=0
-        {% endif %}
+        {{ expand_unit_conversion(mdigit,["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit'] }}
 
         {% endfor %}
 
