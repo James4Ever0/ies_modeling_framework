@@ -455,43 +455,31 @@ for key in keys:
                 if meta_type in SKIP_TYPE:
                     params = {"设计规划": [], "仿真模拟": []}
                     ## 设计规划
+                    dkey = "设计规划"
                     if subkey in ['锂电池']:
-                        params["设计规划"].append(wrapper_uc_vp("初始SOC", "percent"))
-                        params["设计规划"].append('循环边界条件')
-                        params["设计规划"].append(wrapper_uc_vp("最大设备容量", "kWh")) # 总容量
-                        params["设计规划"].append(
+                        params[dkey].append(wrapper_uc_vp("初始SOC", "percent"))
+                        params[dkey].append('循环边界条件')
+                        params[dkey].append(wrapper_uc_vp("最大设备容量", "kWh")) # 总容量
+                        params[dkey].append(
                             wrapper_uc_vp("最小设备容量", "kWh")
                         )  # from excel.
                     elif subkey in ["光伏发电"]:  # solar power.
-                        params["设计规划"].append(wrapper_uc_vp("最大安装面积", "m2"))
-                        params["设计规划"].append(
+                        params[dkey].append(wrapper_uc_vp("最大安装面积", "m2"))
+                        params[dkey].append(
                             wrapper_uc_vp("最小安装面积", "m2")
                         )  # from excel.
                     elif subkey in ["传输线"]:  # transfer lines, pipes
-                        params["设计规划"].append(wrapper_uc_vp("长度", "km"))
-                        params["仿真模拟"].append(wrapper_uc_vp("长度", "km"))
+                        params[dkey].append(wrapper_uc_vp("长度", "km"))
                     else:
-                        params["设计规划"].append(wrapper_uc_vp("最大安装台数", "台"))
-                        params["设计规划"].append(wrapper_uc_vp("最小安装台数", "台"))
+                        params[dkey].append(wrapper_uc_vp("最大安装台数", "台"))
+                        params[dkey].append(wrapper_uc_vp("最小安装台数", "台"))
 
-                        params["仿真模拟"].append(wrapper_uc_vp("安装台数", "台"))
-                    ## "仿真模拟"
-                        
-                    if subkey in ['锂电池']:
-                        params["设计规划"].append(wrapper_uc_vp("初始SOC", "percent"))
-                        params["设计规划"].append('循环边界条件')
-                        params["设计规划"].append(wrapper_uc_vp("最大设备容量", "kWh")) # 总容量
-                        params["设计规划"].append(
-                            wrapper_uc_vp("最小设备容量", "kWh")
-                        )  # from excel.
-                    if subkey in ["传输线"]:  # transfer lines, pipes
-                        params["设计规划"].append(wrapper_uc_vp("长度", "km"))
-                        params["仿真模拟"].append(wrapper_uc_vp("长度", "km"))
+                    ## dkey = "仿真模拟"
+                    dkey = "仿真模拟"
+                    if subkey in ["传输线"]:
+                        params[dkey].append(wrapper_uc_vp("长度", "km"))
                     else:
-                        params["设计规划"].append(wrapper_uc_vp("最大安装台数", "台"))
-                        params["设计规划"].append(wrapper_uc_vp("最小安装台数", "台"))
-
-                        params["仿真模拟"].append(wrapper_uc_vp("安装台数", "台"))
+                        params[dkey].append(wrapper_uc_vp("安装台数", "台"))
 
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
