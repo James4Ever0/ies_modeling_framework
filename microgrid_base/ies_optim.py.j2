@@ -125,12 +125,9 @@ class 计算参数(BaseModel):
 
 class POSNEG:
     def __init__(self, x, x_pos, x_neg, b_pos, b_neg, x_abs):
-        self.x = x
-        self.x_pos = x_pos
-        self.b_pos = b_pos
-        self.x_neg = x_neg
-        self.b_neg = b_neg
-        self.x_abs = x_abs
+        {%for f in ["x", "x_pos", "x_neg", "b_pos", "b_neg", "x_abs"]%}
+        self.{{f}} = {{f}}
+        {%endfor%}
 
 from functools import reduce
 class 设备模型:
@@ -182,12 +179,6 @@ class 设备模型:
     
     def SumRange(var_1):
         return reduce([var_1[i] for i in range(self.计算参数.迭代步数)], lambda x,y: x+y)
-    {# def 典型日变量列表(self, varName: str,**kwargs):
-        varList = []
-        for i in range(len(self.计算参数.典型日列表)):
-            var = self.model.__dict__[f"典型日[{i}]_"+self.getVarName(varName)] = Var(range(24), **kwargs)
-            varList.append(var)
-        return varList #}
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
@@ -196,17 +187,10 @@ class 设备模型:
         b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
         x_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
+        self.RangeConstraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= x_{{flag}})
         {%endfor%}
-        x_pos = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
-        x_neg = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
-
-        b_pos = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
-        b_neg = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
 
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
-
-        self.RangeConstraint(b_pos, x_pos, lambda x,y: x*self.BigM >= x_pos)
-        self.RangeConstraint(b_neg, x_neg, lambda x,y: x*self.BigM >= x_neg)
 
         self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
