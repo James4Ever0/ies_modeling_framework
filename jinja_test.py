@@ -9,6 +9,7 @@ def main():
     
     with open('page.txt','w+') as fout:
         render_content = tpl.render(mylist = [1,2,3])
+        print(render_content)
         fout.write(render_content)
         
 if __name__ == '__main__':
