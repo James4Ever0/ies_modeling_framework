@@ -513,8 +513,7 @@ class {{class_name}}模型(设备模型):
         一小时总放电量 = 计算范围内总放电量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
         一年总放电量 = 一小时总放电量 * 8760
         
-        Constraint(一年总放电量 * self.BatteryLife <= self.DeviceCount * self.TotaDischargeCapacity * 0.85)
-
+        Constraint(一年总放电量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
 
         {%endif%}
         Life = self.Life
