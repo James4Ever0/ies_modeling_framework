@@ -212,13 +212,13 @@ class 风力发电信息(BaseModel): # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 class 柴油发电信息(BaseModel): # 发电设备
@@ -508,13 +508,13 @@ class 变压器信息(BaseModel): # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 class 变流器信息(BaseModel): # 配电传输
@@ -593,13 +593,13 @@ class 变流器信息(BaseModel): # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 class 双向变流器信息(BaseModel): # 配电传输
@@ -946,6 +946,7 @@ class 光伏发电模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
+
                 self.Area: float = 设备信息.Area
         """
         名称: 光伏板面积
@@ -1104,6 +1105,7 @@ class 风力发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+
 
                 self.RatedPower: float = 设备信息.RatedPower
         """
@@ -1283,6 +1285,7 @@ class 柴油发电模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
+
                 self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
@@ -1381,14 +1384,14 @@ class 柴油发电模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
-        """
-        类型: 供电端输出
-        """
-
         self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
         """
         类型: 柴油输入
+        """
+
+        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        """
+        类型: 供电端输出
         """
 
         
@@ -1466,6 +1469,7 @@ class 锂电池模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+
 
                 self.RatedCapacity: float = 设备信息.RatedCapacity
         """
@@ -1701,6 +1705,7 @@ class 变压器模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
+
                 self.Efficiency: float = 设备信息.Efficiency * 0.01
         """
         名称: 效率
@@ -1844,6 +1849,7 @@ class 变流器模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
+
                 self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
@@ -1925,14 +1931,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 变流器输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 变流器输入
         """
 
         
@@ -1987,6 +1993,7 @@ class 双向变流器模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
 
+
                 self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
@@ -2068,14 +2075,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
         
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         
@@ -2136,6 +2143,7 @@ class 传输线模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+
 
                 self.PowerTransferDecay: float = 设备信息.PowerTransferDecay
         """

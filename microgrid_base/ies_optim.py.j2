@@ -290,7 +290,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         assert self.{{ mdigit[0] }} >=0
         {%endmacro%}
-        
+
         {% for mdigit in mdigits %}
         {% if super_class in ["仿真模拟","设计规划"] %}
         {% if super_class == "仿真模拟" %}
@@ -298,7 +298,7 @@ class {{class_name}}模型(设备模型):
         {% elif super_class == "设计规划" %}
         if self.计算参数.计算类型 == "仿真模拟":
         {%endif%}
-        {{expand_unit_conversion(mdigit) | indent(4, True)}}
+        {{expand_unit_conversion(mdigit) | indent(4, False)}}
         {% else %}
         {{ expand_unit_conversion(mdigit,设备参数例外列表) }}
         {%endif%}
