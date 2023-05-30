@@ -212,7 +212,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "VariationalCostPerPower": ("元/kWh", {"": ["可变维护成本"]}),
     "VariationCostPerMeter": ("万元/(km*年)", {"": ["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
-    "Capacity": ("kWh", {"Rated-": ["额定容量"], "TotalDischarge-": ["生命周期总放电量"]}),
+    "Capacity": ("kWh", {"Rated-": ["额定容量"], "MaxTotal-": ["最大设备容量"], "MinTotal-": ["最小设备容量"], "TotalDischarge-": ["生命周期总放电量"]}),
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
