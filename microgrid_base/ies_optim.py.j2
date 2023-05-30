@@ -409,12 +409,11 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         # 设备台数约束
-        if self.计算参数.计算类型 == "仿真模拟":
-            {% if class_name in ['光伏发电'] %}
-            ...
+        {# if self.计算参数.计算类型 == "仿真模拟": #}
+            {# {% if class_name in ['光伏发电'] %}
             {% else %}
-            {% endif %}
-        elif self.计算参数.计算类型 == "规划设计":
+            {% endif %} #}
+        if self.计算参数.计算类型 == "规划设计":
             {% if class_name in ['光伏发电'] %}
             MaxDeviceCount = self.MaxInstallArea/self.Area
             MinDeviceCount = self.MinInstallArea/self.Area
