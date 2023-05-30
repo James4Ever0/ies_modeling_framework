@@ -483,14 +483,14 @@ class {{class_name}}模型(设备模型):
     {%with%}
     {% if class_name in ['锂电池'] %} 
     {% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%}
-    计算范围内总放电量 = (self.SumRange(self.原电接口.x_pos)
+    计算范围内总电变化量 = (self.SumRange(self.原电接口.x_pos)
     +self.SumRange(self.原电接口.x_neg))
     +self.TotalStorageDecay*self.计算参数.迭代步长)
-    一小时总放电量 = 计算范围内总放电量 * {{时间步长参数}}
-    {# 一小时总放电量 = 计算范围内总放电量 #}
-    一年总放电量 = 一小时总放电量 * 8760
+    一小时总电变化量 = 计算范围内总电变化量 * {{时间步长参数}}
+    {# 一小时总电变化量 = 计算范围内总电变化量 #}
+    一年总电变化量 = 一小时总电变化量 * 8760
     
-    Constraint(一年总放电量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
+    Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
     assert self.BatteryLife >=1
     assert self.Life >= self.BatteryLife
     Life = self.BatteryLife
@@ -512,8 +512,7 @@ class {{class_name}}模型(设备模型):
     {# {% set m1="self.SumRange(self.电输出) * (8760 / self.计算参数.迭代步数) * %s"| format(时间步长参数)%} #}
     {% set m1="self.SumRange(self.电输出)"%}
     {% elif class_name in ['锂电池']%}
-    {#其实是总电量变化量#}
-    {% set m1="计算范围总放电量"%}
+    {% set m1="计算范围总电变化量"%}
     {# {% set m1="一年总放电量"%} #}
     {% else %}
     {% endif %}
@@ -523,7 +522,7 @@ class {{class_name}}模型(设备模型):
 
     总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
-    总可变维护成本年化 = {{m1}} * (8760 / self.计算参数.迭代步数) * {{时间步长参数}} *self.VariationalCostPerPower # 由于是小时步长 不用乘时间
+    总可变维护成本年化 = {{m1}} * (8760 / self.计算参数.迭代步数) * {{时间步长参数}} *self.VariationalCostPerPower
     {% elif %}
     {% endif %}
 
