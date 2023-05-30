@@ -300,6 +300,7 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+            
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{psc}}":
