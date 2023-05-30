@@ -3,6 +3,10 @@ import rich
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
+{% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%}
+
+{% set 单向变电器列表 = []%}
+
 {%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit']%}
 # 8760 hours of data
 # several days of data to compute a year
@@ -502,7 +506,6 @@ class {{class_name}}模型(设备模型):
     {# 规划设计和仿真模拟都需要计算年化 #}
     {%with%}
     {% if class_name in ['锂电池'] %} 
-    {% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%}
     计算范围内总电变化量 = (self.SumRange(self.原电接口.x_pos)
     +self.SumRange(self.原电接口.x_neg))
     +self.TotalStorageDecay*self.计算参数.迭代步长)
