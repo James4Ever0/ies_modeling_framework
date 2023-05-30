@@ -429,8 +429,8 @@ class {{class_name}}模型(设备模型):
         {%if class_name in ['传输线']%}
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
         self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗')
-        self.
-        self.RangedConstraint
+        self.RangedConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
+        self.RangedConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
         {%elif class_name in ['双向变流器']%}
         {# self.线路端_ = self.变量列表_带指示变量("线路端_")  #}
         {# self.储能端_ = self.变量列表_带指示变量("储能端_")  #}
