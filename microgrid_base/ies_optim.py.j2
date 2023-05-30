@@ -361,7 +361,9 @@ class {{class_name}}模型(设备模型):
 
         #   初始SOC
         assert self.InitSOC >= self.MinSOC
-        self.初始总电量 = (self.InitSOC - self.MinSOC) * self.RatedCapacity
+        assert self.InitSOC <= self.MaxSOC
+        assert self.MaxSOC > self.MinSOC
+        self.InitCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
 
         if self.计算参数.计算模式 == "设计规划":
             self.总SOC = self.Multiply(dict(self.DeviceCount, min = self.MinDeviceCount, max = self.MaxDeviceCount), dict(self.SOC, min=self.MinSOC, max=self.MaxSOC)))
