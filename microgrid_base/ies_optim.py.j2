@@ -63,12 +63,12 @@ class {{class_name}}ID(BaseModel):
     {% endfor %}
 
 class {{class_name}}信息(BaseModel): # {{super_class}}
-    {% for mstr in mstrs %}
+    {% for psc, mstr in mstrs %}
     {{ mstr }}: str
 
     {% endfor %}
     
-    {% for mdigit in mdigits %}
+    {% for psc, mdigit in mdigits %}
     {{ mdigit[0] }}: float
     """
     名称: {{ mdigit[1]}}
@@ -293,7 +293,7 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-        {% for mdigit in mdigits %}
+        {% for psc, mdigit in mdigits %}
         {% if super_class in ["仿真模拟","设计规划"] %}
         if self.计算参数.计算类型 == "{{super_class}}":
         {{- expand_unit_conversion(mdigit) | indent(4)}}
