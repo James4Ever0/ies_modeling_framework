@@ -1,5 +1,4 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from argparse import Namespace
 import rich
 
 # the main code for computing.
@@ -219,13 +218,13 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -448,13 +447,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -532,13 +531,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -700,13 +699,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1126,11 +1125,10 @@ class 光伏发电模型(设备模型):
 
         self.ports = {}
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        self.ports["电接口"] = self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
         """
         类型: 供电端输出
         """
-        self.ports["电接口"] = self.电接口
 
         # 设备特有约束（变量）
         self.电输出 = self.电接口
@@ -1312,11 +1310,10 @@ class 风力发电模型(设备模型):
 
         self.ports = {}
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        self.ports["电接口"] = self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
         """
         类型: 供电端输出
         """
-        self.ports["电接口"] = self.电接口
 
         # 设备特有约束（变量）
         self.电输出 = self.电接口
@@ -1510,17 +1507,15 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
-        """
-        类型: 供电端输出
-        """
-        self.ports["电接口"] = self.电接口
-
-        self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
+        self.ports["燃料接口"] = self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
         """
         类型: 柴油输入
         """
-        self.ports["燃料接口"] = self.燃料接口
+
+        self.ports["电接口"] = self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        """
+        类型: 供电端输出
+        """
 
         # 设备特有约束（变量）
         self.电输出 = self.电接口
@@ -1776,11 +1771,10 @@ class 锂电池模型(设备模型):
 
         self.ports = {}
 
-        self.电接口 = self.变量列表("电接口", within=Reals)
+        self.ports["电接口"] = self.电接口 = self.变量列表("电接口", within=Reals)
         """
         类型: 电储能端输入输出
         """
-        self.ports["电接口"] = self.电接口
 
         # 设备特有约束（变量）
         if self.计算参数.计算类型 == "设计规划":
@@ -2025,17 +2019,15 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-        self.ports["电输出"] = self.电输出
-
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
         """
-        self.ports["电输入"] = self.电输入
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
+        """
 
         # 设备特有约束（变量）
 
@@ -2172,17 +2164,15 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-        self.ports["电输出"] = self.电输出
-
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 变流器输入
         """
-        self.ports["电输入"] = self.电输入
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
+        """
 
         # 设备特有约束（变量）
 
@@ -2321,17 +2311,15 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.线路端 = self.变量列表("线路端", within=Reals)
+        self.ports["线路端"] = self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
         """
-        self.ports["线路端"] = self.线路端
 
-        self.储能端 = self.变量列表("储能端", within=Reals)
+        self.ports["储能端"] = self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
         """
-        self.ports["储能端"] = self.储能端
 
         # 设备特有约束（变量）
         self.线路端_ = self.变量列表_带指示变量("线路端_")
@@ -2455,20 +2443,15 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-        self.ports["电输出"] = self.电输出
-
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
         """
-        self.ports["电输入"] = self.电输入
-        
-        
-        
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
+        """
 
         # 设备特有约束（变量）
         self.电输入_去除损耗 = self.变量列表_带指示变量("电输入_去除损耗")

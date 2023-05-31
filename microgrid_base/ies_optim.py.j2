@@ -352,16 +352,16 @@ class {{class_name}}模型(设备模型):
         
         {% for port_name, port_type in 设备接口集合[class_name] %}
         {% if port_type.endswith("输入输出") %}
-        self.{{port_name}} = self.变量列表("{{port_name}}", within=Reals)
+        {% set mt = "Reals" %}
         {% elif port_type.endswith("输入") %}
-        self.{{port_name}} = self.变量列表("{{port_name}}", within=NegativeReals)
+        {% set mt = "NegativeReals"%}
         {% elif port_type.endswith("输出") %}
-        self.{{port_name}} = self.变量列表("{{port_name}}", within=NonNegativeReals)
+        {% set mt = "NonNegativeReals"%}
         {% endif %}
+        self.ports['{{port_name}}'] = self.{{port_name}} = self.变量列表("{{port_name}}", within={{mt}})
         """
         类型: {{port_type}}
         """
-        self.ports['{{port_name}}'] = self.{{port_name}}
 
         {% endfor %}
         
