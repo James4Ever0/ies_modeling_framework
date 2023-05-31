@@ -118,7 +118,8 @@ class {{class_name}}信息(BaseModel):
     单位: kW
     {# In this way it will be timescale independent. #}
     """
-    MaxEnergyConsumption: float
+
+    MaxEnergyConsumption: Union[None, float] = None
     """
     单位: kW
     {# 用于电负荷 典型日计算 #}
@@ -672,7 +673,12 @@ class {{class_name}}(设备模型):
 
 {{ port_variable_define(class_name)}}
 
-    def constraints_register(self,):
+        {% if load_type in ['电']%}
+        if self.计算参数.典型日:
+            assert self.MaxEnergyConsumption is not None
+        {% endif%}
+    
+    def constraints_register(self):
         {% if load_type in ['电']%}
         {% set port_name = '电接口'%}
         {% else %}
