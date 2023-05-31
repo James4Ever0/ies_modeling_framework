@@ -673,16 +673,16 @@ class {{class_name}}(设备模型):
 
 {{ port_variable_define(class_name)}}
 
-        {% if load_type in ['电']%}
+        {% if load_type in ['电'] %}
         if self.计算参数.典型日:
             assert self.MaxEnergyConsumption is not None
-        {% endif%}
+        {% endif %}
     
     def constraints_register(self):
-        {% if load_type in ['电']%}
-        {% set port_name = '电接口'%}
+        {% if load_type in ['电'] %}
+        {% set port_name = '电接口' %}
         {% else %}
-        {% error("未知负荷类型:",load_type)%}
+        {% error("未知负荷类型:",load_type) %}
         {% endif %}
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
 {% endfor%}
