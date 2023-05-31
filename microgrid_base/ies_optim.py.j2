@@ -289,6 +289,7 @@ class 设备模型:
 # IO: Real
 import numpy as np
 import math
+{% set mflag = ""%}
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
@@ -300,12 +301,13 @@ class {{class_name}}模型(设备模型):
 
         {# if self.计算参数.计算类型 == "设计规划": #}
         {%with%}
-        {% set mflag = ""%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
+        {% set mflag = ""%}
         # psc: {{psc}} mflag: {{mflag}}
         {% if mflag != psc %}
-        {% set mflag = psc| string%}
+        {% set mflag = "abc"%}
+        # after: psc: {{psc}} mflag: {{mflag}}
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
