@@ -720,7 +720,10 @@ class ModelContext:
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
     with ModelContext() as model:
         计算参数实例 = 计算参数.parse_obj(graph_data)
+        devInstList = []
         for dev in devs:
-            ...
-        for adder in adders:
+            devSubtype = dev['subtype']
+            {% for in %}
+            devInst = {{}}
+        for adder_index, adder in adders.items():
             ...
