@@ -74,3 +74,6 @@ class BM(BaseModel):
 
 new_bm = BM.parse_obj(dict(a = 1))
 rich.print(new_bm)
+
+from typing import  Dict
+a : Dict[int, dict] = {1:{}}

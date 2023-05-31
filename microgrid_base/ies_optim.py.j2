@@ -72,7 +72,7 @@ import rich
 # iterate through all device-port pairs, then retrieve attributes from another dict.
 
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Union, Literal
 # string, digits, tables.
 # you can dump and load from json.
 {# 
@@ -167,7 +167,6 @@ from pyomo.environ import *
 # shall you assign port with variables.
 
 # 风、光照
-from typing import Union, Literal, List
 
 # 需要单位明确
 class 计算参数(BaseModel):
@@ -699,7 +698,7 @@ class {{class_name}}(设备模型):
         {% endif %}
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
 {% endfor %}
-from typing import Dict
+
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
     计算参数实例 = 计算参数.parse_obj(graph_data)
     for dev in devs:
