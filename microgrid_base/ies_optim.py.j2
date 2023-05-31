@@ -149,7 +149,7 @@ class 计算参数(BaseModel):
     {# @lru_cache(maxsize=1) #}
     @property
     def 时间参数(self):
-        return (1 if self.计算参数.计算步长 == "小时" else 3600)
+        return (1 if self.计算步长 == "小时" else 3600)
     {# @property # 提前计算好了
     def 典型日列表(self): # 
         ... #}
