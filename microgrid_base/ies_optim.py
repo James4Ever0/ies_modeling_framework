@@ -447,13 +447,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -615,13 +615,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -699,13 +699,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -2005,14 +2005,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2291,14 +2291,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2419,14 +2419,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2460,11 +2460,4 @@ class 传输线模型(设备模型):
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
-        总可变维护成本年化 = (
-            (-self.SumRange(self.电输入))
-            * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerNone
-        )
-
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        总成本年化 = 总固定成本年化

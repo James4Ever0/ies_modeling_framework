@@ -300,10 +300,13 @@ class {{class_name}}模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-            
+        {% set flag = None%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
+        {% if flag != psc %}
         if self.计算参数.计算类型 == "{{psc}}":
+        {% set flag = psc%}
+        {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
@@ -554,7 +557,7 @@ class {{class_name}}模型(设备模型):
             {% set vi = 'Kilometer' %}
             {% set vm = 'Kilometer' %}
             {% set vb = 'Kilometer' %}
-            {% set vv = None%}
+            {# {% set vv = None%} #}
             {# {% set vv = 'Kilometer' %} #}
         {% else%}
             {% error("不支持的设备类型:", class_name) %}
@@ -580,7 +583,7 @@ class {{class_name}}模型(设备模型):
         {% else%}
             {% error("不支持的类型:", class_name) %}
         {% endif %}
-        {% if m1 != '0'%}
+        {% if class_name not in ['传输线']%}
         总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}}
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
