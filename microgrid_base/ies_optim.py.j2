@@ -680,9 +680,14 @@ class {{class_name}}模型(设备模型):
 
 {% set load_types = ['电']%}
 {% set input_types = ['柴油']%}
-
-{% for load_type in load_types %}
-{% set class_name = load_type+"负荷"%}
+{% set special_types = {"load_type": load_types, "input_type": input_types}%}
+{% for k,vlist in special_types.items() %}
+{% for v in vlist%}
+{% if k == "load_type"%}
+{% set class_name = v+"负荷"%}
+{% else%}
+{% set class_name = v%}
+{% endif%}
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
 
@@ -702,6 +707,8 @@ class {{class_name}}模型(设备模型):
         {% error("未知负荷类型:",load_type) %}
         {% endif %}
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
+{% endfor %}
+
 {% endfor %}
 
 class ModelContext:
