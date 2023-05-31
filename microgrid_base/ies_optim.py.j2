@@ -300,13 +300,13 @@ class {{class_name}}模型(设备模型):
 
         {# if self.计算参数.计算类型 == "设计规划": #}
         {# {%with%} #}
-        {% set mflag = ""%}
+        {% set mflag = namespace(val="")%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
-        # psc: {{psc}} mflag: {{mflag}}
-        {% if mflag != psc %}
-        {% set mflag = psc%}
-        # after: psc: {{psc}} mflag: {{mflag}}
+        {# # psc: {{psc}} mflag: {{mflag}} #}
+        {% if mflag.val != psc %}
+        {% set mflag.val = psc%}
+        {# # after: psc: {{psc}} mflag: {{mflag}} #}
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
