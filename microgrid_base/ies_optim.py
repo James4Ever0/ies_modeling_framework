@@ -615,13 +615,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -815,6 +815,10 @@ class 计算参数(BaseModel):
         assert len(self.光照) == steps
         assert len(self.气温) == steps
         return steps
+
+    @property
+    def 时间参数(self):
+        return 1 if self.计算参数.计算步长 == "小时" else 3600
 
 
 class POSNEG:
@@ -1182,7 +1186,7 @@ class 光伏发电模型(设备模型):
         总可变维护成本年化 = (
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -1378,7 +1382,7 @@ class 风力发电模型(设备模型):
         总可变维护成本年化 = (
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -1604,7 +1608,7 @@ class 柴油发电模型(设备模型):
         总可变维护成本年化 = (
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -1793,16 +1797,11 @@ class 锂电池模型(设备模型):
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
 
         self.MaxTotalCapacityDelta = (
-            self.BatteryDeltaLimit
-            / ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.TotalCapacity
+            self.BatteryDeltaLimit / (self.计算参数.时间参数) * self.TotalCapacity
         )
 
         self.TotalStorageDecay = (
-            self.BatteryStorageDecay
-            / 100
-            / ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.TotalCapacity
+            self.BatteryStorageDecay / 100 / (self.计算参数.时间参数) * self.TotalCapacity
         )
 
     def constraints_register(self):
@@ -1885,7 +1884,7 @@ class 锂电池模型(设备模型):
             self.SumRange(self.原电接口.x_abs)
         ) + self.TotalStorageDecay * self.计算参数.迭代步数
 
-        一小时总电变化量 = 计算范围内总电变化量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
+        一小时总电变化量 = 计算范围内总电变化量 * self.计算参数.时间参数
 
         一年总电变化量 = 一小时总电变化量 * 8760
 
@@ -1911,7 +1910,7 @@ class 锂电池模型(设备模型):
         总可变维护成本年化 = (
             (计算范围内总电变化量)
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -2054,7 +2053,7 @@ class 变压器模型(设备模型):
         总可变维护成本年化 = (
             (-self.SumRange(self.电输入))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -2197,7 +2196,7 @@ class 变流器模型(设备模型):
         总可变维护成本年化 = (
             (-self.SumRange(self.电输入))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -2298,14 +2297,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2350,7 +2349,7 @@ class 双向变流器模型(设备模型):
         总可变维护成本年化 = (
             ((self.SumRange(self.储能端_.x_neg) + self.SumRange(self.线路端_.x_neg)))
             * (8760 / self.计算参数.迭代步数)
-            * ((1 if self.计算参数.计算步长 == "小时" else 3600))
+            * (self.计算参数.时间参数)
             * self.VariationalCostPerWork
         )
 
@@ -2447,11 +2446,7 @@ class 传输线模型(设备模型):
         # 设备台数约束
 
         # 输出输入功率约束
-        TotalDecayPerStep = (
-            self.Length
-            * self.PowerTransferDecay
-            / (1 if self.计算参数.计算步长 == "小时" else 3600)
-        )
+        TotalDecayPerStep = self.Length * self.PowerTransferDecay / self.计算参数.时间参数
         self.RangeConstraint(
             self.电输入_去除损耗.x, self.电输入, lambda x, y: x == y + TotalDecayPerStep
         )

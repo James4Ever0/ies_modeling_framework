@@ -3,7 +3,7 @@ import rich
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
-
+{# from functools import lru_cache #}
 
 {%macro expand_unit_conversion(mdigit, exceptionList=[])%}
         {% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
@@ -24,6 +24,7 @@ import rich
 
 
 {% set 时间步长参数='self.计算参数.时间参数'%}
+{# {% set 时间步长参数='self.计算参数.时间参数()'%} #}
 {# {% set 时间步长参数='(1 if self.计算参数.计算步长 == "小时" else 3600)'%} #}
 
 {% set 单向变电器列表 = ['变压器', '变流器']%}
@@ -145,8 +146,10 @@ class 计算参数(BaseModel):
         assert len(self.气温) == steps
         return steps
     
-    @lru_cache(maxsize=1):
-    def (1 if self.计算参数.计算步长 == "小时" else 3600)
+    {# @lru_cache(maxsize=1) #}
+    @property
+    def 时间参数(self):
+        return (1 if self.计算参数.计算步长 == "小时" else 3600)
     {# @property # 提前计算好了
     def 典型日列表(self): # 
         ... #}
