@@ -135,11 +135,15 @@ class {{class_name}}信息(BaseModel):
     {% else %}
     Price: float
     {% if class_name == "柴油"%}
+    {% set m1="L/万元"%}
     {# just to make it standard. #}
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
     Unit: str
+    """
+    参考单位: {{m1}}
+    """
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
@@ -716,6 +720,10 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.典型日:
             assert self.设备信息.MaxEnergyConsumption is not None
         {% endif %}
+    {% else%}
+    self.Price = self.设备信息.Price
+    self.Unit = self.设备信息.Unit
+    self.StandardUnit = self.
     {% endif%}
     
     def constraints_register(self):
