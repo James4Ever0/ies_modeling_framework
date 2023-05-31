@@ -115,7 +115,8 @@ class {{class_name}}信息(BaseModel):
     # 正数
     EnergyConsumption: List[float]
     """
-    单位: kWh
+    单位: kW
+    {# In this way it will be timescale independent. #}
     """
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
