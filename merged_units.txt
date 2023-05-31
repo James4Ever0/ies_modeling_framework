@@ -920,3 +920,9 @@ kWh = kW * hour
 
 [price_per_length] = [currency] / [length]
 万元每千米 = 万元/ km
+
+[price_per_work_per_year] = [currency] / [work] / [time]
+万元每千瓦时每年 = 万元 / kWh / 年
+
+[power_per_meter] = 
+千瓦每qianmi = 
