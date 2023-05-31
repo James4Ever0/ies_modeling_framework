@@ -5,6 +5,9 @@ import rich
 # three computation modes:
 {# from functools import lru_cache #}
 
+{% set load_types = ['电']%}
+{% set input_types = ['柴油']%}
+
 {% macro init_super_class(class_name)%}
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
@@ -112,6 +115,7 @@ class {{class_name}}ID(BaseModel):
 
 class {{class_name}}信息(BaseModel):
     {% if class_name not in NonLoadDeviceDict.keys() %}
+    {% if class_name in %}
     # 正数
     EnergyConsumption: List[float]
     """
@@ -678,8 +682,6 @@ class {{class_name}}模型(设备模型):
         return 总成本年化
 {% endfor %}
 
-{% set load_types = ['电']%}
-{% set input_types = ['柴油']%}
 {% set special_types = {"load_type": load_types, "input_type": input_types}%}
 
 {% for k,vlist in special_types.items() %}
