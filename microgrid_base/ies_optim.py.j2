@@ -104,9 +104,11 @@ class {{class_name}}ID(BaseModel):
 # Device Info #
 ###############
 
-{% set NonLoadDeviceDict = {class_name: (super_class, mstrs, mdigits, mtables) for super_class, class_name, mstrs, mdigits, mtables in 设备库} %}
+{% set NonLoadDeviceDict = {}%}
+{% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
+{% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
+{% endfor%}
 {% for class_name in 设备接口集合.keys()%}
-{# {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %} #}
 
 class {{class_name}}信息(BaseModel):
     {% if class_name not in NonLoadDeviceDict.keys() %}
