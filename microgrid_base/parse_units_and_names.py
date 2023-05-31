@@ -354,7 +354,7 @@ BASE_UNIT_TRANSLATION_TABLE = {
     "/hour": [
         "/h",
     ],
-    "m3": ["m³"],
+    "m3": ["m³", 'Nm3', 'Nm³'],
     "p_u_": [
         "p.u.",
     ],
