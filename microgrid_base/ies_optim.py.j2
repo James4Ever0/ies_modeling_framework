@@ -115,7 +115,7 @@ class {{class_name}}ID(BaseModel):
 
 class {{class_name}}信息(BaseModel):
     {% if class_name not in NonLoadDeviceDict.keys() %}
-    {% if class_name in %}
+    {% if class_name in load_types_new%}
     # 正数
     EnergyConsumption: List[float]
     """
@@ -128,6 +128,9 @@ class {{class_name}}信息(BaseModel):
     单位: kW
     {# 用于电负荷 典型日计算 #}
     """
+    {% else%}
+    {% error("未知负荷信息类型:", class_name)%}
+    {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
     {% for psc, mstr in mstrs %}
