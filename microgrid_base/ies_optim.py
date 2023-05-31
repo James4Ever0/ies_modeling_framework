@@ -85,13 +85,13 @@ class 锂电池ID(BaseModel):
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -598,6 +598,18 @@ class 变压器信息(BaseModel):
     单位: 万元
     """
 
+    PowerParameter: float
+    """
+    名称: 功率因数
+    单位: one
+    """
+
+    LoadRedundancyParameter: float
+    """
+    名称: 变压器冗余系数
+    单位: one
+    """
+
     MaxDeviceCount: float
     """
     名称: 最大安装台数
@@ -608,6 +620,12 @@ class 变压器信息(BaseModel):
     """
     名称: 最小安装台数
     单位: 台
+    """
+
+    PowerParameter: float
+    """
+    名称: 功率因数
+    单位: one
     """
 
     DeviceCount: float
@@ -2063,6 +2081,20 @@ class 变压器模型(设备模型):
             单位： 个
             """
 
+            self.PowerParameter: float = 设备信息.PowerParameter
+            """
+            名称: 功率因数
+            单位: one
+            """
+            assert self.PowerParameter >= 0
+
+            self.LoadRedundancyParameter: float = 设备信息.LoadRedundancyParameter
+            """
+            名称: 变压器冗余系数
+            单位: one
+            """
+            assert self.LoadRedundancyParameter >= 0
+
             self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
             """
             名称: 最大安装台数
@@ -2078,6 +2110,13 @@ class 变压器模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         if self.计算参数.计算类型 == "仿真模拟":
+            self.PowerParameter: float = 设备信息.PowerParameter
+            """
+            名称: 功率因数
+            单位: one
+            """
+            assert self.PowerParameter >= 0
+
             self.DeviceCount: float = 设备信息.DeviceCount
             """
             名称: 安装台数
@@ -2089,14 +2128,14 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2589,10 +2628,10 @@ class 电负荷(设备模型):
         类型: 负荷电输入
         """
 
-        assert len(self.EnergyConsumption) == self.计算参数.迭代步数
+        assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
         if self.计算参数.典型日:
-            assert self.MaxEnergyConsumption is not None
+            assert self.设备信息.MaxEnergyConsumption is not None
 
     def constraints_register(self):
         self.电接口 = [-e for e in self.设备信息.EnergyConsumption]

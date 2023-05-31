@@ -538,6 +538,20 @@
             ],
             "设计规划": [
                 [
+                    "PowerParameter",
+                    "功率因数",
+                    "one",
+                    "one",
+                    1
+                ],
+                [
+                    "LoadRedundancyParameter",
+                    "变压器冗余系数",
+                    "one",
+                    "one",
+                    1
+                ],
+                [
                     "MaxDeviceCount",
                     "最大安装台数",
                     "台",
@@ -554,6 +568,13 @@
                 "设备选型"
             ],
             "仿真模拟": [
+                [
+                    "PowerParameter",
+                    "功率因数",
+                    "one",
+                    "one",
+                    1
+                ],
                 [
                     "DeviceCount",
                     "安装台数",

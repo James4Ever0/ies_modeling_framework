@@ -684,11 +684,11 @@ class {{class_name}}(设备模型):
 
 {{ port_variable_define(class_name)}}
 
-        assert len(self.EnergyConsumption) == self.计算参数.迭代步数
+        assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
         {% if load_type in ['电'] %}
         if self.计算参数.典型日:
-            assert self.MaxEnergyConsumption is not None
+            assert self.设备信息.MaxEnergyConsumption is not None
         {% endif %}
     
     def constraints_register(self):
