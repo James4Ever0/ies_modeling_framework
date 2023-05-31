@@ -210,7 +210,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerCapacity": ("万元/kWh", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerKilometer": ("万元/km", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
-    "CostPerMachinePerYear": ("万元/(台*年)", {"": ["固定维护成本"],}),
+    "CostPerYearPerMachine": ("万元/(台*年)", {"": ["固定维护成本"],}),
     "CostPerYearPerKilowatt": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "CostPerYearPerCapacity": ("万元/(kWh*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerWork": ("元/kWh", {"": ["可变维护成本"]}),

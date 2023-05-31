@@ -262,7 +262,7 @@
                     1
                 ],
                 [
-                    "CostPerMachinePerYear",
+                    "CostPerYearPerMachine",
                     "固定维护成本",
                     "万元/(台*年)",
                     "万元 / 台 / 年",

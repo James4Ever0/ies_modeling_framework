@@ -257,7 +257,7 @@ class 柴油发电信息(BaseModel):  # 发电设备
     单位: 万元/台
     """
 
-    CostPerMachinePerYear: float
+    CostPerYearPerMachine: float
     """
     名称: 固定维护成本
     单位: 万元/(台*年)
@@ -447,13 +447,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -531,13 +531,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -615,13 +615,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -1419,12 +1419,12 @@ class 柴油发电模型(设备模型):
         """
         assert self.CostPerMachine >= 0
 
-        self.CostPerMachinePerYear: float = 设备信息.CostPerMachinePerYear
+        self.CostPerYearPerMachine: float = 设备信息.CostPerYearPerMachine
         """
         名称: 固定维护成本
         单位: 万元 / 台 / 年
         """
-        assert self.CostPerMachinePerYear >= 0
+        assert self.CostPerYearPerMachine >= 0
 
         self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
@@ -1593,15 +1593,10 @@ class 柴油发电模型(设备模型):
         Life = self.Life
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
-        
-        self.CostPer
 
-        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总建设费用 = (
-            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
-            + self.BuildBaseCost
-        )
+        总采购成本 = self.CostPerMachine * (self.DeviceCount)
+        总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
+        总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
@@ -2011,14 +2006,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2154,14 +2149,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 变流器输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2299,14 +2294,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）

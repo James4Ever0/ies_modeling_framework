@@ -556,10 +556,10 @@ class {{class_name}}模型(设备模型):
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
         {% elif class_name in ['柴油发电']%}
-            {% set m='self.DeviceCount * self.RatedPower'%}
+            {% set m='self.DeviceCount'%}
             {% set vi = 'Machine' %}
             {% set vm = 'Machine' %}
-            {% set vb = 'Kilowatt' %}
+            {% set vb = 'Machine' %}
             {% set vv = 'Work' %}
         {% elif class_name in ["锂电池"]%}
             {% set m='self.DeviceCount * self.RatedCapacity'%}
