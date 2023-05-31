@@ -357,6 +357,8 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
         self.电输出 = self.电接口
+        {% if class_name in ["柴油发电"]%}
+        self.柴油输出 = self.柴油接口
         {% endif%}
         {% if class_name in ['光伏发电']%}
         if self.计算参数.计算类型== "设计规划":
