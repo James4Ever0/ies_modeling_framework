@@ -1,4 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
+from argparse import Namespace
 import rich
 
 # the main code for computing.
@@ -2465,6 +2466,9 @@ class 传输线模型(设备模型):
         类型: 电母线输入
         """
         self.ports["电输入"] = self.电输入
+        
+        
+        
 
         # 设备特有约束（变量）
         self.电输入_去除损耗 = self.变量列表_带指示变量("电输入_去除损耗")
