@@ -805,6 +805,18 @@ class {{class_name}}模型(设备模型):
     {% else%}
 
     self.设备信息.ReferenceUnit = 
+
+
+    ### COMPAT CHECK ###
+    unit = ureg.Unit(self.设备信息.Unit)
+    compatible_units = ureg.get_compatible_units(unit)
+        if default_unit_compatible == frozenset():
+            raise Exception("Compatible units are zero for default unit:", default_unit)
+        if compatible_units == frozenset():
+            raise Exception("Compatible units are zero for value unit:", val_unit)
+    ### COMPAT CHECK ###\
+        if not default_unit_compatible == compatible_units:
+
     
     self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, self.设备信息.Unit)
     print("STANDARD:", standard)
