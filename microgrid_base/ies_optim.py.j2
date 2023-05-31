@@ -717,10 +717,10 @@ class ModelContext:
         del self.model
         print("EXITING MODEL CONTEXT")
 
-{% for e in ["Inst", "ID"] %}
+{% for e in ["Inst", "ID", 'Info'] %}
 dev{{e}}ClassMap = {
     {% for class_name in 设备接口集合.keys()
-    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" else "ID"}},
+    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" else e}},
     {% endfor %}
 }
 
@@ -748,7 +748,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devIDInst = devIDClass.parse_obj(devIDInstInit)
 
             devClass = devInstClassMap[devSubtype]
-            devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfo)
+            devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devParamInst)
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
             ...
