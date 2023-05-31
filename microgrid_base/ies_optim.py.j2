@@ -722,16 +722,16 @@ devInstMap = {
     "{{class_name}}": {{class_name}}模型,
     {% endfor %}
 }
-
-def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
+from networkx import Graph
+def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, graph: Graph):
     with ModelContext() as model:
-        计算参数实例 = 计算参数.parse_obj(graph_data)
-        devInstList = []
+        algoParam = 计算参数.parse_obj(graph_data)
+        devInstDict = {}
         for dev in devs:
             devSubtype = dev['subtype']
             devParam = dev['']
             {% for in %}
             devClass = devInstMap[devSubtype]
-            devInst = devClass(model=model, 计算参数实例=计算参数实例, 设备ID: devID, 设备信息=devInfo)
+            devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devID, 设备信息=devInfo)
         for adder_index, adder in adders.items():
             ...

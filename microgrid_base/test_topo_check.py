@@ -108,4 +108,4 @@ print_with_banner(graph_data, "图元数据")
 import sys
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute
-    result = compute(devs, adders, graph_data)
+    result = compute(devs, adders, graph_data, topo.Graph)
