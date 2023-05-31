@@ -908,4 +908,5 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
             # add them all.
             for j in range(algoParam.迭代步数):
-            [PD[i][] for i in input_indexs+ output_indexs+ io_indexs]
+                seqsum = reduce(sequence=[PD[i][j] for i in input_indexs+ output_indexs+ io_indexs], function = lambda x,y: x+y)
+                Constraint(seqsum >=0) # under what circumstance?
