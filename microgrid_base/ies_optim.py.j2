@@ -32,10 +32,12 @@ import rich
         {% elif port_type.endswith("输出") %}
         {% set mt = "NonNegativeReals"%}
         {% endif %}
-        self.ports['{{port_name}}'] = self.{{port_name}} = self.变量列表("{{port_name}}", within={{mt}})
+        port_index = self.设备ID.__dict__[]
+        self.PD[port_index] = self.ports['{{port_name}}'] = self.{{port_name}} = self.变量列表("{{port_name}}", within={{mt}})
         """
         类型: {{port_type}}
         """
+
 
         {% endfor %}
 {% endmacro %}
@@ -243,8 +245,9 @@ class POSNEG:
 
 from functools import reduce
 class 设备模型:
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, ID):
+    def __init__(self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, ID):
         self.model = model
+        self.PD = PD
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
@@ -905,4 +908,4 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
 
             # add them all.
-            PD[i] for i in input_indexs+ output_indexs+ io_indexs
+            [PD[i] for i in input_indexs+ output_indexs+ io_indexs] >=0
