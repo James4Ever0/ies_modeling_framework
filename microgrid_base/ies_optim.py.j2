@@ -313,7 +313,7 @@ class {{class_name}}模型(设备模型):
             """
             单位： 个
             """
-            
+
         {% endif %}
         {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
@@ -546,9 +546,9 @@ class {{class_name}}模型(设备模型):
         年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
         {% if class_name in ['光伏发电'] %}
             {% set m='总最大功率'%}
-            {% set vi = 'Kilowatt' %}
-            {% set vm = 'Kilowatt' %}
-            {% set vb = 'Kilowatt' %}
+            {% set vi =vm=vb= 'Kilowatt' %}
+            {# {% set vm = 'Kilowatt' %} #}
+            {# {% set vb = 'Kilowatt' %} #}
             {% set vv = 'Work' %}
         {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
             {% set m='self.DeviceCount * self.RatedPower'%}
@@ -578,7 +578,6 @@ class {{class_name}}模型(设备模型):
         总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
-
 
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}
