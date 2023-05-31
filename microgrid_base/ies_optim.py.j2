@@ -747,11 +747,12 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 devIDInstInit.update({port_name:port_id})
             devIDInst = devIDClass.parse_obj(devIDInstInit)
 
+            devInfoInstInit = devParam
             devInfoClass = devInfoClassMap[devSubtype]
-            devInfoInst = devInfoClass.parse_obj()
+            devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
-            devClass = devInstClassMap[devSubtype]
-            devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
+            devInstClass = devInstClassMap[devSubtype]
+            devInst = devInstClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
 
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
