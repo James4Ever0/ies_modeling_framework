@@ -668,8 +668,9 @@ class {{class_name}}(设备模型):
 {{ port_variable_define(class_name)}}
 
     def constraints_register(self,):
-        {% if class_name in []%}
-        {% else%}
-        {% error("未知负荷类型:",class_name)%}
-        {% endif%}
+        {% if load_type in ['电']%}
+        {% else %}
+        {% error("未知负荷类型:",load_type)%}
+        {% endif %}
+        self.{{}} = [-e for e in self.设备信息.EnergyConsumption]
 {% endfor%}
