@@ -112,7 +112,7 @@ class {{class_name}}信息(BaseModel):
     {% if class_name not in NonLoadDeviceDict.keys() %}
     ...
     {% else %}
-    {% set (super_class, mstrs, mdigits, mtables) = NonLoadDeviceDict[class_name] %}
+    {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
     {% for psc, mstr in mstrs %}
     {{ mstr }}: str
 
