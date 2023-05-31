@@ -141,9 +141,7 @@ class {{class_name}}信息(BaseModel):
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
     Unit: str
-    """
-    参考单位: {{m1}}
-    """
+    ReferenceUnit: str = "{{m1}}"
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
@@ -699,7 +697,7 @@ class {{class_name}}模型(设备模型):
         return 总成本年化
 {% endfor %}
 
-{# ##########[PINT]########## #}
+{# ##########[PINT START]########## #}
 
 import pint
 
@@ -781,7 +779,7 @@ standard_units = frozenset(
     [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
 )
 
-{# ##########[PINT]########## #}
+{# ##########[PINT END]########## #}
 
 {% set special_types = {"load_type": load_types, "input_type": input_types}%}
 
@@ -805,6 +803,8 @@ class {{class_name}}模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption is not None
         {% endif %}
     {% else%}
+
+    self.设备信息.ReferenceUnit = 
     
     self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, self.设备信息.Unit)
     print("STANDARD:", standard)
