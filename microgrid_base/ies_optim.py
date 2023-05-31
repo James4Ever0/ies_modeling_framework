@@ -97,13 +97,13 @@ class 变压器ID(BaseModel):
 
 class 变流器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -138,7 +138,7 @@ class 传输线ID(BaseModel):
 
 class 柴油信息(BaseModel):
     Price: float
-    Unit: str = "L/万元"
+    Unit: str
     DefaultUnit: str = "L/万元"
 
 
@@ -2282,14 +2282,14 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 变流器输入
+        """
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2733,34 +2733,34 @@ class 柴油模型(设备模型):
         类型: 柴油输出
         """
 
-    ### COMPAT CHECK ###
-    unit = ureg.Unit(self.设备信息.Unit)
-    compatible_units = ureg.get_compatible_units(unit)
+        ### COMPAT CHECK ###
+        unit = ureg.Unit(self.设备信息.Unit)
+        compatible_units = ureg.get_compatible_units(unit)
 
-    default_unit = ureg.Unit(self.设备信息.DefaultUnit)
-    default_unit_compatible = ureg.get_compatible_units(default_unit)
+        default_unit = ureg.Unit(self.设备信息.DefaultUnit)
+        default_unit_compatible = ureg.get_compatible_units(default_unit)
 
-    if default_unit_compatible == frozenset():
-        raise Exception(
-            "Compatible units are zero for default unit:", str(default_unit)
+        if default_unit_compatible == frozenset():
+            raise Exception(
+                "Compatible units are zero for default unit:", str(default_unit)
+            )
+        if compatible_units == frozenset():
+            raise Exception("Compatible units are zero for value unit:", str(unit))
+
+        if not default_unit_compatible == compatible_units:
+            raise Exception(
+                f"Unit '{unit}' is not compatible with default unit '{default_unit}'"
+            )
+        ### COMPAT CHECK ###
+
+        mag, standard = self.ConversionRate, self.StandardUnit = unitFactorCalculator(
+            ureg, standard_units, unit
         )
-    if compatible_units == frozenset():
-        raise Exception("Compatible units are zero for value unit:", str(unit))
+        print("STANDARD:", standard)
+        print("MAGNITUDE TO STANDARD:", mag)
 
-    if not default_unit_compatible == compatible_units:
-        raise Exception(
-            f"Unit '{unit}' is not compatible with default unit '{default_unit}'"
-        )
-    ### COMPAT CHECK ###
-
-    self.ConversionRate, self.StandardUnit = unitFactorCalculator(
-        ureg, standard_units, unit
-    )
-    print("STANDARD:", standard)
-    print("MAGNITUDE TO STANDARD:", mag)
-
-    self.Price = self.设备信息.Price
-    self.Unit = str(self.StandardUnit)
+        self.Price = self.设备信息.Price
+        self.Unit = str(self.StandardUnit)
 
     def constraints_register(self):
         ...

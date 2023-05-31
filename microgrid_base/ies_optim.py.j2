@@ -140,7 +140,7 @@ class {{class_name}}信息(BaseModel):
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
-    Unit: str = "{{m1}}"
+    Unit: str
     DefaultUnit: str = "{{m1}}"
     {% endif%}
     {% else %}
@@ -804,29 +804,29 @@ class {{class_name}}模型(设备模型):
         {% endif %}
     {% else%}
 
-    ### COMPAT CHECK ###
-    unit = ureg.Unit(self.设备信息.Unit)
-    compatible_units = ureg.get_compatible_units(unit)
+        ### COMPAT CHECK ###
+        unit = ureg.Unit(self.设备信息.Unit)
+        compatible_units = ureg.get_compatible_units(unit)
 
-    default_unit = ureg.Unit(self.设备信息.DefaultUnit)
-    default_unit_compatible = ureg.get_compatible_units(default_unit)
+        default_unit = ureg.Unit(self.设备信息.DefaultUnit)
+        default_unit_compatible = ureg.get_compatible_units(default_unit)
 
-    if default_unit_compatible == frozenset():
-        raise Exception("Compatible units are zero for default unit:", str(default_unit))
-    if compatible_units == frozenset():
-        raise Exception("Compatible units are zero for value unit:", str(unit))
-    
-    if not default_unit_compatible == compatible_units:
-        raise Exception(f"Unit '{unit}' is not compatible with default unit '{default_unit}'")
-    ### COMPAT CHECK ###
+        if default_unit_compatible == frozenset():
+            raise Exception("Compatible units are zero for default unit:", str(default_unit))
+        if compatible_units == frozenset():
+            raise Exception("Compatible units are zero for value unit:", str(unit))
+        
+        if not default_unit_compatible == compatible_units:
+            raise Exception(f"Unit '{unit}' is not compatible with default unit '{default_unit}'")
+        ### COMPAT CHECK ###
 
-    
-    self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, unit)
-    print("STANDARD:", standard)
-    print("MAGNITUDE TO STANDARD:", mag)
-    
-    self.Price = self.设备信息.Price
-    self.Unit = str(self.StandardUnit)
+        
+        mag, standard = self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, unit)
+        print("STANDARD:", standard)
+        print("MAGNITUDE TO STANDARD:", mag)
+        
+        self.Price = self.设备信息.Price
+        self.Unit = str(self.StandardUnit)
     {% endif%}
     
     def constraints_register(self):
