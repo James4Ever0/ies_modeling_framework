@@ -10,7 +10,7 @@ import rich
 {% for load_type in load_types%}
 {% do load_class_names.append(load_type+"负荷")%}
 {% endfor%}
-{% set input_types = ['柴油']%}
+{% set input_types = ['柴油'] %}
 
 {% macro init_super_class(class_name)%}
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
@@ -133,6 +133,8 @@ class {{class_name}}信息(BaseModel):
     {# 用于电负荷 典型日计算 #}
     """
     {% else%}
+    Price: float
+    {% if %}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
     {% else %}
