@@ -112,7 +112,11 @@ class {{class_name}}ID(BaseModel):
 
 class {{class_name}}信息(BaseModel):
     {% if class_name not in NonLoadDeviceDict.keys() %}
-    ...
+    # 正数
+    EnergyConsumption: List[float]
+    """
+    单位: kWh
+    """
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
     {% for psc, mstr in mstrs %}
