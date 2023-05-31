@@ -619,9 +619,12 @@ class {{class_name}}模型(设备模型):
         {% endwith%}
 {% endfor %}
 
-class 电负荷():
+{% set load_types = ['电']%}
+{% for load_type in load_types%}
+class {{load_type}}负荷():
     def __init__(self,):
         ...
 
     def constraints_register(self,):
         ...
+{% endfor%}
