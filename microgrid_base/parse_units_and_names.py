@@ -233,7 +233,8 @@ standard_units_name_list = [
     # "percent"
     "台",
     "m2",
-    "m3",
+    # "m3",
+    "stere",
     "celsius",
     "metric_ton",  # this is weight.
     # "p_u_",
