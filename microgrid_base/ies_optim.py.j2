@@ -82,6 +82,11 @@ class 加法器ID(BaseModel):
     输入输出: int #}
 
 {# {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %} #}
+
+#############
+# Device ID #
+#############
+
 {% for class_name in 设备接口集合.keys()%}
 
 class {{class_name}}ID(BaseModel):
@@ -94,6 +99,10 @@ class {{class_name}}ID(BaseModel):
     {% endfor %}
 
 {% endfor %}
+
+###############
+# Device Info #
+###############
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
