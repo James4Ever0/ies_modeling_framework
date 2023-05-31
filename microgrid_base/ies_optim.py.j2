@@ -487,7 +487,7 @@ class {{class_name}}模型(设备模型):
 
         self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x == y[i] - y[i+1])
         
-        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos*self.DischargeEfficiency - (x_neg + self.TotalStorageDecay)/self.ChargeEfficiency == y)
+        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecay)/self.ChargeEfficiency == y)
 
         for i in range(self.计算参数.迭代步数-1):
             Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] < self.MaxTotalCapacityDelta)

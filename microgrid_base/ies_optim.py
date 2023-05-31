@@ -1838,7 +1838,7 @@ class 锂电池模型(设备模型):
             self.原电接口.x_neg,
             self.电接口,
             expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-            - (x_neg + self.TotalStorageDecay) * self.ChargeEfficiency
+            - (x_neg + self.TotalStorageDecay) / self.ChargeEfficiency
             == y,
         )
 
@@ -1883,7 +1883,7 @@ class 锂电池模型(设备模型):
         # 计算年化
         # unit: one
 
-        计算范围内总电变化量 = self.SumRange(self.原电接口.x_pos) + self.SumRange(self.原电接口.x_neg)
+        计算范围内总电变化量 = self.SumRange(self.原电接口.x_abs)
         +self.TotalStorageDecay * self.计算参数.迭代步数
         一小时总电变化量 = 计算范围内总电变化量 * (1 if self.计算参数.计算步长 == "小时" else 3600)
         一年总电变化量 = 一小时总电变化量 * 8760
@@ -1898,10 +1898,10 @@ class 锂电池模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWork * (self.DeviceCount * self.RatedCapacity)
-        总固定维护成本 = self.CostPerYearPerWork * (self.DeviceCount * self.RatedCapacity)
+        总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
+        总固定维护成本 = self.CostPerYearPerCapacity * (self.DeviceCount * self.RatedCapacity)
         总建设费用 = (
-            self.BuildCostPerWork * (self.DeviceCount * self.RatedCapacity)
+            self.BuildCostPerCapacity * (self.DeviceCount * self.RatedCapacity)
             + self.BuildBaseCost
         )
 
