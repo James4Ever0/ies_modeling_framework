@@ -5,6 +5,28 @@ import rich
 # three computation modes:
 {# from functools import lru_cache #}
 
+
+{%defmacro port_variable_define(class_name)%}
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.ports = {}
+        
+        {% for port_name, port_type in 设备接口集合[class_name] %}
+        {% if port_type.endswith("输入输出") %}
+        {% set mt = "Reals" %}
+        {% elif port_type.endswith("输入") %}
+        {% set mt = "NegativeReals"%}
+        {% elif port_type.endswith("输出") %}
+        {% set mt = "NonNegativeReals"%}
+        {% endif %}
+        self.ports['{{port_name}}'] = self.{{port_name}} = self.变量列表("{{port_name}}", within={{mt}})
+        """
+        类型: {{port_type}}
+        """
+
+        {% endfor %}
+{% endmacro%}
+
 {%macro expand_unit_conversion(mdigit, exceptionList=[])%}
         {% if mdigit[4] == 1 or mdigit[0] in exceptionList%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
@@ -346,24 +368,7 @@ class {{class_name}}模型(设备模型):
 
         {% endfor %}
 
-        ##### PORT VARIABLE DEFINITION ####
-
-        self.ports = {}
-        
-        {% for port_name, port_type in 设备接口集合[class_name] %}
-        {% if port_type.endswith("输入输出") %}
-        {% set mt = "Reals" %}
-        {% elif port_type.endswith("输入") %}
-        {% set mt = "NegativeReals"%}
-        {% elif port_type.endswith("输出") %}
-        {% set mt = "NonNegativeReals"%}
-        {% endif %}
-        self.ports['{{port_name}}'] = self.{{port_name}} = self.变量列表("{{port_name}}", within={{mt}})
-        """
-        类型: {{port_type}}
-        """
-
-        {% endfor %}
+{{ port_define(class_name)}}
         
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
@@ -617,7 +622,7 @@ class {{class_name}}模型(设备模型):
         总成本年化 = 总固定成本年化
         {% endif%}
         {% endwith%}
-        
+
         return 总成本年化
 {% endfor %}
 
