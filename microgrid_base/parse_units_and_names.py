@@ -495,6 +495,11 @@ for key in keys:
                     params = {"设计规划": [], "仿真模拟": []}
                     ## 设计规划
                     dkey = "设计规划"
+                    # extra
+                    if subkey in ["变压器"]:
+                        params[dkey].append(wrapper_uc_vp("功率因数", "one"))
+                        params[dkey].append(wrapper_uc_vp("变压器冗余系数", "one"))
+                    # override
                     if subkey in ["锂电池"]:
                         params[dkey].append(wrapper_uc_vp("初始SOC", "percent"))
                         params[dkey].append("循环边界条件")
@@ -509,15 +514,16 @@ for key in keys:
                         )  # from excel.
                     elif subkey in ["传输线"]:  # transfer lines, pipes
                         params[dkey].append(wrapper_uc_vp("长度", "km"))
-                    elif subkey in ["变压器"]:
-                        params[dkey].append(wrapper_uc_vp("功率因数", "one"))
-                        params[dkey].append(wrapper_uc_vp("变压器冗余系数", "one"))
                     else:
                         params[dkey].append(wrapper_uc_vp("最大安装台数", "台"))
                         params[dkey].append(wrapper_uc_vp("最小安装台数", "台"))
 
-                    ## dkey = "仿真模拟"
+                    ## 仿真模拟
                     dkey = "仿真模拟"
+                    # extra
+                    if subkey in ['变压器']:
+                        params[dkey].append(wrapper_uc_vp("功率因数", "one"))
+                    # override
                     if subkey in ["传输线"]:
                         params[dkey].append(wrapper_uc_vp("长度", "km"))
                     else:
