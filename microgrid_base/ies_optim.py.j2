@@ -652,7 +652,7 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}
         {% elif class_name in ['锂电池']%}
-            {% set m1="计算范围内总电变化量"%}
+            {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%}
         {% elif class_name in 单向变电器列表+['传输线']%}
             {% set m1='-self.SumRange(self.电输入)'%}
         {% elif class_name in ['双向变流器']%}
