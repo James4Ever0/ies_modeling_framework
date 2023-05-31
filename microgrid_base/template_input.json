@@ -48,12 +48,12 @@
             "type": "设备",
             "subtype": "变流器",
             "ports": {
-                "电输入": {
-                    "subtype": "变流器输入",
-                    "id": 5
-                },
                 "电输出": {
                     "subtype": "电母线输出",
+                    "id": 5
+                },
+                "电输入": {
+                    "subtype": "变流器输入",
                     "id": 6
                 }
             },
@@ -61,15 +61,15 @@
         },
         {
             "type": "锚点",
-            "port_name": "电输入",
-            "subtype": "变流器输入",
+            "port_name": "电输出",
+            "subtype": "电母线输出",
             "device_id": 4,
             "id": 5
         },
         {
             "type": "锚点",
-            "port_name": "电输出",
-            "subtype": "电母线输出",
+            "port_name": "电输入",
+            "subtype": "变流器输入",
             "device_id": 4,
             "id": 6
         },
@@ -77,12 +77,12 @@
             "type": "设备",
             "subtype": "变压器",
             "ports": {
-                "电输出": {
-                    "subtype": "变压器输出",
-                    "id": 8
-                },
                 "电输入": {
                     "subtype": "电母线输入",
+                    "id": 8
+                },
+                "电输出": {
+                    "subtype": "变压器输出",
                     "id": 9
                 }
             },
@@ -90,15 +90,15 @@
         },
         {
             "type": "锚点",
-            "port_name": "电输出",
-            "subtype": "变压器输出",
+            "port_name": "电输入",
+            "subtype": "电母线输入",
             "device_id": 7,
             "id": 8
         },
         {
             "type": "锚点",
-            "port_name": "电输入",
-            "subtype": "电母线输入",
+            "port_name": "电输出",
+            "subtype": "变压器输出",
             "device_id": 7,
             "id": 9
         },
@@ -270,11 +270,11 @@
         },
         {
             "source": 5,
-            "target": 27
+            "target": 22
         },
         {
             "source": 6,
-            "target": 22
+            "target": 27
         },
         {
             "source": 7,
@@ -286,11 +286,11 @@
         },
         {
             "source": 8,
-            "target": 24
+            "target": 23
         },
         {
             "source": 9,
-            "target": 23
+            "target": 24
         },
         {
             "source": 10,
