@@ -699,8 +699,8 @@ class {{class_name}}(设备模型):
         {% endif %}
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
 {% endfor %}
-
-def compute(devs:List[dict], adders:List[dict], graph_data:dict):
+from typing import Dict
+def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
     计算参数实例 = 计算参数.parse_obj(graph_data)
     for dev in devs:
         ...

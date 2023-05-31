@@ -58,11 +58,26 @@ topo.check_consistency()
 
 devs = topo.get_all_devices()
 print_with_banner(devs, "设备")
+# {
+#     'type': '设备',
+#     'subtype': '双向变流器',
+#     'ports': {
+#         '线路端': {'subtype': '双向变流器线路端输入输出', 'id': 18},
+#         '储能端': {'subtype': '双向变流器储能端输入输出', 'id': 19}
+#     }
+# }
+
 # device, ports, device_data
 
 adders = topo.get_all_adders()
 print_with_banner(adders, "加法器")
 # input, output, io
+# {
+#     16: {'input': [6], 'output': [9], 'IO': [18]},
+#     14: {'input': [1, 3], 'output': [5], 'IO': []},
+#     -1: {'input': [], 'output': [], 'IO': [19, 13]},
+#     -2: {'input': [8], 'output': [11], 'IO': []}
+# }
 
 ###############
 # dump to dict
