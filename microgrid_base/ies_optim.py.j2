@@ -873,6 +873,7 @@ dev{{e}}ClassMap = {
 
 from networkx import Graph
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
+    PD = {}
     with ModelContext() as model:
         algoParam = 计算参数.parse_obj(graph_data)
         devInstDict = {}
@@ -897,8 +898,11 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
             devInstClass = devInstClassMap[devSubtype]
-            devInst = devInstClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
+            devInst = devInstClass(PD = {}, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
 
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
             input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
+
+            # add them all.
+            PD[i] for i in input_indexs+ output_indexs+ io_indexs
