@@ -140,8 +140,8 @@ class {{class_name}}信息(BaseModel):
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
-    Unit: str
-    ReferenceUnit: str = "{{m1}}"
+    Unit: str = "{{m1}}"
+    DefaultUnit: str = "{{m1}}"
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
@@ -810,12 +810,16 @@ class {{class_name}}模型(设备模型):
     ### COMPAT CHECK ###
     unit = ureg.Unit(self.设备信息.Unit)
     compatible_units = ureg.get_compatible_units(unit)
-        if default_unit_compatible == frozenset():
-            raise Exception("Compatible units are zero for default unit:", default_unit)
-        if compatible_units == frozenset():
-            raise Exception("Compatible units are zero for value unit:", val_unit)
-    ### COMPAT CHECK ###\
-        if not default_unit_compatible == compatible_units:
+
+    default_unit = ureg.Unit(self.设备信息.DefaultUnit)
+    default_unit_compatible = ureg.get_compatible_units(default_unit)
+    if default_unit_compatible == frozenset():
+        raise Exception("Compatible units are zero for default unit:", default_unit)
+    if compatible_units == frozenset():
+        raise Exception("Compatible units are zero for value unit:", val_unit)
+    if not default_unit_compatible == compatible_units:
+        raise Exception(f"Unit '{}' is not compatible with default unit '{}'")
+    ### COMPAT CHECK ###
 
     
     self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, self.设备信息.Unit)
