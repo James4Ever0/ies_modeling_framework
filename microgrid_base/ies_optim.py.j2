@@ -629,7 +629,11 @@ class {{class_name}}模型(设备模型):
 {% for load_type in load_types %}
 {% set class_name = load_type+"负荷"%}
 class {{class_name}}(设备模型):
-    def __init__(self,):
+    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{class_name}}ID, 设备信息: {{class_name}}信息):
+        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        self.设备ID = 设备ID
+        self.设备信息 = 设备信息
+        
         ...
 {{ port_variable_define(class_name)}}
 
