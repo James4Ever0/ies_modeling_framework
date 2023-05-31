@@ -358,7 +358,8 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
         self.电输出 = self.电接口
         {% if class_name in ["柴油发电"]%}
-        self.柴油输出 = self.柴油接口
+        self.柴油输入 = self.燃料接口
+        {% endif%}
         {% endif%}
         {% if class_name in ['光伏发电']%}
         if self.计算参数.计算类型== "设计规划":
@@ -530,8 +531,7 @@ class {{class_name}}模型(设备模型):
         {# 规划设计和仿真模拟都需要计算年化 #}
         {%with%}
         {% if class_name in ['锂电池'] %} 
-        计算范围内总电变化量 = (self.SumRange(self.原电接口.x_abs))
-        +self.TotalStorageDecay*self.计算参数.迭代步数
+        计算范围内总电变化量 = (self.SumRange(self.原电接口.x_abs))+self.TotalStorageDecay*self.计算参数.迭代步数
         一小时总电变化量 = 计算范围内总电变化量 * {{时间步长参数}}
         {# 一小时总电变化量 = 计算范围内总电变化量 #}
         一年总电变化量 = 一小时总电变化量 * 8760

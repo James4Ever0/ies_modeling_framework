@@ -218,13 +218,13 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -1497,18 +1497,19 @@ class 柴油发电模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
-        """
-        类型: 供电端输出
-        """
-
         self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
         """
         类型: 柴油输入
         """
 
+        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        """
+        类型: 供电端输出
+        """
+
         # 设备特有约束（变量）
         self.电输出 = self.电接口
+        self.柴油输入 = self.燃料接口
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
 
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
