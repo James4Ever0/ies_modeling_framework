@@ -593,10 +593,11 @@ class {{class_name}}模型(设备模型):
         {# 规划设计和仿真模拟都需要计算年化 #}
         {%with%}
         {% if class_name in ['锂电池'] %} 
-        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs))/self.计算参数.迭代步数+self.TotalStorageDecay # kW
+        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+self.TotalStorageDecay # kW
         # avg power
 
-        一小时总电变化量 = 计算范围内总平均功率 * {{时间步长参数}}
+        一小时总电变化量 = 计算范围内总平均功率 # 省略乘1
+        # kWh
 
         一年总电变化量 = 一小时总电变化量 * 8760
         
