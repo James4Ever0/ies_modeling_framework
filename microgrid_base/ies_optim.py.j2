@@ -699,6 +699,10 @@ class {{class_name}}模型(设备模型):
         return 总成本年化
 {% endfor %}
 
+{# where the pint placed #}
+
+{# where the pint placed #}
+
 {% set special_types = {"load_type": load_types, "input_type": input_types}%}
 
 {% for k,vlist in special_types.items() %}
@@ -722,9 +726,12 @@ class {{class_name}}模型(设备模型):
         {% endif %}
     {% else%}
     self.Price = self.设备信息.Price * self.ConversionRate
-    self.设备信息.Unit
     
-    self.Unit = self.StandardUnit
+    mag, standard = unitFactorCalculator(ureg, standard_units, self.设备信息.Unit)
+    print("STANDARD:", standard)
+    print("MAGNITUDE TO STANDARD:", mag)
+    self.Standa
+    self.Unit = str(self.StandardUnit)
     {% endif%}
     
     def constraints_register(self):
