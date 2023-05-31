@@ -721,8 +721,10 @@ class {{class_name}}模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption is not None
         {% endif %}
     {% else%}
-    self.Price = self.设备信息.Price
-    self.Unit = self.设备信息.Unit
+    self.Price = self.设备信息.Price * self.ConversionRate
+    self.设备信息.Unit
+    
+    self.Unit = self.StandardUnit
     {% endif%}
     
     def constraints_register(self):
