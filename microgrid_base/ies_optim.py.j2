@@ -665,9 +665,11 @@ class {{class_name}}模型(设备模型):
 class {{class_name}}(设备模型):
 {{ init_super_class(class_name)}}
 
-        ...
 {{ port_variable_define(class_name)}}
 
     def constraints_register(self,):
-        ...
+        {% if class_name in []%}
+        {% else%}
+        {% error("未知负荷类型:",class_name)%}
+        {% endif%}
 {% endfor%}
