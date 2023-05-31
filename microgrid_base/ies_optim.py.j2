@@ -729,7 +729,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
         devInstDict = {}
         for dev in devs:
             devSubtype = dev['subtype']
-            devParam = dev['param'] # make sure this exists!
+            devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} }
             devClass = devInstMap[devSubtype]
             devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfo)
             devInstDict.update({ devID_int: devInst})
