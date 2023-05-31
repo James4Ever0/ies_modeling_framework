@@ -135,13 +135,11 @@ class {{class_name}}信息(BaseModel):
     {% else %}
     Price: float
     {% if class_name == "柴油"%}
-    {% set m1="L/万元"%}
     {# just to make it standard. #}
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
     Unit: str
-    StandardUnit:str = "{{m1}}"
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
