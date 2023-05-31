@@ -447,13 +447,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -531,13 +531,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -615,13 +615,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -699,13 +699,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1090,7 +1090,7 @@ class 光伏发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1104,7 +1104,7 @@ class 光伏发电模型(设备模型):
             assert self.MaxInstallArea >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1118,7 +1118,7 @@ class 光伏发电模型(设备模型):
             assert self.MinInstallArea >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -1283,7 +1283,7 @@ class 风力发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1297,7 +1297,7 @@ class 风力发电模型(设备模型):
             assert self.MaxDeviceCount >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1311,7 +1311,7 @@ class 风力发电模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -1475,7 +1475,7 @@ class 柴油发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1489,7 +1489,7 @@ class 柴油发电模型(设备模型):
             assert self.MaxDeviceCount >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1503,7 +1503,7 @@ class 柴油发电模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -1755,7 +1755,7 @@ class 锂电池模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1769,7 +1769,7 @@ class 锂电池模型(设备模型):
             assert self.InitSOC >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1783,7 +1783,7 @@ class 锂电池模型(设备模型):
             assert self.MaxTotalCapacity >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -1797,7 +1797,7 @@ class 锂电池模型(设备模型):
             assert self.MinTotalCapacity >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -2027,7 +2027,7 @@ class 变压器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2041,7 +2041,7 @@ class 变压器模型(设备模型):
             assert self.MaxDeviceCount >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2055,7 +2055,7 @@ class 变压器模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -2066,14 +2066,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2180,7 +2180,7 @@ class 变流器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2194,7 +2194,7 @@ class 变流器模型(设备模型):
             assert self.MaxDeviceCount >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2208,7 +2208,7 @@ class 变流器模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -2219,14 +2219,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 变流器输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2335,7 +2335,7 @@ class 双向变流器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2349,7 +2349,7 @@ class 双向变流器模型(设备模型):
             assert self.MaxDeviceCount >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2363,7 +2363,7 @@ class 双向变流器模型(设备模型):
             assert self.MinDeviceCount >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.DeviceCount: float = 设备信息.DeviceCount
             """
@@ -2374,14 +2374,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2482,7 +2482,7 @@ class 传输线模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         # psc: 设计规划 mflag:
-        # after: psc: 设计规划 mflag: abc
+        # after: psc: 设计规划 mflag: 设计规划
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
             """
@@ -2496,7 +2496,7 @@ class 传输线模型(设备模型):
             assert self.Length >= 0
 
         # psc: 仿真模拟 mflag:
-        # after: psc: 仿真模拟 mflag: abc
+        # after: psc: 仿真模拟 mflag: 仿真模拟
         if self.计算参数.计算类型 == "仿真模拟":
             self.Length: float = 设备信息.Length
             """
@@ -2507,14 +2507,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
