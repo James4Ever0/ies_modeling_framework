@@ -72,5 +72,5 @@ from pydantic import BaseModel
 class BM(BaseModel):
     a :float
     
-new_bm = BM.from_orm(dict(a = 1))
+new_bm = BM(a=1)
 rich.print(new_bm)
