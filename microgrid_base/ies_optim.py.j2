@@ -299,9 +299,11 @@ class {{class_name}}模型(设备模型):
         self.设备信息 = 设备信息
 
         {# if self.计算参数.计算类型 == "设计规划": #}
+        {%with%}
         {% set mflag = ""%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
+        # psc: {{psc}} mflag: {{mflag}}
         {% if mflag != psc %}
         {% set mflag = psc| string%}
         if self.计算参数.计算类型 == "{{psc}}":
@@ -318,6 +320,7 @@ class {{class_name}}模型(设备模型):
 {{expand_unit_conversion(mdigit,设备参数例外列表) }}
         {% endif %}
         {% endfor %}
+        {%endwith%}
 
         {% for psc, main, sub in mtables %}
         {% set mtable=(main, sub)%}
