@@ -684,31 +684,36 @@ class {{class_name}}模型(设备模型):
 {% for k,vlist in special_types.items() %}
 {% for v in vlist%}
 {% if k == "load_type"%}
-{% set class_name = v+"负荷"%}
+    {% set class_name = v+"负荷"%}
 {% else%}
-{% set class_name = v%}
+    {% set class_name = v%}
 {% endif%}
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
 
 {{ port_variable_define(class_name)}}
 
+    {% if k == "load_type"%}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
         {% if load_type in ['电'] %}
         if self.计算参数.典型日:
             assert self.设备信息.MaxEnergyConsumption is not None
         {% endif %}
+    {% endif%}
     
     def constraints_register(self):
+    {% if k == "load_type"%}
         {% if load_type in ['电'] %}
-        {% set port_name = '电接口' %}
+            {% set port_name = '电接口' %}
         {% else %}
-        {% error("未知负荷类型:",load_type) %}
+            {% error("未知负荷类型:",load_type) %}
         {% endif %}
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
-{% endfor %}
+    {% else%}
+    {% endif%}
 
+{% endfor %}
 {% endfor %}
 
 class ModelContext:
