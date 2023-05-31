@@ -404,6 +404,11 @@ class {{class_name}}模型(设备模型):
         self.柴油输入 = self.燃料接口
         {% endif%}
         {% endif%}
+
+        {% if class_name in ['变压器']%}
+        if self.计算参数.计算类型=="设计规划":
+            self.最大允许的负载功率 = self.DeviceCount*(self.RatedPower*self.Efficiency))*功率因数/冗余系数（
+        {% endif%}
         {% if class_name in ['光伏发电']%}
         if self.计算参数.计算类型== "设计规划":
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
