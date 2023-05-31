@@ -395,13 +395,13 @@ def getUnitConverted(val_name, val_unit):
         compatible_units = ureg.get_compatible_units(unit)
         # print("COMPATIBLE UNITS", compatible_units)
         if default_unit_compatible == frozenset():
-            raise Exception("Compatible unit are zero for default unit:", default_unit)
+            raise Exception("Compatible units are zero for default unit:", default_unit)
         if compatible_units == frozenset():
-            raise Exception("Compatible unit are zero for default unit:", val_unit)
-        if val_unit == "万元/km":
-            print(default_unit_compatible)
-            print(compatible_units) # they are both empty. man!
-            breakpoint()
+            raise Exception("Compatible units are zero for value unit:", val_unit)
+        # if val_unit == "万元/km":
+        #     print(default_unit_compatible)
+        #     print(compatible_units) # they are both empty. man!
+        #     breakpoint()
         if not default_unit_compatible == compatible_units:
             has_exception = True
             print(

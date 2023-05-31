@@ -897,4 +897,4 @@ percent = 0.01 one
 
 Wp = W
 
-# [price_per_power] = [currency] / [power]
+[price_per_power] = [currency] / [power]
