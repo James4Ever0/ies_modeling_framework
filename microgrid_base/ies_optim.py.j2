@@ -549,10 +549,16 @@ class {{class_name}}模型(设备模型):
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
-        {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
+        {%elif class_name in ['风力发电']+单向变电器列表+ ['双向变流器']%}
             {% set m='self.DeviceCount * self.RatedPower'%}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
+            {% set vb = 'Kilowatt' %}
+            {% set vv = 'Work' %}
+        {% elif class_name in ['柴油发电']%}
+            {% set m='self.DeviceCount * self.RatedPower'%}
+            {% set vi = 'Machine' %}
+            {% set vm = 'Machine' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
         {% elif class_name in ["锂电池"]%}

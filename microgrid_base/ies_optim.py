@@ -1593,6 +1593,8 @@ class 柴油发电模型(设备模型):
         Life = self.Life
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        
+        self.CostPer
 
         总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
