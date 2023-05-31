@@ -720,7 +720,7 @@ class ModelContext:
 {% for e in ["Inst", "ID"] %}
 dev{{e}}ClassMap = {
     {% for class_name in 设备接口集合.keys()
-    "{{class_name}}": {{class_name}}模型,
+    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" else "ID"}},
     {% endfor %}
 }
 
@@ -740,7 +740,10 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devID_int = dev['id']
 
             devIDClass = devIDClassDict[devSubtype]
-            devIDInst = devIDClass.parse_obj({})
+
+            
+
+            devIDInst = devIDClass.parse_obj(devIDInstInit)
 
             devClass = devInstClassMap[devSubtype]
             devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfo)
