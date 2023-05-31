@@ -884,7 +884,6 @@ neper = 1 ; logbase: 2.71828182845904523536028747135266249775724709369995; logfa
 秒 = second
 m2 = meter ** 2
 m3 = meter ** 3
-stere = m3
 
 台 = [device_count]
 
@@ -911,4 +910,7 @@ kWh = kW * hour
 
 [volume_per_work] = [volume] / [work]
 升每千瓦时 = L/kWh
-立方米每千瓦时 = stere/kWh
+立方米每千瓦时 = m3/kWh
+
+[price_per_device] = [currency] / [device_count]
+万元每台 = 万元 / 台

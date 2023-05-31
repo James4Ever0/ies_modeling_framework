@@ -69,7 +69,7 @@ MEASURE = "调度"
 def get_table_format(k, u):
     try:
         t = {
-            "燃油消耗率": {str(ureg.Unit("m3 / kilowatt_hour")): ("负载率", "%")},
+            "燃油消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
         }
         return t[k][str(u)]  # name, unit
     except:
@@ -233,8 +233,8 @@ standard_units_name_list = [
     # "percent"
     "台",
     "m2",
-    # "m3",
-    "stere",
+    "m3",
+    # "stere",
     "celsius",
     "metric_ton",  # this is weight.
     # "p_u_",
