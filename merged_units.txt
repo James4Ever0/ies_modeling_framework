@@ -902,5 +902,12 @@ Wp = W
 万元每千瓦时 = 万元/kW
 
 [price_per_power_per_time] = [currency]/ [power] / [time]
-
 万元每千瓦每年 =  万元/(kW*年)
+万元每千瓦每年 =  万元/(kWp*年)
+
+[work] = [power] * [time]
+kWh = kW * hour
+
+[volume_per_work] = [volume] / [work]
+升每千瓦时 = L/kWh
+立方米每千瓦时 = m3 / kWh
