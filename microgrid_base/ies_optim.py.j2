@@ -741,8 +741,10 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
             devIDClass = devIDClassDict[devSubtype]
 
-            
-
+            devIDInstInit = {"ID": devID_int}
+            for port_name, port_info in devPorts.items():
+                port_id = port_info['id']
+                devIDInstInit.update({port_name:port_id})
             devIDInst = devIDClass.parse_obj(devIDInstInit)
 
             devClass = devInstClassMap[devSubtype]
