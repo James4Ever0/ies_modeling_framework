@@ -546,9 +546,9 @@ class {{class_name}}模型(设备模型):
         年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
         {% if class_name in ['光伏发电'] %}
             {% set m='总最大功率'%}
-            {% set vi =vm=vb= 'Kilowatt' %}
-            {# {% set vm = 'Kilowatt' %} #}
-            {# {% set vb = 'Kilowatt' %} #}
+            {% set vi = 'Kilowatt' %}
+            {% set vm = 'Kilowatt' %}
+            {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
         {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
             {% set m='self.DeviceCount * self.RatedPower'%}
