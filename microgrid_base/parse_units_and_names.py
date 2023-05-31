@@ -202,7 +202,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "Battery-": ["电池充放电倍率"],
         },
     ),  # two unit system.
-    "SOC":("percent", {"Min-":['最小SOC'],"Max-":['最大SOC'],"Init-" :["初始SOC"]}),
+    "SOC": ("percent", {"Min-": ["最小SOC"], "Max-": ["最大SOC"], "Init-": ["初始SOC"]}),
     "StorageDecay": ("percent/hour", {"Battery-": ["存储衰减"]}),
     "TransferDecay": ("kW/km", {"Power-": ["能量衰减系数"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
@@ -210,13 +210,26 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerCapacity": ("万元/kWh", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerKilometer": ("万元/km", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
-    "CostPerYearPerMachine": ("万元/(台*年)", {"": ["固定维护成本"],}),
+    "CostPerYearPerMachine": (
+        "万元/(台*年)",
+        {
+            "": ["固定维护成本"],
+        },
+    ),
     "CostPerYearPerKilowatt": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "CostPerYearPerCapacity": ("万元/(kWh*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerWork": ("元/kWh", {"": ["可变维护成本"]}),
     "CostPerYearPerKilometer": ("万元/(km*年)", {"": ["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
-    "Capacity": ("kWh", {"Rated-": ["额定容量"], "MaxTotal-": ["最大设备容量"], "MinTotal-": ["最小设备容量"], "TotalDischarge-": ["生命周期总放电量"]}),
+    "Capacity": (
+        "kWh",
+        {
+            "Rated-": ["额定容量"],
+            "MaxTotal-": ["最大设备容量"],
+            "MinTotal-": ["最小设备容量"],
+            "TotalDischarge-": ["生命周期总放电量"],
+        },
+    ),
 }  # EnglishName: (ReferenceBaseUnit, {convert_string:[ChineseName, ...], ...})
 
 # checking these units.
@@ -426,7 +439,13 @@ def getUnitConverted(val_name, val_unit):
 
 def getValueParam(uc, val_name):
     (base_class, val_unit, mag, standard) = uc
-    vparam = [base_class, val_name, val_unit, standard, mag] # to list. instead of tuple, for serialization
+    vparam = [
+        base_class,
+        val_name,
+        val_unit,
+        standard,
+        mag,
+    ]  # to list. instead of tuple, for serialization
     # vparam = (base_class, val_name, val_unit, standard, mag)
     return vparam
 
@@ -476,10 +495,10 @@ for key in keys:
                     params = {"设计规划": [], "仿真模拟": []}
                     ## 设计规划
                     dkey = "设计规划"
-                    if subkey in ['锂电池']:
+                    if subkey in ["锂电池"]:
                         params[dkey].append(wrapper_uc_vp("初始SOC", "percent"))
-                        params[dkey].append('循环边界条件')
-                        params[dkey].append(wrapper_uc_vp("最大设备容量", "kWh")) # 总容量
+                        params[dkey].append("循环边界条件")
+                        params[dkey].append(wrapper_uc_vp("最大设备容量", "kWh"))  # 总容量
                         params[dkey].append(
                             wrapper_uc_vp("最小设备容量", "kWh")
                         )  # from excel.
@@ -490,7 +509,9 @@ for key in keys:
                         )  # from excel.
                     elif subkey in ["传输线"]:  # transfer lines, pipes
                         params[dkey].append(wrapper_uc_vp("长度", "km"))
-                    elif 
+                    elif subkey in ["变压器"]:
+                        params[dkey].append(wrapper_uc_vp("功率因数", "one"))
+                        params[dkey].append(wrapper_uc_vp("变压器冗余系数", "one"))
                     else:
                         params[dkey].append(wrapper_uc_vp("最大安装台数", "台"))
                         params[dkey].append(wrapper_uc_vp("最小安装台数", "台"))
@@ -599,7 +620,7 @@ for key in keys:
                                 )
 
                             t_param = getValueParam(t_uc, t_name)
-                            new_param = {"MAIN":v_param, "SUB":t_param}
+                            new_param = {"MAIN": v_param, "SUB": t_param}
                             # new_param = {v_param: t_param}
                             # (name, original_name, original_unit, standard_unit, magnitude)
                         else:
@@ -615,7 +636,7 @@ rich.print(output_data)
 # write documents for api?
 # or just a whole bunch of generated documents inserted into places?
 output_path = "microgrid_jinja_param_base.json"
-with open(output_path,'w+') as f:
+with open(output_path, "w+") as f:
     f.write(json.dumps(output_data, indent=4, ensure_ascii=False))
 
 print("SAVED TO:", output_path)
