@@ -462,9 +462,9 @@ class {{class_name}}模型(设备模型):
 
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
 
-        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit/({{时间步长参数}}) * self.TotalCapacity
+        self.MaxTotalCapacityDelta = self.BatteryDeltaLimit/({{时间步长参数}}) * self.TotalCapacity # kWh
 
-        self.TotalStorageDecay = self.BatteryStorageDecay /100/({{时间步长参数}}) * self.TotalCapacity
+        self.TotalStorageDecay = self.BatteryStorageDecay /100/({{时间步长参数}}) * self.TotalCapacity # kW
 
         {%elif class_name in ['双向变流器']%}
         self.线路端_ = self.变量列表_带指示变量("线路端_") 
