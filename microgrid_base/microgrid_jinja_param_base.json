@@ -50,7 +50,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -160,7 +160,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -229,7 +229,7 @@
                         "DieselToPower",
                         "燃油消耗率",
                         "L/kWh",
-                        "m3 / kilowatt_hour",
+                        "m3 / kWh",
                         0.0010000000000000002
                     ],
                     "SUB": [
@@ -255,14 +255,14 @@
                     0.01
                 ],
                 [
-                    "CostPerKilowatt",
+                    "CostPerMachine",
                     "采购成本",
                     "万元/台",
                     "万元 / 台",
                     1
                 ],
                 [
-                    "CostPerYearPerKilowatt",
+                    "CostPerMachinePerYear",
                     "固定维护成本",
                     "万元/(台*年)",
                     "万元 / 台 / 年",
@@ -272,7 +272,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -283,7 +283,7 @@
                     1
                 ],
                 [
-                    "BuildCostPerKilowatt",
+                    "BuildCostPerMachine",
                     "建设费用系数",
                     "万元/台",
                     "万元 / 台",
@@ -335,7 +335,7 @@
                     "RatedCapacity",
                     "额定容量",
                     "kWh",
-                    "kilowatt_hour",
+                    "kWh",
                     1
                 ],
                 [
@@ -384,7 +384,7 @@
                     "TotalDischargeCapacity",
                     "生命周期总放电量",
                     "kWh",
-                    "kilowatt_hour",
+                    "kWh",
                     1
                 ],
                 [
@@ -395,24 +395,24 @@
                     1
                 ],
                 [
-                    "CostPerKilowatt",
+                    "CostPerCapacity",
                     "采购成本",
                     "万元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     1
                 ],
                 [
-                    "CostPerYearPerKilowatt",
+                    "CostPerYearPerCapacity",
                     "固定维护成本",
                     "万元/(kWh*年)",
-                    "万元 / kilowatt_hour / 年",
+                    "万元 / kWh / 年",
                     1
                 ],
                 [
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -423,10 +423,10 @@
                     1
                 ],
                 [
-                    "BuildCostPerKilowatt",
+                    "BuildCostPerCapacity",
                     "建设费用系数",
                     "万元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     1
                 ],
                 [
@@ -450,14 +450,14 @@
                     "MaxTotalCapacity",
                     "最大设备容量",
                     "kWh",
-                    "kilowatt_hour",
+                    "kWh",
                     1
                 ],
                 [
                     "MinTotalCapacity",
                     "最小设备容量",
                     "kWh",
-                    "kilowatt_hour",
+                    "kWh",
                     1
                 ],
                 "设备选型"
@@ -511,7 +511,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -600,7 +600,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -689,7 +689,7 @@
                     "VariationalCostPerWork",
                     "可变维护成本",
                     "元/kWh",
-                    "万元 / kilowatt_hour",
+                    "万元 / kWh",
                     0.0001
                 ],
                 [
@@ -754,7 +754,7 @@
                     1
                 ],
                 [
-                    "CostPerKilowatt",
+                    "CostPerKilometer",
                     "采购成本",
                     "万元/km",
                     "万元 / kilometer",
@@ -775,7 +775,7 @@
                     1
                 ],
                 [
-                    "BuildCostPerKilowatt",
+                    "BuildCostPerKilometer",
                     "建设费用系数",
                     "万元/km",
                     "万元 / kilometer",
