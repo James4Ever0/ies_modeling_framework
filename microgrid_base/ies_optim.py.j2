@@ -717,13 +717,20 @@ class ModelContext:
         del self.model
         print("EXITING MODEL CONTEXT")
 
+devInstMap = {
+    {% for in %}
+    "{{}}": {{}}模型,
+    {% endfor %}
+}
+
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
     with ModelContext() as model:
         计算参数实例 = 计算参数.parse_obj(graph_data)
         devInstList = []
         for dev in devs:
             devSubtype = dev['subtype']
+            devParam = dev['']
             {% for in %}
-            devInst = {{}}
+            devInst = devInstMap[devSubtype]
         for adder_index, adder in adders.items():
             ...
