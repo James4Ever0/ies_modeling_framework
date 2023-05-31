@@ -617,6 +617,8 @@ class {{class_name}}模型(设备模型):
         总成本年化 = 总固定成本年化
         {% endif%}
         {% endwith%}
+        
+        return 总成本年化
 {% endfor %}
 
 {% set load_types = ['电']%}
