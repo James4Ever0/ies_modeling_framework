@@ -5,8 +5,7 @@ import rich
 # three computation modes:
 {# from functools import lru_cache #}
 
-
-{%defmacro port_variable_define(class_name)%}
+{%macro port_variable_define(class_name)%}
         ##### PORT VARIABLE DEFINITION ####
 
         self.ports = {}
@@ -368,7 +367,7 @@ class {{class_name}}模型(设备模型):
 
         {% endfor %}
 
-{{ port_define(class_name)}}
+{{ port_variable_define(class_name)}}
         
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
@@ -628,9 +627,11 @@ class {{class_name}}模型(设备模型):
 
 {% set load_types = ['电']%}
 {% for load_type in load_types %}
-class {{load_type}}负荷():
+{% set class_name = load_type+"负荷"%}
+class {{class_name}}():
     def __init__(self,):
         ...
+{{ port_variable_define(class_name)}}
 
     def constraints_register(self,):
         ...
