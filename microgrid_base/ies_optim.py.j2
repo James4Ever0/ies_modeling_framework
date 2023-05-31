@@ -298,14 +298,19 @@ class {{class_name}}模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
-        {% set flag = None%}
+        {# if self.计算参数.计算类型 == "设计规划": #}
+        {% set mflag = None%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}
-        {% if flag != psc %}
+        {% if mflag != psc %}
         if self.计算参数.计算类型 == "{{psc}}":
-        {% set flag = psc%}
+        {% if %}
+            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+            """
+            单位： 个
+            """
+        {% endif%}
+        {% set mflag = psc%}
         {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
