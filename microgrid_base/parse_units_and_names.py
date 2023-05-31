@@ -180,6 +180,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["效率"],
         },
     ),
+    "Parameter": ("one", {"Power-":["功率因数"], "LoadRedundancy-":["变压器冗余系数"]}),
     "Count": (
         "台",
         {"Device-": ["安装台数"], "MaxDevice-": ["最大安装台数"], "MinDevice-": ["最小安装台数"]},
