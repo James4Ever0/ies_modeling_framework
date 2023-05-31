@@ -701,4 +701,8 @@ class {{class_name}}(设备模型):
 {% endfor %}
 
 def compute(devs:List[dict], adders:List[dict], graph_data:dict):
-    计算参数实例 = 计算参数(**graph_data)
+    计算参数实例 = 计算参数.parse_obj(graph_data)
+    for dev in devs:
+        ...
+    for adder in adders:
+        ...
