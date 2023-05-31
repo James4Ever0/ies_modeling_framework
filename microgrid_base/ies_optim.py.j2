@@ -81,7 +81,8 @@ class 加法器ID(BaseModel):
     输出:int
     输入输出: int #}
 
-{% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
+{# {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %} #}
+{% for class_name in 设备接口集合.keys()%}
 
 class {{class_name}}ID(BaseModel):
     ID: int
@@ -91,6 +92,10 @@ class {{class_name}}ID(BaseModel):
     类型: {{ port_type }}
     """
     {% endfor %}
+
+{% endfor %}
+
+{% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
 class {{class_name}}信息(BaseModel): # {{super_class}}
     {% for psc, mstr in mstrs %}
