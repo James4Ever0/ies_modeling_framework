@@ -85,13 +85,13 @@ class 锂电池ID(BaseModel):
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -121,13 +121,13 @@ class 双向变流器ID(BaseModel):
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -138,10 +138,8 @@ class 传输线ID(BaseModel):
 
 class 柴油信息(BaseModel):
     Price: float
-    Unit: str
-    """
-    参考单位: L/万元
-    """
+    Unit: str = "L/万元"
+    DefaultUnit: str = "L/万元"
 
 
 class 电负荷信息(BaseModel):
@@ -2129,14 +2127,14 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2571,14 +2569,14 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2612,6 +2610,89 @@ class 传输线模型(设备模型):
         总成本年化 = 总固定成本年化
 
         return 总成本年化
+
+
+import pint
+
+unit_def_path = "../merged_units.txt"
+ureg = pint.UnitRegistry(unit_def_path)
+
+
+def unitFactorCalculator(
+    ureg: pint.UnitRegistry, standard_units: frozenset, old_unit_name: str
+):  # like "元/kWh"
+    assert old_unit_name != ""
+    assert type(old_unit_name) == str
+    ## now, the classic test?
+
+    standard_units_mapping = {
+        ureg.get_compatible_units(unit): unit for unit in standard_units
+    }
+
+    try:
+        quantity = ureg.Quantity(1, old_unit_name)  # one, undoubtable.
+    except:
+        raise Exception("Unknown unit name:", old_unit_name)
+    # quantity = ureg.Quantity(1, ureg.元/ureg.kWh)
+    magnitude, units = quantity.to_tuple()
+
+    new_units_list = []
+    for unit, power in units:
+        # if type(unit)!=str:
+        print("UNIT?", unit, "POWER?", power)
+        compat_units = ureg.get_compatible_units(
+            unit
+        )  # the frozen set, as the token for exchange.
+
+        target_unit = standard_units_mapping.get(compat_units, None)
+        if target_unit:
+            # ready to convert?
+            unit = str(target_unit)
+        else:
+            raise Exception("No common units for:", unit)
+        new_units_list.append((unit, power))
+
+    print("NEW UNITS LIST:", new_units_list)
+    new_unit = ureg.UnitsContainer(tuple(new_units_list))
+
+    new_quantity = quantity.to(new_unit)
+
+    print("OLD QUANTITY:", quantity)
+    print("NEW QUANTITY:", new_quantity)
+
+    # get the magnitude?
+    new_magnitude = new_quantity.magnitude  # you multiply that.
+    print("FACTOR:", new_magnitude)
+    new_unit_name = str(new_unit)
+    print("NEW UNIT NAME:", new_unit_name)
+    return new_magnitude, new_unit_name
+
+
+standard_units_name_list = [
+    "万元",
+    "kWh",
+    "km",
+    "kW",
+    "年",
+    "MPa",
+    "V",
+    "Hz",
+    "ohm",
+    "one",
+    # "percent"
+    "台",
+    "m2",
+    "m3",
+    # "stere",
+    "celsius",
+    "metric_ton",  # this is weight.
+    # "p_u_",
+    "dimensionless",
+]
+
+standard_units = frozenset(
+    [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
+)
 
 
 class 电负荷模型(设备模型):
@@ -2651,6 +2732,35 @@ class 柴油模型(设备模型):
         """
         类型: 柴油输出
         """
+
+    ### COMPAT CHECK ###
+    unit = ureg.Unit(self.设备信息.Unit)
+    compatible_units = ureg.get_compatible_units(unit)
+
+    default_unit = ureg.Unit(self.设备信息.DefaultUnit)
+    default_unit_compatible = ureg.get_compatible_units(default_unit)
+
+    if default_unit_compatible == frozenset():
+        raise Exception(
+            "Compatible units are zero for default unit:", str(default_unit)
+        )
+    if compatible_units == frozenset():
+        raise Exception("Compatible units are zero for value unit:", str(unit))
+
+    if not default_unit_compatible == compatible_units:
+        raise Exception(
+            f"Unit '{unit}' is not compatible with default unit '{default_unit}'"
+        )
+    ### COMPAT CHECK ###
+
+    self.ConversionRate, self.StandardUnit = unitFactorCalculator(
+        ureg, standard_units, unit
+    )
+    print("STANDARD:", standard)
+    print("MAGNITUDE TO STANDARD:", mag)
+
+    self.Price = self.设备信息.Price
+    self.Unit = str(self.StandardUnit)
 
     def constraints_register(self):
         ...
