@@ -716,16 +716,14 @@ class ModelContext:
             print("ERROR IN MODEL CONTEXT")
         del self.model
         print("EXITING MODEL CONTEXT")
-
-devInstClassMap = {
+{% for k in ["Inst", "ID"] %}
+dev{{k}}ClassMap = {
     {% for class_name in 设备接口集合.keys()
     "{{class_name}}": {{class_name}}模型,
     {% endfor %}
 }
+{% endfor %}
 
-devIDClassMap = {
-    {% for %}
-}
 from networkx import Graph
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
     with ModelContext() as model:
@@ -739,9 +737,10 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
             devID_int = dev['id']
 
-            devID = 
+            devIDClass = dev
+            devIDInst = devIDClass
 
-            devClass = devInstMap[devSubtype]
+            devClass = devInstClassMap[devSubtype]
             devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfo)
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
