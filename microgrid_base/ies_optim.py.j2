@@ -406,7 +406,7 @@ class {{class_name}}模型(设备模型):
         {% endif%}
 
         {% if class_name in ['变压器']%}
-        if self.计算参数.计算类型 == "设计规划":
+        if self.计算参数.计算类型 == "设计规划": # 在变压器和负荷的交换节点处做处理
             self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/self.LoadRedundancyParameter
         {% endif%}
         {% if class_name in ['光伏发电']%}
