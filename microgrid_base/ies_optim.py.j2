@@ -579,9 +579,11 @@ class {{class_name}}模型(设备模型):
         {% else%}
             {% error("不支持的类型:", class_name) %}
         {% endif %}
-
+        {% if m1 != '0'%}
         总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}}
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        {% else%}
+        总成本年化 = 总固定成本年化
         {% endwith%}
 {% endfor %}
