@@ -664,7 +664,8 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         {% if class_name not in ['传输线']%}
         {# 总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}} #}
-        总可变维护成本年化 = ({{m1}}) / self.计算参数.迭代步数) * 8760 * self.VariationalCostPer{{vv}} # avg_power * 8760 = annual_work
+        总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 8760 * self.VariationalCostPer{{vv}} 
+        # avg_power * 8760 = annual_work
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
         {% else%}
