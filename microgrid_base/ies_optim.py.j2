@@ -80,7 +80,8 @@ class {{class_name}}信息(BaseModel): # {{super_class}}
 
     {% endfor %}
 
-    {% for mtable in mtables %}
+    {% for psc, main, sub in mtables %}
+    {% set mtable=(main, sub)%}
     {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
     """
     {{ mtable[0][0]}}: {{ mtable[0][1]}}
