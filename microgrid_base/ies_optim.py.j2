@@ -543,9 +543,9 @@ class {{class_name}}模型(设备模型):
             {% error("不支持的设备类型:", class_name) %}
         {% endif %}
 
-        总采购成本 = self.CostPerWatt * ({{ m}}) 
+        总采购成本 = self.CostPerKilowatt * ({{ m}}) 
         总固定维护成本 = self.CostPerYear * ({{ m}})
-        总建设费用 = self.BuildCostPerWatt * ({{ m}}) + self.BuildBaseCost
+        总建设费用 = self.BuildCostPerKilowatt * ({{ m}}) + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 

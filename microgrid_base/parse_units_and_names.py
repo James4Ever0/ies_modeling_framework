@@ -206,7 +206,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "StorageDecay": ("percent/hour", {"Battery-": ["存储衰减"]}),
     "TransferDecay": ("kW/km", {"Power-": ["能量衰减系数"]}),
     "BuildBaseCost": ("万元", {"": ["建设费用基数"]}),
-    "CostPerWatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
+    "CostPerKilowatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerKilometer": ("万元/km", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
