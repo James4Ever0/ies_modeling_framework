@@ -347,6 +347,8 @@ class {{class_name}}模型(设备模型):
         {% endfor %}
 
         ##### PORT VARIABLE DEFINITION ####
+
+        self.ports = {}
         
         {% for port_name, port_type in 设备接口集合[class_name] %}
         {% if port_type.endswith("输入输出") %}
@@ -359,6 +361,7 @@ class {{class_name}}模型(设备模型):
         """
         类型: {{port_type}}
         """
+        self.ports['{{port_name}}'] = self.{{port_name}}
 
         {% endfor %}
         
