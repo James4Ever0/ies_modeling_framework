@@ -209,7 +209,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerKilowatt": ("万元/kW", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerKilometer": ("万元/km", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
     "CostPerMachine": ("万元/台", {"": ["采购成本"], "Build-": ["建设费用系数"]}),
-    "CostPerYear": ("万元/(kW*年)", {"": ["固定维护成本"]}),
+    "CostPerYearPerKilowatt": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerWork": ("元/kWh", {"": ["可变维护成本"]}),
     "VariationCostPerKilometer": ("万元/(km*年)", {"": ["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
@@ -302,6 +302,13 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
         for v2 in v1:
             TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(v2, []) + [k0]
         # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
+
+print()
+rich.print(BASE_CLASS_TO_UNIT_TABLE)
+breakpoint()
+print()
+rich.print(TRANSLATION_TABLE)
+breakpoint()
 
 # BASE_CLASS_TO_UNIT_TABLE = {
 #     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
