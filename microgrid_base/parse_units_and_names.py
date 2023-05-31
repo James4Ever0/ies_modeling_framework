@@ -303,12 +303,12 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
             TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(v2, []) + [k0]
         # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
-print()
-rich.print(BASE_CLASS_TO_UNIT_TABLE)
-breakpoint()
-print()
-rich.print(TRANSLATION_TABLE)
-breakpoint()
+# print()
+# rich.print(BASE_CLASS_TO_UNIT_TABLE)
+# breakpoint()
+# print()
+# rich.print(TRANSLATION_TABLE)
+# breakpoint()
 
 # BASE_CLASS_TO_UNIT_TABLE = {
 #     k: v[0] for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items()
@@ -394,6 +394,10 @@ def getUnitConverted(val_name, val_unit):
         unit = ureg.Unit(val_unit)
         compatible_units = ureg.get_compatible_units(unit)
         # print("COMPATIBLE UNITS", compatible_units)
+        if default_unit_real == ureg.Unit("万元/km") and unit == ureg.Unit("万元/km"):
+            print(default_unit_compatible)
+            print(compatible_units)
+            breakpoint()
         if not default_unit_compatible == compatible_units:
             has_exception = True
             print(
