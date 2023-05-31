@@ -65,13 +65,13 @@ class 风力发电ID(BaseModel):
 
 class 柴油发电ID(BaseModel):
     ID: int
-    燃料接口: int
-    """
-    类型: 柴油输入
-    """
     电接口: int
     """
     类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
     """
 
 
@@ -85,13 +85,13 @@ class 锂电池ID(BaseModel):
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -1581,14 +1581,14 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.ports["燃料接口"] = self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
-        """
-        类型: 柴油输入
-        """
-
         self.ports["电接口"] = self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
         """
         类型: 供电端输出
+        """
+
+        self.ports["燃料接口"] = self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2131,14 +2131,14 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2616,7 +2616,7 @@ class 传输线模型(设备模型):
         return 总成本年化
 
 
-class 电负荷(设备模型):
+class 电负荷模型(设备模型):
     def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 电负荷ID, 设备信息: 电负荷信息):
         super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
@@ -2686,16 +2686,16 @@ devIDClassMap = {
 }
 
 devInfoClassMap = {
-    "柴油": 柴油Info,
-    "电负荷": 电负荷Info,
-    "光伏发电": 光伏发电Info,
-    "风力发电": 风力发电Info,
-    "柴油发电": 柴油发电Info,
-    "锂电池": 锂电池Info,
-    "变压器": 变压器Info,
-    "变流器": 变流器Info,
-    "双向变流器": 双向变流器Info,
-    "传输线": 传输线Info,
+    "柴油": 柴油信息,
+    "电负荷": 电负荷信息,
+    "光伏发电": 光伏发电信息,
+    "风力发电": 风力发电信息,
+    "柴油发电": 柴油发电信息,
+    "锂电池": 锂电池信息,
+    "变压器": 变压器信息,
+    "变流器": 变流器信息,
+    "双向变流器": 双向变流器信息,
+    "传输线": 传输线信息,
 }
 
 
