@@ -63,19 +63,19 @@ class 光伏发电信息(BaseModel):  # 发电设备
     单位: percent/s
     """
 
-    CostPerWatt: float
+    CostPerKilowatt: float
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYear: float
+    CostPerYearPerKilowatt: float
     """
     名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -87,7 +87,7 @@ class 光伏发电信息(BaseModel):  # 发电设备
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilowatt: float
     """
     名称: 建设费用系数
     单位: 万元/kWp
@@ -161,19 +161,19 @@ class 风力发电信息(BaseModel):  # 发电设备
     单位: percent/s
     """
 
-    CostPerWatt: float
+    CostPerKilowatt: float
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYear: float
+    CostPerYearPerKilowatt: float
     """
     名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -185,7 +185,7 @@ class 风力发电信息(BaseModel):  # 发电设备
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilowatt: float
     """
     名称: 建设费用系数
     单位: 万元/kWp
@@ -218,13 +218,13 @@ class 风力发电信息(BaseModel):  # 发电设备
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -251,19 +251,19 @@ class 柴油发电信息(BaseModel):  # 发电设备
     单位: percent
     """
 
-    CostPerWatt: float
+    CostPerMachine: float
     """
     名称: 采购成本
     单位: 万元/台
     """
 
-    CostPerYear: float
+    CostPerMachinePerYear: float
     """
     名称: 固定维护成本
     单位: 万元/(台*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -275,7 +275,7 @@ class 柴油发电信息(BaseModel):  # 发电设备
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerMachine: float
     """
     名称: 建设费用系数
     单位: 万元/台
@@ -384,19 +384,19 @@ class 锂电池信息(BaseModel):  # 储能设备
     单位: 年
     """
 
-    CostPerWatt: float
+    CostPerCapacity: float
     """
     名称: 采购成本
     单位: 万元/kWh
     """
 
-    CostPerYear: float
+    CostPerYearPerCapacity: float
     """
     名称: 固定维护成本
     单位: 万元/(kWh*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -408,7 +408,7 @@ class 锂电池信息(BaseModel):  # 储能设备
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerCapacity: float
     """
     名称: 建设费用系数
     单位: 万元/kWh
@@ -447,13 +447,13 @@ class 锂电池信息(BaseModel):  # 储能设备
 
 class 变压器ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -474,19 +474,19 @@ class 变压器信息(BaseModel):  # 配电传输
     单位: kW
     """
 
-    CostPerWatt: float
+    CostPerKilowatt: float
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYear: float
+    CostPerYearPerKilowatt: float
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -498,7 +498,7 @@ class 变压器信息(BaseModel):  # 配电传输
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilowatt: float
     """
     名称: 建设费用系数
     单位: 万元/kW
@@ -531,13 +531,13 @@ class 变压器信息(BaseModel):  # 配电传输
 
 class 变流器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 
@@ -558,19 +558,19 @@ class 变流器信息(BaseModel):  # 配电传输
     单位: percent
     """
 
-    CostPerWatt: float
+    CostPerKilowatt: float
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYear: float
+    CostPerYearPerKilowatt: float
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -582,7 +582,7 @@ class 变流器信息(BaseModel):  # 配电传输
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilowatt: float
     """
     名称: 建设费用系数
     单位: 万元/kW
@@ -615,13 +615,13 @@ class 变流器信息(BaseModel):  # 配电传输
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -642,19 +642,19 @@ class 双向变流器信息(BaseModel):  # 配电传输
     单位: percent
     """
 
-    CostPerWatt: float
+    CostPerKilowatt: float
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYear: float
+    CostPerYearPerKilowatt: float
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerPower: float
+    VariationalCostPerWork: float
     """
     名称: 可变维护成本
     单位: 元/kWh
@@ -666,7 +666,7 @@ class 双向变流器信息(BaseModel):  # 配电传输
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilowatt: float
     """
     名称: 建设费用系数
     单位: 万元/kW
@@ -699,13 +699,13 @@ class 双向变流器信息(BaseModel):  # 配电传输
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -720,13 +720,13 @@ class 传输线信息(BaseModel):  # 配电传输
     单位: kW/km
     """
 
-    CostPerWatt: float
+    CostPerKilometer: float
     """
     名称: 采购成本
     单位: 万元/km
     """
 
-    VariationCostPerMeter: float
+    CostPerYearPerKilometer: float
     """
     名称: 维护成本
     单位: 万元/(km*年)
@@ -738,7 +738,7 @@ class 传输线信息(BaseModel):  # 配电传输
     单位: 年
     """
 
-    BuildCostPerWatt: float
+    BuildCostPerKilometer: float
     """
     名称: 建设费用系数
     单位: 万元/km
@@ -1050,26 +1050,26 @@ class 光伏发电模型(设备模型):
         """
         assert self.PowerDeltaLimit >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilowatt: float = 设备信息.CostPerKilowatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilowatt >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerKilowatt: float = 设备信息.CostPerYearPerKilowatt
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerKilowatt >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -1078,12 +1078,12 @@ class 光伏发电模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilowatt: float = 设备信息.BuildCostPerKilowatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilowatt >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -1172,9 +1172,9 @@ class 光伏发电模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (总最大功率)
-        总固定维护成本 = self.CostPerYear * (总最大功率)
-        总建设费用 = self.BuildCostPerWatt * (总最大功率) + self.BuildBaseCost
+        总采购成本 = self.CostPerKilowatt * (总最大功率)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
+        总建设费用 = self.BuildCostPerKilowatt * (总最大功率) + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
@@ -1182,7 +1182,7 @@ class 光伏发电模型(设备模型):
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -1232,26 +1232,26 @@ class 风力发电模型(设备模型):
         """
         assert self.PowerDeltaLimit >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilowatt: float = 设备信息.CostPerKilowatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilowatt >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerKilowatt: float = 设备信息.CostPerYearPerKilowatt
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerKilowatt >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -1260,12 +1260,12 @@ class 风力发电模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilowatt: float = 设备信息.BuildCostPerKilowatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilowatt >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -1364,10 +1364,10 @@ class 风力发电模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedPower)
+        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedPower)
+            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
@@ -1377,7 +1377,7 @@ class 风力发电模型(设备模型):
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -1413,26 +1413,26 @@ class 柴油发电模型(设备模型):
         """
         assert self.PowerStartupLimit >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerMachine: float = 设备信息.CostPerMachine
         """
         名称: 采购成本
         单位: 万元 / 台
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerMachine >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerMachinePerYear: float = 设备信息.CostPerMachinePerYear
         """
         名称: 固定维护成本
         单位: 万元 / 台 / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerMachinePerYear >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -1441,12 +1441,12 @@ class 柴油发电模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerMachine: float = 设备信息.BuildCostPerMachine
         """
         名称: 建设费用系数
         单位: 万元 / 台
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerMachine >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -1486,7 +1486,7 @@ class 柴油发电模型(设备模型):
         self.DieselToPower_Load.sort(key=lambda x: x[1])
         """
         DieselToPower: 燃油消耗率
-        单位: m3 / kilowatt_hour <- L/kWh
+        单位: m3 / kWh <- L/kWh
 
         Load: 负载率
         单位: one <- percent
@@ -1494,14 +1494,14 @@ class 柴油发电模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
-        """
-        类型: 供电端输出
-        """
-
         self.燃料接口 = self.变量列表("燃料接口", within=NegativeReals)
         """
         类型: 柴油输入
+        """
+
+        self.电接口 = self.变量列表("电接口", within=NonNegativeReals)
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -1591,10 +1591,10 @@ class 柴油发电模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedPower)
+        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedPower)
+            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
@@ -1604,7 +1604,7 @@ class 柴油发电模型(设备模型):
             (self.SumRange(self.电输出))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -1622,7 +1622,7 @@ class 锂电池模型(设备模型):
         self.RatedCapacity: float = 设备信息.RatedCapacity
         """
         名称: 额定容量
-        单位: kilowatt_hour
+        单位: kWh
         """
         assert self.RatedCapacity >= 0
 
@@ -1671,7 +1671,7 @@ class 锂电池模型(设备模型):
         self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity
         """
         名称: 生命周期总放电量
-        单位: kilowatt_hour
+        单位: kWh
         """
         assert self.TotalDischargeCapacity >= 0
 
@@ -1682,26 +1682,26 @@ class 锂电池模型(设备模型):
         """
         assert self.BatteryLife >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerCapacity: float = 设备信息.CostPerCapacity
         """
         名称: 采购成本
-        单位: 万元 / kilowatt_hour
+        单位: 万元 / kWh
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerCapacity >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerCapacity: float = 设备信息.CostPerYearPerCapacity
         """
         名称: 固定维护成本
-        单位: 万元 / kilowatt_hour / 年
+        单位: 万元 / kWh / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerCapacity >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -1710,12 +1710,12 @@ class 锂电池模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerCapacity: float = 设备信息.BuildCostPerCapacity
         """
         名称: 建设费用系数
-        单位: 万元 / kilowatt_hour
+        单位: 万元 / kWh
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerCapacity >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -1736,7 +1736,7 @@ class 锂电池模型(设备模型):
             self.MaxTotalCapacity: float = 设备信息.MaxTotalCapacity
             """
             名称: 最大设备容量
-            单位: kilowatt_hour
+            单位: kWh
             """
             assert self.MaxTotalCapacity >= 0
 
@@ -1744,7 +1744,7 @@ class 锂电池模型(设备模型):
             self.MinTotalCapacity: float = 设备信息.MinTotalCapacity
             """
             名称: 最小设备容量
-            单位: kilowatt_hour
+            单位: kWh
             """
             assert self.MinTotalCapacity >= 0
 
@@ -1895,10 +1895,10 @@ class 锂电池模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedCapacity)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedCapacity)
+        总采购成本 = self.CostPerWork * (self.DeviceCount * self.RatedCapacity)
+        总固定维护成本 = self.CostPerYearPerWork * (self.DeviceCount * self.RatedCapacity)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedCapacity)
+            self.BuildCostPerWork * (self.DeviceCount * self.RatedCapacity)
             + self.BuildBaseCost
         )
 
@@ -1908,7 +1908,7 @@ class 锂电池模型(设备模型):
             (计算范围内总电变化量)
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -1937,26 +1937,26 @@ class 变压器模型(设备模型):
         """
         assert self.RatedPower >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilowatt: float = 设备信息.CostPerKilowatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilowatt >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerKilowatt: float = 设备信息.CostPerYearPerKilowatt
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerKilowatt >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -1965,12 +1965,12 @@ class 变压器模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilowatt: float = 设备信息.BuildCostPerKilowatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilowatt >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -2005,14 +2005,14 @@ class 变压器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 变压器输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2037,10 +2037,10 @@ class 变压器模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedPower)
+        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedPower)
+            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
@@ -2050,7 +2050,7 @@ class 变压器模型(设备模型):
             (-self.SumRange(self.电输入))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -2079,26 +2079,26 @@ class 变流器模型(设备模型):
         """
         assert self.Efficiency >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilowatt: float = 设备信息.CostPerKilowatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilowatt >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerKilowatt: float = 设备信息.CostPerYearPerKilowatt
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerKilowatt >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -2107,12 +2107,12 @@ class 变流器模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilowatt: float = 设备信息.BuildCostPerKilowatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilowatt >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -2147,14 +2147,14 @@ class 变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 变流器输入
-        """
-
         self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 电母线输出
+        """
+
+        self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2179,10 +2179,10 @@ class 变流器模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedPower)
+        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedPower)
+            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
@@ -2192,7 +2192,7 @@ class 变流器模型(设备模型):
             (-self.SumRange(self.电输入))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -2223,26 +2223,26 @@ class 双向变流器模型(设备模型):
         """
         assert self.Efficiency >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilowatt: float = 设备信息.CostPerKilowatt
         """
         名称: 采购成本
         单位: 万元 / kilowatt
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilowatt >= 0
 
-        self.CostPerYear: float = 设备信息.CostPerYear
+        self.CostPerYearPerKilowatt: float = 设备信息.CostPerYearPerKilowatt
         """
         名称: 固定维护成本
         单位: 万元 / kilowatt / 年
         """
-        assert self.CostPerYear >= 0
+        assert self.CostPerYearPerKilowatt >= 0
 
-        self.VariationalCostPerPower: float = 设备信息.VariationalCostPerPower * 0.0001
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
         """
         名称: 可变维护成本
-        单位: 万元 / kilowatt_hour <- 元/kWh
+        单位: 万元 / kWh <- 元/kWh
         """
-        assert self.VariationalCostPerPower >= 0
+        assert self.VariationalCostPerWork >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -2251,12 +2251,12 @@ class 双向变流器模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilowatt: float = 设备信息.BuildCostPerKilowatt
         """
         名称: 建设费用系数
         单位: 万元 / kilowatt
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilowatt >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -2291,14 +2291,14 @@ class 双向变流器模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.储能端 = self.变量列表("储能端", within=Reals)
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.线路端 = self.变量列表("线路端", within=Reals)
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.储能端 = self.变量列表("储能端", within=Reals)
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2331,10 +2331,10 @@ class 双向变流器模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYear * (self.DeviceCount * self.RatedPower)
+        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
         总建设费用 = (
-            self.BuildCostPerWatt * (self.DeviceCount * self.RatedPower)
+            self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
@@ -2344,7 +2344,7 @@ class 双向变流器模型(设备模型):
             ((self.SumRange(self.储能端_.x_neg) + self.SumRange(self.线路端_.x_neg)))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerWork
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
@@ -2366,19 +2366,19 @@ class 传输线模型(设备模型):
         """
         assert self.PowerTransferDecay >= 0
 
-        self.CostPerWatt: float = 设备信息.CostPerWatt
+        self.CostPerKilometer: float = 设备信息.CostPerKilometer
         """
         名称: 采购成本
         单位: 万元 / kilometer
         """
-        assert self.CostPerWatt >= 0
+        assert self.CostPerKilometer >= 0
 
-        self.VariationCostPerMeter: float = 设备信息.VariationCostPerMeter
+        self.CostPerYearPerKilometer: float = 设备信息.CostPerYearPerKilometer
         """
         名称: 维护成本
         单位: 万元 / kilometer / 年
         """
-        assert self.VariationCostPerMeter >= 0
+        assert self.CostPerYearPerKilometer >= 0
 
         self.Life: float = 设备信息.Life
         """
@@ -2387,12 +2387,12 @@ class 传输线模型(设备模型):
         """
         assert self.Life >= 0
 
-        self.BuildCostPerWatt: float = 设备信息.BuildCostPerWatt
+        self.BuildCostPerKilometer: float = 设备信息.BuildCostPerKilometer
         """
         名称: 建设费用系数
         单位: 万元 / kilometer
         """
-        assert self.BuildCostPerWatt >= 0
+        assert self.BuildCostPerKilometer >= 0
 
         self.BuildBaseCost: float = 设备信息.BuildBaseCost
         """
@@ -2419,14 +2419,14 @@ class 传输线模型(设备模型):
 
         ##### PORT VARIABLE DEFINITION ####
 
-        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
-        """
-        类型: 电母线输出
-        """
-
         self.电输入 = self.变量列表("电输入", within=NegativeReals)
         """
         类型: 电母线输入
+        """
+
+        self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2454,9 +2454,9 @@ class 传输线模型(设备模型):
 
         年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerWatt * (self.Length)
-        总固定维护成本 = self.CostPerYear * (self.Length)
-        总建设费用 = self.BuildCostPerWatt * (self.Length) + self.BuildBaseCost
+        总采购成本 = self.CostPerKilometer * (self.Length)
+        总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
+        总建设费用 = self.BuildCostPerKilometer * (self.Length) + self.BuildBaseCost
 
         总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
 
@@ -2464,7 +2464,7 @@ class 传输线模型(设备模型):
             (-self.SumRange(self.电输入))
             * (8760 / self.计算参数.迭代步数)
             * ((1 if self.计算参数.计算步长 == "小时" else 3600))
-            * self.VariationalCostPerPower
+            * self.VariationalCostPerNone
         )
 
         总成本年化 = 总固定成本年化 + 总可变维护成本年化

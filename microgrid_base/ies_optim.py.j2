@@ -536,13 +536,13 @@ class {{class_name}}模型(设备模型):
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
-            {% set vv = 'Kilowatt' %}
+            {% set vv = 'Work' %}
         {%elif class_name in ['风力发电','柴油发电']+单向变电器列表+ ['双向变流器']%}
             {% set m='self.DeviceCount * self.RatedPower'%}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
-            {% set vv = 'Kilowatt' %}
+            {% set vv = 'Work' %}
         {% elif class_name in ["锂电池"]%}
             {% set m='self.DeviceCount * self.RatedCapacity'%}
             {% set vi = 'Work' %}
@@ -554,7 +554,8 @@ class {{class_name}}模型(设备模型):
             {% set vi = 'Kilometer' %}
             {% set vm = 'Kilometer' %}
             {% set vb = 'Kilometer' %}
-            {% set vv = 'Kilometer' %}
+            {% set vv = None%}
+            {# {% set vv = 'Kilometer' %} #}
         {% else%}
             {% error("不支持的设备类型:", class_name) %}
         {% endif %}
@@ -585,5 +586,6 @@ class {{class_name}}模型(设备模型):
         总成本年化 = 总固定成本年化 + 总可变维护成本年化
         {% else%}
         总成本年化 = 总固定成本年化
+        {% endif%}
         {% endwith%}
 {% endfor %}
