@@ -104,6 +104,8 @@ class {{class_name}}ID(BaseModel):
 # Device Info #
 ###############
 
+{% set NonLoadDeviceDict = {}%}
+
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 
 class {{class_name}}信息(BaseModel): # {{super_class}}
