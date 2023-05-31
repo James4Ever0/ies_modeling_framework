@@ -728,8 +728,9 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
-        self.RangeConstraint(self.{{port_name}}, self.EnergyConsumption, lambda x,y: x == -y)
+        self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
     {% else%}
+        ...
     {% endif%}
 
 {% endfor %}
@@ -775,7 +776,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
             devID_int = dev['id']
 
-            devIDClass = devIDClassDict[devSubtype]
+            devIDClass = devIDClassMap[devSubtype]
 
             devIDInstInit = {"ID": devID_int}
             for port_name, port_info in devPorts.items():
