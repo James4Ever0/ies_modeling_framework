@@ -38,7 +38,7 @@ import rich
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }}
         """
         名称: {{ mdigit[1] }}
-        单位: {{ mdigit[3] }}
+        单位: {{ mdigit[2] }}
         """
         {%else%}
         self.{{ mdigit[0] }}: float = 设备信息.{{ mdigit[0] }} * {{ mdigit[4]}}
