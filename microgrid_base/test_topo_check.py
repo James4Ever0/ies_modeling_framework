@@ -72,6 +72,7 @@ mdict = topo.to_json()
 print_with_banner(mdict, "图序列化")
 with open("template_input.json",'w+') as f:
     f.write(json.dumps(mdict, ensure_ascii=False, indent=4))
+
 ###############
 # load from dict
 ###############
