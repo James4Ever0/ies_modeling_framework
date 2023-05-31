@@ -66,3 +66,11 @@ G0 = json_graph.node_link_graph(data)
 print("GRAPH DATA?",G0.graph)
 
 # attribute just do not collide with id.
+
+from pydantic import BaseModel
+
+class BM(BaseModel):
+    a :float
+    
+new_bm = BM.from_orm(dict(a = 1))
+rich.print(new_bm)
