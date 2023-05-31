@@ -118,6 +118,11 @@ class {{class_name}}信息(BaseModel):
     单位: kW
     {# In this way it will be timescale independent. #}
     """
+    MaxEnergyConsumption: float
+    """
+    单位: kW
+    {# 用于电负荷 典型日计算 #}
+    """
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
     {% for psc, mstr in mstrs %}
