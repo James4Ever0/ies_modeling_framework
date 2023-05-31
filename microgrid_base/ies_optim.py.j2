@@ -132,8 +132,9 @@ class {{class_name}}信息(BaseModel):
     单位: kW
     {# 用于电负荷 典型日计算 #}
     """
-    {% else%}
+    {% else %}
     Price: float
+    Unit: str
     {% if class_name == "柴油"%}
     {% set m1="L/万元"%}
     {# just to make it standard. #}
