@@ -699,7 +699,12 @@ class {{class_name}}(设备模型):
         self.{{port_name}} = [-e for e in self.设备信息.EnergyConsumption]
 {% endfor %}
 
+class ModelContext:
+    def __init__(self):
+    def __enter__(self):
+    def __exit__(self):
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict):
+    
     计算参数实例 = 计算参数.parse_obj(graph_data)
     for dev in devs:
         ...
