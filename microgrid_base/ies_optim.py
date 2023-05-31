@@ -20,7 +20,7 @@ import rich
 # iterate through all device-port pairs, then retrieve attributes from another dict.
 
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Union, Literal
 
 # string, digits, tables.
 # you can dump and load from json.
@@ -85,13 +85,13 @@ class 锂电池ID(BaseModel):
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -109,13 +109,13 @@ class 变流器ID(BaseModel):
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -845,7 +845,6 @@ from pyomo.environ import *
 # shall you assign port with variables.
 
 # 风、光照
-from typing import Union, Literal, List
 
 # 需要单位明确
 class 计算参数(BaseModel):
@@ -2132,14 +2131,14 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
         self.ports["电输出"] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+        self.ports["电输入"] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2436,14 +2435,14 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.ports["线路端"] = self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.ports["储能端"] = self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.ports["线路端"] = self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2639,3 +2638,101 @@ class 电负荷(设备模型):
 
     def constraints_register(self):
         self.电接口 = [-e for e in self.设备信息.EnergyConsumption]
+
+
+class ModelContext:
+    def __init__(self):
+        model = ConcreteModel()
+        self.model = model
+
+    def __enter__(self):
+        print("ENTER MODEL CONTEXT")
+        return self.model
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        # we don't have to take care of this.
+        if exc_type == None:
+            print("NO ERROR IN MODEL CONTEXT")
+        else:
+            print("ERROR IN MODEL CONTEXT")
+        del self.model
+        print("EXITING MODEL CONTEXT")
+
+
+devInstClassMap = {
+    "柴油": 柴油模型,
+    "电负荷": 电负荷模型,
+    "光伏发电": 光伏发电模型,
+    "风力发电": 风力发电模型,
+    "柴油发电": 柴油发电模型,
+    "锂电池": 锂电池模型,
+    "变压器": 变压器模型,
+    "变流器": 变流器模型,
+    "双向变流器": 双向变流器模型,
+    "传输线": 传输线模型,
+}
+
+devIDClassMap = {
+    "柴油": 柴油ID,
+    "电负荷": 电负荷ID,
+    "光伏发电": 光伏发电ID,
+    "风力发电": 风力发电ID,
+    "柴油发电": 柴油发电ID,
+    "锂电池": 锂电池ID,
+    "变压器": 变压器ID,
+    "变流器": 变流器ID,
+    "双向变流器": 双向变流器ID,
+    "传输线": 传输线ID,
+}
+
+devInfoClassMap = {
+    "柴油": 柴油Info,
+    "电负荷": 电负荷Info,
+    "光伏发电": 光伏发电Info,
+    "风力发电": 风力发电Info,
+    "柴油发电": 柴油发电Info,
+    "锂电池": 锂电池Info,
+    "变压器": 变压器Info,
+    "变流器": 变流器Info,
+    "双向变流器": 双向变流器Info,
+    "传输线": 传输线Info,
+}
+
+
+from networkx import Graph
+
+
+def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Graph):
+    with ModelContext() as model:
+        algoParam = 计算参数.parse_obj(graph_data)
+        devInstDict = {}
+
+        for dev in devs:
+            devSubtype = dev["subtype"]
+            devParam = {
+                k: v for k, v in dev.items() if k not in {"subtype", "type", "ports"}
+            }
+            devPorts = dev["ports"]
+
+            devID_int = dev["id"]
+
+            devIDClass = devIDClassDict[devSubtype]
+
+            devIDInstInit = {"ID": devID_int}
+            for port_name, port_info in devPorts.items():
+                port_id = port_info["id"]
+                devIDInstInit.update({port_name: port_id})
+            devIDInst = devIDClass.parse_obj(devIDInstInit)
+
+            devInfoInstInit = devParam
+            devInfoClass = devInfoClassMap[devSubtype]
+            devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
+
+            devInstClass = devInstClassMap[devSubtype]
+            devInst = devInstClass(
+                model=model, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst
+            )
+
+            devInstDict.update({devID_int: devInst})
+        for adder_index, adder in adders.items():
+            ...

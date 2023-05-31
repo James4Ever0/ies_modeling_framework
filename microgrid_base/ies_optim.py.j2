@@ -719,8 +719,8 @@ class ModelContext:
 
 {% for e in ["Inst", "ID", 'Info'] %}
 dev{{e}}ClassMap = {
-    {% for class_name in 设备接口集合.keys()
-    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" else e}},
+    {% for class_name in 设备接口集合.keys() %}
+    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" el}},
     {% endfor %}
 }
 
