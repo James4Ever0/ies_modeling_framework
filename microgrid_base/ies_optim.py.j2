@@ -717,10 +717,14 @@ class ModelContext:
         del self.model
         print("EXITING MODEL CONTEXT")
 
-devInstMap = {
+devInstClassMap = {
     {% for class_name in 设备接口集合.keys()
     "{{class_name}}": {{class_name}}模型,
     {% endfor %}
+}
+
+devIDClassMap = {
+    {% for %}
 }
 from networkx import Graph
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
@@ -734,6 +738,8 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devPorts = dev['ports']
 
             devID_int = dev['id']
+
+            devID = 
 
             devClass = devInstMap[devSubtype]
             devInst = devClass(model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfo)

@@ -110,6 +110,7 @@ class 拓扑图:
         devs = []
         for node_index, node_data in self.G.nodes.items():
             node_type = node_data["type"]
+            node_data['id'] = node_index
             if node_type == "设备":
                 devs.append(node_data)
         return devs
