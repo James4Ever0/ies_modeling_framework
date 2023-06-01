@@ -720,7 +720,8 @@ from unit_utils import (
 {% for v in vlist%}
     {% do load_class_names.append(v+"负荷")%}
 {% endfor%}
-{% set special_class = {"load_class": load_class_names, "input_class": input_types}%}
+{% set input_class_names = input_types%}
+{% set special_class = {"load_class": load_class_names, "input_class": input_class_names}%}
 
 {# check for coverage #}
 {% %}
@@ -731,8 +732,6 @@ from unit_utils import (
             {% if not class_name.endswith()%}
                 {% error("错误的负荷类名:", class_name)%}
             {% endif%}
-        {% else%}
-            {% set class_name = v%}
         {% endif%}
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
@@ -750,7 +749,7 @@ class {{class_name}}模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
-    {% else %}
+    {% elif k == 'input_class' %}
 
         ### UNIT COMPATIBILITY CHECK ###
         default_unit= self.设备信息.DefaultUnit
@@ -769,18 +768,22 @@ class {{class_name}}模型(设备模型):
         
         self.Price = self.设备信息.Price
         self.Unit = str(self.StandardUnit)
+    {% else%}
+        {% error("Unknown special class:", k)%}
     {% endif%}
     
     def constraints_register(self):
-    {% if k == "load_type"%}
+    {% if k == "load_class"%}
         {% if v in ['电'] %}
             {% set port_name = '电接口' %}
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
-    {% else%}
+    {% elif k == "input_class"%}
         ...
+    {% else%}
+        {% error("Unknown special class:", k)%}
     {% endif%}
 
 {% endfor %}
