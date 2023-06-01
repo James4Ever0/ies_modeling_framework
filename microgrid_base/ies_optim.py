@@ -925,7 +925,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e10
+        self.BigM = int(1e10)
         """
         一个极大数
         """
