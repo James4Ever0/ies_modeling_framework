@@ -17,7 +17,7 @@ def print_with_banner(data, banner: str):
 
 
 # you may need pydantic here. verify then import to compute graph.
-# from ies_optim.device_ import
+from ies_optim.deviceInfoClasses 
 # algoParam = .to_json()
 topo = 拓扑图()  # with structure?
 # topo = 拓扑图(**algoParam)  # with structure?
