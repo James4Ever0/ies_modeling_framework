@@ -104,13 +104,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -826,6 +826,32 @@ class 传输线信息(BaseModel):
 
 from pyomo.environ import *
 
+
+class ModelWrapper:
+    def __init__(self):
+        self.model = ConcreteModel()
+        self.clock = 0
+
+    def getSpecialName(self):
+        name = f"CN_OB_{self.clock}"
+        self.clock += 1
+        return name
+
+    def Constraint(self, *args, **kwargs):
+        name = self.getSpecialName()
+        ret = self.model.__dict__[name] = Constraint(*args, **kwargs)
+        return ret
+
+    def Var(self, name: str, *args, **kwargs):
+        ret = self.model.__dict__[name] = Var(*args, **kwargs)
+        return ret
+
+    def Objective(self, *args, **kwargs):
+        name = self.getSpecialName()
+        ret = self.model.__dict__[name] = Objective(*args, **kwargs)
+        return ret
+
+
 # first convert the unit.
 # assign variables.
 
@@ -891,8 +917,8 @@ from functools import reduce
 
 
 class 设备模型:
-    def __init__(self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, ID):
-        self.model = model
+    def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
+        self.mw = mw
         self.PD = PD
         self.计算参数 = 计算参数实例
         self.ID = ID
@@ -921,27 +947,25 @@ class 设备模型:
         return specialVarName
 
     def 单变量(self, varName: str, **kwargs):
-        var = self.model.__dict__[self.getVarName(varName)] = Var(**kwargs)
+        var = self.mw.Var(self.getVarName(varName), **kwargs)
         return var
 
     def 变量列表(self, varName: str, **kwargs):
-        var = self.model.__dict__[self.getVarName(varName)] = Var(
-            range(self.计算参数.迭代步数), **kwargs
-        )
+        var = self.mw.Var(self.getVarName(varName), range(self.计算参数.迭代步数), **kwargs)
         return var
 
     def RangeConstraint(self, var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
-            Constraint(expression(var_1, var_2))
+            self.mw.Constraint(expression(var_1, var_2))
 
     def RangeConstraintMulti(self, *vars, expression=...):  # keyword argument now.
         assert expression is not ...
         for i in range(self.计算参数.迭代步数):
-            Constraint(expression(*[var[i] for var in vars]))
+            self.mw.Constraint(expression(*[var[i] for var in vars]))
 
     def CustomRangeConstraint(self, var_1, var_2, customRange: range, expression):
         for i in customRange:
-            Constraint(expression(var_1, var_2, i))
+            self.mw.Constraint(expression(var_1, var_2, i))
 
     def CustomRangeConstraintMulti(
         self, *vars, customRange: range = ..., expression=...
@@ -949,7 +973,7 @@ class 设备模型:
         assert expression is not ...
         assert customRange is not ...
         for i in customRange:
-            Constraint(expression(*vars, i))
+            self.mw.Constraint(expression(*vars, i))
 
     def SumRange(self, var_1):
         return reduce(
@@ -1079,9 +1103,9 @@ import math
 
 class 光伏发电模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1208,8 +1232,8 @@ class 光伏发电模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         光电转换效率 = self.MaxPower / self.Area  # 1kW/m2光照下能产生的能量 省略除以1 单位: one
@@ -1264,9 +1288,9 @@ class 光伏发电模型(设备模型):
 
 class 风力发电模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1419,8 +1443,8 @@ class 风力发电模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
@@ -1468,9 +1492,9 @@ class 风力发电模型(设备模型):
 
 class 柴油发电模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1641,8 +1665,8 @@ class 柴油发电模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
@@ -1708,9 +1732,9 @@ class 柴油发电模型(设备模型):
 
 class 锂电池模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1913,8 +1937,8 @@ class 锂电池模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraintMulti(
@@ -1922,7 +1946,7 @@ class 锂电池模型(设备模型):
             expression=lambda x: x <= self.TotalActualCapacity,
         )
 
-        Constraint(
+        self.mw.Constraint(
             self.CurrentTotalActualCapacity[0]
             == self.InitActualCapacityPerUnit * self.DeviceCount
         )
@@ -1944,12 +1968,12 @@ class 锂电池模型(设备模型):
         )
 
         for i in range(self.计算参数.迭代步数 - 1):
-            Constraint(
+            self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
                 - self.CurrentTotalActualCapacity[i]
                 < self.MaxTotalCapacityDeltaPerStep
             )
-            Constraint(
+            self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
                 - self.CurrentTotalActualCapacity[i]
                 > -self.MaxTotalCapacityDeltaPerStep
@@ -1957,21 +1981,21 @@ class 锂电池模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == "日间独立":
-                Constraint(self.原电接口.x[0] == self.EPS)
+                self.mw.Constraint(self.原电接口.x[0] == self.EPS)
             elif self.设备信息.循环边界条件 == "日间连接":
-                Constraint(
+                self.mw.Constraint(
                     self.CurrentTotalActualCapacity[0]
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     < self.MaxTotalCapacityDeltaPerStep
                 )
 
-                Constraint(
+                self.mw.Constraint(
                     self.CurrentTotalActualCapacity[0]
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     > -self.MaxTotalCapacityDeltaPerStep
                 )
 
-                Constraint(
+                self.mw.Constraint(
                     self.原电接口.x[0]
                     == (
                         self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
@@ -1982,7 +2006,7 @@ class 锂电池模型(设备模型):
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         elif self.计算参数.计算类型 == "仿真模拟":
-            Constraint(self.原电接口.x[0] == self.EPS)
+            self.mw.Constraint(self.原电接口.x[0] == self.EPS)
 
         # 计算年化
         # unit: one
@@ -1997,7 +2021,7 @@ class 锂电池模型(设备模型):
 
         一年总电变化量 = 一小时总电变化量 * 8760
 
-        Constraint(
+        self.mw.Constraint(
             一年总电变化量 * self.BatteryLife
             <= self.DeviceCount * self.TotalDischargeCapacity * 0.85
         )
@@ -2030,9 +2054,9 @@ class 锂电池模型(设备模型):
 
 class 变压器模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2169,8 +2193,8 @@ class 变压器模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x == -y * self.Efficiency)
@@ -2207,9 +2231,9 @@ class 变压器模型(设备模型):
 
 class 变流器模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2322,8 +2346,8 @@ class 变流器模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x == -y * self.Efficiency)
@@ -2360,9 +2384,9 @@ class 变流器模型(设备模型):
 
 class 双向变流器模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2454,18 +2478,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2478,8 +2502,8 @@ class 双向变流器模型(设备模型):
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
-            Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            Constraint(self.DeviceCount >= self.MinDeviceCount)
+            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
+            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
 
@@ -2525,9 +2549,9 @@ class 双向变流器模型(设备模型):
 
 class 传输线模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2658,9 +2682,9 @@ from unit_utils import (
 
 class 电负荷模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 电负荷ID, 设备信息: 电负荷信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 电负荷ID, 设备信息: 电负荷信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2694,9 +2718,9 @@ class 电负荷模型(设备模型):
 
 class 柴油模型(设备模型):
     def __init__(
-        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油ID, 设备信息: 柴油信息
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 柴油ID, 设备信息: 柴油信息
     ):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2742,23 +2766,24 @@ class 柴油模型(设备模型):
         return 年化费用
 
 
-class ModelContext:
+class ModelWrapperContext:
     def __init__(self):
-        model = ConcreteModel()
-        self.model = model
+        mw = ModelWrapper()
+        self.mw = mw
 
     def __enter__(self):
-        print("ENTER MODEL CONTEXT")
-        return self.model
+        print("ENTER MODEL WRAPPER CONTEXT")
+        return self.mw
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         # we don't have to take care of this.
         if exc_type == None:
-            print("NO ERROR IN MODEL CONTEXT")
+            print("NO ERROR IN MODEL WRAPPER CONTEXT")
         else:
-            print("ERROR IN MODEL CONTEXT")
-        del self.model
-        print("EXITING MODEL CONTEXT")
+            print("ERROR IN MODEL WRAPPER CONTEXT")
+        del self.mw.model
+        del self.mw
+        print("EXITING MODEL WRAPPER CONTEXT")
 
 
 devInstClassMap: Dict[str, 设备模型] = {
@@ -2809,7 +2834,7 @@ def compute(
     adders: Dict[int, dict],
     graph_data: dict,
     G: Graph,
-    model: ConcreteModel,
+    mw: ModelWrapper,
 ):
     PD = {}
     algoParam = 计算参数.parse_obj(graph_data)
@@ -2838,7 +2863,7 @@ def compute(
         devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
         devInstClass = devInstClassMap[devSubtype]
-        devInst = devInstClass(PD=PD, model=model, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst)  # type: ignore
+        devInst = devInstClass(PD=PD, mw=mw, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst)  # type: ignore
 
         devInstDict.update({devID_int: devInst})
     for adder_index, adder in adders.items():
@@ -2855,7 +2880,7 @@ def compute(
                 function=lambda x, y: x + y,
             )
 
-            Constraint(seqsum >= 0)
+            self.mw.Constraint(seqsum >= 0)
 
         if algoParam.计算类型 == "设计规划":
             input_anchor_0 = G.nodes[input_indexs[0]]
@@ -2882,7 +2907,7 @@ def compute(
                     sequence=output_limit_list, function=lambda x, y: x + y
                 )
 
-                Constraint(input_limit + output_limit >= 0)
+                self.mw.Constraint(input_limit + output_limit >= 0)
 
     financial_obj_expr = reduce(
         sequence=[e.constraints_register() for e in devInstDict.values()],

@@ -196,12 +196,12 @@ class ModelWrapper:
         name = f"CN_OB_{self.clock}"
         self.clock+=1
         return name
-    {% for k in ['self.mw.Constraint', 'Var','Objective']%}
+    {% for k in ['Constraint', 'Var','Objective']%}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}}*args, **kwargs):
         {% if k !="Var"%}
         name = self.getSpecialName()
         {% endif %}
-        ret = self.model.__dict__[name] = self.mw.Constraint(*args, **kwargs)
+        ret = self.model.__dict__[name] = {{k}}(*args, **kwargs)
         return ret
     {% endfor%}
 
@@ -925,7 +925,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
-                self.mw.Constraint(input_limit + output_limit >= 0)
+                mw.Constraint(input_limit + output_limit >= 0)
 
     financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }}
 
