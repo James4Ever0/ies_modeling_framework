@@ -104,13 +104,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -840,7 +840,11 @@ class ModelWrapper:
 
     def Constraint(self, *args, **kwargs):
         name = self.getSpecialName("CON")
-        ret = Constraint(expr=kwargs.get("expr", args[0]), *args[1:], **kwargs)
+        ret = Constraint(
+            expr=kwargs.get("expr", args[0] if len(args) > 0 else None),
+            *args[1:],
+            **kwargs,
+        )
         self.model.__setattr__(name, ret)
         return ret
 
@@ -851,8 +855,11 @@ class ModelWrapper:
 
     def Objective(self, *args, **kwargs):
         name = self.getSpecialName("OBJ")
-        breakpoint()
-        ret = Objective(expr=kwargs.get("expr", args[0]), *args[1:], **kwargs)
+        ret = Objective(
+            expr=kwargs.get("expr", args[0] if len(args) > 0 else None),
+            *args[1:],
+            **kwargs,
+        )
         self.model.__setattr__(name, ret)
         return ret
 
@@ -2501,18 +2508,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）

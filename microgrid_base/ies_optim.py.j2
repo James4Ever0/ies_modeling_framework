@@ -204,7 +204,7 @@ class ModelWrapper:
         {% if k !="Var" %}
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
-        ret = {{k}}({{mv if k == "Var" else "expr = kwargs.get('expr',args[0]), *args[1:], **kwargs"}})
+        ret = {{k}}({{mv if k == "Var" else "expr = kwargs.get('expr',args[0] if len(args) >0 else None), *args[1:], **kwargs"}})
         self.model.__setattr__(name, ret)
         return ret
     {% endfor%}
