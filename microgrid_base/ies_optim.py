@@ -989,7 +989,7 @@ class 设备模型:
         b_pos = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
         x_pos = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
 
-        self.RangeConstraint(b_pos, x_pos, lambda x, y: x * self.BigM >= y)
+        self.RangeConstraint(b_pos, x_pos, lambda x, y:self.BigM* x  >= y)
         b_neg = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
         x_neg = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
 
