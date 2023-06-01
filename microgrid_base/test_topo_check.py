@@ -108,7 +108,11 @@ print_with_banner(graph_data, "图元数据")
 import sys
 if sys.argv[-1] in ['-f',"--full"]:
     # 测试全年8760,没有典型日
+    from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
     with ModelWrapperContext() as mw:
         obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
-        mw.Objective()
+        
+        OBJ = mw.Objective(expr = obj_expr, sense = minimize)
+        
+        
