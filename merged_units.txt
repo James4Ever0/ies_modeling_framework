@@ -915,6 +915,10 @@ kWh = kW * hour
 [price_per_device] = [currency] / [device_count]
 万元每台 = 万元 / 台
 
+
+[volume_per_price] = [volume] / [currency]
+升每万元 = L/万元
+
 [price_per_device_per_year] = [currency] / [device_count] / [time]
 万元每台每年 = 万元 / 台 / 年
 
