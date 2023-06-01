@@ -107,6 +107,8 @@ print_with_banner(graph_data, "图元数据")
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
 if sys.argv[-1] in ['-f',"--full"]:
-    from ies_optim import compute, ModelWrapper, ModelWrapperContext
+    # 测试全年8760,没有典型日
+    from ies_optim import compute, ModelWrapperContext
     with ModelWrapperContext() as mw:
         obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
+        
