@@ -1035,8 +1035,8 @@ class 设备模型:
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
             range_list,
-            var_0,
-            var_1,
+            var_0, # y_var
+            var_1, # x_var
             pw_pts,
             f_rule,
             pw_repn=pw_repn,
