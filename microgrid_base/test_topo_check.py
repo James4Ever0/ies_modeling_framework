@@ -31,23 +31,24 @@ from ies_optim import (
 )
 from ies_optim import 计算参数
 
-algoParam = 计算参数(计算步长='小时', 典型日=False, 计算类型= '设计规划', 风速=..., 光照=..., 气温=..., 年利率=0.1).json()
+algoParam = 计算参数(计算步长='小时', 典型日=False, 计算类型= '设计规划', 风速=..., 光照=..., 气温=..., 年利率=0.1).dict()
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
-PV1 = 光伏发电(topo, param={})  # 这种是增加新的光伏发电
-PV2 = 光伏发电(topo, param={})
-DEL1 = 变流器(topo, param={})
-DEL2 = 变压器(topo, param={})
-LOAD = 电负荷(topo, param={})
+P1 = 光伏发电信息().dict()
+PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
+PV2 = 光伏发电(topo, param=P1)
+DEL1 = 变流器(topo, param=变流器信息().dict())
+DEL2 = 变压器(topo, param=变压器信息().dict())
+LOAD = 电负荷(topo, param=电负荷信息().dict())
 
-BAT = 锂电池(topo, param={})
+BAT = 锂电池(topo, param=锂电池信息().dict())
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
 
-BC = 双向变流器(topo, param={})
+BC = 双向变流器(topo, param=双向变流器信息().dict())
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
