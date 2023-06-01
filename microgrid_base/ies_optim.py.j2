@@ -188,6 +188,23 @@ class {{class_name}}信息(BaseModel):
 
 from pyomo.environ import *
 
+class ModelWrapper:
+    def __init__(self):
+        self.model = ConcreteModel()
+        self.clock =0
+    def getSpecialName(self):
+        name = f"CN_OB_{self.clock}"
+        self.clock+=1
+        return name
+    {% for k in ['Constraint', 'Var','Objective']%}
+    def {{k}}(self, {{ "name:str," if k == "Var" else ""}}*args, **kwargs):
+        {% if k !="Var"%}
+        name = self.getSpecialName()
+        {% endif %}
+        self.model.__dict__[name] = Constraint(*args, **kwargs)
+    {% endfor%}
+
+
 # first convert the unit.
 # assign variables.
 
@@ -251,7 +268,7 @@ class POSNEG:
 
 from functools import reduce
 class 设备模型:
-    def __init__(self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, ID):
+    def __init__(self, PD: dict, model: ModelWrapper, 计算参数实例: 计算参数, ID):
         self.model = model
         self.PD = PD
         self.计算参数 = 计算参数实例
@@ -814,21 +831,21 @@ class {{class_name}}模型(设备模型):
 
 class ModelContext:
     def __init__(self):
-        model = ConcreteModel()
-        self.model = model
+        mw = ModelWrapper()
+        self.mw = mw
 
     def __enter__(self):
-        print("ENTER MODEL CONTEXT")
-        return self.model
+        print("ENTER MODEL WRAPPER CONTEXT")
+        return self.mw
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         # we don't have to take care of this.
         if exc_type == None:
-            print("NO ERROR IN MODEL CONTEXT")
+            print("NO ERROR IN MODEL WRAPPER CONTEXT")
         else:
-            print("ERROR IN MODEL CONTEXT")
-        del self.model
-        print("EXITING MODEL CONTEXT")
+            print("ERROR IN MODEL WRAPPER CONTEXT")
+        del self.mw.model
+        print("EXITING MODEL WRAPPER CONTEXT")
 
 {% for e in ["Inst", "ID", 'Info'] %}
 {% set class_types = {}%}
