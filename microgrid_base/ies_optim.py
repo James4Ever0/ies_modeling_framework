@@ -86,13 +86,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -108,13 +108,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -1973,15 +1973,15 @@ class 变压器模型(设备模型):
 
         self.ports = {}
         
-        self.PD[self.设备ID.电输入] = self.ports['电输入'] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
-        """
-        类型: 电母线输入
-        """
-
-
         self.PD[self.设备ID.电输出] = self.ports['电输出'] = self.电输出 = self.变量列表("电输出", within=NonNegativeReals)
         """
         类型: 变压器输出
+        """
+
+
+        self.PD[self.设备ID.电输入] = self.ports['电输入'] = self.电输入 = self.变量列表("电输入", within=NegativeReals)
+        """
+        类型: 电母线输入
         """
 
 
@@ -2267,15 +2267,15 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
         
-        self.PD[self.设备ID.线路端] = self.ports['线路端'] = self.线路端 = self.变量列表("线路端", within=Reals)
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
-
         self.PD[self.设备ID.储能端] = self.ports['储能端'] = self.储能端 = self.变量列表("储能端", within=Reals)
         """
         类型: 双向变流器储能端输入输出
+        """
+
+
+        self.PD[self.设备ID.线路端] = self.ports['线路端'] = self.线路端 = self.变量列表("线路端", within=Reals)
+        """
+        类型: 双向变流器线路端输入输出
         """
 
 
@@ -2630,22 +2630,22 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
             if input_anchor_0['subtype'] == '变压器输出':
                 assert io_indexs == []
 
-            input_limit_list = []
-            for input_id in input_indexs:
-                input_anchor = G.nodes[input_id]
-                input_node_id = input_anchor['device_id']
-                input_devInst = devInstDict[input_node_id]
-                input_limit_list.append(input_devInst.最大允许的负载总功率)
-            input_limit = reduce(sequence = input_limit_list , function = lambda x,y:x+y)
+                input_limit_list = []
+                for input_id in input_indexs:
+                    input_anchor = G.nodes[input_id]
+                    input_node_id = input_anchor['device_id']
+                    input_devInst = devInstDict[input_node_id]
+                    input_limit_list.append(input_devInst.最大允许的负载总功率)
+                input_limit = reduce(sequence = input_limit_list , function = lambda x,y:x+y)
 
 
-            output_limit_list = []
-            for output_id in input_indexs:
-                output_anchor = G.nodes[output_id]
-                output_node_id = output_anchor['device_id']
-                output_devInst = devInstDict[output_node_id]
-                output_limit_list.append(output_devInst.MaxEnergyConsumption)
-            output_limit = reduce(sequence = output_limit_list , function = lambda x,y:x+y)
+                output_limit_list = []
+                for output_id in input_indexs:
+                    output_anchor = G.nodes[output_id]
+                    output_node_id = output_anchor['device_id']
+                    output_devInst = devInstDict[output_node_id]
+                    output_limit_list.append(output_devInst.MaxEnergyConsumption)
+                output_limit = reduce(sequence = output_limit_list , function = lambda x,y:x+y)
 
 
                 Constraint(input_limit + output_limit >= 0)
