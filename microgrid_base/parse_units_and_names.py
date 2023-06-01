@@ -296,10 +296,21 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
 
+def getSingleUnitConverted(default_unit, val_unit):
 
 def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
     has_exception = False
+    
+    _val_unit = val_unit
+
+    if val_unit:
+        for (
+            trans_source_unit,
+            trans_target_unit,
+        ) in UNIT_TRANSLATION_TABLE.items():
+            val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
+
     for base_class in base_classes:
         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
         # iterate through all base classes.
@@ -307,14 +318,7 @@ def getUnitConverted(val_name, val_unit):
         default_unit_real = ureg.Unit(default_unit)
         default_unit_compatible = ureg.get_compatible_units(default_unit_real)
         print("TRANS {} -> {}".format(val_name, base_class))
-        if val_unit:
-            for (
-                trans_source_unit,
-                trans_target_unit,
-            ) in UNIT_TRANSLATION_TABLE.items():
-                val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
-            # parse this unit!
-        else:
+        if val_unit is None:
             val_unit = default_unit
             print("USING DEFAULT UNIT")
         print("UNIT", val_unit)
@@ -325,10 +329,6 @@ def getUnitConverted(val_name, val_unit):
             raise Exception("Compatible units are zero for default unit:", default_unit)
         if compatible_units == frozenset():
             raise Exception("Compatible units are zero for value unit:", val_unit)
-        # if val_unit == "万元/km":
-        #     print(default_unit_compatible)
-        #     print(compatible_units) # they are both empty. man!
-        #     breakpoint()
         if not default_unit_compatible == compatible_units:
             has_exception = True
             print(
