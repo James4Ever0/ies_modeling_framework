@@ -37,15 +37,15 @@ topo = 拓扑图(**algoParam)  # with structure?
 
 devParam = dict(生产厂商="Any",设备型号="Any")
 
-P1 = 光伏发电信息(**devParam,Area=10, PowerConversionEfficiency: float, MaxPower: float, PowerDeltaLimit: float, CostPerKilowatt: float, CostPerYearPerKilowatt: float, VariationalCostPerWork: float, Life: float, BuildCostPerKilowatt: float, BuildBaseCost: float, MaxInstallArea: float, MinInstallArea: float, DeviceCount:).dict()
+P1 = 光伏发电信息(**devParam,Area=10, PowerConversionEfficiency=0.9, MaxPower=20,PowerDeltaLimit=1, CostPerKilowatt=100,CostPerYearPerKilowatt=100, VariationalCostPerWork=100, Life = 20,BuildCostPerKilowatt=10,BuildBaseCost=10,MaxInstallArea=200,MinInstallArea=100,DeviceCount=100).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
-DSS = 柴油(topo, param=柴油信息().dict())
-DS = 柴油发电(topo, param = 柴油发电信息().dict())
+DSS = 柴油(topo, param=柴油信息(Price=10,Unit="L/元").dict())
+DS = 柴油发电(topo, param = 柴油发电信息(**devParam).dict())
 
-DEL1 = 变流器(topo, param=变流器信息().dict())
-DEL2 = 变压器(topo, param=变压器信息().dict())
-LOAD = 电负荷(topo, param=电负荷信息().dict())
+DEL1 = 变流器(topo, param=变流器信息(**devParam).dict())
+DEL2 = 变压器(topo, param=变压器信息(**devParam).dict())
+LOAD = 电负荷(topo, param=电负荷信息(**devParam).dict())
 
 BAT = 锂电池(topo, param=锂电池信息().dict())
 
