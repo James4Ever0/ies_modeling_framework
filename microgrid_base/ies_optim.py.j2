@@ -13,8 +13,8 @@ import rich
 {% set input_types = ['柴油'] %}
 
 {% macro init_super_class(class_name)%}
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
+    def __init__(self, PD:dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 {% endmacro%}
@@ -805,7 +805,7 @@ dev{{e}}ClassMap = {
 {% macro iterate_input_output_limit(io_type, attr)%}
                     {{io_type}}_limit_list = []
                     for {{io_type}}_id in input_indexs:
-                        {{io_type}}_anchor = G.node[{{io_type}}_id]
+                        {{io_type}}_anchor = G.nodes[{{io_type}}_id]
                         {{io_type}}_node_id = input_anchor['device_id']
                         {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
                         {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
@@ -853,7 +853,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 Constraint(seqsum >=0)
             
             if algoParam.计算类型 == '设计规划':
-                input_anchor_0 = G.node[input_indexs[0]]
+                input_anchor_0 = G.nodes[input_indexs[0]]
                 if input_anchor_0['subtype'] == '变压器输出':
                     assert io_indexs == []
 

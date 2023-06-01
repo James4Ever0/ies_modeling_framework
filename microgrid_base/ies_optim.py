@@ -85,13 +85,13 @@ class 锂电池ID(BaseModel):
 
 class 变压器ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -109,13 +109,13 @@ class 变流器ID(BaseModel):
 
 class 双向变流器ID(BaseModel):
     ID: int
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -1081,8 +1081,10 @@ import math
 
 
 class 光伏发电模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 光伏发电ID, 设备信息: 光伏发电信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1264,8 +1266,10 @@ class 光伏发电模型(设备模型):
 
 
 class 风力发电模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 风力发电ID, 设备信息: 风力发电信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1466,8 +1470,10 @@ class 风力发电模型(设备模型):
 
 
 class 柴油发电模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油发电ID, 设备信息: 柴油发电信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -1704,8 +1710,10 @@ class 柴油发电模型(设备模型):
 
 
 class 锂电池模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2024,8 +2032,10 @@ class 锂电池模型(设备模型):
 
 
 class 变压器模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变压器ID, 设备信息: 变压器信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2138,18 +2148,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2204,8 +2214,10 @@ class 变压器模型(设备模型):
 
 
 class 变流器模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 变流器ID, 设备信息: 变流器信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2356,9 +2368,9 @@ class 变流器模型(设备模型):
 
 class 双向变流器模型(设备模型):
     def __init__(
-        self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 双向变流器ID, 设备信息: 双向变流器信息
     ):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2450,18 +2462,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2520,8 +2532,10 @@ class 双向变流器模型(设备模型):
 
 
 class 传输线模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 传输线ID, 设备信息: 传输线信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2651,8 +2665,10 @@ from unit_utils import (
 
 
 class 电负荷模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 电负荷ID, 设备信息: 电负荷信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 电负荷ID, 设备信息: 电负荷信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2676,8 +2692,10 @@ class 电负荷模型(设备模型):
 
 
 class 柴油模型(设备模型):
-    def __init__(self, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油ID, 设备信息: 柴油信息):
-        super().__init__(model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
+    def __init__(
+        self, PD: dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: 柴油ID, 设备信息: 柴油信息
+    ):
+        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID=设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
@@ -2833,13 +2851,13 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
                 Constraint(seqsum >= 0)
 
             if algoParam.计算类型 == "设计规划":
-                input_anchor_0 = G.node[input_indexs[0]]
+                input_anchor_0 = G.nodes[input_indexs[0]]
                 if input_anchor_0["subtype"] == "变压器输出":
                     assert io_indexs == []
 
                     input_limit_list = []
                     for input_id in input_indexs:
-                        input_anchor = G.node[input_id]
+                        input_anchor = G.nodes[input_id]
                         input_node_id = input_anchor["device_id"]
                         input_devInst = devInstDict[input_node_id]
                         input_limit_list.append(input_devInst.最大允许的负载总功率)
@@ -2849,7 +2867,7 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
 
                     output_limit_list = []
                     for output_id in input_indexs:
-                        output_anchor = G.node[output_id]
+                        output_anchor = G.nodes[output_id]
                         output_node_id = input_anchor["device_id"]
                         output_devInst = devInstDict[output_node_id]
                         output_limit_list.append(output_devInst.MaxEnergyConsumption)
