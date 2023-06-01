@@ -844,7 +844,8 @@ class ModelWrapper:
         return ret
 
     def Var(self, name: str, *args, **kwargs):
-        ret = self.model.__dict__[name] = Var(*args, **kwargs)
+        ret = Var(*args, **kwargs)
+        self.model.__setattr__(name,ret)
         return ret
 
     def Objective(self, *args, **kwargs):

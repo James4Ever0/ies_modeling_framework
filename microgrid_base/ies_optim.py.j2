@@ -202,7 +202,8 @@ class ModelWrapper:
         {% if k !="Var" %}
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
-        ret = self.model.__dict__[name] = {{k}}(*args, **kwargs)
+        ret = {{k}}(*args, **kwargs)
+        self.model.__setattr__[name] = 
         return ret
     {% endfor%}
 
