@@ -333,8 +333,10 @@ class 设备模型:
     def SumRange(self,var_1):
         return {{- sum_reduce('[var_1[i] for i in range(self.计算参数.迭代步数)]')}}
     
-    def 单变量转列表(self, var, ):
-        return [var for _ in range(self.计算参数.迭代步数)]
+    def 单变量转列表(self, var, dup=None):
+        if dup is None:
+            dup = self.计算参数.迭代步数
+        return [var for _ in range(dup)]
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
@@ -488,9 +490,9 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
-            self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
+            self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
 
-            self.柴油输入_ = self.Multiply(dict(var=self.单台柴油输入, max=0, min=-self.RatedPower*self.最大油耗率), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "柴油输入_", within = NonPositiveReals)
+            self.柴油输入_ = self.Multiply(dict(var=self.单台柴油输入, max=0, min=-self.RatedPower*self.最大油耗率), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "柴油输入_", within = NonPositiveReals)
             self.RangeConstraint(self.柴油输入_, self.柴油输入, lambda x,y: x == y)
         else:
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)

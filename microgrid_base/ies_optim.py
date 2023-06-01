@@ -64,13 +64,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -82,13 +82,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -986,6 +986,11 @@ class 设备模型:
             function=lambda x, y: x + y,
         )
 
+    def 单变量转列表(self, var, dup=None):
+        if dup is None:
+            dup = self.计算参数.迭代步数
+        return [var for _ in range(dup)]
+
     def 变量列表_带指示变量(self, varName: str, within=Reals) -> POSNEG:
         x = self.变量列表(varName, within=within)
 
@@ -1616,18 +1621,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -1645,7 +1650,7 @@ class 柴油发电模型(设备模型):
             self.原电输出 = self.Multiply(
                 dict(var=self.单台发电功率, max=self.RatedPower, min=0),
                 dict(
-                    var=self.DeviceCount,
+                    var=self.单变量转列表(self.DeviceCount),
                     max=self.MaxDeviceCount,
                     min=self.MinDeviceCount,
                 ),
@@ -1656,7 +1661,7 @@ class 柴油发电模型(设备模型):
             self.柴油输入_ = self.Multiply(
                 dict(var=self.单台柴油输入, max=0, min=-self.RatedPower * self.最大油耗率),
                 dict(
-                    var=self.DeviceCount,
+                    var=self.单变量转列表(self.DeviceCount),
                     max=self.MaxDeviceCount,
                     min=self.MinDeviceCount,
                 ),
@@ -2181,18 +2186,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
