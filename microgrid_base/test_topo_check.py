@@ -14,10 +14,10 @@ def print_with_banner(data, banner:str):
     print()
 
 # you may need pydantic here. verify then import to compute graph.
-topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
+topo = 拓扑图(计算步长="小时", 计算模式="典型日") # with structure?
 
-PV1 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
-PV2 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
+PV1 = 光伏发电(topo, param = dict(面积=2))  # 这种是增加新的光伏发电
+PV2 = 光伏发电(topo, param = dict(面积=2))  # 这种是增加新的光伏发电
 DEL1 = 变流器(topo)
 DEL2 = 变压器(topo)
 LOAD = 电负荷(topo, 功率=3000)
