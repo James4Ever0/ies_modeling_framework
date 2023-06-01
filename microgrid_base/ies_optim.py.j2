@@ -717,7 +717,7 @@ from unit_utils import (
 {# ##########[PINT END]########## #}
 
 {% set load_class_names = [] %}
-{% for v in vlist%}
+{% for v in load_types%}
     {% do load_class_names.append(v+"负荷")%}
 {% endfor%}
 {% set input_class_names = input_types%}
@@ -725,8 +725,12 @@ from unit_utils import (
 
 {# check for coverage #}
 {% for class_name in 设备接口集合.keys() %}
-
-{% if nonload_class_name in NonLoadDeviceDict.keys()%}
+    {% if class_name not in NonLoadDeviceDict.keys() %}
+        {% if class_name not in input_class_names+load_class_names%}
+            {% error("未覆盖的非设备类型:", class_name)%}
+        {% endif%}
+    {% endif%}
+{% endfor%}
 
 {% for k,clist in special_types.items() %}
     {% for class_name in clist%}
