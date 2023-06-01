@@ -267,7 +267,7 @@ class 设备模型:
         """
     
     def constraints_register(self):
-        raise NotImplementedError("Must be implemented by subclasses")
+        raise NotImplementedError("Must be implemented by subclasses.")
 
     def getVarName(self, varName: str):
         VN = f"DI_{self.ID}_VN_{varName}" # use underscore.
