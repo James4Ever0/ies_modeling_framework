@@ -890,6 +890,6 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
                 Constraint(input_limit + output_limit >= 0)
-    objective = ...
-    return objective
+    obj_expr = ...
+    return obj_expr
     # always minimize the objective.
