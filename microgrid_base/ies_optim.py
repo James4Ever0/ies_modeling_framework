@@ -1021,8 +1021,8 @@ class 设备模型:
 
     def Piecewise(
         self,
-        var_0,
-        var_1,
+        x_var, # x_var
+        y_var, # y_var
         pw_pts: List[float],
         f_rule: List[float],
         range_list: Union[List[int], None] = None,
@@ -1035,10 +1035,10 @@ class 设备模型:
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
             *range_list,
-            var_0, # y_var
-            var_1, # x_var
-            pw_pts,
-            f_rule,
+            y_var, # y_var
+            x_var, # x_var
+            pw_pts, # x vals
+            f_rule, # y vals
             pw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
