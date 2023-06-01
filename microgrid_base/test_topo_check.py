@@ -31,11 +31,11 @@ from ies_optim import (
 )
 from ies_optim import 计算参数
 
+import numpy as np
 
+a = abs(np.random.random((8760,))).tolist()
 
-algoParam = 计算参数(
-    计算步长="小时", 典型日=False, 计算类型="设计规划", 风速=..., 光照=..., 气温=..., 年利率=0.1
-).dict()
+algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="设计规划", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
@@ -73,7 +73,7 @@ DS = 柴油发电(
         Life=20,
         BuildCostPerMachine=10,
         BuildBaseCost=10,
-        DieselToPower_Load=[[]],
+        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
         DeviceCount=100,
         MaxDeviceCount=200,
         MinDeviceCount=100,
@@ -117,7 +117,7 @@ DEL2 = 变压器(
     ).dict(),
 )
 LOAD = 电负荷(
-    topo, param=电负荷信息(**devParam, EnergyConsumption=[], MaxEnergyConsumption=100).dict()
+    topo, param=电负荷信息(**devParam, EnergyConsumption=a, MaxEnergyConsumption=100).dict()
 )
 
 BAT = 锂电池(
