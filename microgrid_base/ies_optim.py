@@ -2756,7 +2756,7 @@ class ModelContext:
         print("EXITING MODEL CONTEXT")
 
 
-devInstClassMap = {
+devInstClassMap: Dict[str, Union[柴油模型]] = {
     "柴油": 柴油模型,
     "电负荷": 电负荷模型,
     "光伏发电": 光伏发电模型,
