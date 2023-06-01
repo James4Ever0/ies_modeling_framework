@@ -741,19 +741,17 @@ class {{class_name}}模型(设备模型):
     {% else %}
 
         ### COMPAT CHECK ###
-        unit = ureg.Unit(self.设备信息.Unit)
-        compatible_units = ureg.get_compatible_units(unit)
-
-        default_unit = ureg.Unit(self.设备信息.DefaultUnit)
-        default_unit_compatible = ureg.get_compatible_units(default_unit)
+        default_unit= self.设备信息.DefaultUnit
+         val_unit =self.设备信息.Unit
+        has_exception, _ = getSingleUnitConverted(default_unit= default_unit, val_unit =val_unit)
 
         if default_unit_compatible == frozenset():
             raise Exception("Compatible units are zero for default unit:", str(default_unit))
         if compatible_units == frozenset():
             raise Exception("Compatible units are zero for value unit:", str(unit))
         
-        if not default_unit_compatible == compatible_units:
-            raise Exception(f"Unit '{unit}' is not compatible with default unit '{default_unit}'")
+        if has Exception:
+            raise Exception(f"Unit '{val_unit}' is not compatible with default unit '{default_unit}'")
         ### COMPAT CHECK ###
 
         
