@@ -14,21 +14,21 @@ def print_with_banner(data, banner:str):
     print()
 
 # you may need pydantic here. verify then import to compute graph.
-topo = 拓扑图(计算步长="小时", 计算模式="典型日")  # with structure?
+topo = 拓扑图(**)  # with structure?
 
-PV1 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
-PV2 = 光伏发电(topo, 面积=2)  # 这种是增加新的光伏发电
-DEL1 = 变流器(topo)
-DEL2 = 变压器(topo)
-LOAD = 电负荷(topo, 功率=3000)
+PV1 = 光伏发电(topo, param = )  # 这种是增加新的光伏发电
+PV2 = 光伏发电(topo, param = )  
+DEL1 = 变流器(topo, param = )
+DEL2 = 变压器(topo, param = )
+LOAD = 电负荷(topo, param = )
 
-BAT = 锂电池(topo)
+BAT = 锂电池(topo, param = )
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
 
-BC = 双向变流器(topo)
+BC = 双向变流器(topo, param = )
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
