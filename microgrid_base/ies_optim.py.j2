@@ -340,7 +340,7 @@ class 设备模型:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
     
-    def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
+    def 变量列表_带指示变量(self, varName:str, within = Reals) ->=POSNEG:
         x = self.变量列表(varName,within=within )
 
         {% for flag in ['pos', 'neg']%}
@@ -526,7 +526,7 @@ class {{class_name}}模型(设备模型):
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
 
-        assert self.MaxSOC > self.MinSOC
+        assert self.MaxSOC >=self.MinSOC
         assert self.MaxSOC <= 1
         assert self.MinSOC >= 0
 
@@ -568,14 +568,14 @@ class {{class_name}}模型(设备模型):
         #       /     | ax^3
         #  ----/      |______
         #
-        assert self.RatedWindSpeed > self.MinWindSpeed
-        assert self.MaxWindSpeed > self.RatedWindSpeed
+        assert self.RatedWindSpeed >=self.MinWindSpeed
+        assert self.MaxWindSpeed >=self.RatedWindSpeed
 
         发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
-        # windspeed (m/s) -> current power per device (kW)
+        # windspeed (m/s) ->=current power per device (kW)
         WS = np.array(self.计算参数.风速)
-        单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, WS > self.MinWindSpeed and WS <= self.RatedWindSpeed , WS > self.RatedWindSpeed and WS < self.MaxWindSpeed, WS >= self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
+        单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, WS >=self.MinWindSpeed and WS <= self.RatedWindSpeed , WS >=self.RatedWindSpeed and WS <=self.MaxWindSpeed, WS >= self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
         单台发电功率 = 单台发电功率.tolist()
         {% endif %}
 
@@ -608,7 +608,7 @@ class {{class_name}}模型(设备模型):
         总面积 = self.Area * self.DeviceCount
 
         # 光照强度 * 总面积 * 光电转换效率 * 电电转换效率
-        # (kW/m2) * m2 * one * one -> kW
+        # (kW/m2) * m2 * one * one ->=kW
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
 
         {% elif class_name in ['风力发电'] %}
@@ -637,16 +637,16 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y)
 
         for i in range(self.计算参数.迭代步数-1):
-            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] < self.MaxTotalCapacityDeltaPerStep)
-            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] > -self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
                 self.mw.Constraint(self.原电接口.x[0] == self.EPS)
             elif self.设备信息.循环边界条件 == '日间连接':
-                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] < self.MaxTotalCapacityDeltaPerStep)
+                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
 
-                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] > -self.MaxTotalCapacityDeltaPerStep)
+                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] >=-self.MaxTotalCapacityDeltaPerStep)
 
                 self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalActualCapacity[0]) * {{时间步长参数}} )
             else:
