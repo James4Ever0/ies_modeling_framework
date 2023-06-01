@@ -2907,6 +2907,7 @@ def compute(
             input_anchor_0 = G.nodes[input_indexs[0]]
             if input_anchor_0["subtype"] == "变压器输出":
                 print(f"Building Converter Constraint #{cnt}")
+                breakpoint()
                 cnt += 1
                 assert io_indexs == []
 
