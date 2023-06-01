@@ -341,22 +341,10 @@ def getUnitConverted(val_name, val_unit):
         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
         # iterate through all base classes.
         
-            print("USING DEFAULT UNIT")
-        print("UNIT", val_unit)
-        unit = ureg.Unit(val_unit)
-        compatible_units = ureg.get_compatible_units(unit)
-        # print("COMPATIBLE UNITS", compatible_units)
-        if default_unit_compatible == frozenset():
-            raise Exception("Compatible units are zero for default unit:", default_unit)
-        if compatible_units == frozenset():
-            raise Exception("Compatible units are zero for value unit:", val_unit)
-        if not default_unit_compatible == compatible_units:
-            has_exception = True
-            print(
-                "Unit {} not compatible with default unit {}".format(
-                    val_unit, default_unit
-                )
-            )
+        val_unit = _val_unit
+        has_exception = getSingleUnitConverted(default_unit=default_unit, val_unit=val_unit)
+        
+        if has_exception:
             continue
         else:
             # get factor:
