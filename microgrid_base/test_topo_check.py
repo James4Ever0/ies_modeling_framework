@@ -106,13 +106,17 @@ print_with_banner(graph_data, "图元数据")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
-
-def Constraint(self, name:str, *args, **kwargs):
+class ModelWrapper()
+def __init__(self):
+    def getSpecialName
+def Constraint(self,*args, **kwargs):
+    name = self.clock+1
     self.model.__dict__[name] = Constraint(*args, **kwargs)
 def Var(self, name:str, *args, **kwargs):
-    self.model.__dict__[name] = (*args, **kwargs)
-def Objective(self, name:str, *args, **kwargs):
-    self.model.__dict__[name] = (*args, **kwargs)
+    self.model.__dict__[name] = Var(*args, **kwargs)
+def Objective(self,*args, **kwargs):
+
+    self.model.__dict__[name] = Objective(*args, **kwargs)
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute
     from pyomo.environ import *
