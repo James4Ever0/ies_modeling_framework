@@ -31,6 +31,8 @@ from ies_optim import (
 )
 from ies_optim import 计算参数
 
+
+
 algoParam = 计算参数(
     计算步长="小时", 典型日=False, 计算类型="设计规划", 风速=..., 光照=..., 气温=..., 年利率=0.1
 ).dict()
@@ -114,9 +116,14 @@ DEL2 = 变压器(
         MinDeviceCount=100,
     ).dict(),
 )
-LOAD = 电负荷(topo, param=电负荷信息(**devParam,EnergyConsumption=[], MaxEnergyConsumption=100).dict())
+LOAD = 电负荷(
+    topo, param=电负荷信息(**devParam, EnergyConsumption=[], MaxEnergyConsumption=100).dict()
+)
 
-BAT = 锂电池(topo, param=锂电池信息(**devParam,
+BAT = 锂电池(
+    topo,
+    param=锂电池信息(
+        **devParam,
         RatedCapacity=20,
         CostPerCapacity=100,
         CostPerYearPerCapacity=100,
@@ -127,18 +134,39 @@ BAT = 锂电池(topo, param=锂电池信息(**devParam,
         DischargeEfficiency=0.9,
         BuildCostPerCapacity=10,
         BuildBaseCost=10,
-        BatteryStorageDecay = 10,
+        InitSOC=0.5,
+        BatteryStorageDecay=10,
         DeviceCount=100,
-        MaxSOC = 1,
-        MinSOC= 0,
+        BatteryLife=9,
+        TotalDischargeCapacity=1000,
+        MaxSOC=1,
+        MinSOC=0,
         MaxTotalCapacity=200,
-        MinTotalCapacity=100,).dict())
+        MinTotalCapacity=100,
+    ).dict(),
+)
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
 
-BC = 双向变流器(topo, param=双向变流器信息(**devParam).dict())
+BC = 双向变流器(
+    topo,
+    param=双向变流器信息(
+        **devParam,
+        RatedPower=10,
+        Efficiency=0.9,
+        CostPerKilowatt=100,
+        CostPerYearPerKilowatt=100,
+        VariationalCostPerWork=100,
+        Life=100,
+        BuildCostPerKilowatt=100,
+        BuildBaseCost=100,
+        MaxDeviceCount=200,
+        MinDeviceCount=100,
+        DeviceCount=100,
+    ).dict(),
+)
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接柴油母线", DS.燃料接口, DSS.燃料接口)
