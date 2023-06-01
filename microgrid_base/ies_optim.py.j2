@@ -17,7 +17,7 @@ from pydantic import BaseModel
 
 {% macro sum_reduce(seq)%}
  sum({{seq}})
- {# functools.reduce(sequence={{seq}}, function = lambda x,y: x+y) #}
+{# functools.reduce(sequence={{seq}}, function = lambda x,y: x+y) #}
 {% endmacro%}
 
 {% macro init_super_class(class_name)%}
@@ -272,7 +272,7 @@ class POSNEG:
         {%endfor%}
 
 {# from functools import reduce #}
-import functools
+{# import functools #}
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
         print("Building Device Model:", self.__class__.__name__)
