@@ -259,6 +259,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         solver = SolverFactory("cplex")
         try:
+            print(">>>SOLVING<<<")
             results = solver.solve(mw.model)
         except:
             import traceback
