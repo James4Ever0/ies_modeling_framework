@@ -260,11 +260,13 @@ if sys.argv[-1] in ["-f", "--full"]:
         solver = SolverFactory("cplex")
         try:
             print(">>>SOLVING<<<")
-            results = solver.solve(mw.model, tee=True, keepfiles= True)
+            # results = solver.solve(mw.model, tee=True, keepfiles= True)
+            results = solver.solve(mw.model, tee=True)
         except:
             import traceback
             traceback.print_exc()
             print(">>>SOLVER ERROR<<<")
+            exprs = [str(mw.model.__dict__[x].expr) for x in dir(mw.model) if x.startswith('CON')]
             breakpoint()
 
         print("OBJECTIVE?")
