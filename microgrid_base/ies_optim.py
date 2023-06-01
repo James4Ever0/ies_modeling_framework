@@ -65,13 +65,13 @@ class 风力发电ID(BaseModel):
 
 class 柴油发电ID(BaseModel):
     ID: int
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -109,25 +109,25 @@ class 变流器ID(BaseModel):
 
 class 双向变流器ID(BaseModel):
     ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
 class 传输线ID(BaseModel):
     ID: int
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1579,18 +1579,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -2450,18 +2450,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2592,18 +2592,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2641,84 +2641,12 @@ class 传输线模型(设备模型):
 
 import pint
 
-unit_def_path = "../merged_units.txt"
-ureg = pint.UnitRegistry(unit_def_path)
-
-
-def unitFactorCalculator(
-    ureg: pint.UnitRegistry, standard_units: frozenset, old_unit_name: str
-):  # like "元/kWh"
-    assert old_unit_name != ""
-    assert type(old_unit_name) == str
-    ## now, the classic test?
-
-    standard_units_mapping = {
-        ureg.get_compatible_units(unit): unit for unit in standard_units
-    }
-
-    try:
-        quantity = ureg.Quantity(1, old_unit_name)  # one, undoubtable.
-    except:
-        raise Exception("Unknown unit name:", old_unit_name)
-    # quantity = ureg.Quantity(1, ureg.元/ureg.kWh)
-    magnitude, units = quantity.to_tuple()
-
-    new_units_list = []
-    for unit, power in units:
-        # if type(unit)!=str:
-        print("UNIT?", unit, "POWER?", power)
-        compat_units = ureg.get_compatible_units(
-            unit
-        )  # the frozen set, as the token for exchange.
-
-        target_unit = standard_units_mapping.get(compat_units, None)
-        if target_unit:
-            # ready to convert?
-            unit = str(target_unit)
-        else:
-            raise Exception("No common units for:", unit)
-        new_units_list.append((unit, power))
-
-    print("NEW UNITS LIST:", new_units_list)
-    new_unit = ureg.UnitsContainer(tuple(new_units_list))
-
-    new_quantity = quantity.to(new_unit)
-
-    print("OLD QUANTITY:", quantity)
-    print("NEW QUANTITY:", new_quantity)
-
-    # get the magnitude?
-    new_magnitude = new_quantity.magnitude  # you multiply that.
-    print("FACTOR:", new_magnitude)
-    new_unit_name = str(new_unit)
-    print("NEW UNIT NAME:", new_unit_name)
-    return new_magnitude, new_unit_name
-
-
-standard_units_name_list = [
-    "万元",
-    "kWh",
-    "km",
-    "kW",
-    "年",
-    "MPa",
-    "V",
-    "Hz",
-    "ohm",
-    "one",
-    # "percent"
-    "台",
-    "m2",
-    "m3",
-    # "stere",
-    "celsius",
-    "metric_ton",  # this is weight.
-    # "p_u_",
-    "dimensionless",
-]
-
-standard_units = frozenset(
-    [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    getSingleUnitConverted,
+    translateUnit,
 )
 
 
@@ -2764,31 +2692,25 @@ class 柴油模型(设备模型):
         类型: 柴油输出
         """
 
-        ### COMPAT CHECK ###
-        unit = ureg.Unit(self.设备信息.Unit)
-        compatible_units = ureg.get_compatible_units(unit)
+        ### UNIT COMPATIBILITY CHECK ###
+        default_unit = self.设备信息.DefaultUnit
+        val_unit = self.设备信息.Unit
 
-        default_unit = ureg.Unit(self.设备信息.DefaultUnit)
-        default_unit_compatible = ureg.get_compatible_units(default_unit)
+        has_exception, _ = getSingleUnitConverted(
+            default_unit=default_unit, val_unit=val_unit
+        )
 
-        if default_unit_compatible == frozenset():
+        if has_exception:
             raise Exception(
-                "Compatible units are zero for default unit:", str(default_unit)
+                f"Unit '{val_unit}' is not compatible with default unit '{default_unit}'"
             )
-        if compatible_units == frozenset():
-            raise Exception("Compatible units are zero for value unit:", str(unit))
+        ### UNIT COMPATIBILITY CHECK ###
 
-        if not default_unit_compatible == compatible_units:
-            raise Exception(
-                f"Unit '{unit}' is not compatible with default unit '{default_unit}'"
-            )
-        ### COMPAT CHECK ###
-
+        ### UNIT CONVERSION ###
         mag, standard = self.ConversionRate, self.StandardUnit = unitFactorCalculator(
             ureg, standard_units, unit
         )
-        print("STANDARD:", standard)
-        print("MAGNITUDE TO STANDARD:", mag)
+        ### UNIT CONVERSION ###
 
         self.Price = self.设备信息.Price
         self.Unit = str(self.StandardUnit)
@@ -2900,4 +2822,39 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
             )
 
             # add them all.
-            [PD[i] for i in input_indexs + output_indexs + io_indexs] >= 0
+            for j in range(algoParam.迭代步数):
+                seqsum = reduce(
+                    sequence=[
+                        PD[i][j] for i in input_indexs + output_indexs + io_indexs
+                    ],
+                    function=lambda x, y: x + y,
+                )
+
+                Constraint(seqsum >= 0)
+
+            if algoParam.计算类型 == "设计规划":
+                input_anchor_0 = G.node[input_indexs[0]]
+                if input_anchor_0["subtype"] == "变压器输出":
+                    assert io_indexs == []
+
+                    input_limit_list = []
+                    for input_id in input_indexs:
+                        input_anchor = G.node[input_id]
+                        input_node_id = input_anchor["device_id"]
+                        input_devInst = devInstDict[input_node_id]
+                        input_limit_list.append(input_devInst.最大允许的负载总功率)
+                    input_limit = reduce(
+                        sequence=input_limit_list, function=lambda x, y: x + y
+                    )
+
+                    output_limit_list = []
+                    for output_id in input_indexs:
+                        output_anchor = G.node[output_id]
+                        output_node_id = input_anchor["device_id"]
+                        output_devInst = devInstDict[output_node_id]
+                        output_limit_list.append(output_devInst.MaxEnergyConsumption)
+                    output_limit = reduce(
+                        sequence=output_limit_list, function=lambda x, y: x + y
+                    )
+
+                    Constraint(input_limit + output_limit >= 0)

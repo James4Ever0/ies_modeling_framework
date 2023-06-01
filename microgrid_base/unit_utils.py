@@ -137,4 +137,4 @@ def translateUnit(_val_unit):
         trans_target_unit,
     ) in UNIT_TRANSLATION_TABLE.items():
         _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
-        return _val_unit
+    return _val_unit
