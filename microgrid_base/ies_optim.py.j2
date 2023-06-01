@@ -724,7 +724,9 @@ from unit_utils import (
 {% set special_class = {"load_class": load_class_names, "input_class": input_class_names}%}
 
 {# check for coverage #}
-{% %}
+{% for class_name in 设备接口集合.keys() %}
+
+{% if nonload_class_name in NonLoadDeviceDict.keys()%}
 
 {% for k,clist in special_types.items() %}
     {% for class_name in clist%}
