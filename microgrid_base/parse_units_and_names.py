@@ -321,8 +321,15 @@ def getSingleUnitConverted(default_unit, val_unit):
         )
     else:
         has_exception = False
-    return has_exception
+    return has_exception, val_unit
 
+def translateUnit(_val_unit):
+    for (
+        trans_source_unit,
+        trans_target_unit,
+    ) in UNIT_TRANSLATION_TABLE.items():
+        _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
+        return _val_unit
 
 def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
@@ -331,11 +338,7 @@ def getUnitConverted(val_name, val_unit):
     _val_unit = val_unit
 
     if _val_unit:
-        for (
-            trans_source_unit,
-            trans_target_unit,
-        ) in UNIT_TRANSLATION_TABLE.items():
-            _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
+        _val_unit = translateUnit(_val_unit)
 
     for base_class in base_classes:
         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
@@ -346,7 +349,7 @@ def getUnitConverted(val_name, val_unit):
         
         if has_exception:
             continue
-        else:
+        elif val:
             # get factor:
             mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
             print("STANDARD:", standard)
