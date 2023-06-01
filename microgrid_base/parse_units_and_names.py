@@ -320,8 +320,8 @@ def getUnitConverted(val_name, val_unit):
         elif val:
             # get factor:
             mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
-            print("STANDARD:", standard)
-            print("MAGNITUDE TO STANDARD:", mag)
+            # print("STANDARD:", standard)
+            # print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
             return has_exception, (base_class, val_unit, mag, standard)
     return True, (None, None, None, None)  # has_exception, uc

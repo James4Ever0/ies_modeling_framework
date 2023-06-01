@@ -49,9 +49,9 @@ def unitFactorCalculator(
 
     # get the magnitude?
     new_magnitude = new_quantity.magnitude  # you multiply that.
-    print("FACTOR:", new_magnitude)
+    print("MAGNITUDE TO STANDARD:", new_magnitude)
     new_unit_name = str(new_unit)
-    print("NEW UNIT NAME:", new_unit_name)
+    print("STANDARD:", new_unit_name)
     return new_magnitude, new_unit_name
 
 

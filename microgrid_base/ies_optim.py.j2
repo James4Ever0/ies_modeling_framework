@@ -740,19 +740,15 @@ class {{class_name}}模型(设备模型):
         {% endif %}
     {% else %}
 
-        ### COMPAT CHECK ###
+        ### UNIT COMPATIBILITY CHECK ###
         default_unit= self.设备信息.DefaultUnit
-         val_unit =self.设备信息.Unit
-        has_exception, _ = getSingleUnitConverted(default_unit= default_unit, val_unit =val_unit)
+        val_unit = self.设备信息.Unit
 
-        if default_unit_compatible == frozenset():
-            raise Exception("Compatible units are zero for default unit:", str(default_unit))
-        if compatible_units == frozenset():
-            raise Exception("Compatible units are zero for value unit:", str(unit))
-        
-        if has Exception:
+        has_exception, _ = getSingleUnitConverted(default_unit = default_unit, val_unit =val_unit)
+
+        if has_exception:
             raise Exception(f"Unit '{val_unit}' is not compatible with default unit '{default_unit}'")
-        ### COMPAT CHECK ###
+        ### UNIT COMPATIBILITY CHECK ###
 
         
         mag, standard = self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, unit)
