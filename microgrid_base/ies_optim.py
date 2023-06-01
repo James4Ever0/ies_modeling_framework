@@ -64,13 +64,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -82,24 +82,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
     """
+    电输入: int
+    """
+    类型: 电母线输入
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -115,13 +115,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -840,17 +840,19 @@ class ModelWrapper:
 
     def Constraint(self, *args, **kwargs):
         name = self.getSpecialName("CON")
-        ret = self.model.__dict__[name] = Constraint(*args, **kwargs)
+        ret = Constraint(*args, **kwargs)
+        self.model.__setattr__(name, ret)
         return ret
 
     def Var(self, name: str, *args, **kwargs):
         ret = Var(*args, **kwargs)
-        self.model.__setattr__(name,ret)
+        self.model.__setattr__(name, ret)
         return ret
 
     def Objective(self, *args, **kwargs):
         name = self.getSpecialName("OBJ")
-        ret = self.model.__dict__[name] = Objective(*args, **kwargs)
+        ret = Objective(*args, **kwargs)
+        self.model.__setattr__(name, ret)
         return ret
 
 
@@ -954,16 +956,12 @@ class 设备模型:
         return var
 
     def 变量列表(self, varName: str, **kwargs):
-        var = self.mw.Var(self.getVarName(varName), list(range(self.计算参数.迭代步数)), **kwargs)
-        breakpoint()
+        var = self.mw.Var(self.getVarName(varName), range(self.计算参数.迭代步数), **kwargs)
         return var
 
     def RangeConstraint(self, var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
-            try:
-                self.mw.Constraint(expression(var_1[i], var_2[i]))
-            except:
-                breakpoint()
+            self.mw.Constraint(expression(var_1[i], var_2[i]))
 
     def RangeConstraintMulti(self, *vars, expression=...):  # keyword argument now.
         assert expression is not ...
@@ -1028,7 +1026,7 @@ class 设备模型:
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         piecewise_name = self.getSpecialVarName("PW")
-        self.mw.model.__dict__[piecewise_name] = PW = Piecewise(
+        PW = Piecewise(
             range_list,
             var_0,
             var_1,
@@ -1038,6 +1036,7 @@ class 设备模型:
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
         )
+        self.mw.model.__setattr__(piecewise_name, PW)
         return PW
 
     def Multiply(
@@ -1615,18 +1614,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -2180,18 +2179,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2337,18 +2336,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2636,18 +2635,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）

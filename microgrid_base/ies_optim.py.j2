@@ -203,7 +203,7 @@ class ModelWrapper:
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
         ret = {{k}}(*args, **kwargs)
-        self.model.__setattr__[name] = 
+        self.model.__setattr__(name, ret)
         return ret
     {% endfor%}
 
@@ -358,7 +358,8 @@ class 设备模型:
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         piecewise_name = self.getSpecialVarName("PW")
-        self.mw.model.__dict__[piecewise_name] = PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+        PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+        self.mw.model.__setattr__(piecewise_name, PW)
         return PW
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
