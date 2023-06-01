@@ -114,5 +114,9 @@ if sys.argv[-1] in ['-f',"--full"]:
         obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
         
         OBJ = mw.Objective(expr = obj_expr, sense = minimize)
-        
-        
+                
+        solver = SolverFactory("cplex")
+        results = solver.solve(mw.model)
+
+        print("OBJECTIVE?")
+        OBJ.display()
