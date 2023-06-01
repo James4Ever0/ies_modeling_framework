@@ -791,8 +791,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
     {% elif k == "input_class"%}
-        ...
-        self.Price * self.ConversionRate
+        self.Price
     {% else%}
         {% error("Unknown special class:", k)%}
     {% endif%}
