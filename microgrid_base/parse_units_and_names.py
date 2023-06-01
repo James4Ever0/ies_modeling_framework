@@ -319,6 +319,7 @@ def getUnitConverted(val_name, val_unit):
             continue
         elif val:
             # get factor:
+            print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
             mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
             # print("STANDARD:", standard)
             # print("MAGNITUDE TO STANDARD:", mag)
