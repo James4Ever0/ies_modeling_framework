@@ -738,7 +738,7 @@ class {{class_name}}模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
-    {% else%}
+    {% else %}
 
         ### COMPAT CHECK ###
         unit = ureg.Unit(self.设备信息.Unit)
