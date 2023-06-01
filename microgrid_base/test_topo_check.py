@@ -109,4 +109,4 @@ import sys
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute, ModelWrapper, ModelWrapperContext
     with ModelWrapperContext() as mw:
-    obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, model)
+        obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, model)

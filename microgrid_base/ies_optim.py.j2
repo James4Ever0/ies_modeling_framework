@@ -20,8 +20,8 @@ from pydantic import BaseModel
 {% endmacro%}
 
 {% macro init_super_class(class_name)%}
-    def __init__(self, PD:dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
-        super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
+    def __init__(self, PD:dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID = 设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 {% endmacro%}
@@ -306,20 +306,20 @@ class 设备模型:
         var = self.mw.Var(self.getVarName(varName) ,range(self.计算参数.迭代步数), **kwargs)
         return var
 
-    def Rangeself.mw.Constraint(self,var_1, var_2, expression):
+    def RangeConstraint(self,var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
             self.mw.Constraint(expression(var_1, var_2))
 
-    def Rangeself.mw.ConstraintMulti(self, *vars, expression=...): # keyword argument now.
+    def RangeConstraintMulti(self, *vars, expression=...): # keyword argument now.
         assert expression is not ...
         for i in range(self.计算参数.迭代步数):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeself.mw.Constraint(self, var_1, var_2, customRange:range, expression):
+    def CustomRangeConstraint(self, var_1, var_2, customRange:range, expression):
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
     
-    def CustomRangeself.mw.ConstraintMulti(self, *vars, customRange:range=..., expression=...):
+    def CustomRangeConstraintMulti(self, *vars, customRange:range=..., expression=...):
         assert expression is not ...
         assert customRange is not ...
         for i in customRange:
@@ -335,16 +335,16 @@ class 设备模型:
         b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
         x_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
-        self.Rangeself.mw.Constraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= x_{{flag}})
+        self.RangeConstraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= x_{{flag}})
         {%endfor%}
 
-        self.Rangeself.mw.Constraint(b_pos, b_neg, lambda x,y: x+y == 1)
+        self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
 
-        self.Rangeself.mw.ConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
+        self.RangeConstraintMulti(x, x_pos, x_neg, expression = lambda x,y,z: x == y-z )
 
         x_abs = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
-        self.Rangeself.mw.ConstraintMulti(x_pos, x_neg, x_abs, lambda x,y,z : z == x+y)
+        self.RangeConstraintMulti(x_pos, x_neg, x_abs, lambda x,y,z : z == x+y)
 
         posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg, x_abs)
 
@@ -363,12 +363,12 @@ class 设备模型:
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
-        self.Rangeself.mw.ConstraintMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x == y+z)
+        self.RangeConstraintMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x == y+z)
         mx_my_sum_var = m1posneg.x_abs
         mx_my_sum_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
         m2posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
-        self.Rangeself.mw.ConstraintMulti(m2posneg.x, mx, my, expression = lambda x,y,z: x == y-z)
+        self.RangeConstraintMulti(m2posneg.x, mx, my, expression = lambda x,y,z: x == y-z)
         mx_my_minus_var = m2posneg.x_abs
         mx_my_minus_pow2_var = self.变量列表(self.getSpecialVarName(varName))
 
@@ -397,7 +397,7 @@ class 设备模型:
 
         mx_my_multiply = self.变量列表(varName, within=within)
 
-        mx_my_multiply = self.Rangeself.mw.Constraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/4)
+        mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/4)
 
         return mx_my_multiply
 
@@ -482,10 +482,10 @@ class {{class_name}}模型(设备模型):
             self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
 
             self.柴油输入_ = self.Multiply(dict(var=self.单台柴油输入, max=0, min=-self.RatedPower*self.最大油耗率), dict(var=self.DeviceCount,max=self.MaxDeviceCount, min=self.MinDeviceCount), "柴油输入_", within = NonPositiveReals)
-            self.Rangeself.mw.Constraint(self.柴油输入_, self.柴油输入, lambda x,y: x == y)
+            self.RangeConstraint(self.柴油输入_, self.柴油输入, lambda x,y: x == y)
         else:
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
-            self.Rangeself.mw.Constraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
+            self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
         {% elif class_name  == '锂电池' %}
         if self.计算参数.计算类型 == "设计规划":
             #  初始SOC
@@ -558,19 +558,19 @@ class {{class_name}}模型(设备模型):
         # 输出输入功率约束
         {%if class_name in ['传输线']%}
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
-        self.Rangeself.mw.Constraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
-        self.Rangeself.mw.Constraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
+        self.RangeConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
+        self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
         {%elif class_name in ['双向变流器']%}
 
-        self.Rangeself.mw.Constraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
-        self.Rangeself.mw.Constraint(self.储能端_.x , self.储能端, lambda x,y: x==y)
+        self.RangeConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
+        self.RangeConstraint(self.储能端_.x , self.储能端, lambda x,y: x==y)
 
-        self.Rangeself.mw.Constraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: x == y*self.Efficiency)
-        self.Rangeself.mw.Constraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency)
+        self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: x == y*self.Efficiency)
+        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency)
 
         {% elif class_name in 单向变电器列表%}
-        self.Rangeself.mw.Constraint(self.电输入, self.电输出, lambda x,y: x == -y* self.Efficiency)
-        self.Rangeself.mw.ConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
+        self.RangeConstraint(self.电输入, self.电输出, lambda x,y: x == -y* self.Efficiency)
+        self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
         {% elif class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 省略除以1 单位: one
         总最大功率 = self.MaxPower * self.DeviceCount
@@ -578,32 +578,32 @@ class {{class_name}}模型(设备模型):
 
         # 光照强度 * 总面积 * 光电转换效率 * 电电转换效率
         # (kW/m2) * m2 * one * one -> kW
-        self.Rangeself.mw.Constraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
+        self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
 
         {% elif class_name in ['风力发电'] %}
-        self.Rangeself.mw.Constraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
+        self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
 
         {% elif class_name in ['柴油发电'] %}
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
         总最大输出功率 = self.RatedPower * self.DeviceCount
 
-        self.Rangeself.mw.ConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
-        self.Rangeself.mw.Constraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
+        self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
+        self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
 
         self.Piecewise(self.单台柴油输入, self.单台发电功率, [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], [self.RatedPower*x[1] for x in self.DieselToPower_Load])
         # 柴油输入率: L/h
 
-        self.Rangeself.mw.ConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + 总最小启动功率*z == y)
+        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + 总最小启动功率*z == y)
 
         {%elif class_name in ['锂电池'] %}
-        self.Rangeself.mw.ConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity)
+        self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity)
 
         self.mw.Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.DeviceCount)
 
-        self.CustomRangeself.mw.Constraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x == (y[i] - y[i+1]) * {{时间步长参数}})
+        self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x == (y[i] - y[i+1]) * {{时间步长参数}})
         {# power = delta(capacity)/delta(time)#}
         
-        self.Rangeself.mw.ConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y)
+        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y)
 
         for i in range(self.计算参数.迭代步数-1):
             self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] < self.MaxTotalCapacityDeltaPerStep)
@@ -630,8 +630,8 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算步长 == "秒":
             总最大功率 = {{'self.MaxPower' if class_name in ['光伏发电'] else 'self.RatedPower'}} * self.DeviceCount
             最大功率变化 = 总最大功率 *self.PowerDeltaLimit / 100
-            self.CustomRangeself.mw.ConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
-            self.CustomRangeself.mw.ConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
+            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
+            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
         {% endif %}
         {# elif self.计算参数.计算步长 == "小时":
             ... # skip it.
@@ -810,7 +810,7 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
-        self.Rangeself.mw.Constraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
+        self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
         年化费用 = 0
         {# 计价模型 #}
     {% elif k == "input_class"%}
@@ -877,7 +877,7 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 from networkx import Graph
 
 # partial if typical day mode is on.
-def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, model: ConcreteModel):
+def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, mw: ModelWrapper):
     PD = {}
     algoParam = 计算参数.parse_obj(graph_data)
 
@@ -904,7 +904,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
         devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
         devInstClass = devInstClassMap[devSubtype]
-        devInst = devInstClass(PD = PD, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst) # type: ignore
+        devInst = devInstClass(PD = PD, mw=mw, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst) # type: ignore
 
         devInstDict.update({ devID_int: devInst})
     for adder_index, adder in adders.items():
