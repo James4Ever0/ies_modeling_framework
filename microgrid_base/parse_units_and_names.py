@@ -12,7 +12,9 @@ from unit_utils import (
     unitFactorCalculator,
     ureg,
     standard_units,
-    UNIT_TRANSLATION_TABLE,
+    # UNIT_TRANSLATION_TABLE,
+    getSingleUnitConverted,
+    translateUnit
 )
 
 EXCEL = "嵌套"
@@ -296,40 +298,6 @@ add_range_translation(META_TRANSLATION_TABLE, "安装台数", "DeviceCount")
 
 output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿真模拟}
 
-def getSingleUnitConverted(default_unit, val_unit):
-    print("DEFAULT UNIT:", default_unit)
-    default_unit_real = ureg.Unit(default_unit)
-    default_unit_compatible = ureg.get_compatible_units(default_unit_real)
-    # print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
-    if val_unit is None:
-        val_unit = default_unit
-        print("USING DEFAULT UNIT")
-    print("UNIT", val_unit)
-    unit = ureg.Unit(val_unit)
-    compatible_units = ureg.get_compatible_units(unit)
-    # print("COMPATIBLE UNITS", compatible_units)
-    if default_unit_compatible == frozenset():
-        raise Exception("Compatible units are zero for default unit:", default_unit)
-    if compatible_units == frozenset():
-        raise Exception("Compatible units are zero for value unit:", val_unit)
-    if not default_unit_compatible == compatible_units:
-        has_exception = True
-        print(
-            "Unit {} not compatible with default unit {}".format(
-                val_unit, default_unit
-            )
-        )
-    else:
-        has_exception = False
-    return has_exception, val_unit
-
-def translateUnit(_val_unit):
-    for (
-        trans_source_unit,
-        trans_target_unit,
-    ) in UNIT_TRANSLATION_TABLE.items():
-        _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
-        return _val_unit
 
 def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
@@ -345,7 +313,8 @@ def getUnitConverted(val_name, val_unit):
         # iterate through all base classes.
         
         val_unit = _val_unit
-        has_exception = getSingleUnitConverted(default_unit=default_unit, val_unit=val_unit)
+        
+        has_exception, val_unit = getSingleUnitConverted(default_unit=default_unit, val_unit=val_unit)
         
         if has_exception:
             continue

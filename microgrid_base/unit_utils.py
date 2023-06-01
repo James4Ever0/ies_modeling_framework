@@ -102,3 +102,39 @@ def revert_dict(mdict: dict):
     return result
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
+
+
+def getSingleUnitConverted(default_unit, val_unit):
+    print("DEFAULT UNIT:", default_unit)
+    default_unit_real = ureg.Unit(default_unit)
+    default_unit_compatible = ureg.get_compatible_units(default_unit_real)
+    # print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
+    if val_unit is None:
+        val_unit = default_unit
+        print("USING DEFAULT UNIT")
+    print("UNIT", val_unit)
+    unit = ureg.Unit(val_unit)
+    compatible_units = ureg.get_compatible_units(unit)
+    # print("COMPATIBLE UNITS", compatible_units)
+    if default_unit_compatible == frozenset():
+        raise Exception("Compatible units are zero for default unit:", default_unit)
+    if compatible_units == frozenset():
+        raise Exception("Compatible units are zero for value unit:", val_unit)
+    if not default_unit_compatible == compatible_units:
+        has_exception = True
+        print(
+            "Unit {} not compatible with default unit {}".format(
+                val_unit, default_unit
+            )
+        )
+    else:
+        has_exception = False
+    return has_exception, val_unit
+
+def translateUnit(_val_unit):
+    for (
+        trans_source_unit,
+        trans_target_unit,
+    ) in UNIT_TRANSLATION_TABLE.items():
+        _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
+        return _val_unit
