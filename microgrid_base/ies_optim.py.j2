@@ -742,10 +742,12 @@ class {{class_name}}模型(设备模型):
     {% if k == "load_class"%}
         {% if not class_name.endswith('负荷')%}
             {% error("错误的负荷类名:", class_name)%}
+        {% else%}
+            {% set v = class_name.strip("负荷")%}
         {% endif%}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
-        {% if v in ['电负荷'] %}
+        {% if v in ['电'] %}
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
         if self.设备信息.MaxEnergyConsumption is None:
             self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
@@ -778,7 +780,7 @@ class {{class_name}}模型(设备模型):
     
     def constraints_register(self):
     {% if k == "load_class"%}
-        {% if v in ['电负荷'] %}
+        {% if v in ['电'] %}
             {% set port_name = '电接口' %}
         {% else %}
             {% error("未知负荷类型:",class_name) %}
