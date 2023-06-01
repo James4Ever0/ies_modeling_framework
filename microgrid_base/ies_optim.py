@@ -840,6 +840,7 @@ class ModelWrapper:
 
     def Constraint(self, *args, **kwargs):
         name = self.getSpecialName("CON")
+        breakpoint()
         ret = Constraint(*args, **kwargs)
         self.model.__setattr__(name, ret)
         return ret
