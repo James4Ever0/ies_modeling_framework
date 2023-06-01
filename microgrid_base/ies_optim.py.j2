@@ -800,11 +800,11 @@ class ModelContext:
 {% for class_name in 设备接口集合.keys() %}
 {% do class_types.update({class_name:class_name+type_suffix}) %}
 {% endfor %}
-dev{{e}}ClassMap : Dict[str, 设备{{type_suffix}}]= {
+dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" else "BaseModel"}}]= {
     {% for class_name in 设备接口集合.keys() %}
     "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}
-}
+} # type: ignore
 
 {% endfor %}
 
