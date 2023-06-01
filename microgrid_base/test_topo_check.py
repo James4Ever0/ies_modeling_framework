@@ -107,7 +107,7 @@ print_with_banner(graph_data, "图元数据")
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
 
-def 
+class Model()
 
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute
