@@ -2827,19 +2827,6 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "传输线": 传输线信息,
 }  # type: ignore
 
-import enum
-class 设备信息:
-    柴油信息,
-    电负荷信息,
-    光伏发电信息,
-    风力发电信息,
-    柴油发电信息,
-    锂电池信息,
-    变压器信息,
-    变流器信息,
-    双向变流器信息,
-    传输线信息,
-]
 from networkx import Graph
 
 # partial if typical day mode is on.
