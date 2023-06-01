@@ -12,7 +12,6 @@ from unit_utils import (
     unitFactorCalculator,
     ureg,
     standard_units,
-    # UNIT_TRANSLATION_TABLE,
     getSingleUnitConverted,
     translateUnit
 )
