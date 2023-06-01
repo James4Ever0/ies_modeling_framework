@@ -104,13 +104,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -2451,18 +2451,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2874,6 +2874,7 @@ def compute(
                 )
 
                 Constraint(input_limit + output_limit >= 0)
-    objective = ...
-    return objective
+    obj_expr = reduce(sequence=[], function=lambda x, y: x + y)
+
+    return obj_expr
     # always minimize the objective.
