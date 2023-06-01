@@ -15,6 +15,10 @@ from pydantic import BaseModel
 {% endfor%}
 {% set input_types = ['柴油'] %}
 
+{% macro sum_reduce(seq)%}
+reduce(sequence=seq, )
+{% endmacro%}
+
 {% macro init_super_class(class_name)%}
     def __init__(self, PD:dict, model: ConcreteModel, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(PD=PD, model=model, 计算参数实例=计算参数实例, ID = 设备ID.ID)
@@ -890,6 +894,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
                 Constraint(input_limit + output_limit >= 0)
-    obj_expr = ...
+    obj_expr = reduce(sequence=,function = lambda x,y: x+y)
+
     return obj_expr
     # always minimize the objective.
