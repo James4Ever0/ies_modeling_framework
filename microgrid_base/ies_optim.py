@@ -1034,7 +1034,7 @@ class 设备模型:
             range_list = list(range(self.计算参数.迭代步数))
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
-            range_list,
+            *range_list,
             var_0, # y_var
             var_1, # x_var
             pw_pts,
