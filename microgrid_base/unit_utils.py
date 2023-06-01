@@ -80,3 +80,25 @@ standard_units_name_list = [
 standard_units = frozenset(
     [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
 )
+
+
+
+BASE_UNIT_TRANSLATION_TABLE = {
+    "percent": ["%"],
+    "m2": ["m²"],
+    "/hour": [
+        "/h",
+    ],
+    "m3": ["m³", 'Nm3', 'Nm³'],
+    "p_u_": [
+        "p.u.",
+    ],
+}
+
+
+
+def revert_dict(mdict: dict):
+    result = {e: k for k, v in mdict.items() for e in v}
+    return result
+
+UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)

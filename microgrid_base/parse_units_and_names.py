@@ -2,12 +2,18 @@
 # device_name_path = "microgrid_device_params_intermediate.json" # just for reference.
 
 device_data_path_base = "device_params_intermediate.json"
+
 import pint
 
 import json
 import rich
 
-from unit_utils import unitFactorCalculator,ureg, standard_units
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    UNIT_TRANSLATION_TABLE,
+)
 
 EXCEL = "嵌套"
 
@@ -128,7 +134,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "": ["效率"],
         },
     ),
-    "Parameter": ("one", {"Power-":["功率因数"], "LoadRedundancy-":["变压器冗余系数"]}),
+    "Parameter": ("one", {"Power-": ["功率因数"], "LoadRedundancy-": ["变压器冗余系数"]}),
     "Count": (
         "台",
         {"Device-": ["安装台数"], "MaxDevice-": ["最大安装台数"], "MinDevice-": ["最小安装台数"]},
@@ -255,11 +261,6 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
 # }
 
 
-def revert_dict(mdict: dict):
-    result = {e: k for k, v in mdict.items() for e in v}
-    return result
-
-
 # rich.print(BASE_TRANSLATION_TABLE)
 # rich.print(TRANSLATION_TABLE)
 # breakpoint()
@@ -269,20 +270,6 @@ def revert_dict(mdict: dict):
 # LIST_TYPE = [
 #     "嵌套表格"
 # ]  # check this in the 2nd index  # notice, list contains multiple headings, each heading may have its own unit.
-
-BASE_UNIT_TRANSLATION_TABLE = {
-    "percent": ["%"],
-    "m2": ["m²"],
-    "/hour": [
-        "/h",
-    ],
-    "m3": ["m³", 'Nm3', 'Nm³'],
-    "p_u_": [
-        "p.u.",
-    ],
-}
-
-UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
 
 def add_range_translation(mdict, source, target):
@@ -444,7 +431,7 @@ for key in keys:
                     ## 仿真模拟
                     dkey = "仿真模拟"
                     # extra
-                    if subkey in ['变压器']:
+                    if subkey in ["变压器"]:
                         params[dkey].append(wrapper_uc_vp("功率因数", "one"))
                     # override
                     if subkey in ["传输线"]:
