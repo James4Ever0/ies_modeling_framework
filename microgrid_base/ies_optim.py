@@ -2895,4 +2895,3 @@ def compute(
 
     return obj_expr, devInstDict, PD
     # always minimize the objective.
-namespace
