@@ -107,11 +107,10 @@ print_with_banner(graph_data, "图元数据")
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
 
-monotonic = 
 
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute
     from pyomo.environ import *
     model = ConcreteModel()
     model.Constraint
-    obj_expr, devInstDict, PD= compute(devs, adders, graph_data, topo.G, model)
+    obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, model)
