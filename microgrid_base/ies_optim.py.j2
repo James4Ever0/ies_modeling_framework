@@ -336,7 +336,7 @@ class 设备模型:
         b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
         x_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
-        self.RangeConstraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= x_{{flag}})
+        self.RangeConstraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= y)
         {%endfor%}
 
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
