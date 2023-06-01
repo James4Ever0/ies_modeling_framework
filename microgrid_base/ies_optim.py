@@ -93,13 +93,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 
@@ -115,13 +115,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -925,7 +925,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = int(1e10)
+        self.BigM = 1e10
         """
         一个极大数
         """
@@ -958,7 +958,7 @@ class 设备模型:
 
     def RangeConstraint(self, var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
-            self.mw.Constraint(expression(var_1, var_2))
+            self.mw.Constraint(expression(var_1[i], var_2[i]))
 
     def RangeConstraintMulti(self, *vars, expression=...):  # keyword argument now.
         assert expression is not ...
@@ -989,7 +989,7 @@ class 设备模型:
         b_pos = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
         x_pos = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
 
-        self.RangeConstraint(b_pos, x_pos, lambda x, y:self.BigM* x  >= y)
+        self.RangeConstraint(b_pos, x_pos, lambda x, y: x * self.BigM >= y)
         b_neg = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
         x_neg = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
 
@@ -2332,18 +2332,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2631,18 +2631,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
