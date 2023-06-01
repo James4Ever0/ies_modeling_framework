@@ -64,6 +64,7 @@ DS = 柴油发电(
         **devParam,
         RatedPower=20,
         PowerDeltaLimit=1,
+        PowerStartupLimit=1,
         CostPerMachine=100,
         CostPerYearPerMachine=100,
         VariationalCostPerWork=100,
@@ -77,8 +78,36 @@ DS = 柴油发电(
     ).dict(),
 )
 
-DEL1 = 变流器(topo, param=变流器信息(**devParam).dict())
-DEL2 = 变压器(topo, param=变压器信息(**devParam).dict())
+DEL1 = 变流器(
+    topo,
+    param=变流器信息(
+        **devParam,
+        RatedPower=20,
+        CostPerKilowatt=100,
+        CostPerYearPerKilowatt=100,
+        VariationalCostPerWork=100,
+        Life=20,
+        Efficiency=0.9,
+        BuildCostPerKilowatt=10,
+        BuildBaseCost=10,
+        DeviceCount=100,
+        MaxDeviceCount=200,
+        MinDeviceCount=100,
+    ).dict(),
+)
+DEL2 = 变压器(topo, param=变压器信息(**devParam, 
+                            
+        RatedPower=20,
+        CostPerKilowatt=100,
+        CostPerYearPerKilowatt=100,
+        VariationalCostPerWork=100,
+        Life=20,
+        Efficiency=0.9,
+        BuildCostPerKilowatt=10,
+        BuildBaseCost=10,
+        DeviceCount=100,
+        MaxDeviceCount=200,
+        MinDeviceCount=100,).dict())
 LOAD = 电负荷(topo, param=电负荷信息(**devParam).dict())
 
 BAT = 锂电池(topo, param=锂电池信息(**devParam).dict())
