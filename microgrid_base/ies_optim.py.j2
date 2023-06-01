@@ -801,8 +801,11 @@ class {{class_name}}模型(设备模型):
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
         {% if class_name in ['电'] %}
-        if self.计算参数.典型日:
-            assert self.设备信息.MaxEnergyConsumption is not None
+        MaxEnergyConsumption = max(self.设备信息.EnergyConsumption)
+        if self.设备信息.MaxEnergyConsumption is None:
+        else:
+        assert self.
+            self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
     {% else%}
 
