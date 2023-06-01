@@ -117,19 +117,22 @@ DEL2 = 变压器(
 LOAD = 电负荷(topo, param=电负荷信息(**devParam,EnergyConsumption=[], MaxEnergyConsumption=100).dict())
 
 BAT = 锂电池(topo, param=锂电池信息(**devParam,
-        PowerParameter=0.9,
-        LoadRedundancyParameter=1.2,
-        RatedPower=20,
-        CostPerKilowatt=100,
-        CostPerYearPerKilowatt=100,
+        RatedCapacity=20,
+        CostPerCapacity=100,
+        CostPerYearPerCapacity=100,
         VariationalCostPerWork=100,
         Life=20,
-        Efficiency=0.9,
-        BuildCostPerKilowatt=10,
+        BatteryDeltaLimit=2,
+        ChargeEfficiency=0.9,
+        DischargeEfficiency=0.9,
+        BuildCostPerCapacity=10,
         BuildBaseCost=10,
+        BatteryStorageDecay = 10,
         DeviceCount=100,
-        MaxDeviceCount=200,
-        MinDeviceCount=100,).dict())
+        MaxSOC = 1,
+        MinSOC= 0,
+        MaxTotalCapacity=200,
+        MinTotalCapacity=100,).dict())
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
