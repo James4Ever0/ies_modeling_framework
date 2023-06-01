@@ -1032,19 +1032,21 @@ class 设备模型:
     ):
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
-        piecewise_name = self.getSpecialVarName("PW")
-        PW = Piecewise(
-            *range_list,
-            y_var,
-            x_var,
+        PWL = []
+        for i in range_list:
+            piecewise_name = self.getSpecialVarName("PW")
+            PW = Piecewise(
+            y_var[i],
+            x_var[i],
             pw_pts=x_vals,
             f_rule=y_vals,
             pw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
         )
-        self.mw.model.__setattr__(piecewise_name, PW)
-        return PW
+            self.mw.model.__setattr__(piecewise_name, PW)
+            PWL.append(PW)
+        return PWL
 
     def Multiply(
         self, dict_mx: dict, dict_my: dict, varName: str, precision=10, within=Reals
