@@ -840,10 +840,7 @@ class ModelWrapper:
 
     def Constraint(self, *args, **kwargs):
         name = self.getSpecialName("CON")
-        try:
-            ret = Constraint(*args, **kwargs)
-        except:
-            breakpoint()
+        ret = Constraint(expr=args[0], *args[1:], **kwargs)
         self.model.__setattr__(name, ret)
         return ret
 
@@ -854,7 +851,7 @@ class ModelWrapper:
 
     def Objective(self, *args, **kwargs):
         name = self.getSpecialName("OBJ")
-        ret = Objective(*args, **kwargs)
+        ret = Objective(expr=args[0], *args[1:], **kwargs)
         self.model.__setattr__(name, ret)
         return ret
 
