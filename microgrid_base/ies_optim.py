@@ -954,6 +954,7 @@ class 设备模型:
 
     def 变量列表(self, varName: str, **kwargs):
         var = self.mw.Var(self.getVarName(varName), list(range(self.计算参数.迭代步数)), **kwargs)
+        breakpoint()
         return var
 
     def RangeConstraint(self, var_1, var_2, expression):
