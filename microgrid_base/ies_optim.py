@@ -2826,7 +2826,9 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
 }  # type: ignore
-deviceInfoClasses = [
+
+import enum
+enum.Enum()
     柴油信息,
     电负荷信息,
     光伏发电信息,
@@ -2838,8 +2840,6 @@ deviceInfoClasses = [
     双向变流器信息,
     传输线信息,
 ]
-__all__ = [deviceInfoClasses]
-
 from networkx import Graph
 
 # partial if typical day mode is on.
