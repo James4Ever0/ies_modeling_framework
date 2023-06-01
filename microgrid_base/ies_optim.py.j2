@@ -717,16 +717,20 @@ from unit_utils import (
 {# ##########[PINT END]########## #}
 
 {% set load_class_names = [] %}
-
-{% set special_class = {"load_class": load_types, "input_class": input_types}%}
+{% for v in vlist%}
+    {% do load_class_names.append(v+"负荷")%}
+{% endfor%}
+{% set special_class = {"load_class": load_class_names, "input_class": input_types}%}
 
 {# check for coverage #}
 {% %}
 
-{% for k,vlist in special_types.items() %}
-    {% for v in vlist%}
+{% for k,clist in special_types.items() %}
+    {% for class_name in clist%}
         {% if k == "load_class"%}
-            {% set class_name = v+"负荷"%}
+            {% if not class_name.endswith()%}
+                {% error("错误的负荷类名:", class_name)%}
+            {% endif%}
         {% else%}
             {% set class_name = v%}
         {% endif%}
