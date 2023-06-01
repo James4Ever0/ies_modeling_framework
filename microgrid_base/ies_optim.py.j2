@@ -796,10 +796,11 @@ class ModelContext:
 
 {% for e in ["Inst", "ID", 'Info'] %}
 {% set class_types = {}%}
+{% set type_suffix = ("模型" if e == "Inst" else ("信息" if e == 'Info' else e)) %}
 {% for class_name in 设备接口集合.keys() %}
-{% do class_types.update({class_name:class_name+("模型" if e == "Inst" else ("信息" if e == 'Info' else e))}) %}
+{% do class_types.update({class_name:class_name+type_suffix}) %}
 {% endfor %}
-dev{{e}}ClassMap = {
+dev{{e}}ClassMap : Dict[str, 设备{{type_suffix}}]= {
     {% for class_name in 设备接口集合.keys() %}
     "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}

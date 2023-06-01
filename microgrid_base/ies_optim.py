@@ -31,40 +31,39 @@ from typing import List, Dict, Union, Literal
 #############
 
 
-class 柴油ID(BaseModel):
+class 设备ID(BaseModel):
     ID: int
+
+
+class 柴油ID(设备ID):
     燃料接口: int
     """
     类型: 柴油输出
     """
 
 
-class 电负荷ID(BaseModel):
-    ID: int
+class 电负荷ID(设备ID):
     电接口: int
     """
     类型: 负荷电输入
     """
 
 
-class 光伏发电ID(BaseModel):
-    ID: int
+class 光伏发电ID(设备ID):
     电接口: int
     """
     类型: 供电端输出
     """
 
 
-class 风力发电ID(BaseModel):
-    ID: int
+class 风力发电ID(设备ID):
     电接口: int
     """
     类型: 供电端输出
     """
 
 
-class 柴油发电ID(BaseModel):
-    ID: int
+class 柴油发电ID(设备ID):
     电接口: int
     """
     类型: 供电端输出
@@ -75,16 +74,14 @@ class 柴油发电ID(BaseModel):
     """
 
 
-class 锂电池ID(BaseModel):
-    ID: int
+class 锂电池ID(设备ID):
     电接口: int
     """
     类型: 电储能端输入输出
     """
 
 
-class 变压器ID(BaseModel):
-    ID: int
+class 变压器ID(设备ID):
     电输入: int
     """
     类型: 电母线输入
@@ -95,8 +92,7 @@ class 变压器ID(BaseModel):
     """
 
 
-class 变流器ID(BaseModel):
-    ID: int
+class 变流器ID(设备ID):
     电输入: int
     """
     类型: 变流器输入
@@ -107,20 +103,18 @@ class 变流器ID(BaseModel):
     """
 
 
-class 双向变流器ID(BaseModel):
-    ID: int
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
+class 双向变流器ID(设备ID):
     储能端: int
     """
     类型: 双向变流器储能端输入输出
     """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
+    """
 
 
-class 传输线ID(BaseModel):
-    ID: int
+class 传输线ID(设备ID):
     电输入: int
     """
     类型: 电母线输入
@@ -2462,18 +2456,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2756,9 +2750,7 @@ class ModelContext:
         print("EXITING MODEL CONTEXT")
 
 
-devInstClassMap: Dict[
-    str, Union[柴油模型, 电负荷模型, 光伏发电模型, 风力发电模型, 柴油发电模型, 锂电池模型, 变压器模型, 变流器模型, 双向变流器模型, 传输线模型]
-] = {
+devInstClassMap: Dict[str, 设备模型] = {
     "柴油": 柴油模型,
     "电负荷": 电负荷模型,
     "光伏发电": 光伏发电模型,
@@ -2769,11 +2761,9 @@ devInstClassMap: Dict[
     "变流器": 变流器模型,
     "双向变流器": 双向变流器模型,
     "传输线": 传输线模型,
-}  # type: ignore
+}
 
-devIDClassMap: Dict[
-    str, Union[柴油ID, 电负荷ID, 光伏发电ID, 风力发电ID, 柴油发电ID, 锂电池ID, 变压器ID, 变流器ID, 双向变流器ID, 传输线ID]
-] = {
+devIDClassMap: Dict[str, 设备ID] = {
     "柴油": 柴油ID,
     "电负荷": 电负荷ID,
     "光伏发电": 光伏发电ID,
@@ -2784,11 +2774,9 @@ devIDClassMap: Dict[
     "变流器": 变流器ID,
     "双向变流器": 双向变流器ID,
     "传输线": 传输线ID,
-} # type: ignore
+}
 
-devInfoClassMap: Dict[
-    str, Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息]
-] = {
+devInfoClassMap: Dict[str, 设备信息] = {
     "柴油": 柴油信息,
     "电负荷": 电负荷信息,
     "光伏发电": 光伏发电信息,
@@ -2799,7 +2787,7 @@ devInfoClassMap: Dict[
     "变流器": 变流器信息,
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
-} # type:ignore
+}
 
 
 from networkx import Graph
@@ -2835,7 +2823,7 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
             devInstClass = devInstClassMap[devSubtype]
             devInst = devInstClass(
                 PD=PD, model=model, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst
-            )  # type: ignore
+            )
 
             devInstDict.update({devID_int: devInst})
         for adder_index, adder in adders.items():
