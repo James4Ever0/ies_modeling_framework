@@ -821,10 +821,12 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 {% endmacro %}
 
 from networkx import Graph
-def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
+
+# partial if typical day mode is on.
+def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, model=None):
     PD = {}
-    with ModelContext() as model:
         algoParam = 计算参数.parse_obj(graph_data)
+    with ModelContext() as model:
         devInstDict = {}
 
         for dev in devs:
@@ -871,5 +873,6 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
                     Constraint(input_limit + output_limit >= 0)
         result = {}
+        
         del PD
         return result
