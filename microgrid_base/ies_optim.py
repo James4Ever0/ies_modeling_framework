@@ -64,13 +64,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -115,13 +115,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1153,7 +1153,7 @@ class 光伏发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -1345,7 +1345,7 @@ class 风力发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -1535,7 +1535,7 @@ class 柴油发电模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -1579,18 +1579,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -1817,7 +1817,7 @@ class 锂电池模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -2090,7 +2090,7 @@ class 变压器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -2272,7 +2272,7 @@ class 变流器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -2425,7 +2425,7 @@ class 双向变流器模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -2576,7 +2576,7 @@ class 传输线模型(设备模型):
         assert self.BuildBaseCost >= 0
 
         if self.计算参数.计算类型 == "设计规划":
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """
@@ -2600,18 +2600,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2821,9 +2821,7 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
             devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
             devInstClass = devInstClassMap[devSubtype]
-            devInst = devInstClass(
-                PD=PD, model=model, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst
-            )
+            devInst = devInstClass(PD=PD, model=model, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst)  # type: ignore
 
             devInstDict.update({devID_int: devInst})
         for adder_index, adder in adders.items():
@@ -2862,7 +2860,7 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
                     output_limit_list = []
                     for output_id in input_indexs:
                         output_anchor = G.nodes[output_id]
-                        output_node_id = input_anchor["device_id"]
+                        output_node_id = output_anchor["device_id"]
                         output_devInst = devInstDict[output_node_id]
                         output_limit_list.append(output_devInst.MaxEnergyConsumption)
                     output_limit = reduce(

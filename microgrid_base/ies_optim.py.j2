@@ -395,7 +395,7 @@ class {{class_name}}模型(设备模型):
         {# # after: psc: {{psc}} mflag: {{mflag}} #}
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
-            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers)
+            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers) # type: ignore
             """
             单位： 个
             """
@@ -813,7 +813,7 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                     {{io_type}}_limit_list = []
                     for {{io_type}}_id in input_indexs:
                         {{io_type}}_anchor = G.nodes[{{io_type}}_id]
-                        {{io_type}}_node_id = input_anchor['device_id']
+                        {{io_type}}_node_id = {{io_type}}_anchor['device_id']
                         {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
                         {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
                     {{io_type}}_limit = reduce(sequence = {{io_type}}_limit_list , function = lambda x,y:x+y)
@@ -847,7 +847,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
             devInstClass = devInstClassMap[devSubtype]
-            devInst = devInstClass(PD = PD, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
+            devInst = devInstClass(PD = PD, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst) # type: ignore
 
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
