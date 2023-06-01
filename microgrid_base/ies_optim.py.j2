@@ -716,14 +716,16 @@ from unit_utils import (
 
 {# ##########[PINT END]########## #}
 
-{% set special_types = {"load_type": load_types, "input_type": input_types}%}
+{% set load_class_names = [] %}
+
+{% set special_class = {"load_class": load_types, "input_class": input_types}%}
 
 {# check for coverage #}
 {% %}
 
 {% for k,vlist in special_types.items() %}
     {% for v in vlist%}
-        {% if k == "load_type"%}
+        {% if k == "load_class"%}
             {% set class_name = v+"负荷"%}
         {% else%}
             {% set class_name = v%}
@@ -733,10 +735,10 @@ class {{class_name}}模型(设备模型):
 
 {{ port_variable_define(class_name)}}
 
-    {% if k == "load_type"%}
+    {% if k == "load_class"%}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
-        {% if class_name in ['电'] %}
+        {% if class_name in ['电负荷'] %}
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
         if self.设备信息.MaxEnergyConsumption is None:
             self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
