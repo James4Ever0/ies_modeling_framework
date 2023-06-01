@@ -881,7 +881,7 @@ dev{{e}}ClassMap = {
                         {{io_type}}_node_id = input_anchor['device_id']
                         {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
                         {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
-                    {{io_type}}
+                    {{io_type}}_limit = reduce(sequence = {{io_type}}_limit_list , function = lambda x,y:x+y)
 {% endmacro%}
 
 from networkx import Graph
@@ -922,7 +922,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 seqsum = reduce(sequence=[PD[i][j] for i in input_indexs + output_indexs + io_indexs], function = lambda x,y: x+y)
                 Constraint(seqsum >=0)
             
-            if algoParam.典型日:
+            if algoParam.计算模式.:
                 input_anchor_0 = G.node[input_indexs[0]]
                 if input_anchor_0['subtype'] == '变压器输出':
                     assert io_indexs == []
@@ -931,3 +931,4 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
+                    Constraint(input_limit + output_limit >= 0)
