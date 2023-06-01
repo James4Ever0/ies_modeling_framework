@@ -1,5 +1,8 @@
 # TODO: 典型日 最终输出结果需要展开为8760
+from typing import Dict, List, Literal, Union
+
 import rich
+from pydantic import BaseModel
 
 # the main code for computing.
 # currently just compute microgrid
@@ -18,9 +21,6 @@ import rich
 # so for every device the will change.
 
 # iterate through all device-port pairs, then retrieve attributes from another dict.
-
-from pydantic import BaseModel
-from typing import List, Dict, Union, Literal
 
 # string, digits, tables.
 # you can dump and load from json.
@@ -64,13 +64,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: int
-    """
-    类型: 柴油输入
-    """
     电接口: int
     """
     类型: 供电端输出
+    """
+    燃料接口: int
+    """
+    类型: 柴油输入
     """
 
 
@@ -82,13 +82,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -1579,18 +1579,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NegativeReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NegativeReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -1887,9 +1887,9 @@ class 锂电池模型(设备模型):
             "CurrentTotalActualCapacity", within=NonNegativeReals
         )
 
-        self.TotalCapacity = self.DeviceCount * self.RatedCapacity
+        self.TotalCapacity = self.DeviceCount * self.RatedCapacity  # type: ignore
 
-        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
+        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit  # type: ignore
 
         self.MaxTotalCapacityDeltaPerStep = (
             self.BatteryDeltaLimit * self.TotalCapacity / (self.计算参数.时间参数)
@@ -2142,13 +2142,6 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
@@ -2156,15 +2149,17 @@ class 变压器模型(设备模型):
         类型: 变压器输出
         """
 
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
+        """
+
         # 设备特有约束（变量）
 
         if self.计算参数.计算类型 == "设计规划":  # 在变压器和负荷的交换节点处做处理
-            self.最大允许的负载总功率 = (
-                self.DeviceCount
-                * (self.RatedPower * self.Efficiency)
-                * self.PowerParameter
-                / self.LoadRedundancyParameter
-            )
+            self.最大允许的负载总功率 = self.DeviceCount * (self.RatedPower * self.Efficiency) * self.PowerParameter / self.LoadRedundancyParameter  # type: ignore
 
     def constraints_register(self):
         # 设备特有约束（非变量）

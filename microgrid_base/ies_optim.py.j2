@@ -1,5 +1,8 @@
 # TODO: 典型日 最终输出结果需要展开为8760
+from typing import Dict, List, Literal, Union
+
 import rich
+from pydantic import BaseModel
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
@@ -79,8 +82,6 @@ import rich
 
 # iterate through all device-port pairs, then retrieve attributes from another dict.
 
-from pydantic import BaseModel
-from typing import List, Dict, Union, Literal
 # string, digits, tables.
 # you can dump and load from json.
 {# 
@@ -480,9 +481,9 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
-        self.TotalCapacity = self.DeviceCount * self.RatedCapacity
+        self.TotalCapacity = self.DeviceCount * self.RatedCapacity # type: ignore
 
-        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit
+        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore
 
         self.MaxTotalCapacityDeltaPerStep = self.BatteryDeltaLimit * self.TotalCapacity / ({{时间步长参数}})
         """
