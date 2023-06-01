@@ -2784,7 +2784,7 @@ devIDClassMap: Dict[
     "变流器": 变流器ID,
     "双向变流器": 双向变流器ID,
     "传输线": 传输线ID,
-}
+} # type: ignore
 
 devInfoClassMap: Dict[
     str, Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息]
@@ -2799,7 +2799,7 @@ devInfoClassMap: Dict[
     "变流器": 变流器信息,
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
-}
+} # type:ignore
 
 
 from networkx import Graph

@@ -95,10 +95,12 @@ class 加法器ID(BaseModel):
 # Device ID #
 #############
 
+class 设备ID(BaseModel):
+    ID: int
+
 {% for class_name in 设备接口集合.keys()%}
 
-class {{class_name}}ID(BaseModel):
-    ID: int
+class {{class_name}}ID(设备ID):
     {% for port_name, port_type in 设备接口集合[class_name]%}
     {{ port_name }}: int
     """
@@ -797,7 +799,7 @@ class ModelContext:
 {% for class_name in 设备接口集合.keys() %}
 {% do class_types.update({class_name:class_name+("模型" if e == "Inst" else ("信息" if e == 'Info' else e))}) %}
 {% endfor %}
-dev{{e}}ClassMap: Dict[str, Union[{{",".join(class_types.values())}} ]] = {
+dev{{e}}ClassMap = {
     {% for class_name in 设备接口集合.keys() %}
     "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}
