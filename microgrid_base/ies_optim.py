@@ -93,24 +93,24 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
     """
+    电输出: int
+    """
+    类型: 电母线输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -1085,12 +1085,15 @@ class 设备模型:
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
         self.Piecewise(
-            mx_my_sum_var, mx_my_sum_pow2_var, x_vals=mx_my_sum, y_vals=mx_my_sum_pow2
+            x_var=mx_my_sum_var,
+            y_var=mx_my_sum_pow2_var,
+            x_vals=mx_my_sum,
+            y_vals=mx_my_sum_pow2,
         )  # assume it is absolute.
 
         self.Piecewise(
-            mx_my_minus_var,
-            mx_my_minus_pow2_var,
+            x_var=mx_my_minus_var,
+            y_var=mx_my_minus_pow2_var,
             x_vals=mx_my_minus,
             y_vals=mx_my_minus_pow2,
         )
@@ -1693,12 +1696,11 @@ class 柴油发电模型(设备模型):
         )
         self.RangeConstraint(self.原电输出, self.电功率中转.x, lambda x, y: x == y + 总最小启动功率)
 
-        # breakpoint()
         self.Piecewise(
-            self.单台柴油输入,
-            self.单台发电功率,
-            x_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
-            y_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
+            y_var=self.单台柴油输入,
+            x_var=self.单台发电功率,
+            y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
+            x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
         )
         # 柴油输入率: L/h
 
@@ -1973,7 +1975,7 @@ class 锂电池模型(设备模型):
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
             range(self.计算参数.迭代步数 - 1),
-            lambda x, y, i: x == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+            lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
         )
 
         self.RangeConstraintMulti(
@@ -2344,18 +2346,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2498,18 +2500,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
