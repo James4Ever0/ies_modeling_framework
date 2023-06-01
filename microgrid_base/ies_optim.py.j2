@@ -790,11 +790,17 @@ class {{class_name}}模型(设备模型):
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
+        费用 = 0
     {% elif k == "input_class"%}
-        self.Price
+        {% if v in ['电'] %}
+
+        平均 = self.
+        费用 = 
+
     {% else%}
         {% error("Unknown special class:", k)%}
     {% endif%}
+    return 费用
 
 {% endfor %}
 {% endfor %}
