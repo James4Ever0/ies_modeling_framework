@@ -958,7 +958,10 @@ class 设备模型:
 
     def RangeConstraint(self, var_1, var_2, expression):
         for i in range(self.计算参数.迭代步数):
-            self.mw.Constraint(expression(var_1[i], var_2[i]))
+            try:
+                self.mw.Constraint(expression(var_1[i], var_2[i]))
+            except:
+                breakpoint()
 
     def RangeConstraintMulti(self, *vars, expression=...):  # keyword argument now.
         assert expression is not ...
