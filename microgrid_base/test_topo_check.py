@@ -260,7 +260,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         solver = SolverFactory("cplex")
         try:
             print(">>>SOLVING<<<")
-            results = solver.solve(mw.model, tee=True)
+            results = solver.solve(mw.model, tee=True, keepfiles= True)
         except:
             import traceback
             traceback.print_exc()
