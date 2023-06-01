@@ -905,7 +905,6 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():
             input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
-            adder_type = adder['type']
 
             # add them all.
             for j in range(algoParam.迭代步数):
@@ -913,5 +912,6 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 Constraint(seqsum >=0)
             
             if algoParam.典型日:
-                if adder_type in []:
+                input_anchor_0 = G.node[input_indexs[0]]
+                if input_anchor_0['subtype'] == '':
                     
