@@ -8,7 +8,6 @@ import rich
 
 # FIXED: 加法器没有"output"
 
-
 def print_with_banner(data, banner: str):
     print()
     print("=" * 40 + f"[{banner}]")
@@ -124,6 +123,7 @@ BAT = 锂电池(
     topo,
     param=锂电池信息(
         **devParam,
+        循环边界条件 = '日间连接',
         RatedCapacity=20,
         CostPerCapacity=100,
         CostPerYearPerCapacity=100,
