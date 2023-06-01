@@ -267,7 +267,13 @@ if sys.argv[-1] in ["-f", "--full"]:
             traceback.print_exc()
             print(">>>SOLVER ERROR<<<")
             exprs = [str(mw.model.__dict__[x].expr) for x in dir(mw.model) if x.startswith('CON')]
-            breakpoint()
+            output_path = "dump.json"
+            print("DUMPING COND TO:" , output_path)
+            with open(output_path, 'w+') as f:
+                import json
+                content = json.dumps(exprs, indent=4, ensure_ascii=False)
+                f.write(content)
+            # breakpoint()
 
         print("OBJECTIVE?")
         OBJ.display()
