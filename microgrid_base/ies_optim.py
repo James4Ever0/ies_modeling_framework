@@ -1039,7 +1039,7 @@ class 设备模型:
             x_var,
             pw_pts=x_vals,
             f_rule=y_vals,
-            valspw_repn=pw_repn,
+            pw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
         )
@@ -1088,14 +1088,14 @@ class 设备模型:
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
         self.Piecewise(
-            mx_my_sum_var, mx_my_sum_pow2_var, pw_pts=mx_my_sum, f_rule=mx_my_sum_pow2
+            mx_my_sum_var, mx_my_sum_pow2_var, x_vals=mx_my_sum, y_vals=mx_my_sum_pow2
         )  # assume it is absolute.
 
         self.Piecewise(
             mx_my_minus_var,
             mx_my_minus_pow2_var,
-            pw_pts=mx_my_minus,
-            f_rule=mx_my_minus_pow2,
+            x_vals=mx_my_minus,
+            y_vals=mx_my_minus_pow2,
         )
 
         mx_my_multiply = self.变量列表(varName, within=within)
@@ -1696,8 +1696,8 @@ class 柴油发电模型(设备模型):
         self.Piecewise(
             self.单台柴油输入,
             self.单台发电功率,
-            [-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
-            [self.RatedPower * x[1] for x in self.DieselToPower_Load],
+            x_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
+            y_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
         )
         # 柴油输入率: L/h
 
