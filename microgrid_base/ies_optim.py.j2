@@ -793,9 +793,13 @@ class ModelContext:
         print("EXITING MODEL CONTEXT")
 
 {% for e in ["Inst", "ID", 'Info'] %}
-dev{{e}}ClassMap: Dict[str, Union[ ]] = {
+{% set class_types = {}%}
+{% for class_name in 设备接口集合.keys() %}
+{% do class_types.update({class_name:class_name+("模型" if e == "Inst" else ("信息" if e == 'Info' else e))}) %}
+{% endfor%}
+dev{{e}}ClassMap: Dict[str, Union[",".join ]] = {
     {% for class_name in 设备接口集合.keys() %}
-    "{{class_name}}": {{class_name}}{{"模型" if e == "Inst" else ("信息" if e == 'Info' else e)}},
+    "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}
 }
 
