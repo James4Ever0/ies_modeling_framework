@@ -200,7 +200,7 @@ class ModelWrapper:
     {% for k in ['Constraint', 'Var','Objective']%}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}}*args, **kwargs):
         {% if k !="Var" %}
-        name = self.getSpecialName(k[:3].upper())
+        name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
         ret = self.model.__dict__[name] = {{k}}(*args, **kwargs)
         return ret

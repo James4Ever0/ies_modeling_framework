@@ -82,13 +82,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 变压器输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -830,15 +830,16 @@ from pyomo.environ import *
 class ModelWrapper:
     def __init__(self):
         self.model = ConcreteModel()
-        self.clock = 0
+        self.clock = {}
 
-    def getSpecialName(self):
-        name = f"CN_OB_{self.clock}"
-        self.clock += 1
+    def getSpecialName(self, key: str):
+        val = self.clock.get(key, 0)
+        name = f"{key}_{val}"
+        self.clock[key] = val + 1
         return name
 
     def Constraint(self, *args, **kwargs):
-        name = self.getSpecialName()
+        name = self.getSpecialName("CON")
         ret = self.model.__dict__[name] = Constraint(*args, **kwargs)
         return ret
 
@@ -847,7 +848,7 @@ class ModelWrapper:
         return ret
 
     def Objective(self, *args, **kwargs):
-        name = self.getSpecialName()
+        name = self.getSpecialName("OBJ")
         ret = self.model.__dict__[name] = Objective(*args, **kwargs)
         return ret
 
@@ -2169,18 +2170,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
