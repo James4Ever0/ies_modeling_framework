@@ -4,13 +4,10 @@
 device_data_path_base = "device_params_intermediate.json"
 import pint
 
-unit_def_path = "../merged_units.txt"
-ureg = pint.UnitRegistry(unit_def_path)
-
 import json
 import rich
 
-from unit_utils import unitFactorCalculator
+from unit_utils import unitFactorCalculator,ureg, standard_units
 
 EXCEL = "嵌套"
 
@@ -186,32 +183,6 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
 
 # checking these units.
 # they shall never be going too far.
-
-standard_units_name_list = [
-    "万元",
-    "kWh",
-    "km",
-    "kW",
-    "年",
-    "MPa",
-    "V",
-    "Hz",
-    "ohm",
-    "one",
-    # "percent"
-    "台",
-    "m2",
-    "m3",
-    # "stere",
-    "celsius",
-    "metric_ton",  # this is weight.
-    # "p_u_",
-    "dimensionless",
-]
-
-standard_units = frozenset(
-    [ureg.Unit(unit_name) for unit_name in standard_units_name_list]
-)
 
 # for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
 #     v_unit = v[0]
