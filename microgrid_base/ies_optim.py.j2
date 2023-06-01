@@ -333,6 +333,9 @@ class 设备模型:
     def SumRange(self,var_1):
         return {{- sum_reduce('[var_1[i] for i in range(self.计算参数.迭代步数)]')}}
     
+    def 单变量转列表(self, var, ):
+        return [var for _ in range(self.计算参数.迭代步数)]
+    
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
 
