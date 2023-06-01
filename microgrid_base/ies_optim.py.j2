@@ -873,6 +873,17 @@ dev{{e}}ClassMap = {
 
 {% endfor %}
 
+
+{% macro iterate_input_output_limit(io_type, attr)%}
+                    {{io_type}}_limit_list = []
+                    for {{io_type}}_id in input_indexs:
+                        {{io_type}}_anchor = G.node[{{io_type}}_id]
+                        {{io_type}}_node_id = input_anchor['device_id']
+                        {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
+                        {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
+                    {{io_type}}
+{% endmacro%}
+
 from networkx import Graph
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
     PD = {}
@@ -915,17 +926,8 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 input_anchor_0 = G.node[input_indexs[0]]
                 if input_anchor_0['subtype'] == '变压器输出':
                     assert io_indexs == []
-                        input_limit_list.append(input_devInst.最大允许的负载总功率)
 
-{% macro iterate_input_output_limit(io_type, attr)%}
-                    input_limit_list = []
-                    for input_id in input_indexs:
-                        input_anchor = G.node[input_id]
-                        input_node_id = input_anchor['device_id']
-                        input_devInst = devInstDict[input_node_id]
-                        input_limit_list.append(input_devInst.最大允许的负载总功率)
+{{ iterate_input_output_limit("input","最大允许的负载总功率") }}
 
+{{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
-
-                    for output_id in output_indexs:
-                        output_limit_list.append(output_devInst.MaxEnergyConsumption)
