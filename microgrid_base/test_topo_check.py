@@ -37,7 +37,7 @@ topo = 拓扑图(**algoParam)  # with structure?
 
 devParam = dict(生产厂商="Any",设备型号="Any")
 
-P1 = 光伏发电信息().dict()
+P1 = 光伏发电信息(**devParam,Area=10, PowerConversionEfficiency: float, MaxPower: float, PowerDeltaLimit: float, CostPerKilowatt: float, CostPerYearPerKilowatt: float, VariationalCostPerWork: float, Life: float, BuildCostPerKilowatt: float, BuildBaseCost: float, MaxInstallArea: float, MinInstallArea: float, DeviceCount:).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
 DSS = 柴油(topo, param=柴油信息().dict())
