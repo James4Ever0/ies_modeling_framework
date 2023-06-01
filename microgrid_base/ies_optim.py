@@ -2828,7 +2828,7 @@ devInfoClassMap: Dict[str, BaseModel] = {
 }  # type: ignore
 
 import enum
-enum.Enum()
+class 设备信息:
     柴油信息,
     电负荷信息,
     光伏发电信息,
