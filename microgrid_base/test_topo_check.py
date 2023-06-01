@@ -35,11 +35,14 @@ algoParam = 计算参数(计算步长='小时', 典型日=False, 计算类型= '
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
+devParam = dict(生产厂商="Any",设备型号="Any")
+
 P1 = 光伏发电信息().dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
 DSS = 柴油(topo, param=柴油信息().dict())
 DS = 柴油发电(topo, param = 柴油发电信息().dict())
+
 DEL1 = 变流器(topo, param=变流器信息().dict())
 DEL2 = 变压器(topo, param=变压器信息().dict())
 LOAD = 电负荷(topo, param=电负荷信息().dict())
@@ -53,7 +56,7 @@ A3 = 母线(topo, "可连接电母线")
 BC = 双向变流器(topo, param=双向变流器信息().dict())
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
-连接线(topo, "不可连接电储能端母线", DS.燃料接口,DSS.燃料接口)
+连接线(topo, "不可连接柴油母线", DS.燃料接口,DSS.燃料接口)
 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
 
 连接线(topo, "不可连接电母线输入", DEL1.电输出, A3.id)
@@ -63,6 +66,7 @@ BC = 双向变流器(topo, param=双向变流器信息().dict())
 
 连接线(topo, "不可连接供电端母线输入", A1.id, PV1.电接口)
 连接线(topo, "不可连接供电端母线输入", A2.id, PV2.电接口)
+连接线(topo, "不可连接供电端母线输入", A2.id, DS.电接口)
 连接线(topo, "不可连接供电端母线输出", A2.id, DEL1.电输入)
 
 合并线(topo, "可合并供电端母线", A1.id, A2.id)
