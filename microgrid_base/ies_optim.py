@@ -1440,8 +1440,8 @@ class 风力发电模型(设备模型):
         #       /     | ax^3
         #  ----/      |______
         #
-        assert self.RatedWindSpeed > self.MinWindSpeed
-        assert self.MaxWindSpeed > self.RatedWindSpeed
+        assert self.RatedWindSpeed >= self.MinWindSpeed
+        assert self.MaxWindSpeed >= self.RatedWindSpeed
 
         发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
@@ -1452,8 +1452,8 @@ class 风力发电模型(设备模型):
             [
                 WS <= self.MinWindSpeed,
                 WS > self.MinWindSpeed and WS <= self.RatedWindSpeed,
-                WS > self.RatedWindSpeed and WS < self.MaxWindSpeed,
-                WS >= self.MaxWindSpeed,
+                WS > self.RatedWindSpeed and WS <= self.MaxWindSpeed,
+                WS > self.MaxWindSpeed,
             ],
             [0, lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), self.RatedPower, 0],
         )
@@ -1921,7 +1921,7 @@ class 锂电池模型(设备模型):
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
 
-        assert self.MaxSOC > self.MinSOC
+        assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC <= 1
         assert self.MinSOC >= 0
 
@@ -1991,12 +1991,12 @@ class 锂电池模型(设备模型):
             self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
                 - self.CurrentTotalActualCapacity[i]
-                < self.MaxTotalCapacityDeltaPerStep
+                <= self.MaxTotalCapacityDeltaPerStep
             )
             self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
                 - self.CurrentTotalActualCapacity[i]
-                > -self.MaxTotalCapacityDeltaPerStep
+                >= -self.MaxTotalCapacityDeltaPerStep
             )
 
         if self.计算参数.计算类型 == "设计规划":
@@ -2006,13 +2006,13 @@ class 锂电池模型(设备模型):
                 self.mw.Constraint(
                     self.CurrentTotalActualCapacity[0]
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                    < self.MaxTotalCapacityDeltaPerStep
+                    <= self.MaxTotalCapacityDeltaPerStep
                 )
 
                 self.mw.Constraint(
                     self.CurrentTotalActualCapacity[0]
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                    > -self.MaxTotalCapacityDeltaPerStep
+                    >= -self.MaxTotalCapacityDeltaPerStep
                 )
 
                 self.mw.Constraint(
