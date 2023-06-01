@@ -1,5 +1,10 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Literal, Union
+from typing import Dict, List, Union
+try:
+    from typing import Literal
+except:
+    from typing_extensions import Literal
+    
 
 import rich
 from pydantic import BaseModel
