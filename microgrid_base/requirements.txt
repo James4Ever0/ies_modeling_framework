@@ -1,3 +1,6 @@
 rich
 networkx
 pyomo
+pydantic
+pint
+numpy
