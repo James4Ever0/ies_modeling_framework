@@ -93,13 +93,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: int
-    """
-    类型: 变流器输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 变流器输入
     """
 
 
@@ -840,7 +840,7 @@ class ModelWrapper:
 
     def Constraint(self, *args, **kwargs):
         name = self.getSpecialName("CON")
-        ret = Constraint(expr=args[0], *args[1:], **kwargs)
+        ret = Constraint(expr=kwargs.get("expr", args[0]), *args[1:], **kwargs)
         self.model.__setattr__(name, ret)
         return ret
 
@@ -851,7 +851,8 @@ class ModelWrapper:
 
     def Objective(self, *args, **kwargs):
         name = self.getSpecialName("OBJ")
-        ret = Objective(expr=args[0], *args[1:], **kwargs)
+        breakpoint()
+        ret = Objective(expr=kwargs.get("expr", args[0]), *args[1:], **kwargs)
         self.model.__setattr__(name, ret)
         return ret
 
@@ -2346,18 +2347,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
