@@ -379,6 +379,7 @@ class 设备模型:
             pw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
+            warn_domain_coverage=False, # to suppress warning
         )
             self.mw.model.__setattr__(piecewise_name, PW)
             PWL.append(PW)
