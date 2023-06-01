@@ -16,7 +16,8 @@ from pydantic import BaseModel
 {% set input_types = ['柴油'] %}
 
 {% macro sum_reduce(seq)%}
- functools.reduce(sequence={{seq}}, function = lambda x,y: x+y)
+ sum({{seq}})
+ {# functools.reduce(sequence={{seq}}, function = lambda x,y: x+y) #}
 {% endmacro%}
 
 {% macro init_super_class(class_name)%}

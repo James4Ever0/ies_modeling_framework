@@ -104,24 +104,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -917,7 +917,7 @@ class POSNEG:
         self.x_abs = x_abs
 
 
-from functools import reduce
+import functools
 
 
 class 设备模型:
@@ -981,7 +981,7 @@ class 设备模型:
             self.mw.Constraint(expression(*vars, i))
 
     def SumRange(self, var_1):
-        return reduce(
+        return functools.reduce(
             sequence=[var_1[i] for i in range(self.计算参数.迭代步数)],
             function=lambda x, y: x + y,
         )
@@ -2503,18 +2503,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2648,18 +2648,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2902,7 +2902,7 @@ def compute(
 
         # add them all.
         for j in range(algoParam.迭代步数):
-            seqsum = reduce(
+            seqsum = functools.reduce(
                 sequence=[PD[i][j] for i in input_indexs + output_indexs + io_indexs],
                 function=lambda x, y: x + y,
             )
@@ -2920,7 +2920,7 @@ def compute(
                     input_node_id = input_anchor["device_id"]
                     input_devInst = devInstDict[input_node_id]
                     input_limit_list.append(input_devInst.最大允许的负载总功率)
-                input_limit = reduce(
+                input_limit = functools.reduce(
                     sequence=input_limit_list, function=lambda x, y: x + y
                 )
 
@@ -2930,13 +2930,13 @@ def compute(
                     output_node_id = output_anchor["device_id"]
                     output_devInst = devInstDict[output_node_id]
                     output_limit_list.append(output_devInst.MaxEnergyConsumption)
-                output_limit = reduce(
+                output_limit = functools.reduce(
                     sequence=output_limit_list, function=lambda x, y: x + y
                 )
 
                 mw.Constraint(input_limit + output_limit >= 0)
 
-    financial_obj_expr = reduce(
+    financial_obj_expr = functools.reduce(
         sequence=[e.constraints_register() for e in devInstDict.values()],
         function=lambda x, y: x + y,
     )
