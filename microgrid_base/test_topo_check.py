@@ -31,32 +31,66 @@ from ies_optim import (
 )
 from ies_optim import 计算参数
 
-algoParam = 计算参数(计算步长='小时', 典型日=False, 计算类型= '设计规划', 风速=..., 光照=..., 气温=..., 年利率=0.1).dict()
+algoParam = 计算参数(
+    计算步长="小时", 典型日=False, 计算类型="设计规划", 风速=..., 光照=..., 气温=..., 年利率=0.1
+).dict()
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
-devParam = dict(生产厂商="Any",设备型号="Any")
+devParam = dict(生产厂商="Any", 设备型号="Any")
 
-P1 = 光伏发电信息(**devParam,Area=10, PowerConversionEfficiency=0.9, MaxPower=20,PowerDeltaLimit=1, CostPerKilowatt=100,CostPerYearPerKilowatt=100, VariationalCostPerWork=100, Life = 20,BuildCostPerKilowatt=10,BuildBaseCost=10,MaxInstallArea=200,MinInstallArea=100,DeviceCount=100).dict()
+P1 = 光伏发电信息(
+    **devParam,
+    Area=10,
+    PowerConversionEfficiency=0.9,
+    MaxPower=20,
+    PowerDeltaLimit=1,
+    CostPerKilowatt=100,
+    CostPerYearPerKilowatt=100,
+    VariationalCostPerWork=100,
+    Life=20,
+    BuildCostPerKilowatt=10,
+    BuildBaseCost=10,
+    MaxInstallArea=200,
+    MinInstallArea=100,
+    DeviceCount=100,
+).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
-DSS = 柴油(topo, param=柴油信息(Price=10,Unit="L/元").dict())
-DS = 柴油发电(topo, param = 柴油发电信息(**devParam).dict())
+DSS = 柴油(topo, param=柴油信息(Price=10, Unit="L/元").dict())
+DS = 柴油发电(
+    topo,
+    param=柴油发电信息(
+        **devParam,
+        RatedPower=20,
+        PowerDeltaLimit=1,
+        CostPerMachine=100,
+        CostPerYearPerMachine=100,
+        VariationalCostPerWork=100,
+        Life=20,
+        BuildCostPerMachine=10,
+        BuildBaseCost=10,
+        DieselToPower_Load=[[]],
+        DeviceCount=100,
+        MaxDeviceCount=200,
+        MinDeviceCount=100,
+    ).dict(),
+)
 
 DEL1 = 变流器(topo, param=变流器信息(**devParam).dict())
 DEL2 = 变压器(topo, param=变压器信息(**devParam).dict())
 LOAD = 电负荷(topo, param=电负荷信息(**devParam).dict())
 
-BAT = 锂电池(topo, param=锂电池信息().dict())
+BAT = 锂电池(topo, param=锂电池信息(**devParam).dict())
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
 
-BC = 双向变流器(topo, param=双向变流器信息().dict())
+BC = 双向变流器(topo, param=双向变流器信息(**devParam).dict())
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
-连接线(topo, "不可连接柴油母线", DS.燃料接口,DSS.燃料接口)
+连接线(topo, "不可连接柴油母线", DS.燃料接口, DSS.燃料接口)
 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
 
 连接线(topo, "不可连接电母线输入", DEL1.电输出, A3.id)
