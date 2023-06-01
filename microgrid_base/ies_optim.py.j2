@@ -823,11 +823,11 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 from networkx import Graph
 
 # partial if typical day mode is on.
-def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, model=None):
+def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, model: ConcreteModel):
     PD = {}
-        algoParam = 计算参数.parse_obj(graph_data)
-    with ModelContext() as model:
-        devInstDict = {}
+    algoParam = 计算参数.parse_obj(graph_data)
+    
+    devInstDict = {}
 
         for dev in devs:
             devSubtype = dev['subtype']
