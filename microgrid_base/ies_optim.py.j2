@@ -898,12 +898,12 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 {% macro iterate_input_output_limit(io_type, attr)%}
                 {{io_type}}_limit_list = []
-                for {{io_type}}_id in input_indexs:
-                    {{io_type}}_anchor = G.nodes[{{io_type}}_id]
-                    {{io_type}}_node_id = {{io_type}}_anchor['device_id']
-                    {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
-                    {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
-                {{io_type}}_limit = {{- sum_reduce(io_type+'_limit_list') }}
+                for {{io_type}}_id in {{io_type}}_indexs:
+                    m_anchor = G.nodes[m_id]
+                    m_node_id = m_anchor['device_id']
+                    m_devInst = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInst.{{attr}})
+                {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 
 from networkx import Graph
