@@ -1693,7 +1693,7 @@ class 柴油发电模型(设备模型):
         )
         self.RangeConstraint(self.原电输出, self.电功率中转.x, lambda x, y: x == y + 总最小启动功率)
 
-        breakpoint()
+        # breakpoint()
         self.Piecewise(
             self.单台柴油输入,
             self.单台发电功率,

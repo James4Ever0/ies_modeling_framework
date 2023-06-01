@@ -421,9 +421,9 @@ class 设备模型:
 
         mx_my_minus_pow2 = [x**2 for x in mx_my_minus]
 
-        self.Piecewise(mx_my_sum_var, mx_my_sum_pow2_var, x_vals = mx_my_sum, y_vals = mx_my_sum_pow2) # assume it is absolute.
+        self.Piecewise(x_var = mx_my_sum_var, y_var = mx_my_sum_pow2_var, x_vals = mx_my_sum, y_vals = mx_my_sum_pow2) # assume it is absolute.
 
-        self.Piecewise(mx_my_minus_var, mx_my_minus_pow2_var, x_vals = mx_my_minus, y_vals = mx_my_minus_pow2)
+        self.Piecewise(x_var = mx_my_minus_var, y_var = mx_my_minus_pow2_var, x_vals = mx_my_minus, y_vals = mx_my_minus_pow2)
 
         mx_my_multiply = self.变量列表(varName, within=within)
 
@@ -621,7 +621,7 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
         self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
 
-        self.Piecewise(self.单台柴油输入, self.单台发电功率, x_vals = [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], y_vals = [self.RatedPower*x[1] for x in self.DieselToPower_Load])
+        self.Piecewise(y_var = self.单台柴油输入, x_var = self.单台发电功率, y_vals = [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], x_vals = [self.RatedPower*x[1] for x in self.DieselToPower_Load])
         # 柴油输入率: L/h
 
         self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + 总最小启动功率*z == y)
