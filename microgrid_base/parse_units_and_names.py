@@ -300,8 +300,8 @@ def getSingleUnitConverted(default_unit, val_unit):
     print("DEFAULT UNIT:", default_unit)
     default_unit_real = ureg.Unit(default_unit)
     default_unit_compatible = ureg.get_compatible_units(default_unit_real)
-    print("TRANS {} -> {}".format(val_name, base_class))
-    if _val_unit is None:
+    # print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
+    if val_unit is None:
         val_unit = default_unit
         print("USING DEFAULT UNIT")
     print("UNIT", val_unit)
@@ -319,14 +319,9 @@ def getSingleUnitConverted(default_unit, val_unit):
                 val_unit, default_unit
             )
         )
-        continue
     else:
-        # get factor:
-        mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
-        print("STANDARD:", standard)
-        print("MAGNITUDE TO STANDARD:", mag)
         has_exception = False
-        return has_exception, (base_class, val_unit, mag, standard)
+    return has_exception
 
 
 def getUnitConverted(val_name, val_unit):
@@ -335,23 +330,17 @@ def getUnitConverted(val_name, val_unit):
     
     _val_unit = val_unit
 
-    if val_unit:
+    if _val_unit:
         for (
             trans_source_unit,
             trans_target_unit,
         ) in UNIT_TRANSLATION_TABLE.items():
-            val_unit = val_unit.replace(trans_source_unit, trans_target_unit)
+            _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
 
     for base_class in base_classes:
         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
         # iterate through all base classes.
         
-        print("DEFAULT UNIT:", default_unit)
-        default_unit_real = ureg.Unit(default_unit)
-        default_unit_compatible = ureg.get_compatible_units(default_unit_real)
-        print("TRANS {} -> {}".format(val_name, base_class))
-        if _val_unit is None:
-            val_unit = default_unit
             print("USING DEFAULT UNIT")
         print("UNIT", val_unit)
         unit = ureg.Unit(val_unit)
