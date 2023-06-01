@@ -929,5 +929,3 @@ kWh = kW * hour
 
 [power_per_meter] = [power]/ [length]
 千瓦每千米 = kW/km
-
-1/hour = one/hour
