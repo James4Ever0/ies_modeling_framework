@@ -914,9 +914,13 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             if algoParam.典型日:
                 input_anchor_0 = G.node[input_indexs[0]]
                 if input_anchor_0['subtype'] == '变压器输出':
+                
+                    input_limit_list = []
                     for input_id in input_indexs:
                         input_anchor = G.node[input_id]
                         input_node_id = input_anchor['device_id']
-                        input_node = G.node[input_node_id]
-                        
+                        input_devInst = devInstDict[input_node_id]
+                        input_limit_list.append(input_devInst.MaxEnergyConsumption)
+
+
                     for output_id in output_indexs:
