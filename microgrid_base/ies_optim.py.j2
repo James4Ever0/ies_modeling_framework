@@ -191,15 +191,16 @@ from pyomo.environ import *
 class ModelWrapper:
     def __init__(self):
         self.model = ConcreteModel()
-        self.clock =0
-    def getSpecialName(self):
-        name = f"CN_OB_{self.clock}"
-        self.clock+=1
+        self.clock = {}
+    def getSpecialName(self, key:str):
+        val = self.clock.get(key,0)
+        name = f"{key}_{val}"
+        self.clock[key] = val+1
         return name
     {% for k in ['Constraint', 'Var','Objective']%}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}}*args, **kwargs):
-        {% if k !="Var"%}
-        name = self.getSpecialName()
+        {% if k !="Var" %}
+        name = self.getSpecialName(k[:3].upper())
         {% endif %}
         ret = self.model.__dict__[name] = {{k}}(*args, **kwargs)
         return ret
