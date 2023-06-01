@@ -790,19 +790,20 @@ class {{class_name}}模型(设备模型):
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
-        费用 = 0
+        年化费用 = 0
     {% elif k == "input_class"%}
         {% if class_name in ['柴油']%}
         平均消耗率 = self.SumRange(self.燃料接口) / self.计算参数.迭代步数
         {% else%}
-        {% error()%}
+            {% error('未知能源类型:', class_name)%}
+        {% endif%}
 
-        费用 = 平均消耗率 * self.Price / 
+        年化费用 = 平均消耗率 * self.Price * 8760 
 
     {% else%}
-        {% error("Unknown special class:", k)%}
+        {% error("未知特殊类型:", k)%}
     {% endif%}
-    return 费用
+    return 年化费用
 
 {% endfor %}
 {% endfor %}
