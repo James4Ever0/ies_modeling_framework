@@ -886,8 +886,8 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 
     for dev in devs:
         devSubtype = dev['subtype']
-        devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} }
-        {# devParam = dev['param'] #}
+        {# devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} } #}
+        devParam = dev['param']
         devPorts = dev['ports']
 
         devID_int = dev['id']
