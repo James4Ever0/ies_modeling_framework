@@ -258,7 +258,13 @@ if sys.argv[-1] in ["-f", "--full"]:
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
         solver = SolverFactory("cplex")
-        results = solver.solve(mw.model)
+        try:
+            results = solver.solve(mw.model)
+        except:
+            import traceback
+            traceback.print_exc()
+            print(">>>SOLVER ERROR<<<")
+            breakpoint()
 
         print("OBJECTIVE?")
         OBJ.display()
