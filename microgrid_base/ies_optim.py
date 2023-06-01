@@ -82,35 +82,35 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
     """
+    电输出: int
+    """
+    类型: 变压器输出
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
     """
+    电输出: int
+    """
+    类型: 电母线输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -2142,18 +2142,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2298,18 +2298,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2451,18 +2451,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2685,6 +2685,8 @@ class 电负荷模型(设备模型):
         self.RangeConstraint(
             self.电接口, self.设备信息.EnergyConsumption, lambda x, y: x == -y
         )
+        年化费用 = 0
+        return 年化费用
 
 
 class 柴油模型(设备模型):
@@ -2726,11 +2728,15 @@ class 柴油模型(设备模型):
         )
         ### UNIT CONVERSION ###
 
-        self.Price = self.设备信息.Price
+        self.Price = self.设备信息.Price * self.ConversionRate
         self.Unit = str(self.StandardUnit)
 
     def constraints_register(self):
-        ...
+        平均消耗率 = self.SumRange(self.燃料接口) / self.计算参数.迭代步数
+
+        年化费用 = 平均消耗率 * self.Price * 8760
+
+        return 年化费用
 
 
 class ModelContext:
@@ -2874,10 +2880,15 @@ def compute(
                 )
 
                 Constraint(input_limit + output_limit >= 0)
-    obj_expr = reduce(
-        sequence=[e.constraint_register() for e in devInstDict.values()],
+
+    financial_obj_expr = reduce(
+        sequence=[e.constraints_register() for e in devInstDict.values()],
         function=lambda x, y: x + y,
     )
 
-    return obj_expr
+    environment_obj_expr = ...
+
+    obj_expr = financial_obj_expr
+
+    return obj_expr, devInstDict, PD
     # always minimize the objective.
