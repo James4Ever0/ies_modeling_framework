@@ -949,8 +949,13 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
             mw.Constraint(seqsum >=0)
         
         if algoParam.计算类型 == '设计规划':
+            cnt = 0
+            if len(input_indexs)==0:
+                continue
             input_anchor_0 = G.nodes[input_indexs[0]]
             if input_anchor_0['subtype'] == '变压器输出':
+                print(f"Building Converter Constraint #{cnt}")
+                cnt+=1
                 assert io_indexs == []
 
 {{ iterate_input_output_limit("input","最大允许的负载总功率") }}
