@@ -1,10 +1,7 @@
 {
     "directed": false,
     "multigraph": false,
-    "graph": {
-        "计算步长": "小时",
-        "计算模式": "典型日"
-    },
+    "graph": {},
     "nodes": [
         {
             "type": "设备",
@@ -15,7 +12,7 @@
                     "id": 1
                 }
             },
-            "面积": 2,
+            "param": {},
             "id": 0
         },
         {
@@ -34,7 +31,7 @@
                     "id": 3
                 }
             },
-            "面积": 2,
+            "param": {},
             "id": 2
         },
         {
@@ -48,28 +45,29 @@
             "type": "设备",
             "subtype": "变流器",
             "ports": {
-                "电输入": {
-                    "subtype": "变流器输入",
-                    "id": 5
-                },
                 "电输出": {
                     "subtype": "电母线输出",
+                    "id": 5
+                },
+                "电输入": {
+                    "subtype": "变流器输入",
                     "id": 6
                 }
             },
+            "param": {},
             "id": 4
-        },
-        {
-            "type": "锚点",
-            "port_name": "电输入",
-            "subtype": "变流器输入",
-            "device_id": 4,
-            "id": 5
         },
         {
             "type": "锚点",
             "port_name": "电输出",
             "subtype": "电母线输出",
+            "device_id": 4,
+            "id": 5
+        },
+        {
+            "type": "锚点",
+            "port_name": "电输入",
+            "subtype": "变流器输入",
             "device_id": 4,
             "id": 6
         },
@@ -77,28 +75,29 @@
             "type": "设备",
             "subtype": "变压器",
             "ports": {
-                "电输出": {
-                    "subtype": "变压器输出",
-                    "id": 8
-                },
                 "电输入": {
                     "subtype": "电母线输入",
+                    "id": 8
+                },
+                "电输出": {
+                    "subtype": "变压器输出",
                     "id": 9
                 }
             },
+            "param": {},
             "id": 7
-        },
-        {
-            "type": "锚点",
-            "port_name": "电输出",
-            "subtype": "变压器输出",
-            "device_id": 7,
-            "id": 8
         },
         {
             "type": "锚点",
             "port_name": "电输入",
             "subtype": "电母线输入",
+            "device_id": 7,
+            "id": 8
+        },
+        {
+            "type": "锚点",
+            "port_name": "电输出",
+            "subtype": "变压器输出",
             "device_id": 7,
             "id": 9
         },
@@ -111,7 +110,7 @@
                     "id": 11
                 }
             },
-            "功率": 3000,
+            "param": {},
             "id": 10
         },
         {
@@ -130,6 +129,7 @@
                     "id": 13
                 }
             },
+            "param": {},
             "id": 12
         },
         {
@@ -172,28 +172,29 @@
             "type": "设备",
             "subtype": "双向变流器",
             "ports": {
-                "储能端": {
-                    "subtype": "双向变流器储能端输入输出",
-                    "id": 18
-                },
                 "线路端": {
                     "subtype": "双向变流器线路端输入输出",
+                    "id": 18
+                },
+                "储能端": {
+                    "subtype": "双向变流器储能端输入输出",
                     "id": 19
                 }
             },
+            "param": {},
             "id": 17
-        },
-        {
-            "type": "锚点",
-            "port_name": "储能端",
-            "subtype": "双向变流器储能端输入输出",
-            "device_id": 17,
-            "id": 18
         },
         {
             "type": "锚点",
             "port_name": "线路端",
             "subtype": "双向变流器线路端输入输出",
+            "device_id": 17,
+            "id": 18
+        },
+        {
+            "type": "锚点",
+            "port_name": "储能端",
+            "subtype": "双向变流器储能端输入输出",
             "device_id": 17,
             "id": 19
         },
@@ -270,11 +271,11 @@
         },
         {
             "source": 5,
-            "target": 27
+            "target": 22
         },
         {
             "source": 6,
-            "target": 22
+            "target": 27
         },
         {
             "source": 7,
@@ -286,11 +287,11 @@
         },
         {
             "source": 8,
-            "target": 24
+            "target": 23
         },
         {
             "source": 9,
-            "target": 23
+            "target": 24
         },
         {
             "source": 10,
@@ -350,11 +351,11 @@
         },
         {
             "source": 18,
-            "target": 20
+            "target": 21
         },
         {
             "source": 19,
-            "target": 21
+            "target": 20
         }
     ]
 }

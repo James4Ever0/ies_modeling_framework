@@ -1,36 +1,40 @@
 import json
 from topo_check import *
 import rich
+
 ###############
 # build from code.
 ###############
 
 # FIXED: 加法器没有"output"
 
-def print_with_banner(data, banner:str):
+
+def print_with_banner(data, banner: str):
     print()
-    print("="*40+f"[{banner}]")
+    print("=" * 40 + f"[{banner}]")
     rich.print(data)
     print()
 
+
 # you may need pydantic here. verify then import to compute graph.
-# from ies_optim.device_ import 
+# from ies_optim.device_ import
 # algoParam = .to_json()
-topo = 拓扑图(**algoParam)  # with structure?
+topo = 拓扑图()  # with structure?
+# topo = 拓扑图(**algoParam)  # with structure?
 
-PV1 = 光伏发电(topo, param = )  # 这种是增加新的光伏发电
-PV2 = 光伏发电(topo, param = )  
-DEL1 = 变流器(topo, param = )
-DEL2 = 变压器(topo, param = )
-LOAD = 电负荷(topo, param = )
+PV1 = 光伏发电(topo, param={})  # 这种是增加新的光伏发电
+PV2 = 光伏发电(topo, param={})
+DEL1 = 变流器(topo, param={})
+DEL2 = 变压器(topo, param={})
+LOAD = 电负荷(topo, param={})
 
-BAT = 锂电池(topo, param = )
+BAT = 锂电池(topo, param={})
 
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
 
-BC = 双向变流器(topo, param = )
+BC = 双向变流器(topo, param={})
 
 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
@@ -38,10 +42,10 @@ BC = 双向变流器(topo, param = )
 连接线(topo, "不可连接电母线输入", DEL1.电输出, A3.id)
 连接线(topo, "不可连接电母线输出", A3.id, DEL2.电输入)
 
-连接线(topo, "不可连接负荷电母线",DEL2.电输出, LOAD.电接口)
+连接线(topo, "不可连接负荷电母线", DEL2.电输出, LOAD.电接口)
 
 连接线(topo, "不可连接供电端母线输入", A1.id, PV1.电接口)
-连接线(topo, "不可连接供电端母线输入", A2.id,  PV2.电接口)
+连接线(topo, "不可连接供电端母线输入", A2.id, PV2.电接口)
 连接线(topo, "不可连接供电端母线输出", A2.id, DEL1.电输入)
 
 合并线(topo, "可合并供电端母线", A1.id, A2.id)
@@ -87,7 +91,7 @@ print_with_banner(adders, "加法器")
 
 mdict = topo.to_json()
 print_with_banner(mdict, "图序列化")
-with open("template_input.json",'w+') as f:
+with open("template_input.json", "w+") as f:
     f.write(json.dumps(mdict, ensure_ascii=False, indent=4))
 
 ###############
@@ -99,7 +103,7 @@ print_with_banner(topo_load, "图对象")
 # how to check error now?
 # all connected?
 
-topo_load.check_consistency() # may still be good.
+topo_load.check_consistency()  # may still be good.
 ## COMPUTE THIS GRAPH ##
 # use devs, adders
 
@@ -108,15 +112,17 @@ print_with_banner(graph_data, "图元数据")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
-if sys.argv[-1] in ['-f',"--full"]:
+
+if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
+
     with ModelWrapperContext() as mw:
         obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
-        
-        OBJ = mw.Objective(expr = obj_expr, sense = minimize)
-                
+
+        OBJ = mw.Objective(expr=obj_expr, sense=minimize)
+
         solver = SolverFactory("cplex")
         results = solver.solve(mw.model)
 
