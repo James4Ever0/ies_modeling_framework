@@ -721,7 +721,7 @@ from unit_utils import (
     {% do load_class_names.append(v+"负荷")%}
 {% endfor%}
 {% set input_class_names = input_types%}
-{% set special_class = {"load_class": load_class_names, "input_class": input_class_names}%}
+{% set special_classes = {"load_class": load_class_names, "input_class": input_class_names}%}
 
 {# check for coverage #}
 {% for class_name in 设备接口集合.keys() %}
@@ -732,22 +732,20 @@ from unit_utils import (
     {% endif%}
 {% endfor%}
 
-{% for k,clist in special_types.items() %}
+{% for k,clist in special_classes.items() %}
     {% for class_name in clist%}
-        {% if k == "load_class"%}
-            {% if not class_name.endswith()%}
-                {% error("错误的负荷类名:", class_name)%}
-            {% endif%}
-        {% endif%}
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
 
 {{ port_variable_define(class_name)}}
 
     {% if k == "load_class"%}
+        {% if not class_name.endswith('负荷')%}
+            {% error("错误的负荷类名:", class_name)%}
+        {% endif%}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
-        {% if class_name in ['电负荷'] %}
+        {% if v in ['电负荷'] %}
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
         if self.设备信息.MaxEnergyConsumption is None:
             self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
@@ -780,7 +778,7 @@ class {{class_name}}模型(设备模型):
     
     def constraints_register(self):
     {% if k == "load_class"%}
-        {% if v in ['电'] %}
+        {% if v in ['电负荷'] %}
             {% set port_name = '电接口' %}
         {% else %}
             {% error("未知负荷类型:",class_name) %}
