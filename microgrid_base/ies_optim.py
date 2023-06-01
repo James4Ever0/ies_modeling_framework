@@ -1035,6 +1035,7 @@ class 设备模型:
         PWL = []
         for i in range_list:
             piecewise_name = self.getSpecialVarName("PW")
+            breakpoint()
             PW = Piecewise(
             y_var[i],
             x_var[i],
