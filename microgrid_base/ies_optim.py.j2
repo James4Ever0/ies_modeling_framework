@@ -425,7 +425,7 @@ class 设备模型:
 
         mx_my_multiply = self.变量列表(varName, within=within)
 
-        mx_my_multiply = self.RangeConstraint(mx_my_sum_pow2_var, mx_my_minus_pow2_var , lambda x,y:(x-y)/4)
+        mx_my_multiply = self.RangeConstraintMulti(mx_my_sum_pow2_var, mx_my_minus_pow2_var, mx_my_multiply,expression =  lambda x,y,z:(x-y)/4 == z)
 
         return mx_my_multiply
 
