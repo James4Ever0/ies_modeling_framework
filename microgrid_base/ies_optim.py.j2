@@ -861,14 +861,14 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
     "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}
 } # type: ignore
-
-{% if == ""%}
-device_info = [
+{% if e == "Info"%}
+deviceInfoClasses = [
     {% for class_name in 设备接口集合.keys() %}
     {{class_types[class_name]}},
-    {% endfor%}
+    {% endfor %}
 ]
-{% endif%}
+{% endif %}
+
 {% endfor %}
 
 
