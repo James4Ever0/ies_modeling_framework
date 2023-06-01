@@ -801,10 +801,11 @@ class {{class_name}}模型(设备模型):
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
 
         {% if class_name in ['电'] %}
-        MaxEnergyConsumption = max(self.设备信息.EnergyConsumption)
+        MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
         if self.设备信息.MaxEnergyConsumption is None:
+            self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
         else:
-        assert self.
+            assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
     {% else%}
@@ -925,7 +926,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
                 seqsum = reduce(sequence=[PD[i][j] for i in input_indexs + output_indexs + io_indexs], function = lambda x,y: x+y)
                 Constraint(seqsum >=0)
             
-            if algoParam.计算模式.:
+            if algoParam.计算类型 == '设计规划':
                 input_anchor_0 = G.node[input_indexs[0]]
                 if input_anchor_0['subtype'] == '变压器输出':
                     assert io_indexs == []
