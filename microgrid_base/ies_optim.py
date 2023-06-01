@@ -93,13 +93,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1021,10 +1021,10 @@ class 设备模型:
 
     def Piecewise(
         self,
-        x_var, # x_var
-        y_var, # y_var
-        pw_pts: List[float],
-        f_rule: List[float],
+        x_var,  # x_var
+        y_var,  # y_var
+        x_vals: List[float],
+        y_vals: List[float],
         range_list: Union[List[int], None] = None,
         pw_repn="SOS2",
         pw_constr_type="EQ",
@@ -1035,11 +1035,11 @@ class 设备模型:
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
             *range_list,
-            y_var, # y_var
-            x_var, # x_var
-            pw_pts, # x vals
-            f_rule, # y vals
-            pw_repn=pw_repn,
+            y_var,
+            x_var,
+            pw_pts=x_vals,
+            f_rule=y_vals,
+            valspw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
         )
@@ -2343,18 +2343,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）

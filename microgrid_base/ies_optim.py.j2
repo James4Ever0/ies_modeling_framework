@@ -360,11 +360,21 @@ class 设备模型:
 
         return posneg
     
-    def Piecewise(self, var_0, var_1, pw_pts:List[float], f_rule:List[float], range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
+    def Piecewise(self, 
+        x_var, # x_var
+        y_var, # y_var
+        x_vals: List[float],
+        y_vals: List[float],
+     range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         piecewise_name = self.getSpecialVarName("PW")
-        PW = Piecewise(range_list, var_0, var_1, pw_pts, f_rule, pw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
+        PW = Piecewise(
+            *range_list,
+            y_var,
+            x_var,
+            pw_pts=x_vals,
+            f_rule=y_vals, valspw_repn=pw_repn, pw_constr_type=pw_constr_type, unbounded_domain_var=unbounded_domain_var)
         self.mw.model.__setattr__(piecewise_name, PW)
         return PW
 
