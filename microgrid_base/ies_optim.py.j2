@@ -796,8 +796,8 @@ class ModelContext:
 {% set class_types = {}%}
 {% for class_name in 设备接口集合.keys() %}
 {% do class_types.update({class_name:class_name+("模型" if e == "Inst" else ("信息" if e == 'Info' else e))}) %}
-{% endfor%}
-dev{{e}}ClassMap: Dict[str, Union[",".join ]] = {
+{% endfor %}
+dev{{e}}ClassMap: Dict[str, Union[{{",".join(class_types.values())}} ]] = {
     {% for class_name in 设备接口集合.keys() %}
     "{{class_name}}": {{class_types[class_name]}},
     {% endfor %}
@@ -844,7 +844,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
             devInstClass = devInstClassMap[devSubtype]
-            devInst = devInstClass(PD = {}, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
+            devInst = devInstClass(PD = PD, model=model, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst)
 
             devInstDict.update({ devID_int: devInst})
         for adder_index, adder in adders.items():

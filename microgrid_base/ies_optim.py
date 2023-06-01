@@ -121,13 +121,13 @@ class 双向变流器ID(BaseModel):
 
 class 传输线ID(BaseModel):
     ID: int
-    电输入: int
-    """
-    类型: 电母线输入
-    """
     电输出: int
     """
     类型: 电母线输出
+    """
+    电输入: int
+    """
+    类型: 电母线输入
     """
 
 
@@ -2606,18 +2606,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2756,7 +2756,9 @@ class ModelContext:
         print("EXITING MODEL CONTEXT")
 
 
-devInstClassMap: Dict[str, Union[柴油模型]] = {
+devInstClassMap: Dict[
+    str, Union[柴油模型, 电负荷模型, 光伏发电模型, 风力发电模型, 柴油发电模型, 锂电池模型, 变压器模型, 变流器模型, 双向变流器模型, 传输线模型]
+] = {
     "柴油": 柴油模型,
     "电负荷": 电负荷模型,
     "光伏发电": 光伏发电模型,
@@ -2769,7 +2771,9 @@ devInstClassMap: Dict[str, Union[柴油模型]] = {
     "传输线": 传输线模型,
 }
 
-devIDClassMap = {
+devIDClassMap: Dict[
+    str, Union[柴油ID, 电负荷ID, 光伏发电ID, 风力发电ID, 柴油发电ID, 锂电池ID, 变压器ID, 变流器ID, 双向变流器ID, 传输线ID]
+] = {
     "柴油": 柴油ID,
     "电负荷": 电负荷ID,
     "光伏发电": 光伏发电ID,
@@ -2782,7 +2786,9 @@ devIDClassMap = {
     "传输线": 传输线ID,
 }
 
-devInfoClassMap = {
+devInfoClassMap: Dict[
+    str, Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息]
+] = {
     "柴油": 柴油信息,
     "电负荷": 电负荷信息,
     "光伏发电": 光伏发电信息,
@@ -2876,3 +2882,4 @@ def compute(devs: List[dict], adders: Dict[int, dict], graph_data: dict, G: Grap
                     )
 
                     Constraint(input_limit + output_limit >= 0)
+    del PD
