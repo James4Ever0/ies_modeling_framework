@@ -810,7 +810,7 @@ dev{{e}}ClassMap = {
                         {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
                         {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
                     {{io_type}}_limit = reduce(sequence = {{io_type}}_limit_list , function = lambda x,y:x+y)
-{% endmacro%}
+{% endmacro %}
 
 from networkx import Graph
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
@@ -821,7 +821,8 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
 
         for dev in devs:
             devSubtype = dev['subtype']
-            devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} }
+            {# devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} } #}
+            devParam = dev['param']
             devPorts = dev['ports']
 
             devID_int = dev['id']
@@ -848,7 +849,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph):
             # add them all.
             for j in range(algoParam.迭代步数):
                 seqsum = reduce(sequence=[PD[i][j] for i in input_indexs + output_indexs + io_indexs], function = lambda x,y: x+y)
-                
+
                 Constraint(seqsum >=0)
             
             if algoParam.计算类型 == '设计规划':
