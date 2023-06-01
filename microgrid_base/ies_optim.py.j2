@@ -349,7 +349,7 @@ class 设备模型:
 
         x_abs = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
-        self.RangeConstraintMulti(x_pos, x_neg, x_abs, lambda x,y,z : z == x+y)
+        self.RangeConstraintMulti(x_pos, x_neg, x_abs, expression = lambda x,y,z : z == x+y)
 
         posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg, x_abs)
 
