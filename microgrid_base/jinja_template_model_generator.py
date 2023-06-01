@@ -4,8 +4,7 @@
 
 # the test code may not be generated.
 import json
-from numpy import append
-import rich
+
 import black
 
 
