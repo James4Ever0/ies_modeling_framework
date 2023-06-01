@@ -201,7 +201,8 @@ class ModelWrapper:
         {% if k !="Var"%}
         name = self.getSpecialName()
         {% endif %}
-        self.model.__dict__[name] = Constraint(*args, **kwargs)
+        ret = self.model.__dict__[name] = Constraint(*args, **kwargs)
+        return ret
     {% endfor%}
 
 
@@ -829,7 +830,7 @@ class {{class_name}}模型(设备模型):
 {% endfor %}
 {% endfor %}
 
-class ModelContext:
+class ModelWrapperContext:
     def __init__(self):
         mw = ModelWrapper()
         self.mw = mw
@@ -845,6 +846,7 @@ class ModelContext:
         else:
             print("ERROR IN MODEL WRAPPER CONTEXT")
         del self.mw.model
+        del self.mw
         print("EXITING MODEL WRAPPER CONTEXT")
 
 {% for e in ["Inst", "ID", 'Info'] %}
