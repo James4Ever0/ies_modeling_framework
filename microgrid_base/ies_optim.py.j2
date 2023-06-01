@@ -776,7 +776,7 @@ class {{class_name}}模型(设备模型):
         self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
         ### UNIT CONVERSION ###
         
-        self.Price = self.设备信息.Price
+        self.Price = self.设备信息.Price * self.ConversionRate
         self.Unit = str(self.StandardUnit)
     {% else%}
         {% error("Unknown special class:", k)%}
@@ -792,6 +792,7 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
     {% elif k == "input_class"%}
         ...
+        self.Price * self.ConversionRate
     {% else%}
         {% error("Unknown special class:", k)%}
     {% endif%}
@@ -894,9 +895,12 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
                 Constraint(input_limit + output_limit >= 0)
+
     financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }}
 
-    
+    environment_obj_expr = ...
+
+    obj_expr = ...
 
     return obj_expr
     # always minimize the objective.
