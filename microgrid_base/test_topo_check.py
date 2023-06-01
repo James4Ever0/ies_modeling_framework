@@ -31,9 +31,9 @@ from ies_optim import (
 )
 from ies_optim import 计算参数
 
-# algoParam = .to_json()
-topo = 拓扑图()  # with structure?
-# topo = 拓扑图(**algoParam)  # with structure?
+algoParam = 计算参数(计算步长='小时', 典型日=False, 计算类型= '设计规划', 风速=..., 光照=..., 气温=..., 年利率=0.1).json()
+# topo = 拓扑图()  # with structure?
+topo = 拓扑图(**algoParam)  # with structure?
 
 PV1 = 光伏发电(topo, param={})  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param={})
