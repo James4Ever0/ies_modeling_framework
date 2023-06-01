@@ -14,7 +14,9 @@ def print_with_banner(data, banner:str):
     print()
 
 # you may need pydantic here. verify then import to compute graph.
-topo = 拓扑图(**)  # with structure?
+from ies_optim.device_ import 
+algoParam = .to_json()
+topo = 拓扑图(**algoParam)  # with structure?
 
 PV1 = 光伏发电(topo, param = )  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param = )  
