@@ -16,7 +16,7 @@ from pydantic import BaseModel
 {% set input_types = ['柴油'] %}
 
 {% macro sum_reduce(seq)%}
-reduce(sequence=seq, )
+reduce(sequence=seq, function = lambda x,y: x+y)
 {% endmacro%}
 
 {% macro init_super_class(class_name)%}
@@ -305,7 +305,7 @@ class 设备模型:
             Constraint(expression(*vars, i))
     
     def SumRange(self,var_1):
-        return reduce(sequence = [var_1[i] for i in range(self.计算参数.迭代步数)], function = lambda x,y: x+y)
+        return {{- sum_reduce('[var_1[i] for i in range(self.计算参数.迭代步数)]')}}
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
         x = self.变量列表(varName,within=within )
@@ -839,7 +839,7 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                     {{io_type}}_node_id = {{io_type}}_anchor['device_id']
                     {{io_type}}_devInst = devInstDict[{{io_type}}_node_id]
                     {{io_type}}_limit_list.append({{io_type}}_devInst.{{attr}})
-                {{io_type}}_limit = reduce(sequence = {{io_type}}_limit_list , function = lambda x,y:x+y)
+                {{io_type}}_limit = {{- sum_reduce(io_type+'_limit_list') }}
 {% endmacro %}
 
 from networkx import Graph
@@ -880,7 +880,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 
         # add them all.
         for j in range(algoParam.迭代步数):
-            seqsum = reduce(sequence=[PD[i][j] for i in input_indexs + output_indexs + io_indexs], function = lambda x,y: x+y)
+            seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}
 
             Constraint(seqsum >=0)
         
@@ -894,7 +894,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
                 Constraint(input_limit + output_limit >= 0)
-    obj_expr = reduce(sequence=,function = lambda x,y: x+y)
+    obj_expr = {{- sum_reduce('') }}
 
     return obj_expr
     # always minimize the objective.
