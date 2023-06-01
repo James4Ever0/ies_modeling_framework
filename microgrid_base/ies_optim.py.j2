@@ -894,7 +894,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
 {{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
 
                 Constraint(input_limit + output_limit >= 0)
-    obj_expr = {{- sum_reduce('[]') }}
+    obj_expr = {{- sum_reduce('[e.constraint_register() for e in devInstDict.values()]') }}
 
     return obj_expr
     # always minimize the objective.
