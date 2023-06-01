@@ -106,16 +106,22 @@ print_with_banner(graph_data, "图元数据")
 # objective is contained in the graph data.
 # so all we need to pass to the compute function are: devs, adders, graph_data
 import sys
-class ModelWrapper()
+class ModelWrapper:
 def __init__(self):
-    def getSpecialName
-def Constraint(self,*args, **kwargs):
-    name = self.clock+1
+    self.model = ConcreteModel()
+    self.clock =0
+def getSpecialName(self):
+    name = f"CN_OB_{self.clock}"
+    self.clock+=1
+    return name
+{% for k in ['Constraint', 'Var','Objective']%}
+def {{k}}(self, {{ "name:str," if k == "Var" else ""}}*args, **kwargs):
+    {{ if k !="Var"}}
+    name = self.getSpecialName()
     self.model.__dict__[name] = Constraint(*args, **kwargs)
 def Var(self, name:str, *args, **kwargs):
     self.model.__dict__[name] = Var(*args, **kwargs)
 def Objective(self,*args, **kwargs):
-
     self.model.__dict__[name] = Objective(*args, **kwargs)
 if sys.argv[-1] in ['-f',"--full"]:
     from ies_optim import compute
