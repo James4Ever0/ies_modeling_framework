@@ -198,7 +198,8 @@ class ModelWrapper:
         self.clock[key] = val+1
         return name
     {% for k in ['Constraint', 'Var','Objective']%}
-    {% set mv = "*args, **kwargs" if k == 'Var' else 'expr'%}
+    {% set mv = "*args, **kwargs"%}
+    {# {% set mv = "*args, **kwargs" if k == 'Var' else 'expr'%} #}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}} {{ mv}}):
         {% if k !="Var" %}
         name = self.getSpecialName("{{k[:3].upper()}}")
