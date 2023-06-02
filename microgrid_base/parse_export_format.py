@@ -15,22 +15,25 @@ def is_empty(elem):
         return True
 
 
-trough = True
+trough = 0
 
 data ={}
 
 for i, r in table.iterrows():
-    rlist = [(e.strip() if type(e) == str else e) for e in r.tolist()]
+    rlist = [(e.strip() if type(e) == str else "") for e in r.tolist()]
     first_elem, second_elem = rlist[0], rlist[1]
     
     if is_empty(first_elem):
-        trough = True
-    elif not is_empty(first_elem) and is_empty(second_elem):
-        trough = True
-        key = first_elem
+        trough = 0
+
+    if not is_empty(first_elem) and is_empty(second_elem):
+        if trough == 0:
+            trough = 1
+            key = first_elem
+        elif trough  == 1
     elif not is_empty(first_elem) and not is_empty(second_elem):
         if trough:
-            headings = rlist[:]
+            headings = rlist[:rlist.index("")]
             trough = False
         else:
-            ...
+            example = rlist[0]
