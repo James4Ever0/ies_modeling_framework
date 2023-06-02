@@ -13,7 +13,7 @@ from unit_utils import (
     ureg,
     standard_units,
     getSingleUnitConverted,
-    translateUnit
+    translateUnit,
 )
 
 EXCEL = "嵌套"
@@ -302,7 +302,7 @@ output_data = {}  # category -> device_name -> {设备参数, 设计规划, 仿�
 def getUnitConverted(val_name, val_unit):
     base_classes = TRANSLATION_TABLE[val_name]
     has_exception = False
-    
+
     _val_unit = val_unit
 
     if _val_unit:
@@ -311,16 +311,18 @@ def getUnitConverted(val_name, val_unit):
     for base_class in base_classes:
         default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
         # iterate through all base classes.
-        
+
         val_unit = _val_unit
-        
-        has_exception, val_unit = getSingleUnitConverted(default_unit=default_unit, val_unit=val_unit)
-        
+
+        has_exception, val_unit = getSingleUnitConverted(
+            default_unit=default_unit, val_unit=val_unit
+        )
+
         if has_exception:
             continue
         elif val:
             # get factor:
-            print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
+            print("TRANS {} -> {}".format(val_name, base_class))  # [PS]
             mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
             # print("STANDARD:", standard)
             # print("MAGNITUDE TO STANDARD:", mag)
@@ -367,14 +369,9 @@ for key in keys:
                 index
             ]  # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
             print("____" * 10)
-            val = (
-                val.replace("（", "(")
-                .replace("）", ")")
-                .replace(" ", "")
-                .replace(";", "")
-                .replace("；", "")
-            )
-            val = val.strip("*").strip(":").strip("：").strip()
+            from unit_utils import unitCleaner
+
+            val = unitCleaner(val)
             print(val)
             if val in CHAR_TYPE:
                 print("CHAR_TYPE")
@@ -418,7 +415,7 @@ for key in keys:
                     # override
                     if subkey in ["传输线"]:
                         params[dkey].append(wrapper_uc_vp("长度", "km"))
-                    elif subkey in ['锂电池']:
+                    elif subkey in ["锂电池"]:
                         params[dkey].append(wrapper_uc_vp("初始SOC", "percent"))
                         params[dkey].append(wrapper_uc_vp("设备容量", "kWh"))
                     else:

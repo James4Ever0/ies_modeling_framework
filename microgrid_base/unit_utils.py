@@ -82,24 +82,23 @@ standard_units = frozenset(
 )
 
 
-
 BASE_UNIT_TRANSLATION_TABLE = {
     "percent": ["%"],
     "m2": ["m²"],
     "/hour": [
         "/h",
     ],
-    "m3": ["m³", 'Nm3', 'Nm³'],
+    "m3": ["m³", "Nm3", "Nm³"],
     "p_u_": [
         "p.u.",
     ],
 }
 
 
-
 def revert_dict(mdict: dict):
     result = {e: k for k, v in mdict.items() for e in v}
     return result
+
 
 UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
@@ -123,13 +122,12 @@ def getSingleUnitConverted(default_unit, val_unit):
     if not default_unit_compatible == compatible_units:
         has_exception = True
         print(
-            "Unit {} not compatible with default unit {}".format(
-                val_unit, default_unit
-            )
+            "Unit {} not compatible with default unit {}".format(val_unit, default_unit)
         )
     else:
         has_exception = False
     return has_exception, val_unit
+
 
 def translateUnit(_val_unit):
     for (
@@ -138,3 +136,16 @@ def translateUnit(_val_unit):
     ) in UNIT_TRANSLATION_TABLE.items():
         _val_unit = _val_unit.replace(trans_source_unit, trans_target_unit)
     return _val_unit
+
+
+def unitCleaner(val):
+
+    val = (
+        val.replace("（", "(")
+        .replace("）", ")")
+        .replace(" ", "")
+        .replace(";", "")
+        .replace("；", "")
+    )
+    val = val.strip("*").strip(":").strip("：").strip()
+    return val
