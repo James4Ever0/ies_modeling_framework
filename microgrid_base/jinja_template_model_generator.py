@@ -5,7 +5,11 @@
 # the test code may not be generated.
 
 import black
+import jinja2
+import subprocess
+
 from param_base import *
+
 
 def load_render_and_format(
     template_path: str, output_path: str, render_params: dict, banner: str
@@ -54,30 +58,29 @@ def load_template(template_path):
     tpl = env.get_template(template_path)
     return tpl
 
+
+def test(cmd: list, exec="python3"):
+    cmd = [exec] + cmd
+    p = subprocess.run(cmd)
+    p.check_returncode()
+
+
 if __name__ == "__main__":
 
-    topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
+    topo_code_output_path, topo_code_template_path = code_and_template_path(
+        "topo_check"
+    )
 
     ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
         "ies_optim"
     )
 
-    import jinja2
-
-        
     load_render_and_format(
         template_path=topo_code_template_path,
         output_path=topo_code_output_path,
         render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
         banner="TOPO CHECK CODE",
     )
-
-    import subprocess
-
-    def test(cmd: list, exec="python3"):
-        cmd = [exec] + cmd
-        p = subprocess.run(cmd)
-        p.check_returncode()
 
     # run test code.
     test(["test_topo_check.py"])
