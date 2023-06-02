@@ -25,10 +25,8 @@ var input_template={
     "multigraph": false,
     "graph": graph_data,"nodes": [],"links": []
 }
-
-for (var of obj."graph": {
-    "mxGraphModel": {
-        "root": {
-            "mxCell": [){
+var anchorLUT = {}
+var node_id_cursor = 0
+for (var e of obj.graph.mxGraphModel.root.mxCell){
 
 }
