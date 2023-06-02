@@ -4,3 +4,4 @@ pyomo
 pydantic
 pint
 numpy
+jinja2
