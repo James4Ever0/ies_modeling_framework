@@ -17,10 +17,16 @@ def is_empty(elem):
 
 trough = True
 
+data ={}
+
 for i, r in table.iterrows():
     rlist = [(e.strip() if type(e) == str else e) for e in r.tolist()]
     first_elem, second_elem = rlist[0], rlist[1]
+    
     if is_empty(first_elem):
         trough = True
-    if not is_empty(first_elem) and is_empty(second_elem):
+    elif not is_empty(first_elem) and is_empty(second_elem):
         trough = True
+        key = first_elem
+    elif not is_empty(first_elem) and not is_empty(second_elem):
+        
