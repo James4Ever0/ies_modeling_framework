@@ -2,24 +2,35 @@ from ies_optim import {{",".join(...) }}
 {# import device ports. #}
 from typing import List
 
-{% for k in ['出力曲线', '']%}
-class 设备出力曲线(BaseModel):
+{% for k in ['出力曲线', '仿真结果']%}
+{% if k == "出力曲线"%}
+    {% set x = "设备"+k%}
+{% else%}
+    {% set x = k%}
+{% endif%}
+class {{x}}(BaseModel):
     元件名称:str
+    {% if k == "出力曲线"%}
     时间:List[int]
     """
     单位：one
     (根据具体计算步长确定)
     """
+    {% else%}
+    设备型号:str
+    设备台数:int
+    """
+    单位：one
+    """
+    {% endif%}
+
 
 {% for ... in ... %}
-class {{...}}出力曲线(设备出力曲线):
+class {{...}}{{k}}({{x}}):
 {% endfor%}
 
 class 仿真结果(BaseModel):
     元件名称:str
-    设备型号:str
-    设备台数:int
-
 {% for ... in ... %}
 class {{...}}仿真结果(仿真结果):
 {% endfor%}
