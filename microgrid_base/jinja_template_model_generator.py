@@ -25,34 +25,6 @@ dparam_path = "microgrid_jinja_param_base.json"
 dparam = read_json(dparam_path)
 
 
-def code_and_template_path(base_name):
-    code_path = f"{base_name}.py"
-    template_path = f"{code_path}.j2"
-    return code_path, template_path
-
-
-topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
-
-ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
-    "ies_optim"
-)
-
-import jinja2
-
-
-def load_template(template_path):
-    try:
-        assert template_path.endswith(".j2")
-    except:
-        Exception(f"jinja template path '{template_path}' is malformed.")
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader("./"),extensions=['jinja2_error.ErrorExtension', 'jinja2.ext.do'],
-        trim_blocks=True,
-        lstrip_blocks=True,
-        undefined=jinja2.StrictUndefined,
-    )
-    tpl = env.get_template(template_path)
-    return tpl
 
 
 类型集合分类 = [
@@ -93,18 +65,19 @@ for super_class, v0 in dparam.items():
                     continue
                 else:
                     if type(item) == str:
-                        mstrs.append((param_super_class,item))
+                        mstrs.append((param_super_class, item))
                     elif type(item) == list:
-                        mdigits.append((param_super_class,item))
+                        mdigits.append((param_super_class, item))
                     elif type(item) == dict:
-                        main = item['MAIN']
-                        sub = item['SUB']
-                        mtables.append((param_super_class,main, sub))
+                        main = item["MAIN"]
+                        sub = item["SUB"]
+                        mtables.append((param_super_class, main, sub))
         设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 
-
-def load_render_and_format(template_path: str, output_path:str,render_params: dict, banner: str):
+def load_render_and_format(
+    template_path: str, output_path: str, render_params: dict, banner: str
+):
     tpl = load_template(template_path)
     result = tpl.render(**render_params)
 
@@ -127,22 +100,21 @@ def load_render_and_format(template_path: str, output_path:str,render_params: di
         raise Exception("Syntax Failed.")
     print("=" * 40)
 
+
 if __name__ == "__main__":
     load_render_and_format(
         template_path=topo_code_template_path,
-        output_path = topo_code_output_path, 
+        output_path=topo_code_output_path,
         render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
         banner="TOPO CHECK CODE",
     )
 
     import subprocess
 
-
     def test(cmd: list, exec="python3"):
         cmd = [exec] + cmd
         p = subprocess.run(cmd)
         p.check_returncode()
-
 
     # run test code.
     test(["test_topo_check.py"])
@@ -150,7 +122,7 @@ if __name__ == "__main__":
     render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)
     load_render_and_format(
         template_path=ies_optim_code_template_path,
-        output_path = ies_optim_code_output_path,
+        output_path=ies_optim_code_output_path,
         render_params=render_params,
         banner="IES OPTIM CODE",
     )
