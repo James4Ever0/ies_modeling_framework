@@ -486,7 +486,7 @@ class {{class_name}}模型(设备模型):
             """
         {% elif psc == "仿真模拟"%}
             {% if class_name == '锂电池'%}
-            self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息RatedCapacity)
+            self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity)
             {% endif%}
         {% endif %}
         {%endif%}
