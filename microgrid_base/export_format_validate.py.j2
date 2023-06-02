@@ -1,5 +1,6 @@
 from ies_optim import {{",".join() }}
 {# import device ports. #}
+from typing import List
 
 class 设备出力曲线(BaseModel):
     元件名称:str
@@ -7,5 +8,5 @@ class 设备出力曲线(BaseModel):
 
 class 仿真结果(BaseModel):
     元件名称:str
-    设备型号
-    设备台数
+    设备型号:str
+    设备台数:int
