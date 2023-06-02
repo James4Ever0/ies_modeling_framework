@@ -484,7 +484,9 @@ class {{class_name}}模型(设备模型):
             """
             单位： 个
             """
-
+        {% elif psc == "仿真模拟"%}
+            {% if class_name == '锂电池'%}
+            {% %}
         {% endif %}
         {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}
@@ -555,7 +557,6 @@ class {{class_name}}模型(设备模型):
             #  初始SOC
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
-        elif SOC
 
         assert self.MaxSOC >=self.MinSOC
         assert self.MaxSOC <= 1
