@@ -2,12 +2,11 @@ import json
 from topo_check import *
 import rich
 
-###############
-# build from code.
-###############
+####################
+# build from code. #
+####################
 
 # FIXED: 加法器没有"output"
-
 
 def print_with_banner(data, banner: str):
     print()

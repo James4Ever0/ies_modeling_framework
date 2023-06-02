@@ -1,7 +1,6 @@
 excel_path = "设备信息库各参数.xlsx"
 
 import json
-from paddle import tolist
 import pandas
 
 table_name = "仿真结果"
