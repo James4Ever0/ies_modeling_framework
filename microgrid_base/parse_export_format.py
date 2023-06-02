@@ -63,4 +63,7 @@ print(new_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
 
-# 
+# type? sum or array.
+# unit conversion? divide by conversion rate.
+# in unit conversion exception list? check.
+# matched to which port?
