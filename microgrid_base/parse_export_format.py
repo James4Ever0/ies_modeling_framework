@@ -16,3 +16,8 @@ def is_empty(elem):
 
 for i, r in table.iterrows():
     rlist = r.tolist()
+    
+    first_elem, second_elem = rlist[0], rlist[1]
+    if is_empty(first_elem):
+        continue
+    if not is_empty(first_elem) and
