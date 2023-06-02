@@ -18,12 +18,12 @@ def is_empty(elem):
 
 trough = 0
 
-data ={}
+data = {}
 
 for i, r in table.iterrows():
     rlist = [(e.strip() if type(e) == str else "") for e in r.tolist()]
     first_elem, second_elem = rlist[0], rlist[1]
-    
+
     if is_empty(first_elem):
         trough = 0
     elif not is_empty(first_elem) and is_empty(second_elem):
@@ -32,18 +32,19 @@ for i, r in table.iterrows():
             key = first_elem
         elif trough == 2:
             device = rlist[0]
-            data[key][-1]['devices'].append(device)
+            data[key][-1]["devices"].append(device)
     elif not is_empty(first_elem) and not is_empty(second_elem):
-        headings = rlist[:rlist.index("")]
+        headings = rlist[: rlist.index("")]
         trough = 2
-        data[key] = data.get(key,[])+[{'headings':headings, 'devices':[]}]
+        data[key] = data.get(key, []) + [{"headings": headings, "devices": []}]
 
 import rich
+
 rich.print(data)
 
 output_path = "export_format.json"
 
 print("writing to:", output_path)
 
-with open(output_path, 'w+') as f:
+with open(output_path, "w+") as f:
     f.write(json.dumps(data, indent=4))
