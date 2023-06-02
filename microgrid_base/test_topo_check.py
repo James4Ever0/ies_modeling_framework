@@ -92,7 +92,7 @@ DEL1 = 变流器(
         Efficiency=0.9,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
-        DeviceCount=100,
+        DeviceCount=1000000,
         MaxDeviceCount=200,
         MinDeviceCount=100,
     ).dict(),
@@ -165,7 +165,7 @@ BC = 双向变流器(
         BuildBaseCost=100,
         MaxDeviceCount=200,
         MinDeviceCount=100,
-        DeviceCount=100,
+        DeviceCount=1000000,
     ).dict(),
 )
 
