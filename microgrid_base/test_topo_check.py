@@ -74,7 +74,7 @@ DS = 柴油发电(
         BuildCostPerMachine=10,
         BuildBaseCost=10,
         DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=100000,
+        DeviceCount=100000000,
         MaxDeviceCount=2000000,
         MinDeviceCount=100,
     ).dict(),
