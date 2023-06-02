@@ -17,3 +17,4 @@ obj.graph = JSON.parse(obj.graph)
 // console.log(obj)
 // console.dir(obj)
 pretty_print(obj, 'sample_parse.json')
+
