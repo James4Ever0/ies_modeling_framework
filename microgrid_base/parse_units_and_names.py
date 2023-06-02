@@ -183,6 +183,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
             "Rated-": ["额定容量"],
             "MaxTotal-": ["最大设备容量"],
             "MinTotal-": ["最小设备容量"],
+            "Total-": ["设备容量"],
             "TotalDischarge-": ["生命周期总放电量"],
         },
     ),
@@ -417,6 +418,9 @@ for key in keys:
                     # override
                     if subkey in ["传输线"]:
                         params[dkey].append(wrapper_uc_vp("长度", "km"))
+                    elif subkey in ['锂电池']:
+                        params[dkey].append(wrapper_uc_vp("初始SOC", "percent"))
+                        params[dkey].append(wrapper_uc_vp("设备容量", "kWh"))
                     else:
                         params[dkey].append(wrapper_uc_vp("安装台数", "台"))
 
