@@ -208,8 +208,12 @@ class ModelWrapper:
         {% if k !="Var" %}
         expr = kwargs.pop('expr',args[0] if len(args) >0 else None)
         if expr is None:
-            raise Exception("Not passing expression to ")
-        deg = 
+            print("ARGS:", args)
+            print("KWARGS:", kwargs)
+            raise Exception("Not passing expression to method '{{k}}'")
+        deg = expr.polynomial_degree()
+        if deg != 1:
+            raise Exception(f"{{k}}: Unacceptable polynomial degree for expression '{}'")
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
         ret = {{k}}({{mv if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
