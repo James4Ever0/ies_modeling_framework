@@ -111,7 +111,7 @@ DEL2 = 变压器(
         Efficiency=0.9,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
-        DeviceCount=100,
+        DeviceCount=1000000,
         MaxDeviceCount=200,
         MinDeviceCount=100,
     ).dict(),
