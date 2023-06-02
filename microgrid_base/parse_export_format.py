@@ -25,15 +25,13 @@ for i, r in table.iterrows():
     
     if is_empty(first_elem):
         trough = 0
-
-    if not is_empty(first_elem) and is_empty(second_elem):
+    elif not is_empty(first_elem) and is_empty(second_elem):
         if trough == 0:
             trough = 1
             key = first_elem
-        elif trough  == 1
-    elif not is_empty(first_elem) and not is_empty(second_elem):
-        if trough:
-            headings = rlist[:rlist.index("")]
-            trough = False
-        else:
+        elif trough == 2:
             example = rlist[0]
+    elif not is_empty(first_elem) and not is_empty(second_elem):
+        headings = rlist[:rlist.index("")]
+        trough = 2
+        data[key] = {}
