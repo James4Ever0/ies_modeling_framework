@@ -644,7 +644,7 @@ class {{class_name}}模型(设备模型):
         self.Piecewise(y_var = self.单台柴油输入, x_var = self.单台发电功率, y_vals = [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], x_vals = [self.RatedPower*x[1] for x in self.DieselToPower_Load])
         # 柴油输入率: L/h
 
-        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + 总最小启动功率*z == y)
+        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + self.BinVarMultiplySingle(z,总最小启动功率) == y)
 
         {%elif class_name in ['锂电池'] %}
         self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity)
