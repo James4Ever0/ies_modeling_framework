@@ -416,8 +416,8 @@ class 设备模型:
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
-        assert mx[0].is_continuous()
-        assert my[0].is_continuous()
+        assert not mx[0].is_binary()
+        assert not my[0].is_binary()
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeConstraintMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x == y+z)
