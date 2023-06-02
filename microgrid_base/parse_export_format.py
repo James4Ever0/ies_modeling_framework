@@ -1,5 +1,6 @@
 excel_path = "设备信息库各参数.xlsx"
 
+import json
 from paddle import tolist
 import pandas
 
@@ -39,3 +40,10 @@ for i, r in table.iterrows():
 
 import rich
 rich.print(data)
+
+output_path = "export_format.json"
+
+print("writing to:", output_path)
+
+with open(output_path, 'w+') as f:
+    f.write(json.dumps(data, indent=4))
