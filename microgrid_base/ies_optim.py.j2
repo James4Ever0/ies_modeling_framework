@@ -401,6 +401,9 @@ class 设备模型:
         return PWL
     
     def BinVarMultiplySingle(self, b_var, x_var):
+        assert b_var.is_binary()
+        {# assert x_var.is_continuous()  #}
+        {# x_var can be binary. #}
         h = self.单变量(self.getSpecialVarName("BVM"))
         self.Constraint(h<=b_var* self.BigM)
         self.Constraint(h>=−b_var*self.BigM)
@@ -411,6 +414,8 @@ class 设备模型:
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
+        assert mx[0].is_continuous()
+        assert my[0].is_continuous()
 
         m1posneg = self.变量列表_带指示变量(self.getSpecialVarName(varName))
         self.RangeConstraintMulti(m1posneg.x, mx, my , expression = lambda x,y,z: x == y+z)
