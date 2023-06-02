@@ -27,10 +27,7 @@ class {{x}}(BaseModel):
 
 {% for ... in ... %}
 class {{...}}{{k}}({{x}}):
+    ...
 {% endfor%}
 
-class 仿真结果(BaseModel):
-    元件名称:str
-{% for ... in ... %}
-class {{...}}仿真结果(仿真结果):
 {% endfor%}
