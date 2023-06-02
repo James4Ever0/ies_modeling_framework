@@ -290,8 +290,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             import json
             
             with open('export_format.json', 'r') as f:
-                data = f.read()
-                data = json.loads(data)
+                data = json.load(f)
         except:
             print("NO SOLUTION.")
         breakpoint()

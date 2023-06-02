@@ -55,6 +55,10 @@ def convert_format(h_array):
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
 
+with open() as f:
+    设备
+all_devices = list(.keys())
+
 print()
 print(new_data)
 with open(output_path, "w+") as f:
