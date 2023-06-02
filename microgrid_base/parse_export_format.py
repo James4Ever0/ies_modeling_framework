@@ -39,11 +39,13 @@ for i, r in table.iterrows():
 
 import rich
 
+# need processing.
 rich.print(data)
 
 output_path = "export_format.json"
 
 print("writing to:", output_path)
+
 
 with open(output_path, "w+") as f:
     f.write(json.dumps(data, indent=4))
