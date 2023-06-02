@@ -1,7 +1,10 @@
 var path = "sample.json"
 
-function pretty_print(obj){
-    console.log(JSON.stringify(obj,null, 4))
+function pretty_print(obj,output_path){
+    let data = JSON.stringify(obj,null, 4)
+    console.log(data)
+    fs.writeFileSync(output_path, data)
+    console.log("write to:", output_path)
 }
 
 const fs = require('fs')
@@ -13,4 +16,4 @@ var obj = JSON.parse(content)
 obj.graph = JSON.parse(obj.graph)
 // console.log(obj)
 // console.dir(obj)
-pretty_print(obj)
+pretty_print(obj, 'sample_parse.json')

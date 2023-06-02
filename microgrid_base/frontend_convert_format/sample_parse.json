@@ -1,0 +1,248 @@
+{
+    "graph": {
+        "mxGraphModel": {
+            "root": {
+                "mxCell": [
+                    {
+                        "_id": "0"
+                    },
+                    {
+                        "_id": "1",
+                        "_parent": "0"
+                    },
+                    {
+                        "mxGeometry": {
+                            "mxRectangle": {
+                                "_width": "100",
+                                "_height": "100",
+                                "_as": "alternateBounds"
+                            },
+                            "_x": "226",
+                            "_y": "166",
+                            "_width": "100",
+                            "_height": "100",
+                            "_as": "geometry"
+                        },
+                        "Array": {
+                            "Object": {
+                                "_x": "1",
+                                "_y": "0.6",
+                                "_perimeter": "1",
+                                "_constraint": "east",
+                                "_portId": "0",
+                                "_type": "0",
+                                "_title": "柴油输出"
+                            },
+                            "_as": "ports"
+                        },
+                        "_id": "dieselOil-1",
+                        "_style": "fillColor=transparent;strokeColor=transparent;strokeWidth=1;shape=image;align=top;verticalAlign=bottom;imageAlign=center;imageVerticalAlign=bottom;image=./models/柴油.svg;imageWidth=100;imageHeight=105",
+                        "_vertex": "1",
+                        "_parent": "1",
+                        "_modelnum": "1",
+                        "_dropAble": "0",
+                        "_isGroup": "0",
+                        "_isBasicElement": "1",
+                        "_width": "100",
+                        "_height": "100",
+                        "_realX": "276",
+                        "_realY": "216",
+                        "_type": "0"
+                    },
+                    {
+                        "mxGeometry": {
+                            "mxRectangle": {
+                                "_width": "100",
+                                "_height": "100",
+                                "_as": "alternateBounds"
+                            },
+                            "_x": "439",
+                            "_y": "396",
+                            "_width": "130",
+                            "_height": "90",
+                            "_as": "geometry"
+                        },
+                        "Array": {
+                            "Object": [
+                                {
+                                    "_x": "0",
+                                    "_y": "0.46",
+                                    "_perimeter": "1",
+                                    "_constraint": "west",
+                                    "_portId": "0",
+                                    "_type": "0",
+                                    "_title": "柴油输入"
+                                },
+                                {
+                                    "_x": "0.63",
+                                    "_y": "0",
+                                    "_perimeter": "1",
+                                    "_constraint": "west",
+                                    "_portId": "1",
+                                    "_type": "0",
+                                    "_title": "供电端输出"
+                                }
+                            ],
+                            "_as": "ports"
+                        },
+                        "_id": "dieselGenerator-1",
+                        "_style": "fillColor=transparent;strokeColor=transparent;strokeWidth=1;shape=image;align=top;verticalAlign=bottom;imageAlign=center;imageVerticalAlign=top;image=./models/柴油发电.svg;imageWidth=155;imageHeight=85",
+                        "_vertex": "1",
+                        "_parent": "1",
+                        "_modelnum": "3",
+                        "_dropAble": "0",
+                        "_isGroup": "0",
+                        "_isBasicElement": "1",
+                        "_width": "130",
+                        "_height": "90",
+                        "_realX": "504",
+                        "_realY": "441",
+                        "_type": "0"
+                    },
+                    {
+                        "mxGeometry": {
+                            "mxRectangle": {
+                                "_width": "100",
+                                "_height": "100",
+                                "_as": "alternateBounds"
+                            },
+                            "_x": "265",
+                            "_y": "555",
+                            "_width": "100",
+                            "_height": "120",
+                            "_as": "geometry"
+                        },
+                        "Array": {
+                            "Object": {
+                                "_x": "1",
+                                "_y": "0.4",
+                                "_perimeter": "1",
+                                "_constraint": "west",
+                                "_portId": "0",
+                                "_type": "0",
+                                "_title": "供电端输出"
+                            },
+                            "_as": "ports"
+                        },
+                        "_id": "windPower-1",
+                        "_style": "fillColor=transparent;strokeColor=transparent;strokeWidth=1;shape=image;align=center;verticalAlign=bottom;imageAlign=center;imageVerticalAlign=top;image=./models/风力发电.svg;imageWidth=100;imageHeight=100",
+                        "_vertex": "1",
+                        "_parent": "1",
+                        "_modelnum": "2",
+                        "_dropAble": "0",
+                        "_isGroup": "0",
+                        "_isBasicElement": "1",
+                        "_width": "100",
+                        "_height": "120",
+                        "_realX": "315",
+                        "_realY": "615",
+                        "_type": "0"
+                    },
+                    {
+                        "mxGeometry": {
+                            "_relative": "1",
+                            "_as": "geometry"
+                        },
+                        "_id": "5",
+                        "_value": "",
+                        "_style": "exitX=1;exitY=0.6;exitDx=0;exitDy=0;entryX=0;entryY=0.46;entryDx=0;entryDy=0;strokeColor=#ac7300;strokeWidth=2;",
+                        "_edge": "1",
+                        "_parent": "1",
+                        "_source": "dieselOil-1",
+                        "_target": "dieselGenerator-1"
+                    },
+                    {
+                        "mxGeometry": {
+                            "_relative": "1",
+                            "_as": "geometry"
+                        },
+                        "_id": "6",
+                        "_value": "",
+                        "_style": "exitX=0.63;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.4;entryDx=0;entryDy=0;strokeColor=red;strokeWidth=2;",
+                        "_edge": "1",
+                        "_parent": "1",
+                        "_source": "dieselGenerator-1",
+                        "_target": "windPower-1"
+                    }
+                ]
+            }
+        }
+    },
+    "connectionsAnchors": [
+        {
+            "id": "mxCell#10",
+            "sourceAnchors": {
+                "point": {
+                    "x": 0.63,
+                    "y": 0
+                },
+                "perimeter": true,
+                "dx": 0,
+                "dy": 0,
+                "portId": "1"
+            },
+            "targetAnchors": {
+                "point": {
+                    "x": 1,
+                    "y": 0.4
+                },
+                "perimeter": true,
+                "dx": 0,
+                "dy": 0,
+                "portId": "0"
+            }
+        },
+        {
+            "id": "mxCell#10",
+            "sourceAnchors": {
+                "point": {
+                    "x": 0.63,
+                    "y": 0
+                },
+                "perimeter": true,
+                "dx": 0,
+                "dy": 0,
+                "portId": "1"
+            },
+            "targetAnchors": {
+                "point": {
+                    "x": 1,
+                    "y": 0.4
+                },
+                "perimeter": true,
+                "dx": 0,
+                "dy": 0,
+                "portId": "0"
+            }
+        }
+    ],
+    "rightParams": [
+        {
+            "id": "dieselOil-1",
+            "params": {
+                "name": "柴油",
+                "fuelModel": "32"
+            }
+        },
+        {
+            "id": "dieselGenerator-1",
+            "params": {
+                "name": "柴油发电",
+                "typeSelect": 1,
+                "leastNum": "0",
+                "biggestNum": "20",
+                "costModel": 5
+            }
+        },
+        {
+            "id": "windPower-1",
+            "params": {
+                "name": "风力发电",
+                "typeSelect": 13,
+                "leastNum": "0",
+                "biggestNum": "20",
+                "costModel": 5
+            }
+        }
+    ]
+}
