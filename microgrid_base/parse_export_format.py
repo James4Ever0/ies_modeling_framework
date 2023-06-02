@@ -30,12 +30,12 @@ for i, r in table.iterrows():
             trough = 1
             key = first_elem
         elif trough == 2:
-            example = rlist[0]
-            data[key][-1]['examples'].append(example)
+            device = rlist[0]
+            data[key][-1]['devices'].append(device)
     elif not is_empty(first_elem) and not is_empty(second_elem):
         headings = rlist[:rlist.index("")]
         trough = 2
-        data[key] = data.get(key,[])+[{'headings':headings, 'examples':[]}]
+        data[key] = data.get(key,[])+[{'headings':headings, 'devices':[]}]
 
 import rich
 rich.print(data)
