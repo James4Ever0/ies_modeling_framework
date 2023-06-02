@@ -27,6 +27,7 @@ var input_template={
 }
 var anchorLUT = {}
 var node_id_cursor = 0
+
 for (var e of obj.graph.mxGraphModel.root.mxCell){
     if (e.vertex){
         let node_id = e._id
@@ -40,4 +41,6 @@ for (var e of obj.connectionsAnchors){
 
 }
 
-for (var )
+for (var e of obj.rightParams){
+
+}
