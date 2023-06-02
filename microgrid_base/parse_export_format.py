@@ -8,5 +8,5 @@ table = pandas.read_excel(excel_path, sheet_name=  table_name)
 
 # print(table)
 for i, r in table.iterrows():
-    print(i)
+    # print(i)
     print(r)
