@@ -426,7 +426,6 @@ for key in keys:
 
                     params["设计规划"].append("设备选型")  # you may set the calculation mode.
                     params["仿真模拟"].append("设备选型")
-
                     output_data[key][subkey].update(params)
 
                     rich.print(params)
