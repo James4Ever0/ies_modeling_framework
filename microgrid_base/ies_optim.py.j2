@@ -294,7 +294,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e+10
+        self.BigM = 1e+20
         """
         一个极大数
         """
@@ -399,8 +399,12 @@ class 设备模型:
             self.mw.model.__setattr__(piecewise_name, PW)
             PWL.append(PW)
         return PWL
+    
+    def BinVarMultiplySingle(self, b_var, x_var):
+        h = self.单变量()
+        ℎ≤b_var𝑀≥−𝑏𝑀≤𝑦+(1−𝑏)𝑀≥𝑦−(1−𝑏)𝑀(1)(2)(3)(4)
 
-    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # continuous
+    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
