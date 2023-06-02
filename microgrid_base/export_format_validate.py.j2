@@ -2,6 +2,7 @@ from ies_optim import {{",".join(...) }}
 {# import device ports. #}
 from typing import List
 
+{% for k in ['出力曲线', '']%}
 class 设备出力曲线(BaseModel):
     元件名称:str
     时间:List[int]
@@ -11,7 +12,7 @@ class 设备出力曲线(BaseModel):
     """
 
 {% for ... in ... %}
-class (设备出力曲线):
+class {{...}}出力曲线(设备出力曲线):
 {% endfor%}
 
 class 仿真结果(BaseModel):
@@ -20,4 +21,5 @@ class 仿真结果(BaseModel):
     设备台数:int
 
 {% for ... in ... %}
+class {{...}}仿真结果(仿真结果):
 {% endfor%}
