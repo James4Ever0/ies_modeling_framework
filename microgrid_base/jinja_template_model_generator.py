@@ -25,8 +25,6 @@ dparam_path = "microgrid_jinja_param_base.json"
 dparam = read_json(dparam_path)
 
 
-
-
 类型集合分类 = [
     (mkey.replace("设备", "锚点"), [e for (k, v) in mdata.items() for e in v])
     for mkey, mdata in type_sys["类型分类表"].items()
@@ -74,34 +72,63 @@ for super_class, v0 in dparam.items():
                         mtables.append((param_super_class, main, sub))
         设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
+if __name__ == "__main__":
+    def load_render_and_format(
+        template_path: str, output_path: str, render_params: dict, banner: str
+    ):
+        tpl = load_template(template_path)
+        result = tpl.render(**render_params)
 
-def load_render_and_format(
-    template_path: str, output_path: str, render_params: dict, banner: str
-):
-    tpl = load_template(template_path)
-    result = tpl.render(**render_params)
+        print()
+        print("______________________[{}]".format(banner))
+        print(result)
 
-    print()
-    print("______________________[{}]".format(banner))
-    print(result)
-
-    # import black.Mode
-    with open(output_path, "w+") as f:
-        f.write(result)
-    try:
-        result = black.format_str(result, mode=black.Mode())
+        # import black.Mode
         with open(output_path, "w+") as f:
             f.write(result)
-        print("Syntax Ok.")
-    except:
-        import traceback
+        try:
+            result = black.format_str(result, mode=black.Mode())
+            with open(output_path, "w+") as f:
+                f.write(result)
+            print("Syntax Ok.")
+        except:
+            import traceback
 
-        traceback.print_exc()
-        raise Exception("Syntax Failed.")
-    print("=" * 40)
+            traceback.print_exc()
+            raise Exception("Syntax Failed.")
+        print("=" * 40)
 
 
-if __name__ == "__main__":
+    def code_and_template_path(base_name):
+        code_path = f"{base_name}.py"
+        template_path = f"{code_path}.j2"
+        return code_path, template_path
+
+
+    topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
+
+    ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
+        "ies_optim"
+    )
+
+    import jinja2
+
+
+    def load_template(template_path):
+        try:
+            assert template_path.endswith(".j2")
+        except:
+            Exception(f"jinja template path '{template_path}' is malformed.")
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader("./"),
+            extensions=["jinja2_error.ErrorExtension", "jinja2.ext.do"],
+            trim_blocks=True,
+            lstrip_blocks=True,
+            undefined=jinja2.StrictUndefined,
+        )
+        tpl = env.get_template(template_path)
+        return tpl
+        
     load_render_and_format(
         template_path=topo_code_template_path,
         output_path=topo_code_output_path,
