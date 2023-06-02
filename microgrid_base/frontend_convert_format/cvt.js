@@ -25,7 +25,9 @@ var input_template={
     "multigraph": false,
     "graph": graph_data,"nodes": [],"links": []
 }
+
 var anchorLUT = {}
+var 
 var node_id_cursor = 0
 
 for (var e of obj.graph.mxGraphModel.root.mxCell){
@@ -38,9 +40,11 @@ for (var e of obj.graph.mxGraphModel.root.mxCell){
 }
 
 for (var e of obj.connectionsAnchors){
-
+let conn_id = e.id
+let source_anchor_id = e.sourceAnchors.port_id
+let target_anchor_id = e.targetAnchors.port_id
 }
 
 for (var e of obj.rightParams){
-
+    let node_id = e.id
 }
