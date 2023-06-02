@@ -46,6 +46,11 @@ output_path = "export_format.json"
 
 print("writing to:", output_path)
 
+new_data = {k:{} for k in data.keys()}
 
+new_data['仿真结果']['ALL'] = 
+
+print()
+print(new_data)
 with open(output_path, "w+") as f:
-    f.write(json.dumps(data, indent=4, ensure_ascii=False))
+    f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
