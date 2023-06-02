@@ -559,7 +559,9 @@ class {{class_name}}模型(设备模型):
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
 
-        assert self.MaxSOC >=self.MinSOC
+            self.TotalCapacity = self.DeviceCount * self.RatedCapacity # type: ignore
+
+        assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC <= 1
         assert self.MinSOC >= 0
 
@@ -569,7 +571,7 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
-        self.TotalCapacity = self.DeviceCount * self.RatedCapacity # type: ignore
+    
 
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore
 
