@@ -206,9 +206,13 @@ class ModelWrapper:
     {% set mv = "*args, **kwargs"%}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}} {{ mv}}):
         {% if k !="Var" %}
+        expr = kwargs.pop('expr',args[0] if len(args) >0 else None)
+        if expr is None:
+            raise Exception("Not passing expression to ")
+        deg = 
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
-        ret = {{k}}({{mv if k == "Var" else "expr = kwargs.pop('expr',args[0] if len(args) >0 else None), *args[1:], **kwargs"}})
+        ret = {{k}}({{mv if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
         self.model.__setattr__(name, ret)
         return ret
     {% endfor%}
