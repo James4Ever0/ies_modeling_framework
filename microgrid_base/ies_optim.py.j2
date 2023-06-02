@@ -405,10 +405,12 @@ class 设备模型:
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
         h = self.单变量(self.getSpecialVarName("BVM"))
-        self.Constraint(h<=b_var* self.BigM)
-        self.Constraint(h>=−b_var*self.BigM)
-        self.Constraint(h <= x_var+(1−b_var)*self.BigM)
-        self.Constraint(h >= x_var−(1−b_var)*self.BigM)
+
+        self.mw.Constraint(h<=b_var* self.BigM)
+        self.mw.Constraint(h>= -b_var*self.BigM)
+        self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
+        self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
+
         return h
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy

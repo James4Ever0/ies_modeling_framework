@@ -1069,10 +1069,10 @@ class 设备模型:
     def BinVarMultiplySingle(self, b_var, x_var):
         assert b_var.is_binary()
         h = self.单变量(self.getSpecialVarName("BVM"))
-        self.Constraint(h<=b_var* self.BigM)
-        self.Constraint(h>=−b_var*self.BigM)
-        self.Constraint(h <= x_var+(1−b_var)*self.BigM)
-        self.Constraint(h >= x_var−(1−b_var)*self.BigM)
+        self.mw.Constraint(h<=b_var* self.BigM)
+        self.mw.Constraint(h>= -b_var*self.BigM)
+        self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
+        self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
         return h
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
