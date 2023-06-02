@@ -283,8 +283,12 @@ if sys.argv[-1] in ["-f", "--full"]:
                 f.write(content)
             # breakpoint()
 
-        print("OBJECTIVE?")
-        OBJ.display()
+        # print("OBJECTIVE?")
+        # OBJ.display()
+        try:
+            print("OBJ:", value(OBJ))
+        except:
+            print("NO SOLUTION.")
         breakpoint()
 
         print("END")
