@@ -15,8 +15,7 @@ def is_empty(elem):
         return True
 
 for i, r in table.iterrows():
-    rlist = r.tolist()
-    
+    rlist = [( e.strip() if type(e) == str else e) for e in r.tolist()]
     first_elem, second_elem = rlist[0], rlist[1]
     if is_empty(first_elem):
         continue
