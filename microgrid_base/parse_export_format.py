@@ -29,4 +29,8 @@ for i, r in table.iterrows():
         trough = True
         key = first_elem
     elif not is_empty(first_elem) and not is_empty(second_elem):
-        
+        if trough:
+            ...
+            trough = False
+        else:
+            ...
