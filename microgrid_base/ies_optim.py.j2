@@ -402,10 +402,11 @@ class 设备模型:
     
     def BinVarMultiplySingle(self, b_var, x_var):
         h = self.单变量(self.getSpecialVarName("BVM"))
-        h<=b_var* self.BigM
-        >=−b_var*self.BigM
-        h <= x_var+(1−b_var)*self.BigM
-        h >=x_var−(1−b_var)*self.BigM
+        self.Constraint(h<=b_var* self.BigM)
+        self.Constraint(h>=−b_var*self.BigM)
+        self.Constraint(h <= x_var+(1−b_var)*self.BigM)
+        self.Constraint(h >= x_var−(1−b_var)*self.BigM)
+        return h
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
