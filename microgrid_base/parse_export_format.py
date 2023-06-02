@@ -30,7 +30,7 @@ for i, r in table.iterrows():
         key = first_elem
     elif not is_empty(first_elem) and not is_empty(second_elem):
         if trough:
-            ...
+            headings = rlist[:]
             trough = False
         else:
             ...
