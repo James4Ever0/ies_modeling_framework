@@ -486,7 +486,8 @@ class {{class_name}}模型(设备模型):
             """
         {% elif psc == "仿真模拟"%}
             {% if class_name == '锂电池'%}
-            {% %}
+            self.DeviceCount = self.设备信息TotalCapacity / self.设备信息RatedCapacity
+            {% endif%}
         {% endif %}
         {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, True)}}

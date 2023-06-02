@@ -464,10 +464,17 @@
             ],
             "仿真模拟": [
                 [
-                    "DeviceCount",
-                    "安装台数",
-                    "台",
-                    "台",
+                    "InitSOC",
+                    "初始SOC",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "TotalCapacity",
+                    "设备容量",
+                    "kWh",
+                    "kWh",
                     1
                 ],
                 "设备选型"
