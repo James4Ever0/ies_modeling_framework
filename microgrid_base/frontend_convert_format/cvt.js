@@ -25,3 +25,10 @@ var input_template={
     "multigraph": false,
     "graph": graph_data,"nodes": [],"links": []
 }
+
+for (var of obj."graph": {
+    "mxGraphModel": {
+        "root": {
+            "mxCell": [){
+
+}
