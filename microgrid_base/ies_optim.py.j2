@@ -401,9 +401,11 @@ class 设备模型:
         return PWL
     
     def BinVarMultiplySingle(self, b_var, x_var):
-        h = self.单变量()
-        ℎ≤b_var𝑀≥−𝑏𝑀≤𝑦+(1−𝑏)𝑀≥𝑦−(1−𝑏)𝑀(1)(2)(3)(4)
-
+        h = self.单变量(self.getSpecialVarName("BVM"))
+        h<=b_var* self.BigM
+        >=−b_var*self.BigM
+        h <= x_var+(1−b_var)*self.BigM
+        h >=x_var−(1−b_var)*self.BigM
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
