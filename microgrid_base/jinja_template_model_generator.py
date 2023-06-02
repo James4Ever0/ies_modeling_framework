@@ -79,6 +79,32 @@ def load_template(template_path):
 }
 
 
+设备库 = []
+
+for super_class, v0 in dparam.items():
+    for class_name, v1 in v0.items():
+        mstrs = []
+        mdigits = []
+        mtables = []
+        for param_super_class, v2 in v1.items():
+            # if param_super_class == "仿真模拟":
+            #     continue
+            for item in v2:
+                if item == "设备选型":
+                    continue
+                else:
+                    if type(item) == str:
+                        mstrs.append((param_super_class,item))
+                    elif type(item) == list:
+                        mdigits.append((param_super_class,item))
+                    elif type(item) == dict:
+                        main = item['MAIN']
+                        sub = item['SUB']
+                        mtables.append((param_super_class,main, sub))
+        设备库.append((super_class, class_name, mstrs, mdigits, mtables))
+
+
+
 def load_render_and_format(template_path: str, output_path:str,render_params: dict, banner: str):
     tpl = load_template(template_path)
     result = tpl.render(**render_params)
@@ -121,30 +147,6 @@ def test(cmd: list, exec="python3"):
 
 # run test code.
 test(["test_topo_check.py"])
-
-设备库 = []
-
-for super_class, v0 in dparam.items():
-    for class_name, v1 in v0.items():
-        mstrs = []
-        mdigits = []
-        mtables = []
-        for param_super_class, v2 in v1.items():
-            # if param_super_class == "仿真模拟":
-            #     continue
-            for item in v2:
-                if item == "设备选型":
-                    continue
-                else:
-                    if type(item) == str:
-                        mstrs.append((param_super_class,item))
-                    elif type(item) == list:
-                        mdigits.append((param_super_class,item))
-                    elif type(item) == dict:
-                        main = item['MAIN']
-                        sub = item['SUB']
-                        mtables.append((param_super_class,main, sub))
-        设备库.append((super_class, class_name, mstrs, mdigits, mtables))
 
 render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)
 load_render_and_format(
