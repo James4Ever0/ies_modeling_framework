@@ -27,15 +27,16 @@ var input_template={
 }
 
 var anchorLUT = {}
-var 
+var connLUT = {}
 var node_id_cursor = 0
 
 for (var e of obj.graph.mxGraphModel.root.mxCell){
+    let id = e._id
     if (e.vertex){
-        let node_id = e._id
+        let node_id = id
     } else if (e.edge){
-        let source_id = e.source
-        let target_id = e.target
+        connLUT[id].source_id = e.source
+        connLUT[id].target_id = e.target
     }
 }
 
