@@ -78,7 +78,6 @@ def load_template(template_path):
     for (c1, c2), c in [(k.split("_"), v) for k, v in type_sys["连接类型映射表"].items()]
 }
 
-
 设备库 = []
 
 for super_class, v0 in dparam.items():
@@ -128,41 +127,41 @@ def load_render_and_format(template_path: str, output_path:str,render_params: di
         raise Exception("Syntax Failed.")
     print("=" * 40)
 
+if __name__ == "__main__":
+    load_render_and_format(
+        template_path=topo_code_template_path,
+        output_path = topo_code_output_path, 
+        render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
+        banner="TOPO CHECK CODE",
+    )
 
-load_render_and_format(
-    template_path=topo_code_template_path,
-    output_path = topo_code_output_path, 
-    render_params=dict(类型集合分类=类型集合分类, 设备接口集合=设备接口集合, 连接类型映射表=连接类型映射表),
-    banner="TOPO CHECK CODE",
-)
-
-import subprocess
-
-
-def test(cmd: list, exec="python3"):
-    cmd = [exec] + cmd
-    p = subprocess.run(cmd)
-    p.check_returncode()
+    import subprocess
 
 
-# run test code.
-test(["test_topo_check.py"])
+    def test(cmd: list, exec="python3"):
+        cmd = [exec] + cmd
+        p = subprocess.run(cmd)
+        p.check_returncode()
 
-render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)
-load_render_and_format(
-    template_path=ies_optim_code_template_path,
-    output_path = ies_optim_code_output_path,
-    render_params=render_params,
-    banner="IES OPTIM CODE",
-)
 
-# test(["test_topo_check.py", "-f"])
+    # run test code.
+    test(["test_topo_check.py"])
 
-# tpl = load_template(ies_optim_code_output_path)
-# result = tpl.render(type_sys=type_sys, dparam=dparam)
-# print()
-# print("______________________[{}]".format("IES CODE"))
-# print(result)
+    render_params = dict(设备库=设备库, 设备接口集合=设备接口集合)
+    load_render_and_format(
+        template_path=ies_optim_code_template_path,
+        output_path = ies_optim_code_output_path,
+        render_params=render_params,
+        banner="IES OPTIM CODE",
+    )
 
-# with open(ies_optim_code_output_path, "w+") as f:
-#     f.write(result)
+    # test(["test_topo_check.py", "-f"])
+
+    # tpl = load_template(ies_optim_code_output_path)
+    # result = tpl.render(type_sys=type_sys, dparam=dparam)
+    # print()
+    # print("______________________[{}]".format("IES CODE"))
+    # print(result)
+
+    # with open(ies_optim_code_output_path, "w+") as f:
+    #     f.write(result)
