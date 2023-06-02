@@ -55,9 +55,8 @@ def convert_format(h_array):
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
 
-with open() as f:
-    设备
-all_devices = list(.keys())
+from param_base import 设备接口集合
+all_device_names = list(设备接口集合.keys())
 
 print()
 print(new_data)
