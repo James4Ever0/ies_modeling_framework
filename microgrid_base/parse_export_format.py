@@ -31,7 +31,11 @@ for i, r in table.iterrows():
             key = first_elem
         elif trough == 2:
             example = rlist[0]
+            data[key][-1]['examples'].append(example)
     elif not is_empty(first_elem) and not is_empty(second_elem):
         headings = rlist[:rlist.index("")]
         trough = 2
-        data[key] = {}
+        data[key] = data.get(key,[])+[{'headings':headings, 'examples':[]}]
+
+import rich
+rich.print(data)
