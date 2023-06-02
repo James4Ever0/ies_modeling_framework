@@ -287,6 +287,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         # OBJ.display()
         try:
             print("OBJ:", value(OBJ))
+            # export value.
         except:
             print("NO SOLUTION.")
         breakpoint()
