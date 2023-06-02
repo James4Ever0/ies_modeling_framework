@@ -8,10 +8,11 @@ table_name = "仿真结果"
 table = pandas.read_excel(excel_path, sheet_name=  table_name, header=None)
 
 # print(table)
-import numpy
-def check_empty(elem):
-    if type(elem) elem is numpy.nan
+def is_empty(elem):
+    if type(elem) is str:
+        return elem.strip() == ""
+    else:
+        return True
 
 for i, r in table.iterrows():
-    # print(i)
-    print(r.tolist())
+    rlist = r.tolist()
