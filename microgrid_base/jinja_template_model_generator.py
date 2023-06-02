@@ -2,6 +2,7 @@
 
 # to generate the serialized connectivity matrix, you need structures.
 
+from jinja_utils import *
 # the test code may not be generated.
 from param_base import *
 
