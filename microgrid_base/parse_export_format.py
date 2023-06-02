@@ -48,7 +48,12 @@ print("writing to:", output_path)
 
 new_data = {k:{} for k in data.keys()}
 
-new_data['仿真结果']['ALL'] = 
+
+def convert_format(h_array):
+    result_array = []
+    return result_array
+
+new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
 
 print()
 print(new_data)
