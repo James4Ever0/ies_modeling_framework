@@ -1823,7 +1823,7 @@ class 锂电池模型(设备模型):
             assert self.MinTotalCapacity >=0
 
         if self.计算参数.计算类型 == "仿真模拟":
-            self.DeviceCount = self.设备信息TotalCapacity / self.设备信息.RatedCapacity
+            self.DeviceCount = self.设备信息.TotalCapacity / 设备信息.RatedCapacity
             self.InitSOC: float = 设备信息.InitSOC * 0.01
             """
             名称: 初始SOC
