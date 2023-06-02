@@ -400,7 +400,7 @@ class 设备模型:
             PWL.append(PW)
         return PWL
 
-    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals):
+    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # continuous
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
