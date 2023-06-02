@@ -279,3 +279,5 @@ if sys.argv[-1] in ["-f", "--full"]:
         print("OBJECTIVE?")
         OBJ.display()
         breakpoint()
+        
+        print("END")
