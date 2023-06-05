@@ -12,14 +12,13 @@ import astor
 
 TS = lambda ast_tree: astor.code_gen.to_source(ast_tree)
 
-def printTypeAndNameHint(TYPE:str, NAME: str):
+def printTypeAndNameHint(TYPE:str, NAME: str, indent:int):
     print()
-    print(f"[{TYPE}]========================[{NAME}]")
+    print(f"{' '*indent}[{TYPE}]========================[{NAME}]")
 
-def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True):
+def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, indent = 0):
     if not trial:
-        printTypeAndNameHint(TYPE, NAME)
-    else:
+        printTypeAndNameHint(TYPE, NAME, indent = indent)
     hasCode = False
     for w in ast.walk(elem):
         if type(w) == ast.Call:
@@ -28,7 +27,10 @@ def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True):
                 callCode = astor.to_source(w).strip()
                 hasCode=True
                 if not trial:
-                    print(callCode)
+                    print(" "*(indent+4)+callCode)
+    if trial:
+        if hasCode:
+            walkElemAndPrintConstraint(elem, TYPE, NAME, trial=False)
     return hasCode
 
 
