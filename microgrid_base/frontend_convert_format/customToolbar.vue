@@ -2148,8 +2148,10 @@ export default {
               return [targetType,connType]
             }
 
-            function 改变母线属性(, index,){
-
+            function 改变母线连接属性(index,connType){
+              if (this.dataObj[index].refname){
+                this.dataObj[index].conn.insert(connType)
+              }
             }
             if(this.connectDotData.data.length!=2) {
               // TODO: figure out what is this?
@@ -2202,6 +2204,8 @@ export default {
                 return
               } else {
                 addCell.connType=connType
+                改变母线连接属性(addCell.source.id,connType)
+                改变母线连接属性(addCell.target.id,connType)
               }
             }
             //   if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
