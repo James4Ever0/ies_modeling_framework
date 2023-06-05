@@ -32,7 +32,7 @@ var node_id_cursor=0
 var idLUT = {}
 var devLUT = {}
 
-const myRe = /\w+(b+)\w+/g;
+const myRe = /.+models\/(.+)\.svg.+/g;
 
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
