@@ -2187,10 +2187,11 @@ export default {
                 }
               }
               if (connType === null){
-                
               this.graph.removeCells([addCell]);
-              this.$message('')
+              this.$message(`不存在的连接方式: ${targetType}_${sourceType}`)
                 return 
+              }else{
+                addCell.connType = connType
               }
 
             //   if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
