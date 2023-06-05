@@ -2177,24 +2177,32 @@ export default {
               }
               else if(sourceType=='母线') {
                 [sourceType,connType]=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
-              } else {
+              }
+              if (connType === null) {
                 // 用标准校验规则
                 let lookup_keys=[sourceType+"_"+targetType,targetType+"_"+sourceType]
                 for (let k in lookup_keys){
-                  connType = [k]
+                  connType = connectivity_rule[k]
+                  if (connType !== null){break}
                 }
               }
-
-              if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
-                // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
-                targetType=母线类型创建规则[sourceType][0];
-                this.dataObj[addCell.target.id].refname=targetType
-              } else {
-                targetType=this.dataObj[addCell.target.id].refname
+              if (connType === null){
+                
+              this.graph.removeCells([addCell]);
+              this.$message('')
+                return 
               }
-            }
 
-            let lookup_keys=[sourceType+"_"+targetType,targetType+"_"+sourceType]
+            //   if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
+            //     // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
+            //     targetType=母线类型创建规则[sourceType][0];
+            //     this.dataObj[addCell.target.id].refname=targetType
+            //   } else {
+            //     targetType=this.dataObj[addCell.target.id].refname
+            //   }
+            // }
+
+            // let lookup_keys=[sourceType+"_"+targetType,targetType+"_"+sourceType]
 
             // 若目标不在锚点上，则删除这条线
             if(addCell.target===null) {
