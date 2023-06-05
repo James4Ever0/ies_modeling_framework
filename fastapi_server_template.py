@@ -75,6 +75,7 @@ def remove_stale_tasks_decorator(function):
     """
     清除过期任务装饰器
     """
+
     def inner_function(*args, **kwargs):
         remove_stale_tasks()
         return function(*args, **kwargs)
@@ -85,7 +86,7 @@ def remove_stale_tasks_decorator(function):
 def celery_on_message(body: dict):
     """
     Celery任务信息更新回调函数
-    
+
     Args:
         body (dict): 更新的任务信息
     """
@@ -110,7 +111,7 @@ def celery_on_message(body: dict):
 def background_on_message(task: AsyncResult):
     """
     后台获取任务计算结果的方法
-    
+
     Args:
         task (AsyncResult): 任务对象
     """
