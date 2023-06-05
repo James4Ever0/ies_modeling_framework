@@ -18,7 +18,7 @@ obj.graph=JSON.parse(obj.graph)
 // console.dir(obj)
 pretty_print(obj,'sample_parse.json')
 
-const port_type_mapping = {
+const port_type_mapping={
     "外部能源": {
         "柴油": {
             "燃料接口": "柴油输出"
@@ -66,14 +66,14 @@ const port_type_mapping = {
     }
 }
 
-var translate_port_type_and_dev_name_to_port_name = {}
+var translate_port_type_and_dev_name_to_port_name={}
 
-for (var i in port_type_mapping){
-    for (var j in i){
-        for (var k in j){
-            port_type = port_type_mapping[i][j][k]
-            port_name = k
-            translate_port_type_and_dev_name_to_port_name[`${j}_${port_type}`] = port_name
+for(var i in port_type_mapping) {
+    for(var j in i) {
+        for(var k in j) {
+            port_type=port_type_mapping[i][j][k]
+            port_name=k
+            translate_port_type_and_dev_name_to_port_name[`${j}_${port_type}`]=port_name
         }
     }
 }
@@ -99,8 +99,8 @@ var node_id_cursor=0
 var idLUT={}
 var devLUT={}
 
-var nodes_list = []
-var links_list = []
+var nodes_list=[]
+var links_list=[]
 
 // const myRe = /.+models\/(.+)\.svg.+/g;
 
@@ -112,10 +112,10 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         let val=e._style;
         let devType=val.split("models/")[1].split(".svg")[0]
 
-        dev_id_digit = node_id_cursor
+        dev_id_digit=node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
-        if (devType !="母线"){
-            devLUT[`${node_id}`].type = '设备'
+        if(devType!="母线") {
+            devLUT[`${node_id}`].type='设备'
             devLUT[`${node_id}`].subtype=devType;
             if(e.Array.Object.length===undefined) {
                 e.Array.Object=[e.Array.Object]
@@ -125,8 +125,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                 anchor_title=o._title
                 anchor_k=`${node_id}_${anchor_id}`
                 anchorLUT[anchor_k]=anchor_title
-                port_type = anchor_title
-                port_name = translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
+                port_type=anchor_title
+                port_name=translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
                 nodes_list.append(
                     {
                         "type": "锚点",
@@ -137,23 +137,31 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                     })
                 idLUT[anchor_k]=node_id_cursor++;
             }
-        }else{
+        } else {
             //母线
 
-            devLUT[`${node_id}`].type = '母线'
+            devLUT[`${node_id}`].type='母线'
             devLUT[`${node_id}`].subtype=e._refname;
+
+            nodes_list.append(
+                {
+                    "type": "母线",
+                    "subtype": e._refname,
+                    "id": dev_id_digit,
+                })
         }
-       
+
     } else if(e.edge) {
         connLUT[id].source_id=e.source
         connLUT[id].target_id=e.target
         connLUT[id].connType=e.connType
-        idLUT[`${id}`]=node_id_cursor++;
         nodes_list.append({
-            "type": e.connType.startsWith("不可连接")? "连接线": "合并线",
+            "type": e.connType.startsWith("不可连接")? "连接线":"合并线",
             "subtype": e.connType,
-            "id": 26
+            "id": node_id_cursor
         })
+        idLUT[`${id}`]=node_id_cursor++;
+
     }
 }
 
@@ -168,11 +176,11 @@ for(var e of obj.connectionsAnchors) {
 
 for(var e of obj.rightParams) {
     let node_id=e.id
-    devLUT[`${node_id}`].params = e
+    devLUT[`${node_id}`].params=e
     // console.assert()
 }
 
-input_template.nodes = nodes_list
-input_template.links = links_list
+input_template.nodes=nodes_list
+input_template.links=links_list
 
-pretty_print(input_template, "input_template_processed.json")
+pretty_print(input_template,"input_template_processed.json")
