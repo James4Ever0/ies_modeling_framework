@@ -2145,8 +2145,14 @@ export default {
               // console.log(addCell.source.id, sourceIndex);
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
+
+              let connType = null;
               sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
               targetType=getSubType(this.dataObj[addCell.target.id],targetIndex)
+
+              function 创建母线(){
+
+              }
 
               if(targetType=="母线") {
                 if(sourceType!="母线") {
