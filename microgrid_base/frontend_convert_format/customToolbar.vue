@@ -2135,7 +2135,7 @@ export default {
               // console.log(addCell.source.id, sourceIndex);
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
-              sourceType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].?name:refname;
+              sourceType = this.dataObj[addCell.source.id]?.refname:[];
               if (addCell.target.id.split('-')[0] === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0 && this.dataObj[addCell.target.id].refname == "母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
                 targetType = 母线类型创建规则[sourceType][0];
