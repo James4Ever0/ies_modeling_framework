@@ -2181,6 +2181,9 @@ export default {
               }
               else if(sourceType=='母线') {
                 [sourceType,connType]=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
+
+                if (this.dataObj[addCell.source.id].conn.length !== undefined){
+                  this.dataObj[addCell.source.id].conn.insert():this.dataObj[addCell.source.id].conn = []
               }
               if(connType===null) {
                 // 用标准校验规则
