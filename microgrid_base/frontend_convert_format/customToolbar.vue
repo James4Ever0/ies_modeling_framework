@@ -2123,6 +2123,7 @@ export default {
             let sourceType;
             let targetType;
             if (this.connectDotData.data.length != 2) {
+              // TODO: figure out what is this?
               // console.log(addCell.source.id);
               sourceIndex = this.connectDotData.data[0].portId;
               targetIndex = this.connectDotData.data[0].portId;
