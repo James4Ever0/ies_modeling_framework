@@ -29,6 +29,7 @@ var input_template={
 var anchorLUT={}
 var connLUT={}
 var node_id_cursor=0
+var idLUT = {}
 
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
@@ -38,9 +39,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             e.Array.Object = [e.Array.Object]
         }
         for (let o of e.Array.Object){
-            
+            anchorLUT[node_id]
         }
-        anchorLUT[node_id]
     } else if(e.edge) {
         connLUT[id].source_id=e.source
         connLUT[id].target_id=e.target
