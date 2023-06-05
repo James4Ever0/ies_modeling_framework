@@ -51,8 +51,10 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
 
 for(var e of obj.connectionsAnchors) {
     let conn_id=e.id
+    let conn = connLUT[conn_id]
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
+    let sourceAnchor = anchorLUT[] 
 }
 
 for(var e of obj.rightParams) {
