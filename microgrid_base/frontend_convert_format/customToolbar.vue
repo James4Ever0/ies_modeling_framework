@@ -2178,22 +2178,22 @@ export default {
               else if(sourceType=='母线') {
                 [sourceType,connType]=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
               }
-              if (connType === null) {
+              if(connType===null) {
                 // 用标准校验规则
                 let lookup_keys=[sourceType+"_"+targetType,targetType+"_"+sourceType]
-                for (let k in lookup_keys){
-                  connType = connectivity_rule[k]
-                  if (connType !== null){break}
+                for(let k in lookup_keys) {
+                  connType=connectivity_rule[k]
+                  if(connType!==null) {break}
                 }
               }
-              if (connType === null){
-              this.graph.removeCells([addCell]);
-              this.$message(`不存在的连接方式: ${targetType}_${sourceType}`)
-                return 
-              }else{
-                addCell.connType = connType
+              if(connType===null) {
+                this.graph.removeCells([addCell]);
+                this.$message(`不存在的连接方式: ${targetType}_${sourceType}`)
+                return
+              } else {
+                addCell.connType=connType
               }
-
+            }
             //   if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
             //     // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
             //     targetType=母线类型创建规则[sourceType][0];
@@ -2225,33 +2225,33 @@ export default {
               }
             }
             // 判断两个锚点的类型是否一致
-            if(sourceType!==targetType) {
-              // window.alert("源连接类型为"+sourceType+","+"目标连接类型为"+targetType
-              // );
-              // this.graph.removeCells([addCell]);
-              // return;
-              
-            } else {
-              // 每个锚点只能连接一条线
-              // if (this.mPoint.includes(addCell.source.id + sourceIndex) || this.mPoint.includes(addCell.target.id + targetIndex)) {
-              //   this.graph.removeCells([addCell]);
-              //   this.$message('每个锚点只能连接一条线')
-              // } else {
-              //   this.mPoint.push(addCell.source.id + sourceIndex, addCell.target.id + targetIndex)
-              // }
-              let arr=this.mPoint.map((item) => {
-                return Object.values(item).join()
-              })
+            // if(sourceType!==targetType) {
+            // window.alert("源连接类型为"+sourceType+","+"目标连接类型为"+targetType
+            // );
+            // this.graph.removeCells([addCell]);
+            // return;
 
-              if(arr.includes(addCell.source.id+'-'+sourceIndex)||arr.includes(addCell.target.id+'-'+targetIndex)) {
-                this.graph.removeCells([addCell]);
-                this.$message('每个锚点只能连接一条线')
-                return
-              } else {
-                const lineId=addCell.mxObjectId
-                this.mPoint.push({[lineId+'b']: addCell.source.id+'-'+sourceIndex},{[lineId+'a']: addCell.target.id+'-'+targetIndex})
-              }
+            // } else {
+            // 每个锚点只能连接一条线
+            // if (this.mPoint.includes(addCell.source.id + sourceIndex) || this.mPoint.includes(addCell.target.id + targetIndex)) {
+            //   this.graph.removeCells([addCell]);
+            //   this.$message('每个锚点只能连接一条线')
+            // } else {
+            //   this.mPoint.push(addCell.source.id + sourceIndex, addCell.target.id + targetIndex)
+            // }
+            let arr=this.mPoint.map((item) => {
+              return Object.values(item).join()
+            })
+
+            if(arr.includes(addCell.source.id+'-'+sourceIndex)||arr.includes(addCell.target.id+'-'+targetIndex)) {
+              this.graph.removeCells([addCell]);
+              this.$message('每个锚点只能连接一条线')
+              return
+            } else {
+              const lineId=addCell.mxObjectId
+              this.mPoint.push({[lineId+'b']: addCell.source.id+'-'+sourceIndex},{[lineId+'a']: addCell.target.id+'-'+targetIndex})
             }
+            // }
             let cell=this.graph.getSelectionCells();
             // this.changeShape([...cell], Number(sourceType));
             this.changeShape([...cell],sourceType);
