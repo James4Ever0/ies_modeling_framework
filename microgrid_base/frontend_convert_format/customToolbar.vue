@@ -2122,6 +2122,9 @@ export default {
             let targetIndex;
             let sourceType;
             let targetType;
+            function getSubType(cell){
+              
+            }
             if (this.connectDotData.data.length != 2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
