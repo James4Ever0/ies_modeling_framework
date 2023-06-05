@@ -35,6 +35,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
     if(e.vertex) {
         let node_id=id
+        idLUT[`${}`]
         if (e.Array.Object.length === undefinded){
             e.Array.Object = [e.Array.Object]
         }
@@ -54,7 +55,8 @@ for(var e of obj.connectionsAnchors) {
     let conn = connLUT[conn_id]
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
-    let sourceAnchor = anchorLUT[] 
+    let sourceAnchor = anchorLUT[`${conn.source_id}_${source_anchor_id}`] 
+    let targetAnchor = anchorLUT[`${conn.target_id}_${target_anchor_id}`]
 }
 
 for(var e of obj.rightParams) {
