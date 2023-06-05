@@ -37,7 +37,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     if(e.vertex) {
         let node_id=id
         idLUT[`${node_id}`] = node_id_cursor++;
-        devLUT = {}
+        devLUT[`${node_id}`] = ;
         if (e.Array.Object.length === undefined){
             e.Array.Object = [e.Array.Object]
         }
