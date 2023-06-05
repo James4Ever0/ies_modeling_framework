@@ -2134,7 +2134,8 @@ export default {
               targetIndex = this.connectDotData.data[this.connectDotData.data.length - 1].portId;
               // console.log(addCell.source.id, sourceIndex);
               // console.log(addCell.target.id, targetIndex);
-              sourceType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
+              // 可以是母线
+              sourceType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].?name:refname;
               if (addCell.target.id.split('-')[0] === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0 && this.dataObj[addCell.target.id].refname == "母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
                 targetType = 母线类型创建规则[sourceType][0];
