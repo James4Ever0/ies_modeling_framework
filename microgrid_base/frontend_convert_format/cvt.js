@@ -149,7 +149,11 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         connLUT[id].target_id=e.target
         connLUT[id].connType=e.connType
         idLUT[`${id}`]=node_id_cursor++;
-        nodes_list.append({"type": ""})
+        nodes_list.append({
+            "type": e.connType.startsWith("不可连接")? "连接线": "合并线",
+            "subtype": e.connType,
+            "id": 26
+        })
     }
 }
 
