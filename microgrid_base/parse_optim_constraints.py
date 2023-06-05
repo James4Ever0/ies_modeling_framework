@@ -16,14 +16,20 @@ def printTypeAndNameHint(TYPE:str, NAME: str):
     print()
     print(f"[{TYPE}]========================[{NAME}]")
 
-def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str):
-    printTypeAndNameHint(TYPE, NAME)
+def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True):
+    if not trial:
+        printTypeAndNameHint(TYPE, NAME)
+    else:
+    hasCode = False
     for w in ast.walk(elem):
         if type(w) == ast.Call:
             callName = astor.to_source(w.func).strip()
             if "constraint" in callName.lower() and "register" not in callName:
                 callCode = astor.to_source(w).strip()
-                print(callCode)
+                hasCode=True
+                if not trial:
+                    print(callCode)
+    return hasCode
 
 
 for elem in mfile.body:
