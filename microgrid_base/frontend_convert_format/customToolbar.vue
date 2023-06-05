@@ -2144,7 +2144,7 @@ export default {
                 connType=母线类型创建规则[sourceType][1]
                 this.dataObj[targetId].refname=targetType
               }
-              return targetType,connType
+              return [targetType,connType]
             }
             if(this.connectDotData.data.length!=2) {
               // TODO: figure out what is this?
@@ -2167,7 +2167,7 @@ export default {
 
               if(targetType=="母线") {
                 if(sourceType!="母线") {
-                  targetType,connType=改变母线类型(sourceType,addCell.source.id,targetType,addCell.target.id)
+                  [targetType,connType]=改变母线类型(sourceType,addCell.source.id,targetType,addCell.target.id)
                 }
                 else {
                   this.graph.removeCells([addCell]);
@@ -2176,9 +2176,13 @@ export default {
                 }
               }
               else if(sourceType=='母线') {
-                sourceType,connType=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
+                [sourceType,connType]=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
               } else {
                 // 用标准校验规则
+                let lookup_keys=[sourceType+"_"+targetType,targetType+"_"+sourceType]
+                for (let k in lookup_keys){
+                  connType = [k]
+                }
               }
 
               if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
