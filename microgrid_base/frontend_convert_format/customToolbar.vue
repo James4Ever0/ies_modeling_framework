@@ -2124,7 +2124,7 @@ export default {
             let targetType;
             function getSubType(cell, index){
               let ret = cell.anchorPoint[index].name
-              if (cell === undefined){
+              if (ret === undefined){
                 ret = cell.reftype
               }
               return ret
@@ -2143,6 +2143,10 @@ export default {
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
               sourceType = getSubType(this.dataObj[addCell.source.id], sourceIndex)
+              targetType = getSubType(this.dataObj[addCell.target.id], targetIndex)
+
+              if 
+
               if (addCell.target.id.split('-')[0] === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0 && this.dataObj[addCell.target.id].refname == "母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
                 targetType = 母线类型创建规则[sourceType][0];
