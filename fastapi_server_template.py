@@ -224,6 +224,7 @@ def revoke_calculation(calculation_id: str):
         calculation_state = get_calculation_state(calculation_id).calculation_state
     else:
         print("TASK DOES NOT EXIST:", calculation_id)
+        calculation_state = "NOT_CREATED"
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
     )
