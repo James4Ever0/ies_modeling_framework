@@ -2153,6 +2153,9 @@ export default {
               // targetIndex=this.connectDotData.data[0].portId;
               // sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
               // targetType=getSubType(this.dataObj[addCell.source.id],targetIndex)
+              
+              this.graph.removeCells([addCell]);
+              this.$message(`不合理的连接点数量: ${this.connectDotData.data.length}`)
               return 
             } else {
               sourceIndex=this.connectDotData.data[this.connectDotData.data.length-2].portId;
