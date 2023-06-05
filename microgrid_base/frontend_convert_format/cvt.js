@@ -160,12 +160,16 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         }
 
     } else if(e._edge) {
-        connLUT[`${id}`]  ={}
+        connLUT[`${id}`] ={}
         connLUT[`${id}`].source_id=e.source
         connLUT[`${id}`].target_id=e.target
         connLUT[`${id}`].connType=e.connType
+        let type = null;
+        if (e.connType !==undefined){
+            type = e.connType.startsWith("不可连接")? "连接线":"合并线"
+        }
         nodes_list.push({
-            "type":( e.connType).startsWith("不可连接")? "连接线":"合并线",
+            "type":type,
             "subtype": e.connType,
             "id": node_id_cursor
         })
