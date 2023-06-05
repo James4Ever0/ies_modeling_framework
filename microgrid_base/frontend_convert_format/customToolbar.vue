@@ -2146,25 +2146,27 @@ export default {
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
 
-              let connType = null;
+              let connType=null;
               sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
               targetType=getSubType(this.dataObj[addCell.target.id],targetIndex)
 
-              function 创建母线(sourceType, sourceId, targetType, targetId){
-                if (checkIsBus(sourceId)){
-targetType = sourceType
-connType = null
-                  }
-                  else{
-                    targetType=母线类型创建规则[sourceType][0];
-                    connType = 母线类型创建规则[sourceType][1]
+              function 改变母线类型(sourceType,sourceId,targetType,targetId) {
+                let connType=null
+                if(checkIsBus(sourceId)) {
+                  targetType=sourceType
+                  connType=connectivity_rule[targetType+"_"+targetType]
+                }
+                else {
+                  targetType=母线类型创建规则[sourceType][0];
+                  connType=母线类型创建规则[sourceType][1]
                   this.dataObj[targetId].refname=targetType
-                  }
+                }
+                return targetType,connType
               }
 
               if(targetType=="母线") {
                 if(sourceType!="母线") {
-                  创建母线(sourceType, addCell.source.id, targetType, addCell.target.id)
+                  改变母线类型(sourceType,addCell.source.id,targetType,addCell.target.id)
                 }
                 else {
                   this.graph.removeCells([addCell]);
@@ -2172,9 +2174,9 @@ connType = null
                   return
                 }
               }
-              else if (sourceType == '母线') {
+              else if(sourceType=='母线') {
 
-              } else{
+              } else {
                 // 用标准校验规则
               }
 
