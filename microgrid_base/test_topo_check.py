@@ -258,7 +258,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
         
-        devInstDict.items()}
+        devClassMapping = {k: c.__class__.__name__.strip('模型') for k,c in devInstDict.items()}
 
         solver = SolverFactory("cplex")
         try:
