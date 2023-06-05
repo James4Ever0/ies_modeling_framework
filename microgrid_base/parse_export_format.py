@@ -48,14 +48,18 @@ print("writing to:", output_path)
 
 new_data = {k:{} for k in data.keys()}
 
+default_unit_maps = {}
 
 def convert_format(h_array):
     result_mapping = {}
     for elem in h_array:
         elem = elem.strip()
-        elem_name, parsed_unit = 
+        elem_name, parsed_unit = ...
         if parsed_unit is None:
+            elem_name = elem
             unit = default_unit_maps.get(elem, None)
+        else:
+            unit = parsed_unit
     return result_mapping
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
