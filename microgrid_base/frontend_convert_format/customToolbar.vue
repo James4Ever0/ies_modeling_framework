@@ -2129,6 +2129,8 @@ export default {
               }
               return ret
             }
+            function checkIsBus(node_id):
+            addCell.target.id.split('-')[0] === 'bus'
             if (this.connectDotData.data.length != 2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
@@ -2145,7 +2147,14 @@ export default {
               sourceType = getSubType(this.dataObj[addCell.source.id], sourceIndex)
               targetType = getSubType(this.dataObj[addCell.target.id], targetIndex)
 
-              if 
+              if (targetType == "母线"){
+                if (sourceType != "母线"){
+
+                }
+                else{
+
+                }
+              }
 
               if (addCell.target.id.split('-')[0] === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0 && this.dataObj[addCell.target.id].refname == "母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
