@@ -12,7 +12,7 @@ import astor
 
 TS = lambda ast_tree: astor.code_gen.to_source(ast_tree)
 
-def printTypeAndNameHint(TYPE:str, NAME: str, indent:int):
+def printTypeAndNameHint(TYPE:str, NAME: str, indent:int=0):
     print()
     print(f"{' '*indent}[{TYPE}]========================[{NAME}]")
 
@@ -30,7 +30,7 @@ def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, i
                     print(" "*(indent+4)+callCode)
     if trial:
         if hasCode:
-            walkElemAndPrintConstraint(elem, TYPE, NAME, trial=False)
+            walkElemAndPrintConstraint(elem, TYPE, NAME, trial=False, indent=indent)
     return hasCode
 
 
@@ -39,11 +39,11 @@ for elem in mfile.body:
         cname = elem.name
         # print(cname)
         if cname.endswith('模型'):
-            printTypeAndNameHint("CLASS","cname")
+            printTypeAndNameHint("CLASS","cname",)
             if cname == "设备模型":
                 for e in elem.body:
                     if type(e) == ast.FunctionDef:
-                        walkElemAndPrintConstraint(e, "FUNC", e.name)
+                        walkElemAndPrintConstraint(e, "FUNC", e.name, indent=4)
             walkElemAndPrintConstraint(elem, 'CLASS',cname)
     elif type(elem) == ast.FunctionDef:
         funcName = elem.name
