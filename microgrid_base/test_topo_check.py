@@ -273,6 +273,13 @@ if sys.argv[-1] in ["-f", "--full"]:
                 for x in dir(mw.model)
                 if x.startswith("CON")
             ]
+            import re
+            def process_expr(expr):
+                b = re.findall(r"\[\d+\]",expr)
+                for e in b:
+                    expr = expr.replace(e, "[]")
+                return expr
+            new_exprs = set([e for e in exprs])
             output_path = "dump.json"
             print("DUMPING COND TO:", output_path)
             with open(output_path, "w+") as f:
