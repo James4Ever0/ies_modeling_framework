@@ -18,7 +18,7 @@ obj.graph=JSON.parse(obj.graph)
 // console.dir(obj)
 pretty_print(obj,'sample_parse.json')
 
-var graph_data = {}
+var graph_data={}
 
 var input_template={
     "directed": false,
@@ -26,26 +26,26 @@ var input_template={
     "graph": graph_data,"nodes": [],"links": []
 }
 
-var anchorLUT = {}
-var connLUT = {}
-var node_id_cursor = 0
+var anchorLUT={}
+var connLUT={}
+var node_id_cursor=0
 
-for (var e of obj.graph.mxGraphModel.root.mxCell){
-    let id = e._id
-    if (e.vertex){
-        let node_id = id
-    } else if (e.edge){
-        connLUT[id].source_id = e.source
-        connLUT[id].target_id = e.target
+for(var e of obj.graph.mxGraphModel.root.mxCell) {
+    let id=e._id
+    if(e.vertex) {
+        let node_id=id
+    } else if(e.edge) {
+        connLUT[id].source_id=e.source
+        connLUT[id].target_id=e.target
     }
 }
 
-for (var e of obj.connectionsAnchors){
-let conn_id = e.id
-let source_anchor_id = e.sourceAnchors.port_id
-let target_anchor_id = e.targetAnchors.port_id
+for(var e of obj.connectionsAnchors) {
+    let conn_id=e.id
+    let source_anchor_id=e.sourceAnchors.port_id
+    let target_anchor_id=e.targetAnchors.port_id
 }
 
-for (var e of obj.rightParams){
-    let node_id = e.id
+for(var e of obj.rightParams) {
+    let node_id=e.id
 }
