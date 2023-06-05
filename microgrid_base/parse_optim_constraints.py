@@ -24,7 +24,7 @@ def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, i
         if type(w) == ast.Call:
             callName = astor.to_source(w.func).strip()
             if "constraint" in callName.lower() and "register" not in callName:
-                callCode = astor.to_source(w).strip()
+                callCode = astor.to_source(w).strip().replace(callName, callName.split(".")[-1])
                 hasCode=True
                 if not trial:
                     print(" "*(indent+4)+callCode)
