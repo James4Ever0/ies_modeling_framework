@@ -143,11 +143,14 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             devLUT[`${node_id}`].type='母线'
             devLUT[`${node_id}`].subtype=e._refname;
 
+            conn = e._conn; // list of connected types.
+
             nodes_list.append(
                 {
                     "type": "母线",
                     "subtype": e._refname,
                     "id": dev_id_digit,
+                    "conn": conn
                 })
         }
 
