@@ -2153,7 +2153,12 @@ export default {
             }
 
             // 若连接母线，则母线所有锚点转换成和连接的锚点一样的类型
-            if (this.dataObj[addCell.target.id].nodeType === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0) {
+            if (this.dataObj[addCell.target.id].nodeType === 'bus') {
+            // if (this.dataObj[addCell.target.id].nodeType === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0) {
+              if (this.dataObj[addCell.target.id].anchorPoint.length >99){
+                
+              this.graph.removeCells([addCell]);
+              this.$message('母线不能连接超过99条线') ;return }
               for (let i = 0; i < 100; i++) {
                 this.dataObj[addCell.target.id].anchorPoint.push({ type:targetType })
               }
