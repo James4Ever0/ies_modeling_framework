@@ -39,6 +39,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             e.Array.Object = [e.Array.Object]
         }
         for (let o of e.Array.Object){
+            anchor_id = o._portId
+            anchor_title = o._title
             anchorLUT[node_id]
         }
     } else if(e.edge) {
