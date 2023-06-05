@@ -250,6 +250,7 @@ import sys
 
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
+    DEBUG=True
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
@@ -258,7 +259,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
         
-        devClassMapping = {k: c.__class__.__name__.strip('模型') for k,c in devInstDict.items()}
+        devClassMapping = {f"DI_{k}": c.__class__.__name__.strip('模型') for k,c in devInstDict.items()}
 
         solver = SolverFactory("cplex")
         try:
@@ -280,8 +281,12 @@ if sys.argv[-1] in ["-f", "--full"]:
                 b = re.findall(r"\[\d+\]",expr)
                 for e in b:
                     expr = expr.replace(e, "[]")
+                for k, cn in devClassMapping.items():
+                    expr = expr.replace(k, cn)
                 return expr
             new_exprs = set([process_expr(e) for e in exprs])
+            
+            exprs = list(new_exprs)
             
             output_path = "dump.json"
             print("DUMPING COND TO:", output_path)
