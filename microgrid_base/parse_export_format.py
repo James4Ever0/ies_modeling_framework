@@ -50,8 +50,13 @@ new_data = {k:{} for k in data.keys()}
 
 
 def convert_format(h_array):
-    result_array = []
-    return result_array
+    result_mapping = {}
+    for elem in h_array:
+        elem = elem.strip()
+        unit = None
+        if elem in default_unit_maps.keys():
+            elem
+    return result_mapping
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
 
