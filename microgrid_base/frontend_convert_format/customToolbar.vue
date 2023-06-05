@@ -2155,7 +2155,8 @@ targetType = sourceType
                   }
                   else{
                     targetType=母线类型创建规则[sourceType][0];
-                this.dataObj[addCell.target.id].refname=targetType
+                    connType = 母线类型创建规则[sourceType][1]
+                  this.dataObj[addCell.target.id].refname=targetType
                   }
                 }
                 else {
@@ -2164,8 +2165,10 @@ targetType = sourceType
                   return
                 }
               }
-              else {
+              else if (sourceType == '母线') {
 
+              } else{
+                // 用标准校验规则
               }
 
               if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
