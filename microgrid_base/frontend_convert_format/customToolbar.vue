@@ -318,6 +318,8 @@ const connectivity_rule = {
     "可连接电储能端母线_双向变流器储能端输入输出": "不可连接电储能端母线输入"
 };
 
+const = ;
+
 var 母线类型创建规则 = {}
 
 for (let e of connectivity_rule){
@@ -1882,6 +1884,7 @@ export default {
         );
       });
     },
+    // 调整颜色
     changeShape(edge, type) {
       console.log(edge, type);
       switch (type) {
