@@ -2226,10 +2226,11 @@ export default {
             }
             // 判断两个锚点的类型是否一致
             if(sourceType!==targetType) {
-              window.alert("源连接类型为"+sourceType+","+"目标连接类型为"+targetType
-              );
-              this.graph.removeCells([addCell]);
-              return;
+              // window.alert("源连接类型为"+sourceType+","+"目标连接类型为"+targetType
+              // );
+              // this.graph.removeCells([addCell]);
+              // return;
+              
             } else {
               // 每个锚点只能连接一条线
               // if (this.mPoint.includes(addCell.source.id + sourceIndex) || this.mPoint.includes(addCell.target.id + targetIndex)) {
@@ -2245,6 +2246,7 @@ export default {
               if(arr.includes(addCell.source.id+'-'+sourceIndex)||arr.includes(addCell.target.id+'-'+targetIndex)) {
                 this.graph.removeCells([addCell]);
                 this.$message('每个锚点只能连接一条线')
+                return
               } else {
                 const lineId=addCell.mxObjectId
                 this.mPoint.push({[lineId+'b']: addCell.source.id+'-'+sourceIndex},{[lineId+'a']: addCell.target.id+'-'+targetIndex})
