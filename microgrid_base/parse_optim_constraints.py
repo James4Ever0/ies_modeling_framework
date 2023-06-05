@@ -10,3 +10,4 @@ print(mfile, dir(mfile))
 for elem in mfile.body:
     if type(elem) == ast.ClassDef:
         cname = elem.name
+        print(cname)
