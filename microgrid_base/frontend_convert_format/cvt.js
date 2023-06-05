@@ -73,7 +73,7 @@ for (var i in port_type_mapping){
         for (var k in j){
             port_type = port_type_mapping[i][j][k]
             port_name = k
-            translate_port_type_and_dev_name_to_port_name[`${j}_${}`]
+            translate_port_type_and_dev_name_to_port_name[`${j}_${port_type}`] = port_name
         }
     }
 }
@@ -123,6 +123,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             anchor_title=o._title
             anchor_k=`${node_id}_${anchor_id}`
             anchorLUT[anchor_k]=anchor_title
+            port_type = anchor_title
+            port_name = translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
             nodes_list.append(
                 {
                     "type": "锚点",
@@ -138,6 +140,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         connLUT[id].target_id=e.target
         connLUT[id].connType=e.connType
         idLUT[`${id}`]=node_id_cursor++;
+        nodes_list.append({"type": ""})
     }
 }
 
