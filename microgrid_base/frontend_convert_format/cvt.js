@@ -36,6 +36,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
     if(e.vertex) {
         let node_id=id
+        devType =
         idLUT[`${node_id}`] = node_id_cursor++;
         devLUT[`${node_id}`] = ;
         if (e.Array.Object.length === undefined){
@@ -51,6 +52,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     } else if(e.edge) {
         connLUT[id].source_id=e.source
         connLUT[id].target_id=e.target
+        connLUT[id].connType = e.connType
         idLUT[`${id}`] = node_id_cursor++; 
     }
 }
