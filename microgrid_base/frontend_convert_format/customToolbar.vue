@@ -2132,6 +2132,20 @@ export default {
             function checkIsBus(node_id) {
               return node_id.split('-')[0]==='bus'
             }
+
+            function 改变母线类型(sourceType,sourceId,targetType,targetId) {
+              let connType=null
+              if(checkIsBus(sourceId)) {
+                targetType=sourceType
+                connType=connectivity_rule[targetType+"_"+targetType]
+              }
+              else {
+                targetType=母线类型创建规则[sourceType][0];
+                connType=母线类型创建规则[sourceType][1]
+                this.dataObj[targetId].refname=targetType
+              }
+              return targetType,connType
+            }
             if(this.connectDotData.data.length!=2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
@@ -2146,27 +2160,14 @@ export default {
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
 
-              let connType=null;
+              var connType=null;
               sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
               targetType=getSubType(this.dataObj[addCell.target.id],targetIndex)
 
-              function 改变母线类型(sourceType,sourceId,targetType,targetId) {
-                let connType=null
-                if(checkIsBus(sourceId)) {
-                  targetType=sourceType
-                  connType=connectivity_rule[targetType+"_"+targetType]
-                }
-                else {
-                  targetType=母线类型创建规则[sourceType][0];
-                  connType=母线类型创建规则[sourceType][1]
-                  this.dataObj[targetId].refname=targetType
-                }
-                return targetType,connType
-              }
 
               if(targetType=="母线") {
                 if(sourceType!="母线") {
-                  改变母线类型(sourceType,addCell.source.id,targetType,addCell.target.id)
+                  targetType,connType=改变母线类型(sourceType,addCell.source.id,targetType,addCell.target.id)
                 }
                 else {
                   this.graph.removeCells([addCell]);
@@ -2175,7 +2176,7 @@ export default {
                 }
               }
               else if(sourceType=='母线') {
-
+                sourceType,connType=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
               } else {
                 // 用标准校验规则
               }
