@@ -2215,7 +2215,6 @@ export default {
               this.$message('目标不在锚点上')
               return
             }
-
             // 若连接母线，则母线所有锚点转换成和连接的锚点一样的类型
             if(this.dataObj[addCell.target.id].nodeType==='bus') {
               // if (this.dataObj[addCell.target.id].nodeType === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0) {
