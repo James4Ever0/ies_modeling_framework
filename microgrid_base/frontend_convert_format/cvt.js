@@ -191,8 +191,8 @@ for(var e of obj.connectionsAnchors) {
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
     let targetAnchorDigitId=anchorLUT[`${conn.target_id}_${target_anchor_id}`]
-    links_list.push({source: sourceAnchorDigitId,target: idLUT[conn_id]})
-    links_list.push({source: targetAnchorDigitId,target: idLUT[conn_id]})
+    links_list.push({source: sourceAnchorDigitId,target: idLUT[`${conn_id}`]})
+    links_list.push({source: targetAnchorDigitId,target: idLUT[`${conn_id}`]})
 }
 
 for(var e of obj.rightParams) {
