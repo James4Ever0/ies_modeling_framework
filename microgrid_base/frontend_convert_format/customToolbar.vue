@@ -2122,23 +2122,27 @@ export default {
             let targetIndex;
             let sourceType;
             let targetType;
-            function getSubType(cell){
-              
+            function getSubType(cell, index){
+              let ret = cell.anchorPoint[index].name
+              if (cell === undefined){
+                ret = cell.reftype
+              }
+              return ret
             }
             if (this.connectDotData.data.length != 2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
               sourceIndex = this.connectDotData.data[0].portId;
               targetIndex = this.connectDotData.data[0].portId;
-              sourceType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
-              targetType = this.dataObj[addCell.source.id].anchorPoint[targetIndex].name;
+              sourceType = getSubType(this.dataObj[addCell.source.id],sourceIndex)
+              targetType = getSubType(this.dataObj[addCell.source.id],targetIndex)
             } else {
               sourceIndex = this.connectDotData.data[this.connectDotData.data.length - 2].portId;
               targetIndex = this.connectDotData.data[this.connectDotData.data.length - 1].portId;
               // console.log(addCell.source.id, sourceIndex);
               // console.log(addCell.target.id, targetIndex);
               // 可以是母线
-              sourceType = this.dataObj[addCell.source.id]?.refname:[];
+              sourceType = getSubType(this.dataObj[addCell.source.id], sourceIndex)
               if (addCell.target.id.split('-')[0] === 'bus' && this.dataObj[addCell.target.id].anchorPoint.length === 0 && this.dataObj[addCell.target.id].refname == "母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
                 targetType = 母线类型创建规则[sourceType][0];
