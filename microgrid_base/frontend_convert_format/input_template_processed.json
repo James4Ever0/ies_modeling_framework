@@ -1,0 +1,83 @@
+{
+    "directed": false,
+    "multigraph": false,
+    "graph": {
+        "典型日ID": null,
+        "计算步长": "小时",
+        "典型日": false,
+        "典型日权重": 0,
+        "计算类型": "设计规划",
+        "风速": [],
+        "光照": [],
+        "气温": [],
+        "年利率": 0.1
+    },
+    "nodes": [
+        {
+            "type": "锚点",
+            "port_name": "燃料接口",
+            "subtype": "柴油输出",
+            "device_id": 0,
+            "id": 1
+        },
+        {
+            "type": "锚点",
+            "port_name": "燃料接口",
+            "subtype": "柴油输入",
+            "device_id": 2,
+            "id": 3
+        },
+        {
+            "type": "锚点",
+            "port_name": "电接口",
+            "subtype": "供电端输出",
+            "device_id": 2,
+            "id": 4
+        },
+        {
+            "type": "锚点",
+            "port_name": "电接口",
+            "subtype": "供电端输出",
+            "device_id": 5,
+            "id": 6
+        },
+        {
+            "type": null,
+            "id": 7
+        },
+        {
+            "type": null,
+            "id": 8
+        }
+    ],
+    "links": [
+        {
+            "source": 0,
+            "target": 1
+        },
+        {
+            "source": 2,
+            "target": 3
+        },
+        {
+            "source": 2,
+            "target": 4
+        },
+        {
+            "source": 5,
+            "target": 6
+        },
+        {
+            "target": 7
+        },
+        {
+            "target": 7
+        },
+        {
+            "target": 8
+        },
+        {
+            "target": 8
+        }
+    ]
+}
