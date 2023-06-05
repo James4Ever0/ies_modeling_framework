@@ -4,4 +4,9 @@ with open(filepath, 'r') as f:
     
 import ast
 
-ast.parse(content)
+mfile = ast.parse(content)
+print(mfile, dir(mfile))
+# breakpoint()
+for elem in mfile.body:
+    if type(elem) == ast.ClassDef:
+        cname = elem.name
