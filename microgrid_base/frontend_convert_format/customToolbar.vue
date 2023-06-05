@@ -2149,10 +2149,11 @@ export default {
             if(this.connectDotData.data.length!=2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
-              sourceIndex=this.connectDotData.data[0].portId;
-              targetIndex=this.connectDotData.data[0].portId;
-              sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
-              targetType=getSubType(this.dataObj[addCell.source.id],targetIndex)
+              // sourceIndex=this.connectDotData.data[0].portId;
+              // targetIndex=this.connectDotData.data[0].portId;
+              // sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
+              // targetType=getSubType(this.dataObj[addCell.source.id],targetIndex)
+              return 
             } else {
               sourceIndex=this.connectDotData.data[this.connectDotData.data.length-2].portId;
               targetIndex=this.connectDotData.data[this.connectDotData.data.length-1].portId;
