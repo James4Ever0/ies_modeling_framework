@@ -2150,20 +2150,21 @@ export default {
               sourceType=getSubType(this.dataObj[addCell.source.id],sourceIndex)
               targetType=getSubType(this.dataObj[addCell.target.id],targetIndex)
 
-              function 创建母线(){
-
-              }
-
-              if(targetType=="母线") {
-                if(sourceType!="母线") {
-                  if (checkIsBus(addCell.source.id)){
+              function 创建母线(sourceType, sourceId, targetType, targetId){
+                if (checkIsBus(sourceId)){
 targetType = sourceType
+connType = null
                   }
                   else{
                     targetType=母线类型创建规则[sourceType][0];
                     connType = 母线类型创建规则[sourceType][1]
-                  this.dataObj[addCell.target.id].refname=targetType
+                  this.dataObj[targetId].refname=targetType
                   }
+              }
+
+              if(targetType=="母线") {
+                if(sourceType!="母线") {
+                  创建母线(sourceType, addCell.source.id, targetType, addCell.target.id)
                 }
                 else {
                   this.graph.removeCells([addCell]);
