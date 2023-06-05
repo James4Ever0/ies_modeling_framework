@@ -388,7 +388,7 @@ const typeClasses={
 
 var 母线类型创建规则={}
 
-for(let e of connectivity_rule) {
+for(let e in connectivity_rule) {
   let k0,k1=e.split("_")
   let i=0
   let 母线类型=""
