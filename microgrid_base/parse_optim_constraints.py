@@ -39,12 +39,13 @@ for elem in mfile.body:
         cname = elem.name
         # print(cname)
         if cname.endswith('模型'):
-            printTypeAndNameHint("CLASS","cname",)
             if cname == "设备模型":
+                printTypeAndNameHint("CLASS", cname)
                 for e in elem.body:
                     if type(e) == ast.FunctionDef:
                         walkElemAndPrintConstraint(e, "FUNC", e.name, indent=4)
-            walkElemAndPrintConstraint(elem, 'CLASS',cname)
+            else:
+                walkElemAndPrintConstraint(elem, 'CLASS',cname)
     elif type(elem) == ast.FunctionDef:
         funcName = elem.name
         if funcName == "compute":
