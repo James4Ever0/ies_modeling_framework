@@ -32,11 +32,13 @@ var node_id_cursor=0
 var idLUT = {}
 var devLUT = {}
 
+const myRe = /\w+(b+)\w+/g;
+
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
     if(e.vertex) {
         let node_id=id
-        devType =
+        devType = myRe.exec(e._style)[0];
         idLUT[`${node_id}`] = node_id_cursor++;
         devLUT[`${node_id}`] = ;
         if (e.Array.Object.length === undefined){
