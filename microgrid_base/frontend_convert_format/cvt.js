@@ -18,6 +18,62 @@ obj.graph=JSON.parse(obj.graph)
 // console.dir(obj)
 pretty_print(obj,'sample_parse.json')
 
+const port_type_mapping = {
+    "外部能源": {
+        "柴油": {
+            "燃料接口": "柴油输出"
+        }
+    },
+    "负荷类型": {
+        "电负荷": {
+            "电接口": "负荷电输入"
+        }
+    },
+    "发电设备": {
+        "光伏发电": {
+            "电接口": "供电端输出"
+        },
+        "风力发电": {
+            "电接口": "供电端输出"
+        },
+        "柴油发电": {
+            "燃料接口": "柴油输入",
+            "电接口": "供电端输出"
+        }
+    },
+    "储能设备": {
+        "锂电池": {
+            "电接口": "电储能端输入输出"
+        }
+    },
+    "配电传输": {
+        "变压器": {
+            "电输入": "电母线输入",
+            "电输出": "变压器输出"
+        },
+        "变流器": {
+            "电输入": "变流器输入",
+            "电输出": "电母线输出"
+        },
+        "双向变流器": {
+            "储能端": "双向变流器储能端输入输出",
+            "线路端": "双向变流器线路端输入输出"
+        },
+        "传输线": {
+            "电输入": "电母线输入",
+            "电输出": "电母线输出"
+        }
+    }
+}
+
+for (var i in port_type_mapping){
+    for (var j in i){
+        for (var k in j){
+            
+        }
+    }
+}
+
 var graph_data={
     "典型日ID": null,
     "计算步长": "小时",
@@ -51,6 +107,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         // devType = myRe.exec(e._style)[0];
         let val=e._style;
         let devType=val.split("models/")[1].split(".svg")[0]
+        dev_id_digit = node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
         devLUT[`${node_id}`].type = '设备'
         devLUT[`${node_id}`].subtype=devType;
@@ -65,11 +122,11 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             nodes_list.append(
                 {
                     "type": "锚点",
-                    "port_name": "线路端",
-                    "subtype": "双向变流器线路端输入输出",
-                    "device_id": 22,
+                    "port_name": port_name,
+                    "subtype": anchor_title,
+                    "device_id": dev_id_digit,
                     "id": node_id_cursor
-                },)
+                })
             idLUT[anchor_k]=node_id_cursor++;
         }
     } else if(e.edge) {
