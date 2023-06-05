@@ -111,30 +111,39 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         // devType = myRe.exec(e._style)[0];
         let val=e._style;
         let devType=val.split("models/")[1].split(".svg")[0]
+
         dev_id_digit = node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
-        devLUT[`${node_id}`].type = '设备'
-        devLUT[`${node_id}`].subtype=devType;
-        if(e.Array.Object.length===undefined) {
-            e.Array.Object=[e.Array.Object]
+        if (devType !="母线"){
+            devLUT[`${node_id}`].type = '设备'
+            devLUT[`${node_id}`].subtype=devType;
+            if(e.Array.Object.length===undefined) {
+                e.Array.Object=[e.Array.Object]
+            }
+            for(let o of e.Array.Object) {
+                anchor_id=o._portId
+                anchor_title=o._title
+                anchor_k=`${node_id}_${anchor_id}`
+                anchorLUT[anchor_k]=anchor_title
+                port_type = anchor_title
+                port_name = translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
+                nodes_list.append(
+                    {
+                        "type": "锚点",
+                        "port_name": port_name,
+                        "subtype": anchor_title,
+                        "device_id": dev_id_digit,
+                        "id": node_id_cursor
+                    })
+                idLUT[anchor_k]=node_id_cursor++;
+            }
+        }else{
+            //母线
+
+            devLUT[`${node_id}`].type = '母线'
+            devLUT[`${node_id}`].subtype=e._refname;
         }
-        for(let o of e.Array.Object) {
-            anchor_id=o._portId
-            anchor_title=o._title
-            anchor_k=`${node_id}_${anchor_id}`
-            anchorLUT[anchor_k]=anchor_title
-            port_type = anchor_title
-            port_name = translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
-            nodes_list.append(
-                {
-                    "type": "锚点",
-                    "port_name": port_name,
-                    "subtype": anchor_title,
-                    "device_id": dev_id_digit,
-                    "id": node_id_cursor
-                })
-            idLUT[anchor_k]=node_id_cursor++;
-        }
+       
     } else if(e.edge) {
         connLUT[id].source_id=e.source
         connLUT[id].target_id=e.target
