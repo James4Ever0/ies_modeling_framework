@@ -30,12 +30,14 @@ var anchorLUT={}
 var connLUT={}
 var node_id_cursor=0
 var idLUT = {}
+var devLUT = {}
 
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
     if(e.vertex) {
         let node_id=id
         idLUT[`${node_id}`] = node_id_cursor++;
+        devLUT = {}
         if (e.Array.Object.length === undefined){
             e.Array.Object = [e.Array.Object]
         }
@@ -49,6 +51,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     } else if(e.edge) {
         connLUT[id].source_id=e.source
         connLUT[id].target_id=e.target
+        idLUT[`${id}`] = node_id_cursor++; 
     }
 }
 
@@ -57,8 +60,8 @@ for(var e of obj.connectionsAnchors) {
     let conn = connLUT[conn_id]
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
-    let sourceAnchor = anchorLUT[`${conn.source_id}_${source_anchor_id}`]
-    let targetAnchor = anchorLUT[`${conn.target_id}_${target_anchor_id}`]
+    let sourceAnchorType = anchorLUT[`${conn.source_id}_${source_anchor_id}`]
+    let targetAnchorType = anchorLUT[`${conn.target_id}_${target_anchor_id}`]
 }
 
 for(var e of obj.rightParams) {
