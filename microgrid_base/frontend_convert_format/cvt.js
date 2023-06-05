@@ -39,6 +39,9 @@ var node_id_cursor=0
 var idLUT={}
 var devLUT={}
 
+var nodes_list = []
+var links_list = []
+
 // const myRe = /.+models\/(.+)\.svg.+/g;
 
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
@@ -81,3 +84,8 @@ for(var e of obj.rightParams) {
     let node_id=e.id
     // console.assert()
 }
+
+input_template.nodes = nodes_list
+input_template.links = links_list
+
+pretty_print(input_template, "input_template_processed.json")
