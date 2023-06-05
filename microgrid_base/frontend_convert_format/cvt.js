@@ -66,10 +66,14 @@ const port_type_mapping = {
     }
 }
 
+var translate_port_type_and_dev_name_to_port_name = {}
+
 for (var i in port_type_mapping){
     for (var j in i){
         for (var k in j){
-            
+            port_type = port_type_mapping[i][j][k]
+            port_name = k
+            translate_port_type_and_dev_name_to_port_name[`${j}_${}`]
         }
     }
 }
