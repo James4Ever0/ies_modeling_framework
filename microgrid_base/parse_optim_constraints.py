@@ -20,3 +20,5 @@ for elem in mfile.body:
             ...
     elif type(elem) == ast.FunctionDef:
         funcName = elem.name
+        for w in ast.walk(elem):
+            ast.Call
