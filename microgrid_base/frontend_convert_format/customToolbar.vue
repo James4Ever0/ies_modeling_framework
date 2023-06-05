@@ -917,7 +917,8 @@ export default {
 
           pinObject: [],
           anchorPoint: [],
-          refname: "母线"
+          refname: "母线",
+          conn: []
         },
       },
       // 收集整个页面右侧面板数据
@@ -2146,6 +2147,10 @@ export default {
               }
               return [targetType,connType]
             }
+
+            function 改变母线属性(, index,){
+
+            }
             if(this.connectDotData.data.length!=2) {
               // TODO: figure out what is this?
               // console.log(addCell.source.id);
@@ -2182,8 +2187,6 @@ export default {
               else if(sourceType=='母线') {
                 [sourceType,connType]=改变母线类型(targetType,addCell.target.id,sourceType,addCell.source.id)
 
-                if (this.dataObj[addCell.source.id].conn.length !== undefined){
-                  this.dataObj[addCell.source.id].conn.insert():this.dataObj[addCell.source.id].conn = []
               }
               if(connType===null) {
                 // 用标准校验规则
