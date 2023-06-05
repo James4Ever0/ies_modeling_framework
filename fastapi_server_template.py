@@ -177,7 +177,9 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     task = taskDict.get(calculation_id, None)
     if task is not None:
         calculation_state = task.state
-    return CalculationStateResult(calculation_state=calculation_state)
+        return CalculationStateResult(calculation_state=calculation_state)
+    else:
+        return CalculationStateResult(calculation_state="NOT_CREATED")
 
 
 @remove_stale_tasks_decorator
