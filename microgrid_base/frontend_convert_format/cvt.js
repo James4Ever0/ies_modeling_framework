@@ -57,7 +57,7 @@ for(var e of obj.connectionsAnchors) {
     let conn = connLUT[conn_id]
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
-    let sourceAnchor = anchorLUT[`${conn.source_id}_${source_anchor_id}`] 
+    let sourceAnchor = anchorLUT[`${conn.source_id}_${source_anchor_id}`]
     let targetAnchor = anchorLUT[`${conn.target_id}_${target_anchor_id}`]
 }
 
