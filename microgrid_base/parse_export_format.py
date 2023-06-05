@@ -53,9 +53,9 @@ def convert_format(h_array):
     result_mapping = {}
     for elem in h_array:
         elem = elem.strip()
-        unit = None
-        if elem in default_unit_maps.keys():
-            elem
+        elem_name, parsed_unit = 
+        if parsed_unit is None:
+            unit = default_unit_maps.get(elem, None)
     return result_mapping
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
