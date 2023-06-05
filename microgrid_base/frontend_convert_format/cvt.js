@@ -107,7 +107,7 @@ var links_list=[]
 
 for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
-    if(e.vertex) {
+    if(e._vertex) {
         let node_id=id
         // devType = myRe.exec(e._style)[0];
         let val=e._style;
@@ -158,10 +158,10 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                 })
         }
 
-    } else if(e.edge) {
-        connLUT[id].source_id=e.source
-        connLUT[id].target_id=e.target
-        connLUT[id].connType=e.connType
+    } else if(e._edge) {
+        connLUT[`${id}`].source_id=e.source
+        connLUT[`${id}`].target_id=e.target
+        connLUT[`${id}`].connType=e.connType
         nodes_list.append({
             "type": e.connType.startsWith("不可连接")? "连接线":"合并线",
             "subtype": e.connType,
@@ -176,7 +176,7 @@ console.log(connLUT)
 
 for(var e of obj.connectionsAnchors) {
     let conn_id=e.id
-    let conn=connLUT[conn_id]
+    let conn=connLUT[`${conn_id}`]
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
