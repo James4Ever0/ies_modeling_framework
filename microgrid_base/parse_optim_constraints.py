@@ -10,7 +10,8 @@ print(mfile, dir(mfile))
 
 import astor
 
-astor.code_gen.
+TS = lambda ast_tree: astor.code_gen.to_source(ast_tree)
+
 for elem in mfile.body:
     if type(elem) == ast.ClassDef:
         cname = elem.name
