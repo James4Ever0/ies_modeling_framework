@@ -39,7 +39,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     if(e.vertex) {
         let node_id=id
         // devType = myRe.exec(e._style)[0];
-        
+        let val = e._style;
         let devType = val.split("models/")[1].split(".svg")[0]
         idLUT[`${node_id}`] = node_id_cursor++;
         devLUT[`${node_id}`] = devType;
