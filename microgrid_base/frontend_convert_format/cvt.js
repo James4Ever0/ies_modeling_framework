@@ -34,6 +34,12 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
     let id=e._id
     if(e.vertex) {
         let node_id=id
+        if (e.Array.Object.length === undefinded){
+            e.Array.Object = [e.Array.Object]
+        }
+        for (let o of e.Array.Object){
+            
+        }
         anchorLUT[node_id]
     } else if(e.edge) {
         connLUT[id].source_id=e.source
