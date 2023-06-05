@@ -48,7 +48,9 @@ print("writing to:", output_path)
 
 new_data = {k:{} for k in data.keys()}
 
-default_unit_maps = {}
+default_unit_maps = {"平均效率/平均COP":"one", "设备台数": "one"}
+
+# None -> str
 
 def convert_format(h_array):
     result_mapping = {}
