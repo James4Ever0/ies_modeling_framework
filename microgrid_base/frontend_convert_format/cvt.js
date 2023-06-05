@@ -114,6 +114,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         let devType=val.split("models/")[1].split(".svg")[0]
 
         dev_id_digit=node_id_cursor
+        devLUT[`${node_id}`] = {}
         devLUT[`${node_id}`].id=node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
         if(devType!="母线") {
@@ -130,7 +131,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                 // anchorLUT[anchor_k]=anchor_title
                 port_type=anchor_title
                 port_name=translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
-                nodes_list.append(
+                nodes_list.push(
                     {
                         "type": "锚点",
                         "port_name": port_name,
@@ -138,7 +139,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                         "device_id": dev_id_digit,
                         "id": node_id_cursor
                     })
-                links_list.append({source: dev_id_digit,target: node_id_cursor})
+                links_list.push({source: dev_id_digit,target: node_id_cursor})
                 idLUT[anchor_k]=node_id_cursor++;
             }
         } else {
@@ -149,7 +150,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
 
             conn=e._conn; // list of connected types.
 
-            nodes_list.append(
+            nodes_list.push(
                 {
                     "type": "母线",
                     "subtype": e._refname,
@@ -159,11 +160,12 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         }
 
     } else if(e._edge) {
+        connLUT[`${id}`]  ={}
         connLUT[`${id}`].source_id=e.source
         connLUT[`${id}`].target_id=e.target
         connLUT[`${id}`].connType=e.connType
-        nodes_list.append({
-            "type": e.connType.startsWith("不可连接")? "连接线":"合并线",
+        nodes_list.push({
+            "type":( e.connType).startsWith("不可连接")? "连接线":"合并线",
             "subtype": e.connType,
             "id": node_id_cursor
         })
@@ -181,8 +183,8 @@ for(var e of obj.connectionsAnchors) {
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
     let targetAnchorDigitId=anchorLUT[`${conn.target_id}_${target_anchor_id}`]
-    links_list.append({source: sourceAnchorDigitId,target: idLUT[conn_id]})
-    links_list.append({source: targetAnchorDigitId,target: idLUT[conn_id]})
+    links_list.push({source: sourceAnchorDigitId,target: idLUT[conn_id]})
+    links_list.push({source: targetAnchorDigitId,target: idLUT[conn_id]})
 }
 
 for(var e of obj.rightParams) {
