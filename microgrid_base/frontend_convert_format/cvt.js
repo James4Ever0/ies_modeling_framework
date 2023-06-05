@@ -113,7 +113,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         let devType=val.split("models/")[1].split(".svg")[0]
 
         dev_id_digit=node_id_cursor
-        devLUT[`${node_id}`].id = node_id_cursor
+        devLUT[`${node_id}`].id=node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
         if(devType!="母线") {
             devLUT[`${node_id}`].type='设备'
@@ -137,6 +137,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                         "device_id": dev_id_digit,
                         "id": node_id_cursor
                     })
+                links_list.append({source: dev_id_digit,target: node_id_cursor})
                 idLUT[anchor_k]=node_id_cursor++;
             }
         } else {
@@ -145,7 +146,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             devLUT[`${node_id}`].type='母线'
             devLUT[`${node_id}`].subtype=e._refname;
 
-            conn = e._conn; // list of connected types.
+            conn=e._conn; // list of connected types.
 
             nodes_list.append(
                 {
@@ -177,8 +178,8 @@ for(var e of obj.connectionsAnchors) {
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
     let targetAnchorDigitId=anchorLUT[`${conn.target_id}_${target_anchor_id}`]
-    links_list.append({source: source_target:})
-    links_list.append({source: target_target:})
+    links_list.append({source: sourceAnchorDigitId,target: idLUT[conn_id]})
+    links_list.append({source: targetAnchorDigitId,target: idLUT[conn_id]})
 }
 
 for(var e of obj.rightParams) {
