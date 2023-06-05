@@ -2150,7 +2150,13 @@ export default {
 
               if(targetType=="母线") {
                 if(sourceType!="母线") {
-
+                  if (checkIsBus(addCell.source.id)){
+targetType = sourceType
+                  }
+                  else{
+                    targetType=母线类型创建规则[sourceType][0];
+                this.dataObj[addCell.target.id].refname=targetType
+                  }
                 }
                 else {
                   this.graph.removeCells([addCell]);
@@ -2159,10 +2165,10 @@ export default {
                 }
               }
               else {
-                
+
               }
 
-              if(checkIsBus(target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
+              if(checkIsBus(addCell.target.id)&&this.dataObj[addCell.target.id].anchorPoint.length===0&&this.dataObj[addCell.target.id].refname=="母线") {
                 // targetType = this.dataObj[addCell.source.id].anchorPoint[sourceIndex].name;
                 targetType=母线类型创建规则[sourceType][0];
                 this.dataObj[addCell.target.id].refname=targetType
