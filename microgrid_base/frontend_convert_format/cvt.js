@@ -52,7 +52,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         let val=e._style;
         let devType=val.split("models/")[1].split(".svg")[0]
         idLUT[`${node_id}`]=node_id_cursor++;
-        devLUT[`${node_id}`]=devType;
+        devLUT[`${node_id}`].type = '设备'
+        devLUT[`${node_id}`].subtype=devType;
         if(e.Array.Object.length===undefined) {
             e.Array.Object=[e.Array.Object]
         }
@@ -61,6 +62,14 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
             anchor_title=o._title
             anchor_k=`${node_id}_${anchor_id}`
             anchorLUT[anchor_k]=anchor_title
+            nodes_list.append(
+                {
+                    "type": "锚点",
+                    "port_name": "线路端",
+                    "subtype": "双向变流器线路端输入输出",
+                    "device_id": 22,
+                    "id": node_id_cursor
+                },)
             idLUT[anchor_k]=node_id_cursor++;
         }
     } else if(e.edge) {
@@ -82,6 +91,7 @@ for(var e of obj.connectionsAnchors) {
 
 for(var e of obj.rightParams) {
     let node_id=e.id
+    devLUT[`${node_id}`].params = e
     // console.assert()
 }
 
