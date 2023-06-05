@@ -161,8 +161,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
 
     } else if(e._edge) {
         connLUT[`${id}`] ={}
-        connLUT[`${id}`].source_id=e.source
-        connLUT[`${id}`].target_id=e.target
+        connLUT[`${id}`].source_id=e._source
+        connLUT[`${id}`].target_id=e._target
         connLUT[`${id}`].connType=e.connType
         let type = null;
         if (e.connType !==undefined){
@@ -179,10 +179,14 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
 }
 
 console.log(connLUT)
+console.log(devLUT)
+console.log(idLUT)
+console.log(anchorLUT)
 
 for(var e of obj.connectionsAnchors) {
     let conn_id=e.id
     let conn=connLUT[`${conn_id}`]
+    console.log(conn_id, conn)
     let source_anchor_id=e.sourceAnchors.port_id
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
