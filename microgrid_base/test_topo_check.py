@@ -260,17 +260,8 @@ if sys.argv[-1] in ["-f", "--full"]:
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
         
         devClassMapping = {f"DI_{k}": c.__class__.__name__.strip('模型') for k,c in devInstDict.items()}
-
-        solver = SolverFactory("cplex")
-        try:
-            print(">>>SOLVING<<<")
-            # results = solver.solve(mw.model, tee=True, keepfiles= True)
-            results = solver.solve(mw.model, tee=True)
-        except:
-            import traceback
-
-            traceback.print_exc()
-            print(">>>SOLVER ERROR<<<")
+        
+        def dumpCond():
             exprs = [
                 str(mw.model.__dict__[x].expr)
                 for x in dir(mw.model)
@@ -295,6 +286,18 @@ if sys.argv[-1] in ["-f", "--full"]:
 
                 content = json.dumps(exprs, indent=4, ensure_ascii=False)
                 f.write(content)
+        if DEBUG:
+            dumpCond()
+        solver = SolverFactory("cplex")
+        try:
+            print(">>>SOLVING<<<")
+            # results = solver.solve(mw.model, tee=True, keepfiles= True)
+            results = solver.solve(mw.model, tee=True)
+        except:
+            import traceback
+
+            traceback.print_exc()
+            print(">>>SOLVER ERROR<<<")
             # breakpoint()
 
         # print("OBJECTIVE?")
