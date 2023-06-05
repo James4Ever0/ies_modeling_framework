@@ -10,7 +10,7 @@ print(mfile, dir(mfile))
 
 import astor
 
-astor.code_gen.pretty_source
+astor.code_gen.
 for elem in mfile.body:
     if type(elem) == ast.ClassDef:
         cname = elem.name
