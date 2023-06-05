@@ -201,6 +201,7 @@ for(var e of obj.rightParams) {
     // console.assert()
 }
 
+
 input_template.nodes=nodes_list
 input_template.links=links_list
 
