@@ -187,8 +187,8 @@ for(var e of obj.connectionsAnchors) {
     let conn_id=e.id
     let conn=connLUT[`${conn_id}`]
     console.log(conn_id, conn)
-    let source_anchor_id=e.sourceAnchors.port_id
-    let target_anchor_id=e.targetAnchors.port_id
+    let source_anchor_id=e.sourceAnchors.portId
+    let target_anchor_id=e.targetAnchors.portId
     let sk = `${conn.source_id}_${source_anchor_id}`
     let sourceAnchorDigitId=anchorLUT[sk]
     let tk = `${conn.target_id}_${target_anchor_id}`
@@ -200,7 +200,7 @@ for(var e of obj.connectionsAnchors) {
 
 for(var e of obj.rightParams) {
     let node_id=e.id
-    devLUT[`${node_id}`].params=e
+    devLUT[`${node_id}`].params=e.params
     // console.assert()
     nodes_list.push(devLUT[`${node_id}`])
 }

@@ -54,11 +54,8 @@
             "type": "设备",
             "subtype": "柴油",
             "params": {
-                "id": "dieselOil-1",
-                "params": {
-                    "name": "柴油",
-                    "fuelModel": "32"
-                }
+                "name": "柴油",
+                "fuelModel": "32"
             }
         },
         {
@@ -66,14 +63,11 @@
             "type": "设备",
             "subtype": "柴油发电",
             "params": {
-                "id": "dieselGenerator-1",
-                "params": {
-                    "name": "柴油发电",
-                    "typeSelect": 1,
-                    "leastNum": "0",
-                    "biggestNum": "20",
-                    "costModel": 5
-                }
+                "name": "柴油发电",
+                "typeSelect": 1,
+                "leastNum": "0",
+                "biggestNum": "20",
+                "costModel": 5
             }
         },
         {
@@ -81,14 +75,11 @@
             "type": "设备",
             "subtype": "风力发电",
             "params": {
-                "id": "windPower-1",
-                "params": {
-                    "name": "风力发电",
-                    "typeSelect": 13,
-                    "leastNum": "0",
-                    "biggestNum": "20",
-                    "costModel": 5
-                }
+                "name": "风力发电",
+                "typeSelect": 13,
+                "leastNum": "0",
+                "biggestNum": "20",
+                "costModel": 5
             }
         }
     ],
@@ -113,12 +104,15 @@
             "target": 7
         },
         {
+            "source": 3,
             "target": 7
         },
         {
+            "source": 4,
             "target": 8
         },
         {
+            "source": 6,
             "target": 8
         }
     ]
