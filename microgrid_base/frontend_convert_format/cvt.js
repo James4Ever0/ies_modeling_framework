@@ -69,8 +69,9 @@ const port_type_mapping={
 var translate_port_type_and_dev_name_to_port_name={}
 
 for(var i in port_type_mapping) {
-    for(var j in i) {
-        for(var k in j) {
+    for(var j in port_type_mapping[i]) {
+        for(var k in port_type_mapping[i][j]) {
+            console.log(i,j,k)
             port_type=port_type_mapping[i][j][k]
             port_name=k
             translate_port_type_and_dev_name_to_port_name[`${j}_${port_type}`]=port_name
@@ -170,6 +171,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
 
     }
 }
+
+console.log(connLUT)
 
 for(var e of obj.connectionsAnchors) {
     let conn_id=e.id
