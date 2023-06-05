@@ -113,6 +113,7 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
         let devType=val.split("models/")[1].split(".svg")[0]
 
         dev_id_digit=node_id_cursor
+        devLUT[`${node_id}`].id = node_id_cursor
         idLUT[`${node_id}`]=node_id_cursor++;
         if(devType!="母线") {
             devLUT[`${node_id}`].type='设备'
@@ -124,7 +125,8 @@ for(var e of obj.graph.mxGraphModel.root.mxCell) {
                 anchor_id=o._portId
                 anchor_title=o._title
                 anchor_k=`${node_id}_${anchor_id}`
-                anchorLUT[anchor_k]=anchor_title
+                anchorLUT[anchor_k]=node_id_cursor
+                // anchorLUT[anchor_k]=anchor_title
                 port_type=anchor_title
                 port_name=translate_port_type_and_dev_name_to_port_name[`${devType}_${port_type}`]
                 nodes_list.append(
@@ -175,6 +177,8 @@ for(var e of obj.connectionsAnchors) {
     let target_anchor_id=e.targetAnchors.port_id
     let sourceAnchorDigitId=anchorLUT[`${conn.source_id}_${source_anchor_id}`]
     let targetAnchorDigitId=anchorLUT[`${conn.target_id}_${target_anchor_id}`]
+    links_list.append({source: source_target:})
+    links_list.append({source: target_target:})
 }
 
 for(var e of obj.rightParams) {
