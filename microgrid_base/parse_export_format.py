@@ -46,12 +46,13 @@ output_path = "export_format.json"
 
 print("writing to:", output_path)
 
-new_data = {k:{} for k in data.keys()}
+new_data = {k: {} for k in data.keys()}
 
-default_unit_maps = {"平均效率/平均COP":"one", "设备台数": "one"}
+default_unit_maps = {"平均效率/平均COP": "one", "设备台数": "one"}
 
 # None -> str
 from unit_utils import unitCleaner, unitParser
+
 
 def convert_format(h_array):
     result_mapping = {}
@@ -60,16 +61,18 @@ def convert_format(h_array):
         elem = unitCleaner(elem)
         result = unitParser(elem)
         if result:
-            elem_name, unit = result['val_name'], result['val_unit']
+            elem_name, unit = result["val_name"], result["val_unit"]
         else:
             elem_name = elem
             unit = default_unit_maps.get(elem, None)
-        result_map[elem_name] = 
+        result_mapping[elem_name] = unit
     return result_mapping
 
-new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
+
+new_data["仿真结果"]["ALL"] = convert_format(data["仿真结果"][0]["headings"])
 
 from param_base import 设备接口集合
+
 all_device_names = list(设备接口集合.keys())
 
 print()
