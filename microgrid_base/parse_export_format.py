@@ -187,7 +187,10 @@ with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
 print('write to:', output_path)
 
-from jinja_utils import code_and_template_path
+from jinja_utils import code_and_template_path, load_render_and_format
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
+render_params = dict()
+
+load_render_and_format(template_path, code_path,render_params, banner = "FORMAT_VALIDATE_CODE")
