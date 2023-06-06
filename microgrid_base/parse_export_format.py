@@ -95,7 +95,7 @@ print()
 rich.print(all_device_names)
 
 nonDevNames = ["柴油", "电负荷"]
-commonDevParams = ["设备型号", "设备台数"]
+commonDevParams = ["设备型号", "设备台数", "设备维护费用"]
 commonParams = ["元件名称"]
 
 simDevParam = {name: [] for name in all_device_names}
@@ -138,9 +138,13 @@ assert excel_sim_params == all_sim_params, f"参数不符合:\nEXCEL: {excel_sim
 for dev in all_device_names:
     assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"
 
-simParamLUT.update({"设备维护费用": [d for d in all_device_names if d not in nonDevNames]})
+# simParamLUT.update({"设备维护费用": [d for d in all_device_names if d not in nonDevNames]})
 
-simDevParam = 
+# simDevParam = 
+
+for k,vlist in simParamLUT.items():
+    for v in vlist:
+        simDevParam[v].append(k)
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
