@@ -77,14 +77,14 @@ def convert_format(h_array):
 
               
 new_data["仿真结果"]["ALL"] = convert_format(data["仿真结果"][0]["headings"])
-devs = []
-simDevParam = {}
-for d in devs:
-    new_data['仿真结果'][d] = convert_format(simDevParam[d])
 
 from param_base import 设备接口集合
-
 all_device_names = list(设备接口集合.keys())
+simDevParam = {}
+
+for d in all_device_names:
+    new_data['仿真结果'][d] = convert_format(simDevParam[d])
+
 
 print()
 rich.print(new_data)
