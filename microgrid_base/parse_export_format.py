@@ -1,6 +1,7 @@
 excel_path = "设备信息库各参数.xlsx"
 
 import json
+from os import name
 import pandas
 
 table_name = "仿真结果"
@@ -98,22 +99,13 @@ commonDevParams = ["设备型号", "设备台数"]
 commonParams = ["元件名称"]
 
 simDevParam = {
-    "柴油": [],
-    "电负荷": [],
-    "光伏发电": [],
-    "风力发电": [],
-    "柴油发电": [],
-    "锂电池": [],
-    "变压器": [],
-    "变流器": [],
-    "双向变流器": [],
-    "传输线": [],
+    name: [] for name in all_device_names
 }
 
 for k in simDevParam.keys():
     simDevParam[k].extend(commonParams)
     if k not in nonDevNames:
-        simDevParam.extend(commonDevParams))
+        simDevParam[k].extend(commonDevParams)
 
 simParamLUT = {
     "产冷量": [],
