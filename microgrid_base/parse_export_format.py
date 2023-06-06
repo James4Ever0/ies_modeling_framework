@@ -163,7 +163,7 @@ df = pd.DataFrame(tableRepr, index=None)
 print(df.head())
 filepath ="sim_param_export.xlsx"
 print(f"writing to: {filepath}")
-df.to_excel(filepath)
+df.to_excel(filepath, index=False)
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
