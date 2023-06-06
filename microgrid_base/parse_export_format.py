@@ -168,7 +168,6 @@ df.to_excel(filepath, index=False)
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
 
-
 print()
 rich.print(new_data)
 with open(output_path, "w+") as f:
