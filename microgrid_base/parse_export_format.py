@@ -80,7 +80,22 @@ new_data["仿真结果"]["ALL"] = convert_format(data["仿真结果"][0]["headin
 
 from param_base import 设备接口集合
 all_device_names = list(设备接口集合.keys())
-simDevParam = {}
+
+print()
+rich.print(all_device_names)
+
+simDevParam = {
+    '柴油':[],
+    '电负荷':[],
+    '光伏发电':[],
+    '风力发电':[],
+    '柴油发电':[],
+    '锂电池':[],
+    '变压器':[],
+    '变流器':[],
+    '双向变流器':[],
+    '传输线':[],
+}
 
 for d in all_device_names:
     new_data['仿真结果'][d] = convert_format(simDevParam[d])
