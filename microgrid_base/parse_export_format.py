@@ -130,7 +130,9 @@ simParamLUT = {
 
 all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 
-all_sim_params = all_devs_with_uniq_sim_param + commonDevParams + commonParams
+all_sim_params = list(simParamLUT.keys()) + commonDevParams + commonParams
+
+assert list(new_data["仿真结果"]["ALL"].keys()) == all_sim_params, ""
 
 for dev in all_device_names:
     assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"
