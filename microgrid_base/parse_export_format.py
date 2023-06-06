@@ -191,8 +191,8 @@ from jinja_utils import code_and_template_path, load_render_and_format
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
-render_params = dict()
+model_names = [f"{n}模型" for n in all_device_names]
 
-model_names = ["模型all_device_names
+render_params = dict(model_names=model_names)
 
 load_render_and_format(template_path, code_path,render_params, banner = "FORMAT_VALIDATE_CODE")
