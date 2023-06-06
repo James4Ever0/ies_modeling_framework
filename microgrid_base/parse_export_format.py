@@ -110,6 +110,11 @@ simDevParam = {
     "传输线": [],
 }
 
+for k in simDevParam.keys():
+    simDevParam[k].extend(commonParams)
+    if k not in nonDevNames:
+        simDevParam.extend(commonDevParams))
+
 simParamLUT = {
     "产冷量": [],
     "冷负荷": [],
