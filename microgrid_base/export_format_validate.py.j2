@@ -1,7 +1,7 @@
 from ies_optim import {{",".join(model_names) }}
 {# import device ports. #}
 from typing import List
-
+from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
 class 通用结果(BaseModel):
     元件名称:str
@@ -33,7 +33,7 @@ class {{...}}{{k}}({{x}}):
          raise Exception("不合理的计算模式：", mode)
 {% endfor%}
 
-{% for ... in main_data['设备出力曲线'] %}
+{% for devName,  in main_data['设备出力曲线'].items() %}
 class {{}}(出力曲线):
-    ...
+    
 {% endfor%}
