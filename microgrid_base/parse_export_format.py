@@ -187,5 +187,7 @@ with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
 print('write to:', output_path)
 
-from jinja_utils import ...
+from jinja_utils import code_and_template_path
+
+code_path, template_path = code_and_template_path("export_format_validate")
 
