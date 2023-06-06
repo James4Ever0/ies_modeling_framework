@@ -133,20 +133,34 @@ all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 all_sim_params = list(simParamLUT.keys()) + commonDevParams + commonParams
 
 excel_sim_params = list(new_data["仿真结果"]["ALL"].keys())
-assert excel_sim_params == all_sim_params, f"参数不符合:\nEXCEL: {excel_sim_params}\nCODE: {all_sim_params}"
+assert (
+    excel_sim_params == all_sim_params
+), f"参数不符合:\nEXCEL: {excel_sim_params}\nCODE: {all_sim_params}"
 
 for dev in all_device_names:
     assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"
 
 # simParamLUT.update({"设备维护费用": [d for d in all_device_names if d not in nonDevNames]})
 
-# simDevParam = 
+# simDevParam =
 
-for k,vlist in simParamLUT.items():
+for k, vlist in simParamLUT.items():
     for v in vlist:
         simDevParam[v].append(k)
 
-tableRepr = {k: [("x" if k else "") if k !="" else k1 for k1 in simDevParam.keys()] for k in excel_sim_params}
+tableRepr = {
+    k: [
+        ("x" if k in simDevParam[k1] else "") if k != commonParams[0] else k1
+        for k1 in simDevParam.keys()
+    ]
+    for k in excel_sim_params
+}
+
+import pandas as pd
+
+df = pd.DataFrame(tableRepr)
+
+print(df.head())
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
