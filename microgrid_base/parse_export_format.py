@@ -66,10 +66,11 @@ def convert_format(h_array):
             elem_name = elem
             unit = default_unit_maps.get(elem, None)
         if unit:
+            old_unit_name = unit
             mag, new_unit_name = unitFactorCalculator(ureg,standard_units, old_unit_name)
-            unit = 
+            unit = (mag, new_unit_name, old_unit_name)
             
-        result_mapping[elem_name] = 
+        result_mapping[elem_name] = unit
     return result_mapping
 
 
