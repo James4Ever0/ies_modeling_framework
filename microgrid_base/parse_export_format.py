@@ -51,7 +51,7 @@ new_data = {k: {} for k in data.keys()}
 default_unit_maps = {"平均效率/平均COP": "one", "设备台数": "one", "时间": "one"}
 
 # None -> str
-from unit_utils import unitCleaner, unitParser, standard_units, unitFactorCalculator
+from unit_utils import unitCleaner, unitParser, standard_units, unitFactorCalculator, ureg
 
 
 def convert_format(h_array):
@@ -65,7 +65,11 @@ def convert_format(h_array):
         else:
             elem_name = elem
             unit = default_unit_maps.get(elem, None)
-        result_mapping[elem_name] = unit
+        if unit:
+            mag, new_unit_name = unitFactorCalculator(ureg,standard_units, old_unit_name)
+            unit = 
+            
+        result_mapping[elem_name] = 
     return result_mapping
 
 
