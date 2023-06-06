@@ -56,13 +56,15 @@ from unit_utils import unitCleaner, unitParser
 def convert_format(h_array):
     result_mapping = {}
     for elem in h_array:
-        elem = elem.strip()
-        elem_name, parsed_unit = ...
-        if parsed_unit is None:
+        # elem = elem.strip()
+        elem = unitCleaner(elem)
+        result = unitParser(elem)
+        if result:
+            elem_name, unit = result['val_name'], result['val_unit']
+        else:
             elem_name = elem
             unit = default_unit_maps.get(elem, None)
-        else:
-            unit = parsed_unit
+        result_map[elem_name] = 
     return result_mapping
 
 new_data['仿真结果']['ALL'] = convert_format(data['仿真结果'][0]['headings'])
