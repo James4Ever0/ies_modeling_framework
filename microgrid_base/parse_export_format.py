@@ -133,7 +133,15 @@ simParamLUT = {
     "氢气收入": [],
 }
 
-sim
+all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
+
+for dev in 
+
+simParamLUT.update(
+    {
+        "设备维护费用": [d for d in all_device_names if d not in nonDevNames]
+    }
+)
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
