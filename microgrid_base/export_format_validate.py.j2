@@ -16,20 +16,24 @@ class {{x}}(BaseModel):
     单位：one
     (根据具体计算步长确定)
     """
-    {% else%}
+    {% else %}
     设备型号:str
     设备台数:int
     """
     单位：one
     """
-    {% endif%}
+    {% endif %}
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% for ... in ... %}
 class {{...}}{{k}}({{x}}):
     if mode == "仿真模拟":
-    elif mode == '设计规划'
+        ...
+    elif mode == '设计规划':
+        ...
+    else:
+         raise Exception("不合理的计算模式：", mode)
 {% endfor%}
 
 {% endfor%}
