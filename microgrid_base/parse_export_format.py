@@ -84,6 +84,9 @@ all_device_names = list(设备接口集合.keys())
 print()
 rich.print(all_device_names)
 
+nonDevNames = ['柴油','电负荷']
+commonDevParams = []
+commonParams = ['元件名称']
 simDevParam = {
     '柴油':[],
     '电负荷':[],
