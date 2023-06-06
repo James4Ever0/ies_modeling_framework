@@ -23,7 +23,7 @@ class 出力曲线(通用结果):
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
-{% for ... in ... %}
+{% for ... in main_data['仿真结果'] %}
 class {{...}}{{k}}({{x}}):
     if mode == "仿真模拟":
         ...
@@ -33,7 +33,7 @@ class {{...}}{{k}}({{x}}):
          raise Exception("不合理的计算模式：", mode)
 {% endfor%}
 
-{% for ... in ... %}
-class ...():
+{% for ... in main_data['设备出力曲线'] %}
+class {{}}(出力曲线):
     ...
 {% endfor%}
