@@ -82,7 +82,7 @@ from param_base import 设备接口集合
 all_device_names = list(设备接口集合.keys())
 
 print()
-print(new_data)
+rich.print(new_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
 
