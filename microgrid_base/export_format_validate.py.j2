@@ -35,5 +35,13 @@ class {{...}}{{k}}({{x}}):
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{...}}(出力曲线):
-    {% for  paramName, paramDef in paramDict.items() %}
+    {% for paramName, paramDef in paramDict.items() %}
+    {% if paramDef is None%}
+    {% set t = 'str'%}
+    {% elif paramDef[1] == 'one' and paramDef[0] == 1%}
+    {% set t = 'int'%}
+    {% else%}
+    {% set t = 'float'%}
+    {% endif %}
+    {% endfor%}
 {% endfor%}
