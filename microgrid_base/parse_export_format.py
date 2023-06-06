@@ -51,6 +51,7 @@ new_data = {k:{} for k in data.keys()}
 default_unit_maps = {"平均效率/平均COP":"one", "设备台数": "one"}
 
 # None -> str
+from unit_utils import unitCleaner, unitParser
 
 def convert_format(h_array):
     result_mapping = {}

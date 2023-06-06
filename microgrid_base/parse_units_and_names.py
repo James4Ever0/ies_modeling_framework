@@ -434,8 +434,11 @@ for key in keys:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
                     continue
+                
+                from unit_utils import unitParser
 
-                result = parse.parse("{val_name}({val_unit})", val)
+                result = unitParser(val)
+                
                 if result:
                     val_name, val_unit = (
                         result["val_name"].strip(),

@@ -4,6 +4,10 @@ import pint
 unit_def_path = "../merged_units.txt"
 ureg = pint.UnitRegistry(unit_def_path)
 
+import parse
+
+def unitParser(val):
+    return parse.parse("{val_name}({val_unit})", val)
 
 def unitFactorCalculator(
     ureg: pint.UnitRegistry, standard_units: frozenset, old_unit_name: str
