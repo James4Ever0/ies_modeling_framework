@@ -132,9 +132,9 @@ all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 
 all_sim_params = list(simParamLUT.keys()) + commonDevParams + commonParams
 
-excel_sim_params = list(new_data["仿真结果"]["ALL"].keys())
+excel_sim_params = set(new_data["仿真结果"]["ALL"].keys())
 assert (
-    excel_sim_params == all_sim_params
+    excel_sim_params == set(all_sim_params)
 ), f"参数不符合:\nEXCEL: {excel_sim_params}\nCODE: {all_sim_params}"
 
 for dev in all_device_names:
@@ -161,6 +161,8 @@ import pandas as pd
 df = pd.DataFrame(tableRepr)
 
 print(df.head())
+
+df.to_excel("sim_param_export.xlsx")
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
