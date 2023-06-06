@@ -1,4 +1,4 @@
-from ies_optim import {{",".join(model_names) }}
+from ies_optim import {{ ",".join(model_names) }}
 {# import device ports. #}
 from typing import List
 from pydantic import BaseModel, validator
@@ -23,17 +23,17 @@ class 出力曲线(通用结果):
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
-{% for ... in main_data['仿真结果'] %}
+{% for devName, paramDict in main_data['仿真结果'].items() %}
 class {{...}}{{k}}({{x}}):
     if mode == "仿真模拟":
         ...
     elif mode == '设计规划':
         raise NotImplementedError("Not implemented mode:", mode)
     else:
-         raise Exception("不合理的计算模式：", mode)
+        raise Exception("不合理的计算模式：", mode)
 {% endfor%}
 
-{% for devName,  in main_data['设备出力曲线'].items() %}
-class {{}}(出力曲线):
-    
+{% for devName, paramDict in main_data['设备出力曲线'].items() %}
+class {{...}}(出力曲线):
+    {% for  paramName, paramDef in paramDict.items() %}
 {% endfor%}
