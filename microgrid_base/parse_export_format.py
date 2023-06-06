@@ -185,3 +185,4 @@ print()
 rich.print(new_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
+print('write to:', output_path)
