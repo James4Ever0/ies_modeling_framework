@@ -124,6 +124,16 @@ class {{class_name}}ID(设备ID):
 # Device Info #
 ###############
 
+{% set deviceIdentifiers = [
+    "设备名称",
+    "生产厂商",
+    "设备型号",
+]%}
+
+class 设备信息(BaseModel):
+    设备名称: str
+    生产厂商: str
+    设备型号: str
 {% set NonLoadDeviceDict = {}%}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 {% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
