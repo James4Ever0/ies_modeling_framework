@@ -125,7 +125,7 @@ simParamLUT = {
     "柴油消耗费用": ["柴油"],
     "天然气消耗量": [],
     "天然气消耗费用": [],
-    "平均效率/平均COP": [],
+    "平均效率/平均COP": ["柴油发电","",""],
     "设备维护费用": [d for d in all_device_names if d not in nonDevNames],
     "冷收入": [],
     "热收入": [],
