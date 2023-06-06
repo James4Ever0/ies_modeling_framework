@@ -98,9 +98,7 @@ nonDevNames = ["柴油", "电负荷"]
 commonDevParams = ["设备型号", "设备台数"]
 commonParams = ["元件名称"]
 
-simDevParam = {
-    name: [] for name in all_device_names
-}
+simDevParam = {name: [] for name in all_device_names}
 
 for k in simDevParam.keys():
     simDevParam[k].extend(commonParams)
@@ -132,14 +130,12 @@ simParamLUT = {
 
 all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 
+all_sim_params = all_devs_with_uniq_sim_param + commonDevParams + commonParams
+
 for dev in all_device_names:
     assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"
 
-simParamLUT.update(
-    {
-        "设备维护费用": [d for d in all_device_names if d not in nonDevNames]
-    }
-)
+simParamLUT.update({"设备维护费用": [d for d in all_device_names if d not in nonDevNames]})
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
