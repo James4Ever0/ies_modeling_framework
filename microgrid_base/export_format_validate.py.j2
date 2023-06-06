@@ -43,6 +43,11 @@ class {{...}}(出力曲线):
     {% else%}
     {% set t = 'float'%}
     {% endif %}
-    {{}} : List[]
+    {{}} : {{'List[{}]'.format(t) if t != "str" else t}}
+    {% if t!='str' %}
+    """
+    单位: {{paramDef[1] if paramDef[0] == 1 else " <- ".format(paramDef[1], paramDef[2])}}
+    """
+    {% endif %}
     {% endfor%}
 {% endfor%}
