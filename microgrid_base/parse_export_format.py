@@ -158,11 +158,12 @@ tableRepr = {
 
 import pandas as pd
 
-df = pd.DataFrame(tableRepr)
+df = pd.DataFrame(tableRepr, index=None)
 
 print(df.head())
-
-df.to_excel("sim_param_export.xlsx")
+filepath ="sim_param_export.xlsx"
+print(f"writing to: {filepath}")
+df.to_excel(filepath)
 
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
