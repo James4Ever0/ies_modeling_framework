@@ -177,5 +177,9 @@ with open(output_path, "w+") as f:
 # unit conversion? divide by conversion rate.
 # in unit conversion exception list? check.
 # matched to which port?
-data['设备出力曲线']
-new_data["设备出力曲线"]
+k = "设备出力曲线"
+for elem in data[k]:
+    h, dlist = elem['heading'], elem['devices']
+    for d in dlist:
+        assert d not in new_data[k].keys(), f"错误：'{d}'在设备出力曲线中重复定义"
+new_data[k]
