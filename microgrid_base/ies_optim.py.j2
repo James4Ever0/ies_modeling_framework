@@ -131,16 +131,18 @@ class {{class_name}}ID(设备ID):
 ]%}
 
 class 设备信息(BaseModel):
-    设备名称: str
-    生产厂商: str
-    设备型号: str
+{% for i in deviceIdentifiers%}
+    {{i}}: str
+    
+{% endfor %}
+
 {% set NonLoadDeviceDict = {}%}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 {% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
 {% endfor %}
 {% for class_name in 设备接口集合.keys()%}
 
-class {{class_name}}信息(BaseModel):
+class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
     {% if class_name not in NonLoadDeviceDict.keys() %}
     {% if class_name in load_class_names%}
     # 正数
@@ -169,7 +171,9 @@ class {{class_name}}信息(BaseModel):
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
     {% for psc, mstr in mstrs %}
+    {%if mstr not in deviceIdentifiers%}
     {{ mstr }}: str
+    {% endif%}
 
     {% endfor %}
     
