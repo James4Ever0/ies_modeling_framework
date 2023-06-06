@@ -28,7 +28,8 @@ class {{x}}(BaseModel):
 {# in simulation mode #}
 {% for ... in ... %}
 class {{...}}{{k}}({{x}}):
-    ...
+    if mode == "仿真模拟":
+    elif mode == '设计规划'
 {% endfor%}
 
 {% endfor%}
