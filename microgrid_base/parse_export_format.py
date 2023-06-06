@@ -140,6 +140,8 @@ for dev in all_device_names:
 
 simParamLUT.update({"设备维护费用": [d for d in all_device_names if d not in nonDevNames]})
 
+simDevParam = 
+
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
 
