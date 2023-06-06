@@ -48,7 +48,7 @@ print("writing to:", output_path)
 
 new_data = {k: {} for k in data.keys()}
 
-default_unit_maps = {"平均效率/平均COP": "one", "设备台数": "one", "时间":"one"}
+default_unit_maps = {"平均效率/平均COP": "one", "设备台数": "one", "时间": "one"}
 
 # None -> str
 from unit_utils import unitCleaner, unitParser

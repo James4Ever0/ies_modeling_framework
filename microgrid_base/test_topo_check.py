@@ -39,7 +39,7 @@ algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="�
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
-devParam = dict(生产厂商="Any", 设备型号="Any")
+devParam = dict(生产厂商="Any", 设备型号="Any", 设备名称 = 'Any')
 
 P1 = 光伏发电信息(
     **devParam,
