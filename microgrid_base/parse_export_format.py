@@ -178,7 +178,7 @@ for elem in data[k]:
     h, dlist = elem['headings'], elem['devices']
     for d in dlist:
         assert d not in new_data[k].keys(), f"错误：'{d}'在{k}中重复定义"
-        new_data[k] =convert_format(h)
+        new_data[k][d] =convert_format(h)
 
 
 print()
