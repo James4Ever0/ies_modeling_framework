@@ -136,7 +136,7 @@ simParamLUT = {
 all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 
 for dev in all_device_names:
-    assert dev in all_devs_with_uniq_sim_param, f"'{dev}'不在"
+    assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"
 
 simParamLUT.update(
     {
