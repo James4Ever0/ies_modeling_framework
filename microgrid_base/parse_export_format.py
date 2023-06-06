@@ -177,3 +177,5 @@ with open(output_path, "w+") as f:
 # unit conversion? divide by conversion rate.
 # in unit conversion exception list? check.
 # matched to which port?
+data['设备出力曲线']
+new_data["设备出力曲线"]
