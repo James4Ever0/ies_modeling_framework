@@ -146,6 +146,8 @@ for k,vlist in simParamLUT.items():
     for v in vlist:
         simDevParam[v].append(k)
 
+tableRepr = {k: [("x" if k else "") if k !="" else k1 for k1 in simDevParam.keys()] for k in excel_sim_params}
+
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
 
