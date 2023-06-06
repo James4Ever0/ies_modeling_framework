@@ -1,7 +1,7 @@
 excel_path = "设备信息库各参数.xlsx"
 
 import json
-from os import name
+# from os import name
 import pandas
 
 table_name = "仿真结果"
