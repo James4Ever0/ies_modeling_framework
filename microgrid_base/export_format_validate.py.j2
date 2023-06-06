@@ -21,29 +21,6 @@ class 出力曲线(通用结果):
     (根据具体计算步长确定)
     """
 
-{% for k in ['出力曲线', '仿真结果']%}
-{% if k == "出力曲线"%}
-    {% set x = "设备"+k%}
-{% else%}
-    {% set x = k%}
-{% endif%}
-class {{x}}(BaseModel):
-    元件名称:str
-    {% if k == "出力曲线"%}
-    时间:List[int]
-    """
-    单位：one
-    (根据具体计算步长确定)
-    """
-    {% else %}
-    设备型号:str
-
-    设备台数:int
-    """
-    单位：one
-    """
-    {% endif %}
-
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% for ... in ... %}
@@ -51,9 +28,7 @@ class {{...}}{{k}}({{x}}):
     if mode == "仿真模拟":
         ...
     elif mode == '设计规划':
-        ...
+        raise NotImplementedError("Not implemented mode:", mode)
     else:
          raise Exception("不合理的计算模式：", mode)
-{% endfor%}
-
 {% endfor%}
