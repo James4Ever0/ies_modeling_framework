@@ -109,13 +109,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -133,6 +133,14 @@ class 传输线ID(设备ID):
 ###############
 # Device Info #
 ###############
+
+
+class 设备信息(BaseModel):
+    设备名称: str
+
+    生产厂商: str
+
+    设备型号: str
 
 
 class 柴油信息(BaseModel):
@@ -154,10 +162,7 @@ class 电负荷信息(BaseModel):
     """
 
 
-class 光伏发电信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 光伏发电信息(设备信息):
 
     Area: float
     """
@@ -238,10 +243,7 @@ class 光伏发电信息(BaseModel):
     """
 
 
-class 风力发电信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 风力发电信息(设备信息):
 
     RatedPower: float
     """
@@ -328,10 +330,7 @@ class 风力发电信息(BaseModel):
     """
 
 
-class 柴油发电信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 柴油发电信息(设备信息):
 
     RatedPower: float
     """
@@ -415,10 +414,7 @@ class 柴油发电信息(BaseModel):
     """
 
 
-class 锂电池信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 锂电池信息(设备信息):
 
     循环边界条件: str
 
@@ -543,10 +539,7 @@ class 锂电池信息(BaseModel):
     """
 
 
-class 变压器信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 变压器信息(设备信息):
 
     Efficiency: float
     """
@@ -633,10 +626,7 @@ class 变压器信息(BaseModel):
     """
 
 
-class 变流器信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 变流器信息(设备信息):
 
     RatedPower: float
     """
@@ -705,10 +695,7 @@ class 变流器信息(BaseModel):
     """
 
 
-class 双向变流器信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 双向变流器信息(设备信息):
 
     RatedPower: float
     """
@@ -777,10 +764,7 @@ class 双向变流器信息(BaseModel):
     """
 
 
-class 传输线信息(BaseModel):
-    生产厂商: str
-
-    设备型号: str
+class 传输线信息(设备信息):
 
     PowerTransferDecay: float
     """
@@ -2554,18 +2538,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
