@@ -168,18 +168,20 @@ df.to_excel(filepath, index=False)
 for d in all_device_names:
     new_data["仿真结果"][d] = convert_format(simDevParam[d])
 
-print()
-rich.print(new_data)
-with open(output_path, "w+") as f:
-    f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
-
 # type? sum or array.
 # unit conversion? divide by conversion rate.
 # in unit conversion exception list? check.
 # matched to which port?
 k = "设备出力曲线"
+
 for elem in data[k]:
-    h, dlist = elem['heading'], elem['devices']
+    h, dlist = elem['headings'], elem['devices']
     for d in dlist:
-        assert d not in new_data[k].keys(), f"错误：'{d}'在设备出力曲线中重复定义"
-new_data[k]
+        assert d not in new_data[k].keys(), f"错误：'{d}'在{k}中重复定义"
+        new_data[k] =convert_format(h)
+
+
+print()
+rich.print(new_data)
+with open(output_path, "w+") as f:
+    f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
