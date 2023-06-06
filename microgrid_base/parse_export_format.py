@@ -153,7 +153,7 @@ tableRepr = {
         ("x" if k in simDevParam[k1] else "") if k != commonParams[0] else k1
         for k1 in simDevParam.keys()
     ]
-    for k in excel_sim_params
+    for k in sorted(excel_sim_params, key = lambda x: 1 if x != commonParams[0]  else 0)
 }
 
 import pandas as pd
