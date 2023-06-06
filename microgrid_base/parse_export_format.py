@@ -74,18 +74,13 @@ def convert_format(h_array):
         result_mapping[elem_name] = unit
     return result_mapping
 
-for k, vlist in data.items():
-    for v in vlist:
-        devs = v['devices']
-        if devs == []:
-            devs = ["ALL"]
-        for d in devs:
-            if d != 'ALL':
-                ...
-            else:
-                ...
-                
+
+              
 new_data["仿真结果"]["ALL"] = convert_format(data["仿真结果"][0]["headings"])
+devs = []
+simDevParam = {}
+for d in devs:
+    new_data['仿真结果'][d] = convert_format(simDevParam[d])
 
 from param_base import 设备接口集合
 
