@@ -16,7 +16,7 @@ from pydantic import BaseModel, validator
         {% else%}
             {% set t = 'float'%}
         {% endif %}
-    {{}} :{{'List[{}]'.format(t) if( t != "str" and has_list) else t}}
+    {{paramName}} :{{'List[{}]'.format(t) if m else t}}
         {% if t!='str' %}
     {# mag, std, old #}
     """
