@@ -151,7 +151,7 @@ class 设备信息(BaseModel):
 
 class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
     {% if class_name not in NonLoadDeviceDict.keys() %}
-        {% if class_name in load_class_names%}
+        {% if class_name in load_class_names %}
     # 正数
     EnergyConsumption: List[float]
     """
@@ -196,10 +196,10 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     单位: {{ mdigit[2] }}
     """
 
-            {% endfor %}
+        {% endfor %}
 
-            {% for psc, main, sub in mtables %}
-                {% set mtable=(main, sub)%}
+        {% for psc, main, sub in mtables %}
+            {% set mtable=(main, sub)%}
     {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
     """
     {{ mtable[0][0]}}: {{ mtable[0][1]}}
@@ -209,8 +209,8 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     单位: {{ mtable[1][2]}}
     """
 
-            {% endfor %}
-        {% endif %}
+        {% endfor %}
+    {% endif %}
 {% endfor %}
 
 ####################
