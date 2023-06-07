@@ -44,7 +44,7 @@ def load_template(template_path):
         Exception(f"jinja template path '{template_path}' is malformed.")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader("./"),
-        extensions=["jinja2_error.ErrorExtension", "jinja2.ext.do"],
+        extensions=["jinja2_error.ErrorExtension", "jinja2.ext.do","jinja2.ext.loopcontrols"],
         trim_blocks=True,
         lstrip_blocks=True,
         undefined=jinja2.StrictUndefined,
