@@ -199,7 +199,7 @@ code_path, template_path = code_and_template_path("export_format_validate")
 
 model_names = [f"{n}模型" for n in all_device_names]
 
-render_params = dict(main_data=new_data)
+render_params = dict(main_data=new_data, nonDevNames=nonDevNames)
 # render_params = dict(model_names=model_names, main_data=new_data)
 
 load_render_and_format(
