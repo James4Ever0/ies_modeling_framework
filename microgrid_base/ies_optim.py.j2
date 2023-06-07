@@ -344,6 +344,7 @@ class 设备模型:
         %}
         self.{{e0}} = 0
         {% endfor %}
+        self.年化率 = 1
     
     def constraints_register(self):
         print("REGISTERING: ", self.__class__.__name__)
@@ -766,7 +767,7 @@ class {{class_name}}模型(设备模型):
         Life = self.Life
         {%endif%}
 
-        年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
+        self.年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
         {% if class_name in ['光伏发电'] %}
             {% set m='总最大功率'%}
             {% set vi = 'Kilowatt' %}
@@ -804,7 +805,7 @@ class {{class_name}}模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPer{{vm}} * ({{ m}})
         self.总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}
