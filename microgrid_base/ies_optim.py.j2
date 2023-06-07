@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple
 try:
     from typing import Literal
 except:
@@ -165,15 +165,12 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     {# 用于电负荷 典型日计算 #}
     """
     {% else %}
-    Price: float
-    {% if class_name == "柴油"%}
-    {% set m1="L/万元"%}
-    {# just to make it standard. #}
+    {% if class_name in 燃料能源相关数据默认单位.keys()%}
+    {{ }} : Tuple[]
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
-    Unit: str
-    DefaultUnit: str = "{{m1}}"
+    class DefaultUnits
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
