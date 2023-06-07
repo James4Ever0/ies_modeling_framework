@@ -60,7 +60,7 @@ class 柴油发电仿真结果(BaseModel):
 
     柴油消耗量: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -78,7 +78,7 @@ class 锂电池仿真结果(BaseModel):
 
     设备维护费用: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -96,7 +96,7 @@ class 变压器仿真结果(BaseModel):
 
     设备维护费用: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -114,7 +114,7 @@ class 变流器仿真结果(BaseModel):
 
     设备维护费用: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -132,7 +132,7 @@ class 双向变流器仿真结果(BaseModel):
 
     设备维护费用: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -150,7 +150,7 @@ class 传输线仿真结果(BaseModel):
 
     设备维护费用: str
 
-    平均效率 / 平均COP: int
+    平均效率_平均COP: int
     """
     单位: one
     """
@@ -223,7 +223,7 @@ class 锂电池出力曲线(BaseModel):
 
     荷电状态: List[float]
     """
-    单位:  <- 
+    单位: percent <- one
     """
 
     @validator("荷电状态")
