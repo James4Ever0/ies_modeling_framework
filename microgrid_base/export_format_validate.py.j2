@@ -24,7 +24,10 @@ class 出力曲线(通用结果):
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% for devName, paramDict in main_data['仿真结果'].items() %}
-class {{...}}{{k}}({{x}}):
+{% if devName == 'ALL' %}
+{% continue %}
+{% endif %}
+class {{...}}仿真结果{{k}}({{x}}):
     if mode == "仿真模拟":
         ...
     elif mode == '设计规划':
