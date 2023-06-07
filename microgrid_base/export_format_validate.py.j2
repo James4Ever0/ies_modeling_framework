@@ -49,9 +49,11 @@ class {{...}}(出力曲线):
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else " <- ".format(paramDef[2], paramDef[1])}}
     """
-    @validator()
-    def standard_unit_to_custom_{{}}(cls, v):
+    {% if paramDef[0] !=1%}
+    @validator("{{paramName}}")
+    def standard_unit_to_custom_{{paramName}}(cls, v):
         return v / {{paramDef[0]}}
+    {% endif %}
     {% endif %}
     {% endfor%}
 {% endfor%}
