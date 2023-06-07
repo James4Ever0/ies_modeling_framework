@@ -1,6 +1,7 @@
 excel_path = "设备信息库各参数.xlsx"
 
 import json
+
 # from os import name
 import pandas
 
@@ -49,8 +50,12 @@ print("writing to:", output_path)
 
 new_data = {k: {} for k in data.keys()}
 
-revmap = {"one": ["平均效率/平均COP", "设备台数", "时间"], "万元":["设备维护费用"]}
-default_unit_maps = {}
+revmap = {
+    "one": ["平均效率/平均COP", "设备台数", "时间"],
+    "万元": ["设备维护费用", "柴油消耗费用"],
+    "kWh": ["电负荷", "产电量"],
+}
+default_unit_maps = {k: v for v, klist in revmap.items() for k in klist}
 # None -> str
 from unit_utils import (
     unitCleaner,
@@ -133,8 +138,8 @@ all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 all_sim_params = list(simParamLUT.keys()) + commonDevParams + commonParams
 
 excel_sim_params = set(new_data["仿真结果"]["ALL"].keys())
-assert (
-    excel_sim_params == set(all_sim_params)
+assert excel_sim_params == set(
+    all_sim_params
 ), f"参数不符合:\nEXCEL: {excel_sim_params}\nCODE: {all_sim_params}"
 
 for dev in all_device_names:
@@ -153,7 +158,7 @@ tableRepr = {
         ("x" if k in simDevParam[k1] else "") if k != commonParams[0] else k1
         for k1 in simDevParam.keys()
     ]
-    for k in sorted(excel_sim_params, key = lambda x: 1 if x != commonParams[0]  else 0)
+    for k in sorted(excel_sim_params, key=lambda x: 1 if x != commonParams[0] else 0)
 }
 
 import pandas as pd
@@ -161,7 +166,7 @@ import pandas as pd
 df = pd.DataFrame(tableRepr, index=None)
 
 print(df.head())
-filepath ="sim_param_export.xlsx"
+filepath = "sim_param_export.xlsx"
 print(f"writing to: {filepath}")
 df.to_excel(filepath, index=False)
 
@@ -175,17 +180,17 @@ for d in all_device_names:
 k = "设备出力曲线"
 
 for elem in data[k]:
-    h, dlist = elem['headings'], elem['devices']
+    h, dlist = elem["headings"], elem["devices"]
     for d in dlist:
         assert d not in new_data[k].keys(), f"错误：'{d}'在{k}中重复定义"
-        new_data[k][d] =convert_format(h)
+        new_data[k][d] = convert_format(h)
 
 
 print()
 rich.print(new_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
-print('write to:', output_path)
+print("write to:", output_path)
 
 from jinja_utils import code_and_template_path, load_render_and_format
 
@@ -196,4 +201,6 @@ model_names = [f"{n}模型" for n in all_device_names]
 render_params = dict(main_data=new_data)
 # render_params = dict(model_names=model_names, main_data=new_data)
 
-load_render_and_format(template_path, code_path,render_params, banner = "FORMAT_VALIDATE_CODE")
+load_render_and_format(
+    template_path, code_path, render_params, banner="FORMAT_VALIDATE_CODE"
+)
