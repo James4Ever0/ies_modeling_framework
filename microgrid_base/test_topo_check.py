@@ -20,20 +20,6 @@ def print_with_banner(data, banner: str):
 from ies_optim import *
 from export_format_validate import *
 
-# from ies_optim import (
-#     柴油信息,
-#     电负荷信息,
-#     光伏发电信息,
-#     风力发电信息,
-#     柴油发电信息,
-#     锂电池信息,
-#     变压器信息,
-#     变流器信息,
-#     双向变流器信息,
-#     传输线信息,
-# )
-from ies_optim import 计算参数
-
 import numpy as np
 
 a = abs(np.random.random((8760,))).tolist()
@@ -259,7 +245,9 @@ if sys.argv[-1] in ["-f", "--full"]:
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
-        obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw) # single instance.
+        obj_expr, devInstDict, PD = compute(
+            devs, adders, graph_data, topo.G, mw
+        )  # single instance.
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
