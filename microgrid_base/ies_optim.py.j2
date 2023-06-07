@@ -800,11 +800,11 @@ class {{class_name}}模型(设备模型):
             {% error("不支持的设备类型:", class_name) %}
         {% endif %}
 
-        总采购成本 = self.CostPer{{vi}} * ({{ m}}) 
-        总固定维护成本 = self.CostPerYearPer{{vm}} * ({{ m}})
-        总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
+        self.总采购成本 = self.CostPer{{vi}} * ({{ m}}) 
+        self.总固定维护成本 = self.CostPerYearPer{{vm}} * ({{ m}})
+        self.总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * 年化率
 
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}
@@ -821,16 +821,16 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         {% if class_name not in ['传输线']%}
         {# 总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}} #}
-        总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 8760 * self.VariationalCostPer{{vv}} 
+        self.总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 8760 * self.VariationalCostPer{{vv}} 
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
         {% else%}
-        总成本年化 = 总固定成本年化
+        self.总成本年化 = self.总固定成本年化
         {% endif%}
         {% endwith%}
 
-        return 总成本年化
+        return self.总成本年化
 {% endfor %}
 
 {# ##########[PINT START]########## #}
