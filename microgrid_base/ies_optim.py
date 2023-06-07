@@ -444,7 +444,7 @@ class 柴油发电信息(设备信息):
 class 锂电池信息(设备信息):
 
 
-循环边界条件: str
+    循环边界条件: str
 
     
     RatedCapacity: float
