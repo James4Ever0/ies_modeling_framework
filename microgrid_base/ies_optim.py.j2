@@ -875,8 +875,8 @@ class {{class_name}}模型(设备模型):
     {% elif k == 'input_class' %}
 
         ### UNIT COMPATIBILITY CHECK ###
-        default_unit= self.设备信息.DefaultUnits
-        val_unit = self.设备信息.Unit
+        default_unit= self.设备信息.DefaultUnits.__dict__['{{}}']
+        val_unit = self.设备信息.__dict__['{{}}'][1]
 
         has_exception, _ = getSingleUnitConverted(default_unit = default_unit, val_unit =val_unit)
 
