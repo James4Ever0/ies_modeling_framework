@@ -6,13 +6,14 @@ from pydantic import BaseModel, validator
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
+{% set exceptionList = ["平均效率_平均COP"]%}
 
 {% macro iterParamDict(paramDict, has_list)%}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_")%}
         {% if paramDef == None%}
             {% set t = 'str'%}
-        {% elif paramDef[1] == 'one' and paramDef[0] == 1%}
+        {% elif paramDef[1] == 'one' and paramDef[0] == 1 and PN not in exceptionList%}
             {% set t = 'int'%}
         {% else%}
             {% set t = 'float'%}
