@@ -44,13 +44,13 @@ class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 
     @staticmethod
-    def export(model: {{devName}}模型):
+    def export(model: {{devName}}模型, timeParam:float):
         obj = {}
         obj.update(dict(元件名称 = model.设备名称))
         {% if ... in ... %}
         obj.update(dict(设备型号 = model.设备型号))
         obj.update(dict(设备台数 = value(model.DeviceCount)))
-        obj.update(dict(设备维护费用 = value(model.) * ( 1 if else 8760* )))
+        obj.update(dict(设备维护费用 = value(model.) * timeParam))
         {% endif%}
         obj.update(dict())
         return {{devName}}仿真结果.parse_obj(obj)
