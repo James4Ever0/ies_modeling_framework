@@ -259,7 +259,7 @@ if sys.argv[-1] in ["-f", "--full"]:
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
-        obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
+        obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw) # single instance.
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
