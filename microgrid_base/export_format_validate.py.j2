@@ -18,24 +18,24 @@ class {{devName}}仿真结果(BaseModel):
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
     {% for paramName, paramDef in paramDict.items() %}
-    {% if paramDef is None%}
-    {% set t = 'str'%}
-    {% elif paramDef[1] == 'one' and paramDef[0] == 1%}
-    {% set t = 'int'%}
-    {% else%}
-    {% set t = 'float'%}
-    {% endif %}
+        {% if paramDef is None%}
+            {% set t = 'str'%}
+        {% elif paramDef[1] == 'one' and paramDef[0] == 1%}
+            {% set t = 'int'%}
+        {% else%}
+            {% set t = 'float'%}
+        {% endif %}
     {{}} :{{'List[{}]'.format(t) if t != "str" else t}}
-    {% if t!='str' %}
+        {% if t!='str' %}
     {# mag, std, old #}
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else " <- ".format(paramDef[2], paramDef[1])}}
     """
-    {% if paramDef[0] !=1 %}
+            {% if paramDef[0] !=1 %}
     @validator("{{paramName}}")
     def standard_unit_to_custom_{{paramName}}(cls, v):
         return [e / {{paramDef[0]}} for e in v]
-    {% endif %}
-    {% endif %}
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endfor %}
