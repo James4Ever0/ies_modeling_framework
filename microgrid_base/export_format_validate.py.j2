@@ -29,12 +29,14 @@ class 出力曲线(通用结果):
 {% elif %}
 {% endif %}
 class {{devName}}仿真结果({{x}}):
-    if mode == "仿真模拟":
-        ...
-    elif mode == '设计规划':
-        raise NotImplementedError("Not implemented mode:", mode)
-    else:
-        raise Exception("不合理的计算模式：", mode)
+    def ...(self):
+        mode = self.mode
+        if mode == "仿真模拟":
+            ...
+        elif mode == '设计规划':
+            raise NotImplementedError("Not implemented mode:", mode)
+        else:
+            raise Exception("不合理的计算模式：", mode)
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
