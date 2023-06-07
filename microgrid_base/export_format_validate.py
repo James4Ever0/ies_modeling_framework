@@ -1,6 +1,7 @@
 from typing import List
 
 from pydantic import BaseModel, validator
+from ies_optim import 柴油模型
 
 class 柴油仿真结果(BaseModel):
     元件名称: str
@@ -8,8 +9,8 @@ class 柴油仿真结果(BaseModel):
     柴油消耗费用: str
     
     @staticmethod
-    def export(:柴油模型):
-        ...
+    def export(model:柴油模型):
+        return 柴油仿真结果()
 
 
 class 电负荷仿真结果(BaseModel):
