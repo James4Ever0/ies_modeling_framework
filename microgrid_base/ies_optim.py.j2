@@ -171,6 +171,12 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     """
     格式: [数值,单位]
     """
+    {% endif%}
+
+    class DefaultUnits:
+    {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
+        {{attrName }} = "{{defaultUnit}}"
+    {%endfor%}
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
