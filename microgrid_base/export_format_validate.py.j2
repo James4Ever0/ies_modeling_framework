@@ -1,6 +1,7 @@
 {# from ies_optim import {{ ",".join(model_names) }} #}
 {# import device ports. #}
 from typing import List
+from pyomo.environ import value
 
 from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
@@ -45,9 +46,10 @@ class {{devName}}仿真结果(BaseModel):
     @staticmethod
     def export(model: {{devName}}模型):
         obj = {}
-        {% if ... in ... %}
         obj.update(dict(元件名称 = model.设备名称))
+        {% if ... in ... %}
         obj.update(dict(设备型号 = model.设备型号))
+        obj.update(dict(设备台数 = value(model.DeviceCount)))
         {% endif%}
         obj.update(dict())
         return {{devName}}仿真结果.parse_obj(obj)
