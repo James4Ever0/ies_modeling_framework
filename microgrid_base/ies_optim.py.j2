@@ -874,8 +874,9 @@ class {{class_name}}模型(设备模型):
         {% endif %}
     {% elif k == 'input_class' %}
 
-        ### UNIT COMPATIBILITY CHECK ###
         {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
+        ## CHECK: {{attrName}}
+        ### UNIT COMPATIBILITY CHECK ###
         default_unit = self.设备信息.DefaultUnits.{{attrName}}
         val_unit = self.设备信息.{{attrName}}[1]
 
@@ -887,11 +888,11 @@ class {{class_name}}模型(设备模型):
 
         
         ### UNIT CONVERSION ###
-        self.ConversionRate, self.StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
+        ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
         ### UNIT CONVERSION ###
         
-        self.Price = self.设备信息.Price * self.ConversionRate
-        self.Unit = str(self.StandardUnit)
+        self.{{attrName}} = self.设备信息.{{attrName}} * ConversionRate
+        Unit = str(StandardUnit)  # unit?
     {% else%}
         {% error("Unknown special class:", k)%}
     {% endif%}
