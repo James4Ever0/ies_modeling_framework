@@ -69,13 +69,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -87,13 +87,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -109,24 +109,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: int
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1666,18 +1666,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -2239,18 +2239,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2552,18 +2552,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2696,18 +2696,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2843,12 +2843,10 @@ class 柴油模型(设备模型):
         )
         ### UNIT CONVERSION ###
 
-        self.Price = self.设备信息.Price * ConversionRate
+        self.Price = self.设备信息.Price[0] * ConversionRate
         """
-        单位: {} <- {}
-        """.format(
-            str(StandardUnit), val_unit
-        )
+        单位: 标准单位 <- 现用单位
+        """
         UnitsDict.update(dict(Price=str(StandardUnit)))
         ## PROCESSING: 热值
         ### UNIT COMPATIBILITY CHECK ###
@@ -2871,12 +2869,10 @@ class 柴油模型(设备模型):
         )
         ### UNIT CONVERSION ###
 
-        self.热值 = self.设备信息.热值 * ConversionRate
+        self.热值 = self.设备信息.热值[0] * ConversionRate
         """
-        单位: {} <- {}
-        """.format(
-            str(StandardUnit), val_unit
-        )
+        单位: 标准单位 <- 现用单位
+        """
         UnitsDict.update(dict(热值=str(StandardUnit)))
         ## PROCESSING: CO2
         ### UNIT COMPATIBILITY CHECK ###
@@ -2899,12 +2895,10 @@ class 柴油模型(设备模型):
         )
         ### UNIT CONVERSION ###
 
-        self.CO2 = self.设备信息.CO2 * ConversionRate
+        self.CO2 = self.设备信息.CO2[0] * ConversionRate
         """
-        单位: {} <- {}
-        """.format(
-            str(StandardUnit), val_unit
-        )
+        单位: 标准单位 <- 现用单位
+        """
         UnitsDict.update(dict(CO2=str(StandardUnit)))
 
         self.Units = _Units.parse_obj(UnitsDict)

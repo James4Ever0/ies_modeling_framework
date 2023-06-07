@@ -902,9 +902,9 @@ class {{class_name}}模型(设备模型):
         ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
         ### UNIT CONVERSION ###
         
-        self.{{attrName}} = self.设备信息.{{attrName}} * ConversionRate
+        self.{{attrName}} = self.设备信息.{{attrName}}[0] * ConversionRate
         """
-        单位: 标准单位 <- 提供单位
+        单位: 标准单位 <- 现用单位
         """
         {# """
         单位: {} <- {}
