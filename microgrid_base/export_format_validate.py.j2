@@ -42,6 +42,9 @@ from pydantic import BaseModel, validator
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 
+    @staticmethod
+    def export(model: {{devName}}模型):
+        return {{devName}}仿真结果.parse_obj(obj)
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
