@@ -196,6 +196,8 @@ class 拓扑图:
         for id_set in self.合并母线ID集合列表:
             has_input = False
             has_output = False
+            input_conns = []
+            output_conns = []
             for node_id in id_set:
                 node_data = self.G.nodes[node_id]
                 {# if node_data['type'] == '合并线': continue #}
@@ -205,14 +207,17 @@ class 拓扑图:
                 for c in conn:
                     if not c.endswith("输入输出"):
                         if c.endswith("输入"):
+                            input_conns.append(c)
                             has_input=True
                         elif c.endswith("输出"):
+                            output_conns.append(c)
                             has_output=True
                         else:
                             raise Exception(f"{self.G.nodes[node_id]['type']}不可接受的连接类型: {c}")
             if has_input and has_output:
                 # 检查柴油类型的
-                if 
+                if input_conns[0] == :
+                    assert len(input_conns)
             else:
                 print()
                 print("============ERROR LOG============")
