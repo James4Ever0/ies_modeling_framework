@@ -26,8 +26,9 @@ class 出力曲线(通用结果):
 {% for devName, paramDict in main_data['仿真结果'].items() %}
 {% if devName == 'ALL' %}
 {% continue %}
+{% elif %}
 {% endif %}
-class {{...}}仿真结果{{k}}({{x}}):
+class {{devName}}仿真结果({{x}}):
     if mode == "仿真模拟":
         ...
     elif mode == '设计规划':
