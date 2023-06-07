@@ -52,8 +52,8 @@ new_data = {k: {} for k in data.keys()}
 
 revmap = {
     "one": ["平均效率/平均COP", "设备台数", "时间"],
-    "万元": ["设备维护费用", "柴油消耗费用"],
-    "kWh": ["电负荷", "产电量"],
+    # "万元": ["设备维护费用", "柴油消耗费用"],
+    # "kWh": ["电负荷", "产电量"],
 }
 default_unit_maps = {k: v for v, klist in revmap.items() for k in klist}
 # None -> str
@@ -171,7 +171,8 @@ print(f"writing to: {filepath}")
 df.to_excel(filepath, index=False)
 
 for d in all_device_names:
-    new_data["仿真结果"][d] = convert_format(simDevParam[d])
+    # new_data["仿真结果"][d] = convert_format(simDevParam[d])
+    new_data["仿真结果"][d] = {e: new_data["仿真结果"]["ALL"][e] for e in simDevParam[d]}
 
 # type? sum or array.
 # unit conversion? divide by conversion rate.
