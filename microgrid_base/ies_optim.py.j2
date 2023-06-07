@@ -876,9 +876,8 @@ class {{class_name}}模型(设备模型):
         {% endif %}
     {% elif k == 'input_class' %}
 
-
-        {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
         class _Units(BaseModel):
+        {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
             {{attrName}}: str
         {% endfor%}
 
