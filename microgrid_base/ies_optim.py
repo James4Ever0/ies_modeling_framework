@@ -3052,7 +3052,7 @@ def compute(
 
     environment_obj_expr = ...  # annual CO2 emission
 
-    [sum(e) * e. for e in devInstDict.values() if type(e) == 柴油模型]
+    [(sum(e)/e.)*8760 * e.Price for e in devInstDict.values() if type(e) == 柴油模型]
     obj_expr = financial_obj_expr
 
     return obj_expr, devInstDict, PD
