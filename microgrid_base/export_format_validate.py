@@ -24,7 +24,10 @@ class 光伏发电仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
     产电量: str
 
@@ -39,7 +42,10 @@ class 风力发电仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
     产电量: str
 
@@ -54,13 +60,16 @@ class 柴油发电仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
     产电量: str
 
     柴油消耗量: str
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
@@ -76,9 +85,12 @@ class 锂电池仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
@@ -94,9 +106,12 @@ class 变压器仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
@@ -112,9 +127,12 @@ class 变流器仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
@@ -130,9 +148,12 @@ class 双向变流器仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
@@ -148,9 +169,12 @@ class 传输线仿真结果(BaseModel):
     单位: one
     """
 
-    设备维护费用: str
+    设备维护费用: float
+    """
+    单位: 万元
+    """
 
-    平均效率_平均COP: int
+    平均效率_平均COP: float
     """
     单位: one
     """
