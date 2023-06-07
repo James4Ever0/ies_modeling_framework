@@ -49,6 +49,8 @@ class {{...}}(出力曲线):
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else " <- ".format(paramDef[2], paramDef[1])}}
     """
+    @validator()
+    def 
     {% endif %}
     {% endfor%}
 {% endfor%}
