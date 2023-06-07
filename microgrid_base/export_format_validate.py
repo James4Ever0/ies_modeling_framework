@@ -6,6 +6,10 @@ class 柴油仿真结果(BaseModel):
     元件名称: str
 
     柴油消耗费用: str
+    
+    @staticmethod
+    def export(:柴油模型):
+        ...
 
 
 class 电负荷仿真结果(BaseModel):
