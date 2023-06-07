@@ -876,9 +876,11 @@ class {{class_name}}模型(设备模型):
 
 
         {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
-        class Units:
-            attrName: str
+        class Units(BaseModel):
+            {{attrName}}: str
         {% endfor%}
+
+        UnitsDict = {}
 
         {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
         ## PROCESSING: {{attrName}}
@@ -898,7 +900,10 @@ class {{class_name}}模型(设备模型):
         ### UNIT CONVERSION ###
         
         self.{{attrName}} = self.设备信息.{{attrName}} * ConversionRate
-        self.Units = str(StandardUnit)  # unit?
+        self.UnitsDict.update(dict({{attrName}}= str(StandardUnit)))
+        {% endfor%}
+
+        self.Units = Units()
     {% else%}
         {% error("Unknown special class:", k)%}
     {% endif%}
