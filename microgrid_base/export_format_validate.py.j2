@@ -44,6 +44,8 @@ class {{devName}}仿真结果(BaseModel):
 
     @staticmethod
     def export(model: {{devName}}模型):
+        obj = {}
+        obj.update(dict(元件名称 = model.))
         return {{devName}}仿真结果.parse_obj(obj)
 {% endfor%}
 
