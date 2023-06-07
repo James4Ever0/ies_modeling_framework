@@ -37,9 +37,11 @@ from pydantic import BaseModel, validator
 {% endif %}
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
+
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
 {{iterParamDict(paramDict, True)}}
+
 {% endfor %}
