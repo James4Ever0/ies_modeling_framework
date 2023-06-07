@@ -7,7 +7,7 @@ from pydantic import BaseModel, validator
 {# where you prepare the export data. #}
 {# in simulation mode #}
 
-{% macro iterParamDict(paramDict)%}
+{% macro iterParamDict(paramDict, has_list)%}
     {% for paramName, paramDef in paramDict.items() %}
         {% if paramDef is None%}
             {% set t = 'str'%}
@@ -16,7 +16,7 @@ from pydantic import BaseModel, validator
         {% else%}
             {% set t = 'float'%}
         {% endif %}
-    {{}} :{{'List[{}]'.format(t) if t != "str" else t}}
+    {{}} :{{'List[{}]'.format(t) if( t != "str" and has_list) else t}}
         {% if t!='str' %}
     {# mag, std, old #}
     """
@@ -36,9 +36,10 @@ from pydantic import BaseModel, validator
 {% continue %}
 {% endif %}
 class {{devName}}仿真结果(BaseModel):
-    {% for paramName, paramDef in paramDict.items()%}
+{{iterParamDict(paramDict, False)}}
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
+{{iterParamDict(paramDict, True)}}
 {% endfor %}
