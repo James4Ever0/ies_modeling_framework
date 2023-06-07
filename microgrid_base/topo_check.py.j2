@@ -216,8 +216,8 @@ class 拓扑图:
                             raise Exception(f"{self.G.nodes[node_id]['type']}不可接受的连接类型: {c}")
             if has_input and has_output:
                 # 检查柴油类型的
-                if input_conns[0] == :
-                    assert len(input_conns)
+                if output_conns[0] == "不可连接柴油母线输出":
+                    assert len(output_conns) = 1
             else:
                 print()
                 print("============ERROR LOG============")
