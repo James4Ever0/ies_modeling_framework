@@ -308,6 +308,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             print("OBJ:", value(OBJ))
             # export value.
             # import json
+            # 如果是柴油,
             
             # with open('export_format.json', 'r') as f:
             #     data = json.load(f)
