@@ -3,36 +3,18 @@ from ies_optim import {{ ",".join(model_names) }}
 from typing import List
 from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
-class 通用结果(BaseModel):
-    元件名称:str
-
-class 设备仿真结果(通用结果):
-    设备型号:str
-
-    设备台数:int
-    """
-    单位：one
-    """
-
-class 出力曲线(通用结果):
-    时间:List[int]
-    """
-    单位：one
-    (根据具体计算步长确定)
-    """
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% for devName, paramDict in main_data['仿真结果'].items() %}
 {% if devName == 'ALL' %}
 {% continue %}
-{% elif devName in %}
 {% endif %}
-class {{devName}}仿真结果({{x}}):
+class {{devName}}仿真结果(BaseModel):
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
-class {{devName}}出力曲线(出力曲线):
+class {{devName}}出力曲线(BaseModel):
     {% for paramName, paramDef in paramDict.items() %}
     {% if paramDef is None%}
     {% set t = 'str'%}
