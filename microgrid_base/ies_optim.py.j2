@@ -138,10 +138,12 @@ class 设备信息(BaseModel):
 
 {% set NonLoadDeviceDict = {}%}
 
+{# 不是标准单位 #}
 {% set 燃料能源相关数据默认单位 = {
     '柴油':{
         "Price": "L/万元"
         "热值": "kWh/L"
+        "CO2": "kg/L"
     }
 }%}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
