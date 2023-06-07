@@ -876,8 +876,8 @@ class {{class_name}}模型(设备模型):
 
         ### UNIT COMPATIBILITY CHECK ###
         {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items() %}
-        default_unit = self.设备信息.DefaultUnits.{{}}
-        val_unit = self.设备信息.__dict__['{{}}'][1]
+        default_unit = self.设备信息.DefaultUnits.{{attrName}}
+        val_unit = self.设备信息.{{attrName}}[1]
 
         has_exception, _ = getSingleUnitConverted(default_unit = default_unit, val_unit =val_unit)
 
