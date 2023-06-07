@@ -307,10 +307,11 @@ if sys.argv[-1] in ["-f", "--full"]:
         try:
             print("OBJ:", value(OBJ))
             # export value.
-            import json
+            # import json
             
-            with open('export_format.json', 'r') as f:
-                data = json.load(f)
+            # with open('export_format.json', 'r') as f:
+            #     data = json.load(f)
+            
         except:
             print("NO SOLUTION.")
         breakpoint()
