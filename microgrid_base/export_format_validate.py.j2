@@ -9,14 +9,14 @@ from pydantic import BaseModel, validator
 
 {% macro iterParamDict(paramDict, has_list)%}
     {% for paramName, paramDef in paramDict.items() %}
-        {% if paramDef is None%}
+        {% if paramDef == None%}
             {% set t = 'str'%}
         {% elif paramDef[1] == 'one' and paramDef[0] == 1%}
             {% set t = 'int'%}
         {% else%}
             {% set t = 'float'%}
         {% endif %}
-    {{paramName}} :{{'List[{}]'.format(t) if m else t}}
+    {{paramName}} :{{'List[{}]'.format(t) if ( t!='str' and has_list) else t}}
         {% if t!='str' %}
     {# mag, std, old #}
     """
@@ -28,6 +28,7 @@ from pydantic import BaseModel, validator
         return [e / {{paramDef[0]}} for e in v]
             {% endif %}
         {% endif %}
+        
     {% endfor %}
 {% endmacro%}
 
