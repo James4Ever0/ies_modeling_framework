@@ -7,16 +7,7 @@ from pydantic import BaseModel, validator
 {# where you prepare the export data. #}
 {# in simulation mode #}
 
-{% for devName, paramDict in main_data['仿真结果'].items() %}
-{% if devName == 'ALL' %}
-{% continue %}
-{% endif %}
-class {{devName}}仿真结果(BaseModel):
-    {% for paramName, paramDef in paramDict.items()%}
-{% endfor%}
-
-{% for devName, paramDict in main_data['设备出力曲线'].items() %}
-class {{devName}}出力曲线(BaseModel):
+{% macro iterParamDict(paramDict)%}
     {% for paramName, paramDef in paramDict.items() %}
         {% if paramDef is None%}
             {% set t = 'str'%}
@@ -38,4 +29,16 @@ class {{devName}}出力曲线(BaseModel):
             {% endif %}
         {% endif %}
     {% endfor %}
+{% endmacro%}
+
+{% for devName, paramDict in main_data['仿真结果'].items() %}
+{% if devName == 'ALL' %}
+{% continue %}
+{% endif %}
+class {{devName}}仿真结果(BaseModel):
+    {% for paramName, paramDef in paramDict.items()%}
+{% endfor%}
+
+{% for devName, paramDict in main_data['设备出力曲线'].items() %}
+class {{devName}}出力曲线(BaseModel):
 {% endfor %}
