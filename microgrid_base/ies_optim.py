@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Tuple, Union
 
 try:
     from typing import Literal
@@ -1155,11 +1155,12 @@ class 设备模型:
         return mx_my_multiply
 
 
+import math
+
 # input: negative
 # output: positive
 # IO: Real
 import numpy as np
-import math
 
 
 class 光伏发电模型(设备模型):
@@ -2744,12 +2745,8 @@ class 传输线模型(设备模型):
         return 总成本年化
 
 
-from unit_utils import (
-    unitFactorCalculator,
-    ureg,
-    standard_units,
-    getSingleUnitConverted,
-)
+from unit_utils import (getSingleUnitConverted, standard_units,
+                        unitFactorCalculator, ureg)
 
 
 class 电负荷模型(设备模型):
@@ -2970,6 +2967,7 @@ devInfoClassMap: Dict[str, BaseModel] = {
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(

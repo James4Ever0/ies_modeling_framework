@@ -831,7 +831,6 @@ from unit_utils import (
     ureg,
     standard_units,
     getSingleUnitConverted,
-    {# translateUnit #}
 )
 
 {# ##########[PINT END]########## #}
@@ -906,9 +905,6 @@ class {{class_name}}模型(设备模型):
         """
         单位: 标准单位 <- 现用单位
         """
-        {# """
-        单位: {} <- {}
-        """.format(str(StandardUnit), val_unit) #}
         UnitsDict.update(dict({{attrName}}= str(StandardUnit)))
         {% endfor%}
 
