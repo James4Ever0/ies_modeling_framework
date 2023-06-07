@@ -34,7 +34,7 @@ class {{...}}{{k}}({{x}}):
 {% endfor%}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
-class {{...}}(出力曲线):
+class {{devName}}出力曲线(出力曲线):
     {% for paramName, paramDef in paramDict.items() %}
     {% if paramDef is None%}
     {% set t = 'str'%}
@@ -43,7 +43,7 @@ class {{...}}(出力曲线):
     {% else%}
     {% set t = 'float'%}
     {% endif %}
-    {{}} : {{'List[{}]'.format(t) if t != "str" else t}}
+    {{}} :{{'List[{}]'.format(t) if t != "str" else t}}
     {% if t!='str' %}
     {# mag, std, old #}
     """
