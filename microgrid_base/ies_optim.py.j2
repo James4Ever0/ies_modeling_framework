@@ -396,14 +396,14 @@ class 设备模型:
         return [var for _ in range(dup)]
     
     def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
-        x = self.变量列表(varName,within=within )
+        x = self.变量列表(varName,within=within)
 
-        {% for flag in ['pos', 'neg']%}
+        {% for flag in ['pos', 'neg'] %}
         b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
         x_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = NonNegativeReals)
 
         self.RangeConstraint(b_{{flag}}, x_{{flag}}, lambda x,y: x*self.BigM >= y)
-        {%endfor%}
+        {% endfor %}
 
         self.RangeConstraint(b_pos, b_neg, lambda x,y: x+y == 1)
 
