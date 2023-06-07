@@ -145,13 +145,13 @@ class 设备信息(BaseModel):
     }
 }%}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
-{% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
+    {% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
 {% endfor %}
 {% for class_name in 设备接口集合.keys()%}
 
 class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
     {% if class_name not in NonLoadDeviceDict.keys() %}
-    {% if class_name in load_class_names%}
+        {% if class_name in load_class_names%}
     # 正数
     EnergyConsumption: List[float]
     """
@@ -164,9 +164,9 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     单位: kW
     {# 用于电负荷 典型日计算 #}
     """
-    {% else %}
-    {% if class_name in 燃料能源相关数据默认单位.keys()%}
-    {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
+        {% else %}
+        {% if class_name in 燃料能源相关数据默认单位.keys()%}
+            {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
     {{ attrName}} : Tuple[float, str]
     """
     格式: [数值,单位]
@@ -180,7 +180,6 @@ class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.
     {% else%}
     {% error("未知负荷信息类型:", class_name)%}
     {% endif%}
-    class DefaultUnits
     {% endif%}
     {% else %}
     {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
