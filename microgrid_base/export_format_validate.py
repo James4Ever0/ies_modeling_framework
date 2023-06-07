@@ -2,7 +2,6 @@ from typing import List
 
 from pydantic import BaseModel, validator
 
-
 class 柴油仿真结果(BaseModel):
     元件名称: str
 
