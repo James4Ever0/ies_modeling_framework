@@ -901,8 +901,8 @@ class {{class_name}}模型(设备模型):
         
         self.{{attrName}} = self.设备信息.{{attrName}} * ConversionRate
         """
-        单位: 
-        """
+        单位: {} <- {}
+        """.format(str(StandardUnit), val_unit)
         UnitsDict.update(dict({{attrName}}= str(StandardUnit)))
         {% endfor%}
 
