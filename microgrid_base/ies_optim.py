@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 
 try:
     from typing import Literal
@@ -147,7 +147,8 @@ class 柴油信息(BaseModel):
     Price: float
     Unit: str
     DefaultUnit: str = "L/万元"
-    热值:
+    热值: Tuple[float, str]
+    DefaultUnits = dict(Price="L/万元",热值="")
 
 
 class 电负荷信息(BaseModel):
