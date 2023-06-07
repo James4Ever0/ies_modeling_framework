@@ -217,7 +217,7 @@ class 拓扑图:
             if has_input and has_output:
                 # 检查柴油类型的
                 if output_conns[0] == "不可连接柴油母线输出":
-                    assert len(output_conns) = 1, "柴油母线有且只有一个与柴油元件的连接"
+                    assert len(output_conns) == 1, "柴油母线有且只有一个与柴油元件的连接"
             else:
                 print()
                 print("============ERROR LOG============")

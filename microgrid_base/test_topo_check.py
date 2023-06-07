@@ -61,7 +61,7 @@ P1 = 光伏发电信息(
 ).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
-DSS = 柴油(topo, param=柴油信息(Price=10, Unit="L/元").dict())
+DSS = 柴油(topo, param=柴油信息(Price=[10,"L/元"],).dict())
 DS = 柴油发电(
     topo,
     param=柴油发电信息(
