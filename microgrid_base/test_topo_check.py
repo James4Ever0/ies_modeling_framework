@@ -16,18 +16,20 @@ def print_with_banner(data, banner: str):
 
 
 # you may need pydantic here. verify then import to compute graph.
-from ies_optim import (
-    柴油信息,
-    电负荷信息,
-    光伏发电信息,
-    风力发电信息,
-    柴油发电信息,
-    锂电池信息,
-    变压器信息,
-    变流器信息,
-    双向变流器信息,
-    传输线信息,
-)
+from ies_optim import *
+from export_format_validate import *
+# from ies_optim import (
+#     柴油信息,
+#     电负荷信息,
+#     光伏发电信息,
+#     风力发电信息,
+#     柴油发电信息,
+#     锂电池信息,
+#     变压器信息,
+#     变流器信息,
+#     双向变流器信息,
+#     传输线信息,
+# )
 from ies_optim import 计算参数
 
 import numpy as np
