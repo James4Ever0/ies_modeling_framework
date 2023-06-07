@@ -8,6 +8,7 @@ import rich
 
 # FIXED: 加法器没有"output"
 
+
 def print_with_banner(data, banner: str):
     print()
     print("=" * 40 + f"[{banner}]")
@@ -18,6 +19,7 @@ def print_with_banner(data, banner: str):
 # you may need pydantic here. verify then import to compute graph.
 from ies_optim import *
 from export_format_validate import *
+
 # from ies_optim import (
 #     柴油信息,
 #     电负荷信息,
@@ -41,7 +43,7 @@ algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="�
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
 
-devParam = dict(生产厂商="Any", 设备型号="Any", 设备名称 = 'Any')
+devParam = dict(生产厂商="Any", 设备型号="Any", 设备名称="Any")
 
 P1 = 光伏发电信息(
     **devParam,
@@ -61,7 +63,7 @@ P1 = 光伏发电信息(
 ).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
-DSS = 柴油(topo, param=柴油信息(Price=[10,"L/元"]).dict())
+DSS = 柴油(topo, param=柴油信息(Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict())
 DS = 柴油发电(
     topo,
     param=柴油发电信息(
@@ -252,7 +254,7 @@ import sys
 
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
-    DEBUG=True
+    DEBUG = True
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
@@ -260,9 +262,11 @@ if sys.argv[-1] in ["-f", "--full"]:
         obj_expr, devInstDict, PD = compute(devs, adders, graph_data, topo.G, mw)
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
-        
-        devClassMapping = {f"DI_{k}": c.__class__.__name__.strip('模型') for k,c in devInstDict.items()}
-        
+
+        devClassMapping = {
+            f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
+        }
+
         def dumpCond():
             exprs = [
                 str(mw.model.__dict__[x].expr)
@@ -270,17 +274,19 @@ if sys.argv[-1] in ["-f", "--full"]:
                 if x.startswith("CON")
             ]
             import re
+
             def process_expr(expr):
-                b = re.findall(r"\[\d+\]",expr)
+                b = re.findall(r"\[\d+\]", expr)
                 for e in b:
                     expr = expr.replace(e, "[]")
                 for k, cn in devClassMapping.items():
                     expr = expr.replace(k, cn)
                 return expr
+
             new_exprs = set([process_expr(e) for e in exprs])
-            
+
             exprs = list(new_exprs)
-            
+
             output_path = "dump.json"
             print("DUMPING COND TO:", output_path)
             with open(output_path, "w+") as f:
@@ -288,6 +294,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
                 content = json.dumps(exprs, indent=4, ensure_ascii=False)
                 f.write(content)
+
         if DEBUG:
             dumpCond()
         solver = SolverFactory("cplex")
@@ -308,10 +315,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             print("OBJ:", value(OBJ))
             # export value.
             # import json
-            
+
             # with open('export_format.json', 'r') as f:
             #     data = json.load(f)
-            
+
         except:
             print("NO SOLUTION.")
         breakpoint()
