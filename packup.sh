@@ -1,1 +1,1 @@
-find . | grep -E "(py|j2|json)" | xargs -Iabc
+find . | grep -E "(py|j2|json|txt)" | xargs -Iabc 7z a 
