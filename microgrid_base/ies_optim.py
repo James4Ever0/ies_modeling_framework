@@ -147,6 +147,7 @@ class 柴油信息(BaseModel):
     Price: float
     Unit: str
     DefaultUnit: str = "L/万元"
+    热值:
 
 
 class 电负荷信息(BaseModel):
