@@ -148,7 +148,11 @@ class 柴油信息(BaseModel):
     Unit: str
     DefaultUnit: str = "L/万元"
     热值: Tuple[float, str]
-    DefaultUnits = dict(Price="L/万元",热值="")
+    class DefaultUnits:
+        Price="L/万元"
+        热值=""
+
+柴油信息.DefaultUnits.Price
 
 
 class 电负荷信息(BaseModel):
