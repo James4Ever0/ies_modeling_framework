@@ -3050,9 +3050,12 @@ def compute(
 
     financial_obj_expr = sum([e.constraints_register() for e in devInstDict.values()])
 
-    environment_obj_expr = ...  # annual CO2 emission
-
-    [(sum(e)/e.)*8760 * e.Price for e in devInstDict.values() if type(e) == 柴油模型]
+    environment_obj_exprs = ...  # annual CO2 emission
+    for e in devInstDict.values():
+        if type(e) == 柴油模型:
+            
+    [(sum(e.燃料接口)/e.计算参数.迭代步数)*8760 * e.CO2 ]
+    environment_obj_expr = sum(environment_obj_exprs)
     obj_expr = financial_obj_expr
 
     return obj_expr, devInstDict, PD
