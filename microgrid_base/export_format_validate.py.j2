@@ -217,10 +217,10 @@ class {{devName}}仿真结果(BaseModel):
         ('转换功率',commonTimeSeries['电转换功率'])
     ],
     "变流器":[
-        ('转换功率',commonTimeSeries['电转换功率'])
+        ('转换功率', commonTimeSeries['电转换功率'])
     ],
     "双向变流器":[
-        ()
+        ('转换功率', 'model.储能端_. model.线路端.x_pos')
     ]
 }
 %}
