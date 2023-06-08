@@ -14,12 +14,17 @@ import math
 {% macro BANNER(msg)%}
 {% set msglen = 0%}
 {% for e in list(msg)%}
-{% set e = %}
-{% if e > 500%}
-{% do msglen +=2%}
-{% else%}
-{% msglen +=1%}
-{% endif%}
+    {% set l = ord(e)%}
+    {% if l > 500%}
+        {% do msglen +=2%}
+    {% else%}
+        {% do msglen +=1%}
+    {% endif%}
+{% endfor %}
+{{ "#" * (msglen+4)}}
+# {{msg}} #
+{{ "#" * (msglen+4)}}
+{% endmacro%}
 {% set exceptionList = ["平均效率_平均COP"] %}
 {% set commonParamNames = [
     "元件名称",
