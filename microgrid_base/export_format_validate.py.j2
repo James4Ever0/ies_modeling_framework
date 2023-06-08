@@ -193,7 +193,7 @@ class {{devName}}仿真结果(BaseModel):
  放电功率=VLISTPOS('model.电接口'),
  荷电容量=VLIST('model.CurrentTotalCapacity')
  荷电状态=VLISTDIV('model.CurrentTotalCapacity', "model.TotalCapacity")
- 电转换功率=('转换功率', VLIST('model.电输出'))
+ 电转换功率=VLIST('model.电输出')
 )
 %}
 {% set CTSL = {}%}
@@ -214,9 +214,14 @@ class {{devName}}仿真结果(BaseModel):
         CTSL['荷电状态']
     ],
     "变压器":[
-        CTSL['电转换功率']
+        ('转换功率',commonTimeSeries['电转换功率'])
     ],
-    
+    "变流器":[
+        ('转换功率',commonTimeSeries['电转换功率'])
+    ],
+    "双向变流器":[
+        ()
+    ]
 }
 %}
 
