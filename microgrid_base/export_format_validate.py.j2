@@ -143,10 +143,18 @@ def ReLU(val):
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 {% set obj = {} %}
-{% macro export(devName,)%}
+{% macro export_data_with_model(devName)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备名称")) %}
+{{caller()}}
+        return {{devName}}仿真结果(
+    {% for key, value in obj.items() %}
+            {{key}} = {{value}},
+    {% endfor %}
+        )
+{% endmacro%}
+{% call export_data_with_model(devName)%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
@@ -170,11 +178,7 @@ class {{devName}}仿真结果(BaseModel):
     {% else%}
         {% error "设备'{}'没有独有参数".format(devName)%}
     {% endif%}
-        return {{devName}}仿真结果(
-    {% for key, value in obj.items() %}
-            {{key}} = {{value}},
-    {% endfor %}
-        )
+{% endcall%}
 {% endfor %}
 
 {# use "call" here. #}
