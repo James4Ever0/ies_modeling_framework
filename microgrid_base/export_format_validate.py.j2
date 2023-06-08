@@ -11,7 +11,15 @@ import math
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
-{% macro BANNER()%}
+{% macro BANNER(msg)%}
+{% set msglen = 0%}
+{% for e in list(msg)%}
+{% set e = %}
+{% if e > 500%}
+{% do msglen +=2%}
+{% else%}
+{% msglen +=1%}
+{% endif%}
 {% set exceptionList = ["平均效率_平均COP"] %}
 {% set commonParamNames = [
     "元件名称",
