@@ -62,7 +62,7 @@ import math
         ("电负荷","math.mean(model.设备信息.EnergyConsumption) * timeParam")
     ],
     "光伏发电": [
-        (,)
+        (产电量,)
     ]
 }%}
 
@@ -92,6 +92,8 @@ class {{devName}}仿真结果(BaseModel):
             {% error "设备'{}'的独有参数未设置".format(devName)%}
         {% endif%}
         {% for k, v in simDevParamMapping[devName]%}
+            {% if k in commonParamNames%}
+                {%error("")%}
             {% do obj.update({k = v}) %}
         {% endfor%}
     {% else%}
