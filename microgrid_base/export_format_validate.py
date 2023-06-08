@@ -497,15 +497,18 @@ class 锂电池出力曲线(BaseModel):
 
     @staticmethod
     def export(model: 锂电池模型, timeParam: float):
-        model.CurrentTotalActualCapacity + model.MinTotalCapacity
+
         return 锂电池出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             充电功率=[-ReLU(-e) for e in model.电接口],
             放电功率=[ReLU(e) for e in model.电接口],
-            荷电容量=[value(e) for e in model.CurrentTotalCapacity.values()],
+            荷电容量=[
+                value(e + model.MinTotalCapacity)
+                for e in model.CurrentTotalCapacity.values()
+            ],
             荷电状态=[
-                value((e) / (model.TotalCapacity))
+                value((e + model.MinTotalCapacity) / model.TotalCapacity)
                 for e in model.CurrentTotalCapacity.values()
             ],
         )
