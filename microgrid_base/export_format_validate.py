@@ -175,7 +175,7 @@ class 柴油发电仿真结果(BaseModel):
 
         return 柴油发电仿真结果(
             元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
+            设备型号=model.设备信息.设备型号_,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
             产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
