@@ -648,6 +648,10 @@ class {{class_name}}模型(设备模型):
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
+        {# 检验解析时参数是否填写完全 #}
+        {% if class_name in ['柴油发电']%}
+        assert self.燃料热值!=0
+        {% endif%}
         {% if class_name == "风力发电" %}
         # define a single-variate piecewise function
         # 
