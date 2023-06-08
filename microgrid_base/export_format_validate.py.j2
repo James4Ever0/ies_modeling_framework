@@ -59,6 +59,7 @@ import math
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 
+{% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
     "柴油消耗量": TP_MVLIST("model.燃料接口")
@@ -83,13 +84,13 @@ import math
     "柴油发电": [
         CSPL['产电量'],
         CSPL['柴油消耗量'],
-        ("平均效率_平均COP","({})/(model.燃料热值 * ({}))".format(commonSimParams['产电量'],commonSimParams['柴油消耗量']))
+        ("平均效率_平均COP","({})/(model.燃料热值 * ({}) + {})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], EPS))
     ],
     "锂电池":[
         ("平均效率_平均COP", "")
     ], 
     "变压器":[
-        ("平均效率_平均COP", "model.电输入 / -model.电输出")
+        ("平均效率_平均COP", "- model.电输入 / ({} + EPS)model.电输出")
     ]
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
