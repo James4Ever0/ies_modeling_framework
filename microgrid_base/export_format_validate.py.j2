@@ -142,10 +142,10 @@ def ReLU(val):
     {% endif %}
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
-
+{% set obj = {} %}
+{% macro export(devName,)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
-    {% set obj = {} %}
     {% do obj.update(dict(元件名称 = "model.设备名称")) %}
     {% if devName not in nonDevNames %}
         {% do obj.update(
