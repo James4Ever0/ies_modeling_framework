@@ -3029,8 +3029,8 @@ def compute(
             adder["output"],
             adder["IO"],
         )
-        
-        if G.nodes[input_indexs[0]]
+        if len(input_indexs) == 1:
+            if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
 
         # add them all.
         for j in range(algoParam.迭代步数):
