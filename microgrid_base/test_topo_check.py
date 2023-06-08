@@ -313,7 +313,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             for devId, devInst in devInstDict.items():
                 devClassName = devInst.__class__.__name__.strip("模型")
                 结果类 = globals()[f'{devClassName}仿真结果']
-                
+                出力曲线类 = globals().get(f'{devClassName}出力曲线', None)
             仿真结果表 = pd.DataFrame(仿真结果表)
         except:
             print("NO SOLUTION.")
