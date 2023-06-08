@@ -54,17 +54,18 @@ import math
     {% endfor %}
 {% endmacro %}
 
+{% macro TP(val)%}({{val}}) * timeParam{%endmacro%}
 
 
 {% set simDevParamMapping = {
     "柴油": [
-        ("柴油消耗费用", "value(model.总成本年化) * timeParam")
+        ("柴油消耗费用", TP("value(model.总成本年化)"))
     ],
     "电负荷": [
-        ("电负荷","math.mean(model.设备信息.EnergyConsumption) * timeParam")
+        ("电负荷",TP("math.mean(model.设备信息.EnergyConsumption)"))
     ],
     "光伏发电": [
-        ("产电量","* timeParam")
+        ("产电量",TP())
     ]
 }%}
 
@@ -84,7 +85,7 @@ class {{devName}}仿真结果(BaseModel):
             dict(
             设备型号 = "model.设备型号",
             设备台数 = "value(model.DeviceCount)",
-            设备维护费用 = "value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化) * timeParam",
+            设备维护费用 = TP("value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化)"),
             )
         )
         %}
