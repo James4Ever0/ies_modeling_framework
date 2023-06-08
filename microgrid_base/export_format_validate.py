@@ -1,7 +1,8 @@
 from typing import List
 
-from pydantic import BaseModel, validator
 from ies_optim import 柴油模型
+from pydantic import BaseModel, validator
+
 
 class 柴油仿真结果(BaseModel):
     元件名称: str

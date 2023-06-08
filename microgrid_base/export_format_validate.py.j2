@@ -1,9 +1,9 @@
 {# from ies_optim import {{ ",".join(model_names) }} #}
 {# import device ports. #}
 from typing import List
+from pydantic import BaseModel, validator
 from pyomo.environ import value
 
-from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
 
 from ies_optim import *
@@ -24,7 +24,7 @@ import math
 {{ "#" * (msglen+4)}}
 # {{msg}} #
 {{ "#" * (msglen+4)}}
-{% endmacro%}
+{% endmacro %}
 {% set exceptionList = ["平均效率_平均COP"] %}
 {% set commonParamNames = [
     "元件名称",
