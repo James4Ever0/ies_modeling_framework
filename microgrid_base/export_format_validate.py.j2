@@ -80,7 +80,11 @@ def ReLU(val):
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
+{%macro VLISTPOS(vlist)%}[ReLU(e) for e in {{vlist}}]{% endmacro%}
+{%macro VLISTNEG(vlist)%}[-ReLU(-e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
+{%macro MVLISTPOS(vlist)%}math.mean({{VLISTPOS(vlist)}}){% endmacro%}
+{%macro MVLISTNEG(vlist)%}math.mean({{VLISTNEG(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 {% macro BIDIR_SINGLE_CVT(x,y)%}((sumVarList(model.{{x}}.x_pos)/sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
 {% macro BIDIR_CVT_COP(x,y)%}value(BIDIR_SINGLE_CVT(x,y)+ BIDIR_SINGLE_CVT(y,x))/model.计算参数.迭代步数{% endmacro%}
@@ -113,12 +117,7 @@ def ReLU(val):
         ("平均效率_平均COP","({})/(model.燃料热值 * ({}) + {})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], EPS))
     ],
     "锂电池":[
-        ("平均效率_平均COP", ("ReLU(({} * timeParam - (model.InitSOC * model.TotalCapacity))/ (-({}) + {}))".format(TP_MVLISTPOS("model.电接口"), "", TP_MVLISTNEG("model.电接口"), EPS)))
-        vlist =[value(e) for e in model.电接口]
-        vposlist = [ReLU(e) for e in vposlist]
-        vneg_as_poslist = [ReLU(-e) for e in vposlist]
-        output_energy = (sum(vposlist) / len(vlist)) * timeParam
-        input_energy
+        ("平均效率_平均COP", ("ReLU(({} - ({}))/ (-({}) + {}))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"), EPS)))
     ], 
     "变压器":[
         ("平均效率_平均COP", CSPL['单向电转换COP'])
