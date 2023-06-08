@@ -35,9 +35,9 @@ def ReLU(val):
 {% for e in list(msg)%}
     {% set l = ord(e)%}
     {% if l > 500 %}
-        {% do msglen +=2%}
+        {% do msglen =2+msglen%}
     {% else %}
-        {% do msglen +=1%}
+        {% do msglen =1+msglen%}
     {% endif %}
 {% endfor %}
 {{ "#" * (msglen+4)}}
@@ -157,6 +157,22 @@ def ReLU(val):
         )
 {% endmacro%}
 
+{% macro update_obj(obj, paramDict, devName, CPN)%}
+    {% if devName in paramDict.keys()%}
+        {% if len(paramDict[devName]) == 0%}
+            {% error "设备'{}'的独有参数未设置".format(devName)%}
+        {% endif%}
+        {% for k, v in paramDict[devName]%}
+            {% if k in CPN%}
+                {% error("设备'{}'的参数'{}'不是独有参数".format(devName, k)) %}
+            {% endif%}
+            {% do obj.update({k = v}) %}
+        {% endfor%}
+    {% else%}
+        {% error "设备'{}'没有独有参数".format(devName)%}
+    {% endif%}
+{% endmacro%}
+
 {{ BANNER("仿真结果")}}
 
 {% for devName, paramDict in main_data['仿真结果'].items() %}
@@ -228,6 +244,6 @@ class {{devName}}出力曲线(BaseModel):
 {% set obj = {}%}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
 {% call export_data_with_model(devName, obj)%}
-        {% if %}
+    {% do update_obj(obj, timeSeriesMapping, devName, [])%}
 {% endcall%}
 {% endfor %}
