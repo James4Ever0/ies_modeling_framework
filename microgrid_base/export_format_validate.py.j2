@@ -70,8 +70,8 @@ import math
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
-{% macro BIDIR_SINGLE_CVT()%}(sum(model.{{x}}.x_pos)/sum(model.{{y}}.x_neg)) * sum(model.{{x}}.b_pos){%endmacro%}
-{% macro BIDIR_CVT(vlist)%}{% endmacro%}
+{% macro BIDIR_SINGLE_CVT(x,y)%}((sum(model.{{x}}.x_pos)/sum(model.{{y}}.x_neg)) * sum(model.{{x}}.b_pos)){%endmacro%}
+{% macro BIDIR_CVT_COP(x,y)%}value(BIDIR_SINGLE_CVT(x,y)+ BIDIR_SINGLE_CVT(y,x))/model.计算参数.迭代步数{% endmacro%}
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
@@ -110,10 +110,7 @@ import math
         ("平均效率_平均COP", CSPL['单向电转换COP'])
     ],
     "双向变流器": [
-        ("平均效率_平均COP", "")
-        value((sum(model.线路端_.x_pos)/
-        sum(model.储能端_.x_neg)) * sum(model.线路端_.b_pos) + (sum(model.线路端_.x_neg)/
-        sum(model.储能端_.x_pos)) * sum(model.线路端_.b_neg))/ model.计算参数.迭代步数
+        ("平均效率_平均COP", BIDIR_CVT_COP("储能端_",""))
     ],
     "传输线": [
         ("平均效率_平均COP", CSPL['单向电转换COP'])
