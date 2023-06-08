@@ -55,17 +55,18 @@ import math
 {% endmacro %}
 
 {% macro TP(val)%}({{val}}) * timeParam{%endmacro%}
-
+{%macro VLIST(vlist)%}()
+{%macro MVLIST(vlist)%}
 
 {% set simDevParamMapping = {
     "柴油": [
         ("柴油消耗费用", TP("value(model.总成本年化)"))
     ],
     "电负荷": [
-        ("电负荷",TP("math.mean(model.设备信息.EnergyConsumption)"))
+        ("电负荷", TP("math.mean(model.设备信息.EnergyConsumption)"))
     ],
     "光伏发电": [
-        ("产电量",TP())
+        ("产电量",TP("model.电接口"))
     ]
 }%}
 
