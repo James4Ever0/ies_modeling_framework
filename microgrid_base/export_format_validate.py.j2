@@ -185,14 +185,15 @@ class {{devName}}仿真结果(BaseModel):
 {% endcall%}
 {% endfor %}
 
-{% set commonTimeSeries = {
-
-}%}
+{% set commonTimeSeries = dict(
+ 发电功率=VLIST('model.电接口'),
+)
+%}
 {% set CTSL = {}%}
 {% do dictValueToKeyValuePair(commonTimeSeries, CTSL) %}
 {% set timeSeriesMapping = {
     "光伏发电": [
-        ("发电功率", )
+       CTSL['发电功率']
     ]
 }
 %}
