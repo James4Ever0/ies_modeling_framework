@@ -17,3 +17,8 @@ song
 {% set v1, v2 = 1,2 %}
 {{v1}}
 {{v2}}
+
+{% macro mtest()%}happy song{% endmacro%}
+{% set v0 = mtest()%}
+
+v0: {{v0}}
