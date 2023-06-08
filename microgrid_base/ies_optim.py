@@ -3029,8 +3029,12 @@ def compute(
             adder["output"],
             adder["IO"],
         )
-        if len(input_indexs) == 1:
+        if len(input_indexs) >= 1:
+            
             if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
+                assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                热值 = G.nodes[input_indexs[0]][['value']
+
 
         # add them all.
         for j in range(algoParam.迭代步数):
