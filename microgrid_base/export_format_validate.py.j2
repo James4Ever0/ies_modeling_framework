@@ -57,7 +57,7 @@ class {{devName}}仿真结果(BaseModel):
         )
         %}
         {% endif %}
-        {% do obj.update(dict()) %}
+        {% do obj.update(dict(柴油消耗费用 = "model.")) %}
         return {{devName}}仿真结果(
             {% for key, value in obj.items() %}
             {{key}} = {{value}},
