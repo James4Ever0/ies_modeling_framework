@@ -9,8 +9,10 @@ from pydantic import BaseModel, validator
 
 from ies_optim import *
 import math
+from pyomo.core.base.var import IndexedVar
 
-def sumVarList(varList:VarList):
+def sumVarList(varList:IndexedVar):
+    return sum(varList.values())
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
@@ -72,7 +74,7 @@ def sumVarList(varList:VarList):
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
-{% macro BIDIR_SINGLE_CVT(x,y)%}((sum(model.{{x}}.x_pos)/sum(model.{{y}}.x_neg)) * sum(model.{{x}}.b_pos)){%endmacro%}
+{% macro BIDIR_SINGLE_CVT(x,y)%}((sumVarList(model.{{x}}.x_pos)/sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
 {% macro BIDIR_CVT_COP(x,y)%}value(BIDIR_SINGLE_CVT(x,y)+ BIDIR_SINGLE_CVT(y,x))/model.计算参数.迭代步数{% endmacro%}
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
