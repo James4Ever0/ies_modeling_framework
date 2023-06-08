@@ -70,7 +70,8 @@ import math
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
-{% macro BIDIR_CVT(vlist)%}
+{% macro BIDIR_SINGLE_CVT()%}(sum(model.{{x}}.x_pos)/sum(model.{{y}}.x_neg)) * sum(model.{{x}}.b_pos){%endmacro%}
+{% macro BIDIR_CVT(vlist)%}{% endmacro%}
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
