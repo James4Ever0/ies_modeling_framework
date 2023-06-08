@@ -35,9 +35,9 @@ def ReLU(val):
 {% for e in list(msg)%}
     {% set l = ord(e)%}
     {% if l > 500 %}
-        {% do msglen =2+msglen%}
+        {% set msglen =2+msglen%}
     {% else %}
-        {% do msglen =1+msglen%}
+        {% set msglen =1+msglen%}
     {% endif %}
 {% endfor %}
 {{ "#" * (msglen+4)}}
@@ -99,7 +99,7 @@ def ReLU(val):
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
-    "柴油消耗量": TP_MVLIST("model.燃料接口")
+    "柴油消耗量": TP_MVLIST("model.燃料接口"),
     "单向电转换COP": "- ({}) / ({} + {})".format(MVLIST("model.电输入"), MVLIST("model.电输出"), EPS)
 }%}
 {% set CSPL = {} %}
@@ -166,7 +166,7 @@ def ReLU(val):
             {% if k in CPN%}
                 {% error("设备'{}'的参数'{}'不是独有参数".format(devName, k)) %}
             {% endif%}
-            {% do obj.update({k = v}) %}
+            {% do obj.update({k : v}) %}
         {% endfor%}
     {% else%}
         {% error "设备'{}'没有独有参数".format(devName)%}
@@ -201,9 +201,9 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=VLIST('model.CurrentTotalCapacity')
- 荷电状态=VLISTDIV('model.CurrentTotalCapacity', "model.TotalCapacity")
- 电转换功率=VLIST('model.电输出')
+ 荷电容量=VLIST('model.CurrentTotalCapacity'),
+ 荷电状态=VLISTDIV('model.CurrentTotalCapacity', "model.TotalCapacity"),
+ 电转换功率=VLIST('model.电输出'),
 )
 %}
 {% set CTSL = {}%}
