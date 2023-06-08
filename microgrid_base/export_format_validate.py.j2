@@ -14,6 +14,11 @@ from pyomo.core.base.var import IndexedVar
 def sumVarList(varList:IndexedVar):
     return sum(varList.values())
 
+def addListElem(*args):
+    vals = []
+    for elem_zip in zip(*args):
+        vals.append(sum(elem_zip))
+
 def ReLU(val):
     if type(val) not in [int, float]:
         val = value(val)
@@ -220,7 +225,7 @@ class {{devName}}仿真结果(BaseModel):
         ('转换功率', commonTimeSeries['电转换功率'])
     ],
     "双向变流器":[
-        ('转换功率', 'model.储能端_. model.线路端.x_pos')
+        ('转换功率', 'model.储能端_.x_pos model.线路端.x_pos')
     ]
 }
 %}
