@@ -148,12 +148,12 @@ def ReLU(val):
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
-{% macro export_data_with_model(devName, obj)%}
+{% macro export_data_with_model(devName, obj, classType)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
-        return {{devName}}仿真结果(
+        return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
             {{key}} = {{value}},
     {% endfor %}
@@ -187,7 +187,7 @@ def ReLU(val):
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 {% set obj = {} %}
-{% call export_data_with_model(devName, obj)%}
+{% call export_data_with_model(devName, obj, '仿真结果')%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
@@ -235,7 +235,7 @@ class {{devName}}仿真结果(BaseModel):
         ('转换功率', commonTimeSeries['电转换功率'])
     ],
     "双向变流器":[
-        ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端.x_pos')))
+        ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ]
 }
 %}
@@ -248,7 +248,7 @@ class {{devName}}出力曲线(BaseModel):
 {{iterParamDict(paramDict, True)}}
 {% set obj = {}%}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
-{% call export_data_with_model(devName, obj)%}
+{% call export_data_with_model(devName, obj, '出力曲线')%}
     {% do update_obj(obj, timeSeriesMapping, devName, [], False)%}
 {% endcall%}
 {% endfor %}

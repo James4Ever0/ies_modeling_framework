@@ -404,7 +404,7 @@ class 光伏发电出力曲线(BaseModel):
     @staticmethod
     def export(model: 光伏发电模型, timeParam: float):
 
-        return 光伏发电仿真结果(
+        return 光伏发电出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             发电功率=[value(e) for e in model.电接口.values()],
@@ -428,7 +428,7 @@ class 风力发电出力曲线(BaseModel):
     @staticmethod
     def export(model: 风力发电模型, timeParam: float):
 
-        return 风力发电仿真结果(
+        return 风力发电出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
         )
@@ -451,7 +451,7 @@ class 柴油发电出力曲线(BaseModel):
     @staticmethod
     def export(model: 柴油发电模型, timeParam: float):
 
-        return 柴油发电仿真结果(
+        return 柴油发电出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             发电功率=[value(e) for e in model.电接口.values()],
@@ -494,7 +494,7 @@ class 锂电池出力曲线(BaseModel):
     @staticmethod
     def export(model: 锂电池模型, timeParam: float):
 
-        return 锂电池仿真结果(
+        return 锂电池出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             充电功率=[-ReLU(-e) for e in model.电接口],
@@ -524,7 +524,7 @@ class 变压器出力曲线(BaseModel):
     @staticmethod
     def export(model: 变压器模型, timeParam: float):
 
-        return 变压器仿真结果(
+        return 变压器出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             转换功率=[value(e) for e in model.电输出.values()],
@@ -548,7 +548,7 @@ class 变流器出力曲线(BaseModel):
     @staticmethod
     def export(model: 变流器模型, timeParam: float):
 
-        return 变流器仿真结果(
+        return 变流器出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             转换功率=[value(e) for e in model.电输出.values()],
@@ -572,11 +572,11 @@ class 双向变流器出力曲线(BaseModel):
     @staticmethod
     def export(model: 双向变流器模型, timeParam: float):
 
-        return 双向变流器仿真结果(
+        return 双向变流器出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             转换功率=addListElem(
                 [value(e) for e in model.储能端_.x_pos.values()],
-                [value(e) for e in model.线路端.x_pos.values()],
+                [value(e) for e in model.线路端_.x_pos.values()],
             ),
         )
