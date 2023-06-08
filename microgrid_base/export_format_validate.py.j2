@@ -80,8 +80,6 @@ def ReLU(val):
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
-{%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
-{%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 {% macro BIDIR_SINGLE_CVT(x,y)%}((sumVarList(model.{{x}}.x_pos)/sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
