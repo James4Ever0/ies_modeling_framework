@@ -151,7 +151,7 @@ def ReLU(val):
 {% macro export_data_with_model(devName, obj)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
-    {% do obj.update(dict(元件名称 = "model.设备名称")) %}
+    {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
         return {{devName}}仿真结果(
     {% for key, value in obj.items() %}
@@ -191,7 +191,7 @@ class {{devName}}仿真结果(BaseModel):
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
-            设备型号 = "model.设备型号",
+            设备型号 = "model.设备信息.设备型号",
             设备台数 = "value(model.DeviceCount)",
             设备维护费用 = TP("value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)"),
             )
