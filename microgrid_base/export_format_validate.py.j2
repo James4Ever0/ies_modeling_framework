@@ -177,19 +177,7 @@ class {{devName}}仿真结果(BaseModel):
         )
         %}
     {% endif %}
-    {% if devName in simDevParamMapping.keys()%}
-        {% if len(simDevParamMapping[devName]) == 0%}
-            {% error "设备'{}'的独有参数未设置".format(devName)%}
-        {% endif%}
-        {% for k, v in simDevParamMapping[devName]%}
-            {% if k in commonParamNames%}
-                {% error("设备'{}'的参数'{}'不是独有参数".format(devName, k)) %}
-            {% endif%}
-            {% do obj.update({k = v}) %}
-        {% endfor%}
-    {% else%}
-        {% error "设备'{}'没有独有参数".format(devName)%}
-    {% endif%}
+    {% do update_obj(obj, simDevParamMapping, devName, commonParamNames)%}
 {% endcall%}
 {% endfor %}
 
