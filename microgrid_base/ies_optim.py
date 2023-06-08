@@ -3078,6 +3078,8 @@ def compute(
                 mw.Constraint(input_limit + output_limit >= 0)
 
     financial_obj_expr = sum([e.constraints_register() for e in devInstDict.values()])
+    
+    financial_dyn_obj_expr = sum([(e. +e.) for e in devInstDict.values()])
 
     environment_obj_exprs = []  # annual CO2 emission
     for e in devInstDict.values():
