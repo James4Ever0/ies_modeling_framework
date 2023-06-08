@@ -83,7 +83,7 @@ import math
     "柴油发电": [
         CSPL['产电量'],
         CSPL['柴油消耗量'],
-        ("平均效率_平均COP","model.")
+        ("平均效率_平均COP","({})/(model.燃料热值 * ({}))".format(commonSimParams['柴油消耗量']))
     ]
 }%}
 
