@@ -253,6 +253,6 @@ class {{devName}}出力曲线(BaseModel):
 {% set obj = {}%}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
 {% call export_data_with_model(devName, obj, '出力曲线')%}
-    {% do update_obj(obj, timeSeriesMapping, devName, [], False)%}
+    {% do update_obj(obj, timeSeriesMapping, devName, [], False) %}
 {% endcall %}
 {% endfor %}
