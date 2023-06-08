@@ -16,14 +16,21 @@ import math
 {% set commonParamNames = [
     "元件名称",
     "设备型号",
-    "",
-    "",
-    ""
+    "设备台数",
+    "设备维护费用",
+    "时间"
 ]%}
 
 {% macro iterParamDict(paramDict, has_list) %}
+    {% set flag = namespace(val=False)%}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_") %}
+        {% if flag.val == False%}
+            {% if PN not in commonParamNames%}
+                {% set flag.val=True%}
+    ## UNIQ PARAMS ##
+            {% endif%}
+        {% endif%}
         {% if paramDef == None %}
             {% set t = 'str'%}
         {% elif paramDef[1] == 'one' and paramDef[0] == 1 and PN not in exceptionList %}
