@@ -113,7 +113,10 @@ def ReLU(val):
         ("平均效率_平均COP","({})/(model.燃料热值 * ({}) + {})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], EPS))
     ],
     "锂电池":[
-        ("平均效率_平均COP", ("ReLU(({} - ({}))/ (-({}) + {}))".format(TP_MVLIST("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLIST("model.电接口"), EPS)))
+        ("平均效率_平均COP", ("ReLU(({} - (model.InitSOC * model.TotalCapacity))/ (-({}) + {}))".format(TP_MVLIST("model.电接口"), "", TP_MVLIST("model.电接口"), EPS)))
+        vlist =[value(e) for e in model.电接口]
+        vposlist = [ReLU(e) for e in vposlist]
+        vposlist = [ReLU(-e) for e in vposlist]
     ], 
     "变压器":[
         ("平均效率_平均COP", CSPL['单向电转换COP'])
