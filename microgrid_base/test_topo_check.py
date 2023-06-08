@@ -307,7 +307,8 @@ if sys.argv[-1] in ["-f", "--full"]:
 
             # with open('export_format.json', 'r') as f:
             #     data = json.load(f)
-
+            for devId, devInst in devInstDict.items():
+                ...
         except:
             print("NO SOLUTION.")
         breakpoint()
