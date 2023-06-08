@@ -212,8 +212,9 @@ class {{devName}}仿真结果(BaseModel):
         CTSL['荷电状态']
     ],
     "变压器":[
-        ('转换功率', 'model.')
-    ]
+        ('转换功率', VLIST('model.电输入'))
+    ],
+    
 }
 %}
 
