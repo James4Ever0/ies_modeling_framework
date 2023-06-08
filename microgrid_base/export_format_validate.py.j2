@@ -8,7 +8,8 @@ from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
 {# timeParam: how many hours have passed #}
 from ies_optim import *
-import math
+{# import math #}
+import statistics
 from pyomo.core.base.var import IndexedVar
 
 def sumVarList(varList:IndexedVar):
@@ -90,9 +91,9 @@ def ReLU(val):
 {%macro VLISTDIV(vlist, div)%}[value((e)/({{div}})) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTPOS(vlist)%}[ReLU(e) for e in {{vlist}}]{% endmacro%}
 {%macro VLISTNEG(vlist)%}[-ReLU(-e) for e in {{vlist}}]{% endmacro%}
-{%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
-{%macro MVLISTPOS(vlist)%}math.mean({{VLISTPOS(vlist)}}){% endmacro%}
-{%macro MVLISTNEG(vlist)%}math.mean({{VLISTNEG(vlist)}}){% endmacro%}
+{%macro MVLIST(vlist)%}statistics.mean({{VLIST(vlist)}}){% endmacro%}
+{%macro MVLISTPOS(vlist)%}statistics.mean({{VLISTPOS(vlist)}}){% endmacro%}
+{%macro MVLISTNEG(vlist)%}statistics.mean({{VLISTNEG(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 {% macro TP_MVLISTPOS(vlist)%}{{TP(MVLISTPOS(vlist))}}{% endmacro%}
 {% macro TP_MVLISTNEG(vlist)%}{{TP(MVLISTNEG(vlist))}}{% endmacro%}
@@ -116,7 +117,7 @@ def ReLU(val):
         ("柴油消耗费用", TP("value(model.总成本年化)"))
     ],
     "电负荷": [
-        ("电负荷", TP("math.mean(model.设备信息.EnergyConsumption)"))
+        ("电负荷", TP("statistics.mean(model.设备信息.EnergyConsumption)"))
     ],
     "光伏发电": [
         CSPL['产电量']
@@ -161,7 +162,7 @@ def ReLU(val):
 
 {% macro update_obj(obj, paramDict, devName, CPN, check)%}
     {% if devName in paramDict.keys()%}
-        {% if len(paramDict[devName]) == 0 and check%}
+        {% if len(paramDict[devName]) == 0 %}
             {% error "设备'{}'的独有参数未设置".format(devName)%}
         {% endif%}
         {% for k, v in paramDict[devName]%}
@@ -171,7 +172,9 @@ def ReLU(val):
             {% do obj.update({k : v}) %}
         {% endfor%}
     {% else%}
-        {% error "设备'{}'没有独有参数".format(devName)%}
+        {% if check%}
+            {% error "设备'{}'没有独有参数".format(devName)%}
+        {% endif%}
     {% endif%}
 {% endmacro%}
 
@@ -190,7 +193,7 @@ class {{devName}}仿真结果(BaseModel):
             dict(
             设备型号 = "model.设备型号",
             设备台数 = "value(model.DeviceCount)",
-            设备维护费用 = TP("value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化)"),
+            设备维护费用 = TP("value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)"),
             )
         )
         %}
