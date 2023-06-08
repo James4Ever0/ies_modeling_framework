@@ -189,8 +189,8 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=
- 荷电状态=
+ 荷电容量=VLIST('model.TotalCapacity')
+ 荷电状态=VLIST('model.')
 )
 %}
 {% set CTSL = {}%}
@@ -206,7 +206,9 @@ class {{devName}}仿真结果(BaseModel):
     "锂电池":
     [
         CTSL['充电功率'],
-        CTSL['放电功率']
+        CTSL['放电功率'],
+        CTSL['荷电容量'],
+        CTSL['荷电状态']
     ]
 }
 %}
