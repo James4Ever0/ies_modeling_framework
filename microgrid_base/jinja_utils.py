@@ -1,4 +1,3 @@
-
 import subprocess
 
 import black
@@ -44,12 +43,18 @@ def load_template(template_path):
         Exception(f"jinja template path '{template_path}' is malformed.")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader("./"),
-        extensions=["jinja2_error.ErrorExtension", "jinja2.ext.do","jinja2.ext.loopcontrols"],
+        extensions=[
+            "jinja2_error.ErrorExtension",
+            "jinja2.ext.do",
+            "jinja2.ext.loopcontrols",
+        ],
         trim_blocks=True,
         lstrip_blocks=True,
         undefined=jinja2.StrictUndefined,
     )
     tpl = env.get_template(template_path)
+    func_dict = dict(list=list, str=str, ord=ord, len=len)
+    tpl.globals.update(func_dict)
     return tpl
 
 
@@ -57,4 +62,3 @@ def test(cmd: list, exec="python3"):
     cmd = [exec] + cmd
     p = subprocess.run(cmd)
     p.check_returncode()
-
