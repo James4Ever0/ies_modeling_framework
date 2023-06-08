@@ -111,7 +111,7 @@ import math
         ("平均效率_平均COP", "")
         ((sum(model.线路端_.x_pos)/
         sum(model.储能端_.x_neg)) * sum(model.线路端_.b_pos) + (sum(model.线路端_.x_neg)/
-        sum(model.储能端_.x_pos)) * sum(model.线路端_.b_neg))
+        sum(model.储能端_.x_pos)) * sum(model.线路端_.b_neg))/ model.计算参数.迭代步数
     ],
     "传输线": [
         ("平均效率_平均COP", CSPL['单向电转换COP'])
