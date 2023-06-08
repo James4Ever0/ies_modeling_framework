@@ -14,8 +14,13 @@ from pyomo.core.base.var import IndexedVar
 def sumVarList(varList:IndexedVar):
     return sum(varList.values())
 
-def ReLU(val:float):
-    if val>
+def ReLU(val):
+    if type(val) not in [int, float]:
+        val = value(val)
+    if val>0:
+        return val
+    else:
+        return 0
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
@@ -108,7 +113,7 @@ def ReLU(val:float):
         ("平均效率_平均COP","({})/(model.燃料热值 * ({}) + {})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], EPS))
     ],
     "锂电池":[
-        ("平均效率_平均COP", "({} - ({}))/ (charge + eps)".format(TP_MVLIST(), "model.InitSOC * model. Init", ))
+        ("平均效率_平均COP", ("ReLU(({} - ({}))/ (charge + eps))".format(TP_MVLIST(), "model.InitSOC * model. Init", )))
     ], 
     "变压器":[
         ("平均效率_平均COP", CSPL['单向电转换COP'])
