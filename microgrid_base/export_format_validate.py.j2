@@ -79,7 +79,7 @@ def ReLU(val):
     {% endfor %}
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
-{%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
+{%macro VLIST(vlist)%}[value(e) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTPOS(vlist)%}[ReLU(e) for e in {{vlist}}]{% endmacro%}
 {%macro VLISTNEG(vlist)%}[-ReLU(-e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
@@ -189,8 +189,8 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=VLIST('model.TotalCapacity')
- 荷电状态=VLIST('model.')
+ 荷电容量=VLIST('model.CurrentTotalCapacity')
+ 荷电状态=VLIST('model.CurrentTotalCapacity')
 )
 %}
 {% set CTSL = {}%}
