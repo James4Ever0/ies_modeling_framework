@@ -115,6 +115,8 @@ import math
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
+{{ BANNER("仿真结果")}}
+
 {% for devName, paramDict in main_data['仿真结果'].items() %}
     {% if devName == 'ALL' %}
         {% continue %}
@@ -155,6 +157,8 @@ class {{devName}}仿真结果(BaseModel):
     {% endfor %}
         )
 {% endfor %}
+
+{{ BANNER("设备出力曲线")}}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
