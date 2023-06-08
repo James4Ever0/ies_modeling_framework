@@ -14,10 +14,10 @@ from ies_optim import *
 
 {% macro iterParamDict(paramDict, has_list) %}
     {% for paramName, paramDef in paramDict.items() %}
-        {% set PN = paramName.replace("/","_")%}
-        {% if paramDef == None%}
+        {% set PN = paramName.replace("/","_") %}
+        {% if paramDef == None %}
             {% set t = 'str'%}
-        {% elif paramDef[1] == 'one' and paramDef[0] == 1 and PN not in exceptionList%}
+        {% elif paramDef[1] == 'one' and paramDef[0] == 1 and PN not in exceptionList %}
             {% set t = 'int'%}
         {% else%}
             {% set t = 'float'%}
@@ -43,7 +43,7 @@ from ies_optim import *
         ("柴油消耗费用", "value(model.总成本年化) * timeParam")
     ],
     "电负荷": [
-        ("电负荷","value(model.) * timeParam")
+        ("电负荷","value(model.设备信息.EnergyConsumption ) * timeParam")
     ]
 }%}
 
