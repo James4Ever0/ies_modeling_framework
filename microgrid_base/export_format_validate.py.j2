@@ -46,13 +46,13 @@ class {{devName}}仿真结果(BaseModel):
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
         {% set obj = {} %}
-        obj.update(dict(元件名称 = model.设备名称))
+        {% do obj.update(dict(元件名称 = "model.设备名称")) %}
         {% if devName not in nonDevNames %}
-        obj.update(dict(设备型号 = model.设备型号))
-        obj.update(dict(设备台数 = value(model.DeviceCount)))
-        obj.update(dict(设备维护费用 = value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化) * timeParam))
+        {% do obj.update(dict(设备型号 = "model.设备型号")) %}
+        {% do obj.update(dict(设备台数 = "value(model.DeviceCount)")) %}
+        {% do obj.update(dict(设备维护费用 = "value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化) * timeParam")) %}
         {% endif %}
-        obj.update(dict())
+        {% do obj.update(dict()) %}
         return {{devName}}仿真结果(
             {% for key, value in obj.items() %}
             {{key}} = {{value}},
