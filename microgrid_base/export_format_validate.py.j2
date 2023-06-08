@@ -109,8 +109,9 @@ import math
     ],
     "双向变流器": [
         ("平均效率_平均COP", "")
-        线路端_.x_pos/
-        储能端_.x_neg
+        ((sum(model.线路端_.x_pos)/
+        sum(model.储能端_.x_neg)) * sum(model.线路端_.b_pos) + (sum(model.线路端_.x_neg)/
+        sum(model.储能端_.x_pos)) * sum(model.线路端_.b_neg))
     ],
     "传输线": [
         ("平均效率_平均COP", CSPL['单向电转换COP'])
