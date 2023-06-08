@@ -269,10 +269,8 @@ class 变压器仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=(
-                "单向电转换COP",
-                "- (statistics.mean([value(e) for e in model.电输入.values()])) / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10)",
-            ),
+            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
+            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
         )
 
 
@@ -305,10 +303,8 @@ class 变流器仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=(
-                "单向电转换COP",
-                "- (statistics.mean([value(e) for e in model.电输入.values()])) / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10)",
-            ),
+            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
+            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
         )
 
 
@@ -384,10 +380,8 @@ class 传输线仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=(
-                "单向电转换COP",
-                "- (statistics.mean([value(e) for e in model.电输入.values()])) / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10)",
-            ),
+            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
+            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
         )
 
 
@@ -440,6 +434,7 @@ class 风力发电出力曲线(BaseModel):
         return 风力发电出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
+            发电功率=[value(e) for e in model.电接口.values()],
         )
 
 
