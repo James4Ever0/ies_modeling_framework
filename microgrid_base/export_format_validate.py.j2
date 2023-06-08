@@ -6,7 +6,7 @@ from pyomo.environ import value
 from pydantic import BaseModel, validator
 
 {# if unit is one, use "int" as type, else "float"#}
-
+{# timeParam: how many hours have passed #}
 from ies_optim import *
 import math
 from pyomo.core.base.var import IndexedVar
@@ -116,7 +116,8 @@ def ReLU(val):
         ("平均效率_平均COP", ("ReLU(({} - (model.InitSOC * model.TotalCapacity))/ (-({}) + {}))".format(TP_MVLIST("model.电接口"), "", TP_MVLIST("model.电接口"), EPS)))
         vlist =[value(e) for e in model.电接口]
         vposlist = [ReLU(e) for e in vposlist]
-        vposlist = [ReLU(-e) for e in vposlist]
+        vneg_as_poslist = [ReLU(-e) for e in vposlist]
+        sum(vposlist)
     ], 
     "变压器":[
         ("平均效率_平均COP", CSPL['单向电转换COP'])
