@@ -523,7 +523,7 @@ class {{class_name}}模型(设备模型):
 
         {% set mflag = namespace(val="")%}
         {% if class_name in ['柴油发电']%}
-        self.燃料热值 = 0 # 需要拓扑解析之后进行赋值
+        self.燃料热值:float = 0 # 需要拓扑解析之后进行赋值
         {% endif%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟","设计规划"] %}

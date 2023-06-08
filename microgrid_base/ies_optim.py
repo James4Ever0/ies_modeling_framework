@@ -87,13 +87,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: int
-    """
-    类型: 变压器输出
-    """
     电输入: int
     """
     类型: 电母线输入
+    """
+    电输出: int
+    """
+    类型: 变压器输出
     """
 
 
@@ -1570,7 +1570,7 @@ class 柴油发电模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.燃料热值 = 0  # 需要拓扑解析之后进行赋值
+        self.燃料热值: float = 0  # 需要拓扑解析之后进行赋值
         self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
@@ -2253,18 +2253,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
