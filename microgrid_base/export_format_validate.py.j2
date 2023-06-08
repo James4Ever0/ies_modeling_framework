@@ -6,6 +6,8 @@ from pyomo.environ import value
 from pydantic import BaseModel, validator
 {# if unit is one, use "int" as type, else "float"#}
 
+from ies_optim import *
+
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% set exceptionList = ["平均效率_平均COP"] %}
@@ -40,8 +42,8 @@ from pydantic import BaseModel, validator
     "柴油": [
         ("柴油消耗费用", "value(model.总成本年化) * timeParam")
     ],
-    "": [
-        ("","")
+    "电负荷": [
+        ("电负荷","value(model.) * timeParam")
     ]
 }%}
 
