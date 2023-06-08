@@ -60,7 +60,8 @@ import math
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 
 {% set commonSimParams = {
-    "产电量": TP_MVLIST("model.电接口")
+    "产电量": TP_MVLIST("model.电接口"),
+    "柴油消耗量": TP_MVLIST("model.燃料接口")
 }%}
 {% set CSPL = {} %}
 {% for k,v in commonSimParams.items() %}
@@ -74,10 +75,14 @@ import math
         ("电负荷", TP("math.mean(model.设备信息.EnergyConsumption)"))
     ],
     "光伏发电": [
-        
+        CSPL['产电量']
     ],
     "风力发电": [
-        ()
+        CSPL['产电量']
+    ],
+    "柴油发电": [
+        CSPL['产电量'],
+        CSPL['柴油消耗量']
     ]
 }%}
 
