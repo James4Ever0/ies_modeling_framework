@@ -11,8 +11,8 @@ import math
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
+{% macro BANNER()%}
 {% set exceptionList = ["平均效率_平均COP"] %}
-
 {% set commonParamNames = [
     "元件名称",
     "设备型号",
@@ -20,7 +20,6 @@ import math
     "设备维护费用",
     "时间"
 ]%}
-
 {% macro iterParamDict(paramDict, has_list) %}
     {% set flag = namespace(val=False)%}
     {% for paramName, paramDef in paramDict.items() %}
@@ -53,12 +52,10 @@ import math
         
     {% endfor %}
 {% endmacro %}
-
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}]{% endmacro%}
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
-
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
@@ -94,6 +91,12 @@ import math
         ("平均效率_平均COP", CSPL['单向电转换COP'])
     ],
     "变流器": [
+        ("平均效率_平均COP", CSPL['单向电转换COP'])
+    ],
+    "双向变流器": [
+        ("平均效率_平均COP", "")
+    ],
+    "传输线": [
         ("平均效率_平均COP", CSPL['单向电转换COP'])
     ]
 }%}
