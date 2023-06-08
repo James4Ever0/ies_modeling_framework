@@ -307,8 +307,12 @@ if sys.argv[-1] in ["-f", "--full"]:
 
             # with open('export_format.json', 'r') as f:
             #     data = json.load(f)
+            import pandas as pd
+            仿真结果表 = []
+            from export_format_validate import *
             for devId, devInst in devInstDict.items():
-                ...
+                结果leiglobals()[]
+            仿真结果表 = pd.DataFrame(仿真结果表)
         except:
             print("NO SOLUTION.")
         breakpoint()
