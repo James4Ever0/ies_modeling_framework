@@ -8,9 +8,9 @@ from pydantic import BaseModel, validator
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
-{% set exceptionList = ["平均效率_平均COP"]%}
+{% set exceptionList = ["平均效率_平均COP"] %}
 
-{% macro iterParamDict(paramDict, has_list)%}
+{% macro iterParamDict(paramDict, has_list) %}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_")%}
         {% if paramDef == None%}
@@ -54,7 +54,7 @@ class {{devName}}仿真结果(BaseModel):
         {% endif%}
         obj.update(dict())
         return {{devName}}仿真结果.parse_obj(obj)
-{% endfor%}
+{% endfor %}
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
