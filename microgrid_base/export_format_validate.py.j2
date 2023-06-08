@@ -59,6 +59,13 @@ import math
 {%macro MVLIST(vlist)%}math.mean({{VLIST(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
 
+{% set commonSimParams = {
+    "产电量": TP_MVLIST("model.电接口")
+}%}
+{% set CSPL = {} %}
+{% for k,v in commonSimParams.items() %}
+    {% do CSPL.update({k: (k,v)}) %}
+{% endfor%}
 {% set simDevParamMapping = {
     "柴油": [
         ("柴油消耗费用", TP("value(model.总成本年化)"))
@@ -67,7 +74,7 @@ import math
         ("电负荷", TP("math.mean(model.设备信息.EnergyConsumption)"))
     ],
     "光伏发电": [
-        ("产电量",TP_MVLIST("model.电接口"))
+        
     ],
     "风力发电": [
         ()
