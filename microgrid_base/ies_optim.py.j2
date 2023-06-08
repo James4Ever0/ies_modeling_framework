@@ -124,14 +124,23 @@ class {{class_name}}ID(设备ID):
 # Device Info #
 ###############
 
-{% set deviceIdentifiers = [
+{% set deviceBaseIdentifiers = [
     "设备名称",
+]%}
+{% set deviceOptionalIdentifiers = [
     "生产厂商",
     "设备型号",
 ]%}
+{% set deviceIdentifiers =deviceBaseIdentifiers + deviceOptionalIdentifiers %}
 
-class 设备信息(BaseModel):
-{% for i in deviceIdentifiers%}
+class 设备基础信息(BaseModel):
+{% for i in deviceBaseIdentifiers%}
+    {{i}}: str
+
+{% endfor %}
+
+class 设备信息(设备基础信息):
+{% for i in deviceOptionalIdentifiers%}
     {{i}}: str
 
 {% endfor %}
@@ -151,7 +160,7 @@ class 设备信息(BaseModel):
 {% endfor %}
 {% for class_name in 设备接口集合.keys() %}
 
-class {{class_name}}信息({{"BaseModel" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
+class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
     {% if class_name not in NonLoadDeviceDict.keys() %}
         {% if class_name in load_class_names %}
     # 正数
