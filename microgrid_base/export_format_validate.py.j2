@@ -45,7 +45,7 @@ class {{devName}}仿真结果(BaseModel):
 
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
-        obj = {}
+        {% set obj = {} %}
         obj.update(dict(元件名称 = model.设备名称))
         {% if devName not in nonDevNames %}
         obj.update(dict(设备型号 = model.设备型号))
