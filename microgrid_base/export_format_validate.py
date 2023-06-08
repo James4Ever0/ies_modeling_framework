@@ -497,7 +497,7 @@ class 锂电池出力曲线(BaseModel):
 
     @staticmethod
     def export(model: 锂电池模型, timeParam: float):
-
+        model.CurrentTotalActualCapacity + model.MinTotalCapacity
         return 锂电池出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
