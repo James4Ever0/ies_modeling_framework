@@ -32,19 +32,18 @@ def ReLU(val):
 {# where you prepare the export data. #}
 {# in simulation mode #}
 {% macro BANNER(msg)%}
-{% set msglen = 0%}
+{% set msglen = namespace(val=0)%}
 {% for e in list(msg)%}
     {% set l = ord(e)%}
     {% if l > 500 %}
-        {% set msglen =2+msglen%}
+        {% set msglen.val =2+msglen.val%}
     {% else %}
-        {% set msglen =1+msglen%}
+        {% set msglen.val =1+msglen.val%}
     {% endif %}
 {% endfor %}
-{{ "#" * (msglen+4)}}
+{{ "#" * (msglen.val+4)}}
 # {{msg}} #
-{{msglen}}
-{{ "#" * (msglen+4)}}
+{{ "#" * (msglen.val+4)}}
 {% endmacro %}
 {% set exceptionList = ["平均效率_平均COP"] %}
 {% set commonParamNames = [
