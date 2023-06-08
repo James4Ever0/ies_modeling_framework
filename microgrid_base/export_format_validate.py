@@ -341,7 +341,16 @@ class 双向变流器仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=value(BIDIR_SINGLE_CVT(x, y) + BIDIR_SINGLE_CVT(y, x))
+            平均效率_平均COP=value(
+                (
+                    (sumVarList(model.储能端_.x_pos) / sumVarList(model.线路端_.x_neg))
+                    * sumVarList(model.储能端_.b_pos)
+                )
+                + (
+                    (sumVarList(model.线路端_.x_pos) / sumVarList(model.储能端_.x_neg))
+                    * sumVarList(model.线路端_.b_pos)
+                )
+            )
             / model.计算参数.迭代步数,
         )
 

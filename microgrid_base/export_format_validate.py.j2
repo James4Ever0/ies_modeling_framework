@@ -98,7 +98,7 @@ def ReLU(val):
 {% macro TP_MVLISTPOS(vlist)%}{{TP(MVLISTPOS(vlist))}}{% endmacro%}
 {% macro TP_MVLISTNEG(vlist)%}{{TP(MVLISTNEG(vlist))}}{% endmacro%}
 {% macro BIDIR_SINGLE_CVT(x,y)%}((sumVarList(model.{{x}}.x_pos)/sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
-{% macro BIDIR_CVT_COP(x,y)%}value(BIDIR_SINGLE_CVT(x,y)+ BIDIR_SINGLE_CVT(y,x))/model.计算参数.迭代步数{% endmacro%}
+{% macro BIDIR_CVT_COP(x,y)%}value({{BIDIR_SINGLE_CVT(x,y)}}+ {{BIDIR_SINGLE_CVT(y,x)}})/model.计算参数.迭代步数{% endmacro%}
 {% set EPS = "1e-10"%}
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),

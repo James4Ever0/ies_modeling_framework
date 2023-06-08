@@ -965,6 +965,13 @@ class 设备模型:
         """
         一个极小数
         """
+        self.总采购成本 = 0
+        self.总建设费用 = 0
+        self.总固定维护成本 = 0
+        self.总固定成本年化 = 0
+        self.总成本年化 = 0
+        self.总可变维护成本年化 = 0
+        self.年化率 = 1
 
     def constraints_register(self):
         print("REGISTERING: ", self.__class__.__name__)
@@ -1155,12 +1162,11 @@ class 设备模型:
         return mx_my_multiply
 
 
-import math
-
 # input: negative
 # output: positive
 # IO: Real
 import numpy as np
+import math
 
 
 class 光伏发电模型(设备模型):
@@ -1328,24 +1334,24 @@ class 光伏发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilowatt * (总最大功率)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
-        总建设费用 = self.BuildCostPerKilowatt * (总最大功率) + self.BuildBaseCost
+        self.总采购成本 = self.CostPerKilowatt * (总最大功率)
+        self.总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
+        self.总建设费用 = self.BuildCostPerKilowatt * (总最大功率) + self.BuildBaseCost
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 风力发电模型(设备模型):
@@ -1529,27 +1535,29 @@ class 风力发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总建设费用 = (
+        self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        self.总固定维护成本 = self.CostPerYearPerKilowatt * (
+            self.DeviceCount * self.RatedPower
+        )
+        self.总建设费用 = (
             self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 柴油发电模型(设备模型):
@@ -1772,24 +1780,24 @@ class 柴油发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerMachine * (self.DeviceCount)
-        总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
-        总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
+        self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
+        self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
+        self.总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 锂电池模型(设备模型):
@@ -2101,27 +2109,29 @@ class 锂电池模型(设备模型):
         assert self.Life >= self.BatteryLife
         Life = self.BatteryLife
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
-        总固定维护成本 = self.CostPerYearPerCapacity * (self.DeviceCount * self.RatedCapacity)
-        总建设费用 = (
+        self.总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
+        self.总固定维护成本 = self.CostPerYearPerCapacity * (
+            self.DeviceCount * self.RatedCapacity
+        )
+        self.总建设费用 = (
             self.BuildCostPerCapacity * (self.DeviceCount * self.RatedCapacity)
             + self.BuildBaseCost
         )
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((计算范围内总平均功率 * self.计算参数.迭代步数) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 变压器模型(设备模型):
@@ -2282,27 +2292,29 @@ class 变压器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总建设费用 = (
+        self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        self.总固定维护成本 = self.CostPerYearPerKilowatt * (
+            self.DeviceCount * self.RatedPower
+        )
+        self.总建设费用 = (
             self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 变流器模型(设备模型):
@@ -2435,27 +2447,29 @@ class 变流器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总建设费用 = (
+        self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        self.总固定维护成本 = self.CostPerYearPerKilowatt * (
+            self.DeviceCount * self.RatedPower
+        )
+        self.总建设费用 = (
             self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
             * 8760
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 双向变流器模型(设备模型):
@@ -2597,18 +2611,20 @@ class 双向变流器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总固定维护成本 = self.CostPerYearPerKilowatt * (self.DeviceCount * self.RatedPower)
-        总建设费用 = (
+        self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
+        self.总固定维护成本 = self.CostPerYearPerKilowatt * (
+            self.DeviceCount * self.RatedPower
+        )
+        self.总建设费用 = (
             self.BuildCostPerKilowatt * (self.DeviceCount * self.RatedPower)
             + self.BuildBaseCost
         )
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总可变维护成本年化 = (
+        self.总可变维护成本年化 = (
             (
                 ((self.SumRange(self.储能端_.x_neg) + self.SumRange(self.线路端_.x_neg)))
                 / self.计算参数.迭代步数
@@ -2618,9 +2634,9 @@ class 双向变流器模型(设备模型):
         )
         # avg_power * 8760 = annual_work
 
-        总成本年化 = 总固定成本年化 + 总可变维护成本年化
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
 class 传输线模型(设备模型):
@@ -2732,21 +2748,25 @@ class 传输线模型(设备模型):
         # unit: one
         Life = self.Life
 
-        年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
 
-        总采购成本 = self.CostPerKilometer * (self.Length)
-        总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
-        总建设费用 = self.BuildCostPerKilometer * (self.Length) + self.BuildBaseCost
+        self.总采购成本 = self.CostPerKilometer * (self.Length)
+        self.总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
+        self.总建设费用 = self.BuildCostPerKilometer * (self.Length) + self.BuildBaseCost
 
-        总固定成本年化 = (总采购成本 + 总固定维护成本 + 总建设费用) * 年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
-        总成本年化 = 总固定成本年化
+        self.总成本年化 = self.总固定成本年化
 
-        return 总成本年化
+        return self.总成本年化
 
 
-from unit_utils import (getSingleUnitConverted, standard_units,
-                        unitFactorCalculator, ureg)
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    getSingleUnitConverted,
+)
 
 
 class 电负荷模型(设备模型):
@@ -2807,11 +2827,7 @@ class 柴油模型(设备模型):
 
         class _Units(BaseModel):
             Price: str
-
-        class _Units(BaseModel):
             热值: str
-
-        class _Units(BaseModel):
             CO2: str
 
         UnitsDict = {}
@@ -2968,7 +2984,6 @@ devInfoClassMap: Dict[str, BaseModel] = {
 
 from networkx import Graph
 
-
 # partial if typical day mode is on.
 def compute(
     devs: List[dict],
@@ -3050,12 +3065,12 @@ def compute(
 
     financial_obj_expr = sum([e.constraints_register() for e in devInstDict.values()])
 
-    environment_obj_exprs = [] # annual CO2 emission
+    environment_obj_exprs = []  # annual CO2 emission
     for e in devInstDict.values():
         if type(e) == 柴油模型:
-            environment_obj_exprs.append((sum(e.燃料接口)/e.计算参数.迭代步数)*8760 * e.CO2 )
+            environment_obj_exprs.append((sum(e.燃料接口) / e.计算参数.迭代步数) * 8760 * e.CO2)
     environment_obj_expr = sum(environment_obj_exprs)
-    
+
     obj_expr = financial_obj_expr
 
     return obj_expr, devInstDict, PD
