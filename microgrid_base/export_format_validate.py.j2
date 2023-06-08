@@ -134,10 +134,10 @@ def ReLU(val):
         ("平均效率_平均COP", ("ReLU(({} - ({}))/ (-({}) + {}))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"), EPS)))
     ], 
     "变压器":[
-        ("平均效率_平均COP", CSPL['单向电转换COP'])
+        ("平均效率_平均COP", commonSimParams['单向电转换COP'])
     ],
     "变流器": [
-        ("平均效率_平均COP", CSPL['单向电转换COP'])
+        ("平均效率_平均COP", commonSimParams['单向电转换COP'])
     ],
     "双向变流器": [
         ("平均效率_平均COP", BIDIR_CVT_COP("储能端_","线路端_"))
