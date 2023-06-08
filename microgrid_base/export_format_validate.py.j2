@@ -159,9 +159,9 @@ def ReLU(val):
         )
 {% endmacro%}
 
-{% macro update_obj(obj, paramDict, devName, CPN)%}
+{% macro update_obj(obj, paramDict, devName, CPN, check)%}
     {% if devName in paramDict.keys()%}
-        {% if len(paramDict[devName]) == 0%}
+        {% if len(paramDict[devName]) == 0 and check%}
             {% error "设备'{}'的独有参数未设置".format(devName)%}
         {% endif%}
         {% for k, v in paramDict[devName]%}
@@ -195,7 +195,7 @@ class {{devName}}仿真结果(BaseModel):
         )
         %}
     {% endif %}
-    {% do update_obj(obj, simDevParamMapping, devName, commonParamNames)%}
+    {% do update_obj(obj, simDevParamMapping, devName, commonParamNames, True)%}
 {% endcall%}
 {% endfor %}
 
@@ -246,6 +246,6 @@ class {{devName}}出力曲线(BaseModel):
 {% set obj = {}%}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
 {% call export_data_with_model(devName, obj)%}
-    {% do update_obj(obj, timeSeriesMapping, devName, [])%}
+    {% do update_obj(obj, timeSeriesMapping, devName, [], False)%}
 {% endcall%}
 {% endfor %}
