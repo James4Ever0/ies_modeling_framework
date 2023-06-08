@@ -134,16 +134,7 @@ def ReLU(val):
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
-{{ BANNER("仿真结果")}}
-
-{% for devName, paramDict in main_data['仿真结果'].items() %}
-    {% if devName == 'ALL' %}
-        {% continue %}
-    {% endif %}
-class {{devName}}仿真结果(BaseModel):
-{{iterParamDict(paramDict, False)}}
-{% set obj = {} %}
-{% macro export_data_with_model(devName)%}
+{% macro export_data_with_model(devName, obj)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备名称")) %}
@@ -154,7 +145,17 @@ class {{devName}}仿真结果(BaseModel):
     {% endfor %}
         )
 {% endmacro%}
-{% call export_data_with_model(devName)%}
+
+{{ BANNER("仿真结果")}}
+
+{% for devName, paramDict in main_data['仿真结果'].items() %}
+    {% if devName == 'ALL' %}
+        {% continue %}
+    {% endif %}
+class {{devName}}仿真结果(BaseModel):
+{{iterParamDict(paramDict, False)}}
+{% set obj = {} %}
+{% call export_data_with_model(devName, obj)%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
@@ -187,4 +188,8 @@ class {{devName}}仿真结果(BaseModel):
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
 {{iterParamDict(paramDict, True)}}
+{% set obj = {}%}
+{% call export_data_with_model(devName, obj)%}
+        {% if %}
+{% endcall%}
 {% endfor %}
