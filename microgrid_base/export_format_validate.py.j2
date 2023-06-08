@@ -89,7 +89,7 @@ def ReLU(val):
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}.values()]{% endmacro%}
-{% macro VLIST_FUNC(vlist, func)%}[value({{func}}(e)) for e in {{vlist}}.values()]{% endmacro%}
+{% macro VLIST_PAT(vlist, pattern)%}[value({{pattern.format(e)}}) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTINV(vlist)%}[-value(e) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTDIV(vlist, div)%}[value((e)/({{div}})) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTPOS(vlist)%}[ReLU(e) for e in {{vlist}}]{% endmacro%}
@@ -209,8 +209,8 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=VLIST('model.CurrentTotalCapacity'),
- 荷电状态=VLISTDIV('model.CurrentTotalCapacity', "model.TotalCapacity"),
+ 荷电容量=VLIST_PAT('model.CurrentTotalCapacity', "{} + model.MinTotalCapacity"),
+ 荷电状态=VLIST_PAT('model.CurrentTotalCapacity', "({}) / model.TotalCapacity"),
  电转换功率=VLIST('model.电输出'),
 )
 %}
