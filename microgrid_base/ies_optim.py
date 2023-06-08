@@ -3029,6 +3029,8 @@ def compute(
             adder["output"],
             adder["IO"],
         )
+        
+        if G.nodes[input_indexs[0]]
 
         # add them all.
         for j in range(algoParam.迭代步数):
