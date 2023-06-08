@@ -3034,7 +3034,10 @@ def compute(
             if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
                 assert len(input_indexs) == 1, "柴油元件只能一对多连接"
                 diesel_node_id = G.nodes[input_indexs[0]]['device_id']
-                热值 = devInstDict[diesel_node_id].
+                热值 = devInstDict[diesel_node_id].设备信息.热值
+                for output_index in output_indexs:
+                    output_node_index = G.nodes[output_index]['device_id']
+                    devInstDict[output_node_index].燃料热值 = 热值
 
         # add them all.
         for j in range(algoParam.迭代步数):
