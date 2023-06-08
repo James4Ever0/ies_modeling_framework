@@ -95,9 +95,12 @@ def ReLU(val):
     "单向电转换COP": "- ({}) / ({} + {})".format(MVLIST("model.电输入"), MVLIST("model.电输出"), EPS)
 }%}
 {% set CSPL = {} %}
-{% for k,v in commonSimParams.items() %}
-    {% do CSPL.update({k: (k,v)}) %}
+{% macro dictValueToKeyValuePair(a,b)%}
+{% for k,v in a.items() %}
+    {% do b.update({k: (k,v)}) %}
 {% endfor%}
+{% endmacro%}
+{% do dictValueToKeyValuePair(commonSimParams, CSPL)%}
 {% set simDevParamMapping = {
     "柴油": [
         ("柴油消耗费用", TP("value(model.总成本年化)"))
@@ -186,6 +189,7 @@ class {{devName}}仿真结果(BaseModel):
 
 }%}
 {% set CTSL = {}%}
+{% do dictValueToKeyValuePair(commonTimeSeries, CTSL) %}
 {% set timeSeriesMapping = {
     "光伏发电": [
         ("发电功率", )
