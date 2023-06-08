@@ -182,6 +182,17 @@ class {{devName}}仿真结果(BaseModel):
 {% endcall%}
 {% endfor %}
 
+{% set commonTimeSeries = {
+
+}%}
+{% set CTSL = {}%}
+{% set timeSeriesMapping = {
+    "光伏发电": [
+        ("发电功率", )
+    ]
+}
+%}
+
 {# use "call" here. #}
 {{ BANNER("设备出力曲线")}}
 
