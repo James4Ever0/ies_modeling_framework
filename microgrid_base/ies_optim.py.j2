@@ -1049,6 +1049,16 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     for adder_index, adder in adders.items():
         input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
 
+        # fill in missing params
+        if len(input_indexs) >= 1:
+            if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
+                assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                diesel_node_id = G.nodes[input_indexs[0]]['device_id']
+                热值 = devInstDict[diesel_node_id].设备信息.热值
+                for output_index in output_indexs:
+                    output_node_index = G.nodes[output_index]['device_id']
+                    devInstDict[output_node_index].燃料热值 = 热值
+
         # add them all.
         for j in range(algoParam.迭代步数):
             seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}

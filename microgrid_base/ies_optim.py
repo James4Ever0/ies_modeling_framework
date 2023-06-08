@@ -69,13 +69,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
-    """
-    类型: 供电端输出
-    """
     燃料接口: int
     """
     类型: 柴油输入
+    """
+    电接口: int
+    """
+    类型: 供电端输出
     """
 
 
@@ -98,13 +98,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输出: int
-    """
-    类型: 电母线输出
-    """
     电输入: int
     """
     类型: 变流器输入
+    """
+    电输出: int
+    """
+    类型: 电母线输出
     """
 
 
@@ -1678,18 +1678,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NegativeReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -1735,6 +1735,7 @@ class 柴油发电模型(设备模型):
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
+        assert self.燃料热值 != 0
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
@@ -2415,18 +2416,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3029,14 +3030,15 @@ def compute(
             adder["output"],
             adder["IO"],
         )
+
+        # fill in missing params
         if len(input_indexs) >= 1:
-            
-            if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
+            if G.nodes[input_indexs[0]]["subtype"] == "柴油输出":
                 assert len(input_indexs) == 1, "柴油元件只能一对多连接"
-                diesel_node_id = G.nodes[input_indexs[0]]['device_id']
+                diesel_node_id = G.nodes[input_indexs[0]]["device_id"]
                 热值 = devInstDict[diesel_node_id].设备信息.热值
                 for output_index in output_indexs:
-                    output_node_index = G.nodes[output_index]['device_id']
+                    output_node_index = G.nodes[output_index]["device_id"]
                     devInstDict[output_node_index].燃料热值 = 热值
 
         # add them all.
