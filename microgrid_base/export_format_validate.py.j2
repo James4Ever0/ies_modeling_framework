@@ -51,7 +51,7 @@ class {{devName}}仿真结果(BaseModel):
         obj.update(dict(设备型号 = model.设备型号))
         obj.update(dict(设备台数 = value(model.DeviceCount)))
         obj.update(dict(设备维护费用 = value(model.年化率 * self.总固定维护成本 + self.总可变维护成本年化) * timeParam))
-        {% endif%}
+        {% endif %}
         obj.update(dict())
         return {{devName}}仿真结果.parse_obj(obj)
 {% endfor %}
