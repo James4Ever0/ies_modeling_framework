@@ -189,6 +189,7 @@ class {{devName}}仿真结果(BaseModel):
 class {{devName}}出力曲线(BaseModel):
 {{iterParamDict(paramDict, True)}}
 {% set obj = {}%}
+{% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
 {% call export_data_with_model(devName, obj)%}
         {% if %}
 {% endcall%}
