@@ -36,6 +36,15 @@ from pydantic import BaseModel, validator
     {% endfor %}
 {% endmacro %}
 
+{% set simDevParamMapping = {
+    "柴油": [
+        ("柴油消耗费用", "value(model.总成本年化) * timeParam")
+    ],
+    "": [
+        ("","")
+    ]
+}%}
+
 {% for devName, paramDict in main_data['仿真结果'].items() %}
     {% if devName == 'ALL' %}
         {% continue %}
@@ -57,6 +66,8 @@ class {{devName}}仿真结果(BaseModel):
         )
         %}
         {% endif %}
+        {% if devName in simDevParamMapping.keys()%}
+        {% for k, v in %}
         {% do obj.update(dict(柴油消耗费用 = "value(model.总成本年化) * timeParam")) %}
         return {{devName}}仿真结果(
             {% for key, value in obj.items() %}
