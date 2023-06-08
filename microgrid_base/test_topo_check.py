@@ -311,7 +311,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             仿真结果表 = []
             from export_format_validate import *
             for devId, devInst in devInstDict.items():
-                结果leiglobals()[]
+                devClassName = devInst.__class__.__name__.strip("模型")
+                结果类 = globals()[f'{devClassName}仿真结果']
             仿真结果表 = pd.DataFrame(仿真结果表)
         except:
             print("NO SOLUTION.")
