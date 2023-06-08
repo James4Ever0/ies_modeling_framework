@@ -15,11 +15,11 @@ import math
 {% set msglen = 0%}
 {% for e in list(msg)%}
     {% set l = ord(e)%}
-    {% if l > 500%}
+    {% if l > 500 %}
         {% do msglen +=2%}
-    {% else%}
+    {% else %}
         {% do msglen +=1%}
-    {% endif%}
+    {% endif %}
 {% endfor %}
 {{ "#" * (msglen+4)}}
 # {{msg}} #
