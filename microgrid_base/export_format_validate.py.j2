@@ -211,8 +211,8 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=VLIST_PAT('model.CurrentTotalCapacity', "{} + model.MinTotalCapacity"),
- 荷电状态=VLIST_PAT('model.CurrentTotalCapacity', "({} + model.MinTotalCapacity) / model.TotalCapacity"),
+ 荷电容量=VLIST_PAT('model.CurrentTotalActualCapacity', "{} + model.MinTotalCapacity"),
+ 荷电状态=VLIST_PAT('model.CurrentTotalActualCapacity', "({} + model.MinTotalCapacity) / model.TotalCapacity"),
  电转换功率=VLIST('model.电输出'),
 )
 %}

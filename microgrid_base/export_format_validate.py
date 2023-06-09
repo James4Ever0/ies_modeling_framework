@@ -505,11 +505,11 @@ class 锂电池出力曲线(BaseModel):
             放电功率=[ReLU(e) for e in model.电接口],
             荷电容量=[
                 value(e + model.MinTotalCapacity)
-                for e in model.CurrentTotalCapacity.values()
+                for e in model.CurrentTotalActualCapacity.values()
             ],
             荷电状态=[
                 value((e + model.MinTotalCapacity) / model.TotalCapacity)
-                for e in model.CurrentTotalCapacity.values()
+                for e in model.CurrentTotalActualCapacity.values()
             ],
         )
 
