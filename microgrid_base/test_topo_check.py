@@ -256,6 +256,7 @@ if sys.argv[-1] in ["-f", "--full"]:
     assert len(calcParamList)>=1
     典型日 = calcParamList[0][2]['典型日']
     计算步长 = calcParamList[0][2]['计算步长']
+    计算类型 =  calcParamList[0][2]['计算类型']
     if 典型日:
         assert len(calcParamList)>1
     else:
@@ -282,13 +283,13 @@ if sys.argv[-1] in ["-f", "--full"]:
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
+            if 
+            expr_base = 
             if 典型日:
                 if 计算步长 == "小时":
                     obj_expr += 
-                elif 计算步长 == '秒':
-                    obj_expr += 
                 else:
-                    obj_expr
+                    raise Exception(f'不合理的计算步长: {计算步长}')
             else:
                 
             
