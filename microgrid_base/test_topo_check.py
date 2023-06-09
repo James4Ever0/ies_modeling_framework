@@ -228,7 +228,9 @@ with open("template_input.json", "w+") as f:
 ###############
 import sys
 
-mdictList = [mdict] # 传入API的计算参数
+mdictList = [mdict]  # 传入API的计算参数
+
+calcParamList = []
 
 for md in mdictList:
     topo_load = topo.from_json(md)  # static method
@@ -240,11 +242,15 @@ for md in mdictList:
     ## COMPUTE THIS GRAPH ##
     # use devs, adders
 
-    graph_data = topo.get_graph_data()
+    graph_data = topo_load.get_graph_data()
     print_with_banner(graph_data, "图元数据")
     # objective is contained in the graph data.
     # so all we need to pass to the compute function are: devs, adders, graph_data
-
+    devs = topo_load.get_all_devices()
+    adders = topo_load.get_all_adders()
+    calcParam = (devs, adders, graph_data, topo_load.G)
+    calcParamList.append(calcParam)
+    
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
     timeParam = 8760  # how many hours?
