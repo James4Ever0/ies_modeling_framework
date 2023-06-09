@@ -245,7 +245,7 @@ import sys
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
     timeParam = 8760  # how many hours?
-    DEBUG = False # poly degree based verification.
+    DEBUG = False  # poly degree based verification.
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
@@ -308,7 +308,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             print("OBJ:", value(OBJ))
             # export value.
             # import json
-            sol=True
+            sol = True
         except:
             sol = False
             print("NO SOLUTION.")
@@ -341,6 +341,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表.head()
             except:
                 import traceback
+
                 traceback.print_exc()
                 breakpoint()
         breakpoint()
@@ -349,18 +350,18 @@ if sys.argv[-1] in ["-f", "--full"]:
 
 ## assume we have multiobjective here.
 
-min_finance, max_env = 0,3
-env_finance, min_env = 1,1
+min_finance, max_env = 0, 3
+env_finance, min_env = 1, 1
 
 import numpy as np
 
-a,b = min_finance, env_finance
+a, b = min_finance, env_finance
 if a == b:
     raise Exception("Unable to perform multiobjective search.")
-elif a>b:
-    a,b = b,a
+elif a > b:
+    a, b = b, a
 
-fin_points = np.linspace(a,b, num=11)
+fin_points = np.linspace(a, b, num=11)
 for fin_start, fin_end in zip(fin_points[:-1].tolist(), fin_points[1:].tolist()):
-    print("{} <= FIN <= {}".format(fin_start, fin_end)) # fin constraint
+    print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
     # min env under this condition. recalculate.
