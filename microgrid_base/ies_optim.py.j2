@@ -274,6 +274,7 @@ class 计算参数(BaseModel):
     计算步长: Union[Literal["小时"], Literal['秒']]
     典型日: bool
     典型日权重: int = 0
+    典型日代表的日期: List[float] = []
     计算类型: Union[Literal['仿真模拟'],Literal['设计规划']]
     风速: List[float]
     """
