@@ -339,7 +339,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 rich.print(出力曲线字典)
                 print()
                 仿真结果表.head()
-                仿真结果表.
+                # 仿真结果表.to_json(force_ascii=False)
             except:
                 import traceback
 
