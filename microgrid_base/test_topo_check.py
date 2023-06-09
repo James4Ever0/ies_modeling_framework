@@ -294,8 +294,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
             calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
         
-        if 计算目标 == "设计规划":
-        obj_expr = ...
+        if 计算目标 == "经济","环保":
+            obj_expr = calcTargetLUT[]
+        else:
+            obj_expr = calcTargetLUT
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
         # devClassMapping = {
