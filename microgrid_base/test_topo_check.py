@@ -272,11 +272,14 @@ if sys.argv[-1] in ["-f", "--full"]:
         # obj_expr = 0
     from copy import deepcopy
     def getCalcTargetLUT(mw:ModelWrapper, mCalcParamList:list):
-        mCalcParamList = deepcopy(calcParamList)
+        calcParamList = deepcopy(mCalcParamList)
         calcTargetLUT = {
                 "经济": 0,
                 "环保": 0,
             }
+        
+        devInstDictList = []
+        PDList = []
         
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
@@ -288,19 +291,23 @@ if sys.argv[-1] in ["-f", "--full"]:
                 timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
         
             obj_exprs, devInstDict, PD = compute(
-                devs, adders, graph_data, topo.G, mw
+                devs, adders, graph_data, topo_G, mw
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
             obj_time_param = (1 if not 典型日 else len(graph_data['典型日代表的日期']))
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
             calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
-        return calcTargetLUT
+            
+            devInstDictList.append(devInstDict)
+            PDList.append(PD)
+            
+        return calcTargetLUT, devInstDictList, PDList
         
     if 计算目标 in ["经济","环保"]:
         with ModelWrapperContext() as mw:
-            calcTargetLUT = getCalcTargetLUT(mw, calcParamList.copy())
-        obj_expr = calcTargetLUT[计算目标]
+            calcTargetLUT, devInstDictList, PDList = getCalcTargetLUT(mw, calcParamList.copy())
+            obj_expr = calcTargetLUT[计算目标]
     else:
         obj_expr = calcTargetLUT['经济']
 
@@ -350,11 +357,9 @@ if sys.argv[-1] in ["-f", "--full"]:
             val_fin, val_env = value(calcTargetLUT['经济']), value(calcTargetLUT['环保'])
         except:
             import traceback
-
             traceback.print_exc()
             print(">>>SOLVER ERROR<<<")
             # breakpoint()
-
         # print("OBJECTIVE?")
         # OBJ.display()
         try:
