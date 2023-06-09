@@ -228,7 +228,6 @@ with open("template_input.json", "w+") as f:
 ###############
 import sys
 
-mdictList = [mdict]  # 传入API的计算参数
 
 calcParamList = []
 
