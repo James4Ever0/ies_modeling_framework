@@ -256,7 +256,8 @@ if sys.argv[-1] in ["-f", "--full"]:
     assert len(calcParamList)>=1
     典型日 = calcParamList[0][2]['典型日']
     计算步长 = calcParamList[0][2]['计算步长']
-    计算类型 =  calcParamList[0][2]['计算类型']
+    计算类型 = calcParamList[0][2]['计算类型']
+    计算目标 = calcParamList[0][2]['计算目标']
     if 典型日:
         assert len(calcParamList)>1
     else:
@@ -283,8 +284,12 @@ if sys.argv[-1] in ["-f", "--full"]:
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
-            if 
-            expr_base = 
+            calcTargetLUT = {
+                "经济":
+                    "环保": 
+                        "经济_环保": 
+            }
+            expr_base = calcTargetLUT["计算目标"]
             if 典型日:
                 if 计算步长 == "小时":
                     obj_expr += 
