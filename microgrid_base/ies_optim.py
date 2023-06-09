@@ -3100,5 +3100,9 @@ def compute(
 
     obj_expr = financial_obj_expr
 
-    return obj_expr, devInstDict, PD
+    return (
+        (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr),
+        devInstDict,
+        PD,
+    )
     # always minimize the objective.
