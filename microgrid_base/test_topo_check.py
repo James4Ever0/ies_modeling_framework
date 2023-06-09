@@ -219,9 +219,11 @@ print_with_banner(adders, "加法器")
 ###############
 
 mdict = topo.to_json()
+mdictList = [mdict]  # 传入API的计算参数
+
 print_with_banner(mdict, "图序列化")
 with open("template_input.json", "w+") as f:
-    f.write(json.dumps(mdict, ensure_ascii=False, indent=4))
+    f.write(json.dumps(mdictList, ensure_ascii=False, indent=4))
 
 ###############
 # load from dict
