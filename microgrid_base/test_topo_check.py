@@ -283,8 +283,14 @@ if sys.argv[-1] in ["-f", "--full"]:
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
             if 典型日:
-                if 计算步长=="":
-                    obj_expr +=
+                if 计算步长 == "小时":
+                    obj_expr += 
+                elif 计算步长 == '秒':
+                    obj_expr += 
+                else:
+                    obj_expr
+            else:
+                
             
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
