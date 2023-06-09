@@ -251,17 +251,17 @@ for md in mdictList:
     adders = topo_load.get_all_adders()
     calcParam = (devs, adders, graph_data, topo_load.G)
     calcParamList.append(calcParam)
-    
+
 if sys.argv[-1] in ["-f", "--full"]:
-    assert len(calcParamList)>=1
+    assert len(calcParamList) >= 1
     firstParam_graphparam = calcParamList[0][2]
-    典型日 = firstParam_graphparam['典型日']
-    计算步长 = firstParam_graphparam['计算步长']
-    计算类型 = firstParam_graphparam['计算类型']
-    计算目标 = firstParam_graphparam['计算目标']
-    
+    典型日 = firstParam_graphparam["典型日"]
+    计算步长 = firstParam_graphparam["计算步长"]
+    计算类型 = firstParam_graphparam["计算类型"]
+    计算目标 = firstParam_graphparam["计算目标"]
+
     if 典型日:
-        assert len(calcParamList)>1
+        assert len(calcParamList) > 1
     else:
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
@@ -269,49 +269,59 @@ if sys.argv[-1] in ["-f", "--full"]:
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
-        # obj_expr = 0
+    # obj_expr = 0
     from copy import deepcopy
-    def getCalcTargetLUT(mw:ModelWrapper, mCalcParamList:list):
+
+    def getCalcTargetLUT(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
         calcTargetLUT = {
-                "经济": 0,
-                "环保": 0,
-            }
-        
+            "经济": 0,
+            "环保": 0,
+        }
+
         devInstDictList = []
         PDList = []
-        
+        timeParamList = []
+
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
-            
+
             if 典型日:
-                graph_data['典型日ID'] = 典型日ID
-                timeParam = 24 * len(graph_data['典型日代表的日期'])
+                graph_data["典型日ID"] = 典型日ID
+                timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
-                timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
-        
+                timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
+            timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
             )  # single instance.
-            (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
-            
-            obj_time_param = (1 if not 典型日 else len(graph_data['典型日代表的日期']))
-            calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
-            calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
-            
+            (
+                financial_obj_expr,
+                financial_dyn_obj_expr,
+                environment_obj_expr,
+            ) = obj_exprs
+
+            obj_time_param = 1 if not 典型日 else len(graph_data["典型日代表的日期"])
+            calcTargetLUT["环保"] += environment_obj_expr * obj_time_param
+            calcTargetLUT["经济"] += (
+                financial_obj_expr if 计算类型 == "设计规划" else financial_dyn_obj_expr
+            ) * obj_time_param
+
             devInstDictList.append(devInstDict)
             PDList.append(PD)
-            
-        return calcTargetLUT, devInstDictList, PDList
-        
-    if 计算目标 in ["经济","环保"]:
+
+        return calcTargetLUT, devInstDictList, PDList, timeParamList
+
+    if 计算目标 in ["经济", "环保"]:
         with ModelWrapperContext() as mw:
-            calcTargetLUT, devInstDictList, PDList = getCalcTargetLUT(mw, calcParamList.copy())
+            calcTargetLUT, devInstDictList, PDList, timeParamList = getCalcTargetLUT(
+                mw, calcParamList
+            )
             obj_expr = calcTargetLUT[计算目标]
     else:
-        obj_expr = calcTargetLUT['经济']
+        obj_expr = calcTargetLUT["经济"]
 
-    def solve_model(mw:ModelWrapper, obj_expr, sense=minimize):
+    def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
         # devClassMapping = {
@@ -348,15 +358,17 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         # if DEBUG:
         #     dumpCond()
-        
+
         solver = SolverFactory("cplex")
         try:
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             results = solver.solve(mw.model, tee=True)
-            val_fin, val_env = value(calcTargetLUT['经济']), value(calcTargetLUT['环保'])
+            return True
+            val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
         except:
             import traceback
+
             traceback.print_exc()
             print(">>>SOLVER ERROR<<<")
             # breakpoint()
@@ -379,7 +391,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 import pandas as pd
 
                 仿真结果表 = []
-                出力曲线字典 = {} # 设备ID: 设备出力曲线
+                出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 from export_format_validate import *
 
                 for devId, devInst in devInstDict.items():
@@ -399,7 +411,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表.head()
                 # export_table = 仿真结果表.to_html()
                 # may you change the format.
-                sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient='records')
+                sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient="records")
             except:
                 import traceback
 
@@ -408,6 +420,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         breakpoint()
 
         print("END")
+
 
 ## assume we have multiobjective here.
 
