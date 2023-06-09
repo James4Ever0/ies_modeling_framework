@@ -292,18 +292,9 @@ if sys.argv[-1] in ["-f", "--full"]:
             
             obj_time_param = (1 if not 典型日 else len(graph_data['典型日代表的日期']))
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
-            calcTargetLUT["经济"]+= (financial_obj_expr if else financial_dyn_obj_expr) * obj_time_param
+            calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
             
-            expr_base = calcTargetLUT[计算目标]
-            if 典型日:
-                if 计算步长 == "小时":
-                    obj_expr += 
-                else:
-                    raise Exception(f'不合理的计算步长: {计算步长}')
-            else:
-                
-            
-
+        obj_expr = ""
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
         devClassMapping = {
