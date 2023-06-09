@@ -308,34 +308,42 @@ if sys.argv[-1] in ["-f", "--full"]:
             print("OBJ:", value(OBJ))
             # export value.
             # import json
-
-            with open("export_format.json", "r") as f:
-                dt = json.load(f)
-                columns = dt["仿真结果"]["ALL"]
-                columns = [e if type(e) == str else e[0] for e in columns]
-            import pandas as pd
-
-            仿真结果表 = []
-            出力曲线字典 = {}
-            from export_format_validate import *
-
-            for devId, devInst in devInstDict.items():
-                devClassName = devInst.__class__.__name__.strip("模型")
-                结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
-                出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                结果 = 结果类.export(devInst, timeParam)
-                仿真结果表.append(结果.dict())
-
-                if 出力曲线类:
-                    出力曲线 = 出力曲线类.export(devInst, timeParam)
-                    出力曲线字典.update(dict(id=devId, data=出力曲线))
-            仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
-            print()
-            rich.print(出力曲线字典)
-            print()
-            仿真结果表.head()
+            sol=True
         except:
             print("NO SOLUTION.")
+        finally:
+            sol = False
+        if sol:
+            try:
+                with open("export_format.json", "r") as f:
+                    dt = json.load(f)
+                    columns = dt["仿真结果"]["ALL"]
+                    columns = [e if type(e) == str else e[0] for e in columns]
+                import pandas as pd
+
+                仿真结果表 = []
+                出力曲线字典 = {}
+                from export_format_validate import *
+
+                for devId, devInst in devInstDict.items():
+                    devClassName = devInst.__class__.__name__.strip("模型")
+                    结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
+                    出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
+                    结果 = 结果类.export(devInst, timeParam)
+                    仿真结果表.append(结果.dict())
+
+                    if 出力曲线类:
+                        出力曲线 = 出力曲线类.export(devInst, timeParam)
+                        出力曲线字典.update(dict(id=devId, data=出力曲线))
+                仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
+                print()
+                rich.print(出力曲线字典)
+                print()
+                仿真结果表.head()
+            except:
+                import traceback
+                traceback.print_exc()
+                breakpoint()
         breakpoint()
 
         print("END")
