@@ -267,7 +267,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     with ModelWrapperContext() as mw:
         if 典型日:
-            timeParam = ...
+            timeParam = 24 * 
         else:
             timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
         
