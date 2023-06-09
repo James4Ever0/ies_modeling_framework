@@ -285,7 +285,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
             calcTargetLUT = {
-                "经济":
+                "经济": ,
                     "环保": 
                         "经济_环保": 
             }
