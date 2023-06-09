@@ -20,8 +20,8 @@ def addListElem(*args):
 
 
 def safeDiv(val, div):
-    EPS = "1e-10"
-    return (val) / (div + EPS)
+    EPS = 1e-10
+    return (val) / (div + EPS if (type(div) not in [int, float] or div == 0) else div)
 
 
 def ReLU(val):
