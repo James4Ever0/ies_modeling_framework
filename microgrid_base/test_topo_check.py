@@ -233,6 +233,7 @@ mdictList = [mdict]  # 传入API的计算参数
 calcParamList = []
 
 for md in mdictList:
+    
     topo_load = topo.from_json(md)  # static method
     print_with_banner(topo_load, "图对象")
     # how to check error now?
