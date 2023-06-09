@@ -1736,6 +1736,7 @@ class 柴油发电模型(设备模型):
         super().constraints_register()
         # 设备特有约束（非变量）
         assert self.燃料热值 != 0
+        assert type(self.燃料热值) == float
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":
