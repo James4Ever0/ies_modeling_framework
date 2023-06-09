@@ -104,7 +104,7 @@ class 加法器ID(BaseModel):
 #############
 # Device ID #
 #############
-
+from pydantic import validator
 class 设备ID(BaseModel):
     ID: int
 
@@ -278,7 +278,7 @@ class 计算参数(BaseModel):
     @validator('典型日代表的日期')
     def validate_typical_day(cls, v):
         if cls.典型日:
-            assert len(典型日代表的日期) >0
+            assert len(v) >0
             assert len(v) <=365
         return v
     计算类型: Union[Literal['仿真模拟'],Literal['设计规划']]

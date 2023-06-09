@@ -34,6 +34,7 @@ from pydantic import BaseModel
 #############
 # Device ID #
 #############
+from pydantic import validator
 
 
 class 设备ID(BaseModel):
@@ -109,13 +110,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: int
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -898,11 +899,17 @@ class ModelWrapper:
 
 # 需要明确单位
 class 计算参数(BaseModel):
-    典型日ID: Union[int, None] = None
     计算步长: Union[Literal["小时"], Literal["秒"]]
     典型日: bool
-    # 典型日权重: int = 0
     典型日代表的日期: List[int] = []
+
+    @validator("典型日代表的日期")
+    def validate_typical_day(cls, v):
+        if cls.典型日:
+            assert len(v) > 0
+            assert len(v) <= 365
+        return v
+
     计算类型: Union[Literal["仿真模拟"], Literal["设计规划"]]
     风速: List[float]
     """
@@ -2573,18 +2580,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
