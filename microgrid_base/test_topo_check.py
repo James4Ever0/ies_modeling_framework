@@ -293,44 +293,46 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_time_param = (1 if not 典型日 else len(graph_data['典型日代表的日期']))
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
             calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
-            
-        obj_expr = ""
+        
+        if 计算目标 == "设计规划":
+        obj_expr = ...
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
-        devClassMapping = {
-            f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
-        }
+        # devClassMapping = {
+        #     f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
+        # }
 
-        def dumpCond():
-            exprs = [
-                str(mw.model.__dict__[x].expr)
-                for x in dir(mw.model)
-                if x.startswith("CON")
-            ]
-            import re
+        # def dumpCond():
+        #     exprs = [
+        #         str(mw.model.__dict__[x].expr)
+        #         for x in dir(mw.model)
+        #         if x.startswith("CON")
+        #     ]
+        #     import re
 
-            def process_expr(expr):
-                b = re.findall(r"\[\d+\]", expr)
-                for e in b:
-                    expr = expr.replace(e, "[]")
-                for k, cn in devClassMapping.items():
-                    expr = expr.replace(k, cn)
-                return expr
+        #     def process_expr(expr):
+        #         b = re.findall(r"\[\d+\]", expr)
+        #         for e in b:
+        #             expr = expr.replace(e, "[]")
+        #         for k, cn in devClassMapping.items():
+        #             expr = expr.replace(k, cn)
+        #         return expr
 
-            new_exprs = set([process_expr(e) for e in exprs])
+        #     new_exprs = set([process_expr(e) for e in exprs])
 
-            exprs = list(new_exprs)
+        #     exprs = list(new_exprs)
 
-            output_path = "dump.json"
-            print("DUMPING COND TO:", output_path)
-            with open(output_path, "w+") as f:
-                import json
+        #     output_path = "dump.json"
+        #     print("DUMPING COND TO:", output_path)
+        #     with open(output_path, "w+") as f:
+        #         import json
 
-                content = json.dumps(exprs, indent=4, ensure_ascii=False)
-                f.write(content)
+        #         content = json.dumps(exprs, indent=4, ensure_ascii=False)
+        #         f.write(content)
 
-        if DEBUG:
-            dumpCond()
+        # if DEBUG:
+        #     dumpCond()
+        
         solver = SolverFactory("cplex")
         try:
             print(">>>SOLVING<<<")
