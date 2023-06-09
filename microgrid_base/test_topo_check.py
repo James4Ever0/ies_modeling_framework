@@ -339,7 +339,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 import pandas as pd
 
                 仿真结果表 = []
-                出力曲线字典 = {}
+                出力曲线字典 = {} # 设备ID: 设备出力曲线
                 from export_format_validate import *
 
                 for devId, devInst in devInstDict.items():
