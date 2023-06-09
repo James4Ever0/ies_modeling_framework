@@ -258,6 +258,7 @@ if sys.argv[-1] in ["-f", "--full"]:
     计算步长 = calcParamList[0][2]['计算步长']
     计算类型 = calcParamList[0][2]['计算类型']
     计算目标 = calcParamList[0][2]['计算目标']
+    
     if 典型日:
         assert len(calcParamList)>1
     else:
@@ -285,9 +286,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
             calcTargetLUT = { # 计算模式是""时调用
-                "经济": ,
-                    "环保": ,
-                        "经济_环保": ,
+                "经济": financial_obj_expr,
+                "环保": environment_obj_expr,
             }
             expr_base = calcTargetLUT[计算目标]
             if 典型日:
