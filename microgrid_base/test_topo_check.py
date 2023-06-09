@@ -254,10 +254,11 @@ for md in mdictList:
     
 if sys.argv[-1] in ["-f", "--full"]:
     assert len(calcParamList)>=1
-    典型日 = calcParamList[0][2]['典型日']
-    计算步长 = calcParamList[0][2]['计算步长']
-    计算类型 = calcParamList[0][2]['计算类型']
-    计算目标 = calcParamList[0][2]['计算目标']
+    firstParam_graphparam = calcParamList[0][2]
+    典型日 = firstParam_graphparam['典型日']
+    计算步长 = firstParam_graphparam['计算步长']
+    计算类型 = firstParam_graphparam['计算类型']
+    计算目标 = firstParam_graphparam['计算目标']
     
     if 典型日:
         assert len(calcParamList)>1
@@ -269,7 +270,11 @@ if sys.argv[-1] in ["-f", "--full"]:
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
-        obj_expr = 0
+        # obj_expr = 0
+        calcTargetLUT = {
+                "经济": 0,
+                "环保": 0,
+            }
         
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
@@ -285,8 +290,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
-            calcTargetLUT = { # 计算模式是""时调用
-                "经济": financial_obj_expr,
+            calcTargetLUT["环保"]"经济": financial_obj_expr,
                 "环保": environment_obj_expr,
             }
             expr_base = calcTargetLUT[计算目标]
