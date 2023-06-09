@@ -267,6 +267,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     with ModelWrapperContext() as mw:
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
+            典型日ID = calc_id
             if 典型日:
                 timeParam = 24 * len(graph_data['典型日代表的日期'])
             else:
