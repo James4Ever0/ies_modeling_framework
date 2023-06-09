@@ -351,8 +351,10 @@ if sys.argv[-1] in ["-f", "--full"]:
 
 ## assume we have multiobjective here.
 
-min_finance, max_env = 0, 3
+min_finance, fin_env = 0, 3
 env_finance, min_env = 1, 1
+
+# then sort all results by: env
 
 import numpy as np
 
