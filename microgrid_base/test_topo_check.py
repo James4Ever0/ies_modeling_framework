@@ -266,10 +266,11 @@ if sys.argv[-1] in ["-f", "--full"]:
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
-        if 典型日:
-            timeParam = 24 * 
-        else:
-            timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
+        for devs, adders, graph_data, topo_G in calcParam:
+            if 典型日:
+                timeParam = 24 * len(graph_data['典型日代表的日期'])
+            else:
+                timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
         
         obj_expr, devInstDict, PD = compute(
             devs, adders, graph_data, topo.G, mw
