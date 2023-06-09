@@ -310,9 +310,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             # import json
             sol=True
         except:
-            print("NO SOLUTION.")
-        finally:
             sol = False
+            print("NO SOLUTION.")
         if sol:
             try:
                 with open("export_format.json", "r") as f:
