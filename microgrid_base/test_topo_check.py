@@ -267,7 +267,9 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     with ModelWrapperContext() as mw:
         if 典型日:
-            timeParam = 8760 if  # how many hours?
+            timeParam = ...
+        else:
+            timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?
         
         obj_expr, devInstDict, PD = compute(
             devs, adders, graph_data, topo.G, mw
