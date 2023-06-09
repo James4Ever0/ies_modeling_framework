@@ -651,6 +651,7 @@ class {{class_name}}模型(设备模型):
         {# 检验解析时参数是否填写完全 #}
         {% if class_name in ['柴油发电']%}
         assert self.燃料热值!=0
+        assert type(self.燃料热值) in [int,float]
         {% endif%}
         {% if class_name == "风力发电" %}
         # define a single-variate piecewise function
@@ -1054,7 +1055,8 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
             if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
                 assert len(input_indexs) == 1, "柴油元件只能一对多连接"
                 diesel_node_id = G.nodes[input_indexs[0]]['device_id']
-                热值 = devInstDict[diesel_node_id].设备信息.热值
+                {# 热值 = devInstDict[diesel_node_id].设备信息.热值 #}
+                热值 = devInstDict[diesel_node_id].热值
                 for output_index in output_indexs:
                     output_node_index = G.nodes[output_index]['device_id']
                     devInstDict[output_node_index].燃料热值 = 热值
