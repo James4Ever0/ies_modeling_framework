@@ -320,6 +320,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_expr = calcTargetLUT[计算目标]
     else:
         obj_expr = calcTargetLUT["经济"]
+        
+        val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
 
     def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
@@ -365,7 +367,6 @@ if sys.argv[-1] in ["-f", "--full"]:
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             results = solver.solve(mw.model, tee=True)
             return True
-            val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
         except:
             import traceback
 
