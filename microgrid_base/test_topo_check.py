@@ -271,6 +271,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     with ModelWrapperContext() as mw:
         # obj_expr = 0
+    def getCalcTargetLUT(calcParamList:list):
         calcTargetLUT = {
                 "经济": 0,
                 "环保": 0,
@@ -298,6 +299,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_expr = calcTargetLUT[计算目标]
         else:
             obj_expr = calcTargetLUT['经济']
+
     def solve_model(mw:ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
