@@ -163,7 +163,7 @@ class 柴油发电仿真结果(BaseModel):
 
     @validator("柴油消耗量")
     def standard_unit_to_custom_柴油消耗量(cls, v):
-        return [e / 0.0010000000000000002 for e in v]
+        return v / 0.0010000000000000002
 
     平均效率_平均COP: float
     """

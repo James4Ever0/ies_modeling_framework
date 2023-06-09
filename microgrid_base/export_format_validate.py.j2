@@ -79,7 +79,11 @@ def ReLU(val):
             {% if paramDef[0] !=1 %}
     @validator("{{PN}}")
     def standard_unit_to_custom_{{PN}}(cls, v):
+                {% if has_list%}
         return [e / {{paramDef[0]}} for e in v]
+                {% else%}
+        return v / {{paramDef[0]}}
+                {% endif%}
             {% endif %}
         {% endif %}
         
