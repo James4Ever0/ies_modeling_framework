@@ -253,16 +253,19 @@ for md in mdictList:
     
 if sys.argv[-1] in ["-f", "--full"]:
     assert len(calcParamList)>=1
-    典型日 = calcParamList['典型日']
+    典型日 = calcParamList[2]['典型日']
     if 典型日:
         assert len(calcParamList)>1
+    else:
+        assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
-    timeParam = 8760  # how many hours?
     DEBUG = False  # poly degree based verification.
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
+        timeParam = 8760  # how many hours?
+        
         obj_expr, devInstDict, PD = compute(
             devs, adders, graph_data, topo.G, mw
         )  # single instance.
