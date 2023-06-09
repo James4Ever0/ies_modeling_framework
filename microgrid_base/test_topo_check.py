@@ -310,6 +310,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             #     data = json.load(f)
             import pandas as pd
             仿真结果表 = []
+            出力曲线列表 = []
             from export_format_validate import *
             for devId, devInst in devInstDict.items():
                 devClassName = devInst.__class__.__name__.strip("模型")
