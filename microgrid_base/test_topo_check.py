@@ -50,7 +50,10 @@ P1 = 光伏发电信息(
 ).dict()
 PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
-DSS = 柴油(topo, param=柴油信息(设备名称 = 'Any', Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict())
+DSS = 柴油(
+    topo,
+    param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
+)
 DS = 柴油发电(
     topo,
     param=柴油发电信息(
@@ -241,7 +244,7 @@ import sys
 
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
-    timeParam = 8760 # how many hours?
+    timeParam = 8760  # how many hours?
     DEBUG = True
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
@@ -306,19 +309,23 @@ if sys.argv[-1] in ["-f", "--full"]:
             # export value.
             # import json
 
-            # with open('export_format.json', 'r') as f:
-            #     data = json.load(f)
+            with open("export_format.json", "r") as f:
+                dt = json.load(f)
+                columns = dt["仿真结果"]["ALL"]
+                columns = [e if type(e) == str else e[0] for e in columns]
             import pandas as pd
+
             仿真结果表 = []
-            出力曲线列表 = []
+            出力曲线列表 = {}
             from export_format_validate import *
+
             for devId, devInst in devInstDict.items():
                 devClassName = devInst.__class__.__name__.strip("模型")
-                结果类 = globals()[f'{devClassName}仿真结果'] # 一定有的
-                出力曲线类 = globals().get(f'{devClassName}出力曲线', None)
+                结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
+                出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                 结果 = 结果类.export(devInst, timeParam)
                 仿真结果表.append(结果.dict())
-            仿真结果表 = pd.DataFrame(仿真结果表)
+            仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
         except:
             print("NO SOLUTION.")
         breakpoint()
