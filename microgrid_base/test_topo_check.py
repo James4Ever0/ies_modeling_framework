@@ -254,8 +254,8 @@ for md in mdictList:
     
 if sys.argv[-1] in ["-f", "--full"]:
     assert len(calcParamList)>=1
-    典型日 = calcParamList[2]['典型日']
-    计算步长 = calcParamList[2]['']
+    典型日 = calcParamList[0][2]['典型日']
+    计算步长 = calcParamList[0][2]['计算步长']
     if 典型日:
         assert len(calcParamList)>1
     else:
