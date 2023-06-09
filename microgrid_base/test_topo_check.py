@@ -284,10 +284,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
             
-            calcTargetLUT = {
+            calcTargetLUT = { # 计算模式是""时调用
                 "经济": ,
-                    "环保": 
-                        "经济_环保": 
+                    "环保": ,
+                        "经济_环保": ,
             }
             expr_base = calcTargetLUT[计算目标]
             if 典型日:

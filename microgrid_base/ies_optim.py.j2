@@ -282,6 +282,7 @@ class 计算参数(BaseModel):
             assert len(v) <=365
         return v
     计算类型: Union[Literal['仿真模拟'],Literal['设计规划']]
+    计算目标: Union[Literal['经济'], Literal['环保'], Literal['经济_环保']]
     风速: List[float]
     """
     单位: m/s
