@@ -340,7 +340,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             results = solver.solve(mw.model, tee=True)
-            value(calcTargetLUT['经济']), value(calcTargetLUT['经济'])
+            val_fin, val_env = value(calcTargetLUT['经济']), value(calcTargetLUT['环保'])
         except:
             import traceback
 
