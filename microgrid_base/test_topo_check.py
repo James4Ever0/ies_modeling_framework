@@ -233,7 +233,6 @@ mdictList = [mdict]  # 传入API的计算参数
 calcParamList = []
 
 for md in mdictList:
-    
     topo_load = topo.from_json(md)  # static method
     print_with_banner(topo_load, "图对象")
     # how to check error now?
@@ -253,6 +252,10 @@ for md in mdictList:
     calcParamList.append(calcParam)
     
 if sys.argv[-1] in ["-f", "--full"]:
+    assert len(calcParamList)>=1
+    典型日 = calcParamList['典型日']
+    if 典型日:
+        assert len(calcParamList)>1
     # 测试全年8760,没有典型日
     timeParam = 8760  # how many hours?
     DEBUG = False  # poly degree based verification.
@@ -263,6 +266,8 @@ if sys.argv[-1] in ["-f", "--full"]:
         obj_expr, devInstDict, PD = compute(
             devs, adders, graph_data, topo.G, mw
         )  # single instance.
+        
+
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
