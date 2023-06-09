@@ -294,10 +294,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
             calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
         
-        if 计算目标 == "经济","环保":
-            obj_expr = calcTargetLUT[]
+        if 计算目标 in ["经济","环保"]:
+            obj_expr = calcTargetLUT[计算目标]
         else:
-            obj_expr = calcTargetLUT
+            obj_expr = calcTargetLUT['经济']
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
         # devClassMapping = {
@@ -340,6 +340,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             results = solver.solve(mw.model, tee=True)
+            value(calcTargetLUT['经济']), value(calcTargetLUT['经济'])
         except:
             import traceback
 
