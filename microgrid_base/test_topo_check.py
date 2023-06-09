@@ -269,8 +269,6 @@ if sys.argv[-1] in ["-f", "--full"]:
         obj_expr, devInstDict, PD = compute(
             devs, adders, graph_data, topo.G, mw
         )  # single instance.
-        
-
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
@@ -357,8 +355,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                 rich.print(出力曲线字典)
                 print()
                 仿真结果表.head()
-                export_table = 仿真结果表.to_html()
-                # 仿真结果表.to_json(force_ascii=False)
+                # export_table = 仿真结果表.to_html()
+                sim_table_obj = 仿真结果表.to_json(force_ascii=False)
             except:
                 import traceback
 
