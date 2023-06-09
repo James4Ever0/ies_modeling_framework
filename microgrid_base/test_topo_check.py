@@ -270,7 +270,9 @@ if sys.argv[-1] in ["-f", "--full"]:
         
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
+            
             if 典型日:
+                graph_data['典型日ID'] = 典型日ID
                 timeParam = 24 * len(graph_data['典型日代表的日期'])
             else:
                 timeParam = 8760 if 计算步长 == '小时' else 2 # how many hours?

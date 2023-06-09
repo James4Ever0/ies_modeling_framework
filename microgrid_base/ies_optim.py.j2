@@ -270,7 +270,7 @@ class ModelWrapper:
 
 # 需要明确单位
 class 计算参数(BaseModel):
-    典型日ID: Union[int, None] = None
+    典型日ID: Union[int, None] = None # increse by external loop
     计算步长: Union[Literal["小时"], Literal['秒']]
     典型日: bool
     {# 典型日权重: int = 0 #}
