@@ -349,3 +349,9 @@ if sys.argv[-1] in ["-f", "--full"]:
         print("END")
 
 ## assume we have multiobjective here.
+
+min_finance, max_env = 0,3
+env_finance, min_env = 1,1
+
+import numpy as np
+
