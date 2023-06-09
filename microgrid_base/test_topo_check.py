@@ -226,7 +226,6 @@ with open("template_input.json", "w+") as f:
 ###############
 # load from dict
 ###############
-
 topo_load = topo.from_json(mdict)  # static method
 print_with_banner(topo_load, "图对象")
 # how to check error now?
