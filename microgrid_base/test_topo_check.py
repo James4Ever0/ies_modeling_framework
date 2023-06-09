@@ -245,7 +245,7 @@ import sys
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
     timeParam = 8760  # how many hours?
-    DEBUG = True
+    DEBUG = False # poly degree based verification.
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
@@ -330,6 +330,9 @@ if sys.argv[-1] in ["-f", "--full"]:
                     出力曲线 = 出力曲线类.export(devInst, timeParam)
                     出力曲线字典.update(dict(id=devId, data=出力曲线))
             仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
+            print()
+            rich.print(出力曲线字典)
+            print()
             仿真结果表.head()
         except:
             print("NO SOLUTION.")
