@@ -19,6 +19,13 @@ def addListElem(*args):
     return vals
 
 
+EPS = "1e-10"
+
+
+def safeDiv(val, div):
+    return (val) / (div + EPS)
+
+
 def ReLU(val):
     if type(val) not in [int, float]:
         val = value(val)
@@ -182,18 +189,15 @@ class 柴油发电仿真结果(BaseModel):
             柴油消耗量=(
                 (statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam
             ),
-            平均效率_平均COP=(
-                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
-            )
-            / (
+            平均效率_平均COP=safeDiv(
+                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
                 model.燃料热值
                 * (
                     (
                         (statistics.mean([value(e) for e in model.燃料接口.values()]))
                         * timeParam
                     )
-                )
-                + 1e-10
+                ),
             ),
         )
 
@@ -227,15 +231,12 @@ class 锂电池仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=ReLU(
-                (
-                    ((statistics.mean([ReLU(e) for e in model.电接口])) * timeParam)
+            平均效率_平均COP=safeDiv(
+                ReLU(
+                    (((statistics.mean([ReLU(e) for e in model.电接口])) * timeParam))
                     - (model.InitSOC * model.TotalCapacity)
-                )
-                / (
-                    -(((statistics.mean([-ReLU(-e) for e in model.电接口])) * timeParam))
-                    + 1e-10
-                )
+                ),
+                (-(((statistics.mean([-ReLU(-e) for e in model.电接口])) * timeParam))),
             ),
         )
 
@@ -269,8 +270,10 @@ class 变压器仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
-            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
+            平均效率_平均COP=-safeDiv(
+                statistics.mean([value(e) for e in model.电输入.values()]),
+                statistics.mean([value(e) for e in model.电输出.values()]),
+            ),
         )
 
 
@@ -303,8 +306,10 @@ class 变流器仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
-            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
+            平均效率_平均COP=-safeDiv(
+                statistics.mean([value(e) for e in model.电输入.values()]),
+                statistics.mean([value(e) for e in model.电输出.values()]),
+            ),
         )
 
 
@@ -339,11 +344,11 @@ class 双向变流器仿真结果(BaseModel):
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
             平均效率_平均COP=value(
                 (
-                    (sumVarList(model.储能端_.x_pos) / sumVarList(model.线路端_.x_neg))
+                    safeDiv(sumVarList(model.储能端_.x_pos), sumVarList(model.线路端_.x_neg))
                     * sumVarList(model.储能端_.b_pos)
                 )
                 + (
-                    (sumVarList(model.线路端_.x_pos) / sumVarList(model.储能端_.x_neg))
+                    safeDiv(sumVarList(model.线路端_.x_pos), sumVarList(model.储能端_.x_neg))
                     * sumVarList(model.线路端_.b_pos)
                 )
             )
@@ -380,8 +385,10 @@ class 传输线仿真结果(BaseModel):
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
             设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
-            平均效率_平均COP=-(statistics.mean([value(e) for e in model.电输入.values()]))
-            / (statistics.mean([value(e) for e in model.电输出.values()]) + 1e-10),
+            平均效率_平均COP=-safeDiv(
+                statistics.mean([value(e) for e in model.电输入.values()]),
+                statistics.mean([value(e) for e in model.电输出.values()]),
+            ),
         )
 
 
@@ -508,7 +515,7 @@ class 锂电池出力曲线(BaseModel):
                 for e in model.CurrentTotalActualCapacity.values()
             ],
             荷电状态=[
-                value((e + model.MinTotalCapacity) / model.TotalCapacity)
+                value(safeDiv(e + model.MinTotalCapacity, model.TotalCapacity))
                 for e in model.CurrentTotalActualCapacity.values()
             ],
         )
