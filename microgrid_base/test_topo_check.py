@@ -266,6 +266,8 @@ if sys.argv[-1] in ["-f", "--full"]:
     from ies_optim import compute, ModelWrapperContext
 
     with ModelWrapperContext() as mw:
+        obj_expr = 0
+        
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
             if 典型日:
@@ -277,6 +279,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 devs, adders, graph_data, topo.G, mw
             )  # single instance.
             (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr) = obj_exprs
+            
 
         OBJ = mw.Objective(expr=obj_expr, sense=minimize)
 
