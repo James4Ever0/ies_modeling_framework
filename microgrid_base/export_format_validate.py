@@ -19,10 +19,8 @@ def addListElem(*args):
     return vals
 
 
-EPS = "1e-10"
-
-
 def safeDiv(val, div):
+    EPS = "1e-10"
     return (val) / (div + EPS)
 
 

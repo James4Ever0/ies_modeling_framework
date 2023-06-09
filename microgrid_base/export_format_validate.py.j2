@@ -21,9 +21,9 @@ def addListElem(*args):
         vals.append(sum(elem_zip))
     return vals
 
-EPS = "1e-10"
 
 def safeDiv(val, div):
+    EPS = "1e-10"
     return (val)/(div+EPS)
 
 def ReLU(val):
