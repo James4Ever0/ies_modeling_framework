@@ -366,5 +366,3 @@ fin_points = np.linspace(a, b, num=11)
 for fin_start, fin_end in zip(fin_points[:-1].tolist(), fin_points[1:].tolist()):
     print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
     # min env under this condition. recalculate.
-
-# then sort all results by: env
