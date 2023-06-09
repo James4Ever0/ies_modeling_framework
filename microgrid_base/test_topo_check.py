@@ -269,9 +269,10 @@ if sys.argv[-1] in ["-f", "--full"]:
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
-    with ModelWrapperContext() as mw:
         # obj_expr = 0
-    def getCalcTargetLUT(calcParamList:list):
+    from copy import deepcopy
+    def getCalcTargetLUT(mw:ModelWrapper, mCalcParamList:list):
+        mCalcParamList = deepcopy(calcParamList)
         calcTargetLUT = {
                 "经济": 0,
                 "环保": 0,
@@ -294,11 +295,14 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_time_param = (1 if not 典型日 else len(graph_data['典型日代表的日期']))
             calcTargetLUT["环保"]+= environment_obj_expr * obj_time_param
             calcTargetLUT["经济"]+= (financial_obj_expr if 计算类型 == '设计规划' else financial_dyn_obj_expr) * obj_time_param
+        return calcTargetLUT
         
-        if 计算目标 in ["经济","环保"]:
-            obj_expr = calcTargetLUT[计算目标]
-        else:
-            obj_expr = calcTargetLUT['经济']
+    if 计算目标 in ["经济","环保"]:
+        with ModelWrapperContext() as mw:
+            calcTargetLUT = getCalcTargetLUT(mw, calcParamList.copy())
+        obj_expr = calcTargetLUT[计算目标]
+    else:
+        obj_expr = calcTargetLUT['经济']
 
     def solve_model(mw:ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
