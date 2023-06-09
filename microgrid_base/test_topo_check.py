@@ -289,7 +289,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                     "环保": 
                         "经济_环保": 
             }
-            expr_base = calcTargetLUT["计算目标"]
+            expr_base = calcTargetLUT[计算目标]
             if 典型日:
                 if 计算步长 == "小时":
                     obj_expr += 
