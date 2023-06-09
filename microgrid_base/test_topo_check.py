@@ -385,8 +385,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                 print()
                 仿真结果表.head()
                 # export_table = 仿真结果表.to_html()
+                # may you change the format.
                 sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient='records')
-                    
             except:
                 import traceback
 
