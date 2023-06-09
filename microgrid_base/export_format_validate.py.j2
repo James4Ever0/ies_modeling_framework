@@ -113,7 +113,7 @@ def ReLU(val):
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
     "柴油消耗量": TP_MVLIST("model.燃料接口"),
-    "单向电转换COP": "- ({}) / ({} + {})".format(MVLIST("model.电输入"), MVLIST("model.电输出"), EPS)
+    "单向电转换COP": "- safeDiv({},{})".format(MVLIST("model.电输入"), MVLIST("model.电输出"))
 }%}
 {% set CSPL = {} %}
 {% macro dictValueToKeyValuePair(a,b)%}
@@ -138,10 +138,10 @@ def ReLU(val):
     "柴油发电": [
         CSPL['产电量'],
         CSPL['柴油消耗量'],
-        ("平均效率_平均COP","({})/(model.燃料热值 * ({}) + {})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], EPS))
+        ("平均效率_平均COP","safeDiv({},model.燃料热值 * ({}))".format(commonSimParams['产电量'],commonSimParams['柴油消耗量']))
     ],
     "锂电池":[
-        ("平均效率_平均COP", ("ReLU(({} - ({})) / (-({}) + {}))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"), EPS)))
+        ("平均效率_平均COP", ("safeDiv(ReLU(({} - ({})) , (-({})))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"))))
     ], 
     "变压器":[
         ("平均效率_平均COP", commonSimParams['单向电转换COP'])
