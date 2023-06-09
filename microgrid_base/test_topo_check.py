@@ -298,7 +298,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_expr = calcTargetLUT[计算目标]
         else:
             obj_expr = calcTargetLUT['经济']
-        OBJ = mw.Objective(expr=obj_expr, sense=minimize)
+    def solve_model(mw:ModelWrapper, obj_expr, sense=minimize):
+        OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
         # devClassMapping = {
         #     f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
