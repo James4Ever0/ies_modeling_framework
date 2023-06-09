@@ -354,8 +354,6 @@ if sys.argv[-1] in ["-f", "--full"]:
 min_finance, fin_env = 0, 3
 env_finance, min_env = 1, 1
 
-# then sort all results by: env
-
 import numpy as np
 
 a, b = min_finance, env_finance
@@ -368,3 +366,5 @@ fin_points = np.linspace(a, b, num=11)
 for fin_start, fin_end in zip(fin_points[:-1].tolist(), fin_points[1:].tolist()):
     print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
     # min env under this condition. recalculate.
+
+# then sort all results by: env
