@@ -316,7 +316,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 结果类 = globals()[f'{devClassName}仿真结果'] # 一定有的
                 出力曲线类 = globals().get(f'{devClassName}出力曲线', None)
                 结果 = 结果类.export(devInst, timeParam)
-                仿真结果表.append(结果.)
+                仿真结果表.append(结果.dict())
             仿真结果表 = pd.DataFrame(仿真结果表)
         except:
             print("NO SOLUTION.")
