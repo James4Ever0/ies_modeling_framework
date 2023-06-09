@@ -333,7 +333,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
-                        出力曲线字典.update(dict(id=devId, data=出力曲线))
+                        出力曲线字典.update({devId: 出力曲线.dict()})
                 仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
                 print()
                 rich.print(出力曲线字典)
