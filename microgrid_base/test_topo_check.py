@@ -355,3 +355,11 @@ env_finance, min_env = 1,1
 
 import numpy as np
 
+a,b = min_finance, env_finance
+if a == b:
+    raise Exception("Unable to perform multiobjective search.")
+elif a>b:
+    a,b = b,a
+
+fin_points = np.linspace(a,b, num=11)
+for fin_start, fin_end in zip(fin_points[:-1].tolist(), fin_points[1:].tolist())
