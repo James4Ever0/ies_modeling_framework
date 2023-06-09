@@ -241,6 +241,7 @@ import sys
 
 if sys.argv[-1] in ["-f", "--full"]:
     # 测试全年8760,没有典型日
+    timeParam = 8760 # how many hours?
     DEBUG = True
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
@@ -312,8 +313,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             from export_format_validate import *
             for devId, devInst in devInstDict.items():
                 devClassName = devInst.__class__.__name__.strip("模型")
-                结果类 = globals()[f'{devClassName}仿真结果']
+                结果类 = globals()[f'{devClassName}仿真结果'] # 一定有的
                 出力曲线类 = globals().get(f'{devClassName}出力曲线', None)
+                结果 = 结果类.export(devInst, timeParam)
+                仿真结果表.append(结果.)
             仿真结果表 = pd.DataFrame(仿真结果表)
         except:
             print("NO SOLUTION.")
