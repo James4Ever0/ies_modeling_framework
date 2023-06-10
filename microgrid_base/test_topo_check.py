@@ -442,9 +442,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                 sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient="records")
             except:
                 import traceback
-
                 traceback.print_exc()
-                breakpoint()
+                breakpoint() # you need to turn off these breakpoints in release.
         breakpoint()
 
         print("END")
