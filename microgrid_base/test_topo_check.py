@@ -405,6 +405,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         except:
             sol = False
             print("NO SOLUTION.")
+        #### LOOP OF PREPARING SOLUTION ####
         if sol:
             try:
                 import pandas as pd
