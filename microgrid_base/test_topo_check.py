@@ -482,19 +482,24 @@ if sys.argv[-1] in ["-f", "--full"]:
             else:
                 result = None
     else:
-        class (BaseModel):
+        class DualObjectiveRange(BaseModel):
+            min_finance:float
+            fin_env:float
+            env_finance:float
+            min_env:float
             
-min_finance, fin_env = 0, 3
-env_finance, min_env = 1, 1
+        rangeDict = {}
             
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT["经济"]
             solved = solve_model(mw, obj_expr)
             if solved:
-                val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
+                rangeDict["min_finance"], rangeDict["fin_env"] = value(ret.calcTargetLUT["经济"]), value(
                     ret.calcTargetLUT["环保"]
                 )
+                # move to next step.
+        
 
         #### LOOP OF PREPARING SOLUTION ####
 
