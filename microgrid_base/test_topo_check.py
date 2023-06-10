@@ -423,7 +423,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表 = {}
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 
-                出力曲线模版 = 
+                出力曲线模版 = [0 for _ in range(8760)] # 1d array, placed when running under typical day mode.
+                def 
                 from export_format_validate import *
 
                 for index, devInstDict in enumerate(ret.devInstDictList):
