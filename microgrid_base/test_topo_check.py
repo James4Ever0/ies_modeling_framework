@@ -482,33 +482,40 @@ if sys.argv[-1] in ["-f", "--full"]:
             else:
                 result = None
     else:
+
         class DualObjectiveRange(BaseModel):
-            min_finance:float
-            fin_env:float
-            env_finance:float
-            min_env:float
-            
+            min_finance: float
+            fin_env: float
+            env_finance: float
+            min_env: float
+
         rangeDict = {}
-            
+
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT["经济"]
             solved = solve_model(mw, obj_expr)
             if solved:
-                rangeDict["min_finance"], rangeDict["fin_env"] = value(ret.calcTargetLUT["经济"]), value(
-                    ret.calcTargetLUT["环保"]
-                )
+                rangeDict["min_finance"], rangeDict["fin_env"] = value(
+                    ret.calcTargetLUT["经济"]
+                ), value(ret.calcTargetLUT["环保"])
                 # move to next step.
-        if rangeDict !={}:
+        if rangeDict != {}:
             with ModelWrapperContext() as mw:
                 ret = getCalcStruct(mw, calcParamList)
                 obj_expr = ret.calcTargetLUT["经济"]
                 solved = solve_model(mw, obj_expr)
                 if solved:
-                    rangeDict['env_finance'], rangeDict['fin_env'] =  value(ret.calcTargetLUT["经济"]), value(
-                    ret.calcTargetLUT["环保"]
-                )
-            
+                    rangeDict["env_finance"], rangeDict["fin_env"] = value(
+                        ret.calcTargetLUT["经济"]
+                    ), value(ret.calcTargetLUT["环保"])
+            try:
+                DOR = DualObjectiveRange.parse_obj(rangeDict)
+                
+            except:
+                import traceback
+
+                traceback.print_exc()
 
         #### LOOP OF PREPARING SOLUTION ####
 
@@ -532,6 +539,7 @@ elif a > b:
     a, b = b, a
 
 fin_points = np.linspace(a, b, num=11)
-for fin_start, fin_end in zip(fin_points[:-1].tolist(), fin_points[1:].tolist()):
-    print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
+const_ranges = list(zip(fin_points[:-1].tolist(), fin_points[1:].tolist()))
+for fin_start, fin_end in :
+    # print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
     # min env under this condition. recalculate.
