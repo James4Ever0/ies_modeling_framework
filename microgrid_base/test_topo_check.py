@@ -505,9 +505,10 @@ if sys.argv[-1] in ["-f", "--full"]:
                 obj_expr = ret.calcTargetLUT["经济"]
                 solved = solve_model(mw, obj_expr)
                 if solved:
-                    rangeDict[''], rangeDict[''] =  value(ret.calcTargetLUT["经济"]), value(
+                    rangeDict['env_finance'], rangeDict['fin_env'] =  value(ret.calcTargetLUT["经济"]), value(
                     ret.calcTargetLUT["环保"]
                 )
+            
 
         #### LOOP OF PREPARING SOLUTION ####
 
