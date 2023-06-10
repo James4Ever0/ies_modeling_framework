@@ -455,8 +455,9 @@ if sys.argv[-1] in ["-f", "--full"]:
                             出力曲线 = 出力曲线类.export(devInst, timeParam)
                             if 典型日:
                                 if 出力曲线字典.get(devId, None) is None:
-                                    出力曲线字典[devId] = 创建出力曲线模版()
-                                出力曲线字典.update({devId: 出力曲线.dict()})
+                                    出力曲线字典[devId] = {k:创建出力曲线模版() for k in 出力曲线.dict().keys()}
+                                mdict = deepcopy(出力曲线字典[devId])
+                                出力曲线字典.update({devId: {k:填充出力曲线(mdict[k], v, for k,v in 出力曲线.dict().items()})
                             else:
                                 出力曲线字典.update({devId: 出力曲线.dict()})
                 仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
