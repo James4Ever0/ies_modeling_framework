@@ -258,6 +258,8 @@ class {{devName}}仿真结果(BaseModel):
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
+{% if devName == '锂电池'%}
+{% do paramDict[]%}
 {{iterParamDict(paramDict, True)}}
 {% set obj = {}%}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
