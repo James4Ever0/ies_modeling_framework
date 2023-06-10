@@ -484,11 +484,11 @@ if sys.argv[-1] in ["-f", "--full"]:
     else:
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
-        obj_expr = ret.calcTargetLUT["经济"]
+            obj_expr = ret.calcTargetLUT["经济"]
 
-        val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
-            ret.calcTargetLUT["环保"]
-        )
+            val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
+                ret.calcTargetLUT["环保"]
+            )
 
         #### LOOP OF PREPARING SOLUTION ####
 
