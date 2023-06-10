@@ -419,7 +419,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             try:
                 import pandas as pd
 
-                仿真结果表 = []
+                仿真结果表 = {}
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 from export_format_validate import *
 
@@ -434,7 +434,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                         结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                         出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                         结果 = 结果类.export(devInst, timeParam)
-                        仿真结果表.append(结果.dict())
+                        # 仿真结果表.append(结果.dict())
+                        之前结果 = 仿真结果表[devInst].append(结果.dict())
 
                         if 出力曲线类:
                             出力曲线 = 出力曲线类.export(devInst, timeParam)
