@@ -482,13 +482,19 @@ if sys.argv[-1] in ["-f", "--full"]:
             else:
                 result = None
     else:
+        class (BaseModel):
+            
+min_finance, fin_env = 0, 3
+env_finance, min_env = 1, 1
+            
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT["经济"]
-
-            val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
-                ret.calcTargetLUT["环保"]
-            )
+            solved = solve_model(mw, obj_expr)
+            if solved:
+                val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
+                    ret.calcTargetLUT["环保"]
+                )
 
         #### LOOP OF PREPARING SOLUTION ####
 
