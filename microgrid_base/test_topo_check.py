@@ -472,6 +472,31 @@ if sys.argv[-1] in ["-f", "--full"]:
                 traceback.print_exc()
         return None
 
+
+    ## assume we have multiobjective here.
+
+    def prepareDualObjectiveRanges(DOR:DualObjectiveRange):
+        # min_finance, fin_env = 0, 3
+        # env_finance, min_env = 1, 1
+        
+        # DOR.min_finance, DOR.fin_env = 0, 3
+        # DOR.env_finance, DOR.min_env = 1, 1
+
+        import numpy as np
+
+        a, b = DOR.min_finance, DOR.env_finance
+        if a == b:
+            raise Exception("Unable to perform multiobjective search.")
+        elif a > b:
+            a, b = b, a
+
+        fin_points = np.linspace(a, b, num=11)
+        constraint_ranges = list(zip(fin_points[:-1].tolist(), fin_points[1:].tolist()))
+        for fin_start, fin_end in constraint_ranges:
+            print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
+            # min env under this condition. recalculate.
+        return constraint_ranges
+
     if 计算目标 in ["经济", "环保"]:
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
