@@ -335,9 +335,9 @@ if sys.argv[-1] in ["-f", "--full"]:
             ret = getCalcStruct(
                 mw, calcParamList
             )
-        obj_expr = calcTargetLUT["经济"]
+        obj_expr = ret.calcTargetLUT["经济"]
 
-        val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
+        val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(ret.calcTargetLUT["环保"])
 
     def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
