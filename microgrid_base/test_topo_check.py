@@ -499,7 +499,15 @@ if sys.argv[-1] in ["-f", "--full"]:
                     ret.calcTargetLUT["环保"]
                 )
                 # move to next step.
-        
+        if rangeDict !={}:
+            with ModelWrapperContext() as mw:
+                ret = getCalcStruct(mw, calcParamList)
+                obj_expr = ret.calcTargetLUT["经济"]
+                solved = solve_model(mw, obj_expr)
+                if solved:
+                    rangeDict[''], rangeDict[''] =  value(ret.calcTargetLUT["经济"]), value(
+                    ret.calcTargetLUT["环保"]
+                )
 
         #### LOOP OF PREPARING SOLUTION ####
 
