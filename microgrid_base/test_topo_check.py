@@ -253,6 +253,11 @@ for md in mdictList:
     calcParamList.append(calcParam)
 
 if sys.argv[-1] in ["-f", "--full"]:
+
+    with open("export_format.json", "r") as f:
+        dt = json.load(f)
+        columns = dt["仿真结果"]["ALL"]
+        columns = [e if type(e) == str else e[0] for e in columns]
     assert len(calcParamList) >= 1
     firstParam_graphparam = calcParamList[0][2]
     典型日 = firstParam_graphparam["典型日"]
@@ -382,7 +387,8 @@ if sys.argv[-1] in ["-f", "--full"]:
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             results = solver.solve(mw.model, tee=True)
-            return True
+            print("SOLVER RESULTS?")
+            rich.print(results)
         except:
             import traceback
 
@@ -401,10 +407,6 @@ if sys.argv[-1] in ["-f", "--full"]:
             print("NO SOLUTION.")
         if sol:
             try:
-                with open("export_format.json", "r") as f:
-                    dt = json.load(f)
-                    columns = dt["仿真结果"]["ALL"]
-                    columns = [e if type(e) == str else e[0] for e in columns]
                 import pandas as pd
 
                 仿真结果表 = []
