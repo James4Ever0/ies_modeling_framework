@@ -204,7 +204,7 @@ class {{devName}}仿真结果(BaseModel):
             dict(
             设备型号 = "model.设备信息.设备型号",
             设备台数 = "value(model.DeviceCount)",
-            设备维护费用 = TP("value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)"),
+            设备维护费用 = TP_ANNUAL("value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)"),
             )
         )
         %}
