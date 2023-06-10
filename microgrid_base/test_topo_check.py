@@ -423,7 +423,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表 = {}
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 
-                出力曲线模版 = [0 for _ in range(8760)] # 1d array, placed when running under typical day mode.
+                创建出力曲线模版 = [0 for _ in range(8760)] # 1d array, placed when running under typical day mode.
                 def 填充出力曲线(出力曲线模版:List[float], 典型日出力曲线:List[float], 典型日代表的日期:List[int]):
                     assert len(出力曲线模版) == 8760
                     assert len(典型日出力曲线) == 24
