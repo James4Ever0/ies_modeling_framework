@@ -405,6 +405,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         except:
             sol = False
             print("NO SOLUTION.")
+        return sol
         #### LOOP OF PREPARING SOLUTION ####
         if sol:
             try:
