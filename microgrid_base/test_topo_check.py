@@ -276,7 +276,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     # obj_expr = 0
     from copy import deepcopy
-    
+
     def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
         OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
@@ -392,30 +392,27 @@ if sys.argv[-1] in ["-f", "--full"]:
             devInstDictList=devInstDictList,
             PDList=PDList,
             timeParamList=timeParamList,
-            graph_data_list=graph_data_list
+            graph_data_list=graph_data_list,
         )
         return ret
 
     if 计算目标 in ["经济", "环保"]:
         with ModelWrapperContext() as mw:
-            ret = getCalcStruct(
-                mw, calcParamList
-            )
+            ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT[计算目标]
             solved = solve_model(mw, obj_expr)
             if solved:
-                ... # use 'ret' to prepare result.
+                ...  # use 'ret' to prepare result.
             else:
                 ...
     else:
         with ModelWrapperContext() as mw:
-            ret = getCalcStruct(
-                mw, calcParamList
-            )
+            ret = getCalcStruct(mw, calcParamList)
         obj_expr = ret.calcTargetLUT["经济"]
 
-        val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(ret.calcTargetLUT["环保"])
-
+        val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(
+            ret.calcTargetLUT["环保"]
+        )
 
         #### LOOP OF PREPARING SOLUTION ####
         if sol:
@@ -425,11 +422,13 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表 = []
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 from export_format_validate import *
-                
+
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
-                    timeParam= 24*len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == '小时' else 2)
+                    timeParam = (
+                        24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
+                    )
                     for devId, devInst in devInstDict.items():
                         devClassName = devInst.__class__.__name__.strip("模型")
                         结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
@@ -450,8 +449,9 @@ if sys.argv[-1] in ["-f", "--full"]:
                 sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient="records")
             except:
                 import traceback
+
                 traceback.print_exc()
-                breakpoint() # you need to turn off these breakpoints in release.
+                breakpoint()  # you need to turn off these breakpoints in release.
         breakpoint()
 
         print("END")
