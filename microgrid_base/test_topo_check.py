@@ -360,7 +360,6 @@ if sys.argv[-1] in ["-f", "--full"]:
         graph_data_list = []
 
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
-            graph_data_list.append(graph_data)
             典型日ID = calc_id
 
             if 典型日:
@@ -386,6 +385,8 @@ if sys.argv[-1] in ["-f", "--full"]:
 
             devInstDictList.append(devInstDict)
             PDList.append(PD)
+            graph_data_list.append(graph_data)
+            
 
         ret = CalcStruct(
             calcTargetLUT=calcTargetLUT,
@@ -426,6 +427,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
+                    graph_data[]
                     timeParam = (
                         24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
                     )
