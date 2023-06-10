@@ -449,15 +449,28 @@ if sys.argv[-1] in ["-f", "--full"]:
                         出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                         结果 = 结果类.export(devInst, timeParam)
                         # 仿真结果表.append(结果.dict())
-                        之前结果 = 仿真结果表[devInst].append(结果.dict())
+                        之前结果 = 仿真结果表.get(devInst, None)
+                        if 之前结果 == None:
+                            仿真结果表[devInst] = 结果.dict()
+                        else:
+                            
 
                         if 出力曲线类:
                             出力曲线 = 出力曲线类.export(devInst, timeParam)
                             if 典型日:
                                 if 出力曲线字典.get(devId, None) is None:
-                                    出力曲线字典[devId] = {k:创建出力曲线模版() for k in 出力曲线.dict().keys()}
+                                    出力曲线字典[devId] = {
+                                        k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
+                                    }
                                 mdict = deepcopy(出力曲线字典[devId])
-                                出力曲线字典.update({devId: {k:填充出力曲线(mdict[k], v, for k,v in 出力曲线.dict().items()})
+                                出力曲线字典.update(
+                                    {
+                                        devId: {
+                                            k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
+                                            for k, v in 出力曲线.dict().items()
+                                        }
+                                    }
+                                )
                             else:
                                 出力曲线字典.update({devId: 出力曲线.dict()})
                 仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
