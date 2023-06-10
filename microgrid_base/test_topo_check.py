@@ -427,7 +427,9 @@ if sys.argv[-1] in ["-f", "--full"]:
                 from export_format_validate import *
                 
                 for index, devInstDict in enumerate(ret.devInstDictList):
-                    ret.
+                    graph_data = ret.graph_data_list[index]
+                    典型日代表的日期 = graph_data["典型日代表的日期"]
+                    timeParam= 
                     for devId, devInst in devInstDict.items():
                         devClassName = devInst.__class__.__name__.strip("模型")
                         结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
