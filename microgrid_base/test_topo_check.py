@@ -421,6 +421,8 @@ if sys.argv[-1] in ["-f", "--full"]:
                 仿真结果表 = []
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 from export_format_validate import *
+                
+                for index, devInstDict in enumerate(ret.devInstDictList):
 
                 for devId, devInst in devInstDict.items():
                     devClassName = devInst.__class__.__name__.strip("模型")
