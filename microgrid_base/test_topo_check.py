@@ -483,12 +483,13 @@ if sys.argv[-1] in ["-f", "--full"]:
                 # export_table = 仿真结果表.to_html()
                 # may you change the format.
                 sim_table_obj = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
+                return 出力曲线字典, sim_table_obj
             except:
                 import traceback
-
                 traceback.print_exc()
-                breakpoint()  # you need to turn off these breakpoints in release.
-        breakpoint()
+                return None
+        #         breakpoint()  # you need to turn off these breakpoints in release.
+        # breakpoint()
 
         print("END")
 
