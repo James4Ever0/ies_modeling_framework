@@ -260,7 +260,8 @@ class {{devName}}仿真结果(BaseModel):
 class {{devName}}出力曲线(BaseModel):
 {% if devName == '锂电池'%}
     {% do paramDict.pop('放电功率')%}
-    {% set paramDict['电功率'] = paramDict.pop('充电功率') %}
+    {% set mval = paramDict.pop('充电功率') %}
+    {% set paramDict["电功率 = mval%}
     {# {% set paramDict['电功率'] = paramDict.pop('充电功率') %} #}
 {% endif%}
 {{iterParamDict(paramDict, True)}}
