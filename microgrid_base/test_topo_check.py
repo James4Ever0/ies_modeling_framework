@@ -396,7 +396,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         )
         return ret
 
-    def fetchResult(solved:bool):
+    def fetchResult(solved: bool, ret: CalcStruct):
         if solved:
             try:
                 import pandas as pd
@@ -468,6 +468,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 return 出力曲线字典, 仿真结果表_格式化
             except:
                 import traceback
+
                 traceback.print_exc()
         return None
 
@@ -477,9 +478,9 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_expr = ret.calcTargetLUT[计算目标]
             solved = solve_model(mw, obj_expr)
             if solved:
-                ... fetchResult(solved,) # use 'ret' to prepare result.
+                result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             else:
-                ...
+                result = None
     else:
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
@@ -491,7 +492,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         #### LOOP OF PREPARING SOLUTION ####
 
-            #         breakpoint()  # you need to turn off these breakpoints in release.
+        #         breakpoint()  # you need to turn off these breakpoints in release.
         # breakpoint()
 
         print("END")
