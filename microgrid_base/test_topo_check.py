@@ -271,6 +271,12 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     # obj_expr = 0
     from copy import deepcopy
+    
+    class CalcStruct(BaseModel):
+        calcTargetLUT :Dict
+        devInstDictList
+        PDListLList
+        timeParamList
 
     def getCalcTargetLUT(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
@@ -319,6 +325,10 @@ if sys.argv[-1] in ["-f", "--full"]:
             )
             obj_expr = calcTargetLUT[计算目标]
     else:
+        with ModelWrapperContext() as mw:
+            calcTargetLUT, devInstDictList, PDList, timeParamList = getCalcTargetLUT(
+                mw, calcParamList
+            )
         obj_expr = calcTargetLUT["经济"]
         
         val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
