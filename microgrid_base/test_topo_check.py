@@ -415,80 +415,81 @@ if sys.argv[-1] in ["-f", "--full"]:
         )
 
         #### LOOP OF PREPARING SOLUTION ####
-        if sol:
-            try:
-                import pandas as pd
+        def fetchResult(solved:bool):
+            if solved:
+                try:
+                    import pandas as pd
 
-                仿真结果表 = {}
-                出力曲线字典 = {}  # 设备ID: 设备出力曲线
+                    仿真结果表 = {}
+                    出力曲线字典 = {}  # 设备ID: 设备出力曲线
 
-                创建出力曲线模版 = lambda: [
-                    0 for _ in range(8760)
-                ]  # 1d array, placed when running under typical day mode.
+                    创建出力曲线模版 = lambda: [
+                        0 for _ in range(8760)
+                    ]  # 1d array, placed when running under typical day mode.
 
-                def 填充出力曲线(
-                    出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
-                ):
-                    assert len(出力曲线模版) == 8760
-                    assert len(典型日出力曲线) == 24
-                    for day_index in 典型日代表的日期:
-                        出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
-                    return 出力曲线模版
+                    def 填充出力曲线(
+                        出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
+                    ):
+                        assert len(出力曲线模版) == 8760
+                        assert len(典型日出力曲线) == 24
+                        for day_index in 典型日代表的日期:
+                            出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
+                        return 出力曲线模版
 
-                from export_format_validate import *
+                    from export_format_validate import *
 
-                for index, devInstDict in enumerate(ret.devInstDictList):
-                    graph_data = ret.graph_data_list[index]
-                    典型日代表的日期 = graph_data["典型日代表的日期"]
-                    timeParam = (
-                        24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
-                    )
-                    for devId, devInst in devInstDict.items():
-                        devClassName = devInst.__class__.__name__.strip("模型")
-                        结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
-                        出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                        结果 = 结果类.export(devInst, timeParam)
-                        # 仿真结果表.append(结果.dict())
-                        之前结果 = deepcopy(仿真结果表.get(devInst, None))
-                        if 之前结果 == None:
-                            仿真结果表[devInst] = 结果.dict()
-                        else:
-                            仿真结果表[devInst] = {
-                                k: v + 之前结果[k] for k, v in 结果.dict().items()
-                            }
-
-                        if 出力曲线类:
-                            出力曲线 = 出力曲线类.export(devInst, timeParam)
-                            if 典型日:
-                                if 出力曲线字典.get(devId, None) is None:
-                                    出力曲线字典[devId] = {
-                                        k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
-                                    }
-                                mdict = deepcopy(出力曲线字典[devId])
-                                出力曲线字典.update(
-                                    {
-                                        devId: {
-                                            k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
-                                            for k, v in 出力曲线.dict().items()
-                                        }
-                                    }
-                                )
+                    for index, devInstDict in enumerate(ret.devInstDictList):
+                        graph_data = ret.graph_data_list[index]
+                        典型日代表的日期 = graph_data["典型日代表的日期"]
+                        timeParam = (
+                            24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
+                        )
+                        for devId, devInst in devInstDict.items():
+                            devClassName = devInst.__class__.__name__.strip("模型")
+                            结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
+                            出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
+                            结果 = 结果类.export(devInst, timeParam)
+                            # 仿真结果表.append(结果.dict())
+                            之前结果 = deepcopy(仿真结果表.get(devInst, None))
+                            if 之前结果 == None:
+                                仿真结果表[devInst] = 结果.dict()
                             else:
-                                出力曲线字典.update({devId: 出力曲线.dict()})
-                仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
-                print()
-                rich.print(出力曲线字典)
-                print()
-                仿真结果表_导出.head()
-                # export_table = 仿真结果表.to_html()
-                # may you change the format.
-                sim_table_obj = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
-                return 出力曲线字典, sim_table_obj
-            except:
-                import traceback
-                traceback.print_exc()
-                return None
-        #         breakpoint()  # you need to turn off these breakpoints in release.
+                                仿真结果表[devInst] = {
+                                    k: v + 之前结果[k] for k, v in 结果.dict().items()
+                                }
+
+                            if 出力曲线类:
+                                出力曲线 = 出力曲线类.export(devInst, timeParam)
+                                if 典型日:
+                                    if 出力曲线字典.get(devId, None) is None:
+                                        出力曲线字典[devId] = {
+                                            k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
+                                        }
+                                    mdict = deepcopy(出力曲线字典[devId])
+                                    出力曲线字典.update(
+                                        {
+                                            devId: {
+                                                k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
+                                                for k, v in 出力曲线.dict().items()
+                                            }
+                                        }
+                                    )
+                                else:
+                                    出力曲线字典.update({devId: 出力曲线.dict()})
+                    仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+                    print()
+                    rich.print(出力曲线字典)
+                    print()
+                    仿真结果表_导出.head()
+                    # export_table = 仿真结果表.to_html()
+                    # may you change the format.
+                    仿真结果表_格式化 = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
+                    return 出力曲线字典, 仿真结果表_格式化
+                except:
+                    import traceback
+                    traceback.print_exc()
+            return None
+            #         breakpoint()  # you need to turn off these breakpoints in release.
         # breakpoint()
 
         print("END")
