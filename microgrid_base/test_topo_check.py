@@ -449,11 +449,13 @@ if sys.argv[-1] in ["-f", "--full"]:
                         出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                         结果 = 结果类.export(devInst, timeParam)
                         # 仿真结果表.append(结果.dict())
-                        之前结果 = 仿真结果表.get(devInst, None)
+                        之前结果 = deepcopy(仿真结果表.get(devInst, None))
                         if 之前结果 == None:
                             仿真结果表[devInst] = 结果.dict()
                         else:
-                            
+                            仿真结果表[devInst] = {
+                                k: v + 之前结果[k] for k, v in 结果.dict().items()
+                            }
 
                         if 出力曲线类:
                             出力曲线 = 出力曲线类.export(devInst, timeParam)
@@ -473,14 +475,14 @@ if sys.argv[-1] in ["-f", "--full"]:
                                 )
                             else:
                                 出力曲线字典.update({devId: 出力曲线.dict()})
-                仿真结果表 = pd.DataFrame(仿真结果表, columns=columns)
+                仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
                 print()
                 rich.print(出力曲线字典)
                 print()
-                仿真结果表.head()
+                仿真结果表_导出.head()
                 # export_table = 仿真结果表.to_html()
                 # may you change the format.
-                sim_table_obj = 仿真结果表.to_json(force_ascii=False, orient="records")
+                sim_table_obj = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
             except:
                 import traceback
 
