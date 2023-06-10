@@ -344,68 +344,7 @@ if sys.argv[-1] in ["-f", "--full"]:
 
         val_fin, val_env = value(ret.calcTargetLUT["经济"]), value(ret.calcTargetLUT["环保"])
 
-    def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
-        OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
-        # devClassMapping = {
-        #     f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
-        # }
-
-        # def dumpCond():
-        #     exprs = [
-        #         str(mw.model.__dict__[x].expr)
-        #         for x in dir(mw.model)
-        #         if x.startswith("CON")
-        #     ]
-        #     import re
-
-        #     def process_expr(expr):
-        #         b = re.findall(r"\[\d+\]", expr)
-        #         for e in b:
-        #             expr = expr.replace(e, "[]")
-        #         for k, cn in devClassMapping.items():
-        #             expr = expr.replace(k, cn)
-        #         return expr
-
-        #     new_exprs = set([process_expr(e) for e in exprs])
-
-        #     exprs = list(new_exprs)
-
-        #     output_path = "dump.json"
-        #     print("DUMPING COND TO:", output_path)
-        #     with open(output_path, "w+") as f:
-        #         import json
-
-        #         content = json.dumps(exprs, indent=4, ensure_ascii=False)
-        #         f.write(content)
-
-        # if DEBUG:
-        #     dumpCond()
-
-        solver = SolverFactory("cplex")
-        try:
-            print(">>>SOLVING<<<")
-            # results = solver.solve(mw.model, tee=True, keepfiles= True)
-            results = solver.solve(mw.model, tee=True)
-            print("SOLVER RESULTS?")
-            rich.print(results)
-        except:
-            import traceback
-
-            traceback.print_exc()
-            print(">>>SOLVER ERROR<<<")
-            # breakpoint()
-        # print("OBJECTIVE?")
-        # OBJ.display()
-        try:
-            print("OBJ:", value(OBJ))
-            # export value.
-            # import json
-            sol = True
-        except:
-            sol = False
-            print("NO SOLUTION.")
-        return sol
         #### LOOP OF PREPARING SOLUTION ####
         if sol:
             try:
