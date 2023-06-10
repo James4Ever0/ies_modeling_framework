@@ -237,8 +237,7 @@ class {{devName}}仿真结果(BaseModel):
     ],
     "锂电池":
     [
-        CTSL['充电功率'],
-        CTSL['放电功率'],
+        ("电功率",VLIST('model.电接口')),
         CTSL['荷电容量'],
         CTSL['荷电状态']
     ],
