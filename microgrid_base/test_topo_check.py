@@ -424,7 +424,12 @@ if sys.argv[-1] in ["-f", "--full"]:
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
                 
                 出力曲线模版 = [0 for _ in range(8760)] # 1d array, placed when running under typical day mode.
-                def 
+                def 填充出力曲线(出力曲线模版:List[float], 典型日出力曲线:List[float], 典型日代表的日期:List[int]):
+                    assert len(出力曲线模版) == 8760
+                    assert len(典型日出力曲线) == 24
+                    for day_index in 典型日代表的日期:
+                        出力曲线模版[day_index*24:(day_index+1)*24] = 典型日出力曲线
+                    return 出力曲线模版
                 from export_format_validate import *
 
                 for index, devInstDict in enumerate(ret.devInstDictList):
