@@ -500,16 +500,6 @@ class 锂电池出力曲线(BaseModel):
     """
 
     ## UNIQ PARAMS ##
-    充电功率: List[float]
-    """
-    单位: kW
-    """
-
-    放电功率: List[float]
-    """
-    单位: kW
-    """
-
     荷电容量: List[float]
     """
     单位: kWh
@@ -523,6 +513,11 @@ class 锂电池出力曲线(BaseModel):
     @validator("荷电状态")
     def standard_unit_to_custom_荷电状态(cls, v):
         return [e / 0.01 for e in v]
+
+    电功率: List[float]
+    """
+    单位: kW
+    """
 
     @staticmethod
     def export(model: 锂电池模型, timeParam: float):
