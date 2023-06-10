@@ -345,6 +345,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         devInstDictList: List[Dict]
         PDList: List[Dict]
         timeParamList: List[int]
+        graph_data_list: List
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
@@ -356,8 +357,10 @@ if sys.argv[-1] in ["-f", "--full"]:
         devInstDictList = []
         PDList = []
         timeParamList = []
+        graph_data_list = []
 
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
+            graph_data_list.append(graph_data)
             典型日ID = calc_id
 
             if 典型日:
@@ -389,6 +392,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             devInstDictList=devInstDictList,
             PDList=PDList,
             timeParamList=timeParamList,
+            graph_data_list=graph_data_list
         )
         return ret
 
