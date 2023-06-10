@@ -386,7 +386,6 @@ if sys.argv[-1] in ["-f", "--full"]:
             devInstDictList.append(devInstDict)
             PDList.append(PD)
             graph_data_list.append(graph_data)
-            
 
         ret = CalcStruct(
             calcTargetLUT=calcTargetLUT,
@@ -422,20 +421,25 @@ if sys.argv[-1] in ["-f", "--full"]:
 
                 仿真结果表 = {}
                 出力曲线字典 = {}  # 设备ID: 设备出力曲线
-                
-                创建出力曲线模版 = [0 for _ in range(8760)] # 1d array, placed when running under typical day mode.
-                def 填充出力曲线(出力曲线模版:List[float], 典型日出力曲线:List[float], 典型日代表的日期:List[int]):
+
+                创建出力曲线模版 = lambda: [
+                    0 for _ in range(8760)
+                ]  # 1d array, placed when running under typical day mode.
+
+                def 填充出力曲线(
+                    出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
+                ):
                     assert len(出力曲线模版) == 8760
                     assert len(典型日出力曲线) == 24
                     for day_index in 典型日代表的日期:
-                        出力曲线模版[day_index*24:(day_index+1)*24] = 典型日出力曲线
+                        出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
                     return 出力曲线模版
+
                 from export_format_validate import *
 
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
-                    graph_data['']
                     timeParam = (
                         24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
                     )
