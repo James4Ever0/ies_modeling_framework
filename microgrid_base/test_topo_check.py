@@ -400,7 +400,7 @@ if sys.argv[-1] in ["-f", "--full"]:
             obj_expr = ret.calcTargetLUT[计算目标]
             solved = solve_model(mw, obj_expr)
             if solved:
-                ... # prepare result.
+                ... # use 'ret' to prepare result.
             else:
                 ...
     else:
