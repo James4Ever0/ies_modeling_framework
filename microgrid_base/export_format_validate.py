@@ -102,7 +102,10 @@ class 光伏发电仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
         )
 
@@ -135,7 +138,10 @@ class 风力发电仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
         )
 
@@ -182,7 +188,10 @@ class 柴油发电仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
             柴油消耗量=(
                 (statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam
@@ -228,7 +237,10 @@ class 锂电池仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             平均效率_平均COP=safeDiv(
                 ReLU(
                     (((statistics.mean([ReLU(e) for e in model.电接口])) * timeParam))
@@ -267,7 +279,10 @@ class 变压器仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             平均效率_平均COP=-safeDiv(
                 statistics.mean([value(e) for e in model.电输入.values()]),
                 statistics.mean([value(e) for e in model.电输出.values()]),
@@ -303,7 +318,10 @@ class 变流器仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             平均效率_平均COP=-safeDiv(
                 statistics.mean([value(e) for e in model.电输入.values()]),
                 statistics.mean([value(e) for e in model.电输出.values()]),
@@ -339,7 +357,10 @@ class 双向变流器仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             平均效率_平均COP=value(
                 (
                     safeDiv(sumVarList(model.储能端_.x_pos), sumVarList(model.线路端_.x_neg))
@@ -382,7 +403,10 @@ class 传输线仿真结果(BaseModel):
             元件名称=model.设备信息.设备名称,
             设备型号=model.设备信息.设备型号,
             设备台数=value(model.DeviceCount),
-            设备维护费用=((value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)) * timeParam),
+            设备维护费用=(
+                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                * (timeParam / 8760)
+            ),
             平均效率_平均COP=-safeDiv(
                 statistics.mean([value(e) for e in model.电输入.values()]),
                 statistics.mean([value(e) for e in model.电输出.values()]),
