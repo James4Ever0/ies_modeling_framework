@@ -427,7 +427,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
-                    graph_data[]
+                    graph_data['']
                     timeParam = (
                         24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
                     )
