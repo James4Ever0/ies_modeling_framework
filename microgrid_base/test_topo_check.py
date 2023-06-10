@@ -271,14 +271,14 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     # obj_expr = 0
     from copy import deepcopy
-    
-    class CalcStruct(BaseModel):
-        calcTargetLUT :Dict
-        devInstDictList
-        PDListLList
-        timeParamList
 
-    def getCalcTargetLUT(mw: ModelWrapper, mCalcParamList: list):
+    class CalcStruct(BaseModel):
+        calcTargetLUT: Dict
+        devInstDictList: List[Dict]
+        PDList: List[Dict]
+        timeParamList: List[int]
+
+    def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
         calcTargetLUT = {
             "经济": 0,
@@ -316,21 +316,27 @@ if sys.argv[-1] in ["-f", "--full"]:
             devInstDictList.append(devInstDict)
             PDList.append(PD)
 
-        return calcTargetLUT, devInstDictList, PDList, timeParamList
+        ret = CalcStruct(
+            calcTargetLUT=calcTargetLUT,
+            devInstDictList=devInstDictList,
+            PDList=PDList,
+            timeParamList=timeParamList,
+        )
+        return ret
 
     if 计算目标 in ["经济", "环保"]:
         with ModelWrapperContext() as mw:
-            calcTargetLUT, devInstDictList, PDList, timeParamList = getCalcTargetLUT(
+            ret = getCalcStruct(
                 mw, calcParamList
             )
-            obj_expr = calcTargetLUT[计算目标]
+            obj_expr = ret.calcTargetLUT[计算目标]
     else:
         with ModelWrapperContext() as mw:
-            calcTargetLUT, devInstDictList, PDList, timeParamList = getCalcTargetLUT(
+            ret = getCalcStruct(
                 mw, calcParamList
             )
         obj_expr = calcTargetLUT["经济"]
-        
+
         val_fin, val_env = value(calcTargetLUT["经济"]), value(calcTargetLUT["环保"])
 
     def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
