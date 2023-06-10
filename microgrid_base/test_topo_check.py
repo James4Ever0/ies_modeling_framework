@@ -398,6 +398,11 @@ if sys.argv[-1] in ["-f", "--full"]:
                 mw, calcParamList
             )
             obj_expr = ret.calcTargetLUT[计算目标]
+            solved = solve_model(mw, obj_expr)
+            if solved:
+                ... # prepare result.
+            else:
+                ...
     else:
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(
