@@ -528,7 +528,7 @@ if sys.argv[-1] in ["-f", "--full"]:
         if rangeDict != {}:
             with ModelWrapperContext() as mw:
                 ret = getCalcStruct(mw, calcParamList)
-                obj_expr = ret.calcTargetLUT["经济"]
+                obj_expr = ret.calcTargetLUT["环保"]
                 solved = solve_model(mw, obj_expr)
                 if solved:
                     rangeDict["env_finance"], rangeDict["fin_env"] = value(
@@ -541,8 +541,14 @@ if sys.argv[-1] in ["-f", "--full"]:
                     with ModelWrapperContext() as mw:
                         ret = getCalcStruct(mw, calcParamList)
                         fin_expr = ret.calcTargetLUT['经济']
-                        mw.Constraint()
+                        mw.Constraint(fin_expr >= fin_start)
+                        mw.Constraint(fin_expr <= fin_end)
                         obj_expr = ret.calcTargetLUT['环保']
+                        solved = solve_model(mw, obj_expr)
+                        if solved:
+                            result = fetchResult(solved, ret)
+                            if result:
+                                ...
             except:
                 import traceback
 
