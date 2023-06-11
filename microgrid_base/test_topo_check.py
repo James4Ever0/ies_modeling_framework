@@ -545,7 +545,6 @@ if sys.argv[-1] in ["-f", "--full"]:
         if solved:
             ...
     else:
-
         rangeDict = {}
         solved, _, rangeDict = solve_model_and_fetch_result(
             calcParamList, "经济", rangeDict
@@ -564,10 +563,11 @@ if sys.argv[-1] in ["-f", "--full"]:
                         additional_constraints = {
                             "经济": {"min": fin_start, "max": fin_end}
                         }
-                        solved, result, _ = solve_model_and_fetch_result()
+                        solved, result, _ = solve_model_and_fetch_result(
+                            calcParamList, "环保", None, True, additional_constraints
+                        )
                 except:
                     import traceback
-
                     traceback.print_exc()
 
         #### LOOP OF PREPARING SOLUTION ####
