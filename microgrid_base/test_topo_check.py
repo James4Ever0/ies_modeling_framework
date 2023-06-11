@@ -503,17 +503,26 @@ if sys.argv[-1] in ["-f", "--full"]:
             # min env under this condition. recalculate.
         return constraint_ranges
 
-    if 计算目标 in ["经济", "环保"]:
-        def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, )
+
+    def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, rangeDict:Dict, needResult:bool=False):
+        targetAbbr = {
+            
+        }
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
-            obj_expr = ret.calcTargetLUT[计算目标]
+            obj_expr = ret.calcTargetLUT[calcTarget]
             solved = solve_model(mw, obj_expr)
             if solved:
-                result = fetchResult(solved, ret)  # use 'ret' to prepare result.
+                
+                rangeDict["min_{}"], rangeDict["{}_{}"] = value(
+                    ret.calcTargetLUT["经济"]
+                ), value(ret.calcTargetLUT["环保"])
+                if needResult:
+                    result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             else:
                 result = None
             return result, rangeDict
+    if 计算目标 in ["经济", "环保"]:
     else:
 
         rangeDict = {}
