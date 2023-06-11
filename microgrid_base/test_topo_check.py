@@ -505,16 +505,14 @@ if sys.argv[-1] in ["-f", "--full"]:
 
 
     def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, rangeDict:Dict, needResult:bool=False):
-        targetAbbr = {
-            
-        }
+        targetNameMappings=dict(abbr=dict(经济="fin", 环保 = "env"), full = dict(经济="finance", 环保 = "env"))
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT[calcTarget]
             solved = solve_model(mw, obj_expr)
             if solved:
                 
-                rangeDict["min_{}"], rangeDict["{}_{}"] = value(
+                rangeDict["min_{targetNameMappings['full'][calcTarget]}"], rangeDict["{}_{}"] = value(
                     ret.calcTargetLUT["经济"]
                 ), value(ret.calcTargetLUT["环保"])
                 if needResult:
