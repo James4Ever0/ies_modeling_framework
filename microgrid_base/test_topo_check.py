@@ -475,7 +475,13 @@ if sys.argv[-1] in ["-f", "--full"]:
 
     ## assume we have multiobjective here.
 
-    def prepareDualObjectiveRanges(DOR:DualObjectiveRange):
+    class DualObjectiveRange(BaseModel):
+        min_finance: float
+        fin_env: float
+        env_finance: float
+        min_env: float
+
+    def prepareConstraintRangesFromDualObjectiveRange(DOR:DualObjectiveRange):
         # min_finance, fin_env = 0, 3
         # env_finance, min_env = 1, 1
         
@@ -508,12 +514,6 @@ if sys.argv[-1] in ["-f", "--full"]:
                 result = None
     else:
 
-        class DualObjectiveRange(BaseModel):
-            min_finance: float
-            fin_env: float
-            env_finance: float
-            min_env: float
-
         rangeDict = {}
 
         with ModelWrapperContext() as mw:
@@ -536,7 +536,7 @@ if sys.argv[-1] in ["-f", "--full"]:
                     ), value(ret.calcTargetLUT["环保"])
             try:
                 DOR = DualObjectiveRange.parse_obj(rangeDict)
-                
+                constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
             except:
                 import traceback
 
