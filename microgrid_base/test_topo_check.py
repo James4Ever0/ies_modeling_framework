@@ -540,38 +540,38 @@ if sys.argv[-1] in ["-f", "--full"]:
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             return solved, result, rangeDict
 
-    if 计算目标 in ["经济", "环保"]:
-        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {}, True)
-        if solved:
-            ...
-    else:
-        rangeDict = {}
-        solved, _, rangeDict = solve_model_and_fetch_result(
-            calcParamList, "经济", rangeDict
-        )
-        if rangeDict != {} and solved:
-            solved, _, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "环保", rangeDict
-            )
+
+    resultList = []
+    try:
+        if 计算目标 in ["经济", "环保"]:
+            solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {}, True)
             if solved:
-                try:
-                    DOR = DualObjectiveRange.parse_obj(rangeDict)
-                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                        DOR
-                    )
-                    for fin_start, fin_end in constraint_ranges:
-                        additional_constraints = {
-                            "经济": {"min": fin_start, "max": fin_end}
-                        }
-                        solved, result, _ = solve_model_and_fetch_result(
-                            calcParamList, "环保", None, True, additional_constraints
+                ...
+        else:
+            rangeDict = {}
+            solved, _, rangeDict = solve_model_and_fetch_result(
+                calcParamList, "经济", rangeDict
+            )
+            if rangeDict != {} and solved:
+                solved, _, rangeDict = solve_model_and_fetch_result(
+                    calcParamList, "环保", rangeDict
+                )
+                if solved:
+                        DOR = DualObjectiveRange.parse_obj(rangeDict)
+                        constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
+                            DOR
                         )
-                except:
-                    import traceback
-                    traceback.print_exc()
-
+                        for fin_start, fin_end in constraint_ranges:
+                            additional_constraints = {
+                                "经济": {"min": fin_start, "max": fin_end}
+                            }
+                            solved, result, _ = solve_model_and_fetch_result(
+                                calcParamList, "环保", None, True, additional_constraints
+                            )
         #### LOOP OF PREPARING SOLUTION ####
-
+    except:
+        import traceback
+        traceback.print_exc()
         #         breakpoint()  # you need to turn off these breakpoints in release.
         # breakpoint()
 
