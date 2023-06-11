@@ -472,7 +472,6 @@ if sys.argv[-1] in ["-f", "--full"]:
                 traceback.print_exc()
         return None
 
-
     ## assume we have multiobjective here.
 
     class DualObjectiveRange(BaseModel):
@@ -481,10 +480,10 @@ if sys.argv[-1] in ["-f", "--full"]:
         env_finance: float
         min_env: float
 
-    def prepareConstraintRangesFromDualObjectiveRange(DOR:DualObjectiveRange):
+    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange):
         # min_finance, fin_env = 0, 3
         # env_finance, min_env = 1, 1
-        
+
         # DOR.min_finance, DOR.fin_env = 0, 3
         # DOR.env_finance, DOR.min_env = 1, 1
 
@@ -503,17 +502,24 @@ if sys.argv[-1] in ["-f", "--full"]:
             # min env under this condition. recalculate.
         return constraint_ranges
 
-
-    def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, rangeDict:Dict, needResult:bool=False, additional_constraints :Dict = {}):
-        targetNameMappings=dict(abbr=dict(经济="fin", 环保 = "env"), full = dict(经济="finance", 环保 = "env"))
+    def solve_model_and_fetch_result(
+        calcParamList: List,
+        calcTarget: str,
+        rangeDict: Union[None, Dict] = None,
+        needResult: bool = False,
+        additional_constraints: Dict = {},
+    ):
+        targetNameMappings = dict(
+            abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
+        )
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
             for expr_name, constraints in additional_constraints.items():
-                expr =ret.calcTargetLUT[expr_name]
-                min_const = constraints.get('min', None)
-                max_const = constraints.get('max', None)
+                expr = ret.calcTargetLUT[expr_name]
+                min_const = constraints.get("min", None)
+                max_const = constraints.get("max", None)
                 if min_const:
-                    mw.Constraint(expr>= min_const)
+                    mw.Constraint(expr >= min_const)
                 if max_const:
                     mw.Constraint(expr <= max_const)
 
@@ -521,12 +527,17 @@ if sys.argv[-1] in ["-f", "--full"]:
             solved = solve_model(mw, obj_expr)
             result = None
             if solved:
-                rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"], rangeDict[f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][[key for key in targetNameMappings['full'].keys() if key != calcTarget][0]]}"] = value(
-                    ret.calcTargetLUT["经济"]
-                ), value(ret.calcTargetLUT["环保"])
+                if rangeDict:
+                    rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"]=  value(ret.calcTargetLUT["calcTarget"])
+                    for [key for key in targetNameMappings['full'].keys() if key != calcTarget]
+                        rangeDict[
+                            f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][[key for key in targetNameMappings['full'].keys() if key != calcTarget][0]]}"
+                        ],
+                    ) = value(ret.calcTargetLUT["环保"])
                 if needResult:
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             return solved, result, rangeDict
+
     if 计算目标 in ["经济", "环保"]:
         solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {}, True)
         if solved:
@@ -534,26 +545,24 @@ if sys.argv[-1] in ["-f", "--full"]:
     else:
 
         rangeDict = {}
-        solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "经济", rangeDict)
+        solved, _, rangeDict = solve_model_and_fetch_result(
+            calcParamList, "经济", rangeDict
+        )
         if rangeDict != {} and solved:
-            solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "环保", rangeDict)
+            solved, _, rangeDict = solve_model_and_fetch_result(
+                calcParamList, "环保", rangeDict
+            )
             if solved:
                 try:
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
-                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
+                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
+                        DOR
+                    )
                     for fin_start, fin_end in constraint_ranges:
-                        with ModelWrapperContext() as mw:
-                            additional_constraints = {"经济": {"min":fin_start, 'max':fin_end}}
-                            ret = getCalcStruct(mw, calcParamList)
-                            fin_expr = ret.calcTargetLUT['经济']
-                            mw.Constraint(fin_expr >= fin_start)
-                            mw.Constraint(fin_expr <= fin_end)
-                            obj_expr = ret.calcTargetLUT['环保']
-                            solved = solve_model(mw, obj_expr)
-                            if solved:
-                                result = fetchResult(solved, ret)
-                                if result:
-                                    ...
+                        additional_constraints = {
+                            "经济": {"min": fin_start, "max": fin_end}
+                        }
+                        solved, result, _ = solve_model_and_fetch_result()
                 except:
                     import traceback
 
@@ -565,4 +574,3 @@ if sys.argv[-1] in ["-f", "--full"]:
         # breakpoint()
 
         print("END")
-
