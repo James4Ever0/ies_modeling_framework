@@ -537,6 +537,12 @@ if sys.argv[-1] in ["-f", "--full"]:
             try:
                 DOR = DualObjectiveRange.parse_obj(rangeDict)
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
+                for fin_start, fin_end in constraint_ranges:
+                    with ModelWrapperContext() as mw:
+                        ret = getCalcStruct(mw, calcParamList)
+                        fin_expr = ret.calcTargetLUT['经济']
+                        mw.Constraint()
+                        obj_expr = ret.calcTargetLUT['环保']
             except:
                 import traceback
 
