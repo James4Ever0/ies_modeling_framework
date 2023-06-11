@@ -519,28 +519,15 @@ if sys.argv[-1] in ["-f", "--full"]:
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             return solved, result, rangeDict
     if 计算目标 in ["经济", "环保"]:
+        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {}, True)
+        if solved:
+            ...
     else:
 
         rangeDict = {}
-
-        with ModelWrapperContext() as mw:
-            ret = getCalcStruct(mw, calcParamList)
-            obj_expr = ret.calcTargetLUT["经济"]
-            solved = solve_model(mw, obj_expr)
-            if solved:
-                rangeDict["min_finance"], rangeDict["fin_env"] = value(
-                    ret.calcTargetLUT["经济"]
-                ), value(ret.calcTargetLUT["环保"])
-                # move to next step.
-        if rangeDict != {}:
-            with ModelWrapperContext() as mw:
-                ret = getCalcStruct(mw, calcParamList)
-                obj_expr = ret.calcTargetLUT["环保"]
-                solved = solve_model(mw, obj_expr)
-                if solved:
-                    rangeDict["env_finance"], rangeDict["env_fin"] = value(
-                        ret.calcTargetLUT["经济"]
-                    ), value(ret.calcTargetLUT["环保"])
+        solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "经济", rangeDict)
+        if rangeDict != {} and solved:
+            solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "环保", rangeDict)
             try:
                 DOR = DualObjectiveRange.parse_obj(rangeDict)
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
