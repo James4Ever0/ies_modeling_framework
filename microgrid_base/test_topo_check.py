@@ -528,12 +528,14 @@ if sys.argv[-1] in ["-f", "--full"]:
             result = None
             if solved:
                 if rangeDict:
-                    rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"]=  value(ret.calcTargetLUT["calcTarget"])
-                    for [key for key in targetNameMappings['full'].keys() if key != calcTarget]
-                        rangeDict[
-                            f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][[key for key in targetNameMappings['full'].keys() if key != calcTarget][0]]}"
-                        ],
-                    ) = value(ret.calcTargetLUT["环保"])
+                    rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"] = value(
+                        ret.calcTargetLUT["calcTarget"]
+                    )
+                    for key in targetNameMappings["full"].keys():
+                        if key != calcTarget:
+                            rangeDict[
+                                f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][key]}"
+                            ] = value(ret.calcTargetLUT[key])
                 if needResult:
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             return solved, result, rangeDict
