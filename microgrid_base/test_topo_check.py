@@ -504,10 +504,11 @@ if sys.argv[-1] in ["-f", "--full"]:
         return constraint_ranges
 
 
-    def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, rangeDict:Dict, needResult:bool=False):
+    def solve_model_and_fetch_result(calcParamList:List, calcTarget:str, rangeDict:Dict, needResult:bool=False, additional_constraints :dict):
         targetNameMappings=dict(abbr=dict(经济="fin", 环保 = "env"), full = dict(经济="finance", 环保 = "env"))
         with ModelWrapperContext() as mw:
             ret = getCalcStruct(mw, calcParamList)
+            for expr_name, constrainsts in additional_constrains.items():
             obj_expr = ret.calcTargetLUT[calcTarget]
             solved = solve_model(mw, obj_expr)
             result = None
@@ -528,25 +529,26 @@ if sys.argv[-1] in ["-f", "--full"]:
         solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "经济", rangeDict)
         if rangeDict != {} and solved:
             solved, _, rangeDict = solve_model_and_fetch_result(calcParamList, "环保", rangeDict)
-            try:
-                DOR = DualObjectiveRange.parse_obj(rangeDict)
-                constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
-                for fin_start, fin_end in constraint_ranges:
-                    with ModelWrapperContext() as mw:
-                        ret = getCalcStruct(mw, calcParamList)
-                        fin_expr = ret.calcTargetLUT['经济']
-                        mw.Constraint(fin_expr >= fin_start)
-                        mw.Constraint(fin_expr <= fin_end)
-                        obj_expr = ret.calcTargetLUT['环保']
-                        solved = solve_model(mw, obj_expr)
-                        if solved:
-                            result = fetchResult(solved, ret)
-                            if result:
-                                ...
-            except:
-                import traceback
+            if solved:
+                try:
+                    DOR = DualObjectiveRange.parse_obj(rangeDict)
+                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(DOR)
+                    for fin_start, fin_end in constraint_ranges:
+                        with ModelWrapperContext() as mw:
+                            ret = getCalcStruct(mw, calcParamList)
+                            fin_expr = ret.calcTargetLUT['经济']
+                            mw.Constraint(fin_expr >= fin_start)
+                            mw.Constraint(fin_expr <= fin_end)
+                            obj_expr = ret.calcTargetLUT['环保']
+                            solved = solve_model(mw, obj_expr)
+                            if solved:
+                                result = fetchResult(solved, ret)
+                                if result:
+                                    ...
+                except:
+                    import traceback
 
-                traceback.print_exc()
+                    traceback.print_exc()
 
         #### LOOP OF PREPARING SOLUTION ####
 
