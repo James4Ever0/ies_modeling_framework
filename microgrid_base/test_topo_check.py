@@ -510,16 +510,14 @@ if sys.argv[-1] in ["-f", "--full"]:
             ret = getCalcStruct(mw, calcParamList)
             obj_expr = ret.calcTargetLUT[calcTarget]
             solved = solve_model(mw, obj_expr)
+            result = None
             if solved:
-                
-                rangeDict["min_{targetNameMappings['full'][calcTarget]}"], rangeDict["{}_{}"] = value(
+                rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"], rangeDict[f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][[key for key in targetNameMappings['full'].keys() if key != calcTarget][0]]}"] = value(
                     ret.calcTargetLUT["经济"]
                 ), value(ret.calcTargetLUT["环保"])
                 if needResult:
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
-            else:
-                result = None
-            return result, rangeDict
+            return solved, result, rangeDict
     if 计算目标 in ["经济", "环保"]:
     else:
 
