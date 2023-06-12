@@ -46,7 +46,7 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
         result = solveModelFromCalcParamList(calcParamList)
     except:
         import traceback
-        ftb = traceback.format_tb()
+        ftb = traceback.format_exc()
         print(ftb)
     ...
     return calculation_result
