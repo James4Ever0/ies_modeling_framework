@@ -9,8 +9,27 @@ import networkx
 from microgrid_base.ies_optim import EnergyFlowGraph
 
 class 单次计算结果(BaseModel):
-    performanceDataList:List[Dict] = Field(title='设备出力曲线列表')
-    simulationResultTable:Dict[str, Any] = Field(title = "仿真结果列表")
+    performanceDataList:List[Dict] = Field(title='设备出力曲线列表', example = )
+    simulationResultTable:Dict[str, Any] = Field(title = "仿真结果列表", example = [
+        
+    "元件名称": "name",
+    "产冷量": "coolingCapacity",
+    "冷负荷": "coolingLoad",
+    "产电量": "electricSupply",
+    "电负荷": "electricLoad",
+    "产热量": "heatingLoad",
+    "热负荷": "heatLoad",
+    "蒸汽产量": "steamProduction",
+    "蒸汽负荷": "steamLoad",
+    "氢气产量": "hydrogenProduction",
+    "氢气消耗量": "hydrogenConsumption",
+    "柴油消耗量": "dieselConsumption",
+    "柴油消耗费用": "dieselConsumptionCosts",
+    "天然气消耗量": "naturalGasConsumption",
+    "天然气消耗费用": "naturalGasConsumptionCosts",
+    "平均效率_平均COP": "averageEfficiency",
+    "设备维护费用": "equipmentMaintenanceCosts"
+    ])
 
 class CalculationResult(BaseModel):
     resultList:List[单次计算结果]
