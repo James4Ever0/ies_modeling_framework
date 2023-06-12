@@ -352,7 +352,12 @@ def solveModelFromCalcParamList(
         print("END")
     return resultList
 出力曲线列表 =  [{
-    "name": "deviceName"
-    "plot_list":{}
+    "name": "deviceName",
+    "plot_list":[{
+        "name":"Name",
+            "abbr":"Abbr",
+            "data":
+                {"x": [], "y":[]}
+    }]
 }
 ]
