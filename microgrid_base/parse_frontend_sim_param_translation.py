@@ -9,9 +9,9 @@ with open(filepath, "r") as f:
 
 resultMap = {}
 for line in lines:
-    line = line.strip().replace(":", " : ").replace(",", " , ")
+    line = line.replace(":", ": ").replace(",", " , ").replace(" :",":").strip()
     result = parse.parse(
-        "{englishName}{space_0}:{space_1}'{sampleData}'{space_2},{space_3}//{chineseName}", line
+        "{englishName}:{space_1}'{sampleData}'{space_2},{space_3}//{chineseName}", line
     )
     if result:
         print(result)
