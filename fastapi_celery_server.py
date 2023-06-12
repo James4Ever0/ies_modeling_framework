@@ -12,7 +12,7 @@ app = Celery(
 # you had not to pass anything like pydantic data model as parameter.
 from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
 
-from fastapi_datamodel_template import 
+from fastapi_datamodel_template import CalculationResult
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
 
