@@ -232,7 +232,7 @@ with open("template_input.json", "w+") as f:
 ###############
 import sys
 
-flag = sys.argv[-1] 
+flag = sys.argv[-1]
 
 if flag in ["-f", "--full"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
@@ -241,10 +241,11 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
-elif flag in ['-c', '--celery']:
+elif flag in ["-c", "--celery"]:
     import requests
-    port = 
+
+    port = 9870
     url = f"http://127.0.0.1:{port}/calculate_async"
-    r = requests.post(url, json =dict(mDictList=mdictList) )
+    r = requests.post(url, json=dict(mDictList=mdictList))
     print(r.status_code)
     print(r.json())
