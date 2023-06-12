@@ -15,7 +15,13 @@ from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToC
 # define the input structure here.
 from pydantic import BaseModel
 from typing import List
+
 class mDict(BaseModel):
+    directed:bool=False
+    multigraph:bool=False
+    graph:...
+    nodes:...
+    links:...
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
@@ -52,7 +58,7 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
         print(error_log)
         
     if resultList != []: success=True
-    calculation_result = CalculationResult()
+    calculation_result = CalculationResult(resultList=resultList, success=success, error_log=error_log).dict()
     return calculation_result
 
 
