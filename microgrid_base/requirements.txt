@@ -8,3 +8,4 @@ jinja2
 parse
 fastapi
 celery
+importlib-metadata==4.13.0 
