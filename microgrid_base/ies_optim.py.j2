@@ -275,8 +275,8 @@ class 计算参数(BaseModel):
     {# 典型日权重: int = 0 #}
     典型日代表的日期: List[int] = []
     @validator('典型日代表的日期')
-    def validate_typical_day(cls, v):
-        if cls.典型日:
+    def validate_typical_day(cls, v, values):
+        if values['典型日']:
             assert len(v) >0
             assert len(v) <=365
         return v
