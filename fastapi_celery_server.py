@@ -28,9 +28,11 @@ class 锚点节点(节点基类):
     device_id:str
     
 class 母线节点(节点基类):
-    
+    conn: List[str] # connection/merge types to literal.
 
 class 设备节点(节点基类):
+    ports:
+    param:
 
 class mDict(BaseModel):
     directed:bool=False
