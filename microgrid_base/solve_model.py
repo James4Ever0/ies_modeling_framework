@@ -239,7 +239,10 @@ def solveModelFromCalcParamList(
                 # return 出力曲线字典, 仿真结果表_格式化
                 出力曲线列表 = []
                 for devId, content in 出力曲线字典.items():
-                    
+                    deviceName = ret.devInstDictList[0][devId]['设备名称']
+                    deviceType = ret.devInstDictList[0][devId]['设备类型']
+                    elem = {"name":deviceName,"plot_list":[]}
+                    出力曲线列表.append(elem)
                 return 出力曲线列表, 仿真结果表_格式化
             except:
                 import traceback
