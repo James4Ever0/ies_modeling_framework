@@ -7,7 +7,8 @@ MAIN_NAME = "fastapi_celery"
 app = Celery(
     MAIN_NAME,
     broker="amqp://guest@localhost:5672//",
-    backend=f"redis://:{redis_password}@localhost:6379",
+    backend=f"redis://:{redis_password}@localhost:6380",
+    # backend=f"redis://:{redis_password}@localhost:6379",
 )
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
