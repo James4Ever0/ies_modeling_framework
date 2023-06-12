@@ -280,7 +280,7 @@ def solveModelFromCalcParamList(
                         }
                         elem["plot_list"].append(subElem)
                     出力曲线列表.append(elem)
-                return 出力曲线列表, 仿真结果表_格式化
+                return dict(performanceDataList = 出力曲线列表, simulationResultTable = 仿真结果表_格式化)
             except:
                 import traceback
 

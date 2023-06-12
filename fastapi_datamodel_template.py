@@ -9,6 +9,8 @@ import networkx
 from microgrid_base.ies_optim import EnergyFlowGraph
 
 class 单次计算结果(BaseModel):
+    performanceDataList:List
+    simulationResultTable:Dict[]
 
 class CalculationResult(BaseModel):
     resultList:List[单次计算结果]
