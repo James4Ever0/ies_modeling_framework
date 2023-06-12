@@ -1,5 +1,6 @@
 from celery import Celery
 from passwords import redis_password
+from typing import Union
 
 MAIN_NAME = "fastapi_celery"
 
@@ -10,14 +11,18 @@ app = Celery(
 )
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
-from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
+from microgrid_base.solve_model import (
+    solveModelFromCalcParamList,
+    mDictListToCalcParamList,
+)
 
 from fastapi_datamodel_template import CalculationResult
+
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
 
-@app.task(bind=True) # parse it elsewhere.
-def calculate_energyflow_graph(self, energyflow_graph: dict) -> dict:
+@app.task(bind=True)  # parse it elsewhere.
+def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
     """
     能源系统仿真优化计算方法
 
@@ -27,9 +32,9 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> dict:
     Returns:
         calculation_result (dict): 计算结果
     """
-    mDictList = energyflow_graph['mDictList']
+    mDictList = energyflow_graph["mDictList"]
     calcParamList = mDictListToCalcParamList(mDictList)
-    
+
     resultList = []
     error_log = ""
     success = False
@@ -37,15 +42,20 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> dict:
         resultList = solveModelFromCalcParamList(calcParamList)
     except:
         import traceback
+
         error_log = traceback.format_exc()
+        print("************CELERY ERROR************")
         print(error_log)
-        
+
     if resultList != []:
-        success=True
-        calculation_result = CalculationResult(resultList=resultList, success=success, error_log=error_log).dict()
+        success = True
+        calculation_result = CalculationResult(
+            resultList=resultList, success=success, error_log=error_log
+        ).dict()
         return calculation_result
     else:
-        self.update_state(state='FAILURE')
+        self.update_state(state="FAILURE")
+
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
