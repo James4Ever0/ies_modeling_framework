@@ -12,6 +12,8 @@ app = Celery(
 # you had not to pass anything like pydantic data model as parameter.
 from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
 
+from microgrid_base.ies_optim import 计算参数
+
 # define the input structure here.
 from pydantic import BaseModel
 from typing import List
@@ -19,9 +21,9 @@ from typing import List
 class mDict(BaseModel):
     directed:bool=False
     multigraph:bool=False
-    graph:...
-    nodes:...
-    links:...
+    graph:计算参数
+    nodes:List[Union[]]
+    links:List[Dict[Dict[Literal['id'], int], Dict[Literal['id'], int]]]
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
