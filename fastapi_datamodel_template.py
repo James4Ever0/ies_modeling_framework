@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from networkx.readwrite import json_graph
-from typing import Mapping, List, Tuple, Literal, Union
+from typing import Mapping, List, Tuple, Literal, Union, Dict, Any
 import networkx
 # from celery.states import PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
 
@@ -9,8 +9,8 @@ import networkx
 from microgrid_base.ies_optim import EnergyFlowGraph
 
 class 单次计算结果(BaseModel):
-    performanceDataList:List
-    simulationResultTable:Dict[]
+    performanceDataList:List[Dict] = Field(title='设备出力曲线列表')
+    simulationResultTable:Dict[str, Any] = Field(title = "仿真结果列表")
 
 class CalculationResult(BaseModel):
     resultList:List[单次计算结果]
