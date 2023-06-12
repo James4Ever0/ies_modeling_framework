@@ -241,13 +241,4 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
-elif flag in ["-c", "--celery"]:
-    import requests
 
-    port = 9870
-    url = f"http://127.0.0.1:{port}/calculate_async"
-    from fastapi_datamodel_template import EnergyFlowGraph
-    data = EnergyFlowGraph(mDictList=mdictList)
-    r = requests.post(url, json=data.dict())
-    print(r.status_code)
-    print(r.json())
