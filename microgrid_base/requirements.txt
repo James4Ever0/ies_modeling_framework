@@ -10,3 +10,4 @@ fastapi
 celery
 importlib-metadata==4.13.0 
 redis
+uvicorn
