@@ -106,13 +106,13 @@ class 加法器ID(BaseModel):
 #############
 from pydantic import validator
 class 设备ID(BaseModel):
-    ID: int
+    ID: int = Field(title = "设备ID", description = '从拓扑图节点ID获取')
 
 {% for class_name in 设备接口集合.keys()%}
 
 class {{class_name}}ID(设备ID):
     {% for port_name, port_type in 设备接口集合[class_name]%}
-    {{ port_name }}: int
+    {{ port_name }}: int = Field(title = "" description = "接口类型: {{ port_type }}")
     """
     类型: {{ port_type }}
     """
