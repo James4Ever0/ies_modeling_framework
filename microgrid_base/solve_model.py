@@ -242,9 +242,12 @@ def solveModelFromCalcParamList(
                     deviceName = ret.devInstDictList[0][devId].设备名称
                     deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip('模型')
                     elem = {"name":deviceName,"plot_list":[]}
-                    for in content_dict.items():
-
-                        subelem = {"name": plotName, "abbr": Abbr, "data": {"x": xData, "y": yData}}
+                    for abbr, val in content_dict.items():
+                        if abbr in ["元件名称", "时间"]: continue
+                        plotName = f'{}{}出力曲线'
+                        xData = content_dict['时间']
+                        yData = val
+                        subelem = {"name": plotName, "abbr": abbr, "data": {"x": xData, "y": yData}}
                     出力曲线列表.append(elem)
                 return 出力曲线列表, 仿真结果表_格式化
             except:
