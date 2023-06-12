@@ -1024,16 +1024,16 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 
 class 节点基类(BaseModel):
-    type:str
-    subtype:str
-    id:int
+    type:str = Field(title = "节点类型")
+    subtype:str = Field(title = "节点次类型")
+    id:int = Field(title = "节点ID")
 
 class 锚点节点(节点基类):
-    port_name:str
-    device_id:str
+    port_name:str = Field(title = '锚点名称')
+    device_id:str = Field(title = '锚点所对应设备ID')
     
 class 母线节点(节点基类):
-    conn: List[str]  = Field(title = '')# connection/merge types to literal.
+    conn: List[str]  = Field(title = '母线连接线类型列表', description = '包括连接到母线上的连接线和合并线类型')# connection/merge types to literal.
 
 class 设备接口映射(BaseModel):
     subtype: str = Field(title = "接口类型")
