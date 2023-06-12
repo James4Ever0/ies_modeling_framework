@@ -4,7 +4,7 @@ try:
     from typing import Literal
 except:
     from typing_extensions import Literal
-    
+
 import rich
 from pydantic import BaseModel, Field
 # the main code for computing.
@@ -48,7 +48,6 @@ from pydantic import BaseModel, Field
         """
         类型: {{port_type}}
         """
-
 
         {% endfor %}
 {% endmacro %}
