@@ -11,4 +11,3 @@ r = requests.post(url, json=json_data)
 response = r.json()
 print("RESP:", response)
 print("STATUS_CODE", r.status_code)
-
