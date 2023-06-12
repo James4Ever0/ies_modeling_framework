@@ -10,7 +10,7 @@ app = Celery(
 )
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
-
+from microgrid_base.
 
 @app.task
 def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
