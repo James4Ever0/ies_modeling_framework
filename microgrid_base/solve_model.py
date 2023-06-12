@@ -1,23 +1,28 @@
+from fnmatch import translate
 import json
 from typing import *
 from ies_optim import ModelWrapper
 
 from pydantic import BaseModel
 import rich
+
 with open("export_format.json", "r") as f:
     dt = json.load(f)
     columns = dt["仿真结果"]["ALL"]
     columns = [e if type(e) == str else e[0] for e in columns]
 
-with open("frontend_sim_param_translation.json", 'r') as f:
+with open("frontend_sim_param_translation.json", "r") as f:
     FSPT = json.load(f)
-    
+
 from pandas import DataFrame
-def translateSimParamTableHeaders(df:DataFrame):
+
+
+def translateSimParamTableHeaders(df: DataFrame):
     df_dict = df.to_dict()
-    df_dict_translated = {FSPT[k]:v for k,v in df_dict.items()}
+    df_dict_translated = {FSPT[k]: v for k, v in df_dict.items()}
     ret = DataFrame(df_dict_translated)
     return ret
+
 
 # if sys.argv[-1] in ["-f", "--full"]:
 def solveModelFromCalcParamList(
@@ -223,6 +228,7 @@ def solveModelFromCalcParamList(
                             else:
                                 出力曲线字典.update({devId: 出力曲线.dict()})
                 仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+                仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
                 print()
                 rich.print(出力曲线字典)
                 print()
