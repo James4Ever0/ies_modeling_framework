@@ -112,7 +112,7 @@ class 设备ID(BaseModel):
 
 class {{class_name}}ID(设备ID):
     {% for port_name, port_type in 设备接口集合[class_name]%}
-    {{ port_name }}: int = Field(title = "" description = "接口类型: {{ port_type }}")
+    {{ port_name }}: int = Field(title = "{{ port_name }}ID", description = "接口类型: {{ port_type }}")
     """
     类型: {{ port_type }}
     """
@@ -135,13 +135,13 @@ class {{class_name}}ID(设备ID):
 
 class 设备基础信息(BaseModel):
 {% for i in deviceBaseIdentifiers%}
-    {{i}}: str
+    {{i}}: str = Field(title = "{{i}}")
 
 {% endfor %}
 
 class 设备信息(设备基础信息):
 {% for i in deviceOptionalIdentifiers%}
-    {{i}}: str
+    {{i}}: str = Field(title = "{{i}}")
 
 {% endfor %}
 
@@ -178,7 +178,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% else %}
             {% if class_name in 燃料能源相关数据默认单位.keys()%}
                 {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
-    {{ attrName}} : Tuple[float, str]
+    {{ attrName}} : Tuple[float, str] = Field(title = "{{attrName}}")
     """
     格式: [数值,单位]
     """
@@ -196,13 +196,13 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
-    {{ mstr }}: str
+    {{ mstr }}: str = Field(title = "{{mstr}}")
             {% endif%}
 
         {% endfor %}
     
         {% for psc, mdigit in mdigits %}
-    {{ mdigit[0] }}: float
+    {{ mdigit[0] }}: float = Field(title = "{{mdigit[0]}}", description =     """名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}""")
     """
     名称: {{ mdigit[1] }}
     单位: {{ mdigit[2] }}
