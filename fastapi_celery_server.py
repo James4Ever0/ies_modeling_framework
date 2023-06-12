@@ -16,14 +16,14 @@ from microgrid_base.ies_optim import 计算参数
 
 # define the input structure here.
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union , Literal, Dict
 
 class mDict(BaseModel):
     directed:bool=False
     multigraph:bool=False
     graph:计算参数
     nodes:List[Union[]]
-    links:List[Dict[Dict[Literal['id'], int], Dict[Literal['id'], int]]]
+    links:List[Dict[Union[Literal['source'],Literal['target']], int]]
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
