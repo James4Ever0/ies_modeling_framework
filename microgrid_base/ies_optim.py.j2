@@ -1044,15 +1044,20 @@ class 设备接口映射(BaseModel):
     {% do infoClassList.append(class_name+"信息")%}
 {% endfor %}
 class 设备节点(节点基类):
-    ports:Dict[str,设备接口映射]
-    param:Dict[str, Union[{{",".join(infoClassList)}}]]
+    ports:Dict[str,设备接口映射] = Field(title = "设备接口映射", description = "")
+    param:Dict[str, Union[{{",".join(infoClassList)}}]] title = Field(title = '设备信息', description = "不同设备有不同的信息格式")
 
 class mDict(BaseModel):
     directed:bool=Field(default = False, title='保留字段')
     multigraph:bool=Field(default = False, title='保留字段')
     graph:计算参数 = Field(
         title="能流拓扑图的附加属性",
-        description="仿真和优化所需的模型参数字典")
+        description="仿真和优化所需的模型参数字典", example = {
+            "计算步长": "小时",
+            "典型日": false,
+            "典型日代表的日期": [],
+            "计算类型": "设计规划",
+            "风速": [], "光照":[],"气温":[] ,"年利率":[]})
     nodes:List[Union[锚点节点,设备节点,母线节点]] = Field(
         title="节点",
         description="由所有节点ID和属性字典组成的列表", example =[ {
