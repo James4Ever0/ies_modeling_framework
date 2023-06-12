@@ -23,7 +23,7 @@ class EnergyFlowGraph(BaseModel):
 # solved or not?
 
 class CalculationResult(BaseModel):
-    result:List
+    resultList:List
     success:bool=True
     error_log:str=""
 
@@ -43,7 +43,7 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
     
     calculation_result = dict(result = None)
     try:
-        result = solveModelFromCalcParamList(calcParamList)
+        resultList = solveModelFromCalcParamList(calcParamList)
     except:
         import traceback
         ftb = traceback.format_exc()
