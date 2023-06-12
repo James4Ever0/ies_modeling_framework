@@ -12,11 +12,11 @@ app = Celery(
 # you had not to pass anything like pydantic data model as parameter.
 from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
 
-from microgrid_base.ies_optim import 计算参数
+# from microgrid_base.ies_optim import EnergyFlowGraph
 
 # define the input structure here.
 from pydantic import BaseModel
-from typing import List, Union , Literal, Dict
+from typing import List#, Union , Literal, Dict
 
 # solved or not?
 
@@ -25,13 +25,13 @@ class CalculationResult(BaseModel):
     success:bool
     error_log:str
 
-@app.task
-def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
+@app.task # parse it elsewhere.
+def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
     """
     能源系统仿真优化计算方法
 
     Args:
-        energyflow_graph (EnergyFlowGraph): 能流拓扑图和计算所需信息
+        energyflow_graph (dict): 能流拓扑图和计算所需信息
 
     Returns:
         calculation_result (dict): 计算结果
