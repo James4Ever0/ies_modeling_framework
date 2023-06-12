@@ -15,38 +15,8 @@ from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToC
 from microgrid_base.ies_optim import 计算参数
 
 # define the input structure here.
-from pydantic import BaseModel
-from typing import List, Union , Literal, Dict
-
-class 节点基类(BaseModel):
-    type:str
-    subtype:str
-    id:int
-
-class 锚点节点(节点基类):
-    port_name:str
-    device_id:str
-    
-class 母线节点(节点基类):
-    conn: List[str] # connection/merge types to literal.
-
-class 设备接口(BaseModel):
-    subtype: str
-    id: int
-
-class 设备节点(节点基类):
-    ports:Dict[str,设备接口]
-    param:Dict[str, Union[]]
-
-class mDict(BaseModel):
-    directed:bool=False
-    multigraph:bool=False
-    graph:计算参数
-    nodes:List[Union[锚点节点,设备节点,母线节点]]
-    links:List[Dict[Union[Literal['source'],Literal['target']], int]]
-
-class EnergyFlowGraph(BaseModel):
-    mDictList: List[mDict]
+# from pydantic import BaseModel
+# from typing import List, Union , Literal, Dict
 
 # solved or not?
 

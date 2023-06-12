@@ -1022,6 +1022,37 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 
+
+class 节点基类(BaseModel):
+    type:str
+    subtype:str
+    id:int
+
+class 锚点节点(节点基类):
+    port_name:str
+    device_id:str
+    
+class 母线节点(节点基类):
+    conn: List[str] # connection/merge types to literal.
+
+class 设备接口(BaseModel):
+    subtype: str
+    id: int
+
+class 设备节点(节点基类):
+    ports:Dict[str,设备接口]
+    param:Dict[str, Union[柴油信息, 柴油发电信息]]
+
+class mDict(BaseModel):
+    directed:bool=False
+    multigraph:bool=False
+    graph:计算参数
+    nodes:List[Union[锚点节点,设备节点,母线节点]]
+    links:List[Dict[Union[Literal['source'],Literal['target']], int]]
+
+class EnergyFlowGraph(BaseModel):
+    mDictList: List[mDict]
+
 from networkx import Graph
 
 # partial if typical day mode is on.
