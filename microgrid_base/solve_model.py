@@ -238,6 +238,8 @@ def solveModelFromCalcParamList(
                 仿真结果表_格式化 = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
                 # return 出力曲线字典, 仿真结果表_格式化
                 出力曲线列表 = []
+                for devId, content in 出力曲线字典.items():
+                    
                 return 出力曲线列表, 仿真结果表_格式化
             except:
                 import traceback
