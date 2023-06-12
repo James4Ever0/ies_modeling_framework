@@ -30,12 +30,13 @@ class 锚点节点(节点基类):
 class 母线节点(节点基类):
     conn: List[str] # connection/merge types to literal.
 
+class 设备接口(BaseModel):
+    subtype: str
+    id: int
+
 class 设备节点(节点基类):
-    ports:Dict[str, Dict{
-                        "subtype": "柴油输出",
-                        "id": 5
-                    }]
-    param:
+    ports:Dict[str,设备接口]
+    param:Dict[str, Union[]]
 
 class mDict(BaseModel):
     directed:bool=False
