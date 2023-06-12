@@ -2951,6 +2951,7 @@ class ModelWrapperContext:
         else:
             print("ERROR IN MODEL WRAPPER CONTEXT")
         del self.mw.model
+        # delete solver please?
         del self.mw
         print("EXITING MODEL WRAPPER CONTEXT")
 
