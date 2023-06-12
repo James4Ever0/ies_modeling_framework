@@ -1040,9 +1040,9 @@ class 设备接口映射(BaseModel):
     id: int
 
 {% set infoClassList = []%}
-{% for in %}
+{% for class_name in 设备接口集合.keys() %}
     {% infoClassList.append(className+"信息")%}
-{% endfor%}
+{% endfor %}
 class 设备节点(节点基类):
     ports:Dict[str,设备接口映射]
     param:Dict[str, Union[{{",".join(infoClassList)}}]]
