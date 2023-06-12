@@ -24,8 +24,8 @@ class EnergyFlowGraph(BaseModel):
 
 class CalculationResult(BaseModel):
     resultList:List
-    success:bool=True
-    error_log:str=""
+    success:bool
+    error_log:str
 
 @app.task
 def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
@@ -41,14 +41,18 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
     mDictList = energyflow_graph.dict()['mDictList']
     calcParamList = mDictListToCalcParamList(mDictList)
     
-    calculation_result = dict(result = None)
+    resultList = []
+    error_log = ""
+    success = False
     try:
         resultList = solveModelFromCalcParamList(calcParamList)
     except:
         import traceback
-        ftb = traceback.format_exc()
-        print(ftb)
-    ...
+        error_log = traceback.format_exc()
+        print(error_log)
+        
+    if resultList != []: success=True
+    calculation_result = CalculationResult()
     return calculation_result
 
 
