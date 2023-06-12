@@ -238,10 +238,13 @@ def solveModelFromCalcParamList(
                 仿真结果表_格式化 = 仿真结果表_导出.to_json(force_ascii=False, orient="records")
                 # return 出力曲线字典, 仿真结果表_格式化
                 出力曲线列表 = []
-                for devId, content in 出力曲线字典.items():
-                    deviceName = ret.devInstDictList[0][devId]['设备名称']
-                    deviceType = ret.devInstDictList[0][devId]['设备类型']
+                for devId, content_dict in 出力曲线字典.items():
+                    deviceName = ret.devInstDictList[0][devId].设备名称
+                    deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip('模型')
                     elem = {"name":deviceName,"plot_list":[]}
+                    for in content_dict.items():
+
+                        subelem = {"name": plotName, "abbr": Abbr, "data": {"x": xData, "y": yData}}
                     出力曲线列表.append(elem)
                 return 出力曲线列表, 仿真结果表_格式化
             except:
