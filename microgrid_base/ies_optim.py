@@ -88,13 +88,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -147,15 +147,15 @@ class 设备信息(设备基础信息):
 
 
 class 柴油信息(设备基础信息):
-    Price: Tuple[float, str] = Field(title="Price")
+    Price: Tuple[float, str] = Field(title="Price", description="格式: [数值,单位]")
     """
     格式: [数值,单位]
     """
-    热值: Tuple[float, str] = Field(title="热值")
+    热值: Tuple[float, str] = Field(title="热值", description="格式: [数值,单位]")
     """
     格式: [数值,单位]
     """
-    CO2: Tuple[float, str] = Field(title="CO2")
+    CO2: Tuple[float, str] = Field(title="CO2", description="格式: [数值,单位]")
     """
     格式: [数值,单位]
     """
@@ -168,12 +168,14 @@ class 柴油信息(设备基础信息):
 
 class 电负荷信息(设备基础信息):
     # 正数
-    EnergyConsumption: List[float]
+    EnergyConsumption: List[float] = Field(title="耗能功率表", description="单位: kW")
     """
     单位: kW
     """
 
-    MaxEnergyConsumption: Union[None, float] = None
+    MaxEnergyConsumption: Union[None, float] = Field(
+        default=None, title="最大消耗功率", description="单位: kW\n用于典型日下计算变压器容量"
+    )
     """
     单位: kW
     """
@@ -2336,18 +2338,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）

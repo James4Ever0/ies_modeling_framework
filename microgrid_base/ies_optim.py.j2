@@ -170,7 +170,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# In this way it will be timescale independent. #}
     """
 
-    MaxEnergyConsumption: Union[None, float] = Field(default = None, title = "最大消耗功率", description = '用于典型日下计算变压器容量')
+    MaxEnergyConsumption: Union[None, float] = Field(default = None, title = "最大消耗功率", description = '单位: kW\n用于典型日下计算变压器容量')
     """
     单位: kW
     {# 用于电负荷 典型日计算 #}
@@ -178,7 +178,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% else %}
             {% if class_name in 燃料能源相关数据默认单位.keys()%}
                 {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
-    {{ attrName}} : Tuple[float, str] = Field(title = "{{attrName}}")
+    {{ attrName}} : Tuple[float, str] = Field(title = "{{attrName}}", description="格式: [数值,单位]")
     """
     格式: [数值,单位]
     """
