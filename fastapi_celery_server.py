@@ -31,7 +31,10 @@ class 母线节点(节点基类):
     conn: List[str] # connection/merge types to literal.
 
 class 设备节点(节点基类):
-    ports:
+    ports:Dict[str, Dict{
+                        "subtype": "柴油输出",
+                        "id": 5
+                    }]
     param:
 
 class mDict(BaseModel):
