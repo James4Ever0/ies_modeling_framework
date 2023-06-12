@@ -246,6 +246,8 @@ elif flag in ["-c", "--celery"]:
 
     port = 9870
     url = f"http://127.0.0.1:{port}/calculate_async"
-    r = requests.post(url, json=dict(mDictList=mdictList))
+    from fastapi_datamodel_template import EnergyFlowGraph
+    data = EnergyFlowGraph(mDictList=mdictList)
+    r = requests.post(url, json=data.dict())
     print(r.status_code)
     print(r.json())
