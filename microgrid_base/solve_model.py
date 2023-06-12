@@ -1,6 +1,6 @@
 from fnmatch import translate
 import json
-from typing import *
+from typing import List, Literal, Dict, Any, Union
 from ies_optim import ModelWrapper
 
 from pydantic import BaseModel
