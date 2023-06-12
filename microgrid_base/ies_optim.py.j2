@@ -1043,7 +1043,7 @@ class 设备接口映射(BaseModel):
 {% endfor %}
 class 设备节点(节点基类):
     ports:Dict[str,设备接口映射] = Field(title = "设备接口映射", description = "描述设备所对应接口的类型和接口ID")
-    param:Dict[str, Union[{{",".join(infoClassList)}}]] = Field(title = '设备信息', description = "不同设备有不同的信息格式")
+    param:Union[{{",".join(infoClassList)}}] = Field(title = '设备信息', description = "不同设备有不同的信息格式")
 
 class mDict(BaseModel):
     directed:bool=Field(default = False, title='保留字段')
