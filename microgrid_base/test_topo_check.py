@@ -259,7 +259,10 @@ with open("export_format.json", "r") as f:
     columns = [e if type(e) == str else e[0] for e in columns]
 
 # if sys.argv[-1] in ["-f", "--full"]:
-def (calcParamList:List):
+def solveModelFromCalcParamList(
+    calcParamList: List,
+    DEBUG: bool = False,  # replaced by poly degree based verification.
+):
     assert len(calcParamList) >= 1
     firstParam_graphparam = calcParamList[0][2]
     典型日 = firstParam_graphparam["典型日"]
@@ -272,7 +275,6 @@ def (calcParamList:List):
     else:
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
-    DEBUG = False  # poly degree based verification.
     from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
@@ -542,11 +544,12 @@ def (calcParamList:List):
                     result = fetchResult(solved, ret)  # use 'ret' to prepare result.
             return solved, result, rangeDict
 
-
     resultList = []
     try:
         if 计算目标 in ["经济", "环保"]:
-            solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {}, True)
+            solved, result, _ = solve_model_and_fetch_result(
+                calcParamList, 计算目标, {}, True
+            )
             if result:
                 resultList.append(result)
         else:
@@ -559,22 +562,23 @@ def (calcParamList:List):
                     calcParamList, "环保", rangeDict
                 )
                 if solved:
-                        DOR = DualObjectiveRange.parse_obj(rangeDict)
-                        constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                            DOR
+                    DOR = DualObjectiveRange.parse_obj(rangeDict)
+                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
+                        DOR
+                    )
+                    for fin_start, fin_end in constraint_ranges:
+                        additional_constraints = {
+                            "经济": {"min": fin_start, "max": fin_end}
+                        }
+                        solved, result, _ = solve_model_and_fetch_result(
+                            calcParamList, "环保", None, True, additional_constraints
                         )
-                        for fin_start, fin_end in constraint_ranges:
-                            additional_constraints = {
-                                "经济": {"min": fin_start, "max": fin_end}
-                            }
-                            solved, result, _ = solve_model_and_fetch_result(
-                                calcParamList, "环保", None, True, additional_constraints
-                            )
-                            if result:
-                                resultList.append(result)
+                        if result:
+                            resultList.append(result)
         #### LOOP OF PREPARING SOLUTION ####
     except:
         import traceback
+
         traceback.print_exc()
         #         breakpoint()  # you need to turn off these breakpoints in release.
         # breakpoint()
