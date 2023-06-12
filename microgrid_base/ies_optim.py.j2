@@ -1033,18 +1033,18 @@ class 锚点节点(节点基类):
     device_id:str
     
 class 母线节点(节点基类):
-    conn: List[str] # connection/merge types to literal.
+    conn: List[str]  = Field(title = '')# connection/merge types to literal.
 
 class 设备接口映射(BaseModel):
-    subtype: str
-    id: int
+    subtype: str = Field(title = "接口类型")
+    id: int = Field(title = "接口ID", description = "拓扑图上与设备、母线、连接线的ID相比较具有唯一性的ID")
 
 {% set infoClassList = []%}
 {% for class_name in 设备接口集合.keys() %}
     {% do infoClassList.append(class_name+"信息")%}
 {% endfor %}
 class 设备节点(节点基类):
-    ports:Dict[str,设备接口映射] = Field(title = "设备接口映射", description = "")
+    ports:Dict[str,设备接口映射] = Field(title = "设备接口映射", description = "描述设备所对应接口的类型和接口ID")
     param:Dict[str, Union[{{",".join(infoClassList)}}]] title = Field(title = '设备信息', description = "不同设备有不同的信息格式")
 
 class mDict(BaseModel):
