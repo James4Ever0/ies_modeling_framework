@@ -177,7 +177,7 @@ class CalculationAsyncResult(CalculationStateResult):
     异步计算任务查询返回结果
     """
 
-    calculation_result: Union[None, dict] = Field(
+    calculation_result: Union[None, CalculationResult] = Field(
         description="如果没有计算完或者不存在返回空，否则返回计算结果字典", title="计算结果"
     )
 
