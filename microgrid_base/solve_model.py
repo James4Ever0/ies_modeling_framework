@@ -9,6 +9,13 @@ with open("export_format.json", "r") as f:
     columns = dt["仿真结果"]["ALL"]
     columns = [e if type(e) == str else e[0] for e in columns]
 
+with open("frontend_sim_param_translation.json", 'r') as f:
+    FSPT = json.load(f)
+    
+from pandas import DataFrame
+def translateSimParamTableHeaders(df:DataFrame):
+    df_json = df.to_json()
+
 # if sys.argv[-1] in ["-f", "--full"]:
 def solveModelFromCalcParamList(
     calcParamList: List,
