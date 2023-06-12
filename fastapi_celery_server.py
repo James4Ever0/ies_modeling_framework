@@ -15,7 +15,7 @@ from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToC
 from microgrid_base.ies_optim import 计算参数
 
 # define the input structure here.
-# from pydantic import BaseModel
+from pydantic import BaseModel
 from typing import List, Union , Literal, Dict
 
 # solved or not?
