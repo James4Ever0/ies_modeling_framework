@@ -252,12 +252,14 @@ for md in mdictList:
     calcParam = (devs, adders, graph_data, topo_load.G)
     calcParamList.append(calcParam)
 
-if sys.argv[-1] in ["-f", "--full"]:
 
-    with open("export_format.json", "r") as f:
-        dt = json.load(f)
-        columns = dt["仿真结果"]["ALL"]
-        columns = [e if type(e) == str else e[0] for e in columns]
+with open("export_format.json", "r") as f:
+    dt = json.load(f)
+    columns = dt["仿真结果"]["ALL"]
+    columns = [e if type(e) == str else e[0] for e in columns]
+
+# if sys.argv[-1] in ["-f", "--full"]:
+def (calcParamList:List):
     assert len(calcParamList) >= 1
     firstParam_graphparam = calcParamList[0][2]
     典型日 = firstParam_graphparam["典型日"]
@@ -577,3 +579,4 @@ if sys.argv[-1] in ["-f", "--full"]:
         #         breakpoint()  # you need to turn off these breakpoints in release.
         # breakpoint()
         print("END")
+    return resultList
