@@ -1,5 +1,5 @@
 // 计算结果表格数据
-resultTable: [{
+let resultTable= [{
     name: '电负荷1',  //元件名称
 modelNumber:'SS1',//设备型号
 equiCounts:'1', //设备台数
