@@ -25,6 +25,7 @@ from fastapi import FastAPI
 from fastapi_datamodel_template import (
     CalculationAsyncResult,
     CalculationAsyncSubmitResult,
+    CalculationResult,
     EnergyFlowGraph,
     RevokeResult,
     CalculationStateResult,
@@ -32,7 +33,7 @@ from fastapi_datamodel_template import (
 
 # define the input structure here.
 from pydantic import BaseModel
-from typing import List#, Union , Literal, Dict
+from typing import List  # , Union , Literal, Dict
 
 # solved or not?
 
@@ -200,6 +201,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
+    calculation_result = CalculationResult.parse_obj(calculation_result)
 
     return CalculationAsyncResult(
         calculation_state=get_calculation_state(calculation_id).calculation_state,
