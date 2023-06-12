@@ -202,7 +202,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% endfor %}
     
         {% for psc, mdigit in mdigits %}
-    {{ mdigit[0] }}: float = Field(title = "{{mdigit[0]}}", description =     """名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}""")
+    {{ mdigit[0] }}: float = Field(title = "{{mdigit[1]}}", description =     "名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}")
     """
     名称: {{ mdigit[1] }}
     单位: {{ mdigit[2] }}
@@ -212,7 +212,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
 
         {% for psc, main, sub in mtables %}
             {% set mtable=(main, sub)%}
-    {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]]
+    {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[List[float]] = Field(title = "{{ mtable[0][1]}}_{{ mtable[1][1]}}", description=    "{{ mtable[0][0]}}: {{ mtable[0][1]}}\n单位: {{ mtable[0][2]}}\n{{ mtable[1][0]}}: {{ mtable[1][1]}}\n单位: {{ mtable[1][2]}}
+    """)
     """
     {{ mtable[0][0]}}: {{ mtable[0][1]}}
     单位: {{ mtable[0][2]}}
