@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Mapping, Tuple, Union
 
 try:
     from typing import Literal
@@ -3093,8 +3093,8 @@ class 设备接口映射(BaseModel):
 
 
 class 设备节点(节点基类):
-    ports: Dict[str, 设备接口映射] = Field(title="设备接口映射", description="描述设备所对应接口的类型和接口ID")
-    param: Dict[
+    ports: Mapping[str, 设备接口映射] = Field(title="设备接口映射", description="描述设备所对应接口的类型和接口ID")
+    param: Mapping[
         str,
         Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息],
     ] = Field(title="设备信息", description="不同设备有不同的信息格式")

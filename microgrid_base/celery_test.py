@@ -14,3 +14,6 @@ mdata = mDictList[0]['nodes'][0]
 import rich
 rich.print(mdata) # 设备
 # requests.get(url, json=...)
+
+t = 设备节点.parse_obj(mdata)
+print(t)
