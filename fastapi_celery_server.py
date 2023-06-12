@@ -15,8 +15,10 @@ from microgrid_base.solve_model import solveModelFromCalcParamList
 # define the input structure here.
 from pydantic import BaseModel
 
+class mDict(BaseModel):
+
 class EnergyFlowGraph(BaseModel):
-    CalcParamList: List[]
+    mDictList: List[mDict]
 
 @app.task
 def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
@@ -29,7 +31,9 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
     Returns:
         calculation_result (dict): 计算结果
     """
-    calcParamList = energyflow_graph.CalcParamList
+    calcParamList = energyflow_graph.mDictList
+    
+    
     calculation_result = {}  # dummy result.
     return calculation_result
 

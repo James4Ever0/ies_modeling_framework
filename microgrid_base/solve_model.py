@@ -16,6 +16,32 @@ with open("frontend_sim_param_translation.json", "r") as f:
 
 from pandas import DataFrame
 
+def mDictListToCalcParamList(mdictList:List):
+        
+    calcParamList = []
+
+    for md in mdictList:
+        topo_load = topo.from_json(md)  # static method
+        # print_with_banner(topo_load, "图对象")
+        # how to check error now?
+        # all connected?
+
+        topo_load.check_consistency()  # may still be good.
+        ## COMPUTE THIS GRAPH ##
+        # use devs, adders
+
+        graph_data = topo_load.get_graph_data()
+        # print_with_banner(graph_data, "图元数据")
+        # objective is contained in the graph data.
+        # so all we need to pass to the compute function are: devs, adders, graph_data
+        devs = topo_load.get_all_devices()
+        adders = topo_load.get_all_adders()
+        calcParam = (devs, adders, graph_data, topo_load.G)
+        calcParamList.append(calcParam)
+    return calcParamList
+
+
+
 
 def translateSimParamTableHeaders(df: DataFrame):
     df_dict = df.to_dict()
