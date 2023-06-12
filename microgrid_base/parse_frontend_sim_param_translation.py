@@ -15,7 +15,9 @@ for line in lines:
     )
     if result:
         print(result)
-        resultMap[result["chineseName"].upper().replace("/","_")] = result["englishName"]
+        resultMap[result["chineseName"].upper().replace("/", "_")] = result[
+            "englishName"
+        ]
 
 import json
 
