@@ -7,7 +7,7 @@ except:
     from typing_extensions import Literal
 
 import rich
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # the main code for computing.
 # currently just compute microgrid
@@ -38,94 +38,94 @@ from pydantic import validator
 
 
 class 设备ID(BaseModel):
-    ID: int
+    ID: int = Field(title="设备ID", description="从拓扑图节点ID获取")
 
 
 class 柴油ID(设备ID):
-    燃料接口: int
+    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输出")
     """
     类型: 柴油输出
     """
 
 
 class 电负荷ID(设备ID):
-    电接口: int
+    电接口: int = Field(title="电接口ID", description="接口类型: 负荷电输入")
     """
     类型: 负荷电输入
     """
 
 
 class 光伏发电ID(设备ID):
-    电接口: int
+    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
 
 
 class 风力发电ID(设备ID):
-    电接口: int
+    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
 
 
 class 柴油发电ID(设备ID):
-    电接口: int
+    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
-    燃料接口: int
+    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
     """
 
 
 class 锂电池ID(设备ID):
-    电接口: int
+    电接口: int = Field(title="电接口ID", description="接口类型: 电储能端输入输出")
     """
     类型: 电储能端输入输出
     """
 
 
 class 变压器ID(设备ID):
-    电输入: int
-    """
-    类型: 电母线输入
-    """
-    电输出: int
+    电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
 class 变流器ID(设备ID):
-    电输出: int
+    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
-    电输入: int
+    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
 
 
 class 双向变流器ID(设备ID):
-    储能端: int
-    """
-    类型: 双向变流器储能端输入输出
-    """
-    线路端: int
+    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
 class 传输线ID(设备ID):
-    电输出: int
+    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
-    电输入: int
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
@@ -137,25 +137,25 @@ class 传输线ID(设备ID):
 
 
 class 设备基础信息(BaseModel):
-    设备名称: str
+    设备名称: str = Field(title="设备名称")
 
 
 class 设备信息(设备基础信息):
-    生产厂商: str
+    生产厂商: str = Field(title="生产厂商")
 
-    设备型号: str
+    设备型号: str = Field(title="设备型号")
 
 
 class 柴油信息(设备基础信息):
-    Price: Tuple[float, str]
+    Price: Tuple[float, str] = Field(title="Price")
     """
     格式: [数值,单位]
     """
-    热值: Tuple[float, str]
+    热值: Tuple[float, str] = Field(title="热值")
     """
     格式: [数值,单位]
     """
-    CO2: Tuple[float, str]
+    CO2: Tuple[float, str] = Field(title="CO2")
     """
     格式: [数值,单位]
     """
@@ -181,79 +181,89 @@ class 电负荷信息(设备基础信息):
 
 class 光伏发电信息(设备信息):
 
-    Area: float
+    Area: float = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
     单位: m2
     """
 
-    PowerConversionEfficiency: float
+    PowerConversionEfficiency: float = Field(
+        title="电电转换效率", description="名称: 电电转换效率\n单位: percent"
+    )
     """
     名称: 电电转换效率
     单位: percent
     """
 
-    MaxPower: float
+    MaxPower: float = Field(title="最大发电功率", description="名称: 最大发电功率\n单位: kWp")
     """
     名称: 最大发电功率
     单位: kWp
     """
 
-    PowerDeltaLimit: float
+    PowerDeltaLimit: float = Field(
+        title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
+    )
     """
     名称: 发电爬坡率
     单位: percent/s
     """
 
-    CostPerKilowatt: float
+    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWp")
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYearPerKilowatt: float
+    CostPerYearPerKilowatt: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWp*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float
+    BuildCostPerKilowatt: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWp"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kWp
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxInstallArea: float
+    MaxInstallArea: float = Field(title="最大安装面积", description="名称: 最大安装面积\n单位: m2")
     """
     名称: 最大安装面积
     单位: m2
     """
 
-    MinInstallArea: float
+    MinInstallArea: float = Field(title="最小安装面积", description="名称: 最小安装面积\n单位: m2")
     """
     名称: 最小安装面积
     单位: m2
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -262,85 +272,93 @@ class 光伏发电信息(设备信息):
 
 class 风力发电信息(设备信息):
 
-    RatedPower: float
+    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
     单位: kWp
     """
 
-    RatedWindSpeed: float
+    RatedWindSpeed: float = Field(title="额定风速", description="名称: 额定风速\n单位: m/s")
     """
     名称: 额定风速
     单位: m/s
     """
 
-    MinWindSpeed: float
+    MinWindSpeed: float = Field(title="切入风速", description="名称: 切入风速\n单位: m/s")
     """
     名称: 切入风速
     单位: m/s
     """
 
-    MaxWindSpeed: float
+    MaxWindSpeed: float = Field(title="切出风速", description="名称: 切出风速\n单位: m/s")
     """
     名称: 切出风速
     单位: m/s
     """
 
-    PowerDeltaLimit: float
+    PowerDeltaLimit: float = Field(
+        title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
+    )
     """
     名称: 发电爬坡率
     单位: percent/s
     """
 
-    CostPerKilowatt: float
+    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWp")
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYearPerKilowatt: float
+    CostPerYearPerKilowatt: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWp*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float
+    BuildCostPerKilowatt: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWp"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kWp
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float
+    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float
+    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -349,79 +367,92 @@ class 风力发电信息(设备信息):
 
 class 柴油发电信息(设备信息):
 
-    RatedPower: float
+    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    PowerDeltaLimit: float
+    PowerDeltaLimit: float = Field(
+        title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
+    )
     """
     名称: 发电爬坡率
     单位: percent/s
     """
 
-    PowerStartupLimit: float
+    PowerStartupLimit: float = Field(
+        title="启动功率百分比", description="名称: 启动功率百分比\n单位: percent"
+    )
     """
     名称: 启动功率百分比
     单位: percent
     """
 
-    CostPerMachine: float
+    CostPerMachine: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/台")
     """
     名称: 采购成本
     单位: 万元/台
     """
 
-    CostPerYearPerMachine: float
+    CostPerYearPerMachine: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(台*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(台*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerMachine: float
+    BuildCostPerMachine: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/台"
+    )
     """
     名称: 建设费用系数
     单位: 万元/台
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float
+    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float
+    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
     """
 
-    DieselToPower_Load: List[List[float]]
+    DieselToPower_Load: List[List[float]] = Field(
+        title="燃油消耗率_负载率",
+        description="DieselToPower: 燃油消耗率\n单位: L/kWh\nLoad: 负载率\n单位: percent",
+    )
     """
     DieselToPower: 燃油消耗率
     单位: L/kWh
@@ -433,123 +464,137 @@ class 柴油发电信息(设备信息):
 
 class 锂电池信息(设备信息):
 
-    循环边界条件: str
+    循环边界条件: str = Field(title="循环边界条件")
 
-    RatedCapacity: float
+    RatedCapacity: float = Field(title="额定容量", description="名称: 额定容量\n单位: kWh")
     """
     名称: 额定容量
     单位: kWh
     """
 
-    BatteryDeltaLimit: float
+    BatteryDeltaLimit: float = Field(
+        title="电池充放电倍率", description="名称: 电池充放电倍率\n单位: 1/hour"
+    )
     """
     名称: 电池充放电倍率
     单位: 1/hour
     """
 
-    ChargeEfficiency: float
+    ChargeEfficiency: float = Field(title="充能效率", description="名称: 充能效率\n单位: percent")
     """
     名称: 充能效率
     单位: percent
     """
 
-    DischargeEfficiency: float
+    DischargeEfficiency: float = Field(
+        title="放能效率", description="名称: 放能效率\n单位: percent"
+    )
     """
     名称: 放能效率
     单位: percent
     """
 
-    MaxSOC: float
+    MaxSOC: float = Field(title="最大SOC", description="名称: 最大SOC\n单位: percent")
     """
     名称: 最大SOC
     单位: percent
     """
 
-    MinSOC: float
+    MinSOC: float = Field(title="最小SOC", description="名称: 最小SOC\n单位: percent")
     """
     名称: 最小SOC
     单位: percent
     """
 
-    BatteryStorageDecay: float
+    BatteryStorageDecay: float = Field(
+        title="存储衰减", description="名称: 存储衰减\n单位: percent/hour"
+    )
     """
     名称: 存储衰减
     单位: percent/hour
     """
 
-    TotalDischargeCapacity: float
+    TotalDischargeCapacity: float = Field(
+        title="生命周期总放电量", description="名称: 生命周期总放电量\n单位: kWh"
+    )
     """
     名称: 生命周期总放电量
     单位: kWh
     """
 
-    BatteryLife: float
+    BatteryLife: float = Field(title="电池换芯周期", description="名称: 电池换芯周期\n单位: 年")
     """
     名称: 电池换芯周期
     单位: 年
     """
 
-    CostPerCapacity: float
+    CostPerCapacity: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWh")
     """
     名称: 采购成本
     单位: 万元/kWh
     """
 
-    CostPerYearPerCapacity: float
+    CostPerYearPerCapacity: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWh*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kWh*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerCapacity: float
+    BuildCostPerCapacity: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWh"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kWh
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    InitSOC: float
+    InitSOC: float = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
     """
     名称: 初始SOC
     单位: percent
     """
 
-    MaxTotalCapacity: float
+    MaxTotalCapacity: float = Field(title="最大设备容量", description="名称: 最大设备容量\n单位: kWh")
     """
     名称: 最大设备容量
     单位: kWh
     """
 
-    MinTotalCapacity: float
+    MinTotalCapacity: float = Field(title="最小设备容量", description="名称: 最小设备容量\n单位: kWh")
     """
     名称: 最小设备容量
     单位: kWh
     """
 
-    InitSOC: float
+    InitSOC: float = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
     """
     名称: 初始SOC
     单位: percent
     """
 
-    TotalCapacity: float
+    TotalCapacity: float = Field(title="设备容量", description="名称: 设备容量\n单位: kWh")
     """
     名称: 设备容量
     单位: kWh
@@ -558,85 +603,93 @@ class 锂电池信息(设备信息):
 
 class 变压器信息(设备信息):
 
-    Efficiency: float
+    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    RatedPower: float
+    RatedPower: float = Field(title="变压器容量", description="名称: 变压器容量\n单位: kW")
     """
     名称: 变压器容量
     单位: kW
     """
 
-    CostPerKilowatt: float
+    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float
+    CostPerYearPerKilowatt: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float
+    BuildCostPerKilowatt: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kW
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    PowerParameter: float
+    PowerParameter: float = Field(title="功率因数", description="名称: 功率因数\n单位: one")
     """
     名称: 功率因数
     单位: one
     """
 
-    LoadRedundancyParameter: float
+    LoadRedundancyParameter: float = Field(
+        title="变压器冗余系数", description="名称: 变压器冗余系数\n单位: one"
+    )
     """
     名称: 变压器冗余系数
     单位: one
     """
 
-    MaxDeviceCount: float
+    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float
+    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    PowerParameter: float
+    PowerParameter: float = Field(title="功率因数", description="名称: 功率因数\n单位: one")
     """
     名称: 功率因数
     单位: one
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -645,67 +698,73 @@ class 变压器信息(设备信息):
 
 class 变流器信息(设备信息):
 
-    RatedPower: float
+    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    Efficiency: float
+    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    CostPerKilowatt: float
+    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float
+    CostPerYearPerKilowatt: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float
+    BuildCostPerKilowatt: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kW
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float
+    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float
+    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -714,67 +773,73 @@ class 变流器信息(设备信息):
 
 class 双向变流器信息(设备信息):
 
-    RatedPower: float
+    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    Efficiency: float
+    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    CostPerKilowatt: float
+    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float
+    CostPerYearPerKilowatt: float = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
+    )
     """
     名称: 固定维护成本
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float
+    VariationalCostPerWork: float = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
     """
     名称: 可变维护成本
     单位: 元/kWh
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float
+    BuildCostPerKilowatt: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
+    )
     """
     名称: 建设费用系数
     单位: 万元/kW
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float
+    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float
+    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float
+    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -783,49 +848,55 @@ class 双向变流器信息(设备信息):
 
 class 传输线信息(设备信息):
 
-    PowerTransferDecay: float
+    PowerTransferDecay: float = Field(
+        title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
+    )
     """
     名称: 能量衰减系数
     单位: kW/km
     """
 
-    CostPerKilometer: float
+    CostPerKilometer: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/km")
     """
     名称: 采购成本
     单位: 万元/km
     """
 
-    CostPerYearPerKilometer: float
+    CostPerYearPerKilometer: float = Field(
+        title="维护成本", description="名称: 维护成本\n单位: 万元/(km*年)"
+    )
     """
     名称: 维护成本
     单位: 万元/(km*年)
     """
 
-    Life: float
+    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilometer: float
+    BuildCostPerKilometer: float = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/km"
+    )
     """
     名称: 建设费用系数
     单位: 万元/km
     """
 
-    BuildBaseCost: float
+    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    Length: float
+    Length: float = Field(title="长度", description="名称: 长度\n单位: km")
     """
     名称: 长度
     单位: km
     """
 
-    Length: float
+    Length: float = Field(title="长度", description="名称: 长度\n单位: km")
     """
     名称: 长度
     单位: km
@@ -899,6 +970,7 @@ class ModelWrapper:
 
 # 需要明确单位
 class 计算参数(BaseModel):
+    典型日ID: Union[int, None] = None  # increse by external loop
     计算步长: Union[Literal["小时"], Literal["秒"]]
     典型日: bool
     典型日代表的日期: List[int] = []
@@ -911,6 +983,7 @@ class 计算参数(BaseModel):
         return v
 
     计算类型: Union[Literal["仿真模拟"], Literal["设计规划"]]
+    计算目标: Union[Literal["经济"], Literal["环保"], Literal["经济_环保"]]
     风速: List[float]
     """
     单位: m/s
@@ -2263,18 +2336,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2580,18 +2653,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2951,7 +3024,6 @@ class ModelWrapperContext:
         else:
             print("ERROR IN MODEL WRAPPER CONTEXT")
         del self.mw.model
-        # delete solver please?
         del self.mw
         print("EXITING MODEL WRAPPER CONTEXT")
 
@@ -2994,6 +3066,46 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
 }  # type: ignore
+
+
+class 节点基类(BaseModel):
+    type: str
+    subtype: str
+    id: int
+
+
+class 锚点节点(节点基类):
+    port_name: str
+    device_id: str
+
+
+class 母线节点(节点基类):
+    conn: List[str]  # connection/merge types to literal.
+
+
+class 设备接口映射(BaseModel):
+    subtype: str
+    id: int
+
+
+class 设备节点(节点基类):
+    ports: Dict[str, 设备接口映射]
+    param: Dict[
+        str,
+        Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息],
+    ]
+
+
+class mDict(BaseModel):
+    directed: bool = False
+    multigraph: bool = False
+    graph: 计算参数
+    nodes: List[Union[锚点节点, 设备节点, 母线节点]]
+    links: List[Dict[Union[Literal["source"], Literal["target"]], int]]
+
+
+class EnergyFlowGraph(BaseModel):
+    mDictList: List[mDict]
 
 
 from networkx import Graph
@@ -3101,9 +3213,5 @@ def compute(
 
     obj_expr = financial_obj_expr
 
-    return (
-        (financial_obj_expr, financial_dyn_obj_expr, environment_obj_expr),
-        devInstDict,
-        PD,
-    )
+    return obj_expr, devInstDict, PD
     # always minimize the objective.
