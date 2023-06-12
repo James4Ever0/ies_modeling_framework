@@ -3,7 +3,7 @@ from typing import *
 from ies_optim import ModelWrapper
 
 from pydantic import BaseModel
-
+import rich
 with open("export_format.json", "r") as f:
     dt = json.load(f)
     columns = dt["仿真结果"]["ALL"]
@@ -15,7 +15,9 @@ with open("frontend_sim_param_translation.json", 'r') as f:
 from pandas import DataFrame
 def translateSimParamTableHeaders(df:DataFrame):
     df_dict = df.to_dict()
-    df_dict_translated = {FSPT[k]:v for k,v in df_dict.items}
+    df_dict_translated = {FSPT[k]:v for k,v in df_dict.items()}
+    ret = DataFrame(df_dict_translated)
+    return ret
 
 # if sys.argv[-1] in ["-f", "--full"]:
 def solveModelFromCalcParamList(
