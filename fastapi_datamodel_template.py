@@ -7,6 +7,13 @@ import networkx
 # question: how to convert pydantic models to json?
 # to json: json.dumps(model.dict())
 #
+
+
+class CalculationResult(BaseModel):
+    resultList:List
+    success:bool
+    error_log:str
+
 class EnergyFlowGraph(BaseModel):
     """
     用于仿真和优化计算的能流拓扑图，仿真和优化所需要的参数模型和变量定义会有所不同。

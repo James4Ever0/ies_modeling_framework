@@ -30,6 +30,12 @@ from fastapi_datamodel_template import (
     CalculationStateResult,
 )
 
+# define the input structure here.
+from pydantic import BaseModel
+from typing import List#, Union , Literal, Dict
+
+# solved or not?
+
 import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any, Union

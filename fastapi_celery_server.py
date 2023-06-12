@@ -14,16 +14,6 @@ from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToC
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
-# define the input structure here.
-from pydantic import BaseModel
-from typing import List#, Union , Literal, Dict
-
-# solved or not?
-
-class CalculationResult(BaseModel):
-    resultList:List
-    success:bool
-    error_log:str
 
 @app.task # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
