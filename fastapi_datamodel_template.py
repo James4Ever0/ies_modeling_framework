@@ -8,6 +8,8 @@ import networkx
 # to json: json.dumps(model.dict())
 from microgrid_base.ies_optim import EnergyFlowGraph
 
+
+
 class CalculationResult(BaseModel):
     resultList:List
     success:bool
