@@ -88,46 +88,46 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
     电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
 
 
 class 变流器ID(设备ID):
-    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
-
-
-class 双向变流器ID(设备ID):
-    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
-    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
-
-
-class 传输线ID(设备ID):
     电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
+
+
+class 双向变流器ID(设备ID):
+    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
+    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
+    """
+
+
+class 传输线ID(设备ID):
     电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -2336,18 +2336,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2498,18 +2498,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -2653,18 +2653,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2799,18 +2799,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NegativeReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3069,39 +3069,70 @@ devInfoClassMap: Dict[str, BaseModel] = {
 
 
 class 节点基类(BaseModel):
-    type: str
-    subtype: str
-    id: int
+    type: str = Field(title="节点类型")
+    subtype: str = Field(title="节点次类型")
+    id: int = Field(title="节点ID")
 
 
 class 锚点节点(节点基类):
-    port_name: str
-    device_id: str
+    port_name: str = Field(title="锚点名称")
+    device_id: str = Field(title="锚点所对应设备ID")
 
 
 class 母线节点(节点基类):
-    conn: List[str]  # connection/merge types to literal.
+    conn: List[str] = Field(
+        title="母线连接线类型列表", description="包括连接到母线上的连接线和合并线类型"
+    )  # connection/merge types to literal.
 
 
 class 设备接口映射(BaseModel):
-    subtype: str
-    id: int
+    subtype: str = Field(title="接口类型")
+    id: int = Field(title="接口ID", description="拓扑图上与设备、母线、连接线的ID相比较具有唯一性的ID")
 
 
 class 设备节点(节点基类):
-    ports: Dict[str, 设备接口映射]
+    ports: Dict[str, 设备接口映射] = Field(title="设备接口映射", description="描述设备所对应接口的类型和接口ID")
     param: Dict[
         str,
         Union[柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息],
-    ]
+    ] = Field(title="设备信息", description="不同设备有不同的信息格式")
 
 
 class mDict(BaseModel):
-    directed: bool = False
-    multigraph: bool = False
-    graph: 计算参数
-    nodes: List[Union[锚点节点, 设备节点, 母线节点]]
-    links: List[Dict[Union[Literal["source"], Literal["target"]], int]]
+    directed: bool = Field(default=False, title="保留字段")
+    multigraph: bool = Field(default=False, title="保留字段")
+    graph: 计算参数 = Field(
+        title="能流拓扑图的附加属性",
+        description="仿真和优化所需的模型参数字典",
+        example={
+            "计算步长": "小时",
+            "典型日": False,
+            "典型日代表的日期": [],
+            "计算类型": "设计规划",
+            "风速": [],
+            "光照": [],
+            "气温": [],
+            "年利率": [],
+        },
+    )
+    nodes: List[Union[锚点节点, 设备节点, 母线节点]] = Field(
+        title="节点",
+        description="由所有节点ID和属性字典组成的列表",
+        example=[
+            {
+                "type": "锚点",
+                "port_name": "电接口",
+                "subtype": "供电端输出",
+                "device_id": 2,
+                "id": 3,
+            }
+        ],
+    )
+    links: List[Dict[Union[Literal["source"], Literal["target"]], int]] = Field(
+        title="边",
+        description="由能流图中节点互相连接的边组成的列表",
+        example=[{"source": 0, "target": 1}, {"source": 1, "target": 31}],
+    )
 
 
 class EnergyFlowGraph(BaseModel):
