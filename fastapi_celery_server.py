@@ -10,7 +10,7 @@ app = Celery(
 )
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
-from microgrid_base.solve_model import solveModelFromCalcParamList
+from microgrid_base.solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
 
 # define the input structure here.
 from pydantic import BaseModel
@@ -19,6 +19,8 @@ class mDict(BaseModel):
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
+
+# solved or not?
 
 @app.task
 def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
@@ -31,8 +33,10 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
     Returns:
         calculation_result (dict): 计算结果
     """
-    calcParamList = energyflow_graph.mDictList
+    mDictList = energyflow_graph.dict()['mDictList']
+    calcParamList = mDictListToCalcParamList(mDictList)
     
+    solveModelFromCalcParamList(calcParamList)
     
     calculation_result = {}  # dummy result.
     return calculation_result
