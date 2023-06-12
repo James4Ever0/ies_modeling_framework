@@ -2,6 +2,8 @@ from fnmatch import translate
 import json
 from typing import List, Literal, Dict, Any, Union
 from ies_optim import ModelWrapper
+from export_format_validate import *
+from pyomo.environ import *
 
 from pydantic import BaseModel
 import rich
@@ -64,7 +66,6 @@ def solveModelFromCalcParamList(
     else:
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
-    from pyomo.environ import *
     from ies_optim import compute, ModelWrapperContext
 
     # obj_expr = 0
@@ -210,7 +211,6 @@ def solveModelFromCalcParamList(
                         出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
                     return 出力曲线模版
 
-                from export_format_validate import *
 
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
