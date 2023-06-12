@@ -257,3 +257,4 @@ if sys.argv[-1] in ["-f", "--full"]:
     from solve_model import solveModelFromCalcParamList
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
+    print("RESULT:", resultList)

@@ -3,6 +3,7 @@ from typing import *
 from ies_optim import ModelWrapper
 
 from pydantic import BaseModel
+
 with open("export_format.json", "r") as f:
     dt = json.load(f)
     columns = dt["仿真结果"]["ALL"]
