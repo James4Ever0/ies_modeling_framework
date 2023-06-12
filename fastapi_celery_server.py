@@ -36,9 +36,13 @@ def calculate_energyflow_graph(energyflow_graph: EnergyFlowGraph) -> dict:
     mDictList = energyflow_graph.dict()['mDictList']
     calcParamList = mDictListToCalcParamList(mDictList)
     
-    solveModelFromCalcParamList(calcParamList)
-    
-    calculation_result = {}  # dummy result.
+    try:
+        result = solveModelFromCalcParamList(calcParamList)
+    except:
+        import traceback
+        ftb = traceback.format_tb()
+        print(ftb)
+    ...
     return calculation_result
 
 
