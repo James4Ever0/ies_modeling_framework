@@ -585,6 +585,5 @@ def solveModelFromCalcParamList(
         print("END")
     return resultList
 
-
 if sys.argv[-1] in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
