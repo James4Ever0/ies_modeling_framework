@@ -16,8 +16,8 @@ from fastapi_datamodel_template import CalculationResult
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
 
-@app.task # parse it elsewhere.
-def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
+@app.task(bind=True) # parse it elsewhere.
+def calculate_energyflow_graph(self, energyflow_graph: dict) -> dict:
     """
     能源系统仿真优化计算方法
 
@@ -40,11 +40,12 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
         error_log = traceback.format_exc()
         print(error_log)
         
-    if resultList != []: success=True
-    calculation_result = CalculationResult(resultList=resultList, success=success, error_log=error_log).dict()
-    
-    return calculation_result
-
+    if resultList != []:
+        success=True
+        calculation_result = CalculationResult(resultList=resultList, success=success, error_log=error_log).dict()
+        return calculation_result
+    else:
+        self.update_state(state='FAILURE')
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
