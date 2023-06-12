@@ -14,7 +14,8 @@ with open("frontend_sim_param_translation.json", 'r') as f:
     
 from pandas import DataFrame
 def translateSimParamTableHeaders(df:DataFrame):
-    df_json = df.to_json()
+    df_dict = df.to_dict()
+    df_dict_translated = {FSPT[k]:v for k,v in df_dict.items}
 
 # if sys.argv[-1] in ["-f", "--full"]:
 def solveModelFromCalcParamList(
