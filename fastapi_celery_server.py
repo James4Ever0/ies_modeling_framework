@@ -36,7 +36,7 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
     Returns:
         calculation_result (dict): 计算结果
     """
-    mDictList = energyflow_graph.dict()['mDictList']
+    mDictList = energyflow_graph['mDictList']
     calcParamList = mDictListToCalcParamList(mDictList)
     
     resultList = []

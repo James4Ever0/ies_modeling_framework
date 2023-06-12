@@ -1048,8 +1048,8 @@ class 设备节点(节点基类):
     param:Dict[str, Union[{{",".join(infoClassList)}}]]
 
 class mDict(BaseModel):
-    directed:bool=False
-    multigraph:bool=False
+    directed:bool=Field(default = False, title='保留字段')
+    multigraph:bool=Field(default = False, title='保留字段')
     graph:计算参数
     nodes:List[Union[锚点节点,设备节点,母线节点]]
     links:List[Dict[Union[Literal['source'],Literal['target']], int]]
