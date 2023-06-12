@@ -2,45 +2,68 @@ from pydantic import BaseModel, Field
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Literal, Union, Dict, Any
 import networkx
+
 # from celery.states import PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
 
 # question: how to convert pydantic models to json?
 # to json: json.dumps(model.dict())
 from microgrid_base.ies_optim import EnergyFlowGraph
 
+
 class 单次计算结果(BaseModel):
-    performanceDataList:List[Dict] = Field(title='设备出力曲线列表', example = )
-    simulationResultTable:Dict[str, Any] = Field(title = "仿真结果列表", example = [
-     "name": "Any",
-     "modelNumber": "Any",
-     "equiCounts": 1,
-    "coolingCapacity": 1,
-    "coolingLoad": 1,
-    "electricSupply": 1,
-    "electricLoad": 1,
-    "heatingLoad": 1,
-    "heatLoad": 1,
-    "steamProduction": 1,
-    "steamLoad": 1,
-    "hydrogenProduction": 1,
-    "hydrogenConsumption": 1,
-     "dieselConsumption": 1,
-     "dieselConsumptionCosts": 1,
-     "naturalGasConsumption": 1,
-    "naturalGasConsumptionCosts": 1,
-    "averageEfficiency": 1,
-    "equipmentMaintenanceCosts": 1,
-     "coldIncome": 1,
-     "hotIncome": 1,
-    "eletricncome": 1,
-     "steamIncome": 1,
-     "hydrogenIncome: 1,
-    ])
+    performanceDataList: List[Dict] = Field(
+        title="设备出力曲线列表",
+        example=[
+            {
+                "name": "Any",
+                "plot_list": [
+                    {
+                        "name": "plotName",
+                        "abbr": "plotAbbr",
+                        "data": {"x": [], "y": []},
+                    }
+                ],
+            }
+        ],
+    )
+    simulationResultTable: Dict[str, Any] = Field(
+        title="仿真结果列表",
+        example=[
+            {
+                "name": "Any",
+                "modelNumber": "Any",
+                "equiCounts": 1,
+                "coolingCapacity": 1,
+                "coolingLoad": 1,
+                "electricSupply": 1,
+                "electricLoad": 1,
+                "heatingLoad": 1,
+                "heatLoad": 1,
+                "steamProduction": 1,
+                "steamLoad": 1,
+                "hydrogenProduction": 1,
+                "hydrogenConsumption": 1,
+                "dieselConsumption": 1,
+                "dieselConsumptionCosts": 1,
+                "naturalGasConsumption": 1,
+                "naturalGasConsumptionCosts": 1,
+                "averageEfficiency": 1,
+                "equipmentMaintenanceCosts": 1,
+                "coldIncome": 1,
+                "hotIncome": 1,
+                "eletricncome": 1,
+                "steamIncome": 1,
+                "hydrogenIncome": 1,
+            }
+        ],
+    )
+
 
 class CalculationResult(BaseModel):
-    resultList:List[单次计算结果]
-    success:bool
-    error_log:str
+    resultList: List[单次计算结果]
+    success: bool
+    error_log: str
+
 
 # class EnergyFlowGraph(BaseModel):
 #     """
@@ -128,11 +151,25 @@ class CalculationAsyncSubmitResult(BaseModel):
         description='如果成功提交，返回"success"，否则返回"failed"', title="提交结果"
     )
 
+
 class CalculationStateResult(BaseModel):
     """
     包含计算任务状态的数据类
     """
-    calculation_state: Literal[None, "PENDING", "RECEIVED", "STARTED", "SUCCESS", "FAILURE", "RETRY", "REVOKED", 'NOT_CREATED'] = Field(description="Celery内置任务状态，如果是null则表示不存在该任务", title="计算任务状态")
+
+    calculation_state: Literal[
+        None,
+        "PENDING",
+        "RECEIVED",
+        "STARTED",
+        "SUCCESS",
+        "FAILURE",
+        "RETRY",
+        "REVOKED",
+        "NOT_CREATED",
+    ] = Field(description="Celery内置任务状态，如果是null则表示不存在该任务", title="计算任务状态")
+
+
 # would you transfer this thing over celery, or you need to build it?
 # i'd rather build it.
 class CalculationAsyncResult(CalculationStateResult):
@@ -140,7 +177,9 @@ class CalculationAsyncResult(CalculationStateResult):
     异步计算任务查询返回结果
     """
 
-    calculation_result: Union[None, dict] = Field(description="如果没有计算完或者不存在返回空，否则返回计算结果字典", title="计算结果")
+    calculation_result: Union[None, dict] = Field(
+        description="如果没有计算完或者不存在返回空，否则返回计算结果字典", title="计算结果"
+    )
 
 
 class RevokeResult(CalculationStateResult):
