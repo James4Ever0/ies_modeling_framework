@@ -232,11 +232,16 @@ with open("template_input.json", "w+") as f:
 ###############
 import sys
 
+flag = sys.argv[-1] 
 
-if sys.argv[-1] in ["-f", "--full"]:
+if flag in ["-f", "--full"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
 
     calcParamList = mDictListToCalcParamList(mdictList)
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
+elif flag in ['-c', '--celery']:
+    import requests
+    url = f"http://127.0.0.1:{port}/"
+    requests.get()
