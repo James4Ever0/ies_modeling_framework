@@ -108,7 +108,6 @@ def solveModelFromCalcParamList(
                 solved = True
             except:
                 print("NO SOLUTION.")
-            del solver
         return solved
 
     class CalcStruct(BaseModel):
