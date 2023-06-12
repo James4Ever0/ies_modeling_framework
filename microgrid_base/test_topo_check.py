@@ -262,7 +262,7 @@ with open("export_format.json", "r") as f:
 def solveModelFromCalcParamList(
     calcParamList: List,
     DEBUG: bool = False,  # replaced by poly degree based verification.
-):
+) -> List:
     assert len(calcParamList) >= 1
     firstParam_graphparam = calcParamList[0][2]
     典型日 = firstParam_graphparam["典型日"]
@@ -584,3 +584,7 @@ def solveModelFromCalcParamList(
         # breakpoint()
         print("END")
     return resultList
+
+
+if sys.argv[-1] in ["-f", "--full"]:
+    resultList = solveModelFromCalcParamList(calcParamList)
