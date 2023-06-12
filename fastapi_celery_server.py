@@ -42,6 +42,7 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> dict:
         
     if resultList != []: success=True
     calculation_result = CalculationResult(resultList=resultList, success=success, error_log=error_log).dict()
+    
     return calculation_result
 
 
