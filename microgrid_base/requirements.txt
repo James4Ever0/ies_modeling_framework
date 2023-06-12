@@ -6,3 +6,5 @@ pint
 numpy
 jinja2
 parse
+fastapi
+celery
