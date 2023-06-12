@@ -230,10 +230,11 @@ with open("template_input.json", "w+") as f:
 ###############
 import sys
 
-...
+
 
 if sys.argv[-1] in ["-f", "--full"]:
-    from solve_model import solveModelFromCalcParamList
+    from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
+    calcParamList = mDictListToCalcParamList(mdictList)
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)

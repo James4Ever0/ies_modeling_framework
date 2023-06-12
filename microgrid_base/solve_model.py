@@ -15,13 +15,12 @@ with open("frontend_sim_param_translation.json", "r") as f:
     FSPT = json.load(f)
 
 from pandas import DataFrame
-
+from topo_check import 拓扑图
 def mDictListToCalcParamList(mdictList:List):
-        
     calcParamList = []
 
     for md in mdictList:
-        topo_load = topo.from_json(md)  # static method
+        topo_load = 拓扑图.from_json(md)  # static method
         # print_with_banner(topo_load, "图对象")
         # how to check error now?
         # all connected?
@@ -39,8 +38,6 @@ def mDictListToCalcParamList(mdictList:List):
         calcParam = (devs, adders, graph_data, topo_load.G)
         calcParamList.append(calcParam)
     return calcParamList
-
-
 
 
 def translateSimParamTableHeaders(df: DataFrame):
