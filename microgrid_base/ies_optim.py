@@ -99,13 +99,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -978,8 +978,8 @@ class 计算参数(BaseModel):
     典型日代表的日期: List[int] = []
 
     @validator("典型日代表的日期")
-    def validate_typical_day(cls, v):
-        if cls.典型日:
+    def validate_typical_day(cls, v, values):
+        if values["典型日"]:
             assert len(v) > 0
             assert len(v) <= 365
         return v
@@ -2500,18 +2500,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
