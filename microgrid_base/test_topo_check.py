@@ -243,5 +243,5 @@ if flag in ["-f", "--full"]:
     print("RESULT:", resultList)
 elif flag in ['-c', '--celery']:
     import requests
-    url = f"http://127.0.0.1:{port}/"
-    requests.get()
+    url = f"http://127.0.0.1:{port}/calculate_async"
+    requests.post(url, json = )
