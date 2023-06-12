@@ -1,6 +1,11 @@
 from pydantic import BaseModel, Field
 from networkx.readwrite import json_graph
-from typing import Mapping, List, Tuple, Literal, Union, Dict, Any
+from typing import Mapping, List, Tuple, Union, Dict, Any
+
+try:
+    from typing import Literal
+except:
+    from typing_extensions import Literal
 import networkx
 
 # from celery.states import PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED

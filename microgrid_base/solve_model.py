@@ -1,6 +1,10 @@
-# from fnmatch import translate
+
 import json
-from typing import List, Literal, Dict, Any, Union
+from typing import List, Dict, Any, Union
+try:
+    from typing import Literal
+except:
+    from typing_extensions import Literal
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
