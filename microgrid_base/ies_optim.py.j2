@@ -20,7 +20,7 @@ import math
 class 常数电价(BaseModel):
     Price:float = Field("电价", description = "单位： kWh/元")
 
-    def getPrice(self, power:float, time_in_day:float) -> float:
+    def getFee(self, power:float, time_in_day:float) -> float:
         return power*self.Price
 
 class 分时电价(BaseModel):
@@ -31,7 +31,7 @@ class 分时电价(BaseModel):
         assert len(val) == 24
         return val
 
-    def getPrice(self, power:float, time_in_day:float) -> float:
+    def getFee(self, power:float, time_in_day:float) -> float:
         current_time = math.floor(time_in_day%24)
         price = self.PriceList[current_time]
         return price*power
@@ -48,21 +48,22 @@ class 阶梯电价(BaseModel):
         assert v[0].LowerLimit == 0
         return v
     
-    def getPrice(self, power:float, time_in_day:float) -> float:
+    def getFee(self, power:float, time_in_day:float) -> float:
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if index+1 == len(self.PriceStruct) or self.PriceStruct[index+1].LowerLimit >= power:
-                    return elem.Price
+                    return elem.Price * power
         rich.print(self)
         raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
     PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
 
-    def getPrice(self, power:float, time_in_day:float) -> float:
+    def getFee(self, power:float, time_in_day:float) -> float:
         current_time = math.floor(time_in_day%24)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getPrice(power, time_in_day)
+        return result
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
