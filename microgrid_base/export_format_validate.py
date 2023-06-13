@@ -64,6 +64,8 @@ class 电负荷仿真结果(BaseModel):
     """
     单位: kWh
     """
+    
+    售电收入
 
     @staticmethod
     def export(model: 电负荷模型, timeParam: float):
