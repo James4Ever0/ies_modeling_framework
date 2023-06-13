@@ -11,8 +11,8 @@ url = f"http://{ip}:{port}/calculate_async"
 result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
-# test = "create_task"
-test = "check_result"
+test = "create_task"
+# test = "check_result"
 # test = "check_status"
 
 

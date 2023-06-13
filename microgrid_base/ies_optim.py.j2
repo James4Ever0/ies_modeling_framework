@@ -1038,11 +1038,11 @@ class 仿真结果(BaseModel):
         try: 
             val = int(v)
         except:
-            val = None
+            val = 0
         {%if mtype == 'int'%}
         return val
         {% else %}
-        return val if val is None else v
+        return val if val == 0 else v
         {% endif%}
     {% endif%}
 
