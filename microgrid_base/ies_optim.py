@@ -72,7 +72,7 @@ class 分时阶梯电价(BaseModel):
     def getFee(self, power: float, time_in_day: float) -> float:
         current_time = math.floor(time_in_day % 24)
         mPriceStruct = self.PriceStructList[current_time]
-        result = mPriceStruct.getPrice(power, time_in_day)
+        result = mPriceStruct.getFee(power, time_in_day)
         return result
 
 
