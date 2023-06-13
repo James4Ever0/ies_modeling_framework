@@ -12,8 +12,8 @@ result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
 # test = "create_task"
-# test = "check_result"
-test = "check_status"
+test = "check_result"
+# test = "check_status"
 
 
 task_id = "f801b604-2472-482b-9986-fa3a9bc37d7c"
