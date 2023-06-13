@@ -246,6 +246,12 @@ if flag in ["-f", "--full"]:
     mdictList2 = EFG.dict()['mDictList']
     text1 = json.dumps(mdictList, indent=4, ensure_ascii=False)
     text2 = json.dumps(mdictList2, indent=4, ensure_ascii=False)
+    
+    with open("input_1.json", 'w+') as f:
+        f.write(text1)
+    
+    with open("input_2.json", 'w+') as f:
+        f.write(text2)
     # file_diff_compare(f1, f2, "diff_result.html")
     # exit()
     import difflib

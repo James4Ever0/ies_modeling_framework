@@ -26301,6 +26301,7 @@
             {
                 "type": "设备",
                 "subtype": "光伏发电",
+                "id": 0,
                 "ports": {
                     "电接口": {
                         "subtype": "供电端输出",
@@ -26324,19 +26325,19 @@
                     "MaxInstallArea": 200.0,
                     "MinInstallArea": 100.0,
                     "DeviceCount": 100.0
-                },
-                "id": 0
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
                 "subtype": "供电端输出",
-                "device_id": 0,
-                "id": 1
+                "id": 1,
+                "port_name": "电接口",
+                "device_id": "0"
             },
             {
                 "type": "设备",
                 "subtype": "光伏发电",
+                "id": 2,
                 "ports": {
                     "电接口": {
                         "subtype": "供电端输出",
@@ -26360,19 +26361,19 @@
                     "MaxInstallArea": 200.0,
                     "MinInstallArea": 100.0,
                     "DeviceCount": 100.0
-                },
-                "id": 2
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
                 "subtype": "供电端输出",
-                "device_id": 2,
-                "id": 3
+                "id": 3,
+                "port_name": "电接口",
+                "device_id": "2"
             },
             {
                 "type": "设备",
                 "subtype": "柴油",
+                "id": 4,
                 "ports": {
                     "燃料接口": {
                         "subtype": "柴油输出",
@@ -26393,19 +26394,19 @@
                         10.0,
                         "kg/L"
                     ]
-                },
-                "id": 4
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "燃料接口",
                 "subtype": "柴油输出",
-                "device_id": 4,
-                "id": 5
+                "id": 5,
+                "port_name": "燃料接口",
+                "device_id": "4"
             },
             {
                 "type": "设备",
                 "subtype": "柴油发电",
+                "id": 6,
                 "ports": {
                     "燃料接口": {
                         "subtype": "柴油输入",
@@ -26446,26 +26447,26 @@
                             100.0
                         ]
                     ]
-                },
-                "id": 6
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "燃料接口",
                 "subtype": "柴油输入",
-                "device_id": 6,
-                "id": 7
+                "id": 7,
+                "port_name": "燃料接口",
+                "device_id": "6"
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
                 "subtype": "供电端输出",
-                "device_id": 6,
-                "id": 8
+                "id": 8,
+                "port_name": "电接口",
+                "device_id": "6"
             },
             {
                 "type": "设备",
                 "subtype": "变流器",
+                "id": 9,
                 "ports": {
                     "电输入": {
                         "subtype": "变流器输入",
@@ -26491,26 +26492,26 @@
                     "MaxDeviceCount": 200.0,
                     "MinDeviceCount": 100.0,
                     "DeviceCount": 1000000.0
-                },
-                "id": 9
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
                 "subtype": "变流器输入",
-                "device_id": 9,
-                "id": 10
+                "id": 10,
+                "port_name": "电输入",
+                "device_id": "9"
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
                 "subtype": "电母线输出",
-                "device_id": 9,
-                "id": 11
+                "id": 11,
+                "port_name": "电输出",
+                "device_id": "9"
             },
             {
                 "type": "设备",
                 "subtype": "变压器",
+                "id": 12,
                 "ports": {
                     "电输入": {
                         "subtype": "电母线输入",
@@ -26538,26 +26539,26 @@
                     "MaxDeviceCount": 200.0,
                     "MinDeviceCount": 100.0,
                     "DeviceCount": 1000000.0
-                },
-                "id": 12
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
                 "subtype": "电母线输入",
-                "device_id": 12,
-                "id": 13
+                "id": 13,
+                "port_name": "电输入",
+                "device_id": "12"
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
                 "subtype": "变压器输出",
-                "device_id": 12,
-                "id": 14
+                "id": 14,
+                "port_name": "电输出",
+                "device_id": "12"
             },
             {
                 "type": "设备",
                 "subtype": "电负荷",
+                "id": 15,
                 "ports": {
                     "电接口": {
                         "subtype": "负荷电输入",
@@ -35329,19 +35330,19 @@
                         0.6639996722905014
                     ],
                     "MaxEnergyConsumption": 100.0
-                },
-                "id": 15
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
                 "subtype": "负荷电输入",
-                "device_id": 15,
-                "id": 16
+                "id": 16,
+                "port_name": "电接口",
+                "device_id": "15"
             },
             {
                 "type": "设备",
                 "subtype": "锂电池",
+                "id": 17,
                 "ports": {
                     "电接口": {
                         "subtype": "电储能端输入输出",
@@ -35372,49 +35373,49 @@
                     "MaxTotalCapacity": 200.0,
                     "MinTotalCapacity": 100.0,
                     "TotalCapacity": 20000.0
-                },
-                "id": 17
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
                 "subtype": "电储能端输入输出",
-                "device_id": 17,
-                "id": 18
+                "id": 18,
+                "port_name": "电接口",
+                "device_id": "17"
             },
             {
                 "type": "母线",
                 "subtype": "可连接供电端母线",
+                "id": 19,
                 "conn": [
                     "不可连接供电端母线输入",
                     "可合并供电端母线"
-                ],
-                "id": 19
+                ]
             },
             {
                 "type": "母线",
                 "subtype": "可连接供电端母线",
+                "id": 20,
                 "conn": [
                     "不可连接供电端母线输入",
                     "不可连接供电端母线输入",
                     "不可连接供电端母线输出",
                     "可合并供电端母线"
-                ],
-                "id": 20
+                ]
             },
             {
                 "type": "母线",
                 "subtype": "可连接电母线",
+                "id": 21,
                 "conn": [
                     "不可连接电母线输入输出",
                     "不可连接电母线输入",
                     "不可连接电母线输出"
-                ],
-                "id": 21
+                ]
             },
             {
                 "type": "设备",
                 "subtype": "双向变流器",
+                "id": 22,
                 "ports": {
                     "线路端": {
                         "subtype": "双向变流器线路端输入输出",
@@ -35440,22 +35441,21 @@
                     "MaxDeviceCount": 200.0,
                     "MinDeviceCount": 100.0,
                     "DeviceCount": 1000000.0
-                },
-                "id": 22
+                }
             },
             {
                 "type": "锚点",
-                "port_name": "线路端",
                 "subtype": "双向变流器线路端输入输出",
-                "device_id": 22,
-                "id": 23
+                "id": 23,
+                "port_name": "线路端",
+                "device_id": "22"
             },
             {
                 "type": "锚点",
-                "port_name": "储能端",
                 "subtype": "双向变流器储能端输入输出",
-                "device_id": 22,
-                "id": 24
+                "id": 24,
+                "port_name": "储能端",
+                "device_id": "22"
             },
             {
                 "type": "连接线",
