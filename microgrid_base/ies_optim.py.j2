@@ -1028,7 +1028,7 @@ class 节点基类(BaseModel):
 
 class 锚点节点(节点基类):
     port_name:str = Field(title = '锚点名称')
-    device_id:str = Field(title = '锚点所对应设备ID')
+    device_id:int = Field(title = '锚点所对应设备ID')
     
 class 母线节点(节点基类):
     conn: List[str]  = Field(title = '母线连接线类型列表', description = '包括连接到母线上的连接线和合并线类型')# connection/merge types to literal.
