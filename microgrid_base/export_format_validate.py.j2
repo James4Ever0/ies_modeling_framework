@@ -115,6 +115,7 @@ def ReLU(val):
     "产电量": TP_MVLIST("model.电接口"),
     "柴油消耗量": TP_MVLIST("model.燃料接口"),
     "单向电转换COP": "- safeDiv({},{})".format(MVLIST("model.电输入"), MVLIST("model.电输出"))
+    '电收入': TP("-value(model.总成本年化)"))
 }%}
 {% set CSPL = {} %}
 {% macro dictValueToKeyValuePair(a,b)%}
@@ -129,6 +130,7 @@ def ReLU(val):
     ],
     "电负荷": [
         ("电负荷", TP("statistics.mean(model.设备信息.EnergyConsumption)"))
+        CSPL['电收入']
     ],
     "光伏发电": [
         CSPL['产电量']
