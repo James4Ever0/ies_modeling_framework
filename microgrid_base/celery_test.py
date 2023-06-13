@@ -9,18 +9,17 @@ ip = "127.0.0.1"
 url = f"http://{ip}:{port}/calculate_async"
 result_url = f'http://{ip}:{port}/'
 
-from typing import 
 test = "check_result"
 
 if test =="create_task":
-from fastapi_datamodel_template import EnergyFlowGraph
-# from ies_optim import 设备节点
-data = EnergyFlowGraph(mDictList=mDictList)
-# mdata = mDictList[0]['nodes'][25] # 25-35
-# import rich
-# rich.print(mdata) # 设备
-r = requests.post(url, json = data.dict())
-print(r.json())
-print(r.status_code)
+    from fastapi_datamodel_template import EnergyFlowGraph
+    # from ies_optim import 设备节点
+    data = EnergyFlowGraph(mDictList=mDictList)
+    # mdata = mDictList[0]['nodes'][25] # 25-35
+    # import rich
+    # rich.print(mdata) # 设备
+    r = requests.post(url, json = data.dict())
+    print(r.json())
+    print(r.status_code)
 # t = 设备节点.parse_obj(mdata)
 # print(t)
