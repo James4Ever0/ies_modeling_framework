@@ -39,7 +39,7 @@ class 电价转换:
     @staticmethod
     def convert(value):
         # convert to standard unit
-        magnitude = unitFactorCalculator(ureg,standard_units, "{{电价单位}}")
+        magnitude, _ = unitFactorCalculator(ureg,standard_units, "{{电价单位}}")
         ret = value * magnitude
         return ret
 

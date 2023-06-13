@@ -33,7 +33,7 @@ class 电价转换:
     @staticmethod
     def convert(value):
         # convert to standard unit
-        magnitude = unitFactorCalculator(ureg, standard_units, "元/kWh")
+        magnitude, _ = unitFactorCalculator(ureg, standard_units, "元/kWh")
         ret = value * magnitude
         return ret
 
