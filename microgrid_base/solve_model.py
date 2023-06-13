@@ -368,15 +368,19 @@ def solveModelFromCalcParamList(
             if result:
                 resultList.append(result)
         else:
+            # breakpoint()
             rangeDict = {}
             solved, _, rangeDict = solve_model_and_fetch_result(
                 calcParamList, "经济", rangeDict
             )
+            breakpoint()
             if rangeDict != {} and solved:
                 solved, _, rangeDict = solve_model_and_fetch_result(
                     calcParamList, "环保", rangeDict
                 )
+                breakpoint()
                 if solved:
+                    breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
                     constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
                         DOR
