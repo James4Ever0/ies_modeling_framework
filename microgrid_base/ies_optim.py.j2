@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 # 阶梯电价: 容量下限从0开始
 
 class 常数电价(BaseModel):
+    Price:float  = Field()
 class 分时电价(BaseModel):
 class 阶梯电价(BaseModel):
 class 分时阶梯电价(BaseModel):
