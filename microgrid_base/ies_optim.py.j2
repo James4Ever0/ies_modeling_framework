@@ -29,7 +29,7 @@ class 计价阶梯(常数电价):
 class 阶梯电价(BaseModel):
     PriceStruct: List[计价阶梯] = Field("")
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价]
+    PriceStructList: List[阶梯电价] = Field("")
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
