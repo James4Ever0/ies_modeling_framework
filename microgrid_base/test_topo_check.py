@@ -113,7 +113,7 @@ DEL2 = 变压器(
     ).dict(),
 )
 LOAD = 电负荷(
-    topo, param=电负荷信息(**devParam, EnergyConsumption=a, MaxEnergyConsumption=100).dict()
+    topo, param=电负荷信息(**devParam, EnergyConsumption=a, MaxEnergyConsumption=100, PriceModel = 常数电价(Price = 1)).dict()
 )
 
 BAT = 锂电池(
