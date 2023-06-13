@@ -20,7 +20,7 @@ for line in lines:
     )
     if result:
         print(result)
-        resultMap[result["chineseName"].upper().replace("/", "_")] = result[
+        resultMap[result["chineseName"].upper()] = result[
             "englishName"
         ]
 

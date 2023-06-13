@@ -16,7 +16,7 @@
     "柴油消耗费用": "dieselConsumptionCosts",
     "天然气消耗量": "naturalGasConsumption",
     "天然气消耗费用": "naturalGasConsumptionCosts",
-    "平均效率_平均COP": "averageEfficiency",
+    "平均效率/平均COP": "averageEfficiency",
     "设备维护费用": "equipmentMaintenanceCosts",
     "冷收入": "coldIncome",
     "热收入": "hotIncome",
