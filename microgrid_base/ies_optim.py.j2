@@ -1030,7 +1030,12 @@ class 仿真结果(BaseModel):
     {% else %}
         {% set mtype  = 'float'%}
     {% endif%}
-    {{englishName}} : {{mtype}} = Field(title = "{{chineseName}}")
+    {{englishName}} : {{mtype if mtype !='int' else 'float'}} = Field(title = "{{chineseName}}")
+    {% if mtype == 'int'%}
+    @validator('{{englishName}}')
+    def float_to_int_{{englishName}}(cls, v):
+        return int(v)
+    {% endif%}
     {% endfor %}
 
 class 节点基类(BaseModel):
