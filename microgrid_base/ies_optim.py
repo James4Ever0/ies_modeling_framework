@@ -110,13 +110,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -2655,18 +2655,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3082,7 +3082,7 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
+            val = 0
         return val
 
     coolingCapacity: float = Field(title="产冷量")
@@ -3092,8 +3092,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     coolingLoad: float = Field(title="冷负荷")
 
@@ -3102,8 +3102,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     electricSupply: float = Field(title="产电量")
 
@@ -3112,8 +3112,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     electricLoad: float = Field(title="电负荷")
 
@@ -3122,8 +3122,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     heatingLoad: float = Field(title="产热量")
 
@@ -3132,8 +3132,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     heatLoad: float = Field(title="热负荷")
 
@@ -3142,8 +3142,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     steamProduction: float = Field(title="蒸汽产量")
 
@@ -3152,8 +3152,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     steamLoad: float = Field(title="蒸汽负荷")
 
@@ -3162,8 +3162,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     hydrogenProduction: float = Field(title="氢气产量")
 
@@ -3172,8 +3172,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     hydrogenConsumption: float = Field(title="氢气消耗量")
 
@@ -3182,8 +3182,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     dieselConsumption: float = Field(title="柴油消耗量")
 
@@ -3192,8 +3192,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     dieselConsumptionCosts: float = Field(title="柴油消耗费用")
 
@@ -3202,8 +3202,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     naturalGasConsumption: float = Field(title="天然气消耗量")
 
@@ -3212,8 +3212,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     naturalGasConsumptionCosts: float = Field(title="天然气消耗费用")
 
@@ -3222,8 +3222,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     averageEfficiency: float = Field(title="平均效率/平均COP")
 
@@ -3232,8 +3232,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     equipmentMaintenanceCosts: float = Field(title="设备维护费用")
 
@@ -3242,8 +3242,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     coldIncome: float = Field(title="冷收入")
 
@@ -3252,8 +3252,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     hotIncome: float = Field(title="热收入")
 
@@ -3262,8 +3262,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     eletricncome: float = Field(title="电收入")
 
@@ -3272,8 +3272,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     steamIncome: float = Field(title="蒸汽收入")
 
@@ -3282,8 +3282,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
     hydrogenIncome: float = Field(title="氢气收入")
 
@@ -3292,8 +3292,8 @@ class 仿真结果(BaseModel):
         try:
             val = int(v)
         except:
-            val = None
-        return val if val is None else v
+            val = 0
+        return val if val == 0 else v
 
 
 class 节点基类(BaseModel):
