@@ -969,6 +969,9 @@ class {{class_name}}模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
+
+        self.IncomeRate = 0
+        self.计价模型 = self.设备信息.PriceModel
     {% elif k == 'input_class' %}
 
         class _Units(BaseModel):
