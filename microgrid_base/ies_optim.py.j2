@@ -94,7 +94,7 @@ class 分时阶梯电价(BaseModel):
         {% set mt = "Reals" %}
         {% elif port_type.endswith("输入") %}
         {# {% set mt = "NegativeReals"%} #}
-        {% set mt = "NegativeReals"%}
+        {% set mt = "NonPositiveReals"%}
         {% elif port_type.endswith("输出") %}
         {% set mt = "NonNegativeReals"%}
         {% endif %}
