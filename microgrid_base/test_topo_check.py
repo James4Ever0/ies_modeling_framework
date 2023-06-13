@@ -255,7 +255,7 @@ if flag in ["-f", "--full"]:
     # file_diff_compare(f1, f2, "diff_result.html")
     # exit()
     import difflib
-    max_width=70
+    max_width=150
     diff_out = "diff_result.html"
     numlines=0
     show_all=False
