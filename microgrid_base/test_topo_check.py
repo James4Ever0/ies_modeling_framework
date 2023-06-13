@@ -244,31 +244,31 @@ if flag in ["-f", "--full"]:
     
     EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
     mdictList2 = EFG.dict()['mDictList']
-    text1 = json.dumps(mdictList[0]['nodes'], indent=4, ensure_ascii=False)
-    text2 = json.dumps(mdictList2[0]['nodes'], indent=4, ensure_ascii=False)
+    # text1 = json.dumps(mdictList[0]['nodes'], indent=4, ensure_ascii=False)
+    # text2 = json.dumps(mdictList2[0]['nodes'], indent=4, ensure_ascii=False)
     
-    with open("input_1.json", 'w+') as f:
-        f.write(text1)
+    # with open("input_1.json", 'w+') as f:
+    #     f.write(text1)
     
-    with open("input_2.json", 'w+') as f:
-        f.write(text2)
-    # file_diff_compare(f1, f2, "diff_result.html")
+    # with open("input_2.json", 'w+') as f:
+    #     f.write(text2)
+    # # file_diff_compare(f1, f2, "diff_result.html")
+    # # exit()
+    # import difflib
+    # max_width=150
+    # diff_out = "diff_result.html"
+    # numlines=0
+    # show_all=False
+    
+    # print("WRITE DIFF TO:",diff_out)
+    # d = difflib.HtmlDiff(wrapcolumn=max_width)
+    # with open(diff_out, 'w', encoding="u8") as f:
+    #     f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
     # exit()
-    import difflib
-    max_width=150
-    diff_out = "diff_result.html"
-    numlines=0
-    show_all=False
-    
-    print("WRITE DIFF TO:",diff_out)
-    d = difflib.HtmlDiff(wrapcolumn=max_width)
-    with open(diff_out, 'w', encoding="u8") as f:
-        f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
-    exit()
     
     ### YOU MAY WANT TO DIFF IT ###
 
-    calcParamList = mDictListToCalcParamList(mdictList)
+    calcParamList = mDictListToCalcParamList(mdictList2)
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
