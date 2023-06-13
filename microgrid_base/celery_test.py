@@ -12,8 +12,8 @@ result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
 # test = "create_task"
-# test = "check_result"
-test = "check_status"
+test = "check_result"
+# test = "check_status"
 
 
 task_id = "af4b4e6f-6f51-4aee-8fd3-d4323164247a"
@@ -34,6 +34,7 @@ elif test == "check_result":
     r = requests.get(result_url, params=check_data)
     print(r.status_code)
     print(r.content)
+    with open("")
 elif test == "check_status":
     r = requests.get(status_url, params=check_data)
     print(r.status_code)
