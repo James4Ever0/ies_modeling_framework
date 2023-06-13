@@ -9,9 +9,13 @@ port = 9870
 ip = "127.0.0.1"
 url = f"http://{ip}:{port}/calculate_async"
 result_url = f"http://{ip}:{port}/get_calculation_result_async"
-status_url = f"http://{ip}:{port}/"
+status_url = f"http://{ip}:{port}/get_calculation_state"
 # test = "create_task"
 test = "check_result"
+
+
+task_id = "5b814b3c-e471-44d9-8eb1-03f4e729d791"
+check_data = dict(calculation_id=task_id)
 
 if test == "create_task":
     from fastapi_datamodel_template import EnergyFlowGraph
@@ -25,12 +29,13 @@ if test == "create_task":
     print(r.json())
     print(r.status_code)
 elif test == "check_result":
-    task_id = "5b814b3c-e471-44d9-8eb1-03f4e729d791"
-    data = dict(calculation_id=task_id)
-    r = requests.get(result_url, params=data)
+    r = requests.get(result_url, params=check_data)
     print(r.status_code)
     print(r.content)
 elif test == "check_status":
+    r = requests.get(status_url, params=check_data)
+    print(r.status_code)
+    print(r.content)
 else:
     raise Exception("TEST IS NOT CREATED:", test)
 # t = 设备节点.parse_obj(mdata)
