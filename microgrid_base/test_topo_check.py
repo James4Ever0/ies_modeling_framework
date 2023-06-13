@@ -244,8 +244,8 @@ if flag in ["-f", "--full"]:
     
     EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
     mdictList2 = EFG.dict()['mDictList']
-    text1 = json.dumps(mdictList, indent=4, ensure_ascii=False)
-    text2 = json.dumps(mdictList2, indent=4, ensure_ascii=False)
+    text1 = json.dumps(mdictList[0]['nodes'], indent=4, ensure_ascii=False)
+    text2 = json.dumps(mdictList2[0]['nodes'], indent=4, ensure_ascii=False)
     
     with open("input_1.json", 'w+') as f:
         f.write(text1)
