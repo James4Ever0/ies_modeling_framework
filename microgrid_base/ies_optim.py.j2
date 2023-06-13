@@ -331,6 +331,13 @@ class 计算参数(BaseModel):
     典型日ID: Union[int, None] = None # increse by external loop
     计算步长: Union[Literal["小时"], Literal['秒']]
     典型日: bool
+
+    分时计价开始时间点: float 
+
+    @validator('分时计价开始时间点')
+    def validate_starting_time(cls, v):
+        assert v>=0, f"开始时间点大于等于0\n实际: {v}"
+        assert v<=24, f"开始时间点小于等于24\n实际: {v}"
     {# 典型日权重: int = 0 #}
     典型日代表的日期: List[int] = []
     @validator('典型日代表的日期')
