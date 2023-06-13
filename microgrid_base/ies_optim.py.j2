@@ -1031,11 +1031,11 @@ class 仿真结果(BaseModel):
         {% set mtype  = 'float'%}
     {% endif%}
     {{englishName}} : {{mtype if mtype !='int' else 'float'}} = Field(title = "{{chineseName}}")
-    {% if mtype == 'int'%}
-    
+    {% if mtype in ['int', 'float']%}
+
     @validator('{{englishName}}')
-    def float_to_int_{{englishName}}(cls, v):
-        return int(v)
+    def convert_number_{{englishName}}(cls, v):
+        try: int(v)
     {% endif%}
 
     {% endfor %}
