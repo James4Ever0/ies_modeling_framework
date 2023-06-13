@@ -1022,10 +1022,10 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 {% endmacro %}
 
 class 仿真结果(BaseModel):
-    {% for in %}
-    {% if chineseName in []%}
+    {% for chineseName, englishName in frontend_translation_table.items()%}
+    {% if chineseName in ['元件名称', '设备型号']%}
         {% set mtype = 'str'%}
-    {% elif chineseName in []%}
+    {% elif chineseName in ["设备台数"]%}
         {% set mtype = 'int'%}
     {% else %}
         {% set mtype  = 'float'%}

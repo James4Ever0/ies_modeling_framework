@@ -6,6 +6,8 @@ def read_json(path):
         return json.load(f)
 
 
+frontend_translation_table = read_json("frontend_sim_param_translation.json")
+
 type_sys = {
     "类型分类表": read_json("microgrid_v2_all_types_structured.json"),  # （不包含设备名称）分类->能源->类型
     "连接类型映射表": read_json("microgrid_v2_connectivity_matrix.json"),  # "端点1_端点2"->生成连接类型

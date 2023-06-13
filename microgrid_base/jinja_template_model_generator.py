@@ -31,6 +31,7 @@ if __name__ == "__main__":
         template_path=ies_optim_code_template_path,
         output_path=ies_optim_code_output_path,
         render_params=render_params,
+        frontend_translation_table = frontend_translation_table,
         banner="IES OPTIM CODE",
     )
 
