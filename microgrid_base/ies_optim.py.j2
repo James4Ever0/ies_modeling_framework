@@ -24,8 +24,10 @@ class 常数电价(BaseModel):
     """
 class 分时电价(BaseModel):
     PriceList: List[float] = Field("")
+class 计价阶梯(常数电价):
+    LowerLimit : float = Field()
 class 阶梯电价(BaseModel):
-    PriceStruct: 
+    PriceStruct: List[计价阶梯] = Field("")
 class 分时阶梯电价(BaseModel):
     PriceStructList: List[]
 
