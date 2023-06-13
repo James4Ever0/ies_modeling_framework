@@ -1019,9 +1019,12 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
-        getTimeInDay = lambda index: index if self.计算参数.计算步长 == '小时' else self.计算参数.分时计价开始时间点 + index
+        getTimeInDay = lambda index: index if self.计算参数.计算步长 == '小时' else self.计算参数.分时计价开始时间点 + (index/3600)
+
         self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay) for index, power in enumerate(self.{{port_name}})] # positive?
+
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
+
         年化费用 = -(sum(self.IncomeRates)/len(self.IncomeRates)) * 8760
         {# 计价模型 #}
     {% elif k == "input_class"%}
