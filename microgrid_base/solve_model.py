@@ -346,7 +346,7 @@ def solveModelFromCalcParamList(
             solved = solve_model(mw, obj_expr)
             result = None
             if solved:
-                if rangeDict:
+                if rangeDict is not None:
                     rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"] = value(
                         ret.calcTargetLUT[calcTarget]
                     )
