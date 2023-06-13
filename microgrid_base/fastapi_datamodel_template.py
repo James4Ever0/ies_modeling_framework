@@ -16,7 +16,7 @@ from ies_optim import EnergyFlowGraph, 仿真结果
 
 
 class 曲线(BaseModel):
-    x: List[float] = Field(title="x轴数据")
+    x: List[str] = Field(title="x轴数据")
     y: List[float] = Field(title="y轴数据")
 
 
