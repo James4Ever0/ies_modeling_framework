@@ -20,7 +20,7 @@
     "设备维护费用": "equipmentMaintenanceCosts",
     "冷收入": "coldIncome",
     "热收入": "hotIncome",
-    "电收入": "eletricncome",
+    "电收入": "eletricIncome",
     "蒸汽收入": "steamIncome",
     "氢气收入": "hydrogenIncome"
 }
