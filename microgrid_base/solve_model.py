@@ -348,7 +348,7 @@ def solveModelFromCalcParamList(
             if solved:
                 if rangeDict:
                     rangeDict[f"min_{targetNameMappings['full'][calcTarget]}"] = value(
-                        ret.calcTargetLUT["calcTarget"]
+                        ret.calcTargetLUT[calcTarget]
                     )
                     for key in targetNameMappings["full"].keys():
                         if key != calcTarget:

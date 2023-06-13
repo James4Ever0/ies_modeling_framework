@@ -3562,6 +3562,7 @@ def compute(
             environment_obj_exprs.append((sum(e.燃料接口) / e.计算参数.迭代步数) * 8760 * e.CO2)
 
     environment_obj_expr = sum(environment_obj_exprs)
+    breakpoint()
 
     obj_exprs = (
         financial_obj_expr,
