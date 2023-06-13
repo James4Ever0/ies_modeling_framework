@@ -1035,7 +1035,14 @@ class 仿真结果(BaseModel):
 
     @validator('{{englishName}}')
     def convert_number_{{englishName}}(cls, v):
-        try: int(v)
+        try: 
+            val = int(v)
+        except:
+            val = None
+        if mtype == 'int'
+        return val
+        else 
+        return val if val is None else 
     {% endif%}
 
     {% endfor %}
