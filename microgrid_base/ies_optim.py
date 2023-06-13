@@ -2973,7 +2973,7 @@ class 电负荷模型(设备模型):
 
         self.IncomeRates = [
             self.PriceModel.getFee(power, getTimeInDay(index))
-            for index, power in enumerate(self.电接口)
+            for index, power in enumerate(self.电接口.items())
         ]  # positive?
 
         self.RangeConstraint(
