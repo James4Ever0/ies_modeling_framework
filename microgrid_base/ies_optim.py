@@ -49,7 +49,7 @@ class 阶梯电价(BaseModel):
     PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description="单位： kWh/元")
 
     @validator("PriceStruct")
-    def checkPriceStruct(cls, v):
+    def checkPriceStruct(cls, v: List[计价阶梯]):
         v.sort(key=lambda x: x.LowerLimit)
         assert v[0].LowerLimit == 0
         return v
