@@ -244,10 +244,20 @@ if flag in ["-f", "--full"]:
     
     EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
     mdictList2 = EFG.dict()['mDictList']
-    f1 = json.dumps(mdictList, indent=4, ensure_ascii=False)
-    f2 = json.dumps(mdictList2, indent=4, ensure_ascii=False)
-    file_diff_compare(f1, f2, "diff_result.html")
-    exit()
+    text1 = json.dumps(mdictList, indent=4, ensure_ascii=False)
+    text2 = json.dumps(mdictList2, indent=4, ensure_ascii=False)
+    # file_diff_compare(f1, f2, "diff_result.html")
+    # exit()
+    import difflib
+    max_width=70
+    diff_out = "diff_result.html"
+     numlines=0
+     show_all=False,
+                      no_browser=True):
+    
+    d = difflib.HtmlDiff(wrapcolumn=max_width)
+    with open(diff_out, 'w', encoding="u8") as f:
+        f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
     
     ### YOU MAY WANT TO DIFF IT ###
 
