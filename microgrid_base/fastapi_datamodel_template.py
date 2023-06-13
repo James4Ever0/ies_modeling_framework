@@ -12,11 +12,27 @@ except:
 
 # question: how to convert pydantic models to json?
 # to json: json.dumps(model.dict())
-from ies_optim import EnergyFlowGraph
+from ies_optim import EnergyFlowGraph, 仿真结果
+
+
+class 曲线(BaseModel):
+    x: List[float] = Field(title="x轴数据")
+    y: List[float] = Field(title="y轴数据")
+
+
+class 出力曲线(BaseModel):
+    name: str = Field(title="出力曲线标题")
+    abbr: str = Field(title="出力曲线缩写")
+    data: 曲线 = Field(title="曲线数据")
+
+
+class 设备出力曲线(BaseModel):
+    name: str = Field(title="设备名称")
+    plot_list: List[出力曲线] = Field(title="出力曲线列表")
 
 
 class 单次计算结果(BaseModel):
-    performanceDataList: List[Dict] = Field(
+    performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
             {
@@ -31,7 +47,7 @@ class 单次计算结果(BaseModel):
             }
         ],
     )
-    simulationResultTable: Dict[str, Any] = Field(
+    simulationResultTable: List[仿真结果] = Field(
         title="仿真结果列表",
         example=[
             {
@@ -62,6 +78,7 @@ class 单次计算结果(BaseModel):
             }
         ],
     )
+
 
 
 class CalculationResult(BaseModel):
