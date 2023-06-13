@@ -970,8 +970,9 @@ class {{class_name}}模型(设备模型):
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
         {% endif %}
 
-        self.IncomeRate = 0
-        self.计价模型 = self.设备信息.PriceModel
+        self.IncomeRates = ...
+        self.PriceModel = self.设备信息.PriceModel
+
     {% elif k == 'input_class' %}
 
         class _Units(BaseModel):
@@ -1018,6 +1019,7 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
+        self.IncomeRates = self.PriceModel.getFee() # positive?
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
         年化费用 = 0
         {# 计价模型 #}
