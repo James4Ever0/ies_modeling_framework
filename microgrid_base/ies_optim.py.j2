@@ -32,7 +32,8 @@ class 分时电价(BaseModel):
         return val
 
     def getPrice(self, power:float, time_in_day:float) -> float:
-        price = self.PriceList[math.floor(time_in_day%24)]
+        current_time = math.floor(time_in_day%24)
+        price = self.PriceList[current_time]
         return price*power
 
 class 计价阶梯(常数电价):
@@ -50,7 +51,7 @@ class 阶梯电价(BaseModel):
     def getPrice(self, power:float, time_in_day:float) -> float:
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
-                if index+1 == len(self.PriceStruct) or self.PriceStruct[index+1].LowerLimit >=power:
+                if index+1 == len(self.PriceStruct) or self.PriceStruct[index+1].LowerLimit >= power:
                     return elem.Price
         rich.print(self)
         raise Exception("Unable to get electricity price with power:", power)
@@ -59,6 +60,9 @@ class 分时阶梯电价(BaseModel):
     PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
 
     def getPrice(self, power:float, time_in_day:float) -> float:
+        current_time = math.floor(time_in_day%24)
+        mPriceStruct = self.PriceStructList[current_time]
+        result = mPriceStruct.getPrice(power, time_in_day)
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
