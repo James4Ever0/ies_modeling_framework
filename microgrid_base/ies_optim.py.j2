@@ -18,22 +18,22 @@ from pydantic import BaseModel, Field
 # 阶梯电价: 容量下限从0开始
 
 class 常数电价(BaseModel):
-    Price:float = Field("电价")
-    """
-    单位： kWh/元
-    """
+    Price:float = Field("电价", description = "单位： kWh/元")
 
 class 分时电价(BaseModel):
-    PriceList: List[float] = Field("长度为24的价格数组")
+    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： kWh/元")
+
+    @validator("PriceList")
+    def 
 
 class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
 
 class 阶梯电价(BaseModel):
-    PriceStruct: List[计价阶梯] = Field("")
+    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "单位： kWh/元")
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价] = Field("")
+    PriceStructList: List[阶梯电价] = Field("", description = "单位： kWh/元")
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
