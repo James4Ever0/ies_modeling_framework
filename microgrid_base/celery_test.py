@@ -1,5 +1,4 @@
 import json
-from urllib import request
 with open("template_input.json",'r') as f:
     mDictList = json.load(f)
 
@@ -9,6 +8,11 @@ port = 9870
 ip = "127.0.0.1"
 url = f"http://{ip}:{port}/calculate_async"
 result_url = f'http://{ip}:{port}/'
+
+from typing import 
+test = "check_result"
+
+if test =="create_task":
 from fastapi_datamodel_template import EnergyFlowGraph
 # from ies_optim import 设备节点
 data = EnergyFlowGraph(mDictList=mDictList)
