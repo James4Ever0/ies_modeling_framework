@@ -32,7 +32,8 @@ class 分时电价(BaseModel):
         return val
 
     def getPrice(self, power:float, time_in_day:float):
-        PriceList[math.floor(time_in_day)]
+        price = self.PriceList[math.floor(time_in_day%24)]
+        return price*power
 
 class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
@@ -45,6 +46,10 @@ class 阶梯电价(BaseModel):
         v.sort(key = lambda x: x.LowerLimit)
         assert v[0].LowerLimit == 0
         return v
+    
+    def getPrice(self, power:float, time_in_day:float):
+        for index, elem in self.PriceStruct:
+            if elem.LowerLimit
 
 class 分时阶梯电价(BaseModel):
     PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
