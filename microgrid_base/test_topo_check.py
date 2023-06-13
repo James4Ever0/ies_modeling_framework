@@ -236,6 +236,10 @@ flag = sys.argv[-1]
 
 if flag in ["-f", "--full"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
+    from fastapi_datamodel_template import EnergyFlowGraph
+    
+    EFG = EnergyFlowGraph(mDictList = mdictList)
+    mdictList = EFG.dict()['mDictList']
 
     calcParamList = mDictListToCalcParamList(mdictList)
     resultList = solveModelFromCalcParamList(calcParamList)
