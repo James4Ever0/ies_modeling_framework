@@ -1019,9 +1019,9 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
-        self.IncomeRates = self.PriceModel.getFee() # positive?
+        self.IncomeRates = [self.PriceModel.getFee(power, time_in_day) for index, power in enumerate(self.{{port_name}})] # positive?
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
-        年化费用 = 0
+        年化费用 = (sum(self.IncomeRates)/len(self.IncomeRates)) * 8760
         {# 计价模型 #}
     {% elif k == "input_class"%}
         {% if class_name in ['柴油']%}
