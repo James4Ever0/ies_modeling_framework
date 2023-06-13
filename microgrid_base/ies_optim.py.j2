@@ -21,7 +21,9 @@ class 电价转换:
     @staticmethod
     def convert(value):
         # convert to standard unit
-        ret = value * 
+        magnitude = ...
+        ret = value * magnitude
+        return ret
 
 class 常数电价(BaseModel, 电价转换):
     Price:float = Field("电价", description = "单位：元/kWh")
