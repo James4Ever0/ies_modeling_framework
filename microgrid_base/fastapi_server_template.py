@@ -201,7 +201,9 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
-    calculation_result = CalculationResult.parse_obj(calculation_result)
+    calculation_result = (
+        CalculationResult.parse_obj(calculation_result) if calculation_result else None
+    )
 
     return CalculationAsyncResult(
         calculation_state=get_calculation_state(calculation_id).calculation_state,
