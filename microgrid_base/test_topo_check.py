@@ -239,8 +239,14 @@ if flag in ["-f", "--full"]:
     from fastapi_datamodel_template import EnergyFlowGraph
     
     ### TEST PARSING ###
-    EFG = EnergyFlowGraph(mDictList = mdictList)
-    mdictList = EFG.dict()['mDictList']
+    from filediff.diff import file_diff_compare
+    from copy import deepcopy
+    
+    EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
+    mdictList2 = EFG.dict()['mDictList']
+    f1 = json.dumps(mdictList, indent=4, ensure_ascii=False)
+    f2 = json.dumps(mdictList2, indent=4, ensure_ascii=False)
+    
     ### YOU MAY WANT TO DIFF IT ###
 
     calcParamList = mDictListToCalcParamList(mdictList)
