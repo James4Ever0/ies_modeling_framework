@@ -28,6 +28,8 @@ elif test == "check_result":
     task_id = "f909e827-4385-4e17-bad8-fc71670017e2"
     data = dict(calculation_id=task_id)
     r = requests.get(result_url, params=data)
+    print(r.status_code)
+    print(r.content)
 else:
     raise Exception("TEST IS NOT CREATED:", test)
 # t = 设备节点.parse_obj(mdata)
