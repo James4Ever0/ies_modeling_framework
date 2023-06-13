@@ -21,7 +21,7 @@ from fastapi_datamodel_template import CalculationResult
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
 @app.task(bind=True)  # parse it elsewhere.
-def calculate_energyflow_graph(self:Celery, energyflow_graph: dict) -> Union[None, dict]:
+def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
     """
     能源系统仿真优化计算方法
 
