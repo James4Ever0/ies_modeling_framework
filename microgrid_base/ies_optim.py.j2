@@ -47,9 +47,13 @@ class 阶梯电价(BaseModel):
         assert v[0].LowerLimit == 0
         return v
     
-    def getPrice(self, power:float, time_in_day:float):
-        for index, elem in self.PriceStruct:
-            if elem.LowerLimit
+    def getPrice(self, power:float, time_in_day:float) -> float:
+        for index, elem in enumerate(self.PriceStruct):
+            if elem.LowerLimit <= power:
+                if index+1 == len(self.PriceStruct) or self.PriceStruct[index+1].LowerLimit >=power:
+                    return elem.Price
+        rich.print(self)
+        raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
     PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
