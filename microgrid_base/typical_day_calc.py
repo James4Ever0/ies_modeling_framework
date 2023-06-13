@@ -1,5 +1,6 @@
 import numpy
 import scipy # for KNN
+from pydantic import BaseModel, validator, Field
 
 load_format = {"workday": [0, 1, 2, 3, 4], "hoilday": [5, 6]}
 load_format1 = {"workday": [1, 2, 3, 4, 5], "hoilday": [0, 6]}
