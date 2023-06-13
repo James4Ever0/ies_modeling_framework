@@ -21,7 +21,7 @@ API文档: https://{host}:{port}/docs
 """
 
 import traceback
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI
 from fastapi_datamodel_template import (
     CalculationAsyncResult,
     CalculationAsyncSubmitResult,
@@ -144,15 +144,18 @@ app = FastAPI(description=description, version=version, tags_metadata=tags_metad
     response_description="提交状态以及模型计算ID,根据ID获取计算结果",
     response_model=CalculationAsyncSubmitResult,
 )
-def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
+def calculate_async(
+    graph: EnergyFlowGraph, background_task: BackgroundTasks
+) -> CalculationAsyncSubmitResult:
     # use celery
     submit_result = "failed"
     calculation_id = None
     try:
         function_id = "fastapi_celery.calculate_energyflow_graph"
-        task = celery_app.send_task(function_id, args=(graph.dict(),)) # async result?
+        task = celery_app.send_task(function_id, args=(graph.dict(),))  # async result?
         taskInfo[task.id] = datetime.datetime.now()
         taskDict[task.id] = task
+        background_task.add_task(background_on_message, task)
         calculation_id = task.id
     except:
         traceback.print_exc()
