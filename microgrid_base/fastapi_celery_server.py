@@ -48,7 +48,7 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
         print("************CELERY ERROR************")
         print(error_log)
 
-    if resultList != []:
+    if resultList != [] and error_log == "":
         success = True
         calculation_result = CalculationResult(
             resultList=resultList, success=success, error_log=error_log
