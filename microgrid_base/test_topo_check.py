@@ -251,13 +251,14 @@ if flag in ["-f", "--full"]:
     import difflib
     max_width=70
     diff_out = "diff_result.html"
-     numlines=0
-     show_all=False,
-                      no_browser=True):
+    numlines=0
+    show_all=False
     
+    print("WRITE DIFF TO:",diff_out)
     d = difflib.HtmlDiff(wrapcolumn=max_width)
     with open(diff_out, 'w', encoding="u8") as f:
         f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
+    exit()
     
     ### YOU MAY WANT TO DIFF IT ###
 
