@@ -6,8 +6,9 @@ with open("template_input.json",'r') as f:
 import requests
 
 port = 9870
-url = f"http://127.0.0.1:{port}/calculate_async"
-result_url = f''
+ip = "127.0.0.1"
+url = f"http://{ip}:{port}/calculate_async"
+result_url = f'http://{ip}:{port}/'
 from fastapi_datamodel_template import EnergyFlowGraph
 # from ies_optim import 设备节点
 data = EnergyFlowGraph(mDictList=mDictList)
