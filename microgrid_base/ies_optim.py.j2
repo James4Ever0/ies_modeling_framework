@@ -33,6 +33,7 @@ import math
 # 阶梯电价: 容量下限从0开始
 
 {% set 电价单位 = "元/kWh"%}
+{% set 电价单位描述 = "单位: 元/kWh"%}
 
 class 电价转换:
     @staticmethod
@@ -43,13 +44,13 @@ class 电价转换:
         return ret
 
 class 常数电价(BaseModel, 电价转换):
-    Price:float = Field("电价", description = "单位：{{电价单位}}")
+    Price:float = Field("电价", description = "{{电价单位描述}}")
 
     def getFee(self, power:float, time_in_day:float) -> float:
         return self.convert(power*self.Price)
 
 class 分时电价(BaseModel, 电价转换):
-    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： {{电价单位}}")
+    PriceList: List[float] = Field("长度为24的价格数组", description = "{{电价单位描述}}")
 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -65,7 +66,7 @@ class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
 
 class 阶梯电价(BaseModel, 电价转换):
-    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "单位： 元/kWh")
+    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "{{电价单位描述}}")
 
     @validator("PriceStruct")
     def checkPriceStruct(cls, v: List[计价阶梯]):
@@ -82,7 +83,7 @@ class 阶梯电价(BaseModel, 电价转换):
         raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： 元/kWh")
+    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "{{电价单位描述}}")
 
     def getFee(self, power:float, time_in_day:float) -> float:
         current_time = math.floor(time_in_day%24)
