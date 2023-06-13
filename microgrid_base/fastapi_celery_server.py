@@ -20,6 +20,7 @@ from solve_model import (
 from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
+from celery.exceptions import Ignore
 
 
 @app.task(bind=True)  # parse it elsewhere.
@@ -59,8 +60,8 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
     else:
         self.update_state(
             state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log}
-        ) # https://distributedpython.com/posts/custom-celery-task-states/
-        raise Ignore
+        )  # https://distributedpython.com/posts/custom-celery-task-states/
+        raise Ignore()
 
 
 app.conf.update(task_track_started=True)
