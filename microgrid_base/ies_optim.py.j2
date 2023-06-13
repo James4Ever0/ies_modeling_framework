@@ -24,7 +24,7 @@ class 常数电价(BaseModel):
         return power*self.Price
 
 class 分时电价(BaseModel):
-    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： kWh/元")
+    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： 元/kWh")
 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -40,7 +40,7 @@ class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
 
 class 阶梯电价(BaseModel):
-    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "单位： kWh/元")
+    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "单位： 元/kWh")
 
     @validator("PriceStruct")
     def checkPriceStruct(cls, v: List[计价阶梯]):
@@ -57,7 +57,7 @@ class 阶梯电价(BaseModel):
         raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
+    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： 元/kWh")
 
     def getFee(self, power:float, time_in_day:float) -> float:
         current_time = math.floor(time_in_day%24)
