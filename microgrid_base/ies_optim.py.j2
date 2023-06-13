@@ -13,12 +13,15 @@ from pydantic import BaseModel, Field, validator
 {# from functools import lru_cache #}
 
 ### 计价模型 ###
-
+import math
 # 函数参数: (power, time_in_day)
 # 阶梯电价: 容量下限从0开始
 
 class 常数电价(BaseModel):
     Price:float = Field("电价", description = "单位： kWh/元")
+
+    def getPrice(self, power:float, time_in_day:float):
+        return power*self.Price
 
 class 分时电价(BaseModel):
     PriceList: List[float] = Field("长度为24的价格数组", description = "单位： kWh/元")
@@ -27,6 +30,9 @@ class 分时电价(BaseModel):
     def checkPriceList(cls, val):
         assert len(val) == 24
         return val
+
+    def getPrice(self, power:float, time_in_day:float):
+        PriceList[math.floor(time_in_day)]
 
 class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
