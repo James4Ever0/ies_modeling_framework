@@ -18,7 +18,7 @@ import math
 # 阶梯电价: 容量下限从0开始
 
 class 常数电价(BaseModel):
-    Price:float = Field("电价", description = "单位： kWh/元")
+    Price:float = Field("电价", description = "单位：元/kWh")
 
     def getFee(self, power:float, time_in_day:float) -> float:
         return power*self.Price
