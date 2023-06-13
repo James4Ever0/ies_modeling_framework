@@ -7,11 +7,73 @@ except:
     from typing_extensions import Literal
 
 import rich
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
+
+### 计价模型 ###
+import math
+
+# 函数参数: (power, time_in_day)
+# 阶梯电价: 容量下限从0开始
+
+
+class 常数电价(BaseModel):
+    Price: float = Field("电价", description="单位： kWh/元")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+        return power * self.Price
+
+
+class 分时电价(BaseModel):
+    PriceList: List[float] = Field("长度为24的价格数组", description="单位： kWh/元")
+
+    @validator("PriceList")
+    def checkPriceList(cls, val):
+        assert len(val) == 24
+        return val
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+        current_time = math.floor(time_in_day % 24)
+        price = self.PriceList[current_time]
+        return price * power
+
+
+class 计价阶梯(常数电价):
+    LowerLimit: float = Field("功率下限")
+
+
+class 阶梯电价(BaseModel):
+    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description="单位： kWh/元")
+
+    @validator("PriceStruct")
+    def checkPriceStruct(cls, v):
+        v.sort(key=lambda x: x.LowerLimit)
+        assert v[0].LowerLimit == 0
+        return v
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+        for index, elem in enumerate(self.PriceStruct):
+            if elem.LowerLimit <= power:
+                if (
+                    index + 1 == len(self.PriceStruct)
+                    or self.PriceStruct[index + 1].LowerLimit >= power
+                ):
+                    return elem.Price * power
+        rich.print(self)
+        raise Exception("Unable to get electricity price with power:", power)
+
+
+class 分时阶梯电价(BaseModel):
+    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description="单位： kWh/元")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+        current_time = math.floor(time_in_day % 24)
+        mPriceStruct = self.PriceStructList[current_time]
+        result = mPriceStruct.getPrice(power, time_in_day)
+        return result
 
 
 # 8760 hours of data
@@ -70,13 +132,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -88,13 +150,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -110,24 +172,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -179,6 +241,10 @@ class 电负荷信息(设备基础信息):
     """
     单位: kW
     """
+
+    PriceModel: Union[常数电价, 阶梯电价, 分时电价, 分时阶梯电价] = Field(
+        title="计价模型", description="单位: kWh/元"
+    )
 
 
 class 光伏发电信息(设备信息):
@@ -975,6 +1041,14 @@ class 计算参数(BaseModel):
     典型日ID: Union[int, None] = None  # increse by external loop
     计算步长: Union[Literal["小时"], Literal["秒"]]
     典型日: bool
+
+    分时计价开始时间点: float = field(default=0)
+
+    @validator("分时计价开始时间点")
+    def validate_starting_time(cls, v):
+        assert v >= 0, f"开始时间点大于等于0\n实际: {v}"
+        assert v <= 24, f"开始时间点小于等于24\n实际: {v}"
+
     典型日代表的日期: List[int] = []
 
     @validator("典型日代表的日期")
@@ -1761,18 +1835,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NegativeReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NegativeReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2338,18 +2412,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2655,18 +2729,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2801,18 +2875,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -2885,12 +2959,30 @@ class 电负荷模型(设备模型):
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
 
+        self.IncomeRates = ...
+        self.PriceModel = self.设备信息.PriceModel
+
     def constraints_register(self):
         super().constraints_register()
+        getTimeInDay = (
+            lambda index: index
+            if self.计算参数.计算步长 == "小时"
+            else self.计算参数.分时计价开始时间点 + (index / 3600)
+        )
+
+        self.IncomeRates = [
+            self.PriceModel.getFee(power, getTimeInDay(index))
+            for index, power in enumerate(self.电接口)
+        ]  # positive?
+
         self.RangeConstraint(
             self.电接口, self.设备信息.EnergyConsumption, lambda x, y: x == -y
         )
-        年化费用 = 0
+
+        年化费用 = -(sum(self.IncomeRates) / len(self.IncomeRates)) * 8760
+        # 根据年化费用反算
+
+        self.总成本年化 = 年化费用
         return 年化费用
 
 
@@ -3007,6 +3099,7 @@ class 柴油模型(设备模型):
 
         年化费用 = 平均消耗率 * self.Price * 8760
 
+        self.总成本年化 = 年化费用
         return 年化费用
 
 

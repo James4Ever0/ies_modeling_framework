@@ -64,8 +64,11 @@ class 电负荷仿真结果(BaseModel):
     """
     单位: kWh
     """
-    
-    售电收入
+
+    电收入: float
+    """
+    单位: 万元
+    """
 
     @staticmethod
     def export(model: 电负荷模型, timeParam: float):
@@ -73,6 +76,7 @@ class 电负荷仿真结果(BaseModel):
         return 电负荷仿真结果(
             元件名称=model.设备信息.设备名称,
             电负荷=((statistics.mean(model.设备信息.EnergyConsumption)) * timeParam),
+            电收入=((-value(model.总成本年化)) * timeParam),
         )
 
 
