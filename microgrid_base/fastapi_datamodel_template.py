@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field, validator
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any
@@ -19,11 +18,20 @@ from ies_optim import EnergyFlowGraph, 仿真结果
 class 曲线(BaseModel):
     x: List[str] = Field(title="x轴数据")
     y: List[float] = Field(title="y轴数据")
-    
-    @validator('x')
-    def validate_x(cls, x:List[str]):
-        suffixMapping = {7200:'秒', 8760:'时'}
-        if x[0].endswith
+
+    @validator("x")
+    def validate_x(cls, x: List[str]):
+        suffixMapping = {7200: "秒", 8760: "时"}
+        for suffix in suffixMapping.values():
+            if x[0].endswith(suffix):
+                return x
+        len_x = len(x)
+        if len_x in suffixMapping.keys():
+            suffix = suffixMapping[len_x]
+            x = [e + suffix for e in x]
+            return x
+        else:
+            raise Exception("Non-standard x array length:", len_x)
 
 
 class 出力曲线(BaseModel):
@@ -84,7 +92,6 @@ class 单次计算结果(BaseModel):
             }
         ],
     )
-
 
 
 class CalculationResult(BaseModel):
