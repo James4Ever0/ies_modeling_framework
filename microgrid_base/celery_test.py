@@ -34,7 +34,10 @@ elif test == "check_result":
     r = requests.get(result_url, params=check_data)
     print(r.status_code)
     print(r.content)
-    with open("")
+    output_path = "output_template.json"
+    print(f"writing to: {output_path}")
+    with open(output_path, "w+") as f:
+        f.write(json.dumps(r.json(), indent=4, ensure_ascii=False))
 elif test == "check_status":
     r = requests.get(status_url, params=check_data)
     print(r.status_code)
