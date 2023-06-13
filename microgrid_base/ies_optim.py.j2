@@ -228,7 +228,11 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# 用于电负荷 典型日计算 #}
     """
 
+    {% if class_name in ["电负荷"]%}
     PriceModel: Union[] = Field(title = '计价模型')
+    {% else%}
+    {% error("未找到''的计价模型")%}
+    {% endif%}
         {% else %}
             {% if class_name in 燃料能源相关数据默认单位.keys()%}
                 {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
