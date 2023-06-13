@@ -93,6 +93,7 @@ class 分时阶梯电价(BaseModel):
         {% if port_type.endswith("输入输出") %}
         {% set mt = "Reals" %}
         {% elif port_type.endswith("输入") %}
+        {# {% set mt = "NegativeReals"%} #}
         {% set mt = "NegativeReals"%}
         {% elif port_type.endswith("输出") %}
         {% set mt = "NonNegativeReals"%}
@@ -313,7 +314,7 @@ class ModelWrapper:
             raise Exception(f"{{k}}: Unacceptable polynomial degree for expression '{str(expr)}'")
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
-        ret = {{k}}({{mv+", initialize=1" if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
+        ret = {{k}}({{mv+", initialize=0" if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
         self.model.__setattr__(name, ret)
         return ret
     {% endfor%}
