@@ -266,7 +266,7 @@ def solveModelFromCalcParamList(
                 # return 出力曲线字典, 仿真结果表_格式化
                 出力曲线列表 = []
                 for devId, content_dict in 出力曲线字典.items():
-                    deviceName = ret.devInstDictList[0][devId].设备名称
+                    deviceName = ret.devInstDictList[0][devId].设备信息.设备名称
                     deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip(
                         "模型"
                     )
