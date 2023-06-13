@@ -1030,7 +1030,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         getTimeInDay = lambda index: index if self.计算参数.计算步长 == '小时' else self.计算参数.分时计价开始时间点 + (index/3600)
 
-        self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}})] # positive?
+        self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # positive?
 
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
 
@@ -1264,7 +1264,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     
     for e in devInstDict.values():
         if type(e) == 柴油模型:
-            environment_obj_exprs.append((sum(e.燃料接口)/e.计算参数.迭代步数)*8760 * e.CO2 )
+            environment_obj_exprs.append((sum(e.燃料接口.values())/e.计算参数.迭代步数)*8760 * e.CO2)
 
     environment_obj_expr = sum(environment_obj_exprs)
     
