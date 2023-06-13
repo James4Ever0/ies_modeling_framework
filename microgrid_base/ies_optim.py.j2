@@ -12,6 +12,13 @@ from pydantic import BaseModel, Field
 # three computation modes:
 {# from functools import lru_cache #}
 
+### 计价模型 ###
+
+class 常数电价(BaseModel):
+class 分时电价(BaseModel):
+class 阶梯电价(BaseModel):
+class 分时阶梯电价(BaseModel):
+
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
 {% for load_type in load_types%}
