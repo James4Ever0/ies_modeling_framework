@@ -9,7 +9,7 @@ port = 9870
 ip = "127.0.0.1"
 url = f"http://{ip}:{port}/calculate_async"
 result_url = f"http://{ip}:{port}/get_calculation_result_async"
-
+status_url = f"http://{ip}:{port}/"
 # test = "create_task"
 test = "check_result"
 
@@ -30,6 +30,7 @@ elif test == "check_result":
     r = requests.get(result_url, params=data)
     print(r.status_code)
     print(r.content)
+elif test == "check_status":
 else:
     raise Exception("TEST IS NOT CREATED:", test)
 # t = 设备节点.parse_obj(mdata)
