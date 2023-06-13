@@ -39,12 +39,14 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
     resultList = []
     error_log = ""
     success = False
+    error_name = None
     try:
         resultList = solveModelFromCalcParamList(calcParamList)
-    except:
+    except Exception as ex:
         import traceback
 
         error_log = traceback.format_exc()
+        error_name = type(ex).__name__
         print("************CELERY ERROR************")
         print(error_log)
 
@@ -55,7 +57,10 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
         ).dict()
         return calculation_result
     else:
-        self.update_state(state="FAILURE")
+        self.update_state(
+            state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log}
+        ) # https://distributedpython.com/posts/custom-celery-task-states/
+        raise Ignore
 
 
 app.conf.update(task_track_started=True)
