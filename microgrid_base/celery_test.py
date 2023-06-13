@@ -12,11 +12,11 @@ result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
 # test = "create_task"
-test = "check_result"
-# test = "check_status"
+# test = "check_result"
+test = "check_status"
 
 
-task_id = "af4b4e6f-6f51-4aee-8fd3-d4323164247a"
+task_id = "7ba518fe-e553-455b-977d-9ac152a0c906"
 check_data = dict(calculation_id=task_id)
 
 if test == "create_task":
