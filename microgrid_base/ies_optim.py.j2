@@ -38,15 +38,15 @@ import math
 
 from functools import lru_cache
 class 电价转换:
-    @lru_cache(maxsize=1)
     @staticmethod
+    @lru_cache(maxsize=1)
     def getMagnitude():
         magnitude, _ = unitFactorCalculator(ureg, standard_units, "{{电价单位}}")
         return magnitude
     @staticmethod
-    def convert(cls, value):
+    def convert(value):
         # convert to standard unit
-        magnitude = 电价转换.getMag
+        magnitude = 电价转换.getMagnitude()
         ret = value * magnitude
         return ret
 
