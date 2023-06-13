@@ -65,7 +65,7 @@ class 分时电价(BaseModel, 电价转换):
 class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
 
-class 阶梯电价(BaseModel, 电价转换):
+class 阶梯电价(BaseModel):
     PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "{{电价单位描述}}")
 
     @validator("PriceStruct")
@@ -78,7 +78,7 @@ class 阶梯电价(BaseModel, 电价转换):
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if index+1 == len(self.PriceStruct) or self.PriceStruct[index+1].LowerLimit >= power:
-                    return self.convert(elem.Price * power)
+                    return elem.getFee(power, time_in_day)
         rich.print(self)
         raise Exception("Unable to get electricity price with power:", power)
 
