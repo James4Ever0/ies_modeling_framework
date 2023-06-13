@@ -1021,6 +1021,18 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 
+class 仿真结果(BaseModel):
+    {% for in %}
+    {% if chineseName in []%}
+        {% set mtype = 'str'%}
+    {% elif chineseName in []%}
+        {% set mtype = 'int'%}
+    {% else %}
+        {% set mtype  = 'float'%}
+    {% endif%}
+    {{englishName}} : {{mtype}} = Field(title = "{{chineseName}}")
+    {% endfor %}
+
 class 节点基类(BaseModel):
     type:str = Field(title = "节点类型")
     subtype:str = Field(title = "节点次类型")
