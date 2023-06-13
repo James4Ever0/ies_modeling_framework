@@ -150,7 +150,7 @@ def calculate_async(graph: EnergyFlowGraph) -> CalculationAsyncSubmitResult:
     calculation_id = None
     try:
         function_id = "fastapi_celery.calculate_energyflow_graph"
-        task = celery_app.send_task(function_id, args=(graph.dict(),))
+        task = celery_app.send_task(function_id, args=(graph.dict(),)) # async result?
         taskInfo[task.id] = datetime.datetime.now()
         taskDict[task.id] = task
         calculation_id = task.id
