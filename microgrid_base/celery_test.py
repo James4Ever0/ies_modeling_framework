@@ -25,7 +25,7 @@ if test == "create_task":
     print(r.json())
     print(r.status_code)
 elif test == "check_result":
-    task_id = "f909e827-4385-4e17-bad8-fc71670017e2"
+    task_id = "5b814b3c-e471-44d9-8eb1-03f4e729d791"
     data = dict(calculation_id=task_id)
     r = requests.get(result_url, params=data)
     print(r.status_code)
