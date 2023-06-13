@@ -3,6 +3,10 @@ import json
 with open("template_input.json", "r") as f:
     mDictList = json.load(f)
 
+# 修改为环保目标
+
+mDictList[0]['graph']['计算目标'] = '环保'
+
 import requests
 
 port = 9870
@@ -12,8 +16,8 @@ result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
 # test = "create_task"
-# test = "check_result"
-test = "check_status"
+test = "check_result"
+# test = "check_status"
 
 
 task_id = "b70bc929-12e4-4d06-b56f-36b5d949a986"
