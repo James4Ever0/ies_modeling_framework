@@ -6,7 +6,7 @@ except:
     from typing_extensions import Literal
 
 import rich
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
@@ -24,7 +24,9 @@ class 分时电价(BaseModel):
     PriceList: List[float] = Field("长度为24的价格数组", description = "单位： kWh/元")
 
     @validator("PriceList")
-    def 
+    def checkPriceList(cls, val):
+        assert len(val) == 24
+        return val
 
 class 计价阶梯(常数电价):
     LowerLimit : float = Field("功率下限")
@@ -32,8 +34,14 @@ class 计价阶梯(常数电价):
 class 阶梯电价(BaseModel):
     PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description = "单位： kWh/元")
 
+    @validator("PriceStruct")
+    def checkPriceStruct(cls, v):
+        v.sort(key = lambda x: x.LowerLimit)
+        assert v[0].LowerLimit == 0
+        return v
+
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价] = Field("", description = "单位： kWh/元")
+    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
