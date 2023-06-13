@@ -20,7 +20,6 @@ from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
 
-
 @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
     """
