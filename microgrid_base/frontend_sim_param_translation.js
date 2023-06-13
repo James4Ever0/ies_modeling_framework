@@ -21,7 +21,7 @@ averageEfficiency: '89',  //平均效率/平均cop
 equipmentMaintenanceCosts: '89',  //设备维护费用
 coldIncome:'123',  //冷收入
 hotIncome:'123',  //热收入
-eletricncome:'123',  //电收入
+eletricIncome:'123',  //电收入
 steamIncome:'123',  //蒸汽收入
 hydrogenIncome:'123',  //氢气收入
 }]
