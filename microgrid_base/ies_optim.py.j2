@@ -20,7 +20,7 @@ import math
 class 常数电价(BaseModel):
     Price:float = Field("电价", description = "单位： kWh/元")
 
-    def getPrice(self, power:float, time_in_day:float):
+    def getPrice(self, power:float, time_in_day:float) -> float:
         return power*self.Price
 
 class 分时电价(BaseModel):
@@ -31,7 +31,7 @@ class 分时电价(BaseModel):
         assert len(val) == 24
         return val
 
-    def getPrice(self, power:float, time_in_day:float):
+    def getPrice(self, power:float, time_in_day:float) -> float:
         price = self.PriceList[math.floor(time_in_day%24)]
         return price*power
 
@@ -57,6 +57,8 @@ class 阶梯电价(BaseModel):
 
 class 分时阶梯电价(BaseModel):
     PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description = "单位： kWh/元")
+
+    def getPrice(self, power:float, time_in_day:float) -> float:
 
 {% set load_types = ['电']%}
 {% set load_class_names = []%}
