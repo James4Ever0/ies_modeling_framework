@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, Field, validator
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any
 import networkx
@@ -18,6 +19,11 @@ from ies_optim import EnergyFlowGraph, 仿真结果
 class 曲线(BaseModel):
     x: List[str] = Field(title="x轴数据")
     y: List[float] = Field(title="y轴数据")
+    
+    @validator('x')
+    def validate_x(cls, x:List[str]):
+        suffixMapping = {7200:'秒', 8760:'时'}
+        if x[0].endswith
 
 
 class 出力曲线(BaseModel):
