@@ -12,27 +12,44 @@ from pydantic import BaseModel, Field, validator
 # three computation modes:
 {# from functools import lru_cache #}
 
+
+{# ##########[PINT START]########## #}
+
+{# import pint #}
+
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    getSingleUnitConverted,
+)
+
+{# ##########[PINT END]########## #}
+
+
 ### 计价模型 ###
 import math
 # 函数参数: (power, time_in_day)
 # 阶梯电价: 容量下限从0开始
 
+{% set 电价单位 = "元/kWh"%}
+
 class 电价转换:
     @staticmethod
     def convert(value):
         # convert to standard unit
-        magnitude = ...
+        magnitude = unitFactorCalculator(ureg,standard_units, "{{电价单位}}")
         ret = value * magnitude
         return ret
 
 class 常数电价(BaseModel, 电价转换):
-    Price:float = Field("电价", description = "单位：元/kWh")
+    Price:float = Field("电价", description = "单位：{{电价单位}}")
 
     def getFee(self, power:float, time_in_day:float) -> float:
         return self.convert(power*self.Price)
 
 class 分时电价(BaseModel, 电价转换):
-    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： 元/kWh")
+    PriceList: List[float] = Field("长度为24的价格数组", description = "单位： {{电价单位}}")
 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -934,19 +951,6 @@ class {{class_name}}模型(设备模型):
 
         return self.总成本年化
 {% endfor %}
-
-{# ##########[PINT START]########## #}
-
-{# import pint #}
-
-from unit_utils import (
-    unitFactorCalculator,
-    ureg,
-    standard_units,
-    getSingleUnitConverted,
-)
-
-{# ##########[PINT END]########## #}
 
 {% set load_class_names = [] %}
 {% for v in load_types%}

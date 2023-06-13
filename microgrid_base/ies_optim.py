@@ -9,6 +9,13 @@ except:
 import rich
 from pydantic import BaseModel, Field, validator
 
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    getSingleUnitConverted,
+)
+
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
@@ -2924,12 +2931,6 @@ class 传输线模型(设备模型):
         return self.总成本年化
 
 
-from unit_utils import (
-    unitFactorCalculator,
-    ureg,
-    standard_units,
-    getSingleUnitConverted,
-)
 
 
 class 电负荷模型(设备模型):
