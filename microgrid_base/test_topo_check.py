@@ -239,7 +239,7 @@ if flag in ["-f", "--full"]:
     from fastapi_datamodel_template import EnergyFlowGraph
     
     ### TEST PARSING ###
-    from filediff.diff import file_diff_compare
+    # from filediff.diff import file_diff_compare
     from copy import deepcopy
     
     EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
