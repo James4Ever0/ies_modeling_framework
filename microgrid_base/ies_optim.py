@@ -99,35 +99,35 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
+    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
+    """
     电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
-    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
 
 
 class 双向变流器ID(设备ID):
-    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
     """
+    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -2500,18 +2500,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2655,18 +2655,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -2801,18 +2801,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NegativeReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NegativeReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3068,6 +3068,33 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
 }  # type: ignore
+
+
+class 仿真结果(BaseModel):
+    name: str = Field(title="元件名称")
+    modelNumber: str = Field(title="设备型号")
+    equiCounts: int = Field(title="设备台数")
+    coolingCapacity: float = Field(title="产冷量")
+    coolingLoad: float = Field(title="冷负荷")
+    electricSupply: float = Field(title="产电量")
+    electricLoad: float = Field(title="电负荷")
+    heatingLoad: float = Field(title="产热量")
+    heatLoad: float = Field(title="热负荷")
+    steamProduction: float = Field(title="蒸汽产量")
+    steamLoad: float = Field(title="蒸汽负荷")
+    hydrogenProduction: float = Field(title="氢气产量")
+    hydrogenConsumption: float = Field(title="氢气消耗量")
+    dieselConsumption: float = Field(title="柴油消耗量")
+    dieselConsumptionCosts: float = Field(title="柴油消耗费用")
+    naturalGasConsumption: float = Field(title="天然气消耗量")
+    naturalGasConsumptionCosts: float = Field(title="天然气消耗费用")
+    averageEfficiency: float = Field(title="平均效率/平均COP")
+    equipmentMaintenanceCosts: float = Field(title="设备维护费用")
+    coldIncome: float = Field(title="冷收入")
+    hotIncome: float = Field(title="热收入")
+    eletricncome: float = Field(title="电收入")
+    steamIncome: float = Field(title="蒸汽收入")
+    hydrogenIncome: float = Field(title="氢气收入")
 
 
 class 节点基类(BaseModel):
