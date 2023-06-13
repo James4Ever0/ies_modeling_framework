@@ -231,7 +231,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {% if class_name in ["电负荷"]%}
     PriceModel: Union[常数电价, 阶梯电价, 分时电价, 分时阶梯电价] = Field(title = '计价模型', description='单位: kWh/元')
     {% else%}
-    {% error("未找到'{}'的计价模型".format(class_name))%}
+        {% error("未找到'{}'的计价模型".format(class_name))%}
     {% endif%}
         {% else %}
             {% if class_name in 燃料能源相关数据默认单位.keys()%}
