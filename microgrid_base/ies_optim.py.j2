@@ -15,6 +15,8 @@ from pydantic import BaseModel, Field
 ### 计价模型 ###
 
 # 函数参数: (power, time_in_day)
+# 阶梯电价: 容量下限从0开始
+
 class 常数电价(BaseModel):
 class 分时电价(BaseModel):
 class 阶梯电价(BaseModel):
