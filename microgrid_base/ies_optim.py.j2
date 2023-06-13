@@ -299,7 +299,7 @@ class ModelWrapper:
         self.clock[key] = val+1
         return name
     {% for k in ['Constraint', 'Var','Objective']%}
-    {% set mv = "*args, **kwargs"%}
+    {% set mv = "*args, initialize=1, **kwargs"%}
     def {{k}}(self, {{ "name:str," if k == "Var" else ""}} {{ mv}}):
         {% if k !="Var" %}
         expr = kwargs.pop('expr',args[0] if len(args) >0 else None)

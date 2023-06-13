@@ -172,13 +172,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -989,7 +989,7 @@ class ModelWrapper:
         self.clock[key] = val + 1
         return name
 
-    def Constraint(self, *args, **kwargs):
+    def Constraint(self, *args, initialize=1, **kwargs):
         expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
         if expr is None:
             print("ARGS:", args)
@@ -1006,12 +1006,12 @@ class ModelWrapper:
         self.model.__setattr__(name, ret)
         return ret
 
-    def Var(self, name: str, *args, **kwargs):
-        ret = Var(*args, **kwargs)
+    def Var(self, name: str, *args, initialize=1, **kwargs):
+        ret = Var(*args, initialize=1, **kwargs)
         self.model.__setattr__(name, ret)
         return ret
 
-    def Objective(self, *args, **kwargs):
+    def Objective(self, *args, initialize=1, **kwargs):
         expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
         if expr is None:
             print("ARGS:", args)
@@ -2730,18 +2730,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
