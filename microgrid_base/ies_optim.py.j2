@@ -35,11 +35,18 @@ import math
 {% set 电价单位 = "元/kWh"%}
 {% set 电价单位描述 = "单位: 元/kWh"%}
 
+
+from functools import lru_cache
 class 电价转换:
+    @lru_cache(maxsize=1)
     @staticmethod
-    def convert(value):
+    def getMagnitude():
+        magnitude, _ = unitFactorCalculator(ureg, standard_units, "{{电价单位}}")
+        return magnitude
+    @staticmethod
+    def convert(cls, value):
         # convert to standard unit
-        magnitude, _ = unitFactorCalculator(ureg,standard_units, "{{电价单位}}")
+        magnitude = 电价转换.getMag
         ret = value * magnitude
         return ret
 
