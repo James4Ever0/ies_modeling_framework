@@ -7,6 +7,7 @@ import requests
 
 port = 9870
 url = f"http://127.0.0.1:{port}/calculate_async"
+result_url = f''
 from fastapi_datamodel_template import EnergyFlowGraph
 # from ies_optim import 设备节点
 data = EnergyFlowGraph(mDictList=mDictList)
