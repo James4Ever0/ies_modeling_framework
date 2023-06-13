@@ -14,6 +14,14 @@ import networkx
 # to json: json.dumps(model.dict())
 from microgrid_base.ies_optim import EnergyFlowGraph
 
+class 出力曲线(BaseModel):
+    name:str
+    abbr: str
+    data: 
+
+class 设备出力曲线(BaseModel):
+    name: str
+    plot_list: List[出力曲线]
 
 class 单次计算结果(BaseModel):
     performanceDataList: List[Dict] = Field(
@@ -31,7 +39,7 @@ class 单次计算结果(BaseModel):
             }
         ],
     )
-    simulationResultTable: Dict[str, Any] = Field(
+    simulationResultTable: List[Dict[str, Any]] = Field(
         title="仿真结果列表",
         example=[
             {
