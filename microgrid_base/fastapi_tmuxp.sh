@@ -1,10 +1,17 @@
+if [ "$1" != "macos" ] ; then
+    if [ "$1" != "windows" ] ; then 
+        echo "unknown platform: $1"
+        exit 1
+    fi
+fi
+
 ps aux | grep rabbitmq | grep -v grep | awk '{print $2}' | xargs -Iabc kill -s TERM abc
 ps aux | grep redis | grep 6380 | grep -v grep | awk '{print $2}' | xargs -Iabc kill -s TERM abc
 tmux kill-session -t fastapi_tmuxp
 sleep 3
-if [ "$1" -eq "macos" ] ; then
+if [ "$1" == "macos" ] ; then
 echo macos
-elif [ "$1" -eq "windows" ] ; then 
+elif [ "$1" == "windows" ] ; then 
 echo windows
 else 
 echo unknown
