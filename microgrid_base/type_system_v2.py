@@ -6,8 +6,8 @@ Usage:
     python3 type_system_v2.py --version
     
 Options:
-    -p --plot_only Only save the plot picture without showing it.
-    --version Showing version.
+    -p --plot_only        Only save the plot picture without showing it.
+    --version             Showing version.
 """
 
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
