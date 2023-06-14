@@ -22,8 +22,8 @@ from docopt import docopt
 options = docopt(__doc__, version="2.0")
 # from turtle import backward
 # import pandas
-PLOT_ONLY = options.get('plot_only')
-breakpoint()
+PLOT_ONLY = options.get('--plot_only', False)
+# breakpoint()
 
 
 def check_valid_type_base_name(type_base_name):
