@@ -1,6 +1,6 @@
 if [ "$1" != "macos" ] ; then
     if [ "$1" != "windows" ] ; then 
-        echo "supports: [ macos | windows ]
+        echo "supports: [ macos | windows ]"
         echo "unknown platform: $1"
         exit 1
     fi
