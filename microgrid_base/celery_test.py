@@ -21,7 +21,7 @@ status_url = f"http://{ip}:{port}/get_calculation_state"
 test = "check_result"
 # test = "check_status"
 
-task_id = "c7ac4a82-1556-49f3-baff-114e432fbfb1"
+task_id = "fab82e96-aa29-4641-a62c-13fe115d004f"
 check_data = dict(calculation_id=task_id)
 
 if test == "create_task":
