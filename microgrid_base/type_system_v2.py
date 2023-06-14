@@ -2,7 +2,8 @@
 """Creating IES topology type system.
 
 Usage:
-    python3 type_system_v2.py (-p | --plot_only)
+    python3 type_system_v2.py
+    python3 type_system_v2.py [(-p | --plot_only)]
     python3 type_system_v2.py --version
     
 Options:
