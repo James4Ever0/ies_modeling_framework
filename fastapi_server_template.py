@@ -131,18 +131,25 @@ def background_on_message(task: AsyncResult):
     print("VALUE TYPE?", type(value))  # str, '14'
     print("TASK VALUE?", value)
 
+
 from typing import Any
 import orjson
-import starlette.responses import JSONResponse
+from starlette.responses import JSONResponse
 
-class ORJSONResponse(JSONRespon):
+
+class ORJSONResponse(JSONResponse):
     media_type = "application/json"
 
     def render(self, content: Any) -> bytes:
         return orjson.dumps(content)
 
-app = FastAPI(description=description, version=version, tags_metadata=tags_metadata,
-              default_response_class=ORJSONResponse)
+
+app = FastAPI(
+    description=description,
+    version=version,
+    tags_metadata=tags_metadata,
+    default_response_class=ORJSONResponse,
+)
 
 
 @remove_stale_tasks_decorator
