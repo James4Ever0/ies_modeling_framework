@@ -177,35 +177,35 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
+    电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
+    """
 
 
 class 变流器ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
+    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -2440,18 +2440,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2602,18 +2602,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -2757,18 +2757,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3190,223 +3190,47 @@ class 仿真结果(BaseModel):
 
     equiCounts: float = Field(title="设备台数")
 
-    @validator("equiCounts")
-    def convert_number_equiCounts(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val
-
     coolingCapacity: float = Field(title="产冷量")
-
-    @validator("coolingCapacity")
-    def convert_number_coolingCapacity(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     coolingLoad: float = Field(title="冷负荷")
 
-    @validator("coolingLoad")
-    def convert_number_coolingLoad(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     electricSupply: float = Field(title="产电量")
-
-    @validator("electricSupply")
-    def convert_number_electricSupply(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     electricLoad: float = Field(title="电负荷")
 
-    @validator("electricLoad")
-    def convert_number_electricLoad(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     heatingLoad: float = Field(title="产热量")
-
-    @validator("heatingLoad")
-    def convert_number_heatingLoad(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     heatLoad: float = Field(title="热负荷")
 
-    @validator("heatLoad")
-    def convert_number_heatLoad(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     steamProduction: float = Field(title="蒸汽产量")
-
-    @validator("steamProduction")
-    def convert_number_steamProduction(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     steamLoad: float = Field(title="蒸汽负荷")
 
-    @validator("steamLoad")
-    def convert_number_steamLoad(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     hydrogenProduction: float = Field(title="氢气产量")
-
-    @validator("hydrogenProduction")
-    def convert_number_hydrogenProduction(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     hydrogenConsumption: float = Field(title="氢气消耗量")
 
-    @validator("hydrogenConsumption")
-    def convert_number_hydrogenConsumption(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     dieselConsumption: float = Field(title="柴油消耗量")
-
-    @validator("dieselConsumption")
-    def convert_number_dieselConsumption(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     dieselConsumptionCosts: float = Field(title="柴油消耗费用")
 
-    @validator("dieselConsumptionCosts")
-    def convert_number_dieselConsumptionCosts(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     naturalGasConsumption: float = Field(title="天然气消耗量")
-
-    @validator("naturalGasConsumption")
-    def convert_number_naturalGasConsumption(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     naturalGasConsumptionCosts: float = Field(title="天然气消耗费用")
 
-    @validator("naturalGasConsumptionCosts")
-    def convert_number_naturalGasConsumptionCosts(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     averageEfficiency: float = Field(title="平均效率/平均COP")
-
-    @validator("averageEfficiency")
-    def convert_number_averageEfficiency(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     equipmentMaintenanceCosts: float = Field(title="设备维护费用")
 
-    @validator("equipmentMaintenanceCosts")
-    def convert_number_equipmentMaintenanceCosts(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     coldIncome: float = Field(title="冷收入")
-
-    @validator("coldIncome")
-    def convert_number_coldIncome(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     hotIncome: float = Field(title="热收入")
 
-    @validator("hotIncome")
-    def convert_number_hotIncome(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     eletricIncome: float = Field(title="电收入")
-
-    @validator("eletricIncome")
-    def convert_number_eletricIncome(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
     steamIncome: float = Field(title="蒸汽收入")
 
-    @validator("steamIncome")
-    def convert_number_steamIncome(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
-
     hydrogenIncome: float = Field(title="氢气收入")
-
-    @validator("hydrogenIncome")
-    def convert_number_hydrogenIncome(cls, v):
-        try:
-            val = int(v)
-        except:
-            val = 0
-        return val if val == 0 else v
 
 
 class 节点基类(BaseModel):
