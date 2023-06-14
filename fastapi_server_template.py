@@ -133,8 +133,9 @@ def background_on_message(task: AsyncResult):
 
 from typing import Any
 import orjson
+import starlette.responses import JSONResponse
 
-class ORJSONResponse(JSONResponse):
+class ORJSONResponse(JSONRespon):
     media_type = "application/json"
 
     def render(self, content: Any) -> bytes:
