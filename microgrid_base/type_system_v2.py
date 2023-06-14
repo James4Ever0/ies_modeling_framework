@@ -78,8 +78,15 @@ class Suffix(PrefixSuffixBase):
 # 给所有不可连接线增加随机hash值 方便观察
 
 SAVE_PREFIX = "microgrid_v2"
-PLOT_ONLY = False
+PLOT_ONLY = True
 
+import docopt
+
+__doc__ = """
+
+"""
+
+options = docopt.docopt(__doc__)
 # from turtle import backward
 # import pandas
 
