@@ -1134,17 +1134,14 @@ class 仿真结果(BaseModel):
     {{englishName}} : {{mtype if mtype !='int' else 'float'}} = Field(title = "{{chineseName}}")
     {% if mtype in ['int', 'float']%}
 
+    {%if mtype == 'int'%}
     @validator('{{englishName}}')
     def convert_number_{{englishName}}(cls, v):
         try: 
             val = int(v)
         except:
-            val = 0
-        {%if mtype == 'int'%}
+            val = v
         return val
-        {% else %}
-        return val if val == 0 else v
-        {% endif%}
     {% endif%}
 
     {% endfor %}
