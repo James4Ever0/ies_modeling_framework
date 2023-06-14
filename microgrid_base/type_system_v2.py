@@ -4,6 +4,24 @@ import rich
 import traceback
 
 
+import docopt
+
+__doc__ = """
+Creating IES topology type system.
+
+Usage:
+    my_program (-p | --plot_only)
+    
+Options:
+    -p --plot_only Only save the plot picture without showing it.
+"""
+
+options = docopt.docopt(__doc__)
+# from turtle import backward
+# import pandas
+PLOT_ONLY = options.get('plot_only')
+breakpoint()
+
 
 def check_valid_type_base_name(type_base_name):
     type_base_name = type_base_name.replace(" ", "").strip()
@@ -79,20 +97,6 @@ class Suffix(PrefixSuffixBase):
 
 SAVE_PREFIX = "microgrid_v2"
 
-import docopt
-
-__doc__ = """
-Usage:
-    my_program (-p | --plot_only)
-Options:
-    -p --plot_only Only save the plot picture without showing it.
-"""
-
-options = docopt.docopt(__doc__)
-# from turtle import backward
-# import pandas
-PLOT_ONLY = options.get('plot_only')
-breakpoint()
 
 import uuid
 
