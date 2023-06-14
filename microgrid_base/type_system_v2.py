@@ -78,7 +78,6 @@ class Suffix(PrefixSuffixBase):
 # 给所有不可连接线增加随机hash值 方便观察
 
 SAVE_PREFIX = "microgrid_v2"
-PLOT_ONLY = True
 
 import docopt
 
@@ -86,12 +85,14 @@ __doc__ = """
 Usage:
     my_program (-p | --plot_only)
 Options:
-    -p --plot_only 
+    -p --plot_only Only save the plot picture without showing it.
 """
 
 options = docopt.docopt(__doc__)
 # from turtle import backward
 # import pandas
+PLOT_ONLY = options.get('plot_only')
+breakpoint()
 
 import uuid
 
