@@ -1,12 +1,5 @@
-# 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
-# 增加变流器和不可连接母线的连接
-import rich
-import traceback
 
-import docopt
-
-"""
-Creating IES topology type system.
+"""Creating IES topology type system.
 
 Usage:
     python3 type_system_v2.py (-p | --plot_only)
@@ -17,7 +10,17 @@ Options:
     --version Showing version.
 """
 
-options = docopt.docopt(__doc__, version="2.0")
+# 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
+# 增加变流器和不可连接母线的连接
+import rich
+import traceback
+
+import docopt
+
+from docopt import docopt
+# print(type(__doc__))
+# breakpoint()
+options = docopt(__doc__, version="2.0")
 # from turtle import backward
 # import pandas
 PLOT_ONLY = options.get('plot_only')
