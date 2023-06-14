@@ -3,20 +3,21 @@
 import rich
 import traceback
 
-
 import docopt
 
-__doc__ = """
+"""
 Creating IES topology type system.
 
 Usage:
-    my_program (-p | --plot_only)
+    python3 type_system_v2.py (-p | --plot_only)
+    python3 type_system_v2.py --version
     
 Options:
     -p --plot_only Only save the plot picture without showing it.
+    --version Showing version.
 """
 
-options = docopt.docopt(__doc__)
+options = docopt.docopt(__doc__, version="2.0")
 # from turtle import backward
 # import pandas
 PLOT_ONLY = options.get('plot_only')
