@@ -132,23 +132,24 @@ def background_on_message(task: AsyncResult):
     print("TASK VALUE?", value)
 
 
-from typing import Any
-import orjson
-from starlette.responses import JSONResponse
+# from typing import Any
+# import orjson
+# from starlette.responses import JSONResponse
 
 
-class ORJSONResponse(JSONResponse):
-    media_type = "application/json"
+# class ORJSONResponse(JSONResponse):
+#     media_type = "application/json"
 
-    def render(self, content: Any) -> bytes:
-        return orjson.dumps(content)
-
+#     def render(self, content: Any) -> bytes:
+#         return orjson.dumps(content)
+import fastapi
 
 app = FastAPI(
     description=description,
     version=version,
     tags_metadata=tags_metadata,
-    default_response_class=ORJSONResponse,
+    # default_response_class=ORJSONResponse,
+    default_response_class=fastapi.responses.ORJSONResponse
 )
 
 @remove_stale_tasks_decorator
