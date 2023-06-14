@@ -131,6 +131,7 @@ def background_on_message(task: AsyncResult):
     print("VALUE TYPE?", type(value))  # str, '14'
     print("TASK VALUE?", value)
 
+# Reference: https://github.com/tiangolo/fastapi/issues/459
 
 # from typing import Any
 # import orjson
