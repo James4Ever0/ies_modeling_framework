@@ -19,9 +19,14 @@ def addListElem(*args):
     return vals
 
 
+import cmath
+
+
 def safeDiv(val, div):
-    EPS = 1e-10
-    return (val) / (div + EPS if (type(div) not in [int, float] or div == 0) else div)
+    try:
+        return val / div
+    except:
+        return cmath.nan
 
 
 def ReLU(val):
