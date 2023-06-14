@@ -5,7 +5,7 @@ with open("template_input.json", "r") as f:
 
 # 修改为环保目标
 
-mDictList[0]['graph']['计算目标'] = '环保'
+mDictList[0]["graph"]["计算目标"] = "环保"
 
 import requests
 
@@ -18,8 +18,8 @@ result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
 # test = "create_task"
-# test = "check_result"
-test = "check_status"
+test = "check_result"
+# test = "check_status"
 
 task_id = "c05dc5a2-3263-41c5-b978-40c196c58073"
 check_data = dict(calculation_id=task_id)
