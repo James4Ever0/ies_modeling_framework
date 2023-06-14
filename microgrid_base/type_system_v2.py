@@ -83,7 +83,10 @@ PLOT_ONLY = True
 import docopt
 
 __doc__ = """
-
+Usage:
+    my_program (-p | --plot_only)
+Options:
+    -p --plot_only 
 """
 
 options = docopt.docopt(__doc__)
