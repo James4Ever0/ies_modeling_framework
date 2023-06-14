@@ -22,9 +22,16 @@ def addListElem(*args):
 import cmath
 
 
+def safeValue(val):
+    try:
+        return value(val)
+    except:
+        return val
+
+
 def safeDiv(val, div):
     try:
-        return val / div
+        return safeValue(val) / safeValue(div)
     except:
         return cmath.nan
 
