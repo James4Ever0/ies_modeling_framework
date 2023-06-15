@@ -131,12 +131,14 @@ def background_on_message(task: AsyncResult):
     value = task.get(on_message=celery_on_message, propagate=False)
     # shall you not check here.
     # and not the message callback.
-    # status = task.status
-    # print("TASK STATUS?", status)
-    taskResult[task.id] = value
-    print("VALUE TYPE?", type(value))  # str, '14'
-    print("TASK VALUE?", value)
-
+    status = task.status
+    print("TASK STATUS?", status)
+    if status == 'SUCCESS':
+        taskResult[task.id] = value # this will be exception.
+        print("VALUE TYPE?", type(value))  # str, '14'
+        print("TASK VALUE?", value)
+    else:
+        print("FAILED TO GET TASK RESULT.")
 
 # Reference: https://github.com/tiangolo/fastapi/issues/459
 
