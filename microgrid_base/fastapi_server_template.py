@@ -89,7 +89,9 @@ def remove_stale_tasks_decorator(function):
 
     return inner_function
 
+
 error_log_dict = {}
+
 
 def celery_on_message(body: dict):
     """
@@ -103,10 +105,10 @@ def celery_on_message(body: dict):
 
     task_id = body["task_id"]
     status = body["status"]
-    
+
     print("TASK STATUS?", status)
-    if status == 'FAILURE':
-        error_log_dict[task_id] = body['traceback']
+    if status == "FAILURE":
+        error_log_dict[task_id] = body["traceback"]
 
     taskInfo[task_id] = datetime.datetime.now()
 
@@ -135,6 +137,7 @@ def background_on_message(task: AsyncResult):
     print("VALUE TYPE?", type(value))  # str, '14'
     print("TASK VALUE?", value)
 
+
 # Reference: https://github.com/tiangolo/fastapi/issues/459
 
 # from typing import Any
@@ -154,8 +157,9 @@ app = FastAPI(
     version=version,
     tags_metadata=tags_metadata,
     # default_response_class=ORJSONResponse,
-    default_response_class=fastapi.responses.ORJSONResponse
+    default_response_class=fastapi.responses.ORJSONResponse,
 )
+
 
 @remove_stale_tasks_decorator
 @app.post(
@@ -226,16 +230,20 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
+    calculation_state = get_calculation_state(calculation_id).calculation_state
     if calculation_result is None:
         if calculation_state == "FAILURE":
             error_log = error_log_dict.get(calculation_id, None)
             if error_log:
-                calculation_result = CalculationResult(resultList = [], success=False, error_log=error_log)
+                calculation_result = CalculationResult(
+                    resultList=[], success=False, error_log=error_log
+                )
     calculation_result = (
         CalculationResult.parse_obj(calculation_result) if calculation_result else None
     )
 
     return CalculationAsyncResult(
+        calculation_state=calculation_state,
         calculation_result=calculation_result,
     )
 

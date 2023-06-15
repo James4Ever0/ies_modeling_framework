@@ -20,11 +20,19 @@ from solve_model import (
 from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
-from celery.exceptions import Ignore
+# from celery.exceptions import Ignore
 
 
-@app.task(bind=True)  # parse it elsewhere.
-def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
+@app.task()
+# @app.task(bind=True)  # parse it elsewhere.
+def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
+# def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
+    # raise Exception("ERROR MSG")
+    # error_name = "ERROR_NAME"; error_log = 'ERROR_LOG'
+    # self.update_state(
+    #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
+    # )  # https://distributedpython.com/posts/custom-celery-task-states/
+    # raise Ignore()
     """
     能源系统仿真优化计算方法
 
@@ -38,30 +46,34 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
     calcParamList = mDictListToCalcParamList(mDictList)
 
     resultList = []
-    error_log = ""
-    success = False
-    error_name = None
-    try:
-        resultList = solveModelFromCalcParamList(calcParamList)
-    except Exception as ex:
-        import traceback
+    # error_log = ""
+    # success = False
+    # error_name = None
+    # try:
+    resultList = solveModelFromCalcParamList(calcParamList)
+    # except Exception as ex:
+        # import traceback
 
-        error_log = traceback.format_exc()
-        error_name = type(ex).__name__
-        print("************CELERY ERROR************")
-        print(error_log)
+        # error_log = traceback.format_exc()
+        # error_name = type(ex).__name__
+        # print("************CELERY ERROR************")
+        # print(error_log)
 
-    if resultList != [] and error_log == "":
-        success = True
+    if resultList != []:
+        # success = True
         calculation_result = CalculationResult(
-            resultList=resultList, success=success, error_log=error_log
+            resultList=resultList, success=True, error_log=""
         ).dict()
         return calculation_result
     else:
-        self.update_state(
-            state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log}
-        )  # https://distributedpython.com/posts/custom-celery-task-states/
-        raise Ignore()
+        raise Exception("Empty result list.")
+        # calculation_result = CalculationResult(
+        #     error_log = "Empty result list.", resultList=resultList, success=False, 
+        # )
+        # self.update_state(
+        #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
+        # )  # https://distributedpython.com/posts/custom-celery-task-states/
+        # raise Ignore()
 
 
 app.conf.update(task_track_started=True)

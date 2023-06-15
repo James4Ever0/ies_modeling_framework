@@ -21,3 +21,4 @@ for index, mDict in enumerate(EFG.mDictList):
     print()
     print(f"_____parsing mDict #{index}_____")
     topo = 拓扑图.from_json(mDict.dict())
+    topo.check_consistency()
