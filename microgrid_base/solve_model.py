@@ -126,7 +126,8 @@ def solveModelFromCalcParamList(
 
                 traceback.print_exc()
                 print(">>>SOLVER ERROR<<<")
-                breakpoint()
+                # breakpoint()
+                # "Solver (cplex) did not exit normally"
                 return False # you can never get value here.
                 # breakpoint()
             # print("OBJECTIVE?")
