@@ -25,7 +25,7 @@ from celery.exceptions import Ignore
 
 @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
-    
+    error_name = "ERROR_NAME"; error_log = 'ERROR_LOG'
     self.update_state(
         state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
     )  # https://distributedpython.com/posts/custom-celery-task-states/
