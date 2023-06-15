@@ -3,7 +3,7 @@ input_path = "template_input.json"
 import json
 
 with open(input_path, "r") as f:
-    data = json.load(f)
+    data = dict(mDictList=json.load(f))
 
 from ies_optim import EnergyFlowGraph
 from topo_check import 拓扑图
