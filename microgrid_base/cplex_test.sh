@@ -1,1 +1,1 @@
-env PATH="$PATH:/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx/"  python3 test_topo_check.py -f
+env PATH="$PATH:/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx/" python3 test_topo_check.py -f
