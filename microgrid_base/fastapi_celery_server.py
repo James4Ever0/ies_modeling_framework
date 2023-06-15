@@ -82,7 +82,7 @@ concurrent_tasks = 3
 app.conf.update(worker_concurrency=concurrent_tasks)
 memory_limit = 20_000_000  # kB
 app.conf.update(worker_max_memory_per_child=memory_limit)
-time_limit = 60 * 10  # sec, 10 minutes.
+time_limit = 60 * 25  # sec, 25 minutes.
 app.conf.update(worker_time_limit=time_limit)
 # limits on ram usage, concurrency, execution time
 
