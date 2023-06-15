@@ -25,7 +25,7 @@ from celery.exceptions import Ignore
 
 @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
-    raise Exception("ERROR MSG")
+    # raise Exception("ERROR MSG")
     # error_name = "ERROR_NAME"; error_log = 'ERROR_LOG'
     # self.update_state(
     #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
@@ -44,13 +44,13 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
     calcParamList = mDictListToCalcParamList(mDictList)
 
     resultList = []
-    error_log = ""
-    success = False
-    error_name = None
-    try:
-        resultList = solveModelFromCalcParamList(calcParamList)
-    except Exception as ex:
-        import traceback
+    # error_log = ""
+    # success = False
+    # error_name = None
+    # try:
+    resultList = solveModelFromCalcParamList(calcParamList)
+    # except Exception as ex:
+        # import traceback
 
         error_log = traceback.format_exc()
         error_name = type(ex).__name__
