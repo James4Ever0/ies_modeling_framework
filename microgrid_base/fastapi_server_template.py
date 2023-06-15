@@ -226,12 +226,16 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     calculation_result = taskResult.get(calculation_id, None)
+    if calculation_result is None:
+        if calculation_state == "FAILURE":
+            error_log = error_log_dict.get(calculation_id, None)
+            if error_log:
+                calculation_result = CalculationResult(resultList = [], success=False, error_log=error_log)
     calculation_result = (
         CalculationResult.parse_obj(calculation_result) if calculation_result else None
     )
 
     return CalculationAsyncResult(
-        calculation_state=get_calculation_state(calculation_id).calculation_state,
         calculation_result=calculation_result,
     )
 
