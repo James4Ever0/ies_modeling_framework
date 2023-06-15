@@ -52,23 +52,26 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
     # except Exception as ex:
         # import traceback
 
-        error_log = traceback.format_exc()
-        error_name = type(ex).__name__
-        print("************CELERY ERROR************")
-        print(error_log)
+        # error_log = traceback.format_exc()
+        # error_name = type(ex).__name__
+        # print("************CELERY ERROR************")
+        # print(error_log)
 
-    if resultList != [] and error_log == "":
-        success = True
+    if resultList != []:
+        # success = True
         calculation_result = CalculationResult(
-            resultList=resultList, success=success, error_log=error_log
+            resultList=resultList, success=True, error_log=""
         ).dict()
         return calculation_result
     else:
-        self.update_state(
-            state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
-        )  # https://distributedpython.com/posts/custom-celery-task-states/
-        raise Ignore()
-
+        calculation_result = CalculationResult(
+            error_log = "Empty result list.", resultList=resultList, success=False, 
+        )
+        # self.update_state(
+        #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
+        # )  # https://distributedpython.com/posts/custom-celery-task-states/
+        # raise Ignore()
+    return CalculationResult
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
