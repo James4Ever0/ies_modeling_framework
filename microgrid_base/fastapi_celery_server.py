@@ -20,11 +20,13 @@ from solve_model import (
 from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
-from celery.exceptions import Ignore
+# from celery.exceptions import Ignore
 
 
-@app.task(bind=True)  # parse it elsewhere.
-def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
+@app.task()
+# @app.task(bind=True)  # parse it elsewhere.
+def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
+# def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
     # raise Exception("ERROR MSG")
     # error_name = "ERROR_NAME"; error_log = 'ERROR_LOG'
     # self.update_state(
@@ -64,14 +66,15 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
         ).dict()
         return calculation_result
     else:
-        calculation_result = CalculationResult(
-            error_log = "Empty result list.", resultList=resultList, success=False, 
-        )
+        raise Exception("Empty result list.")
+        # calculation_result = CalculationResult(
+        #     error_log = "Empty result list.", resultList=resultList, success=False, 
+        # )
         # self.update_state(
         #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
         # )  # https://distributedpython.com/posts/custom-celery-task-states/
         # raise Ignore()
-    return CalculationResult
+
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)

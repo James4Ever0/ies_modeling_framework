@@ -89,6 +89,7 @@ def remove_stale_tasks_decorator(function):
 
     return inner_function
 
+error_log_dict = {}
 
 def celery_on_message(body: dict):
     """
