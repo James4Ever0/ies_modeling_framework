@@ -126,6 +126,7 @@ def solveModelFromCalcParamList(
 
                 traceback.print_exc()
                 print(">>>SOLVER ERROR<<<")
+                breakpoint()
                 return False # you can never get value here.
                 # breakpoint()
             # print("OBJECTIVE?")
