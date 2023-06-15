@@ -103,7 +103,10 @@ def celery_on_message(body: dict):
 
     task_id = body["task_id"]
     status = body["status"]
+    
     print("TASK STATUS?", status)
+    if status == 'FAILURE':
+        error_log_dict[task_id] = body['traceback']
 
     taskInfo[task_id] = datetime.datetime.now()
 
