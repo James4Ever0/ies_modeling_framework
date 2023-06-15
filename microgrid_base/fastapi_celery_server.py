@@ -59,7 +59,7 @@ def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict
         return calculation_result
     else:
         self.update_state(
-            state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log}
+            state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
         )  # https://distributedpython.com/posts/custom-celery-task-states/
         raise Ignore()
 
