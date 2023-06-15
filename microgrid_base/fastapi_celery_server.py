@@ -25,6 +25,11 @@ from celery.exceptions import Ignore
 
 @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
+    
+    self.update_state(
+        state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
+    )  # https://distributedpython.com/posts/custom-celery-task-states/
+    raise Ignore()
     """
     能源系统仿真优化计算方法
 
