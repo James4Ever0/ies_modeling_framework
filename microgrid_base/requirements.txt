@@ -1,6 +1,6 @@
 rich
 networkx
-pyomo
+pyomo==6.5.0
 pydantic
 pint
 numpy
