@@ -108,7 +108,7 @@ def celery_on_message(body: dict):
 
     print("TASK STATUS?", status)
     if status == "FAILURE":
-        error_log_dict[task_id] = body["traceback"]
+        error_log_dict[task_id] = body.get("traceback", "")
 
     taskInfo[task_id] = datetime.datetime.now()
 
@@ -237,7 +237,7 @@ def get_calculation_result_async(calculation_id: str):
             if error_log:
                 calculation_result = CalculationResult(
                     resultList=[], success=False, error_log=error_log
-                )
+                ).dict()
     calculation_result = (
         CalculationResult.parse_obj(calculation_result) if calculation_result else None
     )
