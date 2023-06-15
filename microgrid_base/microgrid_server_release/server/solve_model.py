@@ -118,6 +118,7 @@ def solveModelFromCalcParamList(
             try:
                 print(">>>SOLVING<<<")
                 # results = solver.solve(mw.model, tee=True, keepfiles= True)
+                # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
                 results = solver.solve(mw.model, tee=True)
                 print("SOLVER RESULTS?")
                 rich.print(results)
