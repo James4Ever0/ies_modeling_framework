@@ -9,17 +9,19 @@ mDictList[0]["graph"]["计算目标"] = "环保"
 
 import requests
 
-# port = 9870
-# ip = "127.0.0.1"
-port = 9871
-ip = "192.168.3.10"
+port = 9870
+ip = "127.0.0.1"
+
+# port = 9871
+# ip = "192.168.3.10"
+
 url = f"http://{ip}:{port}/calculate_async"
 result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
-# test = "create_task"
+test = "create_task"
 # test = "check_result"
-test = "check_status"
+# test = "check_status"
 
 task_id = "5aa95648-2518-4b44-bc91-77b0d430e446"
 check_data = dict(calculation_id=task_id)
