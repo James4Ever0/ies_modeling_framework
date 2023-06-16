@@ -368,9 +368,7 @@ def solveModelFromCalcParamList(
     resultList = []
     try:
         if 计算目标 in ["经济", "环保"]:
-            solved, result, _ = solve_model_and_fetch_result(
-                calcParamList, 计算目标, {}
-            )
+            solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {})
             if result:
                 resultList.append(result)
         else:
@@ -388,13 +386,15 @@ def solveModelFromCalcParamList(
                 if solved:
                     # breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
-                    
+
                     ### 检验经济环保是否互相影响 ###
                     if DOR.fin_env == DOR.min_env:
-                        # 环境不影响经济 返回
+                        # 环境不影响经济 返回最小经济结果
                         return [fin_result]
                     elif DOR.env_finance == DOR.min_finance:
+                        # 经济不影响环境 返回最小环保结果
                         return [env_result]
+
                     constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
                         DOR
                     )
