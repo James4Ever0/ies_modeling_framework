@@ -304,7 +304,7 @@ def solveModelFromCalcParamList(
         env_finance: float
         min_env: float
 
-    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange):
+    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange, target:Union[Literal['fin'], Literal['env']]):
         # min_finance, fin_env = 0, 3
         # env_finance, min_env = 1, 1
 
@@ -312,8 +312,10 @@ def solveModelFromCalcParamList(
         # DOR.env_finance, DOR.min_env = 1, 1
 
         import numpy as np
-
-        a, b = DOR.min_finance, DOR.env_finance
+        if target == 'fin':
+            a, b = DOR.min_finance, DOR.env_finance
+        elif target == 'env':
+            a,b = DOR.min_env, DOR.fin_env 
         if a == b:
             raise Exception("Unable to perform multiobjective search.")
         elif a > b:
@@ -404,7 +406,7 @@ def solveModelFromCalcParamList(
                         "环保": {"min": env_start, "max": env_end}
                     }
                     solved, result, _ = solve_model_and_fetch_result(
-                        calcParamList, "环保", None,additional_constrains = additional_constraints
+                        calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
                     if result:
                         resultList.append(result)
