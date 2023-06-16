@@ -1,6 +1,6 @@
-
 import json
 from typing import List, Dict, Any, Union
+
 try:
     from typing import Literal
 except:
@@ -22,7 +22,9 @@ with open("frontend_sim_param_translation.json", "r") as f:
 
 from pandas import DataFrame
 from topo_check import 拓扑图
-def mDictListToCalcParamList(mdictList:List):
+
+
+def mDictListToCalcParamList(mdictList: List):
     calcParamList = []
 
     for md in mdictList:
@@ -129,7 +131,7 @@ def solveModelFromCalcParamList(
                 print(">>>SOLVER ERROR<<<")
                 # breakpoint()
                 # "Solver (cplex) did not exit normally"
-                return False # you can never get value here.
+                return False  # you can never get value here.
                 # breakpoint()
             # print("OBJECTIVE?")
             # OBJ.display()
@@ -219,7 +221,6 @@ def solveModelFromCalcParamList(
                         出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
                     return 出力曲线模版
 
-
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
@@ -289,7 +290,7 @@ def solveModelFromCalcParamList(
                         }
                         elem["plot_list"].append(subElem)
                     出力曲线列表.append(elem)
-                return dict(performanceDataList = 出力曲线列表, simulationResultTable = 仿真结果表_格式化)
+                return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化)
             except:
                 import traceback
 
@@ -388,7 +389,9 @@ def solveModelFromCalcParamList(
                     # breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
                     if DOR.fin_env == DOR.min_env:
-                        return
+                        return [env_result]
+                    elif DOR.env_finance == DOR.min_finance:
+                        return [fin_result]
                     constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
                         DOR
                     )
