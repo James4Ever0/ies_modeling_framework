@@ -395,14 +395,16 @@ def solveModelFromCalcParamList(
                     return [env_result]
 
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                    DOR
+                    DOR # add some more paremeters.
                 )
-                for fin_start, fin_end in constraint_ranges:
+                for env_start, env_end in constraint_ranges:
+                # for fin_start, fin_end in constraint_ranges:
                     additional_constraints = {
-                        "经济": {"min": fin_start, "max": fin_end}
+                    #     "经济": {"min": fin_start, "max": fin_end}
+                        "环保": {"min": env_start, "max": env_end}
                     }
                     solved, result, _ = solve_model_and_fetch_result(
-                        calcParamList, "环保", None, True, additional_constraints
+                        calcParamList, "环保", None,additional_constrains = additional_constraints
                     )
                     if result:
                         resultList.append(result)
