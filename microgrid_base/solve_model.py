@@ -315,7 +315,9 @@ def solveModelFromCalcParamList(
         if target == 'fin':
             a, b = DOR.min_finance, DOR.env_finance
         elif target == 'env':
-            a,b = DOR.min_env, DOR.fin_env 
+            a,b = DOR.min_env, DOR.fin_env
+        else:
+            raise Exception("Unsupported target:", target) 
         if a == b:
             raise Exception("Unable to perform multiobjective search.")
         elif a > b:
@@ -397,7 +399,7 @@ def solveModelFromCalcParamList(
                     return [env_result]
 
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                    DOR # add some more paremeters.
+                    DOR, target='env' # add some more paremeters.
                 )
                 for env_start, env_end in constraint_ranges:
                 # for fin_start, fin_end in constraint_ranges:
