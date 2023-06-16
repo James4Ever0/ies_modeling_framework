@@ -1,6 +1,6 @@
-
 import json
 from typing import List, Dict, Any, Union
+
 try:
     from typing import Literal
 except:
@@ -22,7 +22,9 @@ with open("frontend_sim_param_translation.json", "r") as f:
 
 from pandas import DataFrame
 from topo_check import 拓扑图
-def mDictListToCalcParamList(mdictList:List):
+
+
+def mDictListToCalcParamList(mdictList: List):
     calcParamList = []
 
     for md in mdictList:
@@ -129,7 +131,7 @@ def solveModelFromCalcParamList(
                 print(">>>SOLVER ERROR<<<")
                 # breakpoint()
                 # "Solver (cplex) did not exit normally"
-                return False # you can never get value here.
+                return False  # you can never get value here.
                 # breakpoint()
             # print("OBJECTIVE?")
             # OBJ.display()
@@ -219,7 +221,6 @@ def solveModelFromCalcParamList(
                         出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
                     return 出力曲线模版
 
-
                 for index, devInstDict in enumerate(ret.devInstDictList):
                     graph_data = ret.graph_data_list[index]
                     典型日代表的日期 = graph_data["典型日代表的日期"]
@@ -289,7 +290,7 @@ def solveModelFromCalcParamList(
                         }
                         elem["plot_list"].append(subElem)
                     出力曲线列表.append(elem)
-                return dict(performanceDataList = 出力曲线列表, simulationResultTable = 仿真结果表_格式化)
+                return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化)
             except:
                 import traceback
 
@@ -330,7 +331,7 @@ def solveModelFromCalcParamList(
         calcParamList: List,
         calcTarget: str,
         rangeDict: Union[None, Dict] = None,
-        needResult: bool = False,
+        needResult: bool = True,
         additional_constraints: Dict = {},
     ):
         targetNameMappings = dict(
@@ -367,26 +368,33 @@ def solveModelFromCalcParamList(
     resultList = []
     try:
         if 计算目标 in ["经济", "环保"]:
-            solved, result, _ = solve_model_and_fetch_result(
-                calcParamList, 计算目标, {}, True
-            )
+            solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {})
             if result:
                 resultList.append(result)
         else:
             # breakpoint()
             rangeDict = {}
-            solved, _, rangeDict = solve_model_and_fetch_result(
+            solved, fin_result, rangeDict = solve_model_and_fetch_result(
                 calcParamList, "经济", rangeDict
             )
             # breakpoint()
             if rangeDict != {} and solved:
-                solved, _, rangeDict = solve_model_and_fetch_result(
+                solved, env_result, rangeDict = solve_model_and_fetch_result(
                     calcParamList, "环保", rangeDict
                 )
                 # breakpoint()
                 if solved:
                     # breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
+
+                    ### 检验经济环保是否互相影响 ###
+                    if DOR.fin_env == DOR.min_env:
+                        # 环境不影响经济 返回最小经济结果
+                        return [fin_result]
+                    elif DOR.env_finance == DOR.min_finance:
+                        # 经济不影响环境 返回最小环保结果
+                        return [env_result]
+
                     constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
                         DOR
                     )
