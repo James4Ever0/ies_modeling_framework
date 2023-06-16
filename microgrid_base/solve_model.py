@@ -331,7 +331,7 @@ def solveModelFromCalcParamList(
         calcParamList: List,
         calcTarget: str,
         rangeDict: Union[None, Dict] = None,
-        needResult: bool = False,
+        needResult: bool = True,
         additional_constraints: Dict = {},
     ):
         targetNameMappings = dict(
@@ -369,7 +369,7 @@ def solveModelFromCalcParamList(
     try:
         if 计算目标 in ["经济", "环保"]:
             solved, result, _ = solve_model_and_fetch_result(
-                calcParamList, 计算目标, {}, True
+                calcParamList, 计算目标, {}
             )
             if result:
                 resultList.append(result)
@@ -377,19 +377,21 @@ def solveModelFromCalcParamList(
             # breakpoint()
             rangeDict = {}
             solved, fin_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "经济", rangeDict, needResult=True
+                calcParamList, "经济", rangeDict
             )
             # breakpoint()
             if rangeDict != {} and solved:
                 solved, env_result, rangeDict = solve_model_and_fetch_result(
-                    calcParamList, "环保", rangeDict, needResult=True
+                    calcParamList, "环保", rangeDict
                 )
                 # breakpoint()
                 if solved:
                     # breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
+                    
                     ### 检验经济环保是否互相影响 ###
                     if DOR.fin_env == DOR.min_env:
+                        # 环境不影响经济 返回
                         return [fin_result]
                     elif DOR.env_finance == DOR.min_finance:
                         return [env_result]
