@@ -375,7 +375,7 @@ def solveModelFromCalcParamList(
         else:
             # breakpoint()
             rangeDict = {}
-            solved, _, rangeDict = solve_model_and_fetch_result(
+            solved, mresult, rangeDict = solve_model_and_fetch_result(
                 calcParamList, "经济", rangeDict
             )
             # breakpoint()
