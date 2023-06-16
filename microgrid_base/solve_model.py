@@ -135,13 +135,13 @@ def solveModelFromCalcParamList(
                 # breakpoint()
             # print("OBJECTIVE?")
             # OBJ.display()
-            try:
-                print("OBJ:", value(OBJ))
-                # export value.
-                # import json
-                solved = True
-            except:
-                print("NO SOLUTION.")
+            # try:
+            print("OBJ:", value(OBJ))
+            # export value.
+            # import json
+            solved = True
+            # except:
+            # print("NO SOLUTION.")
         return solved
 
     class CalcStruct(BaseModel):
