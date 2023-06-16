@@ -409,6 +409,7 @@ def solveModelFromCalcParamList(
                     }
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList, "环保", None, additional_constraints = additional_constraints
+                        # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
                     if solved:
                         if result:
