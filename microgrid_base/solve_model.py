@@ -117,21 +117,20 @@ def solveModelFromCalcParamList(
 
         solved = False
         with SolverFactory("cplex") as solver:
-            try:
-                print(">>>SOLVING<<<")
-                # results = solver.solve(mw.model, tee=True, keepfiles= True)
-                # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
-                results = solver.solve(mw.model, tee=True)
-                print("SOLVER RESULTS?")
-                rich.print(results)
-            except:
-                import traceback
-
-                traceback.print_exc()
-                print(">>>SOLVER ERROR<<<")
+            # try:
+            print(">>>SOLVING<<<")
+            # results = solver.solve(mw.model, tee=True, keepfiles= True)
+            # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
+            results = solver.solve(mw.model, tee=True)
+            print("SOLVER RESULTS?")
+            rich.print(results)
+            # except:
+            #     import traceback
+            #     traceback.print_exc()
+                # print(">>>SOLVER ERROR<<<")
                 # breakpoint()
                 # "Solver (cplex) did not exit normally"
-                return False  # you can never get value here.
+                # return False  # you can never get value here.
                 # breakpoint()
             # print("OBJECTIVE?")
             # OBJ.display()
@@ -202,99 +201,99 @@ def solveModelFromCalcParamList(
 
     def fetchResult(solved: bool, ret: CalcStruct):
         if solved:
-            try:
-                import pandas as pd
+            # try:
+            import pandas as pd
 
-                仿真结果表 = {}
-                出力曲线字典 = {}  # 设备ID: 设备出力曲线
+            仿真结果表 = {}
+            出力曲线字典 = {}  # 设备ID: 设备出力曲线
 
-                创建出力曲线模版 = lambda: [
-                    0 for _ in range(8760)
-                ]  # 1d array, placed when running under typical day mode.
+            创建出力曲线模版 = lambda: [
+                0 for _ in range(8760)
+            ]  # 1d array, placed when running under typical day mode.
 
-                def 填充出力曲线(
-                    出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
-                ):
-                    assert len(出力曲线模版) == 8760
-                    assert len(典型日出力曲线) == 24
-                    for day_index in 典型日代表的日期:
-                        出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
-                    return 出力曲线模版
+            def 填充出力曲线(
+                出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
+            ):
+                assert len(出力曲线模版) == 8760
+                assert len(典型日出力曲线) == 24
+                for day_index in 典型日代表的日期:
+                    出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
+                return 出力曲线模版
 
-                for index, devInstDict in enumerate(ret.devInstDictList):
-                    graph_data = ret.graph_data_list[index]
-                    典型日代表的日期 = graph_data["典型日代表的日期"]
-                    timeParam = (
-                        24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
-                    )
-                    for devId, devInst in devInstDict.items():
-                        devClassName = devInst.__class__.__name__.strip("模型")
-                        # where you convert the units.
-                        结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
-                        出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                        结果 = 结果类.export(devInst, timeParam)
-                        # 仿真结果表.append(结果.dict())
-                        之前结果 = deepcopy(仿真结果表.get(devInst, None))
-                        if 之前结果 == None:
-                            仿真结果表[devInst] = 结果.dict()
-                        else:
-                            仿真结果表[devInst] = {
-                                k: v + 之前结果[k] for k, v in 结果.dict().items()
-                            }
-
-                        if 出力曲线类:
-                            出力曲线 = 出力曲线类.export(devInst, timeParam)
-                            if 典型日:
-                                if 出力曲线字典.get(devId, None) is None:
-                                    出力曲线字典[devId] = {
-                                        k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
-                                    }
-                                mdict = deepcopy(出力曲线字典[devId])
-                                出力曲线字典.update(
-                                    {
-                                        devId: {
-                                            k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
-                                            for k, v in 出力曲线.dict().items()
-                                        }
-                                    }
-                                )
-                            else:
-                                出力曲线字典.update({devId: 出力曲线.dict()})
-                仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
-                仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
-                print()
-                rich.print(出力曲线字典)
-                print()
-                仿真结果表_导出.head()
-                # export_table = 仿真结果表.to_html()
-                # may you change the format.
-                仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
-                # return 出力曲线字典, 仿真结果表_格式化
-                出力曲线列表 = []
-                for devId, content_dict in 出力曲线字典.items():
-                    deviceName = ret.devInstDictList[0][devId].设备信息.设备名称
-                    deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip(
-                        "模型"
-                    )
-                    elem = {"name": deviceName, "plot_list": []}
-                    for abbr, val in content_dict.items():
-                        if abbr in ["元件名称", "时间"]:
-                            continue
-                        plotName = f"{deviceType}{abbr}出力曲线"
-                        xData = content_dict["时间"]
-                        yData = val
-                        subElem = {
-                            "name": plotName,
-                            "abbr": abbr,
-                            "data": {"x": xData, "y": yData},
+            for index, devInstDict in enumerate(ret.devInstDictList):
+                graph_data = ret.graph_data_list[index]
+                典型日代表的日期 = graph_data["典型日代表的日期"]
+                timeParam = (
+                    24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
+                )
+                for devId, devInst in devInstDict.items():
+                    devClassName = devInst.__class__.__name__.strip("模型")
+                    # where you convert the units.
+                    结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
+                    出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
+                    结果 = 结果类.export(devInst, timeParam)
+                    # 仿真结果表.append(结果.dict())
+                    之前结果 = deepcopy(仿真结果表.get(devInst, None))
+                    if 之前结果 == None:
+                        仿真结果表[devInst] = 结果.dict()
+                    else:
+                        仿真结果表[devInst] = {
+                            k: v + 之前结果[k] for k, v in 结果.dict().items()
                         }
-                        elem["plot_list"].append(subElem)
-                    出力曲线列表.append(elem)
-                return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化)
-            except:
-                import traceback
 
-                traceback.print_exc()
+                    if 出力曲线类:
+                        出力曲线 = 出力曲线类.export(devInst, timeParam)
+                        if 典型日:
+                            if 出力曲线字典.get(devId, None) is None:
+                                出力曲线字典[devId] = {
+                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
+                                }
+                            mdict = deepcopy(出力曲线字典[devId])
+                            出力曲线字典.update(
+                                {
+                                    devId: {
+                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
+                                        for k, v in 出力曲线.dict().items()
+                                    }
+                                }
+                            )
+                        else:
+                            出力曲线字典.update({devId: 出力曲线.dict()})
+            仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+            仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
+            print()
+            rich.print(出力曲线字典)
+            print()
+            仿真结果表_导出.head()
+            # export_table = 仿真结果表.to_html()
+            # may you change the format.
+            仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+            # return 出力曲线字典, 仿真结果表_格式化
+            出力曲线列表 = []
+            for devId, content_dict in 出力曲线字典.items():
+                deviceName = ret.devInstDictList[0][devId].设备信息.设备名称
+                deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip(
+                    "模型"
+                )
+                elem = {"name": deviceName, "plot_list": []}
+                for abbr, val in content_dict.items():
+                    if abbr in ["元件名称", "时间"]:
+                        continue
+                    plotName = f"{deviceType}{abbr}出力曲线"
+                    xData = content_dict["时间"]
+                    yData = val
+                    subElem = {
+                        "name": plotName,
+                        "abbr": abbr,
+                        "data": {"x": xData, "y": yData},
+                    }
+                    elem["plot_list"].append(subElem)
+                出力曲线列表.append(elem)
+            return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化)
+            # except:
+            #     import traceback
+
+            #     traceback.print_exc()
         return None
 
     ## assume we have multiobjective here.
@@ -366,53 +365,53 @@ def solveModelFromCalcParamList(
             return solved, result, rangeDict
 
     resultList = []
-    try:
-        if 计算目标 in ["经济", "环保"]:
-            solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {})
-            if result:
-                resultList.append(result)
-        else:
-            # breakpoint()
-            rangeDict = {}
-            solved, fin_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "经济", rangeDict
+    # try:
+    if 计算目标 in ["经济", "环保"]:
+        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {})
+        if result:
+            resultList.append(result)
+    else:
+        # breakpoint()
+        rangeDict = {}
+        solved, fin_result, rangeDict = solve_model_and_fetch_result(
+            calcParamList, "经济", rangeDict
+        )
+        # breakpoint()
+        if rangeDict != {} and solved:
+            solved, env_result, rangeDict = solve_model_and_fetch_result(
+                calcParamList, "环保", rangeDict
             )
             # breakpoint()
-            if rangeDict != {} and solved:
-                solved, env_result, rangeDict = solve_model_and_fetch_result(
-                    calcParamList, "环保", rangeDict
-                )
+            if solved:
                 # breakpoint()
-                if solved:
-                    # breakpoint()
-                    DOR = DualObjectiveRange.parse_obj(rangeDict)
+                DOR = DualObjectiveRange.parse_obj(rangeDict)
 
-                    ### 检验经济环保是否互相影响 ###
-                    if DOR.fin_env == DOR.min_env:
-                        # 环境不影响经济 返回最小经济结果
-                        return [fin_result]
-                    elif DOR.env_finance == DOR.min_finance:
-                        # 经济不影响环境 返回最小环保结果
-                        return [env_result]
+                ### 检验经济环保是否互相影响 ###
+                if DOR.fin_env == DOR.min_env:
+                    # 环境不影响经济 返回最小经济结果
+                    return [fin_result]
+                elif DOR.env_finance == DOR.min_finance:
+                    # 经济不影响环境 返回最小环保结果
+                    return [env_result]
 
-                    constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                        DOR
+                constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
+                    DOR
+                )
+                for fin_start, fin_end in constraint_ranges:
+                    additional_constraints = {
+                        "经济": {"min": fin_start, "max": fin_end}
+                    }
+                    solved, result, _ = solve_model_and_fetch_result(
+                        calcParamList, "环保", None, True, additional_constraints
                     )
-                    for fin_start, fin_end in constraint_ranges:
-                        additional_constraints = {
-                            "经济": {"min": fin_start, "max": fin_end}
-                        }
-                        solved, result, _ = solve_model_and_fetch_result(
-                            calcParamList, "环保", None, True, additional_constraints
-                        )
-                        if result:
-                            resultList.append(result)
+                    if result:
+                        resultList.append(result)
         #### LOOP OF PREPARING SOLUTION ####
-    except:
-        import traceback
+    # except:
+    #     import traceback
 
-        traceback.print_exc()
-        #         breakpoint()  # you need to turn off these breakpoints in release.
-        # breakpoint()
-        print("END")
+    #     traceback.print_exc()
+    #     #         breakpoint()  # you need to turn off these breakpoints in release.
+    #     # breakpoint()
+    print("END")
     return resultList
