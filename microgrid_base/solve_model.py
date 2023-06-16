@@ -377,21 +377,22 @@ def solveModelFromCalcParamList(
             # breakpoint()
             rangeDict = {}
             solved, fin_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "经济", rangeDict
+                calcParamList, "经济", rangeDict, needResult=True
             )
             # breakpoint()
             if rangeDict != {} and solved:
                 solved, env_result, rangeDict = solve_model_and_fetch_result(
-                    calcParamList, "环保", rangeDict
+                    calcParamList, "环保", rangeDict, needResult=True
                 )
                 # breakpoint()
                 if solved:
                     # breakpoint()
                     DOR = DualObjectiveRange.parse_obj(rangeDict)
+                    ### 检验经济环保是否互相影响 ###
                     if DOR.fin_env == DOR.min_env:
-                        return [env_result]
-                    elif DOR.env_finance == DOR.min_finance:
                         return [fin_result]
+                    elif DOR.env_finance == DOR.min_finance:
+                        return [env_result]
                     constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
                         DOR
                     )
