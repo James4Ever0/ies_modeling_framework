@@ -304,7 +304,7 @@ def solveModelFromCalcParamList(
         env_finance: float
         min_env: float
 
-    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange):
+    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange, target:Union[Literal['fin'], Literal['env']]):
         # min_finance, fin_env = 0, 3
         # env_finance, min_env = 1, 1
 
@@ -312,8 +312,12 @@ def solveModelFromCalcParamList(
         # DOR.env_finance, DOR.min_env = 1, 1
 
         import numpy as np
-
-        a, b = DOR.min_finance, DOR.env_finance
+        if target == 'fin':
+            a, b = DOR.min_finance, DOR.env_finance
+        elif target == 'env':
+            a,b = DOR.min_env, DOR.fin_env
+        else:
+            raise Exception("Unsupported target:", target) 
         if a == b:
             raise Exception("Unable to perform multiobjective search.")
         elif a > b:
@@ -395,17 +399,20 @@ def solveModelFromCalcParamList(
                     return [env_result]
 
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                    DOR
+                    DOR, target='env' # add some more paremeters.
                 )
-                for fin_start, fin_end in constraint_ranges:
+                for env_start, env_end in constraint_ranges:
+                # for fin_start, fin_end in constraint_ranges:
                     additional_constraints = {
-                        "经济": {"min": fin_start, "max": fin_end}
+                    #     "经济": {"min": fin_start, "max": fin_end}
+                        "环保": {"min": env_start, "max": env_end}
                     }
                     solved, result, _ = solve_model_and_fetch_result(
-                        calcParamList, "环保", None, True, additional_constraints
+                        calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
-                    if result:
-                        resultList.append(result)
+                    if solved:
+                        if result:
+                            resultList.append(result)
         #### LOOP OF PREPARING SOLUTION ####
     # except:
     #     import traceback

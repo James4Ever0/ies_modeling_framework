@@ -410,8 +410,9 @@ def solveModelFromCalcParamList(
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
-                    if result:
-                        resultList.append(result)
+                    if solved:
+                        if result:
+                            resultList.append(result)
         #### LOOP OF PREPARING SOLUTION ####
     # except:
     #     import traceback
