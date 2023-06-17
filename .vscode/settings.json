@@ -8,4 +8,5 @@
     ],
     "window.zoomLevel": 2,
     "python.formatting.provider": "black",
+    "python.linting.enabled": true,
 }
