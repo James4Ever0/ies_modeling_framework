@@ -5,7 +5,7 @@ Chooseable = TypeVar("Chooseable")
 # pytest -s to print to stdout without collecting
 # pytest --capture=tee-sys
 
-# ninja -> invoke multiple pytest "persistant" sessions, not clearning cache and not rerunning the test if passed test -> clean cache only by passing  target "clean"
+# ninja -> invoke multiple pytest "persistant" sessions, not cleaning cache and not rerunning the test if passed test -> clean cache only by passing target "clean" to ninja
 
 def demo(mtest: Optional[int] = ...):
     ...
