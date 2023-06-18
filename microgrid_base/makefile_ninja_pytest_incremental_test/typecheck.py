@@ -1,7 +1,10 @@
-from typing import Never
+# from typing import NoReturn
+from typing_extensions import Never
 
-def never_call_me(arg: Never) -> None:
+def never_call_me(arg: Never):
     pass
+
+# do mypy check.
 
 def int_or_str(arg: int | str) -> None:
     never_call_me(arg)  # type checker error
