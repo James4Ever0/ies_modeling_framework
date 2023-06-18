@@ -127,11 +127,11 @@ def solveModelFromCalcParamList(
             # except:
             #     import traceback
             #     traceback.print_exc()
-                # print(">>>SOLVER ERROR<<<")
-                # breakpoint()
-                # "Solver (cplex) did not exit normally"
-                # return False  # you can never get value here.
-                # breakpoint()
+            # print(">>>SOLVER ERROR<<<")
+            # breakpoint()
+            # "Solver (cplex) did not exit normally"
+            # return False  # you can never get value here.
+            # breakpoint()
             # print("OBJECTIVE?")
             # OBJ.display()
             # try:
@@ -211,9 +211,7 @@ def solveModelFromCalcParamList(
                 0 for _ in range(8760)
             ]  # 1d array, placed when running under typical day mode.
 
-            def 填充出力曲线(
-                出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]
-            ):
+            def 填充出力曲线(出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]):
                 assert len(出力曲线模版) == 8760
                 assert len(典型日出力曲线) == 24
                 for day_index in 典型日代表的日期:
@@ -223,9 +221,7 @@ def solveModelFromCalcParamList(
             for index, devInstDict in enumerate(ret.devInstDictList):
                 graph_data = ret.graph_data_list[index]
                 典型日代表的日期 = graph_data["典型日代表的日期"]
-                timeParam = (
-                    24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
-                )
+                timeParam = 24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
                 for devId, devInst in devInstDict.items():
                     devClassName = devInst.__class__.__name__.strip("模型")
                     # where you convert the units.
@@ -237,9 +233,7 @@ def solveModelFromCalcParamList(
                     if 之前结果 == None:
                         仿真结果表[devInst] = 结果.dict()
                     else:
-                        仿真结果表[devInst] = {
-                            k: v + 之前结果[k] for k, v in 结果.dict().items()
-                        }
+                        仿真结果表[devInst] = {k: v + 之前结果[k] for k, v in 结果.dict().items()}
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
@@ -304,7 +298,9 @@ def solveModelFromCalcParamList(
         env_finance: float
         min_env: float
 
-    def prepareConstraintRangesFromDualObjectiveRange(DOR: DualObjectiveRange, target:Union[Literal['fin'], Literal['env']]):
+    def prepareConstraintRangesFromDualObjectiveRange(
+        DOR: DualObjectiveRange, target: Union[Literal["fin"], Literal["env"]]
+    ):
         # min_finance, fin_env = 0, 3
         # env_finance, min_env = 1, 1
 
@@ -312,12 +308,13 @@ def solveModelFromCalcParamList(
         # DOR.env_finance, DOR.min_env = 1, 1
 
         import numpy as np
-        if target == 'fin':
+
+        if target == "fin":
             a, b = DOR.min_finance, DOR.env_finance
-        elif target == 'env':
-            a,b = DOR.min_env, DOR.fin_env
+        elif target == "env":
+            a, b = DOR.min_env, DOR.fin_env
         else:
-            raise Exception("Unsupported target:", target) 
+            raise Exception("Unsupported target:", target)
         if a == b:
             raise Exception("Unable to perform multiobjective search.")
         elif a > b:
@@ -399,16 +396,19 @@ def solveModelFromCalcParamList(
                     return [env_result]
 
                 constraint_ranges = prepareConstraintRangesFromDualObjectiveRange(
-                    DOR, target='env' # add some more paremeters.
+                    DOR, target="env"  # add some more paremeters.
                 )
                 for env_start, env_end in constraint_ranges:
-                # for fin_start, fin_end in constraint_ranges:
+                    # for fin_start, fin_end in constraint_ranges:
                     additional_constraints = {
-                    #     "经济": {"min": fin_start, "max": fin_end}
+                        #     "经济": {"min": fin_start, "max": fin_end}
                         "环保": {"min": env_start, "max": env_end}
                     }
                     solved, result, _ = solve_model_and_fetch_result(
-                        calcParamList, "经济", None, additional_constraints = additional_constraints
+                        calcParamList,
+                        "经济",
+                        None,
+                        additional_constraints=additional_constraints
                         # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
                     if solved:
