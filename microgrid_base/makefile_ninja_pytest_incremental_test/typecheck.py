@@ -1,6 +1,7 @@
 # from typing import NoReturn
 from typing_extensions import Never
 
+
 def never_call_me(arg: Never):
     pass
 
