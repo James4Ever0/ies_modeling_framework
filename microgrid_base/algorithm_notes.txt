@@ -1,0 +1,23 @@
+when device count is zero, then no money is spent, not even fixed cost
+
+make individual model of diesel generators by limiting max device count into 1 and alter cost calculation methods, merge these subdevice model into one unified model.
+
+make unittests on "multiply" and "piecewise"
+
+add constraints by investment and intereset rate
+
+questions on financial calculations:
+	for two sets of devices (same type), do we need to calculate the base cost twice?
+	what about other "fixed" costs?
+
+sensitivity analysis:
+	https://pyomo.readthedocs.io/en/stable/contributed_packages/sensitivity_toolbox.html
+	https://coral.ise.lehigh.edu/~ted/files/modeling/lectures/AdvancedModeling.pdf#:~:text=Sensitivity%20Analysis%20in%20PuLP%20and%20Pyomo%20%E2%80%A2Both%20PuLP,the%20solver.%20%E2%80%93%20The%20supported%20su%EF%AC%83xed%20are.pi%20and.rc.
+
+use final objective expression to do sensitivity analysis, just get the parameter out of related variables (like "a" in "a*x")
+
+approximate piecewise functions (select points by minimize error) using solvers
+
+----
+
+if want to model diesel generators without real*real multiplication at same load rate, use as many binary variables as max device count and model them in sum of bin*real
