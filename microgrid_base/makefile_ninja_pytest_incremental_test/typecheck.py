@@ -5,6 +5,7 @@ from typing_extensions import Never
 def never_call_me(arg: Never):
     pass
 
+
 # do mypy check.
 # mypy --python-version <version> does not work for version higher than interpreter's.
 def int_or_str(arg: int | str) -> None:
