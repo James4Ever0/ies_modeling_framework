@@ -1625,6 +1625,8 @@ class 风力发电模型(设备模型):
         单位: 万元
         """
         assert self.BuildBaseCost >= 0
+        
+        # shall you check if not agreed, when input is different.
 
         if self.计算参数.计算类型 == "设计规划":
             self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
