@@ -1,3 +1,7 @@
+import os
+os.environ['http_proxy'] = ""
+os.environ['https_proxy'] = ""
+os.environ['all_proxy'] = ""
 import json
 
 with open("template_input.json", "r") as f:
