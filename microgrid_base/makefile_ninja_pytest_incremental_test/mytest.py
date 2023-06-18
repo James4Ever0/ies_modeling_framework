@@ -1,5 +1,7 @@
 import pytest
+from typing import Sequence, TypeVar
 
+Chooseable = TypeVar("Chooseable")
 # pytest -s to print to stdout without collecting
 # pytest --capture=tee-sys
 def test_request_cache(request):
