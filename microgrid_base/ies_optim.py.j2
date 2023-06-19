@@ -515,7 +515,8 @@ class 设备模型:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
     
-    def 单变量指示变量
+    def 单表达式生成指示变量(self, varName: str, expr):
+        posneg = self.变量列表_带指示变量(varName, exprList=expr)
     
     def 变量列表_带指示变量(self, varName:str, exprList:list=None, within = Reals) -> POSNEG:
         if exprList:
