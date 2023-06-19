@@ -1,12 +1,13 @@
 from typing import Protocol, Any, Generic, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class AddAndLength(Protocol):
-    def __add__(self, *args: Any) -> Any:
+    def __add__(self, *args):
         ...
 
-    def __len__(self) -> Any:
+    def __len__(self):
         ...
 
 
@@ -19,6 +20,6 @@ def mfunc(param: AddAndLength) -> int:
 
 # mfunc(123)
 # mfunc(["i am list"])
-a =[]
-# a = 123
 a: AddAndLength
+a = []
+# a = 123
