@@ -161,7 +161,7 @@ class 拓扑图:
                     print('TARGET:', 设备接口集合[node_subtype])
                     raise Exception()
             elif node_type == "连接线":
-                assert node_subtype in 连接线类型
+                assert node_subtype in 连接线类型, f'{{error_node_info()}} 不合理连接线类型： {node_subtype}'
                 assert len(neighbors) == 2
                 dev_ids = set()
                 subtypes = []
@@ -181,8 +181,8 @@ class 拓扑图:
                 node_ids = set()
                 {{neighborIterator()}}
                     assert ne_type == "母线", f"{{error_node_info('n')}} 不合理类型： 
-                    node_ids.add(n)"
-                assert len(node_ids) == 2, "{{error_node_info()}}, 不合理合并线总节点数：{len(node_ids)}"
+                    {ne_type}"
+                assert len(node_ids) == 2, f"{{error_node_info()}} 不合理合并线总节点数：{len(node_ids)} 节点列表: {node_ids}"
             elif node_type == '锚点':
                 continue
             else:
