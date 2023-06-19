@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 @runtime_checkable
 class AddAndLength(Protocol):
-    def __add__(self, *args) -> Any:
+    def __add__(self, v) -> Any:
         ...
 
     def __len__(self) -> Any:
@@ -24,4 +24,3 @@ def mfunc(param: AddAndLength) -> int:
 a: AddAndLength
 a = []
 # a = 123
-list
