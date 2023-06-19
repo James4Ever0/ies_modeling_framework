@@ -5,6 +5,9 @@ Chooseable = TypeVar("Chooseable") # can limit the choice of vars.
 # pytest -s to print to stdout without collecting
 # pytest --capture=tee-sys
 
+class mProto(Protocol):
+    def mfunc(self, *args, **kwargs): ...
+
 # ninja -> invoke multiple pytest "persistant" sessions, not cleaning cache and not rerunning the test if passed test -> clean cache only by passing target "clean" to ninja
 
 
