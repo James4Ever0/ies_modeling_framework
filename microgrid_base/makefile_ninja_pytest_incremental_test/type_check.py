@@ -2,8 +2,10 @@ from typing import Protocol, Any, Generic, TypeVar, runtime_checkable, cast
 
 T = TypeVar("T")
 
-
-class VarType(Protocol):
+class ArithmaticType(Protocol):
+    """
+    Protocol of which able to do arithmatic operations.
+    """
     
     def __add__(self, v, /) -> Any:
         ...
@@ -45,5 +47,5 @@ model = ConcreteModel()
 model.x = cast(Generic,Var([0,1,2]) )
 model.x:  # type: ignore
 model.x[1]
-# model.v = cast(VarType, Var())
+model.v = cast(ArithmaticType, Var())
 val = model.v * 1
