@@ -202,7 +202,7 @@ class 拓扑图:
                 {# if node_data['type'] == '合并线': continue #}
                 conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
                 merge = [e for e in node_data['conn'] if e.startswith("可合并")]
-                assert len(merge)<=2
+                assert len(merge)<=2, f'{{error_node_info()}} 错误的可合并连接数: {len(merge)} '
                 for c in conn:
                     if not c.endswith("输入输出"):
                         if c.endswith("输入"):
