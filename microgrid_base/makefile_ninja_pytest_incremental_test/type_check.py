@@ -1,8 +1,8 @@
-from typing import Protocol, Any, Generic, TypeVar
+from typing import Protocol, Any, Generic, TypeVar, runtime_checkable
 
 T = TypeVar("T")
 
-
+@runtime_checkable
 class AddAndLength(Protocol):
     def __add__(self, *args):
         ...
