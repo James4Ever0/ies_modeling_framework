@@ -11,6 +11,11 @@ def demo(mtest: Optional[int] = ...):
     ...
 
 
+@
+def mfixture():
+    print("fixture running")
+    return 42
+
 def test_request_cache(request):
     val = request.caches.get("val")
     print(f"Value? {repr(val)}")
