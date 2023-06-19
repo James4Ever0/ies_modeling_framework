@@ -1,11 +1,11 @@
-from typing import TypeVar, List
-from typing_extensions import Never
+from typing import Protocol
 
-T = TypeVar('T')
+class (Protocol)
 
-def mfunc(param: Never if T is List else T) -> T:
+def mfunc(param: ) -> T:
     print("You don't care what I do")
-    return param
+    length = len(param)
+    print(length)
 
 mfunc(123)
 mfunc(['i am list'])
