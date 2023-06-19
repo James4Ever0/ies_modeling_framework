@@ -277,7 +277,7 @@ class 拓扑图:
                 ), f"invalid dev_ids: {dev_ids}"  # no self-connection.
                 assert (
                     连接类型映射表[frozenset(subtypes)] == node_subtype
-                ), f"未知连接组合: {subtypes}"
+                ), f"未知连接组合: (两端: {subtypes} 连接线: {node_subtype})"
             elif node_type == "合并线":
                 合并线ID列表.append(node_id)
                 assert node_subtype in 合并线类型
