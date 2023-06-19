@@ -755,6 +755,8 @@ class {{class_name}}模型(设备模型):
         self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗') 
         {%endif%}
 
+        self.是否购买 = self.DeviceCount - 0.5
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
