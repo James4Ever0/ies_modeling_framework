@@ -24,6 +24,11 @@ class ArithmaticType(Protocol):
     def __le__(self, v, /) -> Any: ...
     def __ge__(self, v, /) -> Any: ...
 
+class Subscripable(Protocol):
+    def __getitem__(self, index:int, /) -> Any: ...
+
+class 
+
 @runtime_checkable
 class AddAndLength(Protocol):
     def __add__(self, v, /) -> Any:
@@ -49,7 +54,7 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
-# model.x = cast(Generic,Var([0,1,2]) )
+model.x = cast(Subscripable,Var([0,1,2]))
 model.x:  # type: ignore
 model.x[1]
 model.v = cast(ArithmaticType, Var())
