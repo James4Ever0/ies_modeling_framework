@@ -19,6 +19,8 @@ class ArithmaticType(Protocol):
     def __div__(self, v, /) -> Any:
         ...
 
+class NumberType()
+
 @runtime_checkable
 class AddAndLength(Protocol):
     def __add__(self, v, /) -> Any:
