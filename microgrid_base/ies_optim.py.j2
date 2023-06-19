@@ -461,8 +461,7 @@ class 设备模型:
         """
         一个极小数
         """
-        {% for e0 in financial_param_names
-        %}
+        {% for e0 in financial_param_names%}
         self.{{e0}} = 0
         {% endfor %}
         self.年化率 = 1
