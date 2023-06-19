@@ -9,7 +9,7 @@ class AddAndLength(Protocol):
         ...
 
 
-def mfunc(param: AddAndLength) -> int:
+def mfunc(param: AddAndLength,) -> int:
     print("You don't care what I do")
     length = len(param)
     print("LEN:", length)
