@@ -6,8 +6,16 @@ Chooseable = TypeVar("Chooseable") # can limit the choice of vars.
 # pytest --capture=tee-sys
 
 class mProto(Protocol):
+    mattr:...
     def mfunc(self, *args, **kwargs): ...
 
+a :mProto
+a = 1 # type error
+c = "abc"
+c:str
+c:int
+for b in [1,2,3]:
+    b: mProto
 # ninja -> invoke multiple pytest "persistant" sessions, not cleaning cache and not rerunning the test if passed test -> clean cache only by passing target "clean" to ninja
 
 
