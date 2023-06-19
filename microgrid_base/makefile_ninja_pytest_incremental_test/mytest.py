@@ -18,6 +18,9 @@ def mfixture():
     return 42
 
 
+# seems fixture is to be called every time invoked.
+
+
 def test_request_cache(request):
     val = request.config.cache.get("val", None)
     print(f"Value? {repr(val)}")
@@ -30,10 +33,4 @@ def test_fixture(mfixture):
 
 def test_fixture2(mfixture):
     print("VAL2?", mfixture)
-== 43
-
-
-def test_fixture2(mfixture):
-    print("FIXTURE VAL2")
     assert mfixture == 43
-    
