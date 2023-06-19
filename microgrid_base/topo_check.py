@@ -1,6 +1,10 @@
 import networkx
 from networkx.readwrite import json_graph
 
+from typing import exclide
+
+a : not List
+
 # when to check topology:
 # 	1.  Building topology <- which the frontend does the job
 # 	2.  Importing topology <- where algorithm kicks in
