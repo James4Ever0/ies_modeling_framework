@@ -67,12 +67,12 @@ def getMainAndSubType(data):
     "电负荷": {("电接口", "负荷电输入")},
     "光伏发电": {("电接口", "供电端输出")},
     "风力发电": {("电接口", "供电端输出")},
-    "柴油发电": {("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
+    "柴油发电": {("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
     "锂电池": {("电接口", "电储能端输入输出")},
     "变压器": {("电输出", "变压器输出"), ("电输入", "电母线输入")},
     "变流器": {("电输入", "变流器输入"), ("电输出", "电母线输出")},
-    "双向变流器": {("储能端", "双向变流器储能端输入输出"), ("线路端", "双向变流器线路端输入输出")},
-    "传输线": {("电输出", "电母线输出"), ("电输入", "电母线输入")},
+    "双向变流器": {("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
+    "传输线": {("电输入", "电母线输入"), ("电输出", "电母线输出")},
 }
 连接类型映射表 = {
     frozenset({"可连接电母线", "双向变流器线路端输入输出"}): "不可连接电母线输入输出",
@@ -80,22 +80,22 @@ def getMainAndSubType(data):
     frozenset({"可连接供电端母线"}): "可合并供电端母线",
     frozenset({"变流器输入", "可连接供电端母线"}): "不可连接供电端母线输出",
     frozenset({"可连接供电端母线", "供电端输出"}): "不可连接供电端母线输入",
-    frozenset({"负荷电输入", "变压器输出"}): "不可连接负荷电母线",
+    frozenset({"变压器输出", "负荷电输入"}): "不可连接负荷电母线",
     frozenset({"可连接负荷电母线"}): "可合并负荷电母线",
     frozenset({"可连接负荷电母线", "负荷电输入"}): "不可连接负荷电母线输出",
-    frozenset({"可连接负荷电母线", "变压器输出"}): "不可连接负荷电母线输入",
-    frozenset({"柴油输出", "柴油输入"}): "不可连接柴油母线",
+    frozenset({"变压器输出", "可连接负荷电母线"}): "不可连接负荷电母线输入",
+    frozenset({"柴油输入", "柴油输出"}): "不可连接柴油母线",
     frozenset({"可连接柴油母线"}): "可合并柴油母线",
     frozenset({"可连接柴油母线", "柴油输入"}): "不可连接柴油母线输出",
-    frozenset({"柴油输出", "可连接柴油母线"}): "不可连接柴油母线输入",
+    frozenset({"可连接柴油母线", "柴油输出"}): "不可连接柴油母线输入",
     frozenset({"电母线输出", "电母线输入"}): "不可连接电母线",
     frozenset({"可连接电母线"}): "可合并电母线",
     frozenset({"可连接电母线", "电母线输入"}): "不可连接电母线输出",
-    frozenset({"可连接电母线", "电母线输出"}): "不可连接电母线输入",
+    frozenset({"电母线输出", "可连接电母线"}): "不可连接电母线输入",
     frozenset({"双向变流器储能端输入输出", "电储能端输入输出"}): "不可连接电储能端母线",
     frozenset({"可连接电储能端母线"}): "可合并电储能端母线",
     frozenset({"可连接电储能端母线", "电储能端输入输出"}): "不可连接电储能端母线输出",
-    frozenset({"双向变流器储能端输入输出", "可连接电储能端母线"}): "不可连接电储能端母线输入",
+    frozenset({"可连接电储能端母线", "双向变流器储能端输入输出"}): "不可连接电储能端母线输入",
 }
 
 
@@ -217,8 +217,8 @@ class 拓扑图:
             print("=" * 40)
             if node_type == "母线":
                 母线ID列表.append(node_id)
-                assert node_subtype in 母线类型
-                assert len(neighbors) <= 99
+                assert node_subtype in 母线类型, f"节点 #{node_id}"
+                assert len(neighbors) <= 99, f"节点 #{node_id}"
 
                 for n in neighbors:
                     ne_data = self.G.nodes[n]
@@ -226,20 +226,22 @@ class 拓扑图:
 
                     if ne_type == "合并线":
                         # just check type.
-                        assert ne_subtype in 合并线类型
-                        assert ne_subtype.replace("合并", "连接") == node_subtype
+                        assert ne_subtype in 合并线类型, f"节点 #{node_id}"
+                        assert (
+                            ne_subtype.replace("合并", "连接") == node_subtype
+                        ), f"节点 #{node_id}"
                     elif ne_type == "连接线":
-                        assert ne_subtype in 连接线类型
+                        assert ne_subtype in 连接线类型, f"节点 #{node_id}"
                         assert (
                             ne_subtype.replace("不可", "可")
                             .replace("输入", "")
                             .replace("输出", "")
                             == node_subtype
-                        )
+                        ), f"节点 #{node_id}"
                     else:
                         raise Exception(f"{node_subtype}连接非法类型节点：", ne_type)
             elif node_type == "设备":
-                assert node_subtype in 设备类型
+                assert node_subtype in 设备类型, f"节点 #{node_id}"
                 port_set = set()
 
                 for n in neighbors:
@@ -247,18 +249,20 @@ class 拓扑图:
                     ne_type, ne_subtype = getMainAndSubType(ne_data)
 
                     port_name = ne_data["port_name"]
-                    assert ne_type == "锚点"
-                    assert len(list(self.G.neighbors(n))) == 2, f"error on node {n}"
+                    assert ne_type == "锚点", f"节点 #{n} 错误的节点类型: {ne_type}"
+                    assert (
+                        len(list(self.G.neighbors(n))) == 2
+                    ), f"节点 #{n} 相邻节点数错误: {len(list(self.G.neighbors(n)))} 相邻节点: {(list(self.G.neighbors(n)))}"
                     port_set.add((port_name, ne_subtype))
-                try:
-                    assert port_set == 设备接口集合[node_subtype]
-                except:
-                    print("PORT SET:", port_set)
-                    print("TARGET:", 设备接口集合[node_subtype])
-                    raise Exception()
+
+                assert (
+                    port_set == 设备接口集合[node_subtype]
+                ), f"节点 #{node_id}  PORT SET: {port_set} TARGET: {设备接口集合[node_subtype]}"
             elif node_type == "连接线":
-                assert node_subtype in 连接线类型
-                assert len(neighbors) == 2
+                assert node_subtype in 连接线类型, f"节点 #{node_id} 不合理连接线类型： {node_subtype}"
+                assert (
+                    len(neighbors) == 2
+                ), f"节点 #{node_id} 不合理连接线相邻节点数: {len(neighbors)} 相邻节点: {neighbors}"
                 dev_ids = set()
                 subtypes = []
 
@@ -274,23 +278,27 @@ class 拓扑图:
                         dev_ids.add(n)
                 assert (
                     len(dev_ids) == 2
-                ), f"invalid dev_ids: {dev_ids}"  # no self-connection.
+                ), f"节点 #{node_id} invalid dev_ids: {dev_ids}"  # no self-connection.
                 assert (
                     连接类型映射表[frozenset(subtypes)] == node_subtype
-                ), f"未知连接组合: (两端: {subtypes} 连接线: {node_subtype})"
+                ), f"节点 #{node_id} 未知连接组合: (两端: {subtypes} 连接线: {node_subtype})"
             elif node_type == "合并线":
                 合并线ID列表.append(node_id)
-                assert node_subtype in 合并线类型
-                assert len(neighbors) == 2
+                assert node_subtype in 合并线类型, f"节点 #{node_id} 未知合并线类型: {node_subtype}"
+                assert (
+                    len(neighbors) == 2
+                ), f"节点 #{node_id} 不合理相邻节点数: {len(neighbors)} 相邻节点: {len(neighbors)}"
                 node_ids = set()
 
                 for n in neighbors:
                     ne_data = self.G.nodes[n]
                     ne_type, ne_subtype = getMainAndSubType(ne_data)
 
-                    assert ne_type == "母线"
+                    assert ne_type == "母线", f"节点 #{n} 不合理类型: {ne_type}"
                     node_ids.add(n)
-                assert len(node_ids) == 2
+                assert (
+                    len(node_ids) == 2
+                ), f"节点 #{node_id} 不合理合并线总节点数：{len(node_ids)} 节点列表: {node_ids}"
             elif node_type == "锚点":
                 continue
             else:
@@ -481,12 +489,12 @@ class 柴油发电(设备):
         super().__init__(
             topo=topo,
             device_type="柴油发电",
-            port_definition={("燃料接口", "柴油输入"), ("电接口", "供电端输出")},
+            port_definition={("电接口", "供电端输出"), ("燃料接口", "柴油输入")},
             **kwargs,
         )
 
-        self.燃料接口 = self.ports["燃料接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
+        self.燃料接口 = self.ports["燃料接口"]["id"]
 
 
 class 锂电池(设备):
@@ -532,12 +540,12 @@ class 双向变流器(设备):
         super().__init__(
             topo=topo,
             device_type="双向变流器",
-            port_definition={("储能端", "双向变流器储能端输入输出"), ("线路端", "双向变流器线路端输入输出")},
+            port_definition={("线路端", "双向变流器线路端输入输出"), ("储能端", "双向变流器储能端输入输出")},
             **kwargs,
         )
 
-        self.储能端 = self.ports["储能端"]["id"]
         self.线路端 = self.ports["线路端"]["id"]
+        self.储能端 = self.ports["储能端"]["id"]
 
 
 class 传输线(设备):
@@ -545,9 +553,9 @@ class 传输线(设备):
         super().__init__(
             topo=topo,
             device_type="传输线",
-            port_definition={("电输出", "电母线输出"), ("电输入", "电母线输入")},
+            port_definition={("电输入", "电母线输入"), ("电输出", "电母线输出")},
             **kwargs,
         )
 
-        self.电输出 = self.ports["电输出"]["id"]
         self.电输入 = self.ports["电输入"]["id"]
+        self.电输出 = self.ports["电输出"]["id"]
