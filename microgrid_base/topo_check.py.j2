@@ -142,12 +142,13 @@ class 拓扑图:
                         assert ne_subtype in 合并线类型, f"{{error_node_info('n')}} 不存在的合并线类型: {ne_subtype}"
                         assert ne_subtype.replace("合并", "连接") == node_subtype, f"{{error_node_info('n')}}"
                     elif ne_type == "连接线":
-                        assert ne_subtype in 连接线类型, f"{{error_node_info('n')}}"
-                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype, f"{{error_node_info('n')}}"
+                        assert ne_subtype in 连接线类型, f"{{error_node_info('n')}} 不存在的连接线类型: {ne_subtype}"
+
+                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype, f"{{error_node_info('n')}} 不合理的连接对： ({ne_subtype}, {node_subtype})"
                     else:
-                        raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
+                        raise Exception(f"{{error_node_info('n')}} {node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
-                assert node_subtype in 设备类型, f"{{error_node_info()}}"
+                assert node_subtype in 设备类型, f"{{error_node_info()}} 不存在的设备类型: {node_subtype}"
                 port_set = set()
 {{neighborIterator()}}
                     port_name = ne_data['port_name']
