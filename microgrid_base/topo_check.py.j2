@@ -134,16 +134,16 @@ class 拓扑图:
             print("="*40)
             if node_type == "母线":
                 母线ID列表.append(node_id)
-                assert node_subtype in 母线类型, f"{{error_node_info()}}"
-                assert len(neighbors) <= 99, f"{{error_node_info()}}"
+                assert node_subtype in 母线类型, f"{{error_node_info()}} 不存在的母线类型: {node_subtype}"
+                assert len(neighbors) <= 99, f"{{error_node_info()}} 母线连接数超过99: {len(neighbors)}"
 {{ neighborIterator()}}
                     if ne_type == "合并线":
                         # just check type.
-                        assert ne_subtype in 合并线类型, f"{{error_node_info()}}"
-                        assert ne_subtype.replace("合并", "连接") == node_subtype, f"{{error_node_info()}}"
+                        assert ne_subtype in 合并线类型, f"{{error_node_info('n')}} 不存在的合并线类型: {ne_subtype}"
+                        assert ne_subtype.replace("合并", "连接") == node_subtype, f"{{error_node_info('n')}}"
                     elif ne_type == "连接线":
-                        assert ne_subtype in 连接线类型, f"{{error_node_info()}}"
-                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype, f"{{error_node_info()}}"
+                        assert ne_subtype in 连接线类型, f"{{error_node_info('n')}}"
+                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype, f"{{error_node_info('n')}}"
                     else:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
@@ -202,7 +202,7 @@ class 拓扑图:
                 {# if node_data['type'] == '合并线': continue #}
                 conn = [e for e in node_data['conn'] if not e.startswith("可合并")] # list.
                 merge = [e for e in node_data['conn'] if e.startswith("可合并")]
-                assert len(merge)<=2, f'{{error_node_info()}} 错误的可合并连接数: {len(merge)} '
+                assert len(merge)<=2, f'{{error_node_info()}} 错误的可合并连接数: {len(merge)} 可合并线列表: {merge}'
                 for c in conn:
                     if not c.endswith("输入输出"):
                         if c.endswith("输入"):
@@ -216,7 +216,7 @@ class 拓扑图:
             if has_input and has_output:
                 # 检查柴油类型的
                 if output_conns[0] == "不可连接柴油母线输出":
-                    assert len(output_conns) == 1, "柴油母线有且只有一个与柴油元件的连接"
+                    assert len(output_conns) == 1, "{{error_node_info()}} 柴油母线有且只有一个与柴油元件的连接"
             else:
                 print()
                 print("============ERROR LOG============")
