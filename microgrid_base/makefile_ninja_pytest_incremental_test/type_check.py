@@ -1,7 +1,8 @@
-from typing import Protocol, Any
+from typing import Protocol, Any, Generic, TypeVar
 
+T = TypeVar('T')
 
-class AddAndLength(Protocol):
+class AddAndLength(Generic[T]):
     def __add__(self, *args: Any) -> Any:
         ...
 
