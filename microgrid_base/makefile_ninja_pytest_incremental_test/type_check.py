@@ -29,7 +29,8 @@ from pyomo.environ import *
 model = ConcreteModel()
 
 model.v  = Var()
+model.x =
 model.x: Generic # type: ignore
-model.x = Var([0,1,2])
-model.x+1
+model.x[1]
+model.v:  = Var([0,1,2])
 model.v * 1
