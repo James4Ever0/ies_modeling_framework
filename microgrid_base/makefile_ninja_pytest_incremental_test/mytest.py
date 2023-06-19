@@ -29,4 +29,11 @@ def test_fixture(mfixture):
 
 
 def test_fixture2(mfixture):
-    print("")
+    print("VAL2?", mfixture)
+== 43
+
+
+def test_fixture2(mfixture):
+    print("FIXTURE VAL2")
+    assert mfixture == 43
+    
