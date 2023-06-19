@@ -25,3 +25,7 @@ if want to model diesel generators without real*real multiplication at same load
 ----
 
 subtract device count by 0.5 then pass to positive/negative indicator, times total cost output by the indicator
+
+----
+
+冷热设备没有秒级仿真
