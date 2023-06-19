@@ -515,8 +515,13 @@ class 设备模型:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
     
-    def 变量列表_带指示变量(self, varName:str, within = Reals) -> POSNEG:
-        x = self.变量列表(varName,within=within)
+    def 单变量指示变量
+    
+    def 变量列表_带指示变量(self, varName:str, exprList:list=None, within = Reals) -> POSNEG:
+        if exprList:
+            x = exprList
+        else:
+            x = self.变量列表(varName,within=within)
 
         {% for flag in ['pos', 'neg'] %}
         b_{{flag}} = self.变量列表(self.getSpecialVarName(varName), within = Boolean)
