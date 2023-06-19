@@ -135,7 +135,7 @@ class 拓扑图:
             if node_type == "母线":
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型
-                assert len(neighbors) <= 99
+                assert len(neighbors) <= 99, f"{{error_node_info()}}"
 {{ neighborIterator()}}
                     if ne_type == "合并线":
                         # just check type.
@@ -151,8 +151,8 @@ class 拓扑图:
                 port_set = set()
 {{neighborIterator()}}
                     port_name = ne_data['port_name']
-                    assert ne_type == "锚点", "{{error_node_info('n')}} "
-                    assert len(list(self.G.neighbors(n))) == 2, f"{{error_node_info('n')}} 相邻节点数错误: {len(list(self.G.neighbors(n)))} "
+                    assert ne_type == "锚点", f"{{error_node_info('n')}} 错误的节点类型: {ne_type}"
+                    assert len(list(self.G.neighbors(n))) == 2, f"{{error_node_info('n')}} 相邻节点数错误: {len(list(self.G.neighbors(n)))} 相邻节点: {(list(self.G.neighbors(n)))}"
                     port_set.add((port_name, ne_subtype))
 
                 assert port_set == 设备接口集合[node_subtype], "{{error_node_info()}}  PORT SET: {port_set} TARGET: {设备接口集合[node_subtype]}"
