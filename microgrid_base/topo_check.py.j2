@@ -52,7 +52,7 @@ def getMainAndSubType(data):
                         raise Exception("Unknown type:", {{source_subtype}})
 
 {% endmacro %}
-{% macro error_node_info(node_id="node_id")%}节点 {{"#"}}{{node_id}}{% endmacro %}
+{% macro error_node_info(node_id="node_id")%}节点 {{"#"}}{{"node_id}}{% endmacro %}
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
@@ -134,20 +134,20 @@ class 拓扑图:
             print("="*40)
             if node_type == "母线":
                 母线ID列表.append(node_id)
-                assert node_subtype in 母线类型
+                assert node_subtype in 母线类型, f"{{error_node_info()}}"
                 assert len(neighbors) <= 99, f"{{error_node_info()}}"
 {{ neighborIterator()}}
                     if ne_type == "合并线":
                         # just check type.
-                        assert ne_subtype in 合并线类型
-                        assert ne_subtype.replace("合并", "连接") == node_subtype
+                        assert ne_subtype in 合并线类型, f"{{error_node_info()}}"
+                        assert ne_subtype.replace("合并", "连接") == node_subtype, f"{{error_node_info()}}"
                     elif ne_type == "连接线":
-                        assert ne_subtype in 连接线类型
-                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype
+                        assert ne_subtype in 连接线类型, f"{{error_node_info()}}"
+                        assert ne_subtype.replace('不可','可').replace("输入","").replace("输出","") == node_subtype, f"{{error_node_info()}}"
                     else:
                         raise Exception(f"{node_subtype}连接非法类型节点：",ne_type)
             elif node_type == "设备":
-                assert node_subtype in 设备类型
+                assert node_subtype in 设备类型, f"{{error_node_info()}}"
                 port_set = set()
 {{neighborIterator()}}
                     port_name = ne_data['port_name']
@@ -155,7 +155,7 @@ class 拓扑图:
                     assert len(list(self.G.neighbors(n))) == 2, f"{{error_node_info('n')}} 相邻节点数错误: {len(list(self.G.neighbors(n)))} 相邻节点: {(list(self.G.neighbors(n)))}"
                     port_set.add((port_name, ne_subtype))
 
-                assert port_set == 设备接口集合[node_subtype], "{{error_node_info()}}  PORT SET: {port_set} TARGET: {设备接口集合[node_subtype]}"
+                assert port_set == 设备接口集合[node_subtype], f"{{error_node_info()}}  PORT SET: {port_set} TARGET: {设备接口集合[node_subtype]}"
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型, f'{{error_node_info()}} 不合理连接线类型： {node_subtype}'
                 assert len(neighbors) == 2, f'{{error_node_info()}} 不合理连接线相邻节点数: {len(neighbors)} 相邻节点: {neighbors}'
