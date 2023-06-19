@@ -177,6 +177,7 @@ class 拓扑图:
                 node_ids = set()
                 {{neighborIterator()}}
                     assert ne_type == "母线", f"{{error_node_info('n')}} 不合理类型: {ne_type}"
+                    node_ids.add(n)
                 assert len(node_ids) == 2, f"{{error_node_info()}} 不合理合并线总节点数：{len(node_ids)} 节点列表: {node_ids}"
             elif node_type == '锚点':
                 continue
