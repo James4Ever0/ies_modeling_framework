@@ -1,6 +1,6 @@
 when device count is zero, then no money is spent, not even fixed cost
 
-make individual model of diesel generators by limiting max device count into 1 and alter cost calculation methods, merge these subdevice model into one unified model.
+make individual model of diesel generators by limiting max device count into 1 and alter cost calculation methods, merge these subdevice model into one unified model
 
 make unittests on "multiply" and "piecewise"
 
@@ -24,4 +24,4 @@ if want to model diesel generators without real*real multiplication at same load
 
 ----
 
-subtract device count by 0.5 then pass to positive/negative indicator, times total cost output 
+subtract device count by 0.5 then pass to positive/negative indicator, times total cost output by the indicator
