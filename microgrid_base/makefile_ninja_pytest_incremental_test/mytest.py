@@ -1,7 +1,7 @@
 import pytest
-from typing import Sequence, TypeVar, Optional
+from typing import Sequence, TypeVar, Optional, Protocol
 
-Chooseable = TypeVar("Chooseable")
+Chooseable = TypeVar("Chooseable") # can limit the choice of vars.
 # pytest -s to print to stdout without collecting
 # pytest --capture=tee-sys
 
