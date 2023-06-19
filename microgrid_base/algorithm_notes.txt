@@ -21,3 +21,7 @@ approximate piecewise functions (select points by minimize error) using solvers
 ----
 
 if want to model diesel generators without real*real multiplication at same load rate, use as many binary variables as max device count and model them in sum of bin*real
+
+----
+
+subtract device count by 0.5 then pass to positive/negative indicator, times total cost output 
