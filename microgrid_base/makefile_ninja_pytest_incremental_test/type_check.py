@@ -1,4 +1,4 @@
-from typing import Protocol, Any, Generic, TypeVar, runtime_checkable
+from typing import Protocol, Any, Generic, TypeVar, runtime_checkable, cast
 
 T = TypeVar("T")
 
@@ -29,8 +29,8 @@ from pyomo.environ import *
 model = ConcreteModel()
 
 model.v  = Var()
-model.x =
-model.x: Generic # type: ignore
+model.x = cast(Generic)
+model.x:  # type: ignore
 model.x[1]
-model.v:  = Var([0,1,2])
-model.v * 1
+model.v= cast(float, Var([0,1,2]))
+val = model.v * 1
