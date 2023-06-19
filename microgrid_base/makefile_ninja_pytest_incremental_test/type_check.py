@@ -2,7 +2,7 @@ from typing import Protocol, Any, Generic, TypeVar
 
 T = TypeVar('T')
 
-class AddAndLength(Generic[T]):
+class AddAndLength(Generic):
     def __add__(self, *args: Any) -> Any:
         ...
 
