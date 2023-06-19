@@ -8,7 +8,7 @@ class AddAndLength(Protocol):
     def __add__(self, *args) -> Any:
         ...
 
-    def __len__(self) -> Any:
+    def [T] __len__(self) -> Any:
         ...
 
 
