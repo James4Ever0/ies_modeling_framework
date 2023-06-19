@@ -28,4 +28,5 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
-model.v  = Var
+model.v  = Var('v')
+model.v * 1
