@@ -1,4 +1,4 @@
-from typing import Any, Generic, Protocol, TypeVar, cast, runtime_checkable
+from typing import Any, Generic, Protocol, TypeVar, cast, runtime_checkable, overload
 
 T = TypeVar("T")
 
@@ -68,7 +68,7 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
-model.x:ReadableBySubscription= Var([0, 1, 2])
+model.x = cast(ReadableBySubscription, Var([0, 1, 2]))
 # model.x = cast(ReadableBySubscription, Var([0, 1, 2]))
 
 model.x[1]
