@@ -18,8 +18,11 @@ class ArithmaticType(Protocol):
         
     def __div__(self, v, /) -> Any:
         ...
-
-class NumberType()
+        
+    def __eq__(self, v, /) -> Any: ...
+    def __ne__(self, v, /) -> Any: ...
+    def __le__(self, v, /) -> Any: ...
+    def __ge__(self, v, /) -> Any: ...
 
 @runtime_checkable
 class AddAndLength(Protocol):
@@ -46,7 +49,7 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
-model.x = cast(Generic,Var([0,1,2]) )
+# model.x = cast(Generic,Var([0,1,2]) )
 model.x:  # type: ignore
 model.x[1]
 model.v = cast(ArithmaticType, Var())
