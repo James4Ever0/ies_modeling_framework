@@ -29,3 +29,4 @@ subtract device count by 0.5 then pass to positive/negative indicator, times tot
 ----
 
 冷热设备没有秒级仿真
+
