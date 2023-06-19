@@ -7,6 +7,7 @@ Chooseable = TypeVar("Chooseable")
 
 # ninja -> invoke multiple pytest "persistant" sessions, not cleaning cache and not rerunning the test if passed test -> clean cache only by passing target "clean" to ninja
 
+
 def demo(mtest: Optional[int] = ...):
     ...
 
@@ -16,13 +17,16 @@ def mfixture():
     print("fixture running")
     return 42
 
+
 def test_request_cache(request):
-    val = request.caches.get("val")
+    val = request.config.cache.get("val", None)
     print(f"Value? {repr(val)}")
 
+
 def test_fixture(mfixture):
-    print("FIXTURE VAL?",mfixture)
+    print("FIXTURE VAL?", mfixture)
     assert mfixture == 43
+
 
 def test_fixture2(mfixture):
     print("")
