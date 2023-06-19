@@ -3,6 +3,20 @@ from typing import Protocol, Any, Generic, TypeVar, runtime_checkable, cast
 T = TypeVar("T")
 
 
+class VarType(Protocol):
+    
+    def __add__(self, v, /) -> Any:
+        ...
+        
+    def __sub__(self, v, /) -> Any:
+        ...
+        
+    def __mul__(self, v, /) -> Any:
+        ...
+        
+    def __div__(self, v, /) -> Any:
+        ...
+
 @runtime_checkable
 class AddAndLength(Protocol):
     def __add__(self, v, /) -> Any:
@@ -28,9 +42,8 @@ from pyomo.environ import *
 
 model = ConcreteModel()
 
-model.v  = Var()
-model.x = cast(Generic)
+model.x = cast(Generic,Var([0,1,2]) )
 model.x:  # type: ignore
 model.x[1]
-model.v= cast(float, Var([0,1,2]))
+# model.v = cast(VarType, Var())
 val = model.v * 1
