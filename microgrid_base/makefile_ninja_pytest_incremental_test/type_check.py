@@ -2,6 +2,7 @@ from typing import Protocol, Any, Generic, TypeVar, runtime_checkable
 
 T = TypeVar("T")
 
+t[T]
 @runtime_checkable
 class AddAndLength(Protocol):
     def __add__(self, *args):
