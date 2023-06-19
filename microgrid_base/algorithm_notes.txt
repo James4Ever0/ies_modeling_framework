@@ -29,4 +29,6 @@ subtract device count by 0.5 then pass to positive/negative indicator, times tot
 ----
 
 冷热设备没有秒级仿真
+
 // 相同型号的设备 机组多个 建设基数算一次
+维持现状
