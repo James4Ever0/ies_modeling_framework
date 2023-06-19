@@ -435,6 +435,15 @@ class POSNEG:
 
 {# from functools import reduce #}
 {# import functools #}
+{% set financial_param_names = [
+            "总采购成本",
+            "总建设费用",
+            "总固定维护成本",
+            "总固定成本年化",
+            "总成本年化",
+            "总可变维护成本年化"
+        ]
+%}
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
         print("Building Device Model:", self.__class__.__name__)
@@ -452,14 +461,7 @@ class 设备模型:
         """
         一个极小数
         """
-        {% for e0 in [
-            "总采购成本",
-            "总建设费用",
-            "总固定维护成本",
-            "总固定成本年化",
-            "总成本年化",
-            "总可变维护成本年化"
-        ]
+        {% for e0 in financial_param_names
         %}
         self.{{e0}} = 0
         {% endfor %}
