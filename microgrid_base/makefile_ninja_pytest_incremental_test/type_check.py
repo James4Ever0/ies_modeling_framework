@@ -1,11 +1,14 @@
-from typing import Protocol
+from typing import Protocol, Any
 
-class (Protocol)
+class AddAndLength(Protocol):
+    def __add__(self, v: Any) -> Any: ...
+    def __len__(self) -> int: ...
 
-def mfunc(param: ) -> T:
+def mfunc(param: AddAndLength) -> int:
     print("You don't care what I do")
     length = len(param)
-    print(length)
+    print('LEN:', length)
+    return length
 
 mfunc(123)
 mfunc(['i am list'])
