@@ -4,7 +4,7 @@ make individual model of diesel generators by limiting max device count into 1 a
 
 make unittests on "multiply" and "piecewise"
 
-add constraints by investment and intereset rate
+add constraints by investment and interest rate
 
 questions on financial calculations:
 	for two sets of devices (same type), do we need to calculate the base cost twice?
