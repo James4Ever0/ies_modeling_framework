@@ -52,7 +52,7 @@ def getMainAndSubType(data):
                         raise Exception("Unknown type:", {{source_subtype}})
 
 {% endmacro %}
-{% macro error_node_info(node_id="node_id")%}节点 {{"#"}}{{"node_id}}{% endmacro %}
+{% macro error_node_info(node_id="node_id")%}节点 {{"#{"}}{{node_id}}{{"}"}}{% endmacro %}
 class 拓扑图:
     def __init__(self, **kwargs):
         self.node_count = 0
@@ -176,8 +176,7 @@ class 拓扑图:
                 assert len(neighbors) == 2, f"{{error_node_info()}} 不合理相邻节点数: {len(neighbors)} 相邻节点: {len(neighbors)}"
                 node_ids = set()
                 {{neighborIterator()}}
-                    assert ne_type == "母线", f"{{error_node_info('n')}} 不合理类型： 
-                    {ne_type}"
+                    assert ne_type == "母线", f"{{error_node_info('n')}} 不合理类型：  {ne_type}"
                 assert len(node_ids) == 2, f"{{error_node_info()}} 不合理合并线总节点数：{len(node_ids)} 节点列表: {node_ids}"
             elif node_type == '锚点':
                 continue
