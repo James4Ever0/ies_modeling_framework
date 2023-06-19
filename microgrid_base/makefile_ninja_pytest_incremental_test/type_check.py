@@ -8,7 +8,7 @@ class AddAndLength(Protocol):
     def __add__(self, *args) -> Any:
         ...
 
-    def [T] __len__(self) -> Any:
+    def __len__(self) -> Any:
         ...
 
 
@@ -24,3 +24,4 @@ def mfunc(param: AddAndLength) -> int:
 a: AddAndLength
 a = []
 # a = 123
+list
