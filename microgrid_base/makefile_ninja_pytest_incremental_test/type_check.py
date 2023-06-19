@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 @runtime_checkable
 class AddAndLength(Protocol):
-    def __add__(self, v) -> Any:
+    def __add__(self, v, /) -> Any:
         ...
 
     def __len__(self) -> Any:
@@ -20,7 +20,12 @@ def mfunc(param: AddAndLength) -> int:
 
 
 # mfunc(123)
-# mfunc(["i am list"])
+mfunc(["i am list"])
 a: AddAndLength
 a = []
 # a = 123
+from pyomo.environ import *
+
+model = ConcreteModel()
+
+model.v  = Var
