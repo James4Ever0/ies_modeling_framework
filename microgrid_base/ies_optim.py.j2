@@ -516,7 +516,11 @@ class 设备模型:
         return [var for _ in range(dup)]
     
     def 单表达式生成指示变量(self, varName: str, expr):
-        posneg = self.变量列表_带指示变量(varName, exprList=expr)
+        # where to exclude type from type hints?
+        # or what language can express type exclusion?
+        posneg = self.变量列表_带指示变量(varName, exprList=[expr])
+        ret = POSNEG(posneg.x[0], posneg.x_pos[0], posneg.x_neg[0], posneg.b_pos[0], posneg.b_neg[0], posneg.x_abs[0])
+        return ret
     
     def 变量列表_带指示变量(self, varName:str, exprList:list=None, within = Reals) -> POSNEG:
         if exprList:
