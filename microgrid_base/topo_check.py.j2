@@ -151,16 +151,11 @@ class 拓扑图:
                 port_set = set()
 {{neighborIterator()}}
                     port_name = ne_data['port_name']
-                    assert ne_type == "锚点"
-                    assert len(list(self.G.neighbors(n))) == 2, f"error on node {n}"
+                    assert ne_type == "锚点", "{{error_node_info('n')}} "
+                    assert len(list(self.G.neighbors(n))) == 2, f"{{error_node_info('n')}} 相邻节点数错误: {len(list(self.G.neighbors(n)))} "
                     port_set.add((port_name, ne_subtype))
-                try:
-                    assert port_set == 设备接口集合[node_subtype], ""
-                except:
-                    errorMsg = ""
-                    errorMsg+=f"PORT SET: {port_set}"
-                    errorMsg+=f' TARGET: {设备接口集合[node_subtype]}'
-                    raise Exception(errorMsg)
+
+                assert port_set == 设备接口集合[node_subtype], "{{error_node_info()}}  PORT SET: {port_set} TARGET: {设备接口集合[node_subtype]}"
             elif node_type == "连接线":
                 assert node_subtype in 连接线类型, f'{{error_node_info()}} 不合理连接线类型： {node_subtype}'
                 assert len(neighbors) == 2, f'{{error_node_info()}} 不合理连接线相邻节点数: {len(neighbors)} 相邻节点: {neighbors}'
