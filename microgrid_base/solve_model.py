@@ -225,6 +225,7 @@ def solveModelFromCalcParamList(
                 for devId, devInst in devInstDict.items():
                     devClassName = devInst.__class__.__name__.strip("模型")
                     # where you convert the units.
+                    # devName = devInst.设备信息.设备名称
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                     结果 = 结果类.export(devInst, timeParam)

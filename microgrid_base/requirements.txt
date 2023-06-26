@@ -14,3 +14,6 @@ redis==4.5.5
 uvicorn==0.22.0
 # tmuxp
 pandas==1.2.4
+sympy
+progressbar2
+pytest

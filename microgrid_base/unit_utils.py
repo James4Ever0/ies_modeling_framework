@@ -1,7 +1,8 @@
 import pint
+from os.path import abspath, dirname, join
 
-
-unit_def_path = "../merged_units.txt"
+unit_def_path = f"{join(dirname(abspath(__file__)), '../merged_units.txt')}"
+# unit_def_path = "../merged_units.txt"
 ureg = pint.UnitRegistry(unit_def_path)
 
 import parse

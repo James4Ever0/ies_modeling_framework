@@ -88,4 +88,4 @@ app.conf.update(worker_time_limit=time_limit)
 
 if __name__ == "__main__":
     worker = app.Worker()
-    worker.start()
+    worker.start() # type:ignore

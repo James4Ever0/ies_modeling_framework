@@ -57,7 +57,8 @@ PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
 DSS = 柴油(
     topo,
-    param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
+    param=柴油信息(设备名称="Any", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
+    # param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
 )
 DS = 柴油发电(
     topo,

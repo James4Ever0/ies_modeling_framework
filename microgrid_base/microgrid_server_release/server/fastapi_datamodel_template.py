@@ -36,6 +36,7 @@ class 曲线(BaseModel):
 
 class 出力曲线(BaseModel):
     name: str = Field(title="出力曲线标题")
+    # device_name: str = Field(title = "设备名称")
     abbr: str = Field(title="出力曲线缩写")
     data: 曲线 = Field(title="曲线数据")
 

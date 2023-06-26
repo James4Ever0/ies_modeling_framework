@@ -1,10 +1,12 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 from typing import Dict, List, Tuple, Union
+from pydantic import conlist, conint, confloat, constr
 
 try:
     from typing import Literal
 except:
     from typing_extensions import Literal
+
 
 import rich
 from pydantic import BaseModel, Field, validator
@@ -28,6 +30,8 @@ import math
 # 函数参数: (power, time_in_day)
 # 阶梯电价: 容量下限从0开始
 
+# TODO: 每个月的都不同 #
+
 
 from functools import lru_cache
 
@@ -48,32 +52,122 @@ class 电价转换:
 
 
 class 常数电价(BaseModel, 电价转换):
-    Price: float = Field("电价", description="单位: 元/kWh")
+    Price: confloat(gt=0) = Field("电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        return self.convert(power * self.Price)
 
+        price = self.Price
 
-class 分时电价(BaseModel, 电价转换):
-    PriceList: List[float] = Field("长度为24的价格数组", description="单位: 元/kWh")
-
-    @validator("PriceList")
-    def checkPriceList(cls, val):
-        assert len(val) == 24
-        return val
-
-    def getFee(self, power: float, time_in_day: float) -> float:
-        current_time = math.floor(time_in_day % 24)
-        price = self.PriceList[current_time]
         return self.convert(price * power)
 
 
+month_days = [31] * 12
+month_days[1] = 28
+month_days[4 - 1] = month_days[6 - 1] = month_days[9 - 1] = month_days[11 - 1] = 30
+assert sum(month_days) == 365
+
+
+def convertMonthToDays(month_index: int):
+    assert month_index in range(12)
+    ret = sum(month_days[:month_index])
+    return ret
+
+
+def convertDaysToMonth(day_index: float):
+    acc_days = 0
+    for month_cursor, days_in_month in enumerate(month_days):
+        if acc_days >= day_index:
+            return month_cursor
+        acc_days += days_in_month
+    raise Exception("Invalid day index:", day_index)
+
+
+class 分月电价(BaseModel, 电价转换):
+    PriceList: Tuple[
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+    ] = Field(title="长度为12的价格数组", description="单位: 元/kWh")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+
+        current_day_index = time_in_day // 24
+        month_index = convertDaysToMonth(current_day_index)
+
+        price = self.PriceList[month_index]
+
+        return self.convert(price * power)
+
+
+class 分时电价(BaseModel, 电价转换):
+    PriceList: Tuple[
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+        float,
+    ] = Field(title="长度为24的价格数组", description="单位: 元/kWh")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+
+        current_time = math.floor(time_in_day % 24)
+
+        price = self.PriceList[current_time]
+
+        return self.convert(price * power)
+
+
+class 分时分月电价(BaseModel, 电价转换):
+    PriceStruct: Tuple[
+        分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价
+    ] = Field(title="长度为12的分时电价数组", description="单位: 元/kWh")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+
+        current_day_index = time_in_day // 24
+        month_index = convertDaysToMonth(current_day_index)
+
+        _分时电价 = self.PriceStruct[month_index]
+        ret = _分时电价.getFee(power, time_in_day)
+        return ret
+
+
 class 计价阶梯(常数电价):
-    LowerLimit: float = Field("功率下限")
+    LowerLimit: confloat(ge=0) = Field("功率下限")
 
 
 class 阶梯电价(BaseModel):
-    PriceStruct: List[计价阶梯] = Field("长度不定的计价阶梯列表", description="单位: 元/kWh")
+    PriceStruct: conlist(计价阶梯, min_items=1) = Field(
+        "长度不定的计价阶梯列表", description="单位: 元/kWh"
+    )
 
     @validator("PriceStruct")
     def checkPriceStruct(cls, v: List[计价阶梯]):
@@ -82,6 +176,7 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -94,9 +189,35 @@ class 阶梯电价(BaseModel):
 
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList: List[阶梯电价] = Field("长度为24的阶梯电价列表", description="单位: 元/kWh")
+    PriceStructList: Tuple[
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+        阶梯电价,
+    ] = Field(title="长度为24的阶梯电价列表", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_time = math.floor(time_in_day % 24)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -127,96 +248,96 @@ from pydantic import validator
 
 
 class 设备ID(BaseModel):
-    ID: int = Field(title="设备ID", description="从拓扑图节点ID获取")
+    ID: conint(ge=0) = Field(title="设备ID", description="从拓扑图节点ID获取")
 
 
 class 柴油ID(设备ID):
-    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输出")
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输出")
     """
     类型: 柴油输出
     """
 
 
 class 电负荷ID(设备ID):
-    电接口: int = Field(title="电接口ID", description="接口类型: 负荷电输入")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 负荷电输入")
     """
     类型: 负荷电输入
     """
 
 
 class 光伏发电ID(设备ID):
-    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
 
 
 class 风力发电ID(设备ID):
-    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: int = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
     """
-    电接口: int = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
     """
 
 
 class 锂电池ID(设备ID):
-    电接口: int = Field(title="电接口ID", description="接口类型: 电储能端输入输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 电储能端输入输出")
     """
     类型: 电储能端输入输出
     """
 
 
 class 变压器ID(设备ID):
-    电输出: int = Field(title="电输出ID", description="接口类型: 变压器输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
 
 
 class 变流器ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 变流器输入")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
-    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
 
 
 class 双向变流器ID(设备ID):
-    储能端: int = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
-    线路端: int = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
 class 传输线ID(设备ID):
-    电输入: int = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
-    电输出: int = Field(title="电输出ID", description="接口类型: 电母线输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -226,63 +347,69 @@ class 传输线ID(设备ID):
 
 
 class 设备基础信息(BaseModel):
-    设备名称: str = Field(title="设备名称")
+    设备名称: constr(min_length=1) = Field(title="设备名称")
 
 
 class 设备信息(设备基础信息):
-    生产厂商: str = Field(title="生产厂商")
+    生产厂商: constr(min_length=1) = Field(title="生产厂商")
 
-    设备型号: str = Field(title="设备型号")
+    设备型号: constr(min_length=1) = Field(title="设备型号")
 
 
 class 柴油信息(设备基础信息):
-    Price: Tuple[float, str] = Field(title="Price", description="格式: [数值,单位]")
+    Price: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
+        title="Price", description="格式: [数值,单位]"
+    )
     """
     格式: [数值,单位]
     """
-    热值: Tuple[float, str] = Field(title="热值", description="格式: [数值,单位]")
+    热值: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
+        title="热值", description="格式: [数值,单位]"
+    )
     """
     格式: [数值,单位]
     """
-    CO2: Tuple[float, str] = Field(title="CO2", description="格式: [数值,单位]")
+    CO2: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
+        title="CO2", description="格式: [数值,单位]"
+    )
     """
     格式: [数值,单位]
     """
 
     class DefaultUnits:
-        Price = "L/万元"
+        Price = "万元/L"
         热值 = "kWh/L"
         CO2 = "kg/L"
 
 
 class 电负荷信息(设备基础信息):
     # 正数
-    EnergyConsumption: List[float] = Field(title="耗能功率表", description="单位: kW")
+    EnergyConsumption: List[confloat(ge=0)] = Field(title="耗能功率表", description="单位: kW")
     """
     单位: kW
     """
 
-    MaxEnergyConsumption: Union[None, float] = Field(
+    MaxEnergyConsumption: Union[None, confloat(gt=0)] = Field(
         default=None, title="最大消耗功率", description="单位: kW\n用于典型日下计算变压器容量"
     )
     """
     单位: kW
     """
 
-    PriceModel: Union[常数电价, 阶梯电价, 分时电价, 分时阶梯电价] = Field(
+    PriceModel: Union[常数电价, 阶梯电价, 分时电价, 分时阶梯电价, 分月电价, 分时分月电价] = Field(
         title="计价模型", description="单位: kWh/元"
     )
 
 
 class 光伏发电信息(设备信息):
 
-    Area: float = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
+    Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
     单位: m2
     """
 
-    PowerConversionEfficiency: float = Field(
+    PowerConversionEfficiency: confloat(ge=0) = Field(
         title="电电转换效率", description="名称: 电电转换效率\n单位: percent"
     )
     """
@@ -290,13 +417,13 @@ class 光伏发电信息(设备信息):
     单位: percent
     """
 
-    MaxPower: float = Field(title="最大发电功率", description="名称: 最大发电功率\n单位: kWp")
+    MaxPower: confloat(ge=0) = Field(title="最大发电功率", description="名称: 最大发电功率\n单位: kWp")
     """
     名称: 最大发电功率
     单位: kWp
     """
 
-    PowerDeltaLimit: float = Field(
+    PowerDeltaLimit: confloat(ge=0) = Field(
         title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
     )
     """
@@ -304,13 +431,15 @@ class 光伏发电信息(设备信息):
     单位: percent/s
     """
 
-    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWp")
+    CostPerKilowatt: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kWp"
+    )
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYearPerKilowatt: float = Field(
+    CostPerYearPerKilowatt: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWp*年)"
     )
     """
@@ -318,7 +447,7 @@ class 光伏发电信息(设备信息):
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -326,13 +455,13 @@ class 光伏发电信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float = Field(
+    BuildCostPerKilowatt: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWp"
     )
     """
@@ -340,25 +469,31 @@ class 光伏发电信息(设备信息):
     单位: 万元/kWp
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxInstallArea: float = Field(title="最大安装面积", description="名称: 最大安装面积\n单位: m2")
+    MaxInstallArea: confloat(ge=0) = Field(
+        title="最大安装面积", description="名称: 最大安装面积\n单位: m2"
+    )
     """
     名称: 最大安装面积
     单位: m2
     """
 
-    MinInstallArea: float = Field(title="最小安装面积", description="名称: 最小安装面积\n单位: m2")
+    MinInstallArea: confloat(ge=0) = Field(
+        title="最小安装面积", description="名称: 最小安装面积\n单位: m2"
+    )
     """
     名称: 最小安装面积
     单位: m2
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -367,31 +502,33 @@ class 光伏发电信息(设备信息):
 
 class 风力发电信息(设备信息):
 
-    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
+    RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
     单位: kWp
     """
 
-    RatedWindSpeed: float = Field(title="额定风速", description="名称: 额定风速\n单位: m/s")
+    RatedWindSpeed: confloat(ge=0) = Field(
+        title="额定风速", description="名称: 额定风速\n单位: m/s"
+    )
     """
     名称: 额定风速
     单位: m/s
     """
 
-    MinWindSpeed: float = Field(title="切入风速", description="名称: 切入风速\n单位: m/s")
+    MinWindSpeed: confloat(ge=0) = Field(title="切入风速", description="名称: 切入风速\n单位: m/s")
     """
     名称: 切入风速
     单位: m/s
     """
 
-    MaxWindSpeed: float = Field(title="切出风速", description="名称: 切出风速\n单位: m/s")
+    MaxWindSpeed: confloat(ge=0) = Field(title="切出风速", description="名称: 切出风速\n单位: m/s")
     """
     名称: 切出风速
     单位: m/s
     """
 
-    PowerDeltaLimit: float = Field(
+    PowerDeltaLimit: confloat(ge=0) = Field(
         title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
     )
     """
@@ -399,13 +536,15 @@ class 风力发电信息(设备信息):
     单位: percent/s
     """
 
-    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWp")
+    CostPerKilowatt: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kWp"
+    )
     """
     名称: 采购成本
     单位: 万元/kWp
     """
 
-    CostPerYearPerKilowatt: float = Field(
+    CostPerYearPerKilowatt: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWp*年)"
     )
     """
@@ -413,7 +552,7 @@ class 风力发电信息(设备信息):
     单位: 万元/(kWp*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -421,13 +560,13 @@ class 风力发电信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float = Field(
+    BuildCostPerKilowatt: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWp"
     )
     """
@@ -435,25 +574,31 @@ class 风力发电信息(设备信息):
     单位: 万元/kWp
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -462,13 +607,13 @@ class 风力发电信息(设备信息):
 
 class 柴油发电信息(设备信息):
 
-    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
+    RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    PowerDeltaLimit: float = Field(
+    PowerDeltaLimit: confloat(ge=0) = Field(
         title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
     )
     """
@@ -476,7 +621,7 @@ class 柴油发电信息(设备信息):
     单位: percent/s
     """
 
-    PowerStartupLimit: float = Field(
+    PowerStartupLimit: confloat(ge=0) = Field(
         title="启动功率百分比", description="名称: 启动功率百分比\n单位: percent"
     )
     """
@@ -484,13 +629,15 @@ class 柴油发电信息(设备信息):
     单位: percent
     """
 
-    CostPerMachine: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/台")
+    CostPerMachine: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/台"
+    )
     """
     名称: 采购成本
     单位: 万元/台
     """
 
-    CostPerYearPerMachine: float = Field(
+    CostPerYearPerMachine: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(台*年)"
     )
     """
@@ -498,7 +645,7 @@ class 柴油发电信息(设备信息):
     单位: 万元/(台*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -506,13 +653,13 @@ class 柴油发电信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerMachine: float = Field(
+    BuildCostPerMachine: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/台"
     )
     """
@@ -520,31 +667,37 @@ class 柴油发电信息(设备信息):
     单位: 万元/台
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
     """
 
-    DieselToPower_Load: List[List[float]] = Field(
+    DieselToPower_Load: List[Tuple[confloat(gt=0), confloat(ge=0)]] = Field(
         title="燃油消耗率_负载率",
         description="DieselToPower: 燃油消耗率\n单位: L/kWh\nLoad: 负载率\n单位: percent",
     )
@@ -559,15 +712,15 @@ class 柴油发电信息(设备信息):
 
 class 锂电池信息(设备信息):
 
-    循环边界条件: str = Field(title="循环边界条件")
+    循环边界条件: constr(min_length=1) = Field(title="循环边界条件")
 
-    RatedCapacity: float = Field(title="额定容量", description="名称: 额定容量\n单位: kWh")
+    RatedCapacity: confloat(ge=0) = Field(title="额定容量", description="名称: 额定容量\n单位: kWh")
     """
     名称: 额定容量
     单位: kWh
     """
 
-    BatteryDeltaLimit: float = Field(
+    BatteryDeltaLimit: confloat(ge=0) = Field(
         title="电池充放电倍率", description="名称: 电池充放电倍率\n单位: 1/hour"
     )
     """
@@ -575,13 +728,15 @@ class 锂电池信息(设备信息):
     单位: 1/hour
     """
 
-    ChargeEfficiency: float = Field(title="充能效率", description="名称: 充能效率\n单位: percent")
+    ChargeEfficiency: confloat(ge=0) = Field(
+        title="充能效率", description="名称: 充能效率\n单位: percent"
+    )
     """
     名称: 充能效率
     单位: percent
     """
 
-    DischargeEfficiency: float = Field(
+    DischargeEfficiency: confloat(ge=0) = Field(
         title="放能效率", description="名称: 放能效率\n单位: percent"
     )
     """
@@ -589,19 +744,19 @@ class 锂电池信息(设备信息):
     单位: percent
     """
 
-    MaxSOC: float = Field(title="最大SOC", description="名称: 最大SOC\n单位: percent")
+    MaxSOC: confloat(ge=0) = Field(title="最大SOC", description="名称: 最大SOC\n单位: percent")
     """
     名称: 最大SOC
     单位: percent
     """
 
-    MinSOC: float = Field(title="最小SOC", description="名称: 最小SOC\n单位: percent")
+    MinSOC: confloat(ge=0) = Field(title="最小SOC", description="名称: 最小SOC\n单位: percent")
     """
     名称: 最小SOC
     单位: percent
     """
 
-    BatteryStorageDecay: float = Field(
+    BatteryStorageDecay: confloat(ge=0) = Field(
         title="存储衰减", description="名称: 存储衰减\n单位: percent/hour"
     )
     """
@@ -609,7 +764,7 @@ class 锂电池信息(设备信息):
     单位: percent/hour
     """
 
-    TotalDischargeCapacity: float = Field(
+    TotalDischargeCapacity: confloat(ge=0) = Field(
         title="生命周期总放电量", description="名称: 生命周期总放电量\n单位: kWh"
     )
     """
@@ -617,19 +772,21 @@ class 锂电池信息(设备信息):
     单位: kWh
     """
 
-    BatteryLife: float = Field(title="电池换芯周期", description="名称: 电池换芯周期\n单位: 年")
+    BatteryLife: confloat(ge=0) = Field(title="电池换芯周期", description="名称: 电池换芯周期\n单位: 年")
     """
     名称: 电池换芯周期
     单位: 年
     """
 
-    CostPerCapacity: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kWh")
+    CostPerCapacity: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kWh"
+    )
     """
     名称: 采购成本
     单位: 万元/kWh
     """
 
-    CostPerYearPerCapacity: float = Field(
+    CostPerYearPerCapacity: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kWh*年)"
     )
     """
@@ -637,7 +794,7 @@ class 锂电池信息(设备信息):
     单位: 万元/(kWh*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -645,13 +802,13 @@ class 锂电池信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerCapacity: float = Field(
+    BuildCostPerCapacity: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kWh"
     )
     """
@@ -659,37 +816,43 @@ class 锂电池信息(设备信息):
     单位: 万元/kWh
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    InitSOC: float = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
+    InitSOC: confloat(ge=0) = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
     """
     名称: 初始SOC
     单位: percent
     """
 
-    MaxTotalCapacity: float = Field(title="最大设备容量", description="名称: 最大设备容量\n单位: kWh")
+    MaxTotalCapacity: confloat(ge=0) = Field(
+        title="最大设备容量", description="名称: 最大设备容量\n单位: kWh"
+    )
     """
     名称: 最大设备容量
     单位: kWh
     """
 
-    MinTotalCapacity: float = Field(title="最小设备容量", description="名称: 最小设备容量\n单位: kWh")
+    MinTotalCapacity: confloat(ge=0) = Field(
+        title="最小设备容量", description="名称: 最小设备容量\n单位: kWh"
+    )
     """
     名称: 最小设备容量
     单位: kWh
     """
 
-    InitSOC: float = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
+    InitSOC: confloat(ge=0) = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
     """
     名称: 初始SOC
     单位: percent
     """
 
-    TotalCapacity: float = Field(title="设备容量", description="名称: 设备容量\n单位: kWh")
+    TotalCapacity: confloat(ge=0) = Field(title="设备容量", description="名称: 设备容量\n单位: kWh")
     """
     名称: 设备容量
     单位: kWh
@@ -698,25 +861,27 @@ class 锂电池信息(设备信息):
 
 class 变压器信息(设备信息):
 
-    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
+    Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    RatedPower: float = Field(title="变压器容量", description="名称: 变压器容量\n单位: kW")
+    RatedPower: confloat(ge=0) = Field(title="变压器容量", description="名称: 变压器容量\n单位: kW")
     """
     名称: 变压器容量
     单位: kW
     """
 
-    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
+    CostPerKilowatt: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kW"
+    )
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float = Field(
+    CostPerYearPerKilowatt: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
     )
     """
@@ -724,7 +889,7 @@ class 变压器信息(设备信息):
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -732,13 +897,13 @@ class 变压器信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float = Field(
+    BuildCostPerKilowatt: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
     )
     """
@@ -746,19 +911,23 @@ class 变压器信息(设备信息):
     单位: 万元/kW
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    PowerParameter: float = Field(title="功率因数", description="名称: 功率因数\n单位: one")
+    PowerParameter: confloat(ge=0) = Field(
+        title="功率因数", description="名称: 功率因数\n单位: one"
+    )
     """
     名称: 功率因数
     单位: one
     """
 
-    LoadRedundancyParameter: float = Field(
+    LoadRedundancyParameter: confloat(ge=0) = Field(
         title="变压器冗余系数", description="名称: 变压器冗余系数\n单位: one"
     )
     """
@@ -766,25 +935,31 @@ class 变压器信息(设备信息):
     单位: one
     """
 
-    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    PowerParameter: float = Field(title="功率因数", description="名称: 功率因数\n单位: one")
+    PowerParameter: confloat(ge=0) = Field(
+        title="功率因数", description="名称: 功率因数\n单位: one"
+    )
     """
     名称: 功率因数
     单位: one
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -793,25 +968,27 @@ class 变压器信息(设备信息):
 
 class 变流器信息(设备信息):
 
-    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
+    RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
+    Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
+    CostPerKilowatt: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kW"
+    )
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float = Field(
+    CostPerYearPerKilowatt: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
     )
     """
@@ -819,7 +996,7 @@ class 变流器信息(设备信息):
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -827,13 +1004,13 @@ class 变流器信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float = Field(
+    BuildCostPerKilowatt: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
     )
     """
@@ -841,25 +1018,31 @@ class 变流器信息(设备信息):
     单位: 万元/kW
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -868,25 +1051,27 @@ class 变流器信息(设备信息):
 
 class 双向变流器信息(设备信息):
 
-    RatedPower: float = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
+    RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
     单位: kW
     """
 
-    Efficiency: float = Field(title="效率", description="名称: 效率\n单位: percent")
+    Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
     单位: percent
     """
 
-    CostPerKilowatt: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/kW")
+    CostPerKilowatt: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/kW"
+    )
     """
     名称: 采购成本
     单位: 万元/kW
     """
 
-    CostPerYearPerKilowatt: float = Field(
+    CostPerYearPerKilowatt: confloat(ge=0) = Field(
         title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(kW*年)"
     )
     """
@@ -894,7 +1079,7 @@ class 双向变流器信息(设备信息):
     单位: 万元/(kW*年)
     """
 
-    VariationalCostPerWork: float = Field(
+    VariationalCostPerWork: confloat(ge=0) = Field(
         title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
     )
     """
@@ -902,13 +1087,13 @@ class 双向变流器信息(设备信息):
     单位: 元/kWh
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilowatt: float = Field(
+    BuildCostPerKilowatt: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/kW"
     )
     """
@@ -916,25 +1101,31 @@ class 双向变流器信息(设备信息):
     单位: 万元/kW
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    MaxDeviceCount: float = Field(title="最大安装台数", description="名称: 最大安装台数\n单位: 台")
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
     """
     名称: 最大安装台数
     单位: 台
     """
 
-    MinDeviceCount: float = Field(title="最小安装台数", description="名称: 最小安装台数\n单位: 台")
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
     """
     名称: 最小安装台数
     单位: 台
     """
 
-    DeviceCount: float = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
     """
     名称: 安装台数
     单位: 台
@@ -943,7 +1134,7 @@ class 双向变流器信息(设备信息):
 
 class 传输线信息(设备信息):
 
-    PowerTransferDecay: float = Field(
+    PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
     """
@@ -951,13 +1142,15 @@ class 传输线信息(设备信息):
     单位: kW/km
     """
 
-    CostPerKilometer: float = Field(title="采购成本", description="名称: 采购成本\n单位: 万元/km")
+    CostPerKilometer: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/km"
+    )
     """
     名称: 采购成本
     单位: 万元/km
     """
 
-    CostPerYearPerKilometer: float = Field(
+    CostPerYearPerKilometer: confloat(ge=0) = Field(
         title="维护成本", description="名称: 维护成本\n单位: 万元/(km*年)"
     )
     """
@@ -965,13 +1158,13 @@ class 传输线信息(设备信息):
     单位: 万元/(km*年)
     """
 
-    Life: float = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
     """
     名称: 设计寿命
     单位: 年
     """
 
-    BuildCostPerKilometer: float = Field(
+    BuildCostPerKilometer: confloat(ge=0) = Field(
         title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/km"
     )
     """
@@ -979,19 +1172,21 @@ class 传输线信息(设备信息):
     单位: 万元/km
     """
 
-    BuildBaseCost: float = Field(title="建设费用基数", description="名称: 建设费用基数\n单位: 万元")
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
     """
     名称: 建设费用基数
     单位: 万元
     """
 
-    Length: float = Field(title="长度", description="名称: 长度\n单位: km")
+    Length: confloat(ge=0) = Field(title="长度", description="名称: 长度\n单位: km")
     """
     名称: 长度
     单位: km
     """
 
-    Length: float = Field(title="长度", description="名称: 长度\n单位: km")
+    Length: confloat(ge=0) = Field(title="长度", description="名称: 长度\n单位: km")
     """
     名称: 长度
     单位: km
@@ -1004,11 +1199,42 @@ class 传输线信息(设备信息):
 
 from pyomo.environ import *
 
+from sympy.polys.polytools import Poly
+import re
+from sympy import sympify
+
+# taking too long. recursion.
+from progressbar import progressbar
+
+from expr_utils import getExprStrParsedToExprList
+
+
+def examineSubExprDegree(expr):
+    data = str(expr)
+    exprlist = getExprStrParsedToExprList(data)
+    print("ANALYSING TERMS")
+    for subexpr in progressbar(exprlist):
+        subpoly = Poly(subexpr)
+        subpoly_deg = subpoly.total_degree()
+        if subpoly_deg not in [0, 1]:
+            print()
+            print("Abnormal subexpression poly degree:", subpoly_deg)
+            # recover expression representation
+            subexpr_pyomo = sympy2pyomo_expression(subexpr, objmap)
+            subexpr_pyomo_repr = str(subexpr_pyomo)
+            print("Abnormal expression:", subexpr_pyomo_repr)
+    print()
+
 
 class ModelWrapper:
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
+
+    def __del__(self):
+        del self.model
+        del self.clock
+        del self
 
     def getSpecialName(self, key: str):
         val = self.clock.get(key, 0)
@@ -1025,17 +1251,37 @@ class ModelWrapper:
         deg = expr.polynomial_degree()
         if deg != 1:
             print("EXPR DEG:", deg)
-            raise Exception(
-                f"Constraint: Unacceptable polynomial degree for expression '{str(expr)}'"
-            )
+            expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
+            print("EXPR:", expr_repr)
+
+            # TODO: use regex to simplify expression here.
+            print("_____________ERROR LOG_____________")
+            examineSubExprDegree(expr)
+            print("_____________ERROR LOG_____________")
+            error_msg = f"Constraint: Unacceptable polynomial degree for expression."
+            raise Exception(error_msg)
         name = self.getSpecialName("CON")
+        _initialize = kwargs.get("initialize", 0)
+        if "initialize" in kwargs.keys():
+            del kwargs["initialize"]
         ret = Constraint(expr=expr, *args[1:], **kwargs)
+        assert (
+            getattr(self.model, name, None) is None
+        ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
+
         return ret
 
     def Var(self, name: str, *args, **kwargs):
-        ret = Var(*args, **kwargs, initialize=0)
+        _initialize = kwargs.get("initialize", 0)
+        if "initialize" in kwargs.keys():
+            del kwargs["initialize"]
+        ret = Var(*args, **kwargs, initialize=_initialize)
+        assert (
+            getattr(self.model, name, None) is None
+        ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
+
         return ret
 
     def Objective(self, *args, **kwargs):
@@ -1047,12 +1293,25 @@ class ModelWrapper:
         deg = expr.polynomial_degree()
         if deg != 1:
             print("EXPR DEG:", deg)
-            raise Exception(
-                f"Objective: Unacceptable polynomial degree for expression '{str(expr)}'"
-            )
+            expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
+            print("EXPR:", expr_repr)
+
+            # TODO: use regex to simplify expression here.
+            print("_____________ERROR LOG_____________")
+            examineSubExprDegree(expr)
+            print("_____________ERROR LOG_____________")
+            error_msg = f"Objective: Unacceptable polynomial degree for expression."
+            raise Exception(error_msg)
         name = self.getSpecialName("OBJ")
+        _initialize = kwargs.get("initialize", 0)
+        if "initialize" in kwargs.keys():
+            del kwargs["initialize"]
         ret = Objective(expr=expr, *args[1:], **kwargs)
+        assert (
+            getattr(self.model, name, None) is None
+        ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
+
         return ret
 
 
@@ -1065,19 +1324,21 @@ class ModelWrapper:
 
 # 需要明确单位
 class 计算参数(BaseModel):
-    典型日ID: Union[int, None] = None  # increse by external loop
-    计算步长: Union[Literal["小时"], Literal["秒"]]
+    典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
+    计算步长: Literal["小时", "秒"]
     典型日: bool
 
-    分时计价开始时间点: float = Field(default=0)
+    分时计价开始时间点: float = Field(
+        default=0, title="秒级仿真时 开始时间在一天中的哪个小时", description="取值范围: 0-24", ge=0, le=24
+    )
 
-    @validator("分时计价开始时间点")
-    def validate_starting_time(cls, v):
-        assert v >= 0, f"开始时间点大于等于0\n实际: {v}"
-        assert v <= 24, f"开始时间点小于等于24\n实际: {v}"
-        return v
+    分时计价开始月份: int = Field(
+        default=0, title="秒级仿真时 开始时间在一年中的哪个月份", description="取值范围: 0-11", le=11, ge=0
+    )
 
-    典型日代表的日期: List[int] = []
+    典型日代表的日期: conlist(
+        conint(ge=0, lt=365), min_items=0, max_items=365, unique_items=True
+    ) = []
 
     @validator("典型日代表的日期")
     def validate_typical_day(cls, v, values):
@@ -1086,17 +1347,17 @@ class 计算参数(BaseModel):
             assert len(v) <= 365
         return v
 
-    计算类型: Union[Literal["仿真模拟"], Literal["设计规划"]]
-    计算目标: Union[Literal["经济"], Literal["环保"], Literal["经济_环保"]]
-    风速: List[float]
+    计算类型: Literal["仿真模拟", "设计规划"]
+    计算目标: Literal["经济", "环保", "经济_环保"]
+    风速: List[confloat(ge=0)]
     """
     单位: m/s
     """
-    光照: List[float]
+    光照: List[confloat(ge=0)]
     """
     单位: kW/m2
     """
-    气温: List[float]
+    气温: List[confloat(ge=0)]
     """
     单位: 摄氏度
     """
@@ -1116,9 +1377,17 @@ class 计算参数(BaseModel):
         else:
             rich.print(self)
             raise Exception("未知计算参数")
-        assert len(self.风速) == steps
-        assert len(self.光照) == steps
-        assert len(self.气温) == steps
+        errors = []
+
+        if not len(self.风速) == steps:
+            errors.append(f"风速长度应该是{steps} 实际:{len(self.风速)}")
+        if not len(self.光照) == steps:
+            errors.append(f"光照长度应该是{steps} 实际:{len(self.光照)}")
+        if not len(self.气温) == steps:
+            errors.append(f"气温长度应该是{steps} 实际:{len(self.气温)}")
+
+        if errors:
+            raise Exception("\n".join(errors))
         return steps
 
     @property
@@ -1136,6 +1405,25 @@ class POSNEG:
         self.x_abs = x_abs
 
 
+try:
+    from typing import Protocol
+except:
+    from typing_extensions import Protocol
+
+
+class 可购买类(Protocol):
+    是否购买: ...
+    总采购成本: ...
+    总建设费用: ...
+    总固定维护成本: ...
+    总固定成本年化: ...
+    总成本年化: ...
+    总可变维护成本年化: ...
+
+    def BinVarMultiplySingle(self, *args, **kwargs):
+        ...
+
+
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
         print("Building Device Model:", self.__class__.__name__)
@@ -1144,7 +1432,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e20
+        self.BigM = 1e30
         """
         一个极大数
         """
@@ -1160,7 +1448,18 @@ class 设备模型:
         self.总可变维护成本年化 = 0
         self.年化率 = 1
 
+    @staticmethod
+    def 处理最终财务输出(mclass: 可购买类):
+        mclass.总采购成本 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总采购成本)
+        mclass.总建设费用 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总建设费用)
+        mclass.总固定维护成本 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总固定维护成本)
+        mclass.总固定成本年化 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总固定成本年化)
+        mclass.总成本年化 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总成本年化)
+        mclass.总可变维护成本年化 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总可变维护成本年化)
+
     def constraints_register(self):
+        if self.__class__.__name__ == "设备模型":
+            raise NotImplementedError("Must be implemented by subclasses.")
         print("REGISTERING: ", self.__class__.__name__)
 
     def getVarName(self, varName: str):
@@ -1178,17 +1477,24 @@ class 设备模型:
         var = self.mw.Var(self.getVarName(varName), **kwargs)
         return var
 
-    def 变量列表(self, varName: str, **kwargs):
-        var = self.mw.Var(self.getVarName(varName), range(self.计算参数.迭代步数), **kwargs)
+    def getRange(self, mrange: range = None):
+        if mrange is None:
+            mrange = range(self.计算参数.迭代步数)
+        return mrange
+
+    def 变量列表(self, varName: str, mrange: range = None, **kwargs):
+        var = self.mw.Var(self.getVarName(varName), self.getRange(mrange), **kwargs)
         return var
 
-    def RangeConstraint(self, var_1, var_2, expression):
-        for i in range(self.计算参数.迭代步数):
+    def RangeConstraint(self, var_1, var_2, expression, mrange: range = None):
+        for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
 
-    def RangeConstraintMulti(self, *vars, expression=...):  # keyword argument now.
+    def RangeConstraintMulti(
+        self, *vars, expression=..., mrange: range = None
+    ):  # keyword argument now.
         assert expression is not ...
-        for i in range(self.计算参数.迭代步数):
+        for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
     def CustomRangeConstraint(self, var_1, var_2, customRange: range, expression):
@@ -1203,36 +1509,69 @@ class 设备模型:
         for i in customRange:
             self.mw.Constraint(expression(*vars, i))
 
-    def SumRange(self, var_1):
-        return sum([var_1[i] for i in range(self.计算参数.迭代步数)])
+    def SumRange(self, var_1, mrange: range = None):
+        return sum([var_1[i] for i in self.getRange(mrange)])
 
-    def 单变量转列表(self, var, dup=None):
+    def 单变量转列表(self, var, dup: int = None):
         if dup is None:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
 
-    def 变量列表_带指示变量(self, varName: str, within=Reals) -> POSNEG:
-        x = self.变量列表(varName, within=within)
+    def 单表达式生成指示变量(self, varName: str, expr):
+        # where to exclude type from type hints?
+        # or what language can express type exclusion?
+        posneg = self.变量列表_带指示变量(varName, exprList=[expr], mrange=range(1))
+        ret = POSNEG(
+            posneg.x[0],
+            posneg.x_pos[0],
+            posneg.x_neg[0],
+            posneg.b_pos[0],
+            posneg.b_neg[0],
+            posneg.x_abs[0],
+        )
+        return ret
 
-        b_pos = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
-        x_pos = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
+    def 变量列表_带指示变量(
+        self, varName: str, exprList: list = None, within=Reals, mrange: range = None
+    ) -> POSNEG:
+        if exprList:
+            x = exprList
+        else:
+            x = self.变量列表(varName, within=within, mrange=mrange)
 
-        self.RangeConstraint(b_pos, x_pos, lambda x, y: x * self.BigM >= y)
-        b_neg = self.变量列表(self.getSpecialVarName(varName), within=Boolean)
-        x_neg = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
-
-        self.RangeConstraint(b_neg, x_neg, lambda x, y: x * self.BigM >= y)
-
-        self.RangeConstraint(b_pos, b_neg, lambda x, y: x + y == 1)
-
-        self.RangeConstraintMulti(
-            x, x_pos, x_neg, expression=lambda x, y, z: x == y - z
+        b_pos = self.变量列表(
+            self.getSpecialVarName(varName), within=Boolean, mrange=mrange
+        )
+        x_pos = self.变量列表(
+            self.getSpecialVarName(varName), within=NonNegativeReals, mrange=mrange
         )
 
-        x_abs = self.变量列表(self.getSpecialVarName(varName), within=NonNegativeReals)
+        self.RangeConstraint(
+            b_pos, x_pos, lambda x, y: x * self.BigM >= y, mrange=mrange
+        )
+        b_neg = self.变量列表(
+            self.getSpecialVarName(varName), within=Boolean, mrange=mrange
+        )
+        x_neg = self.变量列表(
+            self.getSpecialVarName(varName), within=NonNegativeReals, mrange=mrange
+        )
+
+        self.RangeConstraint(
+            b_neg, x_neg, lambda x, y: x * self.BigM >= y, mrange=mrange
+        )
+
+        self.RangeConstraint(b_pos, b_neg, lambda x, y: x + y == 1, mrange=mrange)
 
         self.RangeConstraintMulti(
-            x_pos, x_neg, x_abs, expression=lambda x, y, z: z == x + y
+            x, x_pos, x_neg, expression=lambda x, y, z: x == y - z, mrange=mrange
+        )
+
+        x_abs = self.变量列表(
+            self.getSpecialVarName(varName), within=NonNegativeReals, mrange=mrange
+        )
+
+        self.RangeConstraintMulti(
+            x_pos, x_neg, x_abs, expression=lambda x, y, z: z == x + y, mrange=mrange
         )
 
         posneg = POSNEG(x, x_pos, x_neg, b_pos, b_neg, x_abs)
@@ -1265,8 +1604,11 @@ class 设备模型:
                 unbounded_domain_var=unbounded_domain_var,
                 warn_domain_coverage=False,  # to suppress warning
             )
+            assert (
+                getattr(self.mw.model, piecewise_name, None) is None
+            ), f"错误: 不能设置两次相同的变量名称\n重复变量: { piecewise_name }"
             self.mw.model.__setattr__(piecewise_name, PW)
-            PWL.append(PW)
+
         return PWL
 
     def BinVarMultiplySingle(self, b_var, x_var):
@@ -1481,6 +1823,9 @@ class 光伏发电模型(设备模型):
             assert self.MinDeviceCount >= 0
             assert self.MaxDeviceCount >= self.MinDeviceCount
 
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -1537,6 +1882,8 @@ class 光伏发电模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -1667,6 +2014,9 @@ class 风力发电模型(设备模型):
         # 设备特有约束（变量）
         self.电输出 = self.电接口
 
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -1743,6 +2093,8 @@ class 风力发电模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -1916,6 +2268,18 @@ class 柴油发电模型(设备模型):
             self.RangeConstraint(
                 self.原电输出, self.单台发电功率, lambda x, y: x == y * self.DeviceCount
             )
+            # change #1: add line to define "self.柴油输入"
+            self.RangeConstraint(
+                # self.RangeConstraintMulti(
+                self.柴油输入,
+                self.单台柴油输入,
+                # self.单变量转列表(self.DeviceCount),
+                # expression=lambda x, y, z: x == y * z,
+                expression=lambda x, y: x == y * self.DeviceCount,
+            )
+
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
 
     def constraints_register(self):
         super().constraints_register()
@@ -1930,7 +2294,6 @@ class 柴油发电模型(设备模型):
 
         # 输出输入功率约束
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
-        总最大输出功率 = self.RatedPower * self.DeviceCount
 
         self.RangeConstraintMulti(
             self.单台发电功率, expression=lambda x: x <= self.RatedPower
@@ -1986,6 +2349,8 @@ class 柴油发电模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2201,6 +2566,9 @@ class 锂电池模型(设备模型):
         单位: kW
         """
 
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -2320,6 +2688,8 @@ class 锂电池模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2459,6 +2829,9 @@ class 变压器模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":  # 在变压器和负荷的交换节点处做处理
             self.最大允许的负载总功率 = self.DeviceCount * (self.RatedPower * self.Efficiency) * self.PowerParameter / self.LoadRedundancyParameter  # type: ignore
 
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -2503,6 +2876,8 @@ class 变压器模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2618,6 +2993,9 @@ class 变流器模型(设备模型):
 
         # 设备特有约束（变量）
 
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -2658,6 +3036,8 @@ class 变流器模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2757,13 +3137,6 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
@@ -2771,10 +3144,20 @@ class 双向变流器模型(设备模型):
         类型: 双向变流器线路端输入输出
         """
 
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
+        """
+
         # 设备特有约束（变量）
 
         self.线路端_ = self.变量列表_带指示变量("线路端_")
         self.储能端_ = self.变量列表_带指示变量("储能端_")
+
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
 
     def constraints_register(self):
         super().constraints_register()
@@ -2825,6 +3208,8 @@ class 双向变流器模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2903,13 +3288,6 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
@@ -2917,9 +3295,19 @@ class 传输线模型(设备模型):
         类型: 电母线输出
         """
 
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
+        """
+
         # 设备特有约束（变量）
 
         self.电输入_去除损耗 = self.变量列表_带指示变量("电输入_去除损耗")
+
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
 
     def constraints_register(self):
         super().constraints_register()
@@ -2947,6 +3335,8 @@ class 传输线模型(设备模型):
         self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
         self.总成本年化 = self.总固定成本年化
+
+        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -2987,7 +3377,9 @@ class 电负荷模型(设备模型):
         getTimeInDay = (
             lambda index: index
             if self.计算参数.计算步长 == "小时"
-            else self.计算参数.分时计价开始时间点 + (index / 3600)
+            else self.计算参数.分时计价开始时间点
+            + 24 * convertMonthToDays(self.计算参数.分时计价开始月份)
+            + (index / 3600)
         )
 
         self.IncomeRates = [
@@ -2999,8 +3391,8 @@ class 电负荷模型(设备模型):
             self.电接口, self.设备信息.EnergyConsumption, lambda x, y: x == -y
         )
 
-        年化费用 = -(sum(self.IncomeRates) / len(self.IncomeRates)) * 8760
-        # 根据年化费用反算
+        年化费用 = (sum(self.IncomeRates) / len(self.IncomeRates)) * 8760
+        # 已经是负数了
 
         self.总成本年化 = 年化费用
         return 年化费用
@@ -3138,7 +3530,6 @@ class ModelWrapperContext:
             print("NO ERROR IN MODEL WRAPPER CONTEXT")
         else:
             print("ERROR IN MODEL WRAPPER CONTEXT")
-        del self.mw.model
         del self.mw
         print("EXITING MODEL WRAPPER CONTEXT")
 
@@ -3234,29 +3625,31 @@ class 仿真结果(BaseModel):
 
 
 class 节点基类(BaseModel):
-    type: str = Field(title="节点类型")
-    subtype: str = Field(title="节点次类型")
+    type: constr(min_length=1) = Field(title="节点类型")
+    subtype: constr(min_length=1) = Field(title="节点次类型")
     id: int = Field(title="节点ID")
 
 
 class 锚点节点(节点基类):
-    port_name: str = Field(title="锚点名称")
-    device_id: int = Field(title="锚点所对应设备ID")
+    port_name: constr(min_length=1) = Field(title="锚点名称")
+    device_id: conint(ge=0) = Field(title="锚点所对应设备ID")
 
 
 class 母线节点(节点基类):
-    conn: List[str] = Field(
+    conn: conlist(constr(min_length=1), min_items=2) = Field(
         title="母线连接线类型列表", description="包括连接到母线上的连接线和合并线类型"
     )  # connection/merge types to literal.
 
 
 class 设备接口映射(BaseModel):
-    subtype: str = Field(title="接口类型")
-    id: int = Field(title="接口ID", description="拓扑图上与设备、母线、连接线的ID相比较具有唯一性的ID")
+    subtype: constr(min_length=1) = Field(title="接口类型")
+    id: conint(ge=0) = Field(title="接口ID", description="拓扑图上与设备、母线、连接线的ID相比较具有唯一性的ID")
 
 
 class 设备节点(节点基类):
-    ports: Dict[str, 设备接口映射] = Field(title="设备接口映射", description="描述设备所对应接口的类型和接口ID")
+    ports: Dict[constr(min_length=1), 设备接口映射] = Field(
+        title="设备接口映射", description="描述设备所对应接口的类型和接口ID"
+    )
     param: Union[
         柴油信息, 电负荷信息, 光伏发电信息, 风力发电信息, 柴油发电信息, 锂电池信息, 变压器信息, 变流器信息, 双向变流器信息, 传输线信息
     ] = Field(title="设备信息", description="不同设备有不同的信息格式")
@@ -3279,7 +3672,7 @@ class mDict(BaseModel):
             "年利率": 0.1,
         },
     )
-    nodes: List[Union[锚点节点, 设备节点, 母线节点, 节点基类]] = Field(
+    nodes: conlist(Union[锚点节点, 设备节点, 母线节点, 节点基类], min_items=5) = Field(
         title="节点",
         description="由所有节点ID和属性字典组成的列表",
         example=[
@@ -3292,7 +3685,7 @@ class mDict(BaseModel):
             }
         ],
     )
-    links: List[Dict[Union[Literal["source"], Literal["target"]], int]] = Field(
+    links: conlist(Dict[Union[Literal["source", "target"]], int], min_items=4) = Field(
         title="边",
         description="由能流图中节点互相连接的边组成的列表",
         example=[{"source": 0, "target": 1}, {"source": 1, "target": 31}],
