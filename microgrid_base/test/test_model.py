@@ -314,6 +314,8 @@ import numpy as np
     [
         (0, 2, minimize),
         (0, 2, maximize),
+        (0.3, 2.3, minimize),
+        (0.3, 2.3, maximize),
         (0 - 1, 2, minimize),  # BUG: y = 0 if x is out of bound
         (0 - 1, 2, maximize),
         (0 + 3, 4, minimize),
@@ -325,7 +327,7 @@ def test_Piecewise(
 ):
     x = [测试设备模型.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
     y = [测试设备模型.单变量("y")]
-    x_vals = np.linspace(0, 2, 100)
+    x_vals = np.linspace(0, 2, 2)
     y_vals = x_vals + 2
     测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
     obj_expr = y[0]
@@ -339,9 +341,9 @@ def test_Piecewise(
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 
-@pytest.mark.parametrize("power_output, expected_val", [(10, 10)])
+@pytest.mark.parametrize("power_output, expected_val, expected_diesel", [(10, 10,)])
 def test_柴油发电(
-    model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output, expected_val
+    model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output, expected_val, expected_diesel
 ):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
