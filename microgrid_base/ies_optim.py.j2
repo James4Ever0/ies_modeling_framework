@@ -651,7 +651,8 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e+8 # 这个数不能太大 否则就会报错
+        {# self.BigM = 1e+8  #}
+        self.BigM = 1e+7 # 这个数不能太大 否则就会报错
         {# self.BigM = 1e+12 #}
         """
         一个极大数
@@ -793,15 +794,18 @@ class 设备模型:
         {# to eliminate the issue of overflow: #}
         {# approach 1: first divide variable by some number, then multiply by that. #}
         {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
-        
+
         h = self.单变量(self.getSpecialVarName("BVM"))
+
+        divider = 1e+4
 
         self.mw.Constraint(h<= b_var* self.BigM)
         self.mw.Constraint(h>= -b_var*self.BigM)
-        self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
-        self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
+        self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
+        self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM)
 
-        return h
+        return h*divider
+        
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']

@@ -1,5 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 
 try:
@@ -280,13 +280,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -298,13 +298,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -320,24 +320,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -1230,6 +1230,14 @@ class ModelWrapper:
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
+        self.assumptions: List[Callable] = []
+        # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
+
+    def check_assumptions(self):
+        # TODO: call this function after model solved.
+        for assumption in self.assumptions:
+            assumption()
+        self.assumptions = []
 
     def __del__(self):
         del self.model
@@ -1432,7 +1440,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e8  # 这个数不能太大 否则就会报错
+        self.BigM = 1e7  # 这个数不能太大 否则就会报错
         """
         一个极大数
         """
@@ -1613,14 +1621,17 @@ class 设备模型:
 
     def BinVarMultiplySingle(self, b_var, x_var):
         assert b_var.is_binary()
+
         h = self.单变量(self.getSpecialVarName("BVM"))
+
+        divider = 1e4
 
         self.mw.Constraint(h <= b_var * self.BigM)
         self.mw.Constraint(h >= -b_var * self.BigM)
-        self.mw.Constraint(h <= x_var + (1 - b_var) * self.BigM)
-        self.mw.Constraint(h >= x_var - (1 - b_var) * self.BigM)
+        self.mw.Constraint(h <= x_var / divider + (1 - b_var) * self.BigM)
+        self.mw.Constraint(h >= x_var / divider - (1 - b_var) * self.BigM)
 
-        return h
+        return h * divider
 
     def Multiply(
         self, dict_mx: dict, dict_my: dict, varName: str, precision=10, within=Reals
@@ -2215,18 +2226,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2810,18 +2821,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3137,18 +3148,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3288,18 +3299,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
