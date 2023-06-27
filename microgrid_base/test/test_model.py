@@ -265,6 +265,7 @@ def test_单表达式生成指示变量(
 ):
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
+    # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
     obj_expr = v0
     model_wrapper.Objective(expr=obj_expr, sense=sense)
 
@@ -273,12 +274,12 @@ def test_单表达式生成指示变量(
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
-        assert abs(value(expected_v0) - v0) <= EPS
-        assert abs(value(expected_v1_b_pos) - v1.b_pos) <= EPS
-        assert abs(value(expected_v1_x_neg) - v1.x_neg) <= EPS
-        assert abs(value(expected_v1_b_neg) - v1.b_neg) <= EPS
-        assert abs(value(expected_v1_x_pos) - v1.x_pos) <= EPS
-        assert abs(value(expected_v1_x_abs) - v1.x_abs) <= EPS
+        assert abs(expected_v0 - value(v0)) <= EPS
+        assert abs(expected_v1_b_pos - value(v1.b_pos)) <= EPS
+        assert abs(expected_v1_x_neg - value(v1.x_neg)) <= EPS
+        assert abs(expected_v1_b_neg - value(v1.b_neg)) <= EPS
+        assert abs(expected_v1_x_pos - value(v1.x_pos)) <= EPS
+        assert abs(expected_v1_x_abs - value(v1.x_abs)) <= EPS
 
 
 def test_Piecewise(
