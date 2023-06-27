@@ -203,18 +203,18 @@ def test_BinVarMultiplySingle(
         print(f"ACTUAL: {value(v0)*value(v1)}")
         assert abs(value(v_result) - result) <= EPS
 
-
+@pytest.mark.parametrize("v0_min, v0_max, v1_min, v1_max, exp", [(1,5, 2,4)])
 def test_VarMultiplySingle(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
 ):
-    v0 = 测试设备模型.单变量('v0')
+    v0 = 测试设备模型.单变量('v0', bounds = (v0_min, v0_max))
     v0_dict = dict(var = v0, max=v0_max, min=v0_min)
     
-    v1 = 测试设备模型.单变量('v1')
+    v1 = 测试设备模型.单变量('v1', bounds = (v1_min, v1_max))
     v1_dict = dict(var = v1, max=v1_max, min=v1_min)
     
-    测试设备模型.Multiply
+    v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
 
 
 def test_单表达式生成指示变量(
