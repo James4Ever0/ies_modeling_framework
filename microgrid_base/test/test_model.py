@@ -289,7 +289,8 @@ def test_Piecewise(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
 ):
-    ...
+    x = 测试设备模型.单变量('x', )
+    测试设备模型.Piecewise()
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):
