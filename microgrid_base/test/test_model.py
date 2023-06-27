@@ -233,16 +233,27 @@ def test_VarMultiplySingle(
         print(s_results)
         assert abs(value(obj_expr) - expected) <= EPS
 
-@pytest.mark.parametrize("v0_min, v0_max, sense, expected_v0, expected_v1_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs", [])
+@pytest.mark.parametrize("v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs", [])
 def test_单表达式生成指示变量(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
-    v0_min, v0_max, sense, expected_v0, expected_v1_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs
+    v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs
 ):
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
+    obj_expr = v0
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
     
-
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        assert abs(value(expected_v0) - v0) <= EPS
+        assert abs(value(expected_v1_b_pos) - v1.b_pos) <= EPS
+        assert abs(value(expected_v1_x_neg) - v1.x_neg) <= EPS
+        assert abs(value(expected_v1_b_neg) - v1.b_neg) <= EPS
+        assert abs(value(expected_v1_x_pos) - v1.x_pos) <= EPS
 
 def test_Piecewise(
     model_wrapper: ModelWrapper,
