@@ -344,6 +344,7 @@ def test_柴油发电(
     model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output, expected_val
 ):
     测试柴油发电模型.燃料热值 = 1
+    测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
