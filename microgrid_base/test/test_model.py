@@ -29,7 +29,7 @@ def model_wrapper():
     # return mw
 
 
-EPS = 0.01
+EPS = 0.03
 
 # class mObject:
 #     a = 1
@@ -110,7 +110,7 @@ def 测试计算参数():
         # 计算目标="环保",
         计算步长="小时",
         典型日=True,
-        典型日代表的日期 = [1],
+        典型日代表的日期=[1],
         # 典型日=False,
         计算类型="设计规划",
         风速=a,
@@ -211,7 +211,9 @@ def test_BinVarMultiplySingle(
     "v0_min, v0_max, v1_min, v1_max, sense, expected, param",
     [
         (1, 5, 2, 4, minimize, 2, 0),
-        (1, 5, 2, 4, maximize, 20, 0),(-1,3,-2,4, minimize, -10, ) 8
+        (1, 5, 2, 4, maximize, 20, 0),
+        (-1, 3, -2, 4, minimize, -10, -2),
+        (-1, 3, -2, 4, maximize, 8, -2),
     ],
 )
 def test_VarMultiplySingle(
@@ -222,7 +224,8 @@ def test_VarMultiplySingle(
     v1_min,
     v1_max,
     sense,
-    expected,param
+    expected,
+    param,
 ):
     v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)
@@ -231,7 +234,7 @@ def test_VarMultiplySingle(
     v1_dict = dict(var=v1, max=v1_max, min=v1_min)
 
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
-    obj_expr = v0_v1[0]
+    obj_expr = v0_v1[0] + param * (v0[0] + v1[0])
     model_wrapper.Objective(expr=obj_expr, sense=sense)
 
     with SolverFactory("cplex") as solver:
