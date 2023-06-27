@@ -1,7 +1,7 @@
 from sympy.abc import x, y
 import numpy as np
 
-expr = x*y - (x+y)
+expr = x*y - 2*x+3*y
 # help(expr.evalf)
 x_min, x_max = 1,5
 y_min, y_max = 2,4
@@ -14,7 +14,8 @@ max_inputs = []
 for _x in np.linspace(x_min, x_max, 100):
     for _y in np.linspace(y_min, y_max, 100):
         val = expr.evalf(subs = {x: _x, y:_y})
-        if val < min_val: min_val = val
+        if val < min_val:
+            min_val = val
             min_inputs = [_x, _y]
         if val > max_val:
             max_val = val
@@ -22,3 +23,4 @@ for _x in np.linspace(x_min, x_max, 100):
         
 
 print(f"MIN: {min_val}, MAX: {max_val}")
+print(f"MIN_INPUT: {min_inputs}, MAX_INPUT: {max_inputs}")
