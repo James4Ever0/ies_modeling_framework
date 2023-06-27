@@ -88,9 +88,9 @@ def 测试柴油发电信息():
         BuildCostPerMachine=10,
         BuildBaseCost=10,
         DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=100000000,
-        MaxDeviceCount=2000000,
-        MinDeviceCount=100,
+        DeviceCount=1,
+        MaxDeviceCount=2,
+        MinDeviceCount=1,
     )
 
 from ies_optim import 柴油发电模型
