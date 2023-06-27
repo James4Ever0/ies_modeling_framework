@@ -94,9 +94,12 @@ def 测试柴油发电信息():
     )
 
 from ies_optim import 柴油发电模型
+from import 柴油发电ID
 @fixture()
-def 测试柴油发电模型(测试柴油发电信息: 柴油发电信息,model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
-    mDieselEngineModel = 柴油发电模型(PD = {}, mw=model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 1, 设备信息 =  测试柴油发电信息)
+
+@fixture()
+def 测试柴油发电模型(测试柴油发电信息: 柴油发电信息,model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油发电ID: 柴油发电ID):
+    mDieselEngineModel = 柴油发电模型(PD = {}, mw=model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 测试柴油发电ID, 设备信息 =  测试柴油发电信息)
     return mDieselEngineModel
 
 @fixture(scope="session")
@@ -321,7 +324,7 @@ def test_Piecewise(
 
 
 def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型):
-    测试柴油发电模型.
+    测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.RangeConstraint()
 
 
