@@ -126,10 +126,10 @@ def test_convertMonthToDays():
     assert convertMonthToDays(1) == sum(month_days[:1])
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
+from ies_optim import 设备模型
 
 @fixture
 def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
-    from ies_optim import 设备模型
     mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
     yield mDeviceModel
 
@@ -164,6 +164,7 @@ import pytest
 def test_BinVarMultiplySingle(
     model_wrapper: ModelWrapper,
     测试计算参数: 计算参数,
+    测试设备模型: 设备模型,
     v0_within,
     v0_init,
     v1_within,
@@ -174,12 +175,12 @@ def test_BinVarMultiplySingle(
     sense,
 ):
     assert min_v0 <= max_v0
-    v0 = mDeviceModel.单变量(
+    v0 = 测试设备模型.单变量(
         "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
     )
 
-    v1 = mDeviceModel.单变量("v1", within=v1_within, initialize=v1_init)
-    v_result = mDeviceModel.BinVarMultiplySingle(v1, v0)
+    v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
+    v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
     # obj_expr = v1
     obj_expr = v_result
     # if sense == maximize:

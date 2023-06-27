@@ -797,7 +797,7 @@ class 设备模型:
 
         h = self.单变量(self.getSpecialVarName("BVM"))
 
-        divider = 1e+4
+        divider = 1e+2
 
         self.mw.Constraint(h<= b_var* self.BigM)
         self.mw.Constraint(h>= -b_var*self.BigM)
@@ -805,7 +805,7 @@ class 设备模型:
         self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM)
 
         return h*divider
-        
+
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
