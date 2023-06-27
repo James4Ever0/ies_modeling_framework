@@ -137,9 +137,9 @@ def solveModelFromCalcParamList(
             # try:
             
             
-            assert s_results, "no solver result."
-            TC = s_results.solver.termination_condition
-            SS = s_results.solver.status
+            assert results, "no solver result."
+            TC = results.solver.termination_condition
+            SS = results.solver.status
             normalSSs = [SolverStatus.ok, SolverStatus.warning]
             normalTCs = [
                 TerminationCondition.globallyOptimal,
