@@ -511,6 +511,7 @@ class ModelWrapper:
             deg = expr.polynomial_degree()
         {# deg = expr.polynomial_degree() #}
         if deg != 1:
+        {# if deg != 1: #}
             print("EXPR DEG:", deg)
             expr_repr =f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
             print('EXPR:',  expr_repr)

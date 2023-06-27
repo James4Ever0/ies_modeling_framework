@@ -346,6 +346,7 @@ def test_柴油发电(
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
+    print("年化:", obj_expr)
     model_wrapper.Objective(obj_expr, sense=minimize)
 
     with SolverFactory("cplex") as solver:
