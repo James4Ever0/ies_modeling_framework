@@ -132,7 +132,8 @@ def 测试计算参数():
         典型日=True,
         典型日代表的日期=[1],
         # 典型日=False,
-        计算类型="设计规划",
+        计算类型="仿真模拟",
+        # 计算类型="设计规划",
         风速=a,
         光照=a,
         气温=a,
@@ -337,10 +338,10 @@ def test_Piecewise(
         print(s_results)
         assert abs(value(obj_expr) - y_expected) <= EPS
 
-
+@pytest.mark.parametrize("power_output", [(10, )])
 def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型):
     测试柴油发电模型.燃料热值 = 1
-    测试柴油发电模型.RangeConstraintMulti()
+    测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出,expression = lambda x: x==power_output)
 
 
 def test_柴油(model_wrapper: ModelWrapper):
