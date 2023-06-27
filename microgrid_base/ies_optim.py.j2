@@ -765,6 +765,13 @@ class 设备模型:
         x_vals: List[float],
         y_vals: List[float],
      range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
+
+        # BUG: x out of bound, resulting into unsolvable problem.
+        assert x_vals[0] <= x_vals[-1]
+        expand_val = 1e+3
+        _x_vals = [x_vals[0]-expand_val] + x_vals +[ x_vals[-1]+expand_val]
+        _y_vals = [y_vals[0]] + y_vals +[ y_vals[-1]]
+
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         PWL = []
@@ -773,8 +780,8 @@ class 设备模型:
             PW = Piecewise(
             y_var[i],
             x_var[i],
-            pw_pts=x_vals,
-            f_rule=y_vals,
+            pw_pts=_x_vals,
+            f_rule=_y_vals,
             pw_repn=pw_repn,
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
