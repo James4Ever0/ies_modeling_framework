@@ -320,8 +320,8 @@ def test_Piecewise(
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 
-def test_柴油发电(model_wrapper: ModelWrapper):
-    ...
+def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型):
+    测试柴油发电模型
 
 
 def test_柴油(model_wrapper: ModelWrapper):
