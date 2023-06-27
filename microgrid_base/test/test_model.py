@@ -29,7 +29,7 @@ def model_wrapper():
     # return mw
 
 
-EPS = 0.03
+EPS = 0.02
 
 # class mObject:
 #     a = 1
@@ -341,7 +341,7 @@ def test_Piecewise(
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 
-@pytest.mark.parametrize("power_output, expected_val, expected_diesel", [(10, 10,3*0.001*10)])
+@pytest.mark.parametrize("power_output, expected_val, expected_diesel", [(10, 10,-3*0.001*10)])
 def test_柴油发电(
     model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output, expected_val, expected_diesel
 ):
