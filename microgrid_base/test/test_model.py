@@ -127,6 +127,11 @@ def test_convertMonthToDays():
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
 
+@fixture
+def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
+    from ies_optim import 设备模型
+    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
+    yield mDeviceModel
 
 # from collections import namedtuple
 import pytest
@@ -168,9 +173,6 @@ def test_BinVarMultiplySingle(
     min_v0,
     sense,
 ):
-    from ies_optim import 设备模型
-
-    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
     assert min_v0 <= max_v0
     v0 = mDeviceModel.单变量(
         "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
@@ -196,6 +198,9 @@ def test_BinVarMultiplySingle(
         print(f"EXPECTED: {result}")
         print(f"ACTUAL: {value(v0)*value(v1)}")
         assert abs(value(v_result) - result) <= EPS
+
+def test_VarMultiplySingle(model_wrapper: ModelWrapper):
+    ...
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):

@@ -11,7 +11,7 @@ from pydantic import conlist, conint, confloat, constr
 {% set pos_float = "confloat(gt=0)"%}
 {% set non_neg_int = "conint(ge=0)"%}
 {% set pos_int = "conint(gt=0)"%}
-{%macro qstr(mstr)%}"{{mstr}}"{%endmacro%}
+{% macro qstr(mstr)%}"{{mstr}}"{%endmacro%}
 {% macro import_type_fallback(symbol)%}
 try:
     from typing import {{symbol}}
@@ -27,10 +27,10 @@ except:
 
 {# from typing import Tuple #}
 
-{% macro double_check_setattr(obj, attrName, val)%}
+{% macro double_check_setattr(obj, attrName, val) %}
 assert getattr({{obj}},{{attrName}}, None) is None, f"错误: 不能设置两次相同的变量名称\n重复变量: { {{attrName}} }"
 {{obj}}.__setattr__({{attrName}}, {{val}})
-{% endmacro%}
+{% endmacro %}
 
 import rich
 from pydantic import BaseModel, Field, validator
