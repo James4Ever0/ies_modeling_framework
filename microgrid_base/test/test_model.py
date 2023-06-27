@@ -340,7 +340,7 @@ def test_Piecewise(
 
 def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型):
     测试柴油发电模型.燃料热值 = 1
-    测试柴油发电模型.RangeConstraint()
+    测试柴油发电模型.RangeConstraintMulti()
 
 
 def test_柴油(model_wrapper: ModelWrapper):
