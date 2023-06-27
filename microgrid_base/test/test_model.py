@@ -284,30 +284,39 @@ def test_单表达式生成指示变量(
         assert abs(expected_v1_x_pos - value(v1.x_pos)) <= EPS
         assert abs(expected_v1_x_abs - value(v1.x_abs)) <= EPS
 
+
 import numpy as np
 
-@pytest.mark.parametrize("x_init, y_expected, sense", [
-    (0,2,minimize),
-    ])
+
+@pytest.mark.parametrize(
+    "x_init, y_expected, sense",
+    [
+        (0, 2, minimize),
+        (0, 2, maximize),
+        (0 - 1, 2 - 1, minimize),
+        (0 - 1, 2 - 1, maximize),
+        (0 + 3, 2 + 3, minimize),
+        (0 + 3, 2 + 3, maximize),
+    ],
+)
 def test_Piecewise(
-    model_wrapper: ModelWrapper,
-    测试设备模型: 设备模型,
-    x_init,  y_expected, sense
+    model_wrapper: ModelWrapper, 测试设备模型: 设备模型, x_init, y_expected, sense
 ):
-    x = [测试设备模型.单变量('x', initialize = x_init, bounds= (x_init, x_init))]
-    y = [测试设备模型.单变量('y')]
-    x_vals = np.linspace(0,2, 100)
-    y_vals = x_vals +2
-    测试设备模型.Piecewise(x,y, x_vals.tolist(), y_vals.tolist(), range_list = [0])
+    x = [测试设备模型.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
+    y = [测试设备模型.单变量("y")]
+    x_vals = np.linspace(0, 2, 100)
+    y_vals = x_vals + 2
+    测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
     obj_expr = y[0]
-    model_wrapper.Objective(expr = obj_expr, sense = sense)
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
 
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
-        assert abs(value(obj_expr) - y_expected) <=EPS
+        assert abs(value(obj_expr) - y_expected) <= EPS
+
 
 def test_柴油发电(model_wrapper: ModelWrapper):
     from ies_optim import 柴油发电模型, 柴油发电信息
