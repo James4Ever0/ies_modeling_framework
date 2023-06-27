@@ -789,6 +789,7 @@ class 设备模型:
         assert b_var.is_binary()
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
+        {# to eliminate issue of overflow:approach 1: #}
         h = self.单变量(self.getSpecialVarName("BVM"))
 
         self.mw.Constraint(h<=b_var* self.BigM)
