@@ -208,6 +208,12 @@ def test_VarMultiplySingle(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
 ):
+    v0 = 测试设备模型.单变量('v0')
+    v0_dict = dict(var = v0, max=v0_max, min=v0_min)
+    
+    v1 = 测试设备模型.单变量('v1')
+    v1_dict = dict(var = v1, max=v1_max, min=v1_min)
+    
     测试设备模型.Multiply
 
 
