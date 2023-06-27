@@ -208,10 +208,10 @@ def test_BinVarMultiplySingle(
 
 
 @pytest.mark.parametrize(
-    "v0_min, v0_max, v1_min, v1_max, sense, expected",
+    "v0_min, v0_max, v1_min, v1_max, sense, expected, param",
     [
-        (1, 5, 2, 4, minimize, 2),
-        (1, 5, 2, 4, maximize, 20),
+        (1, 5, 2, 4, minimize, 2, 0),
+        (1, 5, 2, 4, maximize, 20, 0),(-1,3,-2,4, minimize, -10, ) 8
     ],
 )
 def test_VarMultiplySingle(
@@ -222,7 +222,7 @@ def test_VarMultiplySingle(
     v1_min,
     v1_max,
     sense,
-    expected,
+    expected,param
 ):
     v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)

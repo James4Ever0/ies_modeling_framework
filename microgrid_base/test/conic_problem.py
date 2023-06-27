@@ -1,7 +1,7 @@
 from sympy.abc import x, y
 import numpy as np
 
-expr = x*y +x-y
+expr = x*y -2*(x+y)
 # help(expr.evalf)
 x_min, x_max = -1,3
 y_min, y_max = -2,4
