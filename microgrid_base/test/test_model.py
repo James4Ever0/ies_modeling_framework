@@ -68,11 +68,11 @@ def 测试柴油信息():
     from ies_optim import 柴油信息
 
     return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
+from ies_optim import 柴油发电信息
 
 
 @fixture(scope="session")
 def 测试柴油发电信息():
-    from ies_optim import 柴油发电信息
 
     return 柴油发电信息(
         生产厂商="柴油发电1",
@@ -94,8 +94,8 @@ def 测试柴油发电信息():
     )
 
 
-# @fixture()
-
+@fixture()
+def 测试柴油发电模型(测试柴油发电信息: 柴油发电信息)
 
 @fixture(scope="session")
 def 测试计算参数():
@@ -319,7 +319,6 @@ def test_Piecewise(
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):
-    from ies_optim import 柴油发电模型, 柴油发电信息
     ...
 
 
