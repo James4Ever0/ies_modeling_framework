@@ -390,7 +390,8 @@ def test_柴油发电(
 
 def test_电价模型():
     from ies_optim import 电负荷信息
-    myInfo = 电负荷信息.parse_obj(dict(设备名称 = 'Any', EnergyConsumption=[1,2,3], MaxEnergyConsumption=4, PriceModel = dict()))
+    myInfo = 电负荷信息.parse_obj(dict(设备名称 = 'Any', EnergyConsumption=[1,2,3], MaxEnergyConsumption=4, PriceModel = dict(PriceList = [1]*12)))
+    print(myInfo)
 
 
 def test_柴油(model_wrapper: ModelWrapper):
