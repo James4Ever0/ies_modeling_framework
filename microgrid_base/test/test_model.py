@@ -213,7 +213,6 @@ def test_VarMultiplySingle(
 
 def test_柴油发电(model_wrapper: ModelWrapper):
     from ies_optim import 柴油发电模型, 柴油发电信息
-
     ...
 
 
