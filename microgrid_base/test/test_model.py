@@ -342,7 +342,12 @@ def test_Piecewise(
 
 
 @pytest.mark.parametrize(
-    "power_output, expected_val, expected_diesel", [(10, 10, -3 * 0.001 * 10)]
+    "power_output, expected_val, expected_diesel",
+    [
+        (10, 10, -3 * 0.001 * 10),
+        (20, 20, -1 * 0.001 * 20),
+        (20, 20, -1 * 0.001 * 20),
+    ],
 )
 def test_柴油发电(
     model_wrapper: ModelWrapper,
@@ -364,7 +369,7 @@ def test_柴油发电(
         print("SOLVER RESULTS?")
         print(s_results)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS
+        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS*.01
 
 
 def test_柴油(model_wrapper: ModelWrapper):
