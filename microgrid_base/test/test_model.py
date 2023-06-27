@@ -366,11 +366,17 @@ def test_柴油发电(
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
-        print(s_results) # check solver status.
+        print(s_results)  # check solver status.
         TC = s_results.solver.termination_condition
         SS = s_results.solver.status
+        normalTCs = [
+            TerminationCondition.globallyOptimal,
+            TerminationCondition.locallyOptimal,
+            TerminationCondition.feasible,
+            TerminationCondition.optimal,
+        ]
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS*.01
+        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS * 0.01
 
 
 def test_柴油(model_wrapper: ModelWrapper):
