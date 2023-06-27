@@ -1597,6 +1597,8 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
+        # BUG: x out of bound, resulting into unsolvable problem.
+        _x_vals = 
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         PWL = []
@@ -1605,8 +1607,8 @@ class 设备模型:
             PW = Piecewise(
                 y_var[i],
                 x_var[i],
-                pw_pts=x_vals,
-                f_rule=y_vals,
+                pw_pts=_x_vals,
+                f_rule=_y_vals,
                 pw_repn=pw_repn,
                 pw_constr_type=pw_constr_type,
                 unbounded_domain_var=unbounded_domain_var,
