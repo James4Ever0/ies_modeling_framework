@@ -36,3 +36,7 @@ class sampleLex(metaclass=LexMeta):
 myLex = sampleLex()
 print(dir(sampleLex))
 print(dir(myLex))
+
+import ply.yacc as yacc
+
+myParser = yacc.yacc()
