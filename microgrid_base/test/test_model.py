@@ -216,10 +216,10 @@ def test_VarMultiplySingle(
     测试设备模型: 设备模型,
     v0_min, v0_max, v1_min, v1_max, sense, expected,
 ):
-    v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
+    v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)
 
-    v1 = 测试设备模型.单变量("v1", bounds=(v1_min, v1_max))
+    v1 = 测试设备模型.变量列表("v1", bounds=(v1_min, v1_max))
     v1_dict = dict(var=v1, max=v1_max, min=v1_min)
 
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
