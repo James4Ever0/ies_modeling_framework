@@ -367,7 +367,8 @@ def test_柴油发电(
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)  # check solver status.
-        assert s_results
+        
+        assert s_results, "no solver result."
         TC = s_results.solver.termination_condition
         SS = s_results.solver.status
         normalSSs = [SolverStatus.ok, SolverStatus.warning]
@@ -380,8 +381,10 @@ def test_柴油发电(
         error_msg = []
         if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
         if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
-        if error_msg: 
+        if error_msg:
+            raise Exception("\n".join(error_msg))
         # TODO: can apply this to "solve_model.py"
+        
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS * 0.01
 

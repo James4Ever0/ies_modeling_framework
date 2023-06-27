@@ -135,6 +135,24 @@ def solveModelFromCalcParamList(
             # print("OBJECTIVE?")
             # OBJ.display()
             # try:
+            
+            
+            assert s_results, "no solver result."
+            TC = s_results.solver.termination_condition
+            SS = s_results.solver.status
+            normalSSs = [SolverStatus.ok, SolverStatus.warning]
+            normalTCs = [
+                TerminationCondition.globallyOptimal,
+                TerminationCondition.locallyOptimal,
+                TerminationCondition.feasible,
+                TerminationCondition.optimal,
+            ]
+            error_msg = []
+            if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
+            if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
+            if error_msg:
+                raise Exception("\n".join(error_msg))
+
             print("OBJ:", value(OBJ))
             # export value.
             # import json
