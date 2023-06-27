@@ -225,6 +225,13 @@ def test_VarMultiplySingle(
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
     
     model_wrapper.Objective(expr=v0_v1, sense=sense)
+    
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        assert abs(value(v0_v1) - expected) <= EPS
 
 
 def test_单表达式生成指示变量(
