@@ -1599,7 +1599,7 @@ class 设备模型:
     ):
         # BUG: x out of bound, resulting into unsolvable problem.
         assert x_vals[0] <= x_vals[-1]
-        _x_vals = [x_vals[0]-sel] + x_vals +[ x_vals[-1]+]
+        _x_vals = [x_vals[0]-self.BigM] + x_vals +[ x_vals[-1]+self.BigM]
         _y_vals = [y_vals[0]] + y_vals +[ y_vals[-1]]
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
