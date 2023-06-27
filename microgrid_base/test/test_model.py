@@ -339,12 +339,21 @@ def test_Piecewise(
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 
-@pytest.mark.parametrize("power_output", [(10,)])
-def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output):
+@pytest.mark.parametrize("power_output, expected_val", [(10, 10)])
+def test_柴油发电(
+    model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型, power_output, expected_val
+):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     model_wrapper.Objective(obj_expr, sense=minimize)
+
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
 
 
 def test_柴油(model_wrapper: ModelWrapper):
