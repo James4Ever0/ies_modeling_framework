@@ -52,7 +52,7 @@ class 电价转换:
 
 
 class 常数电价(BaseModel, 电价转换):
-    Price: confloat(gt=0) = Field("电价", description="单位: 元/kWh")
+    Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
 
@@ -161,12 +161,12 @@ class 分时分月电价(BaseModel, 电价转换):
 
 
 class 计价阶梯(常数电价):
-    LowerLimit: confloat(ge=0) = Field("功率下限")
+    LowerLimit: confloat(ge=0) = Field(title="功率下限")
 
 
 class 阶梯电价(BaseModel):
     PriceStruct: conlist(计价阶梯, min_items=1) = Field(
-        "长度不定的计价阶梯列表", description="单位: 元/kWh"
+        title="长度不定的计价阶梯列表", description="单位: 元/kWh"
     )
 
     @validator("PriceStruct")
@@ -309,24 +309,24 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -2221,7 +2221,6 @@ class 柴油发电模型(设备模型):
             [v1 * 0.0010000000000000002, v2 * 0.01]
             for v1, v2 in 设备信息.DieselToPower_Load
         ]
-        self.DieselToPower_Load.sort(key=lambda x: x[1])
         """
         DieselToPower: 燃油消耗率
         单位: m3 / kWh <- L/kWh
@@ -2229,6 +2228,7 @@ class 柴油发电模型(设备模型):
         Load: 负载率
         单位: one <- percent
         """
+        self.DieselToPower_Load.sort(key=lambda x: x[1])
 
         ##### PORT VARIABLE DEFINITION ####
 
@@ -2996,18 +2996,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3156,18 +3156,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
