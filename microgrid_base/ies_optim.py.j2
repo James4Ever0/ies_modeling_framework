@@ -792,19 +792,21 @@ class 设备模型:
         {# x_var can be binary. #}
 
         {# to eliminate the issue of overflow: #}
-        {# approach 1: first divide variable by some number, then multiply by that. #}
+        {# approach 1: first divide variable by some number, then multiply by that. (not working) #}
         {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
 
         h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
-        divider = 1e+3
+        {# divider = 1e+2 #}
 
         self.mw.Constraint(h<= b_var* self.BigM)
         self.mw.Constraint(h>= -b_var*self.BigM)
-        self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
-        self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM)
-
-        return h*divider
+        {# self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
+        self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM) #}
+        self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
+        self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
+        return h
+        {# return h*divider #}
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
