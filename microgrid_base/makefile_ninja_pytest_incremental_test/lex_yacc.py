@@ -39,4 +39,6 @@ print(dir(myLex))
 
 import ply.yacc as yacc
 
-myParser = yacc.yacc()
+# be it a class?
+
+myParser = yacc.yacc(module = myModule)
