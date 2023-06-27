@@ -789,10 +789,14 @@ class 设备模型:
         assert b_var.is_binary()
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
-        {# to eliminate issue of overflow:approach 1: #}
+
+        {# to eliminate the issue of overflow: #}
+        {# approach 1: first divide variable by some number, then multiply by that. #}
+        {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
+        
         h = self.单变量(self.getSpecialVarName("BVM"))
 
-        self.mw.Constraint(h<=b_var* self.BigM)
+        self.mw.Constraint(h<= b_var* self.BigM)
         self.mw.Constraint(h>= -b_var*self.BigM)
         self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
         self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
