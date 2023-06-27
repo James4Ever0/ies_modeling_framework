@@ -238,7 +238,7 @@ def test_单表达式生成指示变量(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
 ):
-    ...
+    
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):
