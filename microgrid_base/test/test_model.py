@@ -367,7 +367,8 @@ def test_柴油发电(
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results) # check solver status.
-        TC = s_results.termination_condition
+        TC = s_results.solver.termination_condition
+        SS = s_results.solver.status
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS*.01
 
