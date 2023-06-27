@@ -4,6 +4,7 @@ import sys
 sys.path.append("../")
 
 from typing import cast
+
 try:
     from typing import Protocol
 except:
@@ -126,12 +127,16 @@ def test_convertMonthToDays():
     assert convertMonthToDays(1) == sum(month_days[:1])
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
+
+
 from ies_optim import 设备模型
+
 
 @fixture
 def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
     mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
     yield mDeviceModel
+
 
 # from collections import namedtuple
 import pytest
@@ -143,7 +148,7 @@ import pytest
         (Reals, 3, Boolean, 0, 10, -1, 10, maximize),
         (Reals, 3, Boolean, 0, -1, -1, 10, minimize),
         (Reals, 3, Boolean, 1, 10, -1, 10, maximize),
-        (Reals, 3, Boolean, 1, -1, -1, 10, minimize), # error: assert 10 <= 0.01
+        (Reals, 3, Boolean, 1, -1, -1, 10, minimize),  # error: assert 10 <= 0.01
         (NonNegativeReals, 3, Boolean, 0, 10, 1, 10, maximize),
         (NonNegativeReals, 3, Boolean, 0, 0, 1, 10, minimize),
         (NonNegativeReals, 3, Boolean, 1, 10, 1, 10, maximize),
@@ -163,7 +168,7 @@ import pytest
 )
 def test_BinVarMultiplySingle(
     model_wrapper: ModelWrapper,
-    测试计算参数: 计算参数,
+    # 测试计算参数: 计算参数,
     测试设备模型: 设备模型,
     v0_within,
     v0_init,
@@ -175,9 +180,7 @@ def test_BinVarMultiplySingle(
     sense,
 ):
     assert min_v0 <= max_v0
-    v0 = 测试设备模型.单变量(
-        "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
-    )
+    v0 = 测试设备模型.单变量("v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0))
 
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
@@ -200,12 +203,17 @@ def test_BinVarMultiplySingle(
         print(f"ACTUAL: {value(v0)*value(v1)}")
         assert abs(value(v_result) - result) <= EPS
 
-def test_VarMultiplySingle(model_wrapper: ModelWrapper):
+
+def test_VarMultiplySingle(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+):
     ...
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):
     from ies_optim import 柴油发电模型, 柴油发电信息
+
     ...
 
 
