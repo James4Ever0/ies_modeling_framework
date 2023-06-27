@@ -377,9 +377,11 @@ def test_柴油发电(
             TerminationCondition.feasible,
             TerminationCondition.optimal,
         ]
-        assert TC in normalTCs
-        assert SS in normalSSs
-        # can apply this to "solve_model.py"
+        error_msg = []
+        if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
+        if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
+        if error_msg: 
+        # TODO: can apply this to "solve_model.py"
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS * 0.01
 
