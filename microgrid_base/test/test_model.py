@@ -293,7 +293,7 @@ import numpy as np
     [
         (0, 2, minimize),
         (0, 2, maximize),
-        (0 - 1, 2 - 1, minimize),
+        (0 - 1, 2 - 1, minimize), # y = 0 if x is out of bound
         (0 - 1, 2 - 1, maximize),
         (0 + 3, 2 + 3, minimize),
         (0 + 3, 2 + 3, maximize),
