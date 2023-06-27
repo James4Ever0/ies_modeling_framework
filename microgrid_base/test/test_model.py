@@ -101,14 +101,17 @@ def 测试柴油发电信息():
 def 测试计算参数():
     import numpy as np
 
-    a = abs(np.random.random((8760,))).tolist()
+    a = abs(np.random.random((24,))).tolist()
+    # a = abs(np.random.random((8760,))).tolist()
 
     return 计算参数(
         计算目标="经济",
         # 计算目标="经济_环保",
         # 计算目标="环保",
         计算步长="小时",
-        典型日=False,
+        典型日=True,
+        典型日代表的日期 = [1],
+        # 典型日=False,
         计算类型="设计规划",
         风速=a,
         光照=a,
