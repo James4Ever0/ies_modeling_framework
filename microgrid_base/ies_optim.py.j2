@@ -795,9 +795,9 @@ class 设备模型:
         {# approach 1: first divide variable by some number, then multiply by that. #}
         {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
 
-        h = self.单变量(self.getSpecialVarName("BVM"))
+        h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
-        divider = 1e+2
+        divider = 1e+3
 
         self.mw.Constraint(h<= b_var* self.BigM)
         self.mw.Constraint(h>= -b_var*self.BigM)
