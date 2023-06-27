@@ -64,10 +64,14 @@ EPS = 0.03
 
 
 from ies_optim import 柴油信息
+
+
 @fixture(scope="session")
 def 测试柴油信息():
 
     return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
+
+
 from ies_optim import 柴油发电信息
 
 
@@ -93,14 +97,25 @@ def 测试柴油发电信息():
         MinDeviceCount=1,
     )
 
-from ies_optim import 柴油发电模型
-from import 柴油发电ID
-@fixture()
+
+from ies_optim import 柴油发电模型, 柴油发电ID
+
 
 @fixture()
-def 测试柴油发电模型(测试柴油发电信息: 柴油发电信息,model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油发电ID: 柴油发电ID):
-    mDieselEngineModel = 柴油发电模型(PD = {}, mw=model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 测试柴油发电ID, 设备信息 =  测试柴油发电信息)
+def 测试柴油发电ID():
+    devID = 柴油发电ID(ID=0, 燃料接口=1, 电接口=2)
+    return devID
+
+
+@fixture()
+def 测试柴油发电模型(
+    测试柴油发电信息: 柴油发电信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油发电ID: 柴油发电ID
+):
+    mDieselEngineModel = 柴油发电模型(
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油发电ID, 设备信息=测试柴油发电信息
+    )
     return mDieselEngineModel
+
 
 @fixture(scope="session")
 def 测试计算参数():
@@ -298,7 +313,7 @@ import numpy as np
     [
         (0, 2, minimize),
         (0, 2, maximize),
-        (0 - 1, 2, minimize), # BUG: y = 0 if x is out of bound
+        (0 - 1, 2, minimize),  # BUG: y = 0 if x is out of bound
         (0 - 1, 2, maximize),
         (0 + 3, 4, minimize),
         (0 + 3, 4, maximize),
