@@ -285,18 +285,21 @@ def test_单表达式生成指示变量(
         assert abs(expected_v1_x_abs - value(v1.x_abs)) <= EPS
 
 import numpy as np
-@pytest.mark.parametrize("x_init, y_expected", [()])
+
+@pytest.mark.parametrize("x_init, y_expected, sense", [
+    (0,2,minimize),
+    ])
 def test_Piecewise(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
-    x_init
+    x_init,  y_expected, sense
 ):
     x = [测试设备模型.单变量('x', initialize = x_init, bounds= (x_init, x_init))]
     y = [测试设备模型.单变量('y')]
     x_vals = np.linspace(0,2, 100)
     y_vals = x_vals +2
     测试设备模型.Piecewise(x,y, x_vals.tolist(), y_vals.tolist(), range_list = [0])
-    model_wrapper.Objective(expr = obj_expr, sense = minimize)
+    model_wrapper.Objective(expr = obj_expr, sense = sense)
 
 
 def test_柴油发电(model_wrapper: ModelWrapper):
