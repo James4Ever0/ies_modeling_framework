@@ -1598,7 +1598,9 @@ class 设备模型:
         unbounded_domain_var=True,
     ):
         # BUG: x out of bound, resulting into unsolvable problem.
-        _x_vals = 
+        assert x_vals[0] <= x_vals[-1]
+        _x_vals = [x_vals[0]-sel] + x_vals +[ x_vals[-1]+]
+        _y_vals = [y_vals[0]] + y_vals +[ y_vals[-1]]
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         PWL = []
