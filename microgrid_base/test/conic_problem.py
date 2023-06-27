@@ -1,10 +1,10 @@
 from sympy.abc import x, y
 import numpy as np
 
-expr = x*y - 2*x+3*y
+expr = x*y +x-y
 # help(expr.evalf)
-x_min, x_max = 1,5
-y_min, y_max = 2,4
+x_min, x_max = -1,3
+y_min, y_max = -2,4
 
 
 min_val = 1000
