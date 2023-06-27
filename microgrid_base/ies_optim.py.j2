@@ -100,7 +100,7 @@ class 电价转换:
         return ret
 
 class 常数电价(BaseModel, 电价转换):
-    Price:{{pos_float}} = Field("电价", description = "{{电价单位描述}}")
+    Price:{{pos_float}} = Field(title = "电价", description = "{{电价单位描述}}")
 
 {%call getFeeWrapper()%}
         price = self.Price
@@ -159,10 +159,10 @@ class 分时分月电价(BaseModel, 电价转换):
 {% endcall%} #}
 
 class 计价阶梯(常数电价):
-    LowerLimit : {{non_neg_float}} = Field("功率下限")
+    LowerLimit : {{non_neg_float}} = Field(title = "功率下限")
 
 class 阶梯电价(BaseModel):
-    PriceStruct: conlist(计价阶梯, min_items=1) = Field("长度不定的计价阶梯列表", description = "{{电价单位描述}}")
+    PriceStruct: conlist(计价阶梯, min_items=1) = Field(title = "长度不定的计价阶梯列表", description = "{{电价单位描述}}")
 
     @validator("PriceStruct")
     def checkPriceStruct(cls, v: List[计价阶梯]):
