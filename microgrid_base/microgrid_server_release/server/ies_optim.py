@@ -280,13 +280,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -1256,7 +1256,9 @@ class ModelWrapper:
             print("ARGS:", args)
             print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method 'Constraint'")
-        deg = expr.polynomial_degree()
+        deg = getattr(expr, "polynomial_degree", 0)
+        if deg:
+            deg = expr.polynomial_degree()
         if deg != 1:
             print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
@@ -1298,7 +1300,9 @@ class ModelWrapper:
             print("ARGS:", args)
             print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method 'Objective'")
-        deg = expr.polynomial_degree()
+        deg = getattr(expr, "polynomial_degree", 0)
+        if deg:
+            deg = expr.polynomial_degree()
         if deg != 1:
             print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
@@ -1597,6 +1601,13 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
+
+        # BUG: x out of bound, resulting into unsolvable problem.
+        assert x_vals[0] <= x_vals[-1]
+        expand_val = 1e3
+        _x_vals = [x_vals[0] - expand_val] + x_vals + [x_vals[-1] + expand_val]
+        _y_vals = [y_vals[0]] + y_vals + [y_vals[-1]]
+
         if range_list is None:
             range_list = list(range(self.计算参数.迭代步数))
         PWL = []
@@ -1605,8 +1616,8 @@ class 设备模型:
             PW = Piecewise(
                 y_var[i],
                 x_var[i],
-                pw_pts=x_vals,
-                f_rule=y_vals,
+                pw_pts=_x_vals,
+                f_rule=_y_vals,
                 pw_repn=pw_repn,
                 pw_constr_type=pw_constr_type,
                 unbounded_domain_var=unbounded_domain_var,
@@ -2223,18 +2234,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）

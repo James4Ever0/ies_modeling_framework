@@ -506,7 +506,10 @@ class ModelWrapper:
             print("ARGS:", args)
             print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method '{{k}}'")
-        deg = expr.polynomial_degree()
+        deg = getattr(expr, "polynomial_degree", 0)
+        if deg:
+            deg = expr.polynomial_degree()
+        {# deg = expr.polynomial_degree() #}
         if deg != 1:
             print("EXPR DEG:", deg)
             expr_repr =f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
