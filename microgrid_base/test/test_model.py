@@ -408,11 +408,11 @@ def test_电价模型():
 @pytest.mark.parametrize(
     "day_index, expected_month",
     [
-        (1, 1),
-        pytest.param(365, 12, marks=pytest.mark.xfail),
-        (364, 12),
-        (363, 12),
-        (333, 11),
+        (1, 0),
+        pytest.param(365, 11, marks=pytest.mark.xfail),
+        (364, 11),
+        (363, 11),
+        (333, 10),
     ],
 )
 def test_timeInDay(day_index, expected_month):
