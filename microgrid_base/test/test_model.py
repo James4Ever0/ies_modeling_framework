@@ -513,3 +513,6 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         print(s_results)
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
+
+@pytest.mark.parametrize("input_rate)
+def test_双向变流器()
