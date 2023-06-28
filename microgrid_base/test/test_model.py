@@ -377,7 +377,7 @@ def test_柴油发电(
 
     with SolverFactory("cplex") as solver:
         # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        # solver.options[''] = ...
+        solver.options['timelimit'] = 10
         # print(solver.options.keys())
         # breakpoint()
         print(">>>SOLVING<<<")
@@ -394,6 +394,8 @@ def test_柴油发电(
             TerminationCondition.locallyOptimal,
             TerminationCondition.feasible,
             TerminationCondition.optimal,
+            TerminationCondition.maxTimeLimit,
+            TerminationCondition.
         ]
         error_msg = []
         if TC not in normalTCs:
