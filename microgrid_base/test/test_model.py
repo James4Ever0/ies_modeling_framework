@@ -119,15 +119,19 @@ def 测试柴油发电模型(
     )
     return mDieselEngineModel
 
+
 from typing import Protocol, Any
+
 
 class Request(Protocol):
     param: Any
     cache: Any
 
-@fixture(scope="session", params = ['设计规划', '仿真模拟'], ids = ['PLANNING', 'SIMULATION'])
-def 测试计算参数(request: Request): # _pytest.fixtures.SubRequest
+
+@fixture(scope="session", params=["设计规划", "仿真模拟"], ids=["PLANNING", "SIMULATION"])
+def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
     import numpy as np
+
     print(type(request))
     # breakpoint()
 
@@ -143,7 +147,7 @@ def 测试计算参数(request: Request): # _pytest.fixtures.SubRequest
         典型日代表的日期=[1],
         # 典型日=False,
         # 计算类型="仿真模拟",
-        计算类型= request.param,
+        计算类型=request.param,
         # 计算类型="设计规划",
         风速=a,
         光照=a,
@@ -355,10 +359,12 @@ def test_Piecewise(
         print(s_results)
         assert abs(value(obj_expr) - y_expected) <= EPS
 
+
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-@pytest.mark.timeout(30) # pip3 install pytest-timeout
+
+@pytest.mark.timeout(30)  # pip3 install pytest-timeout
 @pytest.mark.parametrize(
     "power_output, expected_val, expected_diesel",
     [
@@ -382,7 +388,7 @@ def test_柴油发电(
 
     with SolverFactory("cplex") as solver:
         # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        solver.options['timelimit'] = 5 # use this instead.
+        solver.options["timelimit"] = 5  # use this instead.
         # print(solver.options.keys())
         # breakpoint()
         print(">>>SOLVING<<<")
@@ -409,8 +415,8 @@ def test_柴油发电(
         if error_msg:
             raise Exception("\n".join(error_msg))
         # TODO: can apply this to "solve_model.py"
-        print("ELECTRICITY:",value(测试柴油发电模型.原电输出[0]),expected_val)
-        print('DIESEL:',value(测试柴油发电模型.柴油输入[0]), expected_diesel)
+        print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
+        print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
         # breakpoint()
@@ -418,6 +424,7 @@ def test_柴油发电(
 
 def test_电价模型():
     from ies_optim import 电负荷信息, 分月电价
+
     mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
         dict(
@@ -467,22 +474,29 @@ def test_分月电价(hour_index, expected_price, power):
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
+
 from ies_optim import 柴油模型, 计算参数, 柴油信息, 柴油ID
+
 
 @fixture
 def 测试柴油ID():
-    devId = 柴油ID(ID = 1, 燃料接口 = 2)
+    devId = 柴油ID(ID=1, 燃料接口=2)
     return devId
+
 
 @fixture
 def 测试柴油信息():
-    devInfo = 柴油信息(设备名称 = 'Any', Price = (,), 热值 = (,), CO2 = 2)
-    return
+    devInfo = 柴油信息(设备名称="Any", Price=(2, "万元/L"), 热值=(2, "kWh/L"), CO2=(2, "kg/L"))
+    return devInfo
+
 
 @fixture
 def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油ID: 柴油ID, 测试柴油信息: 柴油信息):
-    mDieselModel = 柴油模型(PD = {}, mw = model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 测试柴油ID, 设备信息 = 测试柴油信息)
+    mDieselModel = 柴油模型(
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油ID, 设备信息=测试柴油信息
+    )
     return mDieselModel
 
-def test_柴油(model_wrapper: ModelWrapper,测试柴油模型:柴油模型):
+@pytest.mark.parametrize('diesel_rate, fee_rate', [(1,),(3,)])
+def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate):
     ...
