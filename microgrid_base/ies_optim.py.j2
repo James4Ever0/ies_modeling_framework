@@ -774,7 +774,7 @@ class 设备模型:
         y_vals: List[float],
      range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
 
-        # TODO: if performance overhead is significant, shall convert into "MC" piecewise functions, or stepwise functions.
+        # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
         assert x_vals[0] <= x_vals[-1]
