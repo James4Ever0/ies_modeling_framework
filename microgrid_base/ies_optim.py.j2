@@ -817,7 +817,7 @@ class 设备模型:
         if expr_type in numeric_types:
             results.append(expr)
         else:
-            # implement expr breakdown. usually of pyomo expressions.
+            # implement expression breakdown. usually pyomo expressions.
             ...
         return results
     
@@ -838,6 +838,7 @@ class 设备模型:
             h_list = []
             for sub_x_var in self.breakdownExpression(x_var):
                 _h = self.BinVarMultiplySingle(b_var,sub_x_var, recurse=False)
+                h_list.append(_h)
         else:
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
