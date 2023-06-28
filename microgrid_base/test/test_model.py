@@ -125,13 +125,11 @@ class Request(Protocol):
     param: Any
     cache: Any
 
-fixture.SubRequest
-
 @fixture(scope="session", params = ['设计规划', '仿真模拟'], ids = ['PLANNING', 'SIMULATION'])
-def 测试计算参数(request: Request):
+def 测试计算参数(request: Request): # _pytest.fixtures.SubRequest
     import numpy as np
     print(type(request))
-    breakpoint()
+    # breakpoint()
 
     a = abs(np.random.random((24,))).tolist()
     # a = abs(np.random.random((8760,))).tolist()
@@ -456,6 +454,7 @@ def test_DayToMonth(day_index, expected_month):
         (24 * 40, 4 * 0.0001 * 2, 4),
         (24 * 30 * 2 + 10, 4 * 0.0001 * 3, 4),
         pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
+        pytest.param(8779, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
     ],
 )
 def test_分月电价(hour_index, expected_price, power):
