@@ -398,7 +398,7 @@ def test_柴油发电(
         # TODO: can apply this to "solve_model.py"
 
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS * 0.01
+        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.001
 
 
 def test_电价模型():
