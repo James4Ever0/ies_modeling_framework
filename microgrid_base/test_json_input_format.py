@@ -31,4 +31,4 @@ for index, mDict in enumerate(EFG.mDictList):
 mDictList = EFG.dict()["mDictList"]
 calcParamList = mDictListToCalcParamList(mDictList)
 resultList = solveModelFromCalcParamList(calcParamList)
-# breakpoint()
+breakpoint()
