@@ -1109,7 +1109,7 @@ class {{class_name}}模型(设备模型):
 
         # windspeed (m/s) -> current power per device (kW)
         WS = np.array(self.计算参数.风速)
-        单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, WS >self.MinWindSpeed and WS <= self.RatedWindSpeed , WS >self.RatedWindSpeed and WS <=self.MaxWindSpeed, WS > self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
+        单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, np.logical_and(WS >self.MinWindSpeed,WS <= self.RatedWindSpeed) , np.logical_and(WS >self.RatedWindSpeed, WS <=self.MaxWindSpeed) , WS > self.MaxWindSpeed], [0,lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),self.RatedPower,0])
         单台发电功率 = 单台发电功率.tolist()
         {% endif %}
 
@@ -1599,7 +1599,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
         print()
         print(f"IO:{display_var_names(io_indexs)}")
         print("_"*20)
-        
+
         for j in range(algoParam.迭代步数):
             seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}
             mw.Constraint(seqsum >=0)
