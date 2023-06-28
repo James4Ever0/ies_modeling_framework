@@ -166,8 +166,10 @@ def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
 import pytest
 
 # BUG: BigM <= 1e+8
+@pytest.mark.parametrize("v0_is_constant", [False, True])
+@pytest.mark.parametrize("v1_within", [Boolean])
 @pytest.mark.parametrize(
-    "v0_within, v0_init, v1_within, v1_init, result, min_v0, max_v0, sense",
+    "v0_within, v0_init, , v1_init, result, min_v0, max_v0, sense",
     [
         (Reals, 3, Boolean, 0, 10, -1, 10, maximize),
         (Reals, 3, Boolean, 0, -1, -1, 10, minimize),
@@ -202,10 +204,15 @@ def test_BinVarMultiplySingle(
     max_v0,
     min_v0,
     sense,
+    v0_is_constant,
 ):
     assert min_v0 <= max_v0
-    if v0_is_
-    v0 = 测试设备模型.单变量("v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0))
+    if v0_is_constant:
+        v0 = v0_init
+    else:
+        v0 = 测试设备模型.单变量(
+            "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
+        )
 
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
