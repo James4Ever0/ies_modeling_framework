@@ -77,7 +77,7 @@ import math
 {% macro getCurrentTimeFromTimeInDay()%}
         current_time = math.floor(time_in_day%24)
 {% endmacro%}
-{% macro returnElectricPrice()%}
+{% macro returnElectricPrice() %}
         return self.convert(price*power)
 {% endmacro%}
 {% macro getFeeWrapper()%}
