@@ -802,9 +802,10 @@ class 设备模型:
 
     @staticmethod
     def breakdownExpression(expr):
+        assert type(expr) != {{IndexedVar}}, "Expression: {repr(expr)[:200]}Invalid expression type."
 
         numeric_types = [float, int]
-        variable_types = []
+        variable_types = [ScalarVar, ]
         # otherwise, expression types.
         results = []
 
