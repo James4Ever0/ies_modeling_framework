@@ -3832,11 +3832,12 @@ def compute(
         for j in range(algoParam.迭代步数):
             seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
             print("_"*20)
-            print(f"INPUTS:{'\n    '.join([repr(PD[i][j]) for i in input_indexs])}")
+            display_var_names = lambda indexs: '\n    '.join([repr(PD[i][j]) for i in indexs])
+            print(f"INPUTS:{display_var_names(input_indexs)}")
             print()
-            print(f"OUTPUTS:{'\n    '.join([repr(PD[i][j]) for i in output_indexs])}")
+            print(f"OUTPUTS:{display_var_names(output_indexs)}")
             print()
-            print(f"IO:{'\n    '.join([repr(PD[i][j]) for i in io_indexs])}")
+            print(f"IO:{display_var_names(io_indexs)}")
             print("_"*20)
 
             mw.Constraint(seqsum >= 0)
