@@ -443,7 +443,7 @@ from expr_utils import getExprStrParsedToExprList
 {# mystr = '(1,2,3), (((1+2),2),5,(6,7)) 23'
 print(find_parentheses(mystr)) #}
 
-def withBanner(banner:str):
+def withBanner(banner: str = ""):
     def decorator(func):
         def inner_func(*args, **kwargs):
             print(f"_____________{banner}_____________")
@@ -452,6 +452,7 @@ def withBanner(banner:str):
             return val
         return inner_func
     return decorator
+
 
 @withBanner("ERROR LOG")
 def examineSubExprDegree(expr):

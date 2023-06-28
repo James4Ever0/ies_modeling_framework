@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -1209,6 +1209,7 @@ from progressbar import progressbar
 
 from expr_utils import getExprStrParsedToExprList
 
+
 def withBanner(banner: str = ""):
     def decorator(func):
         def inner_func(*args, **kwargs):
@@ -1216,11 +1217,13 @@ def withBanner(banner: str = ""):
             val = func(*args, **kwargs)
             print(f"_____________{banner}_____________")
             return val
+
         return inner_func
+
     return decorator
 
 
-@withBanner(banner="ERROR LOG")
+@withBanner("ERROR LOG")
 def examineSubExprDegree(expr):
     data = str(expr)
     exprlist = getExprStrParsedToExprList(data)
@@ -2289,18 +2292,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
