@@ -127,7 +127,7 @@ def solveModelFromCalcParamList(
             print("SOLVER RESULTS?")
             rich.print(results)
             
-            breakpoint() # TODO: check diesel engine issues.
+            # breakpoint() # TODO: check diesel engine issues.
             
             # except:
             #     import traceback

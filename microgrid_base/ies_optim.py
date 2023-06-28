@@ -299,13 +299,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -332,13 +332,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -2887,18 +2887,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2919,10 +2919,12 @@ class 变压器模型(设备模型):
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
+        # TODO: figure out what "PowerParameter" does
+        # TODO: fix efficiency issue
         self.RangeConstraint(
             self.电输入,
             self.电输出,
-            lambda x, y: x == -y * self.Efficiency * self.PowerParameter,
+            lambda x, y: x * self.Efficiency * self.PowerParameter == -y,
         )
         self.RangeConstraintMulti(
             self.电输入, expression=lambda x: -x <= self.RatedPower * self.DeviceCount
@@ -3083,7 +3085,9 @@ class 变流器模型(设备模型):
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
-        self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x == -y * self.Efficiency)
+        # TODO: figure out what "PowerParameter" does
+        # TODO: fix efficiency issue
+        self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x * self.Efficiency == -y)
         self.RangeConstraintMulti(
             self.电输入, expression=lambda x: -x <= self.RatedPower * self.DeviceCount
         )
@@ -3365,18 +3369,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3831,14 +3835,17 @@ def compute(
         # add them all.
         for j in range(algoParam.迭代步数):
             seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
-            print("_"*20)
-            display_var_names = lambda indexs: '\n    '.join([repr(PD[i][j]) for i in indexs])
+
+            print("_" * 20)
+            display_var_names = lambda indexs: "\n    ".join(
+                [repr(PD[i][j]) for i in indexs]
+            )
             print(f"INPUTS:{display_var_names(input_indexs)}")
             print()
             print(f"OUTPUTS:{display_var_names(output_indexs)}")
             print()
             print(f"IO:{display_var_names(io_indexs)}")
-            print("_"*20)
+            print("_" * 20)
 
             mw.Constraint(seqsum >= 0)
 
