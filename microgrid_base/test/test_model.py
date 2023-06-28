@@ -166,7 +166,7 @@ def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
 import pytest
 
 # BUG: BigM <= 1e+8
-@pytest.mark.parametrize("v0_is_constant,v0_override", [False, True])
+@pytest.mark.parametrize("v0_is_constant", [False, True])
 @pytest.mark.parametrize(
     "v0_within, min_v0, max_v0, sense, result",
     [
@@ -221,6 +221,13 @@ def test_BinVarMultiplySingle(
         print(f"PROD: {value(v_result)}")
         print(f"EXPECTED: {result}")
         print(f"ACTUAL: {value(v0)*value(v1)}")
+        if v0_is_constant:
+            if sense == minimize:
+                result = min(0, v0_init)
+            elif sense == maximize:
+                result = max(0, v0_init)
+            else:
+                assert False, f"Wrong sense: {sense}"
         assert abs(value(v_result) - result) <= EPS
 
 
