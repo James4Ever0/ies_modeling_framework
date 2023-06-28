@@ -5,6 +5,7 @@ from pydantic import conlist, conint, confloat, constr
 {# cast such type to all variables, to forbid var * var #}
 import pyomo.core.base
 {% set IndexedVar = "pyomo.core.base.var.IndexedVar"%}
+{% set pyomo.core.base.var._GeneralVarData%}
 {# forbid untyped code. #}
 {# mark as pyright global config. #}
 {# also for mypy #}
@@ -802,10 +803,10 @@ class 设备模型:
 
     @staticmethod
     def breakdownExpression(expr):
-        assert type(expr) != {{IndexedVar}}, "Expression: {repr(expr)[:200]}Invalid expression type."
+        assert type(expr) != {{IndexedVar}}, f"Expression: {repr(expr)[:200]}\nInvalid expression type."
 
         numeric_types = [float, int]
-        variable_types = [ScalarVar, ]
+        variable_types = [ScalarVar, {{GeneralVarData}}]
         # otherwise, expression types.
         results = []
 
