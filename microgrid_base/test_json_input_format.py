@@ -29,4 +29,5 @@ for index, mDict in enumerate(EFG.mDictList):
     topo = 拓扑图.from_json(mDict.dict())
     topo.check_consistency()
 
-resultList = solveModelFromCalcParamList(calcParamList)
+resultList = solveModelFromCalcParamList(EFG.dict()['mDictList'])
+# breakpoint()

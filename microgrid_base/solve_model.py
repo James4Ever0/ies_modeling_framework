@@ -125,6 +125,9 @@ def solveModelFromCalcParamList(
             results = solver.solve(mw.model, tee=True)
             print("SOLVER RESULTS?")
             rich.print(results)
+            
+            breakpoint() # check diesel engine issues.
+            
             # except:
             #     import traceback
             #     traceback.print_exc()
