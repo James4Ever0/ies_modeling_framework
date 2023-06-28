@@ -167,7 +167,11 @@ import pytest
 
 # BUG: BigM <= 1e+8
 @pytest.mark.parametrize("v0_is_constant", [False, True])
-@pytest.mark.parametrize("v0_within", [Reals, pytest.param(NonNegativeReals, marks = pytest.mark.xfail)])
+@pytest.mark.parametrize("v0_within, min_v0, max_v0, sense, result", [
+    (Reals, -1,10, minimize, -1),
+    (Reals, -1,10, maximize, 10),
+    (NonNegativeReals, 1,10)
+    ])
 @pytest.mark.parametrize("v1_within", [Boolean, pytest.param(NonNegativeReals, marks = pytest.mark.xfail)])
 @pytest.mark.parametrize(
     "v0_within, v0_init, v1_init, result, min_v0, max_v0, sense",
