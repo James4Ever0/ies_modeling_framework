@@ -471,10 +471,12 @@ from ies_optim import 柴油模型, 计算参数, 柴油信息, 柴油ID
 
 @fixture
 def 测试柴油ID():
-    return
+    devId = 柴油ID(ID = 1, 燃料接口 = 2)
+    return devId
 
 @fixture
 def 测试柴油信息():
+    devInfo = 柴油信息(设备名称 = 'Any', Price = (,), 热值 = (,), CO2 = 2)
     return
 
 @fixture
@@ -482,5 +484,5 @@ def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
     mDieselModel = 柴油模型(PD = {}, mw = model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 测试柴油ID, 设备信息 = 测试柴油信息)
     return mDieselModel
 
-def test_柴油(测试柴油模型:柴油模型):
+def test_柴油(model_wrapper: ModelWrapper,测试柴油模型:柴油模型):
     ...
