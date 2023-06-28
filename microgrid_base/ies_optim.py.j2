@@ -798,7 +798,8 @@ class 设备模型:
             PWL.append(PW) #}
         return PWL
     
-    def BinVarMultiplySingle(self, b_var, x_var):
+    def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
+    {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
         assert b_var.is_binary()
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
@@ -806,18 +807,22 @@ class 设备模型:
         {# to eliminate the issue of overflow: #}
         {# approach 1: first divide variable by some number, then multiply by that. (not working) #}
         {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
+        {# if using APP2, shall do recursion. #}
+        {# and mind all occurance of BigMs #}
+        if recurse:
+            
+        else:
+            h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
-        h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
+            {# divider = 1e+2 #}
 
-        {# divider = 1e+2 #}
-
-        self.mw.Constraint(h<= b_var* self.BigM)
-        self.mw.Constraint(h>= -b_var*self.BigM)
-        {# self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
-        self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM) #}
-        self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
-        self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
-        return h
+            self.mw.Constraint(h<= b_var* self.BigM)
+            self.mw.Constraint(h>= -b_var*self.BigM)
+            {# self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
+            self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM) #}
+            self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
+            self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
+            return h
         {# return h*divider #}
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
