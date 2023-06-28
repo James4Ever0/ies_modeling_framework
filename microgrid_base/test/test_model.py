@@ -521,7 +521,7 @@ from ies_optim import 风力发电ID,风力发电模型,风力发电信息
 
 @fixture
 def 测试风力信息():
-    ...
+    devInfo = 风力发电信息(设备名称 = "风力发电", 生产厂商 = 'Any', 设备型号 = '风力发电1', RatedPower = 100, RatedWindSpeed= 100, MinWindSpeed = 10, MaxWindSpeed = 200, PowerDeltaLimit= 2, CostPerKilowatt= )
 
 def test_风力发电():
     ...
