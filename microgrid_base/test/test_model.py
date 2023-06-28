@@ -166,25 +166,19 @@ def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
 import pytest
 
 # BUG: BigM <= 1e+8
-@pytest.mark.parametrize("v0_is_constant", [False, True])
-@pytest.mark.parametrize("v0_within, min_v0, max_v0, sense, result", [
-    (Reals, -1,10, minimize, -1),
-    (Reals, -1,10, maximize, 10),
-    (NonNegativeReals, 1,10)
-    ])
-@pytest.mark.parametrize("v1_within", [Boolean, pytest.param(NonNegativeReals, marks = pytest.mark.xfail)])
+@pytest.mark.parametrize("v0_is_constant,v0_override", [False, True])
 @pytest.mark.parametrize(
-    "v0_within, v0_init, v1_init, result, min_v0, max_v0, sense",
+    "v0_within, min_v0, max_v0, sense, result",
     [
-        (Reals, 3, 0, 10, -1, 10, maximize),
-        (Reals, 3, 0, -1, -1, 10, minimize),
-        (Reals, 3, 1, 10, -1, 10, maximize),
-        (Reals, 3, 1, -1, -1, 10, minimize),  # error: assert 10 <= 0.01
-        (NonNegativeReals, 3, 0, 10, 1, 10, maximize),
-        (NonNegativeReals, 3, 0, 0, 1, 10, minimize),
-        (NonNegativeReals, 3, 1, 10, 1, 10, maximize),
-        (NonNegativeReals, 3, 1, 0, 1, 10, minimize),
+        (Reals, -1, 10, minimize, -1),
+        (Reals, -1, 10, maximize, 10),
+        (NonNegativeReals, 1, 10, minimize, 0),
+        (NonNegativeReals, 1, 10, maximize, 10),
     ],
+)
+@pytest.mark.parametrize("v1_init", [0, 1])
+@pytest.mark.parametrize(
+    "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
 )
 def test_BinVarMultiplySingle(
     model_wrapper: ModelWrapper,
