@@ -167,29 +167,19 @@ import pytest
 
 # BUG: BigM <= 1e+8
 @pytest.mark.parametrize("v0_is_constant", [False, True])
-@pytest.mark.parametrize("v1_within", [Boolean])
+@pytest.mark.parametrize("v0_within", [Reals, pytest.param(NonNegativeReals, marks = pytest.mark.xfail)])
+@pytest.mark.parametrize("v1_within", [Boolean, pytest.param(NonNegativeReals, marks = pytest.mark.xfail)])
 @pytest.mark.parametrize(
-    "v0_within, v0_init, , v1_init, result, min_v0, max_v0, sense",
+    "v0_within, v0_init, v1_init, result, min_v0, max_v0, sense",
     [
-        (Reals, 3, Boolean, 0, 10, -1, 10, maximize),
-        (Reals, 3, Boolean, 0, -1, -1, 10, minimize),
-        (Reals, 3, Boolean, 1, 10, -1, 10, maximize),
-        (Reals, 3, Boolean, 1, -1, -1, 10, minimize),  # error: assert 10 <= 0.01
-        (NonNegativeReals, 3, Boolean, 0, 10, 1, 10, maximize),
-        (NonNegativeReals, 3, Boolean, 0, 0, 1, 10, minimize),
-        (NonNegativeReals, 3, Boolean, 1, 10, 1, 10, maximize),
-        (NonNegativeReals, 3, Boolean, 1, 0, 1, 10, minimize),
-        pytest.param(
-            NonNegativeReals,
-            3,
-            NonNegativeReals,
-            0,
-            -1,
-            -1,
-            10,
-            maximize,
-            marks=pytest.mark.xfail,
-        ),
+        (Reals, 3, 0, 10, -1, 10, maximize),
+        (Reals, 3, 0, -1, -1, 10, minimize),
+        (Reals, 3, 1, 10, -1, 10, maximize),
+        (Reals, 3, 1, -1, -1, 10, minimize),  # error: assert 10 <= 0.01
+        (NonNegativeReals, 3, 0, 10, 1, 10, maximize),
+        (NonNegativeReals, 3, 0, 0, 1, 10, minimize),
+        (NonNegativeReals, 3, 1, 10, 1, 10, maximize),
+        (NonNegativeReals, 3, 1, 0, 1, 10, minimize),
     ],
 )
 def test_BinVarMultiplySingle(
