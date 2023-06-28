@@ -816,6 +816,8 @@ class 设备模型:
 
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid x_var: {x_var}"
+                # format: (factor, x_var)
+                assert type(x_var[0]) in [float, int]
 
             {# divider = 1e+2 #}
 
