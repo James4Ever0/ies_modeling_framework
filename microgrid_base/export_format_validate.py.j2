@@ -37,6 +37,8 @@ def safeDiv(val, div):
     {# EPS = 1e-10
     return (val)/(div+EPS if (type(div) not in [int, float] or div == 0 ) else div) #}
 
+def safeAbs()
+
 def ReLU(val):
     if type(val) not in [int, float]:
         val = value(val)
