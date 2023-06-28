@@ -204,6 +204,7 @@ def test_BinVarMultiplySingle(
     sense,
 ):
     assert min_v0 <= max_v0
+    if v0_is_
     v0 = 测试设备模型.单变量("v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0))
 
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
@@ -427,7 +428,9 @@ def test_分月电价(hour_index, expected_price, power):
     from ies_optim import 分月电价
 
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
-    myPriceModel.getFee(power, time_in_day=hour_index)
+    mprice = myPriceModel.getFee(power, time_in_day=hour_index)
+    assert abs(mprice - expected_price) < EPS * 0.1
+
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
