@@ -424,13 +424,13 @@ def test_电价模型():
             设备名称="Any",
             EnergyConsumption=[1, 2, 3],
             MaxEnergyConsumption=4,
-            PriceModel=mydata),
+            PriceModel=mydata,
         )
     )
     myPriceModel = 分月电价.parse_obj(mydata)
     print(myInfo)
     # breakpoint()
-    assert myPriceModel == 
+    assert myPriceModel == myInfo.PriceModel
 
 
 @pytest.mark.parametrize(
