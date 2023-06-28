@@ -1134,7 +1134,9 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency)
 
         {% elif class_name in 单向变电器列表%}
-        self.RangeConstraint(self.电输入, self.电输出, lambda x,y: x == -y * self.Efficiency {{"* self.PowerParameter" if class_name in ['变压器'] else ""}})
+        # TODO: figure out what "PowerParameter" does
+        # TODO: fix efficiency issue
+        self.RangeConstraint(self.电输入, self.电输出, lambda x,y: x * self.Efficiency == -y {{"* self.PowerParameter" if class_name in ['变压器'] else ""}})
         self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount )
         {% elif class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 省略除以1 单位: one
