@@ -377,7 +377,7 @@ def test_柴油发电(
 
     with SolverFactory("cplex") as solver:
         # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        # solver.options['timelimit'] = 5
+        solver.options['timelimit'] = 5
         # print(solver.options.keys())
         # breakpoint()
         print(">>>SOLVING<<<")
@@ -404,8 +404,8 @@ def test_柴油发电(
         if error_msg:
             raise Exception("\n".join(error_msg))
         # TODO: can apply this to "solve_model.py"
-        print(测试柴油发电模型.原电输出[0],expected_val)
-        print(测试柴油发电模型.柴油输入[0], expected_diesel)
+        print("ELECTRICITY:",测试柴油发电模型.原电输出[0],expected_val)
+        print('DIESEL:',测试柴油发电模型.柴油输入[0], expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
 
