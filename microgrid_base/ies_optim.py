@@ -1217,7 +1217,6 @@ def withBanner(func, banner: str):
         val = func(*args, **kwargs)
         print(f"_____________{banner}_____________")
         return val
-
     return inner_func
 
     # return decorator
