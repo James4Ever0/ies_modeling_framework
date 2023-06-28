@@ -811,6 +811,7 @@ class 设备模型:
         {# and mind all occurance of BigMs #}
         if recurse:
             # tear down x_var
+            ...
         else:
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
@@ -818,6 +819,10 @@ class 设备模型:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
                 assert type(x_var[0]) in [float, int], f"Invalid `x_var` format: {x_var}\nShould be: (factor (float), x_var (Var))"
+                factor, _x_var = x_var
+            else:
+                factor = 1
+                _x_var = x_var
 
             {# divider = 1e+2 #}
 
@@ -825,9 +830,9 @@ class 设备模型:
             self.mw.Constraint(h>= -b_var*self.BigM)
             {# self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
             self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM) #}
-            self.mw.Constraint(h <= x_var+(1-b_var)*self.BigM)
-            self.mw.Constraint(h >= x_var-(1-b_var)*self.BigM)
-            return h
+            self.mw.Constraint(h <= _x_var+(1-b_var)*self.BigM)
+            self.mw.Constraint(h >= _x_var-(1-b_var)*self.BigM)
+            return h * factor
         {# return h*divider #}
 
     def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, precision = 10, within = Reals): # two continuous multiplication
