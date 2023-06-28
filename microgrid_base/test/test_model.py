@@ -120,9 +120,10 @@ from typing import Protocol, Any
 
 class Request(Protocol):
     param: Any
+    cache: Any
 
 @fixture(scope="session", params = ['设计规划', '仿真模拟'])
-def 测试计算参数(request):
+def 测试计算参数(request: Request):
     import numpy as np
 
     a = abs(np.random.random((24,))).tolist()
@@ -136,7 +137,8 @@ def 测试计算参数(request):
         典型日=True,
         典型日代表的日期=[1],
         # 典型日=False,
-        计算类型="仿真模拟",
+        # 计算类型="仿真模拟",
+        计算类型= request.param,
         # 计算类型="设计规划",
         风速=a,
         光照=a,
