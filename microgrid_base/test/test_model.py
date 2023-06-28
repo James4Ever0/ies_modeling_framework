@@ -353,7 +353,7 @@ def test_Piecewise(
         print(s_results)
         assert abs(value(obj_expr) - y_expected) <= EPS
 
-
+@pytest.mark.timeout(30)
 @pytest.mark.parametrize(
     "power_output, expected_val, expected_diesel",
     [
