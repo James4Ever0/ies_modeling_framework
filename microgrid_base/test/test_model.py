@@ -432,7 +432,7 @@ def test_DayToMonth(day_index, expected_month):
         (2, 4 * 0.0001 * 1, 4),
         (24 * 40, 4 * 0.0001 * 2, 4),
         (24 * 30 * 2 + 10, 4 * 0.0001 * 3, 4),
-        pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.xfail),
+        pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
     ],
 )
 def test_分月电价(hour_index, expected_price, power):
@@ -440,7 +440,7 @@ def test_分月电价(hour_index, expected_price, power):
 
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
-    assert abs(mprice - expected_price) < EPS * 0.001
+    assert abs(mprice - expected_price) == 0
 
 
 def test_柴油(model_wrapper: ModelWrapper):
