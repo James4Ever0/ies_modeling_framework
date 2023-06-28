@@ -421,9 +421,13 @@ def test_DayToMonth(day_index, expected_month):
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
+
 @pytest.mark.parametrize("hour_index, expected_price", [])
 def test_分月电价(hour_index):
-    ...
+    from ies_optim import 分月电价
+
+    myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
+
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
