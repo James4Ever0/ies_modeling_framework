@@ -122,7 +122,7 @@ class Request(Protocol):
     param: Any
     cache: Any
 
-@fixture(scope="session", params = ['设计规划', '仿真模拟'])
+@fixture(scope="session", params = ['设计规划', '仿真模拟'], ids = ['PLANNING', 'SIMULATION'])
 def 测试计算参数(request: Request):
     import numpy as np
 
