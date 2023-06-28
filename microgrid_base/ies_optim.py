@@ -1210,7 +1210,7 @@ from progressbar import progressbar
 from expr_utils import getExprStrParsedToExprList
 
 
-def withBanner(func, *, banner: str):
+def withBanner(func=..., *, banner: str):
     # def decorator():
     def inner_func(*args, **kwargs):
         print(f"_____________{banner}_____________")
