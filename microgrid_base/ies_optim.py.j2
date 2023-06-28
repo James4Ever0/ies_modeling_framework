@@ -810,9 +810,12 @@ class 设备模型:
         {# if using APP2, shall do recursion. #}
         {# and mind all occurance of BigMs #}
         if recurse:
-            
+            # tear down x_var
         else:
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
+
+            if type(x_var) == tuple:
+                assert len(x_var) == 2, f"Invalid x_var: {x_var}"
 
             {# divider = 1e+2 #}
 
