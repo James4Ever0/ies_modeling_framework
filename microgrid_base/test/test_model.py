@@ -125,9 +125,13 @@ class Request(Protocol):
     param: Any
     cache: Any
 
+fixture.SubRequest
+
 @fixture(scope="session", params = ['设计规划', '仿真模拟'], ids = ['PLANNING', 'SIMULATION'])
 def 测试计算参数(request: Request):
     import numpy as np
+    print(type(request))
+    breakpoint()
 
     a = abs(np.random.random((24,))).tolist()
     # a = abs(np.random.random((8760,))).tolist()
