@@ -393,7 +393,7 @@ def test_电价模型():
     myInfo = 电负荷信息.parse_obj(dict(设备名称 = 'Any', EnergyConsumption=[1,2,3], MaxEnergyConsumption=4, PriceModel = dict(PriceList = [1]*12)))
     print(myInfo)
 
-@pytest.mark.parametrize('day_index, expected_month', [(1,365, 364, 333])
+@pytest.mark.parametrize('day_index, expected_month', [1,365,12,, 364,363,  333, 11])
 def test_timeInDay(day_index, expected_month):
     from ies_optim import convertDaysToMonth
     month_index = convertDaysToMonth(day_index)

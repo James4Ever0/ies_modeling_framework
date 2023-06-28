@@ -79,6 +79,8 @@ def convertDaysToMonth(day_index: float):
         if acc_days >= day_index:
             return month_cursor
         acc_days += days_in_month
+    if day_index <365:
+        return month_cursor+1
     raise Exception("Invalid day index:", day_index)
 
 
