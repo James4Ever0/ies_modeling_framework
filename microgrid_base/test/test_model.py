@@ -515,7 +515,8 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         assert abs(val_fee - fee_rate_per_hour) < EPS
 from ies_optim import 双向变流器ID,双向变流器模型,双向变流器信息
 @fixture
-def 测试双向变流器信息（）
+def 测试双向变流器信息():
+    devInfo = 双向变流器信息()
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():...
 
