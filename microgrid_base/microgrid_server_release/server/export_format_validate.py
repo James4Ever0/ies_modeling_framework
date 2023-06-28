@@ -36,6 +36,15 @@ def safeDiv(val, div):
         return cmath.nan
 
 
+def safeAbs(val):
+    if type(val) in [str]:
+        return val
+    try:
+        return abs(val)
+    except:
+        return cmath.nan
+
+
 def ReLU(val):
     if type(val) not in [int, float]:
         val = value(val)
@@ -63,8 +72,8 @@ class 柴油仿真结果(BaseModel):
     def export(model: 柴油模型, timeParam: float):
 
         return 柴油仿真结果(
-            元件名称=model.设备信息.设备名称,
-            柴油消耗费用=((value(model.总成本年化)) * timeParam),
+            元件名称=safeAbs(model.设备信息.设备名称),
+            柴油消耗费用=safeAbs(((value(model.总成本年化)) * timeParam)),
         )
 
 
@@ -86,9 +95,9 @@ class 电负荷仿真结果(BaseModel):
     def export(model: 电负荷模型, timeParam: float):
 
         return 电负荷仿真结果(
-            元件名称=model.设备信息.设备名称,
-            电负荷=((statistics.mean(model.设备信息.EnergyConsumption)) * timeParam),
-            电收入=((-value(model.总成本年化)) * timeParam),
+            元件名称=safeAbs(model.设备信息.设备名称),
+            电负荷=safeAbs(((statistics.mean(model.设备信息.EnergyConsumption)) * timeParam)),
+            电收入=safeAbs(((-value(model.总成本年化)) * timeParam)),
         )
 
 
@@ -117,14 +126,18 @@ class 光伏发电仿真结果(BaseModel):
     def export(model: 光伏发电模型, timeParam: float):
 
         return 光伏发电仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
+            产电量=safeAbs(
+                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
+            ),
         )
 
 
@@ -153,14 +166,18 @@ class 风力发电仿真结果(BaseModel):
     def export(model: 风力发电模型, timeParam: float):
 
         return 风力发电仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
+            产电量=safeAbs(
+                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
+            ),
         )
 
 
@@ -203,26 +220,35 @@ class 柴油发电仿真结果(BaseModel):
     def export(model: 柴油发电模型, timeParam: float):
 
         return 柴油发电仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            产电量=((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
-            柴油消耗量=(
-                (statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam
+            产电量=safeAbs(
+                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
             ),
-            平均效率_平均COP=safeDiv(
-                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam),
-                model.燃料热值
-                * (
+            柴油消耗量=safeAbs(
+                ((statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam)
+            ),
+            平均效率_平均COP=safeAbs(
+                safeDiv(
                     (
-                        (statistics.mean([value(e) for e in model.燃料接口.values()]))
+                        (statistics.mean([value(e) for e in model.电接口.values()]))
                         * timeParam
-                    )
-                ),
+                    ),
+                    model.燃料热值
+                    * (
+                        (
+                            (statistics.mean([value(e) for e in model.燃料接口.values()]))
+                            * timeParam
+                        )
+                    ),
+                )
             ),
         )
 
@@ -252,19 +278,30 @@ class 锂电池仿真结果(BaseModel):
     def export(model: 锂电池模型, timeParam: float):
 
         return 锂电池仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            平均效率_平均COP=safeDiv(
-                ReLU(
-                    (((statistics.mean([ReLU(e) for e in model.电接口])) * timeParam))
-                    - (model.InitSOC * model.TotalCapacity)
-                ),
-                (-(((statistics.mean([-ReLU(-e) for e in model.电接口])) * timeParam))),
+            平均效率_平均COP=safeAbs(
+                safeDiv(
+                    ReLU(
+                        (((statistics.mean([ReLU(e) for e in model.电接口])) * timeParam))
+                        - (model.InitSOC * model.TotalCapacity)
+                    ),
+                    (
+                        -(
+                            (
+                                (statistics.mean([-ReLU(-e) for e in model.电接口]))
+                                * timeParam
+                            )
+                        )
+                    ),
+                )
             ),
         )
 
@@ -294,16 +331,20 @@ class 变压器仿真结果(BaseModel):
     def export(model: 变压器模型, timeParam: float):
 
         return 变压器仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            平均效率_平均COP=-safeDiv(
-                statistics.mean([value(e) for e in model.电输入.values()]),
-                statistics.mean([value(e) for e in model.电输出.values()]),
+            平均效率_平均COP=safeAbs(
+                -safeDiv(
+                    statistics.mean([value(e) for e in model.电输入.values()]),
+                    statistics.mean([value(e) for e in model.电输出.values()]),
+                )
             ),
         )
 
@@ -333,16 +374,20 @@ class 变流器仿真结果(BaseModel):
     def export(model: 变流器模型, timeParam: float):
 
         return 变流器仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            平均效率_平均COP=-safeDiv(
-                statistics.mean([value(e) for e in model.电输入.values()]),
-                statistics.mean([value(e) for e in model.电输出.values()]),
+            平均效率_平均COP=safeAbs(
+                -safeDiv(
+                    statistics.mean([value(e) for e in model.电输入.values()]),
+                    statistics.mean([value(e) for e in model.电输出.values()]),
+                )
             ),
         )
 
@@ -372,24 +417,32 @@ class 双向变流器仿真结果(BaseModel):
     def export(model: 双向变流器模型, timeParam: float):
 
         return 双向变流器仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
-            ),
-            平均效率_平均COP=value(
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
                 (
-                    safeDiv(sumVarList(model.储能端_.x_pos), sumVarList(model.线路端_.x_neg))
-                    * sumVarList(model.储能端_.b_pos)
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
                 )
-                + (
-                    safeDiv(sumVarList(model.线路端_.x_pos), sumVarList(model.储能端_.x_neg))
-                    * sumVarList(model.线路端_.b_pos)
+            ),
+            平均效率_平均COP=safeAbs(
+                value(
+                    (
+                        safeDiv(
+                            sumVarList(model.储能端_.x_pos), sumVarList(model.线路端_.x_neg)
+                        )
+                        * sumVarList(model.储能端_.b_pos)
+                    )
+                    + (
+                        safeDiv(
+                            sumVarList(model.线路端_.x_pos), sumVarList(model.储能端_.x_neg)
+                        )
+                        * sumVarList(model.线路端_.b_pos)
+                    )
                 )
-            )
-            / model.计算参数.迭代步数,
+                / model.计算参数.迭代步数
+            ),
         )
 
 
@@ -418,16 +471,20 @@ class 传输线仿真结果(BaseModel):
     def export(model: 传输线模型, timeParam: float):
 
         return 传输线仿真结果(
-            元件名称=model.设备信息.设备名称,
-            设备型号=model.设备信息.设备型号,
-            设备台数=value(model.DeviceCount),
-            设备维护费用=(
-                (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
-                * (timeParam / 8760)
+            元件名称=safeAbs(model.设备信息.设备名称),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            设备维护费用=safeAbs(
+                (
+                    (value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化))
+                    * (timeParam / 8760)
+                )
             ),
-            平均效率_平均COP=-safeDiv(
-                statistics.mean([value(e) for e in model.电输入.values()]),
-                statistics.mean([value(e) for e in model.电输出.values()]),
+            平均效率_平均COP=safeAbs(
+                -safeDiv(
+                    statistics.mean([value(e) for e in model.电输入.values()]),
+                    statistics.mean([value(e) for e in model.电输出.values()]),
+                )
             ),
         )
 

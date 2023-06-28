@@ -38,6 +38,7 @@ def safeDiv(val, div):
     return (val)/(div+EPS if (type(div) not in [int, float] or div == 0 ) else div) #}
 
 def safeAbs(val):
+    if type(val) in [str]: return val
     try:
         return abs(val)
     except:
