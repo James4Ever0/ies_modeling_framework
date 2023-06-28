@@ -785,7 +785,10 @@ class 设备模型:
         y_var, # y_var
         x_vals: List[float],
         y_vals: List[float],
-     range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
+     range_list:Union[List[int], None]=None, 
+     pw_repn='MC', 
+     {# pw_repn='SOS2',  #}
+     pw_constr_type='EQ', unbounded_domain_var=True):
 
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 

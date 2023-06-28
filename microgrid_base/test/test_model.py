@@ -380,7 +380,7 @@ def test_柴油发电(
 
     with SolverFactory("cplex") as solver:
         # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        solver.options['timelimit'] = 5
+        solver.options['timelimit'] = 5 # use this instead.
         # print(solver.options.keys())
         # breakpoint()
         print(">>>SOLVING<<<")
