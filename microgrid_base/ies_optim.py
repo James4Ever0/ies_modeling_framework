@@ -3831,8 +3831,9 @@ def compute(
         # add them all.
         for j in range(algoParam.迭代步数):
             seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
-            print("INPUTS: {}")
-            print("INPUTS: {}")
+            print("INPUTS:{'\n    '.join([repr(PD[i][j]input_indexs])}")
+            print("OUTPUTS: {}")
+            print("IO: {}")
 
             mw.Constraint(seqsum >= 0)
 
