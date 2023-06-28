@@ -497,8 +497,8 @@ def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
     )
     return mDieselModel
 
-@pytest.mark.parametrize('diesel_rate, fee_rate', [(1,),(3,)])
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate):
+@pytest.mark.parametrize('diesel_rate, fee_rate_per_hour', [(1,),(3,)])
+def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
     测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(测试柴油模型.燃料接口, expression = lambda x: x == diesel_rate)
     obj_expr = 测试柴油模型.燃料接口[0]
@@ -508,4 +508,5 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
-        
+        val_fee = value(测试柴油模型.总成本年化)/8760
+        assert val_fee - fee_rate_per_hour
