@@ -467,11 +467,16 @@ def test_分月电价(hour_index, expected_price, power):
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
-from ies_optim import 柴油模型
+from ies_optim import 柴油模型, 计算参数, 柴油信息, 柴油ID
 
 @fixture
-def 测试柴油模型(model_wrapper: ModelWrapper):
-    mDieselModel = 柴油模型(PD = {}, mw = model_wrapper)
+def 测试柴油ID():
+    ...
+
+@fixture
+def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油ID: 柴油ID, 测试柴油信息: 柴油信息):
+    mDieselModel = 柴油模型(PD = {}, mw = model_wrapper, 计算参数实例 = 测试计算参数,设备ID = 测试柴油ID, 设备信息 = 测试柴油信息)
+    return mDieselModel
 
 def test_柴油(测试柴油模型:柴油模型):
     ...
