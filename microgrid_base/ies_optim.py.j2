@@ -17,7 +17,7 @@ try:
     from typing import {{symbol}}
 except:
     from typing_extensions import {{symbol}}
-{% endmacro%}
+{% endmacro %}
 {{import_type_fallback("Literal")}}
 {# 
 try:
