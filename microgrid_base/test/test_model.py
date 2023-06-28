@@ -353,6 +353,9 @@ def test_Piecewise(
         print(s_results)
         assert abs(value(obj_expr) - y_expected) <= EPS
 
+# if use timeout as solver option, usually not so good.
+# you will not get accurate results.
+
 @pytest.mark.timeout(30) # pip3 install pytest-timeout
 @pytest.mark.parametrize(
     "power_output, expected_val, expected_diesel",
@@ -394,7 +397,7 @@ def test_柴油发电(
             TerminationCondition.locallyOptimal,
             TerminationCondition.feasible,
             TerminationCondition.optimal,
-            TerminationCondition.maxTimeLimit,
+            # TerminationCondition.maxTimeLimit,
         ]
         error_msg = []
         if TC not in normalTCs:
