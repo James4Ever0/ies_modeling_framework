@@ -122,7 +122,9 @@ def convertDaysToMonth(day_index:float):
     for month_cursor, days_in_month in enumerate(month_days):
         if acc_days >= day_index:
             return month_cursor
-        acc_days+=days_in_month
+        acc_days += days_in_month
+    if day_index <365:
+        return month_cursor+1
     raise Exception("Invalid day index:", day_index)
 
 class 分月电价(BaseModel, 电价转换):

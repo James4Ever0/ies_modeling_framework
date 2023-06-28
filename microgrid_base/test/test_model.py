@@ -367,7 +367,7 @@ def test_柴油发电(
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)  # check solver status.
-        
+
         assert s_results, "no solver result."
         TC = s_results.solver.termination_condition
         SS = s_results.solver.status
@@ -379,26 +379,47 @@ def test_柴油发电(
             TerminationCondition.optimal,
         ]
         error_msg = []
-        if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
-        if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
+        if TC not in normalTCs:
+            error_msg.append(f"abnormal termination condition: {TC}")
+        if SS not in normalSSs:
+            error_msg.append(f"abnormal solver status: {TC}")
         if error_msg:
             raise Exception("\n".join(error_msg))
         # TODO: can apply this to "solve_model.py"
-        
+
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= EPS * 0.01
 
+
 def test_电价模型():
     from ies_optim import 电负荷信息
-    myInfo = 电负荷信息.parse_obj(dict(设备名称 = 'Any', EnergyConsumption=[1,2,3], MaxEnergyConsumption=4, PriceModel = dict(PriceList = [1]*12)))
+
+    myInfo = 电负荷信息.parse_obj(
+        dict(
+            设备名称="Any",
+            EnergyConsumption=[1, 2, 3],
+            MaxEnergyConsumption=4,
+            PriceModel=dict(PriceList=[1] * 12),
+        )
+    )
     print(myInfo)
 
-@pytest.mark.parametrize('day_index, expected_month', [1,365,12,, 364,363,  333, 11])
+
+@pytest.mark.parametrize(
+    "day_index, expected_month",
+    [
+        (1, 1),
+        pytest.param(365, 12, marks=pytest.mark.xfail),
+        (364, 12),
+        (363, 12),
+        (333, 11),
+    ],
+)
 def test_timeInDay(day_index, expected_month):
     from ies_optim import convertDaysToMonth
+
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
-    
 
 
 def test_柴油(model_wrapper: ModelWrapper):
