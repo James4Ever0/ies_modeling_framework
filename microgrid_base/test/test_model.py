@@ -404,10 +404,11 @@ def test_柴油发电(
         if error_msg:
             raise Exception("\n".join(error_msg))
         # TODO: can apply this to "solve_model.py"
-        print("ELECTRICITY:",测试柴油发电模型.原电输出[0],expected_val)
-        print('DIESEL:',测试柴油发电模型.柴油输入[0], expected_diesel)
+        print("ELECTRICITY:",value(测试柴油发电模型.原电输出[0]),expected_val)
+        print('DIESEL:',value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
+        # breakpoint()
 
 
 def test_电价模型():
