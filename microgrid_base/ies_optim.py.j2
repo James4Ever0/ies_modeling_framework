@@ -859,6 +859,7 @@ class 设备模型:
             for sub_x_var in self.breakdownExpression(x_var):
                 _h = self.BinVarMultiplySingle(b_var,sub_x_var, recurse=False)
                 h_list.append(_h)
+            return sum(h_list)
         else:
 
             if type(x_var) == tuple:
