@@ -442,6 +442,13 @@ from expr_utils import getExprStrParsedToExprList
 
 {# mystr = '(1,2,3), (((1+2),2),5,(6,7)) 23'
 print(find_parentheses(mystr)) #}
+def withBanner(error_msg:str, func):
+    def inner_func(*args, **kwargs):
+
+            print("_____________ERROR LOG_____________")
+        return func(*args, **kwargs)
+
+@withBanner("ERROR")
 def examineSubExprDegree(expr):
     data = str(expr)
     exprlist = getExprStrParsedToExprList(data)
@@ -521,9 +528,9 @@ class ModelWrapper:
             print('EXPR:',  expr_repr)
 
             # TODO: use regex to simplify expression here.
-            print("_____________ERROR LOG_____________")
+            {# print("_____________ERROR LOG_____________") #}
             examineSubExprDegree(expr)
-            print("_____________ERROR LOG_____________")
+            {# print("_____________ERROR LOG_____________") #}
             error_msg = f"{{k}}: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("{{k[:3].upper()}}")
@@ -817,6 +824,7 @@ class 设备模型:
         if is_linear:
             return results
         else:
+            examineSubExprDegree(expr)
             raise Exception(f"Nonlinear expression found while breaking down.\nExpression type: {type(expr)}")
         {# if expr_type in numeric_types:
             results.append((expr))
