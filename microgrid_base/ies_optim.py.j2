@@ -3,6 +3,8 @@ from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 {# consider to type check all variable operations #}
 {# cast such type to all variables, to forbid var * var #}
+import pyomo.core.base
+{% set IndexedVar = "pyomo.core.base.var.IndexedVar"%}
 {# forbid untyped code. #}
 {# mark as pyright global config. #}
 {# also for mypy #}
@@ -816,7 +818,7 @@ class 设备模型:
     def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
     {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
         assert b_var.is_binary()
-        assert type(x_var) is not pyomo.core.base.var.IndexedVar
+        assert type(x_var) is not {{IndexedVar}}
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
 
