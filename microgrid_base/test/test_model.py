@@ -93,7 +93,7 @@ def 测试柴油发电信息():
         BuildBaseCost=10,
         DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
         DeviceCount=1,
-        MaxDeviceCount=2,
+        MaxDeviceCount=1,
         MinDeviceCount=1,
     )
 
@@ -117,8 +117,8 @@ def 测试柴油发电模型(
     return mDieselEngineModel
 
 
-@fixture(scope="session")
-def 测试计算参数():
+@fixture(scope="session", params = )
+def 测试计算参数(request):
     import numpy as np
 
     a = abs(np.random.random((24,))).tolist()
