@@ -797,6 +797,10 @@ class 设备模型:
             self.mw.model.__setattr__(piecewise_name, PW)
             PWL.append(PW) #}
         return PWL
+
+    @staticmethod
+    def breakdownExpression(expr):
+        if type(expr) in [float, int]: return expr
     
     def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
     {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
