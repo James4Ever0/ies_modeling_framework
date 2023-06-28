@@ -16,7 +16,7 @@ from pyomo.environ import *
 # may you hook arith methods to check expression (poly degree) on the way.
 
 # render constraints as latex. use sigma notation.
-
+a :str= 1
 
 @fixture()
 # @fixture(scope="session")
