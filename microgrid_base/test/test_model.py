@@ -377,7 +377,9 @@ def test_柴油发电(
 
     with SolverFactory("cplex") as solver:
         # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        solver.options[''] = ...
+        # solver.options[''] = ...
+        # print(solver.options.keys())
+        # breakpoint()
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
