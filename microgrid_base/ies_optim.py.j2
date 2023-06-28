@@ -812,7 +812,7 @@ class 设备模型:
         # otherwise, expression types.
         results = []
 
-        if expr_type in numeric_types+variable_types:
+        if expr_type in numeric_types:
             results.append(expr)
         else:
             # implement expr breakdown. usually of pyomo expressions.
