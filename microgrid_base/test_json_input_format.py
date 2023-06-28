@@ -20,7 +20,7 @@ EFG2 = EnergyFlowGraph.parse_obj(EFG_dict)
 
 import rich
 
-from microgrid_base.solve_model import solveModelFromCalcParamList
+from solve_model import solveModelFromCalcParamList
 
 for index, mDict in enumerate(EFG.mDictList):
     rich.print(mDict)

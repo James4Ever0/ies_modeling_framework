@@ -61,6 +61,7 @@ def solveModelFromCalcParamList(
     DEBUG: bool = False,  # replaced by poly degree based verification.
 ) -> List:
     assert len(calcParamList) >= 1
+    # breakpoint()
     firstParam_graphparam = calcParamList[0][2]
     典型日 = firstParam_graphparam["典型日"]
     计算步长 = firstParam_graphparam["计算步长"]
