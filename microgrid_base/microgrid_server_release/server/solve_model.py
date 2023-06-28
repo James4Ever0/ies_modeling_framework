@@ -118,6 +118,7 @@ def solveModelFromCalcParamList(
         solved = False
         with SolverFactory("cplex") as solver:
             # try:
+            solver.options['timelimit'] = 60*24 # solver timeout: 24 minutes.
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
