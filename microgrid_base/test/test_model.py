@@ -421,8 +421,9 @@ def test_DayToMonth(day_index, expected_month):
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
-
-def test_分月电价():
+@pytest.mark.parametrize("hour_index, expected_price", [])
+def test_分月电价(hour_index):
+    ...
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
