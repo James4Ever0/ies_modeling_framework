@@ -775,7 +775,7 @@ class 设备模型:
      range_list:Union[List[int], None]=None, pw_repn='SOS2', pw_constr_type='EQ', unbounded_domain_var=True):
 
         # TODO: if performance overhead is significant, shall convert into "MC" piecewise functions, or stepwise functions.
-        
+
         # BUG: x out of bound, resulting into unsolvable problem.
         assert x_vals[0] <= x_vals[-1]
         expand_val = 1e+3
@@ -796,7 +796,7 @@ class 设备模型:
             pw_constr_type=pw_constr_type,
             unbounded_domain_var=unbounded_domain_var,
             warn_domain_coverage=False, # to suppress warning
-        )   
+        )
 {{double_check_setattr("self.mw.model", "piecewise_name", "PW") | indent(3*4, True)}}
             {# assert getattr(self.mw.model,piecewise_name, None) is None, f"错误: 不能设置两次相同的变量名称\n重复变量: {piecewise_name}"
             self.mw.model.__setattr__(piecewise_name, PW)
