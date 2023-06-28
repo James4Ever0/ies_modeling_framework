@@ -1210,16 +1210,15 @@ from progressbar import progressbar
 from expr_utils import getExprStrParsedToExprList
 
 # partial function?
-def withBanner(func = None, *, banner: str = ""): # noqa: F811
-    # def decorator():
-    def inner_func(*args, **kwargs):
-        print(f"_____________{banner}_____________")
-        val = func(*args, **kwargs)
-        print(f"_____________{banner}_____________")
-        return val
-    return inner_func
-
-    # return decorator
+def withBanner(banner: str = ""): # noqa: F811
+    def decorator(func):
+        def inner_func(*args, **kwargs):
+            print(f"_____________{banner}_____________")
+            val = func(*args, **kwargs)
+            print(f"_____________{banner}_____________")
+            return val
+        return inner_func
+    return decorator
 
 
 @withBanner(banner="ERROR LOG")
