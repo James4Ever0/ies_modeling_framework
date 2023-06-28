@@ -852,11 +852,12 @@ class 设备模型:
                 # format: (factor, x_var)
                 assert type(x_var[0]) in [float, int], f"Invalid `x_var` format: {x_var}\nShould be: (factor (float), x_var (Var))"
                 factor, _x_var = x_var
-                if _x_var is None:
+                if _x_var is None: # constant.
                     return factor * b_var
             else:
                 factor = 1
                 _x_var = x_var
+                if _x_var in [flo]
 
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
