@@ -445,7 +445,7 @@ print(find_parentheses(mystr)) #}
 
 def withBanner(banner:str):
     def decorator(func):
-        def inner_func(*args, **kwargs)
+        def inner_func(*args, **kwargs):
             print(f"_____________{banner}_____________")
             val = func(*args, **kwargs)
             print(f"_____________{banner}_____________")

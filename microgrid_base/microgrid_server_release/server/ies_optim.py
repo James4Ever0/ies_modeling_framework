@@ -1,6 +1,7 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
+import pyomo.core.base
 
 try:
     from typing import Literal
@@ -280,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -309,13 +310,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -1209,6 +1210,20 @@ from progressbar import progressbar
 from expr_utils import getExprStrParsedToExprList
 
 
+def withBanner(banner: str):
+    def decorator(func):
+        def inner_func(*args, **kwargs):
+            print(f"_____________{banner}_____________")
+            val = func(*args, **kwargs)
+            print(f"_____________{banner}_____________")
+            return val
+
+        return inner_func
+
+    return decorator
+
+
+@withBanner("ERROR LOG")
 def examineSubExprDegree(expr):
     data = str(expr)
     exprlist = getExprStrParsedToExprList(data)
@@ -1265,9 +1280,7 @@ class ModelWrapper:
             print("EXPR:", expr_repr)
 
             # TODO: use regex to simplify expression here.
-            print("_____________ERROR LOG_____________")
             examineSubExprDegree(expr)
-            print("_____________ERROR LOG_____________")
             error_msg = f"Constraint: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("CON")
@@ -1309,9 +1322,7 @@ class ModelWrapper:
             print("EXPR:", expr_repr)
 
             # TODO: use regex to simplify expression here.
-            print("_____________ERROR LOG_____________")
             examineSubExprDegree(expr)
-            print("_____________ERROR LOG_____________")
             error_msg = f"Objective: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("OBJ")
@@ -1602,6 +1613,8 @@ class 设备模型:
         unbounded_domain_var=True,
     ):
 
+        # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
+
         # BUG: x out of bound, resulting into unsolvable problem.
         assert x_vals[0] <= x_vals[-1]
         expand_val = 1e3
@@ -1630,16 +1643,60 @@ class 设备模型:
 
         return PWL
 
-    def BinVarMultiplySingle(self, b_var, x_var):
+    @staticmethod
+    def breakdownExpression(expr):
+        expr_type = type(expr)
+
+        assert (
+            expr_type != pyomo.core.base.var.IndexedVar
+        ), f"Expression: {repr(expr)[:200]}\nInvalid expression type."
+
+        # otherwise, expression types.
+        is_linear, results = pyomo.core.expr.current.decompose_term(expr)
+        if is_linear:
+            return results
+        else:
+            examineSubExprDegree(expr)
+            raise Exception(
+                f"Nonlinear expression found while breaking down.\nExpression type: {type(expr)}"
+            )
+
+    def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
         assert b_var.is_binary()
+        assert type(x_var) is not pyomo.core.base.var.IndexedVar
 
-        h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
+        numeric_types = [float, int]
+        if recurse:
+            # tear down x_var
+            h_list = []
+            for sub_x_var in self.breakdownExpression(x_var):
+                _h = self.BinVarMultiplySingle(b_var, sub_x_var, recurse=False)
+                h_list.append(_h)
+        else:
 
-        self.mw.Constraint(h <= b_var * self.BigM)
-        self.mw.Constraint(h >= -b_var * self.BigM)
-        self.mw.Constraint(h <= x_var + (1 - b_var) * self.BigM)
-        self.mw.Constraint(h >= x_var - (1 - b_var) * self.BigM)
-        return h
+            if type(x_var) == tuple:
+                assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
+                # format: (factor, x_var)
+                assert type(x_var[0]) in [
+                    float,
+                    int,
+                ], f"Invalid `x_var` format: {x_var}\nShould be: (factor (float), x_var (Var))"
+                factor, _x_var = x_var
+                if _x_var is None:  # constant.
+                    return factor * b_var
+            else:
+                factor = 1
+                _x_var = x_var
+                if _x_var in numeric_types:
+                    return _x_var * b_var
+
+            h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
+
+            self.mw.Constraint(h <= b_var * self.BigM)
+            self.mw.Constraint(h >= -b_var * self.BigM)
+            self.mw.Constraint(h <= _x_var + (1 - b_var) * self.BigM)
+            self.mw.Constraint(h >= _x_var - (1 - b_var) * self.BigM)
+            return h * factor
 
     def Multiply(
         self, dict_mx: dict, dict_my: dict, varName: str, precision=10, within=Reals
@@ -2234,18 +2291,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2996,18 +3053,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）

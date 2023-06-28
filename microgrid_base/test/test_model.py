@@ -422,8 +422,8 @@ def test_DayToMonth(day_index, expected_month):
     assert month_index == expected_month
 
 
-@pytest.mark.parametrize("hour_index, expected_price", [])
-def test_分月电价(hour_index):
+@pytest.mark.parametrize("hour_index, expected_price, power", [])
+def test_分月电价(hour_index, expected_price, power):
     from ies_optim import 分月电价
 
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
