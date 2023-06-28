@@ -179,15 +179,18 @@ def ReLU(val):
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
-{% macro export_data_with_model(devName, obj, classType, needAbs=false)%}
+{% macro export_data_with_model(devName, obj, classType, needAbs=False)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
-    {% if needAbs%}
+        {% if needAbs %}
+            {{key}} = safeAbs({{value}}),
+        {% else %}
             {{key}} = {{value}},
+        {% endif %}
     {% endfor %}
         )
 {% endmacro%}
@@ -219,7 +222,7 @@ def ReLU(val):
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 {% set obj = {} %}
-{% call export_data_with_model(devName, obj, '仿真结果')%}
+{% call export_data_with_model(devName, obj, '仿真结果', needAbs=True)%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
