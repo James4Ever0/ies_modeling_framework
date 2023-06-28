@@ -821,8 +821,9 @@ class 设备模型:
         {# and mind all occurance of BigMs #}
         if recurse:
             # tear down x_var
+            h_list = []
             for sub_x_var in self.breakdownExpression(x_var):
-
+                _h = self.BinVarMultiplySingle(b_var,sub_x_var, recurse=False)
         else:
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
