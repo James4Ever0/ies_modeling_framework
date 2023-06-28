@@ -37,7 +37,11 @@ def safeDiv(val, div):
     {# EPS = 1e-10
     return (val)/(div+EPS if (type(div) not in [int, float] or div == 0 ) else div) #}
 
-def safeAbs()
+def safeAbs(val):
+    try:
+        return abs(val)
+    except:
+        return cmath.nan
 
 def ReLU(val):
     if type(val) not in [int, float]:
@@ -175,13 +179,14 @@ def ReLU(val):
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
-{% macro export_data_with_model(devName, obj, classType)%}
+{% macro export_data_with_model(devName, obj, classType, needAbs=false)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
+    {% if needAbs%}
             {{key}} = {{value}},
     {% endfor %}
         )
