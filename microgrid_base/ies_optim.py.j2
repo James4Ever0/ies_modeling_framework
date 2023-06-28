@@ -1590,19 +1590,18 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
                     devInstDict[output_node_index].燃料热值 = 热值
 
         # add them all.
+
+        print("_"*20)
+        display_var_names = lambda indexs: '\n    '.join([str(PD[i]) for i in indexs])
+        print(f"INPUTS:{display_var_names(input_indexs)}")
+        print()
+        print(f"OUTPUTS:{display_var_names(output_indexs)}")
+        print()
+        print(f"IO:{display_var_names(io_indexs)}")
+        print("_"*20)
+        
         for j in range(algoParam.迭代步数):
             seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}
-            
-            print("_"*20)
-            display_var_names = lambda indexs: '\n    '.join([str(PD[i][j]) for i in indexs])
-            print(f"INPUTS:{display_var_names(input_indexs)}")
-            print()
-            print(f"OUTPUTS:{display_var_names(output_indexs)}")
-            print()
-            print(f"IO:{display_var_names(io_indexs)}")
-            print("_"*20)
-
-
             mw.Constraint(seqsum >=0)
         
         if algoParam.计算类型 == '设计规划':
