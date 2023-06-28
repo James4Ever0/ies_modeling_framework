@@ -427,7 +427,7 @@ def test_分月电价(hour_index):
     from ies_optim import 分月电价
 
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
-    myPriceModel.getFee()
+    myPriceModel.getFee(power, time_in_day=hour_index)
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
