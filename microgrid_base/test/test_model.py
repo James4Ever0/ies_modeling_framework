@@ -417,17 +417,20 @@ def test_柴油发电(
 
 
 def test_电价模型():
-    from ies_optim import 电负荷信息
-
+    from ies_optim import 电负荷信息, 分月电价
+    mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
         dict(
             设备名称="Any",
             EnergyConsumption=[1, 2, 3],
             MaxEnergyConsumption=4,
-            PriceModel=dict(PriceList=[1] * 12),
+            PriceModel=mydata),
         )
     )
+    myPriceModel = 分月电价.parse_obj(mydata)
     print(myInfo)
+    # breakpoint()
+    assert myPriceModel == 
 
 
 @pytest.mark.parametrize(
@@ -454,7 +457,7 @@ def test_DayToMonth(day_index, expected_month):
         (24 * 40, 4 * 0.0001 * 2, 4),
         (24 * 30 * 2 + 10, 4 * 0.0001 * 3, 4),
         pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
-        pytest.param(8779, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
+        (8779, 4 * 0.0001 * 12, 4),
     ],
 )
 def test_分月电价(hour_index, expected_price, power):
