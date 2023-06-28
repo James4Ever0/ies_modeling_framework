@@ -516,7 +516,7 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
 
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():...
-
+from ies_optim import 风力发电ID,风力发电模型,风力发电信息
 from ies_optim import 风力发电ID,风力发电模型,风力发电信息
 
 @fixture
