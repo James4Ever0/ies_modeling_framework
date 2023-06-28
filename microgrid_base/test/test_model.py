@@ -177,6 +177,7 @@ import pytest
     ],
 )
 @pytest.mark.parametrize("v1_init", [0, 1])
+@pytest.mark.parametrize("v0_init", [3])
 @pytest.mark.parametrize(
     "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
 )
