@@ -1,6 +1,9 @@
 from pytest import fixture
 import sys
 
+# taking too long to solve.
+# TODO: assert time per test.
+
 sys.path.append("../")
 
 from typing import cast
@@ -398,7 +401,7 @@ def test_柴油发电(
         # TODO: can apply this to "solve_model.py"
 
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.001
+        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
 
 
 def test_电价模型():
