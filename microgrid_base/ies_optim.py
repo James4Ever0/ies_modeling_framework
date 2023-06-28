@@ -1210,20 +1210,20 @@ from progressbar import progressbar
 from expr_utils import getExprStrParsedToExprList
 
 
-def withBanner(banner: str):
-    def decorator(func):
-        def inner_func(*args, **kwargs):
-            print(f"_____________{banner}_____________")
-            val = func(*args, **kwargs)
-            print(f"_____________{banner}_____________")
-            return val
+def withBanner(func, banner: str):
+    # def decorator():
+    def inner_func(*args, **kwargs):
+        print(f"_____________{banner}_____________")
+        val = func(*args, **kwargs)
+        print(f"_____________{banner}_____________")
+        return val
 
-        return inner_func
+    return inner_func
 
-    return decorator
+    # return decorator
 
 
-@withBanner("ERROR LOG")
+@withBanner(banner="ERROR LOG")
 def examineSubExprDegree(expr):
     data = str(expr)
     exprlist = getExprStrParsedToExprList(data)
