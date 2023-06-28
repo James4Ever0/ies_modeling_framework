@@ -32,5 +32,7 @@ mDictList = EFG.dict()["mDictList"]
 calcParamList = mDictListToCalcParamList(mDictList)
 resultList = solveModelFromCalcParamList(calcParamList)
 # breakpoint()
+rich.print(resultList[0]['simulationResultTable'])
+
 with open("export_format_test.json", 'w') as f:
     f.write(json.dumps(resultList, indent=4, ensure_ascii=False))
