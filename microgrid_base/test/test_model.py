@@ -421,7 +421,8 @@ def test_DayToMonth(day_index, expected_month):
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
-def test_分月电价()
+
+def test_分月电价():
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
