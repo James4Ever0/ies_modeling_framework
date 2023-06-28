@@ -376,6 +376,7 @@ def test_柴油发电(
     model_wrapper.Objective(obj_expr, sense=minimize)
 
     with SolverFactory("cplex") as solver:
+        solver.options['absmipgap'] = 0.05
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
