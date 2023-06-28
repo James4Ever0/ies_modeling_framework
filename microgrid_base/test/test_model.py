@@ -415,12 +415,13 @@ def test_电价模型():
         (333, 10),
     ],
 )
-def test_timeInDay(day_index, expected_month):
+def test_DayToMonth(day_index, expected_month):
     from ies_optim import convertDaysToMonth
 
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
+def test_分月电价()
 
 def test_柴油(model_wrapper: ModelWrapper):
     ...
