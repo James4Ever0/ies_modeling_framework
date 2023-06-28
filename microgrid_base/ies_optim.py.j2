@@ -800,7 +800,7 @@ class 设备模型:
 
     @staticmethod
     def breakdownExpression(expr):
-    
+
         numeric_types = [float, int]
         variable_types = []
         # otherwise, expression types.
@@ -816,6 +816,7 @@ class 设备模型:
     def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
     {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
         assert b_var.is_binary()
+        assert type(x_var) is not pyomo.core.base.var.IndexedVar
         {# assert x_var.is_continuous()  #}
         {# x_var can be binary. #}
 
