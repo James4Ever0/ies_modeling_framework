@@ -4,8 +4,8 @@ from pydantic import conlist, conint, confloat, constr
 {# consider to type check all variable operations #}
 {# cast such type to all variables, to forbid var * var #}
 import pyomo.core.base
-{% set IndexedVar = "pyomo.core.base.var.IndexedVar"%}
-{% set pyomo.core.base.var._GeneralVarData%}
+{% set IndexedVar = "pyomo.core.base.var.IndexedVar" %}
+{% set GeneralVarData = "pyomo.core.base.var._GeneralVarData" %}
 {# forbid untyped code. #}
 {# mark as pyright global config. #}
 {# also for mypy #}
@@ -803,14 +803,16 @@ class 设备模型:
 
     @staticmethod
     def breakdownExpression(expr):
-        assert type(expr) != {{IndexedVar}}, f"Expression: {repr(expr)[:200]}\nInvalid expression type."
+        expr_type = type(expr)
+
+        assert expr_type != {{IndexedVar}}, f"Expression: {repr(expr)[:200]}\nInvalid expression type."
 
         numeric_types = [float, int]
         variable_types = [ScalarVar, {{GeneralVarData}}]
         # otherwise, expression types.
         results = []
 
-        if type(expr) in numeric_types+variable_types:
+        if expr_type in numeric_types+variable_types:
             results.append(expr)
         else:
             # implement expr breakdown. usually of pyomo expressions.
