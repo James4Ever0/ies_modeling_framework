@@ -499,4 +499,5 @@ def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算�
 
 @pytest.mark.parametrize('diesel_rate, fee_rate', [(1,),(3,)])
 def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate):
-    ...
+    测试柴油模型.
+    测试柴油模型.constraints_register()
