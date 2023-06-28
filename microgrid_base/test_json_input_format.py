@@ -31,4 +31,6 @@ for index, mDict in enumerate(EFG.mDictList):
 mDictList = EFG.dict()["mDictList"]
 calcParamList = mDictListToCalcParamList(mDictList)
 resultList = solveModelFromCalcParamList(calcParamList)
-breakpoint()
+# breakpoint()
+with open("export_format_test.json", 'w') as f:
+    f.write(json.dumps(resultList, indent=4, ensure_ascii=False))
