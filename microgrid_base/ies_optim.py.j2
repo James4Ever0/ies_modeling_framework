@@ -809,12 +809,15 @@ class 设备模型:
 
         assert expr_type != {{IndexedVar}}, f"Expression: {repr(expr)[:200]}\nInvalid expression type."
 
-        numeric_types = [float, int]
-        variable_types = [ScalarVar, {{GeneralVarData}}]
+        {# numeric_types = [float, int]
+        variable_types = [ScalarVar, {{GeneralVarData}}] #}
         # otherwise, expression types.
         {# results = [] #}
-        is_linear, results = pyomo.core.expr.current.decompose_term()
+        is_linear, results = pyomo.core.expr.current.decompose_term(expr)
         if is_linear:
+            return results
+        else:
+            raise Exception(f"Nonlinear expression found while breaking down.\nExpression type: {type(expr)}")
         {# if expr_type in numeric_types:
             results.append((expr))
         else:
@@ -823,7 +826,6 @@ class 设备模型:
                 results.append(...)
             except:
                 ... #}
-        return results
     
     def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
     {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
