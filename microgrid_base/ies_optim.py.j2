@@ -818,7 +818,10 @@ class 设备模型:
             results.append(expr)
         else:
             # implement expression breakdown. usually pyomo expressions.
-            ...
+            try:
+                results.append(...)
+            except:
+                ...
         return results
     
     def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
