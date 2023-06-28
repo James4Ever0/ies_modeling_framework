@@ -20,14 +20,16 @@ EFG2 = EnergyFlowGraph.parse_obj(EFG_dict)
 
 import rich
 
-from solve_model import solveModelFromCalcParamList
-
+from solve_model import (mDictListToCalcParamList,solveModelFromCalcParamList
+)
 for index, mDict in enumerate(EFG.mDictList):
     rich.print(mDict)
     print()
     print(f"_____parsing mDict #{index}_____")
     topo = 拓扑图.from_json(mDict.dict())
     topo.check_consistency()
-
-resultList = solveModelFromCalcParamList(EFG.dict()['mDictList'])
+    
+mDictList =EFG.dict()['mDictList']
+calcParamList = mDictListToCalcParamList(mDictList)
+resultList = solveModelFromCalcParamList(calcParamList)
 # breakpoint()
