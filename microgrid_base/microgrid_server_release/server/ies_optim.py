@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -321,13 +321,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -2115,8 +2115,8 @@ class 风力发电模型(设备模型):
             WS,
             [
                 WS <= self.MinWindSpeed,
-                WS > self.MinWindSpeed and WS <= self.RatedWindSpeed,
-                WS > self.RatedWindSpeed and WS <= self.MaxWindSpeed,
+                np.logical_and(WS > self.MinWindSpeed, WS <= self.RatedWindSpeed),
+                np.logical_and(WS > self.RatedWindSpeed, WS <= self.MaxWindSpeed),
                 WS > self.MaxWindSpeed,
             ],
             [0, lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), self.RatedPower, 0],
@@ -2292,18 +2292,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -3218,18 +3218,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
