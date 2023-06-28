@@ -116,8 +116,12 @@ def 测试柴油发电模型(
     )
     return mDieselEngineModel
 
+from typing import Protocol, Any
 
-@fixture(scope="session", params = )
+class Request(Protocol):
+    param: Any
+
+@fixture(scope="session", params = ['设计规划', '仿真模拟'])
 def 测试计算参数(request):
     import numpy as np
 
