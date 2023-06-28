@@ -1601,7 +1601,6 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
-
         # BUG: x out of bound, resulting into unsolvable problem.
         assert x_vals[0] <= x_vals[-1]
         expand_val = 1e3
