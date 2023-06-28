@@ -839,6 +839,7 @@ class 设备模型:
         {# approach 2: if the variable/expression is summation, execute the function elementwise then sum them up. #}
         {# if using APP2, shall do recursion. #}
         {# and mind all occurance of BigMs #}
+        numeric_types = [float, int]
         if recurse:
             # tear down x_var
             h_list = []
@@ -857,7 +858,8 @@ class 设备模型:
             else:
                 factor = 1
                 _x_var = x_var
-                if _x_var in [flo]
+                if _x_var in numeric_types:
+                    return _x_var * b_var
 
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
 
