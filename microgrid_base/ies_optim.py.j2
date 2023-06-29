@@ -1062,8 +1062,6 @@ class {{class_name}}模型(设备模型):
 
         self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
 
-    
-
         self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore
 
         self.MaxTotalCapacityDeltaPerStep = self.BatteryDeltaLimit * self.TotalCapacity / ({{时间步长参数}})
