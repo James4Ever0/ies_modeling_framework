@@ -5,13 +5,21 @@ import rich
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-@hydra.main(version_base=None, 
-            config_path=".", 
-            # config_path="conf", 
-            config_name="test_config")
-def my_app(cfg : DictConfig) -> None:
+
+@hydra.main(
+    version_base=None,
+    config_path=".",
+    # config_path="conf",
+    config_name="test_config",
+)
+def my_app(cfg: DictConfig) -> None:
     mconfig = OmegaConf.to_yaml(cfg)
     rich.print(mconfig)
+    print()
+    rich.print(cfg)
+    print(type(cfg), dir(cfg))
+    print(cfg.db.abc)
+
 
 if __name__ == "__main__":
     my_app()
