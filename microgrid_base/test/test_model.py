@@ -540,13 +540,14 @@ def 测试双向变流器信息():
 
 
 @fixture
-def 测试双向变流器模型(测试双向变流器信息: 双向变流器信息, model_wrapper: ModelWrapper):
+def 测试双向变流器模型(
+    测试双向变流器信息: 双向变流器信息, model_wrapper: ModelWrapper, 测试双向变流器ID: 双向变流器ID, 测试计算参数: 计算参数
+):
     devModel = 双向变流器模型(
-        PD={},
-        mw=model_wrapper,
-        计算参数实例= 测试双向变流器信息, 设备ID= ..., 设备信息= ...
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试双向变流器ID, 设备信息=测试双向变流器信息
     )
     return devModel
+
 
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():
