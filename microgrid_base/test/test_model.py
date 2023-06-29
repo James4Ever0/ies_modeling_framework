@@ -514,9 +514,15 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 from ies_optim import 双向变流器ID,双向变流器模型,双向变流器信息
+
 @fixture
 def 测试双向变流器信息():
-    devInfo = 双向变流器信息(设备名称= '双向变流器', 生产厂商= 'Any', 设备型号= '双向变流器1', RatedPower= 100, Efficiency= 98, CostPerKilowatt= 2, CostPerYearPerKilowatt= 2, VariationalCostPerWork= 2, Life= 10, BuildCostPerKilowatt=2, BuildBaseCost= ..., MaxDeviceCount= ..., MinDeviceCount= ..., DeviceCount= ...)
+    devInfo = 双向变流器信息(设备名称= '双向变流器', 生产厂商= 'Any', 设备型号= '双向变流器1', RatedPower= 100, Efficiency= 98, CostPerKilowatt= 2, CostPerYearPerKilowatt= 2, VariationalCostPerWork= 2, Life= 10, BuildCostPerKilowatt=2, BuildBaseCost= 2, MaxDeviceCount= 1, MinDeviceCount= 1, DeviceCount= 1)
+    return devInfo
+
+@fixture
+def 测试双向变流器模型():
+    ...
 
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():...
