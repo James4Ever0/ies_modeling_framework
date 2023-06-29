@@ -67,10 +67,10 @@ EPS = 0.02
 from ies_optim import 柴油信息
 
 
-@fixture(scope="session")
-def 测试柴油信息():
+# @fixture(scope="session")
+# def 测试柴油信息():
 
-    return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
+#     return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
 
 
 from ies_optim import 柴油发电信息
