@@ -26,8 +26,6 @@ from pyomo.environ import *
 def model_wrapper():
     mw = ModelWrapper()
     yield mw
-    # cleanup this!
-    # del mw.model
     del mw
     # return mw
 
