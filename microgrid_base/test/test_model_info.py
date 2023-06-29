@@ -11,6 +11,7 @@ from omegaconf import OmegaConf
 # shall not use that as type.
 from typing import Protocol
 
+# create this using recursion?
 class myConfig(Protocol):
     myDb: str
     class subConfig:
