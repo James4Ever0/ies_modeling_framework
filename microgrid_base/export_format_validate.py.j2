@@ -272,8 +272,6 @@ class {{devName}}仿真结果(BaseModel):
     "变流器":[
         ('转换功率', commonTimeSeries['电转换功率'])
     ],
-    "传输线": [('', )],
-    "电负荷": [('', )],
     "双向变流器":[
         ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ]
@@ -285,15 +283,15 @@ class {{devName}}仿真结果(BaseModel):
 
 {% for devName, paramDict in main_data['设备出力曲线'].items() %}
 class {{devName}}出力曲线(BaseModel):
-{% if devName == '锂电池'%}
-    {% do paramDict.pop('放电功率')%}
-    {% do paramDict.update(dict(电功率 = paramDict.pop('充电功率')))%}
+{% if devName == '锂电池' %}
+    {% do paramDict.pop('放电功率') %}
+    {% do paramDict.update(dict(电功率 = paramDict.pop('充电功率'))) %}
     {# {% set paramDict['电功率'] = paramDict.pop('充电功率') %} #}
 {% endif%}
 {{iterParamDict(paramDict, True)}}
 {% set obj = {}%}
-{% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))"))%}
-{% call export_data_with_model(devName, obj, '出力曲线')%}
+{% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))")) %}
+{% call export_data_with_model(devName, obj, '出力曲线') %}
     {% do update_obj(obj, timeSeriesMapping, devName, [], False) %}
 {% endcall %}
 {% endfor %}
