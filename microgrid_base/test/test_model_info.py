@@ -5,14 +5,18 @@ import rich
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-
+# shall not use that as type.
+from typing import Protocol
+class myConfig(Protocol):
+    myDb: str
 @hydra.main(
     version_base=None,
     config_path=".",
     # config_path="conf",
     config_name="test_config",
 )
-def my_app(cfg: DictConfig) -> None:
+def my_app(cfg: myConfig) -> None:
+# def my_app(cfg: DictConfig) -> None:
     mconfig = OmegaConf.to_yaml(cfg)
     rich.print(mconfig)
     print()
