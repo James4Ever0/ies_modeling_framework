@@ -3,12 +3,15 @@
 
 import rich
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
+# from omegaconf import DictConfig, OmegaConf
 
 # shall not use that as type.
 from typing import Protocol
 class myConfig(Protocol):
     myDb: str
+    class subConfig:
+        mySubConfig: int
 @hydra.main(
     version_base=None,
     config_path=".",
@@ -17,12 +20,13 @@ class myConfig(Protocol):
 )
 def my_app(cfg: myConfig) -> None:
 # def my_app(cfg: DictConfig) -> None:
+    # cfg.subConfig.mySubConfig
     mconfig = OmegaConf.to_yaml(cfg)
     rich.print(mconfig)
     print()
     rich.print(cfg)
     print(type(cfg), dir(cfg))
-    print(cfg.db.abc)
+    print(cfg.db.abc) # error by type checker.
 
 
 if __name__ == "__main__":
