@@ -513,25 +513,71 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         print(s_results)
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
-from ies_optim import 双向变流器ID,双向变流器模型,双向变流器信息
+
+
+from ies_optim import 双向变流器ID, 双向变流器模型, 双向变流器信息
+
 
 @fixture
 def 测试双向变流器信息():
-    devInfo = 双向变流器信息(设备名称= '双向变流器', 生产厂商= 'Any', 设备型号= '双向变流器1', RatedPower= 100, Efficiency= 98, CostPerKilowatt= 2, CostPerYearPerKilowatt= 2, VariationalCostPerWork= 2, Life= 10, BuildCostPerKilowatt=2, BuildBaseCost= 2, MaxDeviceCount= 1, MinDeviceCount= 1, DeviceCount= 1)
+    devInfo = 双向变流器信息(
+        设备名称="双向变流器",
+        生产厂商="Any",
+        设备型号="双向变流器1",
+        RatedPower=100,
+        Efficiency=98,
+        CostPerKilowatt=2,
+        CostPerYearPerKilowatt=2,
+        VariationalCostPerWork=2,
+        Life=10,
+        BuildCostPerKilowatt=2,
+        BuildBaseCost=2,
+        MaxDeviceCount=1,
+        MinDeviceCount=1,
+        DeviceCount=1,
+    )
     return devInfo
 
+
 @fixture
-def 测试双向变流器模型(测试双向变流器信息: 双向变流器信息):
-    devModel = 双向变流器模型(PD = {}, mw = model_wrapper, )
+def 测试双向变流器模型(测试双向变流器信息: 双向变流器信息, model_wrapper: ModelWrapper):
+    devModel = 双向变流器模型(
+        PD={},
+        mw=model_wrapper,
+        计算参数实例= 测试双向变流器信息, 设备ID= ..., 设备信息= ...
+    )
+    return devModel
 
 @pytest.mark.parametrize("input, output", [])
-def test_双向变流器():...
+def test_双向变流器():
+    ...
 
-from ies_optim import 风力发电ID,风力发电模型,风力发电信息
+
+from ies_optim import 风力发电ID, 风力发电模型, 风力发电信息
+
 
 @fixture
 def 测试风力信息():
-    devInfo = 风力发电信息(设备名称 = "风力发电", 生产厂商 = 'Any', 设备型号 = '风力发电1', RatedPower = 100, RatedWindSpeed = 100, MinWindSpeed = 10, MaxWindSpeed = 200, PowerDeltaLimit= 2, CostPerKilowatt= )
+    devInfo = 风力发电信息(
+        设备名称="风力发电",
+        生产厂商="Any",
+        设备型号="风力发电1",
+        RatedPower=100,
+        RatedWindSpeed=100,
+        MinWindSpeed=10,
+        MaxWindSpeed=200,
+        PowerDeltaLimit=2,
+        CostPerKilowatt=...,
+        CostPerYearPerKilowatt=...,
+        VariationalCostPerWork=...,
+        Life=...,
+        BuildCostPerKilowatt=...,
+        BuildBaseCost=...,
+        MaxDeviceCount=...,
+        MinDeviceCount=...,
+        DeviceCount=...,
+    )
+
 
 def test_风力发电():
     ...
