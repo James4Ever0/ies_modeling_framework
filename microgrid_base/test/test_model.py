@@ -521,8 +521,8 @@ def 测试双向变流器信息():
     return devInfo
 
 @fixture
-def 测试双向变流器模型():
-    ...
+def 测试双向变流器模型(测试双向变流器信息: 双向变流器信息):
+    devModel = 双向变流器模型(PD = {}, mw = model_wrapper, )
 
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():...
@@ -531,7 +531,7 @@ from ies_optim import 风力发电ID,风力发电模型,风力发电信息
 
 @fixture
 def 测试风力信息():
-    devInfo = 风力发电信息(设备名称 = "风力发电", 生产厂商 = 'Any', 设备型号 = '风力发电1', RatedPower = 100, RatedWindSpeed= 100, MinWindSpeed = 10, MaxWindSpeed = 200, PowerDeltaLimit= 2, CostPerKilowatt= )
+    devInfo = 风力发电信息(设备名称 = "风力发电", 生产厂商 = 'Any', 设备型号 = '风力发电1', RatedPower = 100, RatedWindSpeed = 100, MinWindSpeed = 10, MaxWindSpeed = 200, PowerDeltaLimit= 2, CostPerKilowatt= )
 
 def test_风力发电():
     ...
