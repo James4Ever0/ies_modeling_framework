@@ -8,10 +8,12 @@ from omegaconf import OmegaConf
 
 # shall not use that as type.
 from typing import Protocol
+
 class myConfig(Protocol):
     myDb: str
     class subConfig:
         mySubConfig: int
+
 @hydra.main(
     version_base=None,
     config_path=".",
