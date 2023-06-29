@@ -272,6 +272,8 @@ class {{devName}}仿真结果(BaseModel):
     "变流器":[
         ('转换功率', commonTimeSeries['电转换功率'])
     ],
+    "传输线": [()],
+    "电负荷": [()],
     "双向变流器":[
         ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ]
