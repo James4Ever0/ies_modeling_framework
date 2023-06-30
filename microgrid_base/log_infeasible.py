@@ -47,5 +47,7 @@ print("TERMINATION CONDITION?",solution.solver.termination_condition) # infeasib
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 print(value(m.z))
 
+mstream.seek(0)
 logging_data = mstream.read()
+mstream.
 print("LOGGING DATA:", logging_data)
