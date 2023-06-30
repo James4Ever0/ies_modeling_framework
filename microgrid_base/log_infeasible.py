@@ -49,5 +49,6 @@ print(value(m.z))
 
 mstream.seek(0)
 logging_data = mstream.read()
-mstream.
+# logging_data = mstream.getvalue()
+mstream.truncate(0)
 print("LOGGING DATA:", logging_data)
