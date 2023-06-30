@@ -9,7 +9,6 @@ from pyomo.environ import (
 )
 from pyomo.opt import SolverFactory
 from pyomo.util.infeasible import log_infeasible_constraints
-import logging
 
 m = ConcreteModel()
 m.LE = set([1, 2, 3])
@@ -32,12 +31,14 @@ import io
 mstream = io.StringIO()
 
 import sys
+import logging
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 # logging.basicConfig(stream=mstream, level=logging.INFO)
 
 solver = SolverFactory("cplex")
 # solver = SolverFactory("glpk")
 solution = solver.solve(m, tee=True)
+# after solving.
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
 print()
 print("SOLVER STATUS?",solution.solver.status)
