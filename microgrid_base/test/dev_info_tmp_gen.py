@@ -6,7 +6,7 @@ import sys
 sys.path.append("../")
 
 from ies_optim import *
-
+import inspect
 for k, v in globals():
     # print(k)
     # print(k.__annotations__)
@@ -17,4 +17,5 @@ for k, v in globals():
             if issubclass(v, 设备信息):
                 # 意味着有公共内容
                 commonParams.update(生产厂商="Any", 设备型号=f"{devName}1")
+            sig = inspect.signature(v)
     # class/methods might have distinct annotations inside.
