@@ -158,6 +158,8 @@ def solveModelFromCalcParamList(
                 TerminationCondition.optimal,
             ]
             error_msg = []
+            mstream.truncate(0)
+            # strip away other logging data.
             log_infeasible_constraints(
                 mw.model, log_expression=True, log_variables=True
             )
