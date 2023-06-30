@@ -34,8 +34,11 @@ solution = solver.solve(m, tee=False)
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
 import io
 mstream = io.StringIO()
-logging.basicConfig(stream=mstream, encoding="utf-8", level=logging.INFO)
+import sys
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+# logging.basicConfig(stream=mstream, level=logging.INFO)
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 print(value(m.z))
 
-mstream.read()
+logging_data = mstream.read()
+print("LOGGING DATA:", logging_data)
