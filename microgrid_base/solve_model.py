@@ -11,6 +11,10 @@ from pyomo.environ import *
 
 from pydantic import BaseModel
 import rich
+import io
+import logging
+mstream = io.StringIO()
+logging.basicConfig(stream=mstream,  level=logging.INFO)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
