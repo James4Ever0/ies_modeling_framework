@@ -153,6 +153,11 @@ def solveModelFromCalcParamList(
                 TerminationCondition.optimal,
             ]
             error_msg = []
+            if :
+                error_msg.append()
+                error_msg.append("")
+                error_msg.append("_"*20)
+                error_msg.append("")
             if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
             if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
             if error_msg:
