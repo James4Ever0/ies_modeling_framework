@@ -32,7 +32,10 @@ solver = SolverFactory("cplex")
 # solver = SolverFactory("glpk")
 solution = solver.solve(m, tee=False)
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
-mstream = ...
+import io
+mstream = io.StringIO()
 logging.basicConfig(stream=mstream, encoding="utf-8", level=logging.INFO)
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 print(value(m.z))
+
+mstream.read()
