@@ -8,6 +8,7 @@ except:
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
+from pyomo.util.infeasible import log_infeasible_constraints
 
 from pydantic import BaseModel
 import rich
@@ -157,8 +158,13 @@ def solveModelFromCalcParamList(
                 TerminationCondition.optimal,
             ]
             error_msg = []
-            if :
-                error_msg.append()
+            log_infeasible_constraints(mw.model, log_expression=True, log_variables=True)
+            
+            mstream.seek(0)
+            infeasible_constraint_log = mstream.getvalue()
+            mstream.truncate(0)
+            if infeasible_constraint_log:
+                error_msg.append(infeasible_constraint_log)
                 error_msg.append("")
                 error_msg.append("_"*20)
                 error_msg.append("")
