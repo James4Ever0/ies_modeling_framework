@@ -3,7 +3,7 @@
 
 Usage:
     type_system_v2.py [(-p | --plot_only) | --version]
-    
+
 Options:
     -p --plot_only        Only save the plot picture without showing it.
     --version             Showing version.
