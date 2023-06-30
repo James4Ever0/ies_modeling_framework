@@ -32,8 +32,8 @@ mstream = io.StringIO()
 
 import sys
 import logging
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
-# logging.basicConfig(stream=mstream, level=logging.INFO)
+# logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+logging.basicConfig(stream=mstream,level=logging.INFO)
 
 solver = SolverFactory("cplex")
 # solver = SolverFactory("glpk")
