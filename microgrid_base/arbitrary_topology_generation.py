@@ -86,5 +86,5 @@ for i in range(len(devices), max_nodes):
 
 import matplotlib.pyplot as plt
 
-nx.draw(G)
+nx.draw(G, with_labels=True)
 plt.show()
