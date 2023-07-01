@@ -1,32 +1,30 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Dict, List, Tuple, Union, Callable
-from pydantic import conlist, conint, confloat, constr
+from typing import Callable, Dict, List, Tuple, Union
+
 import pyomo.core.base
+from pydantic import confloat, conint, conlist, constr
 
 try:
     from typing import Literal
 except:
     from typing_extensions import Literal
 
+### 计价模型 ###
+import math
+from functools import lru_cache
 
 import rich
 from pydantic import BaseModel, Field, validator
+from unit_utils import (getSingleUnitConverted, standard_units,
+                        unitFactorCalculator, ureg)
 
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
 
 
-from unit_utils import (
-    unitFactorCalculator,
-    ureg,
-    standard_units,
-    getSingleUnitConverted,
-)
 
 
-### 计价模型 ###
-import math
 
 # 函数参数: (power, time_in_day)
 # 阶梯电价: 容量下限从0开始
@@ -34,7 +32,6 @@ import math
 # TODO: 每个月的都不同 #
 
 
-from functools import lru_cache
 
 
 class 电价转换:
@@ -1198,16 +1195,14 @@ class 传输线信息(设备信息):
 # model definition #
 ####################
 
-from pyomo.environ import *
-
-from sympy.polys.polytools import Poly
 import re
-from sympy import sympify
-
-# taking too long. recursion.
-from progressbar import progressbar
 
 from expr_utils import getExprStrParsedToExprList
+# taking too long. recursion.
+from progressbar import progressbar
+from pyomo.environ import *
+from sympy import sympify
+from sympy.polys.polytools import Poly
 
 
 def withBanner(banner: str = ""):
@@ -1768,11 +1763,12 @@ class 设备模型:
         return mx_my_multiply
 
 
+import math
+
 # input: negative
 # output: positive
 # IO: Real
 import numpy as np
-import math
 
 
 class 光伏发电模型(设备模型):
@@ -3778,6 +3774,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(
