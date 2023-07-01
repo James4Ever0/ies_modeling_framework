@@ -40,3 +40,32 @@
 # above code does not seem to be right.
 # the library is fictional.
 # TSP is not of our type of problem.
+
+import networkx as nx
+
+# set the maximum number of nodes/devices
+max_nodes = 10
+
+# create an empty graph
+G = nx.Graph()
+
+# add the initial nodes/devices
+devices = ['Diesel source', 'Diesel generator', 'Solar power generator', 'Wind power generator', 'Power lines']
+G.add_nodes_from(devices)
+
+# add edges based on the rules
+G.add_edge('Diesel source', 'Diesel generator')
+G.add_edge('Diesel generator', 'Power lines')
+G.add_edge('Solar power generator', 'Power lines')
+G.add_edge('Wind power generator', 'Power lines')
+
+# use the BA model to add new nodes with connections
+for i in range(len(devices), max_nodes):
+    G.add_node(i)
+    # connect to existing nodes with probability proportional to their degree
+    targets = list(G.nodes())
+    probabilities = [deg / sum(dict(G.degree()).values()) for deg in dict(G.degree()).values()]
+    for j in range(len(targets)):
+        if i != targets[j]:
+            if nx.utils.random.choice([True, False], p=[probabilities[j], 1-probabilities[j]]):
+                G.add_edge(i, targets[j])
