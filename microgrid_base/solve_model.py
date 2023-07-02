@@ -16,7 +16,8 @@ import io
 import logging
 
 mstream = io.StringIO()
-# shall you 
+# TODO: shall you test running under celery. shall you not using the root logger.
+# TODO: shall you save the log to file with "RotatingFileHandler"
 logging.basicConfig(stream=mstream, level=logging.INFO)
 
 with open("export_format.json", "r") as f:
