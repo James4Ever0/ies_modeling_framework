@@ -1,5 +1,4 @@
 # fpath = "device_info.yml.tmp"
-template_path = "common_fixtures.py.j2"
 
 import yaml
 import sys
@@ -51,4 +50,6 @@ for k, v in ies_optim.__dict__.items():
 # with open(fpath, "w+") as f:
 #     content = yaml.safe_dump(exportData, allow_unicode=True)
 #     f.write(content)
-jinja_utils.code_and_template_path(base_name:= )
+
+code_path, template_path = jinja_utils.code_and_template_path(base_name:="common_fixtures")
+jinja_utils.load_render_and_format(template_path, code_path, render_params, banner:="")
