@@ -505,7 +505,7 @@ class ModelWrapper:
         # TODO: call this function after model solved.
         for assumption in self.assumptions:
             assumption()
-        self.assumptions = []
+        self.assumptions = [] # clear assumptions
     def __del__(self):
         del self.model
         del self.clock
