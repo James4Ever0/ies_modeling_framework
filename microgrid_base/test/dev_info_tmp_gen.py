@@ -36,7 +36,7 @@ for k, v in ies_optim.__dict__.items():
                 else:
                     commonParams.update({sigkey: None})
             rich.print(commonParams)
-            exportData[devName] = commonParams
+            exportData[k] = commonParams
     # class/methods might have distinct annotations inside.
 
 with open(fpath, 'w+') as f:
