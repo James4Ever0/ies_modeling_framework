@@ -18,4 +18,5 @@ for k, v in globals():
                 # 意味着有公共内容
                 commonParams.update(生产厂商="Any", 设备型号=f"{devName}1")
             sig = inspect.signature(v)
+            print(sig)
     # class/methods might have distinct annotations inside.
