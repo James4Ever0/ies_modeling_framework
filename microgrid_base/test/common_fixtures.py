@@ -45,12 +45,7 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 
 @fixture
 def 测试柴油信息():
-    val = 柴油信息(
-        设备名称="柴油",
-        Price=None,
-        热值=None,
-        CO2=None,
-    )
+    val = 柴油信息(设备名称="柴油", Price=(2, "万元/L"), 热值=(2, "kWh/L"), CO2=(2, "kg/L"))
     return val
 
 
@@ -191,22 +186,22 @@ def 测试风力发电模型(
 @fixture
 def 测试柴油发电信息():
     val = 柴油发电信息(
-        设备名称="柴油发电",
-        生产厂商="Any",
+        生产厂商="柴油发电1",
         设备型号="柴油发电1",
-        RatedPower=None,
-        PowerDeltaLimit=None,
-        PowerStartupLimit=None,
-        CostPerMachine=None,
-        CostPerYearPerMachine=None,
-        VariationalCostPerWork=None,
-        Life=None,
-        BuildCostPerMachine=None,
-        BuildBaseCost=None,
-        MaxDeviceCount=None,
-        MinDeviceCount=None,
-        DeviceCount=None,
-        DieselToPower_Load=None,
+        设备名称="柴油发电1",
+        RatedPower=20,
+        PowerDeltaLimit=1,
+        PowerStartupLimit=1,
+        CostPerMachine=100,
+        CostPerYearPerMachine=100,
+        VariationalCostPerWork=100,
+        Life=20,
+        BuildCostPerMachine=10,
+        BuildBaseCost=10,
+        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
+        DeviceCount=1,
+        MaxDeviceCount=1,
+        MinDeviceCount=1,
     )
     return val
 
