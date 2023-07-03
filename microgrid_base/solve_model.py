@@ -22,12 +22,17 @@ mstream = io.StringIO()
 mStreamHandler = logging.StreamHandler(stream=mstream)
 import logging.handlers
 import os
-log_path = os.path.dirname(os.path.abspath(__file__)), "" 
-mRotateFileHandler = logging.handlers.RotatingFileHandler(log_path, maxBytes=1024*5*1024, backupCount=5)
-logger =logging.getLogger("SOLVE_MODEL_LOGGER")
-logger.propagate=False
+
+log_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
+)
+mRotateFileHandler = logging.handlers.RotatingFileHandler(
+    log_path, maxBytes=1024 * 5 * 1024, backupCount=5
+)
+logger = logging.getLogger("SOLVE_MODEL_LOGGER")
+logger.propagate = False
 logger.setLevel(level=logging.INFO)
-logger.addHandler()
+logger.addHandler(mStreamHandler)
 logger.addHandler(mRotateFileHandler)
 
 with open("export_format.json", "r") as f:
@@ -172,8 +177,9 @@ def solveModelFromCalcParamList(
             error_msg = []
             mstream.truncate(0)
             # strip away other logging data.
+            logger.info("".center())
             log_infeasible_constraints(
-                mw.model, log_expression=True, log_variables=True
+                mw.model, log_expression=True, log_variables=True, logger=logger
             )
 
             mstream.seek(0)
