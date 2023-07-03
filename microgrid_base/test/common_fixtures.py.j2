@@ -51,12 +51,11 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 
 
 {% for infoClassName, infoData in data.items() %}
+{{infoClassName.center(70, "=")}}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
         {% set devModelClassName = infoClassName+"模型"%}
         {% set devIDClassName = infoClassName+"ID"%}
-
-{{infoClassName.center(70, "=")}}
 
         {% call createTestFixture(devInfoClassName) %}
             {%for infoName, infoValue in infoData.items()%}
@@ -73,18 +72,10 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
         {% call createTestFixture(devModelClassName, "测试{className}信息: {className}信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试{className}ID: {className}ID".format(className = infoClassName))%}
         PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID={{devIDClassName}}, 设备信息={{devInfoClassName}}
         {% endcall%}
-
     {% else%}
-
-@fixture
-def {{infoClassName}}():
-    return ...
+        {% call createTestFixture("设备模型", "model_wrapper: ModelWrapper, 测试计算参数: 计算参数") %}
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=0
+        {% endcall%}
     {% endif %}
-
-@fixture
-def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
-    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
-    yield mDeviceModel
-
 
 {% endfor %}
