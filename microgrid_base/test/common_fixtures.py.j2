@@ -12,7 +12,7 @@ from ies_optim import *
 def {{infoClassName}}信息():
     devInfo = {{infoClassName}}信息(
         {%for infoName, infoValue in infoData.items()%}
-        {{infoName}} = {{infoValue}}
+        {{infoName}} = {{repr(infoValue)}}
         {%endfor%}
     )
     return devInfo
