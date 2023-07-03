@@ -9,7 +9,6 @@ def 测试{{className}}():
 {{caller()}}
     )
     return val
-
 {% endmacro%}
 
 from pytest import fixture
@@ -23,23 +22,17 @@ from ies_optim import *
 
 {{infoClassName.center(70, "=")}}
 
-@fixture
-def 测试{{devInfoClassName}}():
-    val = {{devInfoClassName}}(
+{% call createTestFixture(devInfoClassName) %}
         {%for infoName, infoValue in infoData.items()%}
         {{infoName}} = {{repr(infoValue)}},
         {%endfor%}
-    )
-    return val
+{% endcall %}
 
-@fixture
-def 测试{{devIDClassName}}():
-    devID = {{devIDClassName}}(
+{% call createTestFixture(devIDClassName) %}
         {% for k,v in id_data[infoClassName] %}
         {{k}} = {{v}},
         {% endfor %}
-    )
-    return devID
+{% endcall %}
 
 @fixture
 def {{infoClassName}}():
