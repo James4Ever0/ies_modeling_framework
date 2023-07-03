@@ -17,10 +17,15 @@ def 测试{{infoClassName}}信息():
     )
     return val
 
-@fixture
-def 测试{{infoClassName}}设备():
-    ...
-    {% else %}
+@fixture()
+def 测试{{infoClassName}}ID():
+    devID = {{infoClassName}}ID(
+        {% for k,v in id_data[]%}
+        {{k}} = {{v}},
+        {% endfor%}
+    )
+    return devID
+
 @fixture
 def {{infoClassName}}():
     return ...
