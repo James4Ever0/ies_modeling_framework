@@ -1,11 +1,12 @@
-fpath = "device_info.yml.tmp"
+# fpath = "device_info.yml.tmp"
+template_path = "common_fixtures.py.j2"
 
 import yaml
 import sys
 import rich
 
 sys.path.append("../")
-
+import jinja_utils
 import ies_optim
 import inspect
 
