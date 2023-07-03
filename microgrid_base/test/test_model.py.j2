@@ -42,9 +42,11 @@ def test_convertMonthToDays():
 import pytest
 {% set paramStringList = []%}
 {% macro parametrizeHelper(testName,_params)%}
-{% do paramStringList = [_params]%}
+{% do paramStringList.append(_params)%}
 {{caller()}}
+{{paramStringList}}
 def test_{{testName}}({{",".join(paramStringList)}}):
+{% set paramStringList = []%}
 {% endmacro%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
