@@ -12,8 +12,8 @@ import inspect
 # import copy
 
 exportData = {}
-
-
+exportIDData = {}
+_id = 0
 for k, v in ies_optim.__dict__.items():
     # for k, v in mglobals.items():
     # print(k)
@@ -29,11 +29,15 @@ for k, v in ies_optim.__dict__.items():
         if issubclass(v, ies_optim.设备基础信息):
             devName = k.strip("信息")
 
+            devIDData = {}
             # get ID classes.
             devIDName = f"{devName}ID"
             devIDClass = ies_optim.__dict__[devIDName]
             devIDClassSignature = inspect.signature(devIDClass)
-            
+            for sigkey in devIDClassSignature.parameters.keys():
+                devIDData[sigkey] = _id
+                _id +=1
+            exportIDData[k] = devIDData
 
             commonParams = dict(设备名称=devName)
             if issubclass(v, ies_optim.设备信息):
@@ -62,5 +66,5 @@ code_path, template_path = jinja_utils.code_and_template_path(
     base_name := "common_fixtures"
 )
 jinja_utils.load_render_and_format(
-    template_path, code_path, render_params := dict(data = exportData), banner := "TEST FIXTURES"
+    template_path, code_path, render_params := dict(data = exportData, id_data = exportIDData), banner := "TEST FIXTURES"
 )
