@@ -20,7 +20,10 @@ mstream = io.StringIO()
 # TODO: shall you save the log to file with "RotatingFileHandler"
 # logging.basicConfig(stream=mstream, level=logging.INFO)
 mStreamHandler = logging.StreamHandler(stream=mstream)
-mRotateFileHandler = logging.R
+import logging.handlers
+import os
+log_path = os.path.dirname(os.path.abspath(__file__)), "" 
+mRotateFileHandler = logging.handlers.RotatingFileHandler(log_path, maxBytes=1024*5*1024, backupCount=5)
 logger =logging.getLogger("SOLVE_MODEL_LOGGER")
 logger.propagate=False
 logger.setLevel(level=logging.INFO)
