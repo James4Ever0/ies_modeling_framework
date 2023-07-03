@@ -10,6 +10,9 @@ from ies_optim import *
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
         {% set devIDClassName = infoClassName+"ID"%}
+
+{{infoClassName.center(70, "=")}}
+
 @fixture
 def 测试{{devInfoClassName}}():
     val = {{devInfoClassName}}(
@@ -22,7 +25,7 @@ def 测试{{devInfoClassName}}():
 @fixture
 def 测试{{devIDClassName}}():
     devID = {{devIDClassName}}(
-        {% for k,v in id_data[] %}
+        {% for k,v in id_data[infoClassName] %}
         {{k}} = {{v}},
         {% endfor %}
     )
