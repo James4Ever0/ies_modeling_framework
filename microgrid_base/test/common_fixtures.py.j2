@@ -2,6 +2,16 @@
 {# for better coding experience, refuse to use yaml but embrace python (autocomplete) #}
 {# render this to ".py.tmp" first, then modify it. #}
 
+{% macro createTestFixture(className)%}
+@fixture
+def 测试{{className}}():
+    val = {{className}}(
+{{caller()}}
+    )
+    return val
+
+{% endmacro%}
+
 from pytest import fixture
 import sys
 sys.path.append("../")
