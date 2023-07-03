@@ -28,10 +28,12 @@ for i in m.LE:
     m.cons1.add(10**2 * m.x[i] <= -3)
 
 import io
+
 mstream = io.StringIO()
 
-import sys
+# import sys
 import logging
+
 # logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logging.basicConfig(stream=mstream, level=logging.INFO)
 
@@ -41,8 +43,8 @@ solution = solver.solve(m, tee=True)
 # after solving.
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
 print()
-print("SOLVER STATUS?",solution.solver.status)
-print("TERMINATION CONDITION?",solution.solver.termination_condition) # infeasible.
+print("SOLVER STATUS?", solution.solver.status)
+print("TERMINATION CONDITION?", solution.solver.termination_condition)  # infeasible.
 
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 print(value(m.z))
