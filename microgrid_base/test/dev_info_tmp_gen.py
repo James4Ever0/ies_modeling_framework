@@ -10,7 +10,7 @@ import ies_optim
 import inspect
 
 # import copy
-
+计算参数 = "计算参数"
 exportData = {}
 exportIDData = {}
 _id = 0
@@ -18,7 +18,7 @@ for k, v in ies_optim.__dict__.items():
     # for k, v in mglobals.items():
     # print(k)
     # print(k.__annotations__)
-    if k == "计算参数":
+    if k == 计算参数:
         sig = inspect.signature(v)
         commonParams = {}
         for sigkey in sig.parameters.keys():
@@ -36,7 +36,7 @@ for k, v in ies_optim.__dict__.items():
             devIDClassSignature = inspect.signature(devIDClass)
             for sigkey in devIDClassSignature.parameters.keys():
                 devIDData[sigkey] = _id
-                _id +=1
+                _id += 1
             exportIDData[k] = devIDData
 
             commonParams = dict(设备名称=devName)
@@ -68,7 +68,13 @@ code_path, template_path = jinja_utils.code_and_template_path(
 
 
 # from collections import OrderedDict
-exportedDataOrdered = OrderedDict()
+# exportedDataOrdered = OrderedDict()
 jinja_utils.load_render_and_format(
-    template_path, code_path, render_params := dict(data = exportData, id_data = exportIDData), banner := "TEST FIXTURES"
+    template_path,
+    code_path,
+    render_params := dict(
+        data=dict(sorted(exportData.items(), key=lambda item: item[0] == 计算参数)),
+        id_data=exportIDData,
+    ),
+    banner := "TEST FIXTURES",
 )
