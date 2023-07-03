@@ -19,6 +19,8 @@ mstream = io.StringIO()
 # TODO: shall you test running under celery. shall you not using the root logger.
 # TODO: shall you save the log to file with "RotatingFileHandler"
 logging.basicConfig(stream=mstream, level=logging.INFO)
+logger =logging.getLogger("SOLVE_MODEL_LOGGER")
+logger.setLevel(level=logging.INFO)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
