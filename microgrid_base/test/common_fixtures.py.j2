@@ -22,34 +22,30 @@ def model_wrapper():
     yield mw
     del mw
 
-
-
 from typing import Protocol, Any
-
 
 class Request(Protocol):
     param: Any
     cache: Any
 
-
 @fixture(scope="session", params=["设计规划", "仿真模拟"], ids=["PLANNING", "SIMULATION"])
 def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
     import numpy as np
+    {# print(type(request)) #}
 
-    print(type(request))
-
-    a = abs(np.random.random((24,))).tolist()
+    arr = abs(np.random.random((24,))).tolist()
     return 计算参数(
         计算目标="经济",
         # 计算目标="经济_环保",
         # 计算目标="环保",
         计算步长="小时",
+        {# 计算步长="秒", #}
         典型日=True,
         典型日代表的日期=[1],
         计算类型=request.param,
-        风速=a,
-        光照=a,
-        气温=a,
+        风速=arr,
+        光照=arr,
+        气温=arr,
         年利率=0.1,
     )
 
@@ -84,6 +80,11 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 def {{infoClassName}}():
     return ...
     {% endif %}
+
+@fixture
+def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
+    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
+    yield mDeviceModel
 
 
 {% endfor %}
