@@ -175,26 +175,26 @@ def solveModelFromCalcParamList(
                 TerminationCondition.optimal,
             ]
             error_msg = []
-            mstream.truncate(0)
             # strip away other logging data.
             if TC in [
                 TerminationCondition.infeasible,
                 TerminationCondition.infeasibleOrUnbounded,
             ]:
+                mstream.truncate(0)
                 logger.info("logging infeasible constraints".center(70, "="))
-            log_infeasible_constraints(
-                mw.model, log_expression=True, log_variables=True, logger=logger
-            )
+                log_infeasible_constraints(
+                    mw.model, log_expression=True, log_variables=True, logger=logger
+                )
 
-            mstream.seek(0)
-            infeasible_constraint_log = mstream.getvalue()
-            mstream.truncate(0)
-            if infeasible_constraint_log:
-                error_msg.append("")
-                error_msg.append(infeasible_constraint_log)
-                error_msg.append("")
-                error_msg.append("_" * 20)
-                error_msg.append("")
+                mstream.seek(0)
+                infeasible_constraint_log = mstream.getvalue()
+                mstream.truncate(0)
+                if infeasible_constraint_log:
+                    error_msg.append("")
+                    error_msg.append(infeasible_constraint_log)
+                    error_msg.append("")
+                    error_msg.append("_" * 20)
+                    error_msg.append("")
             if TC not in normalTCs:
                 error_msg.append(f"abnormal termination condition: {TC}")
             if SS not in normalSSs:
