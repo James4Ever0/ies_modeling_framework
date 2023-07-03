@@ -40,15 +40,15 @@ def test_convertMonthToDays():
     assert convertMonthToDays(11) == sum(month_days[:11])
 
 import pytest
-
-{% macro parametrize(mParamString) %}
-    {% set paramString=",".join([paramString, mParamString])%}
-@pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
-{% endmacro%}
+{% set paramStringList = []%}
 {% macro parametrizeHelper(testName,_params)%}
-{% set paramString = ""%}
+{% do paramStringList = [_params]%}
 {{caller()}}
-def test_{{testName}}({{",".join([_params,paramString])}}):
+def test_{{testName}}({{",".join(paramStringList)}}):
+{% endmacro%}
+{% macro parametrize(mParamString) %}
+    {% do paramStringList.append(mParamString) %}
+@pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
     OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}})
