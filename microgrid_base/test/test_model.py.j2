@@ -30,6 +30,8 @@ import pytest
 {% caller()%}
 def test_{{testName}}({{",".join([_params,paramString])}}):
 {% endmacro%}
+{% macro solveModel()%}
+{% endmacro%}
 
 # BUG: BigM <= 1e+8
 {% call parametrizeHelper("BinVarMultiplySingle")%}
@@ -53,21 +55,17 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
         v0 = 测试设备模型.单变量(
             "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
         )
-
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
-    # obj_expr = v1
     obj_expr = v_result
-    # if sense == maximize:
-    #     obj_expr = -obj_expr
-    # OBJ = model_wrapper.Objective(expr=obj_expr, sense=minimize)
-    OBJ = model_wrapper.Objective(expr=obj_expr, sense=sense)
 
+    OBJ = model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
         print(f"PROD: {value(v_result)}")
