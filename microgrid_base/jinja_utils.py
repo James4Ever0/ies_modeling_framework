@@ -53,7 +53,11 @@ def load_template(template_path):
         undefined=jinja2.StrictUndefined,
     )
     tpl = env.get_template(template_path)
-    func_dict = dict(list=list, str=str, ord=ord, len=len, repr=repr)
+    def myJoin(mstr, mlist):
+        print("STR:", repr(mstr))
+        print("LIST:", repr(mlist))
+        mstr.join(mlist)
+    func_dict = dict(list=list, str=str, ord=ord, len=len, repr=repr, join=myJoin)
     tpl.globals.update(func_dict)
     return tpl
 
