@@ -48,6 +48,7 @@ for k, v in ies_optim.__dict__.items():
             exportData[k] = commonParams
     # class/methods might have distinct annotations inside.
 
-with open(fpath, "w+") as f:
-    content = yaml.safe_dump(exportData, allow_unicode=True)
-    f.write(content)
+# with open(fpath, "w+") as f:
+#     content = yaml.safe_dump(exportData, allow_unicode=True)
+#     f.write(content)
+jinja_utils.code_and_template_path(base_name:= )
