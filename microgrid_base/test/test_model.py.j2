@@ -21,8 +21,9 @@ def test_convertMonthToDays():
 
 import pytest
 
-{% macro parametrize(paramDef)%}
-{% caller()%}
+{% macro parametrize(mParamString)%}
+{% do paramString= ",".join([paramString, mParamString])%}
+@pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
