@@ -2,6 +2,7 @@ fpath = "device_info.yml.tmp"
 
 import yaml
 import sys
+import rich
 
 sys.path.append("../")
 
@@ -26,5 +27,10 @@ for k, v in ies_optim.__dict__.items():
             print()
             print(devName.center(30, "="))
             for sigkey in sig.parameters.keys():
-                print(sigkey)
+                # print(sigkey)
+                if sigkey in commonParams.keys():
+                    continue
+                else:
+                    commonParams.update({sigkey:None})
+            rich.print(sigkey)
     # class/methods might have distinct annotations inside.
