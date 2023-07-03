@@ -1,10 +1,4 @@
-from pytest import fixture
-import sys
-
-# taking too long to solve.
-# TODO: assert time per test.
-
-sys.path.append("../")
+from 
 
 from typing import cast
 
@@ -12,8 +6,6 @@ try:
     from typing import Protocol
 except:
     from typing_extensions import Protocol
-from ies_optim import ModelWrapper
-from ies_optim import 计算参数
 from pyomo.environ import *
 
 # may you hook arith methods to check expression (poly degree) on the way.
@@ -31,37 +23,6 @@ def model_wrapper():
 
 
 EPS = 0.02
-
-# class mObject:
-#     a = 1
-#     b = 2
-#     @staticmethod
-#     def method():
-#         return "method return value"
-
-# @fixture()
-# def teardown_fixture():
-#     yield mObject()
-#     print("TEARDOWN FIXTURE")
-
-# # @fixture == @fixture()
-
-# @fixture()
-# def t2f(teardown_fixture):
-#     print(teardown_fixture)
-#     print("VAL A?", teardown_fixture.a)
-#     print("VAL B?", teardown_fixture.b)
-#     print("VAL METHOD?", teardown_fixture.method())
-#     print("_____EXIT T2F_____")
-#     yield teardown_fixture
-#     # return teardown_fixture
-#     print("TEARDOWN T2F")
-
-# def test_teardown(t2f: mObject):
-#     print(t2f)
-#     print("VAL A?", t2f.a)
-#     print("VAL B?", t2f.b)
-#     print("VAL METHOD?", t2f.method())
 
 
 from ies_optim import 柴油信息
