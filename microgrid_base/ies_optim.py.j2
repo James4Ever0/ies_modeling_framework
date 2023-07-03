@@ -1289,7 +1289,10 @@ class {{class_name}}模型(设备模型):
         {% endif%}
         {% endwith%}
 
+        {% if class_name != "传输线" %}
+        {# 忽略传输线 #}
         self.处理最终财务输出(self)
+        {% endif%}
 
         return self.总成本年化
 {% endfor %}
