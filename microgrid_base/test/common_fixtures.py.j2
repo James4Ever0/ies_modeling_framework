@@ -10,6 +10,11 @@ from ies_optim import *
     {% if infoClassName != "计算参数" %}
 @fixture
 def {{infoClassName}}信息():
+    devInfo = {{infoClassName}}信息(
+        {%for infoName, infoValue in infoData.items()%}
+        {{infoName}} = {{infoValue}}
+        {%endfor%}
+    )
     return devInfo
     {% else %}
 @fixture
