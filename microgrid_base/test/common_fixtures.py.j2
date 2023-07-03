@@ -9,13 +9,17 @@ from ies_optim import *
 {% for infoClassName, infoData in data.items() %}
     {% if infoClassName != "计算参数" %}
 @fixture
-def {{infoClassName}}信息():
+def 测试{{infoClassName}}信息():
     val = {{infoClassName}}信息(
         {%for infoName, infoValue in infoData.items()%}
         {{infoName}} = {{repr(infoValue)}},
         {%endfor%}
     )
     return val
+
+@fixture
+def 测试{{infoClassName}}设备():
+    ...
     {% else %}
 @fixture
 def {{infoClassName}}():
