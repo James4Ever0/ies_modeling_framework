@@ -25,9 +25,10 @@ import pytest
     {% do paramString= ",".join([paramString, mParamString])%}
 @pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
 {% endmacro%}
-{%macro solveModel(testName)%}
+{%macro Model(testName,params)%}
 {% set paramString = ""%}
-def test_{{testName}}(param):
+{% caller()%}
+def test_{{testName}}({{params+","+paramString}}):
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
