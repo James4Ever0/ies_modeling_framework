@@ -8,21 +8,23 @@ sys.path.append("../")
 from ies_optim import *
 {% for infoClassName, infoData in data.items() %}
     {% if infoClassName != "计算参数" %}
+        {% set devInfoClassName = infoClassName+"信息"%}
+        {% set devIDClassName = infoClassName+"ID"%}
 @fixture
-def 测试{{infoClassName}}信息():
-    val = {{infoClassName}}信息(
+def 测试{{devInfoClassName}}():
+    val = {{devInfoClassName}}(
         {%for infoName, infoValue in infoData.items()%}
         {{infoName}} = {{repr(infoValue)}},
         {%endfor%}
     )
     return val
 
-@fixture()
-def 测试{{infoClassName}}ID():
-    devID = {{infoClassName}}ID(
-        {% for k,v in id_data[]%}
+@fixture
+def 测试{{devIDClassName}}():
+    devID = {{devIDClassName}}(
+        {% for k,v in id_data[] %}
         {{k}} = {{v}},
-        {% endfor%}
+        {% endfor %}
     )
     return devID
 
