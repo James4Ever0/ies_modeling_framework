@@ -8,12 +8,13 @@ sys.path.append("../")
 
 import ies_optim
 import inspect
+
 # import copy
 
 exportData = {}
 
 for k, v in ies_optim.__dict__.items():
-# for k, v in mglobals.items():
+    # for k, v in mglobals.items():
     # print(k)
     # print(k.__annotations__)
     if k.endswith("信息") and (not k.startswith("设备")):
@@ -33,7 +34,11 @@ for k, v in ies_optim.__dict__.items():
                 if sigkey in commonParams.keys():
                     continue
                 else:
-                    commonParams.update({sigkey:None})
+                    commonParams.update({sigkey: None})
             rich.print(commonParams)
+            exportData[devName] = commonParams
     # class/methods might have distinct annotations inside.
-    
+
+with open(fpath, 'w+') as f:
+    content = yaml.safe_dump(exportData, allow_unicode=True)
+    f.write(content)
