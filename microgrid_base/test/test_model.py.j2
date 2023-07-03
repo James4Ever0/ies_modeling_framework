@@ -25,27 +25,26 @@ import pytest
     {% do paramString= ",".join([paramString, mParamString])%}
 @pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
 {% endmacro%}
-{%macro Model(testName,params)%}
+{% macro parametrizeHelper(testName,_params)%}
 {% set paramString = ""%}
 {% caller()%}
-def test_{{testName}}({{params+","+paramString}}):
+def test_{{testName}}({{",".join([_params,paramString])}}):
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
 {%call parametrize("v0_is_constant")%}[False, True]{% endcall%}
-@pytest.mark.parametrize(
-    "v0_within, min_v0, max_v0, sense, result",
+{%call parametrize("v0_within, min_v0, max_v0, sense, result")%}
     [
         (Reals, -1, 10, minimize, -1),
         (Reals, -1, 10, maximize, 10),
         (NonNegativeReals, 1, 10, minimize, 0),
         (NonNegativeReals, 1, 10, maximize, 10),
-    ],
-)
-@pytest.mark.parametrize("v1_init", [0, 1])
-@pytest.mark.parametrize("v0_init", [3])
-@pytest.mark.parametrize(
-    "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
+    ]
+{%endcall%}
+{% parametrize("v1_init")%}, [0, 1])
+{% parametrize("v0_init")%}, [3])
+{% parametrize(
+    "v1_within")%}, [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
 )
 def test_BinVarMultiplySingle(
     model_wrapper: ModelWrapper,
