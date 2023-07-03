@@ -50,7 +50,14 @@ import pytest
 {% caller()%}
 def test_{{testName}}({{",".join([_params,paramString])}}):
 {% endmacro%}
-{% macro solveModel()%}
+{% macro solveModel(objective, sense='sense')%}
+    OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}})
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
@@ -77,15 +84,7 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
         )
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
-    obj_expr = v_result
-
-    OBJ = model_wrapper.Objective(expr=obj_expr, sense=sense)
-    with SolverFactory("cplex") as solver:
-        print(">>>SOLVING<<<")
-        s_results = solver.solve(model_wrapper.model, tee=True)
-        print("SOLVER RESULTS?")
-        print(s_results)
-        check_solver_result(s_results)
+{{solveModel('v_result')}}
 
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
