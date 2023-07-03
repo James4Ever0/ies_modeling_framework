@@ -489,10 +489,10 @@ def examineSubExprDegree(expr):
             print()
             print("Abnormal subexpression poly degree:", subpoly_deg)
             # recover expression representation
-            subexpr_pyomo = sympy2pyomo_expression(subexpr, objmap)
-            subexpr_pyomo_repr = str(subexpr_pyomo)
-            {# print("Abnormal expression:", subexpr) #}
-            print("Abnormal expression:", subexpr_pyomo_repr)
+            {# subexpr_pyomo = sympy2pyomo_expression(subexpr, objmap)
+            subexpr_pyomo_repr = str(subexpr_pyomo) #}
+            print("Abnormal expression:", subexpr)
+            {# print("Abnormal expression:", subexpr_pyomo_repr) #}
     print()
 
 class ModelWrapper:
