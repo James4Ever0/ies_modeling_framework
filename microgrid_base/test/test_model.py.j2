@@ -1,4 +1,4 @@
-from 
+from common_fixtures import *
 
 from typing import cast
 
@@ -12,131 +12,13 @@ from pyomo.environ import *
 
 # render constraints as latex. use sigma notation.
 
-
-@fixture()
-# @fixture(scope="session")
-def model_wrapper():
-    mw = ModelWrapper()
-    yield mw
-    del mw
-    # return mw
-
-
 EPS = 0.02
 
-
-from ies_optim import 柴油信息
-
-
-# @fixture(scope="session")
-# def 测试柴油信息():
-
-#     return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
-
-
-from ies_optim import 柴油发电信息
-
-
-@fixture(scope="session")
-def 测试柴油发电信息():
-
-    return 柴油发电信息(
-        生产厂商="柴油发电1",
-        设备型号="柴油发电1",
-        设备名称="柴油发电1",
-        RatedPower=20,
-        PowerDeltaLimit=1,
-        PowerStartupLimit=1,
-        CostPerMachine=100,
-        CostPerYearPerMachine=100,
-        VariationalCostPerWork=100,
-        Life=20,
-        BuildCostPerMachine=10,
-        BuildBaseCost=10,
-        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=1,
-        MaxDeviceCount=1,
-        MinDeviceCount=1,
-    )
-
-
-from ies_optim import 柴油发电模型, 柴油发电ID
-
-
-@fixture()
-def 测试柴油发电ID():
-    devID = 柴油发电ID(ID=0, 燃料接口=1, 电接口=2)
-    return devID
-
-
-@fixture()
-def 测试柴油发电模型(
-    测试柴油发电信息: 柴油发电信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油发电ID: 柴油发电ID
-):
-    mDieselEngineModel = 柴油发电模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油发电ID, 设备信息=测试柴油发电信息
-    )
-    return mDieselEngineModel
-
-
-from typing import Protocol, Any
-
-
-class Request(Protocol):
-    param: Any
-    cache: Any
-
-
-@fixture(scope="session", params=["设计规划", "仿真模拟"], ids=["PLANNING", "SIMULATION"])
-def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
-    import numpy as np
-
-    print(type(request))
-    # breakpoint()
-
-    a = abs(np.random.random((24,))).tolist()
-    # a = abs(np.random.random((8760,))).tolist()
-
-    return 计算参数(
-        计算目标="经济",
-        # 计算目标="经济_环保",
-        # 计算目标="环保",
-        计算步长="小时",
-        典型日=True,
-        典型日代表的日期=[1],
-        # 典型日=False,
-        # 计算类型="仿真模拟",
-        计算类型=request.param,
-        # 计算类型="设计规划",
-        风速=a,
-        光照=a,
-        气温=a,
-        年利率=0.1,
-    )
-
-
-# def test_init():
-#     print("hello test")
-
-
 def test_convertMonthToDays():
-    from ies_optim import convertMonthToDays, month_days
-
     assert convertMonthToDays(1) == sum(month_days[:1])
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
 
-
-from ies_optim import 设备模型
-
-
-@fixture
-def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
-    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
-    yield mDeviceModel
-
-
-# from collections import namedtuple
 import pytest
 
 # BUG: BigM <= 1e+8
