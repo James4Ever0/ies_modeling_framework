@@ -1,6 +1,9 @@
 import yaml
 
 fpath = "test_config.yaml"
+import rich
 
-with open('fpath, 'r') as file:
-...    prime_service = yaml.safe_load(file)
+with open(fpath, "r") as file:
+    data = yaml.safe_load(file)
+    rich.print(data)
+    # {'db': {'abc': 'def', 'mykey': None, 'myotherkey': None}}
