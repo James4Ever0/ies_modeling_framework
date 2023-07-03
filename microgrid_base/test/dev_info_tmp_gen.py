@@ -24,6 +24,7 @@ for k, v in ies_optim.__dict__.items():
         for sigkey in sig.parameters.keys():
             commonParams[sigkey] = None
         exportData[k] = commonParams
+        # breakpoint()
     elif k.endswith("信息") and (not k.startswith("设备")):
         if issubclass(v, ies_optim.设备基础信息):
             devName = k.strip("信息")
