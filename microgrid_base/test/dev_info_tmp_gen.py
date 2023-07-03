@@ -65,6 +65,10 @@ for k, v in ies_optim.__dict__.items():
 code_path, template_path = jinja_utils.code_and_template_path(
     base_name := "common_fixtures"
 )
+
+
+from collections import OrderedDict
+exportedDataOrdered = OrderedDict()
 jinja_utils.load_render_and_format(
     template_path, code_path, render_params := dict(data = exportData, id_data = exportIDData), banner := "TEST FIXTURES"
 )
