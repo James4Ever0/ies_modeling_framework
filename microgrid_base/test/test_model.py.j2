@@ -22,12 +22,16 @@ def test_convertMonthToDays():
 import pytest
 
 {% macro parametrize(mParamString)%}
-{% do paramString= ",".join([paramString, mParamString])%}
+    {% do paramString= ",".join([paramString, mParamString])%}
 @pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
+{% endmacro%}
+{%macro solveModel(testName)%}
+{% set paramString = ""%}
+def test_{{testName}}(param):
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
-@pytest.mark.parametrize("v0_is_constant", [False, True])
+{%call parametrize("v0_is_constant")%}[False, True]{% endcall%}
 @pytest.mark.parametrize(
     "v0_within, min_v0, max_v0, sense, result",
     [
