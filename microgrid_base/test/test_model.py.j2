@@ -32,34 +32,20 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
-{%call parametrize("v0_is_constant")%}[False, True]{% endcall%}
-{%call parametrize("v0_within, min_v0, max_v0, sense, result")%}
+{% call parametrizeHelper("BinVarMultiplySingle")%}
+    {%call parametrize("v0_is_constant")%}[False, True]{% endcall%}
+    {%call parametrize("v0_within, min_v0, max_v0, sense, result")%}
     [
         (Reals, -1, 10, minimize, -1),
         (Reals, -1, 10, maximize, 10),
         (NonNegativeReals, 1, 10, minimize, 0),
         (NonNegativeReals, 1, 10, maximize, 10),
     ]
-{%endcall%}
-{% parametrize("v1_init")%}, [0, 1])
-{% parametrize("v0_init")%}, [3])
-{% parametrize(
-    "v1_within")%}, [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
-)
-def test_BinVarMultiplySingle(
-    model_wrapper: ModelWrapper,
-    # 测试计算参数: 计算参数,
-    测试设备模型: 设备模型,
-    v0_within,
-    v0_init,
-    v1_within,
-    v1_init,
-    result,
-    max_v0,
-    min_v0,
-    sense,
-    v0_is_constant,
-):
+    {%endcall%}
+    {% call parametrize("v1_init")%}[0, 1]{%endcall%}
+    {% call parametrize("v0_init")%}[3]{%endcall%}
+    {% call parametrize("v1_within")%}[Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]{% endcall%}
+{% endcall%}
     assert min_v0 <= max_v0
     if v0_is_constant:
         v0 = v0_init
