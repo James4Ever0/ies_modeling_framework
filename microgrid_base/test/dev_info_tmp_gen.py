@@ -65,7 +65,7 @@ for k, v in ies_optim.__dict__.items():
 code_path, template_path = jinja_utils.code_and_template_path(
     base_name := "common_fixtures"
 )
-
+code_path += ".tmp"
 
 # from collections import OrderedDict
 # exportedDataOrdered = OrderedDict()
