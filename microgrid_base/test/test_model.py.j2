@@ -42,7 +42,7 @@ def test_convertMonthToDays():
 import pytest
 
 {% macro parametrize(mParamString)%}
-    {% do paramString= ",".join([paramString, mParamString])%}
+    {% set paramString= ",".join([paramString, mParamString])%}
 @pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
 {% endmacro%}
 {% macro parametrizeHelper(testName,_params)%}
@@ -58,6 +58,7 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
+
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
@@ -85,7 +86,6 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
 {{solveModel('v_result')}}
-
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
         print(f"PROD: {value(v_result)}")
