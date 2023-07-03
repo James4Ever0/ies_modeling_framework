@@ -50,7 +50,8 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
     )
 
 
-{% for infoClassName, infoData in data.items() %}
+{% for _infoClassName, infoData in data.items() %}
+    {% set infoClassName = _infoClassName.strip('信息') %}
 {{'# '+infoClassName.center(70, "=")}}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
@@ -64,7 +65,7 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
         {% endcall %}
 
         {% call createTestFixture(devIDClassName) %}
-            {% for k,v in id_data[infoClassName].items() %}
+            {% for k,v in id_data[_infoClassName].items() %}
         {{k}} = {{v}},
             {% endfor %}
         {% endcall %}
