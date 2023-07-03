@@ -250,7 +250,7 @@ class 设备ID(BaseModel):
 
 
 class 柴油ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输出")
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输出") # type:ignore
     """
     类型: 柴油输出
     """
