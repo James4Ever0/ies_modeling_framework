@@ -51,5 +51,9 @@ for k, v in ies_optim.__dict__.items():
 #     content = yaml.safe_dump(exportData, allow_unicode=True)
 #     f.write(content)
 
-code_path, template_path = jinja_utils.code_and_template_path(base_name:="common_fixtures")
-jinja_utils.load_render_and_format(template_path, code_path, render_params, banner:="")
+code_path, template_path = jinja_utils.code_and_template_path(
+    base_name := "common_fixtures"
+)
+jinja_utils.load_render_and_format(
+    template_path, code_path, render_params := dict(data = exportData), banner := "TEST FIXTURES"
+)
