@@ -15,6 +15,7 @@ from pytest import fixture
 import sys
 sys.path.append("../")
 from ies_optim import *
+
 {% for infoClassName, infoData in data.items() %}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
@@ -22,17 +23,19 @@ from ies_optim import *
 
 {{infoClassName.center(70, "=")}}
 
-{% call createTestFixture(devInfoClassName) %}
-        {%for infoName, infoValue in infoData.items()%}
+        {% call createTestFixture(devInfoClassName) %}
+            {%for infoName, infoValue in infoData.items()%}
         {{infoName}} = {{repr(infoValue)}},
-        {%endfor%}
-{% endcall %}
+            {%endfor%}
+        {% endcall %}
 
-{% call createTestFixture(devIDClassName) %}
-        {% for k,v in id_data[infoClassName] %}
+        {% call createTestFixture(devIDClassName) %}
+            {% for k,v in id_data[infoClassName] %}
         {{k}} = {{v}},
-        {% endfor %}
-{% endcall %}
+            {% endfor %}
+        {% endcall %}
+
+    {% else%}
 
 @fixture
 def {{infoClassName}}():
