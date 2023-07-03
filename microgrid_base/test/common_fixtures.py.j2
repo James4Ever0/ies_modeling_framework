@@ -3,15 +3,17 @@
 {# render this to ".py.tmp" first, then modify it. #}
 
 from pytest import fixture
-
+import sys
+sys.path.append("../")
+from ies_optim import *
 {% for infoClassName, infoData in data.items() %}
-    {% if infoClassName != "" %}
+    {% if infoClassName != "计算参数" %}
 @fixture
-def ...():
-    return 
+def {{infoClassName}}信息():
+    return devInfo
     {% else %}
 @fixture
-def 设备信息():
+def {{infoClassName}}():
     return ...
     {% endif %}
 
