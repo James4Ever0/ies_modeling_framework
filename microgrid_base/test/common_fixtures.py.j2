@@ -4,11 +4,15 @@
 
 from pytest import fixture
 
-{% for infoClassName in %}
+{% for infoClassName, infoData in data.items() %}
+    {% if infoClassName != "" %}
+@fixture
 def ...():
     return 
-{% endfor %}
-
+    {% else %}
 @fixture
 def 设备信息():
     return ...
+    {% endif %}
+
+{% endfor %}
