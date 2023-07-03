@@ -18,9 +18,14 @@ import logging
 mstream = io.StringIO()
 # TODO: shall you test running under celery. shall you not using the root logger.
 # TODO: shall you save the log to file with "RotatingFileHandler"
-logging.basicConfig(stream=mstream, level=logging.INFO)
+# logging.basicConfig(stream=mstream, level=logging.INFO)
+mStreamHandler = logging.StreamHandler(stream=mstream)
+mRotateFileHandler = logging.R
 logger =logging.getLogger("SOLVE_MODEL_LOGGER")
+logger.propagate=False
 logger.setLevel(level=logging.INFO)
+logger.addHandler()
+logger.addHandler(mRotateFileHandler)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
