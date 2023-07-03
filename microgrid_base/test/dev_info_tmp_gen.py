@@ -10,6 +10,8 @@ import ies_optim
 import inspect
 # import copy
 
+exportData = {}
+
 for k, v in ies_optim.__dict__.items():
 # for k, v in mglobals.items():
     # print(k)
@@ -32,5 +34,6 @@ for k, v in ies_optim.__dict__.items():
                     continue
                 else:
                     commonParams.update({sigkey:None})
-            rich.print(sigkey)
+            rich.print(commonParams)
     # class/methods might have distinct annotations inside.
+    
