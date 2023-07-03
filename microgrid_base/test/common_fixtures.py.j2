@@ -16,6 +16,44 @@ import sys
 sys.path.append("../")
 from ies_optim import *
 
+@fixture
+def model_wrapper():
+    mw = ModelWrapper()
+    yield mw
+    del mw
+
+
+
+from typing import Protocol, Any
+
+
+class Request(Protocol):
+    param: Any
+    cache: Any
+
+
+@fixture(scope="session", params=["设计规划", "仿真模拟"], ids=["PLANNING", "SIMULATION"])
+def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
+    import numpy as np
+
+    print(type(request))
+
+    a = abs(np.random.random((24,))).tolist()
+    return 计算参数(
+        计算目标="经济",
+        # 计算目标="经济_环保",
+        # 计算目标="环保",
+        计算步长="小时",
+        典型日=True,
+        典型日代表的日期=[1],
+        计算类型=request.param,
+        风速=a,
+        光照=a,
+        气温=a,
+        年利率=0.1,
+    )
+
+
 {% for infoClassName, infoData in data.items() %}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
