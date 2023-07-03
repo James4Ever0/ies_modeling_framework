@@ -20,8 +20,10 @@ for k, v in ies_optim.__dict__.items():
     # print(k.__annotations__)
     if k == "计算参数":
         sig = inspect.signature(v)
+        commonParams = {}
         for sigkey in sig.parameters.keys():
             commonParams[sigkey] = None
+        exportData[k] = commonParams
     elif k.endswith("信息") and (not k.startswith("设备")):
         if issubclass(v, ies_optim.设备基础信息):
             devName = k.strip("信息")
@@ -44,6 +46,6 @@ for k, v in ies_optim.__dict__.items():
             exportData[k] = commonParams
     # class/methods might have distinct annotations inside.
 
-with open(fpath, 'w+') as f:
+with open(fpath, "w+") as f:
     content = yaml.safe_dump(exportData, allow_unicode=True)
     f.write(content)
