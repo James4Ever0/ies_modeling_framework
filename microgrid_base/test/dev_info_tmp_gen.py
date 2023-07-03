@@ -13,11 +13,16 @@ import inspect
 
 exportData = {}
 
+
 for k, v in ies_optim.__dict__.items():
     # for k, v in mglobals.items():
     # print(k)
     # print(k.__annotations__)
-    if k.endswith("信息") and (not k.startswith("设备")):
+    if k == "计算参数":
+        sig = inspect.signature(v)
+        for sigkey in sig.parameters.keys():
+            commonParams[sigkey] = None
+    elif k.endswith("信息") and (not k.startswith("设备")):
         if issubclass(v, ies_optim.设备基础信息):
             devName = k.strip("信息")
             commonParams = dict(设备名称=devName)
