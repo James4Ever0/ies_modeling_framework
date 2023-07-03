@@ -5,9 +5,11 @@ import sys
 
 sys.path.append("../")
 
-from ies_optim import *
+import ies_optim
 import inspect
-for k, v in globals():
+import copy
+ies_optim.
+for k, v in mglobals.items():
     # print(k)
     # print(k.__annotations__)
     if k.endswith("信息") and (not k.startswith("设备")):
