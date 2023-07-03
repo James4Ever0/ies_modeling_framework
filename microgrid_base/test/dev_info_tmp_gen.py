@@ -28,6 +28,13 @@ for k, v in ies_optim.__dict__.items():
     elif k.endswith("信息") and (not k.startswith("设备")):
         if issubclass(v, ies_optim.设备基础信息):
             devName = k.strip("信息")
+
+            # get ID classes.
+            devIDName = f"{devName}ID"
+            devIDClass = ies_optim.__dict__[devIDName]
+            devIDClassSignature = inspect.signature(devIDClass)
+            
+
             commonParams = dict(设备名称=devName)
             if issubclass(v, ies_optim.设备信息):
                 # 意味着有公共内容
