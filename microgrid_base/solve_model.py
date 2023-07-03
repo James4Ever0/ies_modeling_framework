@@ -177,7 +177,11 @@ def solveModelFromCalcParamList(
             error_msg = []
             mstream.truncate(0)
             # strip away other logging data.
-            logger.info("".center())
+            if TC in [
+                TerminationCondition.infeasible,
+                TerminationCondition.infeasibleOrUnbounded,
+            ]:
+                logger.info("logging infeasible constraints".center(70, "="))
             log_infeasible_constraints(
                 mw.model, log_expression=True, log_variables=True, logger=logger
             )
