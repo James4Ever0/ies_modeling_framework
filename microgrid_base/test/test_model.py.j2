@@ -41,13 +41,13 @@ def test_convertMonthToDays():
 
 import pytest
 
-{% macro parametrize(mParamString)%}
-    {% set paramString= ",".join([paramString, mParamString])%}
-@pytest.mark.parametrize({{repr(mParamString)}},{% caller()%})
+{% macro parametrize(mParamString) %}
+    {% set paramString=",".join([paramString, mParamString])%}
+@pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro parametrizeHelper(testName,_params)%}
 {% set paramString = ""%}
-{% caller()%}
+{{caller()}}
 def test_{{testName}}({{",".join([_params,paramString])}}):
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
