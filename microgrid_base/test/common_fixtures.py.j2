@@ -19,6 +19,7 @@ from ies_optim import *
 {% for infoClassName, infoData in data.items() %}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
+        {% set devModelClassName = infoClassName+"模型"%}
         {% set devIDClassName = infoClassName+"ID"%}
 
 {{infoClassName.center(70, "=")}}
