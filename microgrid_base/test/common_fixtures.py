@@ -56,7 +56,7 @@ def 测试柴油信息信息():
 
 @fixture
 def 测试柴油信息ID():
-    val = 柴油信息ID(
+    val = 柴油ID(
         ID=0,
         燃料接口=1,
     )
