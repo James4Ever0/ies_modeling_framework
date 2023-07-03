@@ -47,7 +47,7 @@ def test_{{testName}}({{",".join([_params,paramString])}}):
     {% call parametrize("v1_init")%}[0, 1]{%endcall%}
     {% call parametrize("v0_init")%}[3]{%endcall%}
     {% call parametrize("v1_within")%}[Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]{% endcall%}
-{% endcall%}
+{% endcall %}
     assert min_v0 <= max_v0
     if v0_is_constant:
         v0 = v0_init
