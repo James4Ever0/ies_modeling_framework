@@ -317,7 +317,7 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
-    obj_expr = 测试柴油模型.总成本年化
+    obj_expr = 测试柴油模型.燃料接口[0]
     model_wrapper.Objective(expr=obj_expr, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
