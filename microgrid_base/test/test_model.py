@@ -230,6 +230,7 @@ def test_Piecewise(
 
 @pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
 def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
+    测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
@@ -333,6 +334,7 @@ def test_分月电价(hour_index, expected_price, power):
 
 @pytest.mark.parametrize("device_count", [500 / 20])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count):
+    测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=lambda x: x == 500 * (10 / 100) / (50 / 100)
     )

@@ -43,7 +43,9 @@ import pytest
 {% set paramStringList = []%}
 {% macro parametrizeTestHelper(testName,_params, autoRegister=true)%}
 {# shall you ensure no parameter is undefined.#}
+    {% set isDevice = false%}
     {% if _params == "Device"%}
+        {% set isDevice = true%}
         {% set _params = "model_wrapper: ModelWrapper, 测试{testName}模型: {testName}模型".format(testName=testName) %}
     {% endif%}
     {% if _params != ""%}
@@ -51,8 +53,8 @@ import pytest
     {% endif%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
-    {% if _params == 'Device'%}
-    # {{_params}} {{autoRegister}}
+    {# {{'#'}} {{_params}} {{autoRegister}} #}
+    {% if isDevice%}
         {% if autoRegister == true %}
     测试{{testName}}模型.constraints_register()
         {% endif%}
