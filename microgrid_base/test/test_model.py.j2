@@ -283,7 +283,8 @@ def test_电价模型():
     # override the windspeed.
     测试风力发电模型.计算参数.风速 = windspeed_array
     测试风力发电模型.constraints_register()
-{{ solveModel("测试风力发电模型.电接口[0]+测试风力发电模型.电接口[2]", sense='maximize') }}
+{# {{ solveModel("测试风力发电模型.总成本年化", sense='minimize') }} #}
+{{ solveModel("测试风力发电模型.电接口[0]+测试风力发电模型.电接口[2]", sense='minimize') }}
         devCount = 测试风力发电模型.设备信息.DeviceCount
         assert abs(value(测试风力发电模型.DeviceCount) - devCount)< EPS
         assert abs(value(测试风力发电模型.单台发电功率[0]) - output)< EPS
