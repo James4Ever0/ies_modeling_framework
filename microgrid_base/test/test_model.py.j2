@@ -287,6 +287,6 @@ def test_电价模型():
 #}
 
 {% call parametrizeTestHelper("锂电池", "Device")%}
-    {% call parametrize("device_count")%}[]{% endcall%}
+    {% call parametrize("device_count")%}[500/20]{% endcall%}
 {% endcall%}
     ...
