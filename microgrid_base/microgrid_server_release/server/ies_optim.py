@@ -2119,6 +2119,7 @@ class 风力发电模型(设备模型):
             [0, lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), self.RatedPower, 0],
         )
         单台发电功率 = 单台发电功率.tolist()
+        breakpoint()
 
         # 设备台数约束
         if self.计算参数.计算类型 == "规划设计":

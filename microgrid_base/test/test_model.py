@@ -351,10 +351,10 @@ def test_分月电价(hour_index, expected_price, power):
     ],
 )
 def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, windspeed, output):
-    测试风力发电模型.constraints_register()
     windspeed_array = [windspeed] * 24
     # override the windspeed.
     测试风力发电模型.计算参数.风速 = windspeed_array
+    测试风力发电模型.constraints_register()
     model_wrapper.Objective(expr=测试风力发电模型.SumRange(测试风力发电模型.电接口), sense=maximize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
