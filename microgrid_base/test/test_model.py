@@ -332,6 +332,37 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
+@pytest.mark.parametrize(
+    "windspeed, output",
+    [
+        (5, 0),
+        (10, 0),
+        (20, 100 * ((10 / 90) ** 3)),
+        (50, 100 * (0.5**3)),
+        (100, 100),
+        (150, 100),
+        (200, 100),
+        (210, 0),
+    ],
+)
+def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, windspeed, output):
+    测试风力发电模型.constraints_register()
+    windspeed_array = [windspeed] * 24
+    # override the windspeed.
+    测试风力发电模型.计算参数.风速 = windspeed_array
+    model_wrapper.Objective(expr=测试风力发电模型.总成本年化, sense=sense)
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        assert abs(value(测试风力发电模型.电接口[0] - output)) < EPS
+        assert abs(value(测试风力发电模型.电接口[2] - output)) < EPS
+
+
 @pytest.mark.parametrize("_input, output", [(100, 98), (200, 196)])
 @pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize("direction", [False, True])
