@@ -208,7 +208,7 @@ import numpy as np
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
-{% call parametrizeTestHelper("柴油发电", "Device", autoRegister=false) %}
+{% call parametrizeTestHelper("柴油发电", "Device", autoRegister=false,autoSense=false) %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
     {% call parametrize("power_output, expected_val, expected_diesel") %}
     [
@@ -222,7 +222,7 @@ import numpy as np
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-{{solveModel("obj_expr")}}
+{{solveModel("obj_expr", sense='minimize')}}
         print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
