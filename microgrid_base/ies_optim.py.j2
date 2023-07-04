@@ -964,7 +964,8 @@ class {{class_name}}模型(设备模型):
         {# # after: psc: {{psc}} mflag: {{mflag}} #}
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
-            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers) # type: ignore
+            # BUG: if unbounded, then we get some error.
+            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers, bounds = (self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)) # type: ignore
             """
             单位： 个
             """
