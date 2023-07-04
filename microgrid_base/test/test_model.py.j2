@@ -65,9 +65,8 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 
 {% endmacro %}
 {% macro parametrizeTeseModelHelper(modelName)%}
-{% call parametrizeTestHelper(modelName, _params)%}
-{{caller()}}
-{% endcall%}
+{% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
+{{parametrizeTestHelper(modelName, _params)}}
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
