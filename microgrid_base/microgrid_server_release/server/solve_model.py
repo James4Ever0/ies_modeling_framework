@@ -8,9 +8,32 @@ except:
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
+from pyomo.util.infeasible import log_infeasible_constraints
 
 from pydantic import BaseModel
 import rich
+import io
+import logging
+
+mstream = io.StringIO()
+# TODO: shall you test running under celery. shall you not using the root logger.
+# TODO: shall you save the log to file with "RotatingFileHandler"
+# logging.basicConfig(stream=mstream, level=logging.INFO)
+mStreamHandler = logging.StreamHandler(stream=mstream)
+import logging.handlers
+import os
+
+log_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
+)
+mRotateFileHandler = logging.handlers.RotatingFileHandler(
+    log_path, maxBytes=1024 * 5 * 1024, backupCount=5
+)
+logger = logging.getLogger("SOLVE_MODEL_LOGGER")
+logger.propagate = False
+logger.setLevel(level=logging.INFO)
+logger.addHandler(mStreamHandler)
+logger.addHandler(mRotateFileHandler)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
@@ -119,16 +142,16 @@ def solveModelFromCalcParamList(
         solved = False
         with SolverFactory("cplex") as solver:
             # try:
-            solver.options['timelimit'] = 60*24 # solver timeout: 24 minutes.
+            solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
             print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
             results = solver.solve(mw.model, tee=True)
             print("SOLVER RESULTS?")
             rich.print(results)
-            
+
             # breakpoint() # TODO: check diesel engine issues.
-            
+
             # except:
             #     import traceback
             #     traceback.print_exc()
@@ -140,8 +163,7 @@ def solveModelFromCalcParamList(
             # print("OBJECTIVE?")
             # OBJ.display()
             # try:
-            
-            
+
             assert results, "no solver result."
             TC = results.solver.termination_condition
             SS = results.solver.status
@@ -153,8 +175,30 @@ def solveModelFromCalcParamList(
                 TerminationCondition.optimal,
             ]
             error_msg = []
-            if TC not in normalTCs: error_msg.append(f"abnormal termination condition: {TC}")
-            if SS not in normalSSs: error_msg.append(f"abnormal solver status: {TC}")
+            # strip away other logging data.
+            if TC in [
+                TerminationCondition.infeasible,
+                TerminationCondition.infeasibleOrUnbounded,
+            ]:
+                mstream.truncate(0)
+                logger.info("logging infeasible constraints".center(70, "="))
+                log_infeasible_constraints(
+                    mw.model, log_expression=True, log_variables=True, logger=logger
+                )
+
+                mstream.seek(0)
+                infeasible_constraint_log = mstream.getvalue()
+                mstream.truncate(0)
+                if infeasible_constraint_log:
+                    error_msg.append("")
+                    error_msg.append(infeasible_constraint_log)
+                    error_msg.append("")
+                    error_msg.append("_" * 20)
+                    error_msg.append("")
+            if TC not in normalTCs:
+                error_msg.append(f"abnormal termination condition: {TC}")
+            if SS not in normalSSs:
+                error_msg.append(f"abnormal solver status: {TC}")
             if error_msg:
                 raise Exception("\n".join(error_msg))
 

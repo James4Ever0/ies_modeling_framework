@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -1235,9 +1235,7 @@ def examineSubExprDegree(expr):
             print()
             print("Abnormal subexpression poly degree:", subpoly_deg)
             # recover expression representation
-            subexpr_pyomo = sympy2pyomo_expression(subexpr, objmap)
-            subexpr_pyomo_repr = str(subexpr_pyomo)
-            print("Abnormal expression:", subexpr_pyomo_repr)
+            print("Abnormal expression:", subexpr)
     print()
 
 
@@ -1252,7 +1250,7 @@ class ModelWrapper:
         # TODO: call this function after model solved.
         for assumption in self.assumptions:
             assumption()
-        self.assumptions = []
+        self.assumptions = []  # clear assumptions
 
     def __del__(self):
         del self.model
@@ -1284,7 +1282,6 @@ class ModelWrapper:
             error_msg = f"Constraint: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("CON")
-        _initialize = kwargs.get("initialize", 0)
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
         ret = Constraint(expr=expr, *args[1:], **kwargs)
@@ -1326,7 +1323,6 @@ class ModelWrapper:
             error_msg = f"Objective: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("OBJ")
-        _initialize = kwargs.get("initialize", 0)
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
         ret = Objective(expr=expr, *args[1:], **kwargs)
@@ -1448,7 +1444,7 @@ class 可购买类(Protocol):
 
 
 class 设备模型:
-    def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
+    def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
         print("Building Device Model:", self.__class__.__name__)
         self.mw = mw
         self.PD = PD
@@ -2292,18 +2288,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -3417,8 +3413,6 @@ class 传输线模型(设备模型):
 
         self.总成本年化 = self.总固定成本年化
 
-        self.处理最终财务输出(self)
-
         return self.总成本年化
 
 
@@ -3863,7 +3857,7 @@ def compute(
                 for m_id in input_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInst = devInstDict[m_node_id]
+                    m_devInstInput: {type_annotation} = devInstDict[m_node_id]
                     m_limit_list.append(m_devInst.最大允许的负载总功率)
                 input_limit = sum(m_limit_list)
 
@@ -3872,7 +3866,7 @@ def compute(
                 for m_id in output_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInst = devInstDict[m_node_id]
+                    m_devInstOutput: {type_annotation} = devInstDict[m_node_id]
                     m_limit_list.append(m_devInst.MaxEnergyConsumption)
                 output_limit = sum(m_limit_list)
 

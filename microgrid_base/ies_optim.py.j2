@@ -1451,13 +1451,13 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 {% endfor %}
 
 
-{% macro iterate_input_output_limit(io_type, attr)%}
+{% macro iterate_input_output_limit(io_type, attr, type_annotation)%}
                 # IO TYPE: {{io_type}}
                 m_limit_list = []
                 for m_id in {{io_type}}_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor['device_id']
-                    m_devInst = devInstDict[m_node_id]
+                    m_devInst{{io_type.title()}} : {type_annotation} = devInstDict[m_node_id]
                     m_limit_list.append(m_devInst.{{attr}})
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
@@ -1617,9 +1617,9 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
                 cnt+=1
                 assert io_indexs == []
 
-{{ iterate_input_output_limit("input","最大允许的负载总功率") }}
+{{ iterate_input_output_limit("input","最大允许的负载总功率", "变压器模型") }}
 
-{{ iterate_input_output_limit("output","MaxEnergyConsumption") }}
+{{ iterate_input_output_limit("output","MaxEnergyConsumption", "电负荷模型") }}
 
                 mw.Constraint(input_limit + output_limit >= 0)
 
