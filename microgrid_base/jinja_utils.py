@@ -3,6 +3,21 @@ import subprocess
 import black
 import jinja2
 
+class NeverUndefined(jinja2.StrictUndefined):
+    def __init__(self, *args, **kwargs):
+        # ARGS: ("parameter 'myvar2' was not provided",)
+        # KWARGS: {'name': 'myvar2'}
+        if len(args) == 1:
+            info = args[0]
+        elif "name" in kwargs.keys():
+            info = f"Undefined variable '{kwargs['name']}"
+        else:
+            infoList = ["Not allowing any undefined variable."]
+            infoList.append(f"ARGS: {args}")
+            infoList.append(f"KWARGS: {kwargs}")
+            info = "\n".join(infoList)
+
+        raise Exception(info)
 
 def load_render_and_format(
     template_path: str, output_path: str, render_params: dict, banner: str
@@ -50,7 +65,8 @@ def load_template(template_path):
         ],
         trim_blocks=True,
         lstrip_blocks=True,
-        undefined=jinja2.StrictUndefined,
+        # undefined=jinja2.StrictUndefined,
+        undefined = NeverUndefined,
     )
     tpl = env.get_template(template_path)
     def myJoin(mstr, mlist):

@@ -1,30 +1,32 @@
 # TODO: 典型日 最终输出结果需要展开为8760
-from typing import Callable, Dict, List, Tuple, Union
-
+from typing import Dict, List, Tuple, Union, Callable
+from pydantic import conlist, conint, confloat, constr
 import pyomo.core.base
-from pydantic import confloat, conint, conlist, constr
 
 try:
     from typing import Literal
 except:
     from typing_extensions import Literal
 
-### 计价模型 ###
-import math
-from functools import lru_cache
 
 import rich
 from pydantic import BaseModel, Field, validator
-from unit_utils import (getSingleUnitConverted, standard_units,
-                        unitFactorCalculator, ureg)
 
 # the main code for computing.
 # currently just compute microgrid
 # three computation modes:
 
 
+from unit_utils import (
+    unitFactorCalculator,
+    ureg,
+    standard_units,
+    getSingleUnitConverted,
+)
 
 
+### 计价模型 ###
+import math
 
 # 函数参数: (power, time_in_day)
 # 阶梯电价: 容量下限从0开始
@@ -32,6 +34,7 @@ from unit_utils import (getSingleUnitConverted, standard_units,
 # TODO: 每个月的都不同 #
 
 
+from functools import lru_cache
 
 
 class 电价转换:
@@ -296,35 +299,35 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -1195,14 +1198,16 @@ class 传输线信息(设备信息):
 # model definition #
 ####################
 
-import re
+from pyomo.environ import *
 
-from expr_utils import getExprStrParsedToExprList
+from sympy.polys.polytools import Poly
+import re
+from sympy import sympify
+
 # taking too long. recursion.
 from progressbar import progressbar
-from pyomo.environ import *
-from sympy import sympify
-from sympy.polys.polytools import Poly
+
+from expr_utils import getExprStrParsedToExprList
 
 
 def withBanner(banner: str = ""):
@@ -1230,9 +1235,7 @@ def examineSubExprDegree(expr):
             print()
             print("Abnormal subexpression poly degree:", subpoly_deg)
             # recover expression representation
-            subexpr_pyomo = sympy2pyomo_expression(subexpr, objmap)
-            subexpr_pyomo_repr = str(subexpr_pyomo)
-            print("Abnormal expression:", subexpr_pyomo_repr)
+            print("Abnormal expression:", subexpr)
     print()
 
 
@@ -1247,7 +1250,7 @@ class ModelWrapper:
         # TODO: call this function after model solved.
         for assumption in self.assumptions:
             assumption()
-        self.assumptions = []
+        self.assumptions = []  # clear assumptions
 
     def __del__(self):
         del self.model
@@ -1443,7 +1446,7 @@ class 可购买类(Protocol):
 
 
 class 设备模型:
-    def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID):
+    def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
         print("Building Device Model:", self.__class__.__name__)
         self.mw = mw
         self.PD = PD
@@ -1763,12 +1766,11 @@ class 设备模型:
         return mx_my_multiply
 
 
-import math
-
 # input: negative
 # output: positive
 # IO: Real
 import numpy as np
+import math
 
 
 class 光伏发电模型(设备模型):
@@ -2883,18 +2885,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3052,18 +3054,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3214,18 +3216,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3412,8 +3414,6 @@ class 传输线模型(设备模型):
         self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
 
         self.总成本年化 = self.总固定成本年化
-
-        self.处理最终财务输出(self)
 
         return self.总成本年化
 
@@ -3774,7 +3774,6 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
-
 
 # partial if typical day mode is on.
 def compute(
