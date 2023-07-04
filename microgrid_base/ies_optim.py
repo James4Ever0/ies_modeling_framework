@@ -2107,7 +2107,7 @@ class 风力发电模型(设备模型):
         发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
         # windspeed (m/s) -> current power per device (kW)
-        WS = np.array(self.计算参数.风速)
+        WS = np.array(self.计算参数.风速, dtype=np.float64) # BUG: before that it was "np.int64", which introduce errors.
         self.单台发电功率 = 单台发电功率 = np.piecewise(
             WS,
             [
