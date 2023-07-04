@@ -14,6 +14,7 @@ from pyomo.environ import *
 
 EPS = 0.02
 
+
 def check_solver_result(s_results):
     assert s_results, "no solver result."
     TC = s_results.solver.termination_condition
@@ -34,27 +35,44 @@ def check_solver_result(s_results):
     if error_msg:
         raise Exception("\n".join(error_msg))
 
+
 def test_convertMonthToDays():
     assert convertMonthToDays(1) == sum(month_days[:1])
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
 
+
 import pytest
 
 # BUG: BigM <= 1e+8
-@pytest.mark.parametrize('v0_is_constant',[False, True])
-@pytest.mark.parametrize('v0_within, min_v0, max_v0, sense, result',    [
+@pytest.mark.parametrize("v0_is_constant", [False, True])
+@pytest.mark.parametrize(
+    "v0_within, min_v0, max_v0, sense, result",
+    [
         (Reals, -1, 10, minimize, -1),
         (Reals, -1, 10, maximize, 10),
         (NonNegativeReals, 1, 10, minimize, 0),
         (NonNegativeReals, 1, 10, maximize, 10),
-    ]
+    ],
 )
-@pytest.mark.parametrize('v1_init',[0, 1])
-@pytest.mark.parametrize('v0_init',[3])
-@pytest.mark.parametrize('v1_within',[Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)])
-
-def test_BinVarMultiplySingle(model_wrapper: ModelWrapper, 测试设备模型: 设备模型,v0_is_constant,v0_within, min_v0, max_v0, sense, result,v1_init,v0_init,v1_within):
+@pytest.mark.parametrize("v1_init", [0, 1])
+@pytest.mark.parametrize("v0_init", [3])
+@pytest.mark.parametrize(
+    "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
+)
+def test_BinVarMultiplySingle(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+):
     assert min_v0 <= max_v0
     if v0_is_constant:
         v0 = v0_init
@@ -67,12 +85,11 @@ def test_BinVarMultiplySingle(model_wrapper: ModelWrapper, 测试设备模型: �
     model_wrapper.Objective(expr=v_result, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
-
 
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
@@ -88,15 +105,27 @@ def test_BinVarMultiplySingle(model_wrapper: ModelWrapper, 测试设备模型: �
                 assert False, f"Wrong sense: {sense}"
         assert abs(value(v_result) - result) <= EPS
 
-@pytest.mark.parametrize('v0_min, v0_max, v1_min, v1_max, sense, expected, param',    [
+
+@pytest.mark.parametrize(
+    "v0_min, v0_max, v1_min, v1_max, sense, expected, param",
+    [
         (1, 5, 2, 4, minimize, 2, 0),
         (1, 5, 2, 4, maximize, 20, 0),
         (-1, 3, -2, 4, minimize, -10, -2),
         (-1, 3, -2, 4, maximize, 8, -2),
-    ]
+    ],
 )
-
-def test_VarMultiplySingle(model_wrapper: ModelWrapper, 测试设备模型: 设备模型,v0_min, v0_max, v1_min, v1_max, sense, expected, param):
+def test_VarMultiplySingle(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+):
     v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)
 
@@ -108,35 +137,47 @@ def test_VarMultiplySingle(model_wrapper: ModelWrapper, 测试设备模型: 设�
     model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
 
-
         assert abs(value(obj_expr) - expected) <= EPS
 
-@pytest.mark.parametrize('v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs',    [
+
+@pytest.mark.parametrize(
+    "v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs",
+    [
         (-1, 5, maximize, 5, 1, 5, 0, 0, 5),
         (-1, 5, minimize, -1, 0, 0, 1, 1, 1),
         (-2, 5, minimize, -2, 0, 0, 1, 2, 2),
-    ]
+    ],
 )
-
-def test_单表达式生成指示变量(model_wrapper: ModelWrapper, 测试设备模型: 设备模型,v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs):
+def test_单表达式生成指示变量(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+):
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
     model_wrapper.Objective(expr=v0, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
-
 
         assert abs(expected_v0 - value(v0)) <= EPS
         assert abs(expected_v1_b_pos - value(v1.b_pos)) <= EPS
@@ -148,7 +189,10 @@ def test_单表达式生成指示变量(model_wrapper: ModelWrapper, 测试设�
 
 import numpy as np
 
-@pytest.mark.parametrize('x_init, y_expected, sense',    [
+
+@pytest.mark.parametrize(
+    "x_init, y_expected, sense",
+    [
         (0, 2, minimize),
         (0, 2, maximize),
         (0.3, 2.3, minimize),
@@ -157,10 +201,11 @@ import numpy as np
         (0 - 1, 2, maximize),
         (0 + 3, 4, minimize),
         (0 + 3, 4, maximize),
-    ]
+    ],
 )
-
-def test_Piecewise(model_wrapper: ModelWrapper, 测试设备模型: 设备模型,x_init, y_expected, sense):
+def test_Piecewise(
+    model_wrapper: ModelWrapper, 测试设备模型: 设备模型, x_init, y_expected, sense
+):
     x = [测试设备模型.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
     y = [测试设备模型.单变量("y")]
     x_vals = np.linspace(0, 2, 2)
@@ -170,22 +215,21 @@ def test_Piecewise(model_wrapper: ModelWrapper, 测试设备模型: 设备模型
     model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
 
-
         assert abs(value(obj_expr) - y_expected) <= EPS
+
 
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
 
-@pytest.mark.parametrize('diesel_rate, fee_rate_per_hour',[(1, 2), (3, 6)])
-
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型,diesel_rate, fee_rate_per_hour):
+@pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
+def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
     测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
@@ -194,24 +238,31 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型,di
     model_wrapper.Objective(expr=obj_expr, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
 
-
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
+
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
-@pytest.mark.parametrize('power_output, expected_val, expected_diesel',    [
+@pytest.mark.parametrize(
+    "power_output, expected_val, expected_diesel",
+    [
         (10, 10, -3 * 0.001 * 10),
         (20, 20, -1 * 0.001 * 20),
-    ]
+    ],
 )
-
-def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴油发电模型,power_output, expected_val, expected_diesel):
+def test_柴油发电(
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
@@ -220,18 +271,18 @@ def test_柴油发电(model_wrapper: ModelWrapper, 测试柴油发电模型: 柴
     model_wrapper.Objective(expr=obj_expr, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
-
 
         print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
         # breakpoint()
+
 
 def test_电价模型():
 
@@ -249,69 +300,89 @@ def test_电价模型():
     # breakpoint()
     assert myPriceModel == myInfo.PriceModel
 
-@pytest.mark.parametrize('day_index, expected_month',    [
+
+@pytest.mark.parametrize(
+    "day_index, expected_month",
+    [
         (1, 0),
         pytest.param(365, 11, marks=pytest.mark.xfail),
         (364, 11),
         (363, 11),
         (333, 10),
-    ]
+    ],
 )
-
 def test_DayToMonth(day_index, expected_month):
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
-@pytest.mark.parametrize('hour_index, expected_price, power',    [
+
+@pytest.mark.parametrize(
+    "hour_index, expected_price, power",
+    [
         (2, 4 * 0.0001 * 1, 4),
         (24 * 40, 4 * 0.0001 * 2, 4),
         (24 * 30 * 2 + 10, 4 * 0.0001 * 3, 4),
         pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
         (8779, 4 * 0.0001 * 12, 4),
-    ]
+    ],
 )
-
 def test_分月电价(hour_index, expected_price, power):
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
 
-
-@pytest.mark.parametrize('_input, output',[(100, 90), (200,190)])
-@pytest.mark.parametrize('sense',[minimize, maximize])
-
-def test_传输线(model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型,_input, output,sense):
+@pytest.mark.parametrize("_input, output", [(100, 90), (200, 190)])
+@pytest.mark.parametrize("sense", [minimize, maximize])
+@pytest.mark.parametrize("direction", [False, True])
+def test_传输线(
+    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, sense, direction
+):
     测试传输线模型.constraints_register()
-    测试传输线模型.RangeConstraintMulti(测试传输线模型.电接口, expression = lambda x: x == _input)
+    if direction:
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == _input)
+    else:
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == output)
     model_wrapper.Objective(expr=测试传输线模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
 
+        assert abs(value(测试传输线模型.电输出[0]) - output) < EPS
+        assert abs(value(测试传输线模型.电输出[2]) - output) < EPS
 
-        assert abs(value(测试传输线模型.[0]) - output) < EPS
-        assert abs(value(测试传输线模型.[2]) - output) < EPS
+        assert abs(-value(测试传输线模型.电输入[0]) - output) < EPS
+        assert abs(-value(测试传输线模型.电输入[2]) - output) < EPS
 
-@pytest.mark.parametrize('device_count',[500/20])
-@pytest.mark.parametrize('sense',[minimize, maximize])
 
-def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型,device_count,sense):
+@pytest.mark.parametrize("device_count", [500 / 20])
+@pytest.mark.parametrize("sense", [minimize, maximize])
+def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, sense):
     测试锂电池模型.constraints_register()
-    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100))
+    测试锂电池模型.RangeConstraintMulti(
+        测试锂电池模型.电接口, expression=lambda x: x == 500 * (10 / 100) / (50 / 100)
+    )
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5 
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
 
-
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
-        assert abs(value(测试锂电池模型.CurrentTotalActualCapacity[0]+ 500 * (测试锂电池模型.设备信息.MinSOC/100)) - 500 * (测试锂电池模型.设备信息.InitSOC/100)) < EPS
+        assert (
+            abs(
+                value(
+                    测试锂电池模型.CurrentTotalActualCapacity[0]
+                    + 500 * (测试锂电池模型.设备信息.MinSOC / 100)
+                )
+                - 500 * (测试锂电池模型.设备信息.InitSOC / 100)
+            )
+            < EPS
+        )
