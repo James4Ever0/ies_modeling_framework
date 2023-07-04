@@ -287,9 +287,11 @@ def test_电价模型():
 #}
 
 {% call parametrizeTestHelper("传输线", "Device")%}
-    {% call parametrize("_input, output")%}[]{% endcall%}
+    {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}
+    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
 {% endcall%}
     测试传输线模型.RangeConstraintMulti(测试传输线模型.电接口, expression = lambda x: x == _input)
+    {# decay = 1*10 #}
 {{ solveModel("测试传输线模型.总成本年化")}}
         assert abs(value(测试传输线模型.[0]) - output) < EPS
         assert abs(value(测试传输线模型.[2]) - output) < EPS
