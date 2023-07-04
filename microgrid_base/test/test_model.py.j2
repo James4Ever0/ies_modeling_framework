@@ -284,10 +284,10 @@ def test_电价模型():
     测试风力发电模型.计算参数.风速 = windspeed_array
     测试风力发电模型.constraints_register()
 {{ solveModel("测试风力发电模型.电接口[0]+测试风力发电模型.电接口[2]", sense='maximize') }}
-        assert abs(value(测试风力发电模型.单台发电功率[0]) - output)< EPS
-        assert abs(value(测试风力发电模型.单台发电功率[2]) - output)< EPS
-        assert abs(value(测试风力发电模型.电接口[0]) - output)< EPS
-        assert abs(value(测试风力发电模型.电接口[2]) - output)< EPS
+        assert abs(value(测试风力发电模型.单台发电功率[0]) - output*)< EPS
+        assert abs(value(测试风力发电模型.单台发电功率[2]) - output*)< EPS
+        assert abs(value(测试风力发电模型.电接口[0]) - output*)< EPS
+        assert abs(value(测试风力发电模型.电接口[2]) - output*)< EPS
  
 {# likely to be inversed efficiency. #}
 {% call parametrizeTestHelper("双向变流器", "Device")%}

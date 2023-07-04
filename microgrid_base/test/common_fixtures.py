@@ -156,9 +156,9 @@ def 测试风力发电信息():
         Life=20,
         BuildCostPerKilowatt=20,
         BuildBaseCost=20,
-        MaxDeviceCount=1,
-        MinDeviceCount=1,
-        DeviceCount=1,
+        MaxDeviceCount=2,
+        MinDeviceCount=2,
+        DeviceCount=2,
     )
     return val
 
