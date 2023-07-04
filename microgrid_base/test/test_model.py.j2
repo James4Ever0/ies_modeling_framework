@@ -283,11 +283,15 @@ def test_电价模型():
 #}
 
 {% call parametrizeTestHelper("双向变流器", "Device")%}
-    {% call parametrize("_input, output")%}[(100, 98), (200,190)]{% endcall%}
+    {% call parametrize("_input, output")%}[(100, 98), (200,196)]{% endcall%}
     {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
-    {% call parametrize("input_only")%}[False,True]{% endcall%}
+    {% call parametrize("direction")%}[False,True]{% endcall%}
 {% endcall%}
-    测试双向变流器模型.储能端
+    if direction:
+        测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.储能端, expression = lambda x: x == -_input)
+    else:
+        测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.线路端, expression = lambda x: x == -_input)
+{{ solveModel("测试传输线模型.SumRange(测试传输线模型.电输出)") }}
 
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}
