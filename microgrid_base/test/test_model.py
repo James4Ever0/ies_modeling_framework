@@ -340,9 +340,9 @@ def test_传输线(
 ):
     测试传输线模型.constraints_register()
     if input_only:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == _input)
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == -_input)
     else:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == output)
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == output)
     model_wrapper.Objective(expr=测试传输线模型.SumRange(测试传输线模型.电输出), sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")

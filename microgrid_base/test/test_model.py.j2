@@ -292,9 +292,9 @@ def test_电价模型():
     {% call parametrize("input_only")%}[False,True]{% endcall%}
 {% endcall%}
     if input_only:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression = lambda x: x == _input)
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == -_input)
     else:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression = lambda x: x == output)
+        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == output)
     {# decay = 1*10 #}
 {{ solveModel("测试传输线模型.SumRange(测试传输线模型.电输出)") }}
 {# {{ solveModel("测试传输线模型.总成本年化")}} #}
