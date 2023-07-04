@@ -332,7 +332,7 @@ def test_电价模型():
     {% call parametrize("device_count")%}[500/20]{% endcall%}
 {% endcall%}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100)) #}
-    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x <= 0)
+    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x <= 0) # means charging the battery.
 {{ solveModel("测试锂电池模型.总成本年化")}}
         {# assert abs(value(测试锂电池模型.DeviceCount)) == device_count #}
         {# assert abs(value(测试锂电池模型.CurrentTotalActualCapacity[0]+ 500 * (测试锂电池模型.设备信息.MinSOC/100)) - 500 * (测试锂电池模型.设备信息.InitSOC/100)) < EPS #}
