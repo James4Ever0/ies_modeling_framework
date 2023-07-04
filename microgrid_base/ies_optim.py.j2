@@ -878,7 +878,7 @@ class 设备模型:
             else:
                 factor = 1
                 _x_var = x_var
-                if _x_var in numeric_types:
+                if type(_x_var) in numeric_types:
                     return _x_var * b_var
 
             h = self.单变量(self.getSpecialVarName("BVM"), within=Reals)
