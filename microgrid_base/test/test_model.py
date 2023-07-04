@@ -338,6 +338,26 @@ def test_分月电价(hour_index, expected_price, power):
 import math
 
 
+@pytest.mark.parametrize("illumination, output", [(5, 49), (10, 98), (20, 98)])
+def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光伏发电模型, illumination, output):
+    illumination_array = [illumination] * 24
+
+    测试光伏发电模型.计算参数.光照 = illumination_array
+    测试光伏发电模型.constraints_register()
+    model_wrapper.Objective(expr=测试光伏发电模型.电接口[0] + 测试光伏发电模型.电接口[2], sense=maximize)
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        devCount = 测试风力发电模型.MaxDeviceCount
+        assert abs(value(测试光伏发电模型.电接口[0]) - output * devCount) < EPS
+        assert abs(value(测试光伏发电模型.电接口[2]) - output * devCount) < EPS
+
+
 @pytest.mark.parametrize(
     "windspeed, output",
     [
