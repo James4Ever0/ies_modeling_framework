@@ -43,9 +43,6 @@ import pytest
 {% set paramStringList = []%}
 {% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
-    {% if _params == "Auto" %}
-        {% set _params = "" %}
-    {% endif%}
 {% do paramStringList.append(_params)%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
@@ -67,6 +64,11 @@ def test_{{testName}}({{",".join(paramStringList)}}):
         check_solver_result(s_results)
 
 {% endmacro %}
+{% macro parametrizeTeseModelHelper(modelName)%}
+{% call parametrizeTestHelper(modelName, _params)%}
+{{caller()}}
+{% endcall%}
+{% endmacro%}
 
 # BUG: BigM <= 1e+8
 {# {% call parametrizeTestHelper("BinVarMultiplySingle")%} #}
