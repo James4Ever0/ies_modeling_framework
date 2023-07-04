@@ -286,6 +286,11 @@ def test_电价模型():
     ...
 #}
 
+{% call parametrizeTestHelper("双向变流器", "Device")%}
+    {% call parametrize("input, output")%}[]{% endcall%}
+{% endcall%}
+    ...
+
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}
     {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
