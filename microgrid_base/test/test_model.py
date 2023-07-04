@@ -228,6 +228,25 @@ def test_Piecewise(
 # you will not get accurate results.
 
 
+@pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
+def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
+    测试柴油模型.RangeConstraintMulti(
+        测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
+    )  # unit: m^3
+    obj_expr = 测试柴油模型.燃料接口[0]
+    model_wrapper.Objective(expr=obj_expr, sense=minimize)
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
+        assert abs(val_fee - fee_rate_per_hour) < EPS
+
+
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
 @pytest.mark.parametrize(
     "power_output, expected_val, expected_diesel",
@@ -310,25 +329,6 @@ def test_分月电价(hour_index, expected_price, power):
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
-
-
-@pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
-    测试柴油模型.RangeConstraintMulti(
-        测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
-    )  # unit: m^3
-    obj_expr = 测试柴油模型.燃料接口[0]
-    model_wrapper.Objective(expr=obj_expr, sense=minimize)
-    with SolverFactory("cplex") as solver:
-        print(">>>SOLVING<<<")
-        solver.options["timelimit"] = 5
-        s_results = solver.solve(model_wrapper.model, tee=True)
-        print("SOLVER RESULTS?")
-        print(s_results)
-        check_solver_result(s_results)
-
-        val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
-        assert abs(val_fee - fee_rate_per_hour) < EPS
 
 
 @pytest.mark.parametrize("device_count", [500 / 20])
