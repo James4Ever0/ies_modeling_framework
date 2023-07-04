@@ -1892,7 +1892,7 @@ class 光伏发电模型(设备模型):
         self.电输出 = self.电接口
 
         if self.计算参数.计算类型 == "设计规划":
-            # TODO： 
+            # TODO： 标准光照
             self.MaxDeviceCount = math.floor(self.MaxInstallArea / self.Area)
             self.MinDeviceCount = math.ceil(self.MinInstallArea / self.Area)
             assert self.MinDeviceCount >= 0
