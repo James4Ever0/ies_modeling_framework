@@ -286,7 +286,7 @@ import math
     测试光伏发电模型.计算参数.光照 = illumination_array
     测试光伏发电模型.constraints_register()
 {{ solveModel("测试光伏发电模型.电接口[0]+测试光伏发电模型.电接口[2]", sense='maximize') }}
-        devCount = 测试风力发电模型.MaxDeviceCount
+        devCount = 测试光伏发电模型.MaxDeviceCount
         assert abs(value(测试光伏发电模型.电接口[0]) - output*devCount)< EPS
         assert abs(value(测试光伏发电模型.电接口[2]) - output*devCount)< EPS
     
