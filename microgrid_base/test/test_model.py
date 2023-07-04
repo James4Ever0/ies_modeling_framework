@@ -391,7 +391,7 @@ def test_传输线(
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, sense):
     测试锂电池模型.constraints_register()
-    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression=lambda x: x > 10)
+    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression=lambda x: x >= 0)
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
