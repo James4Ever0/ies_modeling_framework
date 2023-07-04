@@ -45,7 +45,7 @@ import pytest
 {# shall you ensure no parameter is undefined.#}
 {% do paramStringList.append(_params)%}
 {{caller()}}
-def test_{{testName}}({{join(",",paramStringList)}}):
+def test_{{testName}}({{",".join(paramStringList)}}):
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
 {% set paramStringList = []%}
 {% endmacro%}
@@ -54,7 +54,8 @@ def test_{{testName}}({{join(",",paramStringList)}}):
 @pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
-    OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}})
+    model_wrapper.Objective(expr={{objective}}, sense={{sense}})
+    {# OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}}) #}
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)

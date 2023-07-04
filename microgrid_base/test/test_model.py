@@ -60,7 +60,19 @@ import pytest
 @pytest.mark.parametrize(
     "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
 )
-def test_BinVarMultiplySingle(None):
+def test_BinVarMultiplySingle(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+):
     assert min_v0 <= max_v0
     if v0_is_constant:
         v0 = v0_init
@@ -70,7 +82,7 @@ def test_BinVarMultiplySingle(None):
         )
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
-    OBJ = model_wrapper.Objective(expr=v_result, sense=sense)
+    model_wrapper.Objective(expr=v_result, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)

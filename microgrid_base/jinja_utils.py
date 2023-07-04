@@ -3,6 +3,7 @@ import subprocess
 import black
 import jinja2
 
+
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
         # ARGS: ("parameter 'myvar2' was not provided",)
@@ -18,6 +19,7 @@ class NeverUndefined(jinja2.StrictUndefined):
             info = "\n".join(infoList)
 
         raise Exception(info)
+
 
 def load_render_and_format(
     template_path: str, output_path: str, render_params: dict, banner: str
@@ -66,14 +68,21 @@ def load_template(template_path):
         trim_blocks=True,
         lstrip_blocks=True,
         # undefined=jinja2.StrictUndefined,
-        undefined = NeverUndefined,
+        undefined=NeverUndefined,
     )
     tpl = env.get_template(template_path)
-    def myJoin(mstr, mlist):
-        print("STR:", repr(mstr))
-        print("LIST:", repr(mlist))
-        mstr.join(mlist)
-    func_dict = dict(list=list, str=str, ord=ord, len=len, repr=repr, join=myJoin)
+    # def myJoin(mstr, mlist):
+    #     print("STR:", repr(mstr))
+    #     print("LIST:", repr(mlist))
+    #     return mstr.join(mlist)
+    func_dict = dict(
+        list=list,
+        str=str,
+        ord=ord,
+        len=len,
+        repr=repr,
+        #  join=myJoin
+    )
     tpl.globals.update(func_dict)
     return tpl
 
