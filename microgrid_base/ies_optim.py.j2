@@ -1452,13 +1452,14 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 
 {% macro iterate_input_output_limit(io_type, attr, type_annotation)%}
+    {% set devInstVarName = "m_devInst{}".format(io_type.title())%}
                 # IO TYPE: {{io_type}}
                 m_limit_list = []
                 for m_id in {{io_type}}_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor['device_id']
-                    m_devInst{{io_type.title()}} : {{type_annotation}} = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInst.{{attr}})
+                    m_devInstVarName : {{type_annotation}} = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInstVarName.{{attr}})
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 
