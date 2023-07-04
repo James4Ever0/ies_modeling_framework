@@ -41,7 +41,7 @@ def test_convertMonthToDays():
 
 import pytest
 {% set paramStringList = []%}
-{% macro parametrizeTestHelper(testName,_params)%}
+{% macro parametrizeTestHelper(testName,_params, autoRegister=True)%}
 {# shall you ensure no parameter is undefined.#}
     {% if _params == "Device"%}
         {% set _params = "model_wrapper: ModelWrapper, 测试{testName}模型: {testName}模型".format(testName=testName) %}
@@ -51,7 +51,11 @@ import pytest
     {% endif%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
-    .const
+    {% if _params == 'Device'%}
+        {% if autoRegister%}
+    测试{{testName}}模型.constraints_register()
+        {% endif%}
+    {% endif%}
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
     {% do paramStringList.clear() %}
     {# do not use "set"#}
