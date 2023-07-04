@@ -51,6 +51,7 @@ import pytest
     {% endif%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
+    .const
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
     {% do paramStringList.clear() %}
     {# do not use "set"#}
