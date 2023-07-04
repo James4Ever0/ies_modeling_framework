@@ -289,6 +289,6 @@ def test_电价模型():
 {% call parametrizeTestHelper("锂电池", "Device")%}
     {% call parametrize("device_count")%}[500/20]{% endcall%}
 {% endcall%}
-测试锂电池模型.RangeConstraintMulti()
-    测试锂电池模型.电接口
+    测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, lambda x: x == 500 * (10/100) / (50/100))
+{{ solveModel("测试锂电池模型.")}}
  
