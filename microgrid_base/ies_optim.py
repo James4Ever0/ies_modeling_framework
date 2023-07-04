@@ -3857,8 +3857,8 @@ def compute(
                 for m_id in input_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInst:变压器模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInst.最大允许的负载总功率)
+                    m_devInstIn: 变压器模型 = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInstIn.最大允许的负载总功率)
                 input_limit = sum(m_limit_list)
 
                 # IO TYPE: output
@@ -3866,8 +3866,8 @@ def compute(
                 for m_id in output_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInst: 电负荷模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInst.MaxEnergyConsumption)
+                    m_devInstOut: 电负荷模型 = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInstOut.MaxEnergyConsumption)
                 output_limit = sum(m_limit_list)
 
                 mw.Constraint(input_limit + output_limit >= 0)
