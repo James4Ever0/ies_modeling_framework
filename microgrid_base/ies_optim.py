@@ -2748,7 +2748,7 @@ class 锂电池模型(设备模型):
 
         计算范围内总平均功率 = (
             self.SumRange(self.原电接口.x_abs) / self.计算参数.迭代步数
-        ) + 0 #  self.TotalStorageDecayRate  # kW
+        ) + self.TotalStorageDecayRate  # kW
         # avg power
 
         一小时总电变化量 = 计算范围内总平均功率  # 省略乘1
