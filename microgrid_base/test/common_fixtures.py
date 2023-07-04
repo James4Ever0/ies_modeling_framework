@@ -233,7 +233,7 @@ def 测试锂电池信息():
         设备名称="锂电池",
         生产厂商="Any",
         设备型号="锂电池1",
-        循环边界条件=None,
+        循环边界条件="日间连接",
         RatedCapacity=None,
         BatteryDeltaLimit=None,
         ChargeEfficiency=None,
