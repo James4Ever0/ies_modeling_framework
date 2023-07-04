@@ -355,7 +355,7 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
     # override the windspeed.
     测试风力发电模型.计算参数.风速 = windspeed_array
     测试风力发电模型.constraints_register()
-    model_wrapper.Objective(expr=测试风力发电模型.SumRange(测试风力发电模型.电接口), sense=maximize)
+    model_wrapper.Objective(expr=测试风力发电模型.电接口[0] + 测试风力发电模型.电接口[2], sense=maximize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
