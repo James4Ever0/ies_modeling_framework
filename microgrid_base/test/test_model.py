@@ -247,7 +247,7 @@ def test_柴油发电(
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
+    model_wrapper.Objective(expr=obj_expr, sense="minimize")
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -318,7 +318,7 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
+    model_wrapper.Objective(expr=obj_expr, sense="minimize")
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
