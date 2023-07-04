@@ -965,10 +965,12 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
             # BUG: if unbounded, then we get some error.
+            {% if class_name not in ['传输线']%}
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers, bounds = (self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)) # type: ignore
             """
             单位： 个
             """
+            {% endif%}
         {% elif psc == "仿真模拟"%}
             {% if class_name == '锂电池'%}
             self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity)
