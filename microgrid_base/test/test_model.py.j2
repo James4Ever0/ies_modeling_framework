@@ -61,6 +61,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
     {# OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}}) #}
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5 
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
@@ -178,7 +179,7 @@ import numpy as np
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-{% call parametrizeTestModelHelper("柴油发电") %}
+{% call parametrizeTestHelper("柴油发电") %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
     {% call parametrize("power_output, expected_val, expected_diesel")%}
     [
@@ -187,58 +188,20 @@ import numpy as np
     ]
     {% endcall%}
 {% endcall%}
-def test_柴油发电(
-    model_wrapper: ModelWrapper,
-    测试柴油发电模型: 柴油发电模型,
-    power_output,
-    expected_val,
-    expected_diesel,
-):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-    model_wrapper.Objective(obj_expr, sense=minimize)
-
-    with SolverFactory("cplex") as solver:
-        # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        solver.options["timelimit"] = 5  # use this instead.
-        # print(solver.options.keys())
-        # breakpoint()
-        print(">>>SOLVING<<<")
-        s_results = solver.solve(model_wrapper.model, tee=True)
-        print("SOLVER RESULTS?")
-        print(s_results)  # check solver status.
-
-        assert s_results, "no solver result."
-        TC = s_results.solver.termination_condition
-        SS = s_results.solver.status
-        normalSSs = [SolverStatus.ok, SolverStatus.warning]
-        normalTCs = [
-            TerminationCondition.globallyOptimal,
-            TerminationCondition.locallyOptimal,
-            TerminationCondition.feasible,
-            TerminationCondition.optimal,
-            # TerminationCondition.maxTimeLimit,
-        ]
-        error_msg = []
-        if TC not in normalTCs:
-            error_msg.append(f"abnormal termination condition: {TC}")
-        if SS not in normalSSs:
-            error_msg.append(f"abnormal solver status: {TC}")
-        if error_msg:
-            raise Exception("\n".join(error_msg))
-        # TODO: can apply this to "solve_model.py"
+{{solveModel("obj_expr")}}
         print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
         # breakpoint()
 
-
 def test_电价模型():
-    from ies_optim import 电负荷信息, 分月电价
+    {# from ies_optim import 电负荷信息, 分月电价 #}
 
     mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
