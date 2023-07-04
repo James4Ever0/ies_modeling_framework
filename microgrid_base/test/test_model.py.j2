@@ -52,13 +52,14 @@ import pytest
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
     {% if _params == 'Device'%}
+    # {{_params}} {{autoRegister}}
         {% if autoRegister == true %}
     测试{{testName}}模型.constraints_register()
         {% endif%}
     {% endif%}
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
     {% do paramStringList.clear() %}
-    {# do not use "set"#}
+    {# do not use "set" #}
 {% endmacro%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
