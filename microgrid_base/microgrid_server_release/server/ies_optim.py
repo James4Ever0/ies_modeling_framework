@@ -1451,7 +1451,7 @@ class 设备模型:
         self.计算参数 = 计算参数实例
         self.ID = ID
         self.SID = 0
-        self.BigM = 1e7  # 这个数不能太大 否则就会报错
+        self.BigM = 1e3  # 这个数不能太大 否则就会报错
         """
         一个极大数
         """
