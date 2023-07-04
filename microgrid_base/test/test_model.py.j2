@@ -43,6 +43,9 @@ import pytest
 {% set paramStringList = []%}
 {% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
+    {% if _params == "Auto" %}
+        {% set _params = "" %}
+    {% endif%}
 {% do paramStringList.append(_params)%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
