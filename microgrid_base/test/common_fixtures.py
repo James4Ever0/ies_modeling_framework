@@ -241,7 +241,7 @@ def 测试锂电池信息():
         MaxSOC=90,
         MinSOC=10,
         BatteryStorageDecay=10,
-        TotalDischargeCapacity=None,
+        TotalDischargeCapacity=100000000,
         BatteryLife=20,
         CostPerCapacity=20,
         CostPerYearPerCapacity=20,

@@ -334,9 +334,9 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
 @pytest.mark.parametrize("device_count", [500 / 20])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count):
     测试锂电池模型.RangeConstraintMulti(
-        测试锂电池模型.电接口, lambda x: x == 500 * (10 / 100) / (50 / 100)
+        测试锂电池模型.电接口, expression=lambda x: x == 500 * (10 / 100) / (50 / 100)
     )
-    model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
+    model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
