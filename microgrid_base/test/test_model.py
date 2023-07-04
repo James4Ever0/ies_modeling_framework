@@ -343,7 +343,7 @@ def test_传输线(
         测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == _input)
     else:
         测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == output)
-    model_wrapper.Objective(expr=测试传输线模型.总成本年化, sense=sense)
+    model_wrapper.Objective(expr=测试传输线模型.SumRange(测试传输线模型.电输出), sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
