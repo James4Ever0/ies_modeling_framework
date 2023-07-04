@@ -277,7 +277,7 @@ def test_电价模型():
     assert abs(mprice - expected_price) == 0
 
 {% call parametrizeTestHelper("光伏发电", "Device", autoSense=false, autoRegister=false)%}
-    {% call parametrize("illumination, output")%}[(),()]{% endcall%}
+    {% call parametrize("illumination, output")%}[(10,),(20,)]{% endcall%}
 {% endcall%}
     illumination_array = [illumination]*24
 
