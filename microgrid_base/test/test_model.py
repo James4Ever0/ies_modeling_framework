@@ -365,8 +365,8 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
         check_solver_result(s_results)
 
         devCount = 测试风力发电模型.设备信息.DeviceCount
-        assert abs(value(测试风力发电模型.单台发电功率[0]) - output * devCount) < EPS
-        assert abs(value(测试风力发电模型.单台发电功率[2]) - output * devCount) < EPS
+        assert abs(value(测试风力发电模型.单台发电功率[0]) - output) < EPS
+        assert abs(value(测试风力发电模型.单台发电功率[2]) - output) < EPS
         assert abs(value(测试风力发电模型.电接口[0]) - output * devCount) < EPS
         assert abs(value(测试风力发电模型.电接口[2]) - output * devCount) < EPS
 
