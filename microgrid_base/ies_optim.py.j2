@@ -1056,8 +1056,10 @@ class {{class_name}}模型(设备模型):
             self.TotalCapacity = self.DeviceCount * self.RatedCapacity # type: ignore
 
         assert self.MaxSOC >= self.MinSOC
-        assert self.MaxSOC <= 1
-        assert self.MinSOC >= 0
+        assert self.MaxSOC < 1
+        {# assert self.MaxSOC <= 1 #}
+        {# assert self.MinSOC >= 0 #}
+        assert self.MinSOC > 0 # to ensure that battery will not be drained.
 
         self.原电接口 = self.变量列表_带指示变量("原电接口") # 正 放电 负 充电
 
