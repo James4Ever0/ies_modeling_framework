@@ -41,7 +41,7 @@ def test_convertMonthToDays():
 
 import pytest
 {% set paramStringList = []%}
-{% macro parametrizeHelper(testName,_params)%}
+{% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
 {% do paramStringList.append(_params)%}
 {{caller()}}
@@ -66,9 +66,9 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {% endmacro %}
 
 # BUG: BigM <= 1e+8
-{# {% call parametrizeHelper("BinVarMultiplySingle")%} #}
+{# {% call parametrizeTestHelper("BinVarMultiplySingle")%} #}
 {% set commonDevTestParam ="model_wrapper: ModelWrapper, 测试设备模型: 设备模型" %}
-{% call parametrizeHelper("BinVarMultiplySingle", commonDevTestParam)%}
+{% call parametrizeTestHelper("BinVarMultiplySingle", commonDevTestParam)%}
     {% call parametrize("v0_is_constant")%}[False, True]{% endcall%}
     {% call parametrize("v0_within, min_v0, max_v0, sense, result")%}
     [
@@ -106,7 +106,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
                 assert False, f"Wrong sense: {sense}"
         assert abs(value(v_result) - result) <= EPS
 
-{% call parametrizeHelper("VarMultiplySingle", commonDevTestParam)%}
+{% call parametrizeTestHelper("VarMultiplySingle", commonDevTestParam)%}
     {% call parametrize("v0_min, v0_max, v1_min, v1_max, sense, expected, param")%}
     [
         (1, 5, 2, 4, minimize, 2, 0),
@@ -127,7 +127,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {{solveModel('obj_expr')}}
         assert abs(value(obj_expr) - expected) <= EPS
 
-{% call parametrizeHelper("单表达式生成指示变量", commonDevTestParam)%}
+{% call parametrizeTestHelper("单表达式生成指示变量", commonDevTestParam) %}
 @pytest.mark.parametrize(
     "v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs",
     [
