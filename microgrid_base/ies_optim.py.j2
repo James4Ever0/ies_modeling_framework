@@ -1002,9 +1002,11 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（变量）
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
         self.电输出 = self.电接口
-        {% if class_name in ["柴油发电"]%}
+            {% if class_name in ["柴油发电"]%}
         self.柴油输入 = self.燃料接口
-        {% endif%}
+            {% elif class_name in ['风力发电']%}
+        self.单台发电功率 = ...
+            {% endif%}
         {% endif%}
 
         {% if class_name in ['变压器']%}
