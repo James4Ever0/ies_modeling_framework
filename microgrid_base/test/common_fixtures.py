@@ -157,7 +157,7 @@ def 测试风力发电信息():
         BuildCostPerKilowatt=20,
         BuildBaseCost=20,
         MaxDeviceCount=(devCount:=3),
-        MinDeviceCount=devCount,
+        MinDeviceCount=devCount-0.5,
         DeviceCount=devCount,
     )
     return val
@@ -372,7 +372,7 @@ def 测试双向变流器信息():
         BuildCostPerKilowatt=2,
         BuildBaseCost=2,
         MaxDeviceCount=1,
-        MinDeviceCount=1,
+        MinDeviceCount=1-0.5,
         DeviceCount=1,
     )
     return val
