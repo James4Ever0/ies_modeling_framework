@@ -60,7 +60,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 @pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
-    model_wrapper.Objective(expr={{objective}}, sense={{sense}})
+    model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}})
     {# OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}}) #}
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
@@ -258,7 +258,7 @@ def test_电价模型():
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-{{ solveModel("obj_expr")}}
+{{ solveModel("obj_expr", "minimize")}}
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
