@@ -63,7 +63,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
         print(s_results)
         check_solver_result(s_results)
 
-{% endmacro%}
+{% endmacro %}
 
 # BUG: BigM <= 1e+8
 {% call parametrizeHelper("BinVarMultiplySingle", "model_wrapper: ModelWrapper, 测试设备模型: 设备模型")%}
