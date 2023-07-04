@@ -846,8 +846,8 @@ class 设备模型:
             except:
                 ... #}
     
-    {# def BinVarMultiplySingle(self, b_var, x_var, recurse=True): #}
-    def BinVarMultiplySingle(self, b_var, x_var, recurse=False):
+    def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
+    {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
         assert b_var.is_binary()
         assert type(x_var) is not {{IndexedVar}}
         {# assert x_var.is_continuous()  #}
