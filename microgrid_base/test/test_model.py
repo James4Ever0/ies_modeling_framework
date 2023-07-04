@@ -365,8 +365,8 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
         print(s_results)
         check_solver_result(s_results)
 
-        assert abs(value(测试风力发电模型.电接口[0] - output)) < EPS
-        assert abs(value(测试风力发电模型.电接口[2] - output)) < EPS
+        assert abs(value(测试风力发电模型.电接口[0]) - output) < EPS
+        assert abs(value(测试风力发电模型.电接口[2]) - output) < EPS
 
 
 @pytest.mark.parametrize("_input, output", [(100, 98), (200, 196)])

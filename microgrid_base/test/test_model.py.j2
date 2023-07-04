@@ -283,8 +283,8 @@ def test_电价模型():
     # override the windspeed.
     测试风力发电模型.计算参数.风速 = windspeed_array
 {{ solveModel("测试风力发电模型.总成本年化") }}
-        assert abs(value(测试风力发电模型.电接口[0] - output))< EPS
-        assert abs(value(测试风力发电模型.电接口[2] - output))< EPS
+        assert abs(value(测试风力发电模型.电接口[0]) - output)< EPS
+        assert abs(value(测试风力发电模型.电接口[2]) - output)< EPS
  
 {# likely to be inversed efficiency. #}
 {% call parametrizeTestHelper("双向变流器", "Device")%}
