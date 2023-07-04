@@ -43,8 +43,8 @@ import pytest
 {% set paramStringList = []%}
 {% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
-    {% if _params = "Device"%}
-        {% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
+    {% if _params == "Device"%}
+        {% set _params = "model_wrapper: ModelWrapper, 测试{testName}模型: {testName}模型".format(testName=testName) %}
     {% endif%}
 {% if _params != ""%}
     {% do paramStringList.append(_params)%}
@@ -262,36 +262,11 @@ def test_电价模型():
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
 {% call parametrizeTestHelper("双向变流器", "Device")%}
-@pytest.mark.parametrize("input, output", [])
-def test_双向变流器():
+    {% call parametrize("input, output")%}[]{% endcall%}
+{% endcall%}
     ...
 
-
-from ies_optim import 风力发电ID, 风力发电模型, 风力发电信息
-
-
-@fixture
-def 测试风力信息():
-    devInfo = 风力发电信息(
-        设备名称="风力发电",
-        生产厂商="Any",
-        设备型号="风力发电1",
-        RatedPower=100,
-        RatedWindSpeed=100,
-        MinWindSpeed=10,
-        MaxWindSpeed=200,
-        PowerDeltaLimit=2,
-        CostPerKilowatt=...,
-        CostPerYearPerKilowatt=...,
-        VariationalCostPerWork=...,
-        Life=...,
-        BuildCostPerKilowatt=...,
-        BuildBaseCost=...,
-        MaxDeviceCount=...,
-        MinDeviceCount=...,
-        DeviceCount=...,
-    )
-
-
-def test_风力发电():
+{% call parametrizeTestHelper("风力发电", "Device")%}
+    {% call parametrize("input, output")%}[]{% endcall%}
+{% endcall%}
     ...

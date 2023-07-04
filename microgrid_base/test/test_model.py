@@ -85,6 +85,7 @@ def test_BinVarMultiplySingle(
     model_wrapper.Objective(expr=v_result, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
@@ -117,6 +118,17 @@ def test_BinVarMultiplySingle(
 def test_VarMultiplySingle(
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
     v0_min,
     v0_max,
     v1_min,
@@ -134,12 +146,14 @@ def test_VarMultiplySingle(
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
     obj_expr = v0_v1[0] + param * (v0[0] + v1[0])
     model_wrapper.Objective(expr=obj_expr, sense=sense)
-
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+        check_solver_result(s_results)
+
         assert abs(value(obj_expr) - expected) <= EPS
 
 
@@ -152,6 +166,26 @@ def test_VarMultiplySingle(
     ],
 )
 def test_单表达式生成指示变量(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
     model_wrapper: ModelWrapper,
     测试设备模型: 设备模型,
     v0_min,
@@ -167,14 +201,15 @@ def test_单表达式生成指示变量(
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
-    obj_expr = v0
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
-
+    model_wrapper.Objective(expr=v0, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+        check_solver_result(s_results)
+
         assert abs(expected_v0 - value(v0)) <= EPS
         assert abs(expected_v1_b_pos - value(v1.b_pos)) <= EPS
         assert abs(expected_v1_x_neg - value(v1.x_neg)) <= EPS
@@ -200,21 +235,57 @@ import numpy as np
     ],
 )
 def test_Piecewise(
-    model_wrapper: ModelWrapper, 测试设备模型: 设备模型, x_init, y_expected, sense
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
 ):
     x = [测试设备模型.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
     y = [测试设备模型.单变量("y")]
     x_vals = np.linspace(0, 2, 2)
     y_vals = x_vals + 2
     测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
-    obj_expr = y[0]
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
-
+    model_wrapper.Objective(expr=y[0], sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+        check_solver_result(s_results)
+
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 
@@ -232,6 +303,42 @@ def test_Piecewise(
 )
 def test_柴油发电(
     model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
     测试柴油发电模型: 柴油发电模型,
     power_output,
     expected_val,
@@ -242,37 +349,15 @@ def test_柴油发电(
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-    model_wrapper.Objective(obj_expr, sense=minimize)
-
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
-        # solver.options['mipgap'] = 0.05 # to prevent too much iteration?
-        solver.options["timelimit"] = 5  # use this instead.
-        # print(solver.options.keys())
-        # breakpoint()
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
-        print(s_results)  # check solver status.
+        print(s_results)
+        check_solver_result(s_results)
 
-        assert s_results, "no solver result."
-        TC = s_results.solver.termination_condition
-        SS = s_results.solver.status
-        normalSSs = [SolverStatus.ok, SolverStatus.warning]
-        normalTCs = [
-            TerminationCondition.globallyOptimal,
-            TerminationCondition.locallyOptimal,
-            TerminationCondition.feasible,
-            TerminationCondition.optimal,
-            # TerminationCondition.maxTimeLimit,
-        ]
-        error_msg = []
-        if TC not in normalTCs:
-            error_msg.append(f"abnormal termination condition: {TC}")
-        if SS not in normalSSs:
-            error_msg.append(f"abnormal solver status: {TC}")
-        if error_msg:
-            raise Exception("\n".join(error_msg))
-        # TODO: can apply this to "solve_model.py"
         print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
@@ -281,7 +366,6 @@ def test_柴油发电(
 
 
 def test_电价模型():
-    from ies_optim import 电负荷信息, 分月电价
 
     mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
@@ -308,9 +392,51 @@ def test_电价模型():
         (333, 10),
     ],
 )
-def test_DayToMonth(day_index, expected_month):
-    from ies_optim import convertDaysToMonth
-
+def test_DayToMonth(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+    day_index,
+    expected_month,
+):
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
@@ -325,118 +451,249 @@ def test_DayToMonth(day_index, expected_month):
         (8779, 4 * 0.0001 * 12, 4),
     ],
 )
-def test_分月电价(hour_index, expected_price, power):
-    from ies_optim import 分月电价
-
+def test_分月电价(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+    day_index,
+    expected_month,
+    hour_index,
+    expected_price,
+    power,
+):
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
 
-from ies_optim import 柴油模型, 计算参数, 柴油信息, 柴油ID
-
-
-@fixture
-def 测试柴油ID():
-    devId = 柴油ID(ID=1, 燃料接口=2)
-    return devId
-
-
-@fixture
-def 测试柴油信息():
-    devInfo = 柴油信息(设备名称="Any", Price=(2, "万元/L"), 热值=(2, "kWh/L"), CO2=(2, "kg/L"))
-    return devInfo
-
-
-@fixture
-def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油ID: 柴油ID, 测试柴油信息: 柴油信息):
-    mDieselModel = 柴油模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油ID, 设备信息=测试柴油信息
-    )
-    return mDieselModel
-
-
 @pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
+def test_柴油(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+    day_index,
+    expected_month,
+    hour_index,
+    expected_price,
+    power,
+    model_wrapper: ModelWrapper,
+    测试柴油模型: 柴油模型,
+    diesel_rate,
+    fee_rate_per_hour,
+):
     测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-    测试柴油模型.mw.Objective(expr=obj_expr, sense=minimize)
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+        check_solver_result(s_results)
+
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
 
-from ies_optim import 双向变流器ID, 双向变流器模型, 双向变流器信息
-
-
-@fixture
-def 测试双向变流器信息():
-    devInfo = 双向变流器信息(
-        设备名称="双向变流器",
-        生产厂商="Any",
-        设备型号="双向变流器1",
-        RatedPower=100,
-        Efficiency=98,
-        CostPerKilowatt=2,
-        CostPerYearPerKilowatt=2,
-        VariationalCostPerWork=2,
-        Life=10,
-        BuildCostPerKilowatt=2,
-        BuildBaseCost=2,
-        MaxDeviceCount=1,
-        MinDeviceCount=1,
-        DeviceCount=1,
-    )
-    return devInfo
-
-
-@fixture
-def 测试双向变流器模型(
-    测试双向变流器信息: 双向变流器信息, model_wrapper: ModelWrapper, 测试双向变流器ID: 双向变流器ID, 测试计算参数: 计算参数
-):
-    devModel = 双向变流器模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试双向变流器ID, 设备信息=测试双向变流器信息
-    )
-    return devModel
-
-
 @pytest.mark.parametrize("input, output", [])
-def test_双向变流器():
+def test_双向变流器(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+    day_index,
+    expected_month,
+    hour_index,
+    expected_price,
+    power,
+    model_wrapper: ModelWrapper,
+    测试柴油模型: 柴油模型,
+    diesel_rate,
+    fee_rate_per_hour,
+    model_wrapper: ModelWrapper,
+    测试双向变流器模型: 双向变流器模型,
+    input,
+    output,
+):
     ...
 
 
-from ies_optim import 风力发电ID, 风力发电模型, 风力发电信息
-
-
-@fixture
-def 测试风力信息():
-    devInfo = 风力发电信息(
-        设备名称="风力发电",
-        生产厂商="Any",
-        设备型号="风力发电1",
-        RatedPower=100,
-        RatedWindSpeed=100,
-        MinWindSpeed=10,
-        MaxWindSpeed=200,
-        PowerDeltaLimit=2,
-        CostPerKilowatt=...,
-        CostPerYearPerKilowatt=...,
-        VariationalCostPerWork=...,
-        Life=...,
-        BuildCostPerKilowatt=...,
-        BuildBaseCost=...,
-        MaxDeviceCount=...,
-        MinDeviceCount=...,
-        DeviceCount=...,
-    )
-
-
-def test_风力发电():
+@pytest.mark.parametrize("input, output", [])
+def test_风力发电(
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_is_constant,
+    v0_within,
+    min_v0,
+    max_v0,
+    sense,
+    result,
+    v1_init,
+    v0_init,
+    v1_within,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    v1_min,
+    v1_max,
+    sense,
+    expected,
+    param,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    v0_min,
+    v0_max,
+    sense,
+    expected_v0,
+    expected_v1_b_pos,
+    expected_v1_x_pos,
+    expected_v1_b_neg,
+    expected_v1_x_neg,
+    expected_v1_x_abs,
+    model_wrapper: ModelWrapper,
+    测试设备模型: 设备模型,
+    x_init,
+    y_expected,
+    sense,
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+    day_index,
+    expected_month,
+    hour_index,
+    expected_price,
+    power,
+    model_wrapper: ModelWrapper,
+    测试柴油模型: 柴油模型,
+    diesel_rate,
+    fee_rate_per_hour,
+    model_wrapper: ModelWrapper,
+    测试双向变流器模型: 双向变流器模型,
+    input,
+    output,
+    model_wrapper: ModelWrapper,
+    测试风力发电模型: 风力发电模型,
+    input,
+    output,
+):
     ...
