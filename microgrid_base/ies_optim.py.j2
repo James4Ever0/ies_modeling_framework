@@ -1458,8 +1458,8 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                 for m_id in {{io_type}}_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor['device_id']
-                    m_devInstVarName : {{type_annotation}} = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInstVarName.{{attr}})
+                    {{devInstVarName}} : {{type_annotation}} = devInstDict[m_node_id]
+                    m_limit_list.append({{devInstVarName}}.{{attr}})
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 

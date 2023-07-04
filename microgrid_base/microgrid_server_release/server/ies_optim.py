@@ -321,24 +321,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -3214,18 +3214,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3365,18 +3365,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3857,8 +3857,8 @@ def compute(
                 for m_id in input_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInstVarName: 变压器模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInstVarName.最大允许的负载总功率)
+                    m_devInstInput: 变压器模型 = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInstInput.最大允许的负载总功率)
                 input_limit = sum(m_limit_list)
 
                 # IO TYPE: output
@@ -3866,8 +3866,8 @@ def compute(
                 for m_id in output_indexs:
                     m_anchor = G.nodes[m_id]
                     m_node_id = m_anchor["device_id"]
-                    m_devInstVarName: 电负荷模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInstVarName.MaxEnergyConsumption)
+                    m_devInstOutput: 电负荷模型 = devInstDict[m_node_id]
+                    m_limit_list.append(m_devInstOutput.MaxEnergyConsumption)
                 output_limit = sum(m_limit_list)
 
                 mw.Constraint(input_limit + output_limit >= 0)
