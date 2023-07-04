@@ -287,10 +287,12 @@ def test_电价模型():
 #}
 
 {% call parametrizeTestHelper("传输线", "Device")%}
-    {% call parametrize("input, output")%}[]{% endcall%}
+    {% call parametrize("_input, output")%}[]{% endcall%}
 {% endcall%}
-    测试传输线模型.RangeConstraintMulti(测试传输线模型.电接口, expression = lambda x: x == 100)
+    测试传输线模型.RangeConstraintMulti(测试传输线模型.电接口, expression = lambda x: x == _input)
 {{ solveModel("测试传输线模型.总成本年化")}}
+        assert abs(value(测试传输线模型.[0]) - output) < EPS
+        assert abs(value(测试传输线模型.[2]) - output) < EPS
 
 {# infeasible! just why? #}
 {% call parametrizeTestHelper("锂电池", "Device")%}

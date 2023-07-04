@@ -407,13 +407,13 @@ def 测试传输线信息():
         设备名称="传输线",
         生产厂商="Any",
         设备型号="传输线1",
-        PowerTransferDecay=None,
-        CostPerKilometer=None,
-        CostPerYearPerKilometer=None,
-        Life=None,
-        BuildCostPerKilometer=None,
-        BuildBaseCost=None,
-        Length=None,
+        PowerTransferDecay=1,
+        CostPerKilometer=2,
+        CostPerYearPerKilometer=2,
+        Life=100,
+        BuildCostPerKilometer=20,
+        BuildBaseCost=20,
+        Length=10,
     )
     return val
 
