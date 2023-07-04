@@ -273,6 +273,13 @@ def test_电价模型():
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
+def windmill_helper(start, end, max_power):
+    def windmill_power_calculator(windspeed):
+        if power< start: return 0
+        elif power > start and power < end
+        return power
+    return windmill_power_calculator
+
 {% call parametrizeTestHelper("风力发电", "Device")%}
     {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*),()]{% endcall%}
 {% endcall%}
