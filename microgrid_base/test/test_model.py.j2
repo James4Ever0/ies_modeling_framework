@@ -46,6 +46,7 @@ import pytest
 {% do paramStringList.append(_params)%}
 {{caller()}}
 def test_{{testName}}({{join(",",paramStringList)}}):
+{# def test_{{testName}}({{join(",",paramStringList)}}): #}
 {% set paramStringList = []%}
 {% endmacro%}
 {% macro parametrize(mParamString) %}

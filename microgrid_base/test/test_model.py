@@ -1,10 +1,4 @@
-from pytest import fixture
-import sys
-
-# taking too long to solve.
-# TODO: assert time per test.
-
-sys.path.append("../")
+from common_fixtures import *
 
 from typing import cast
 
@@ -12,170 +6,42 @@ try:
     from typing import Protocol
 except:
     from typing_extensions import Protocol
-from ies_optim import ModelWrapper
-from ies_optim import 计算参数
 from pyomo.environ import *
 
 # may you hook arith methods to check expression (poly degree) on the way.
 
 # render constraints as latex. use sigma notation.
 
-
-@fixture()
-# @fixture(scope="session")
-def model_wrapper():
-    mw = ModelWrapper()
-    yield mw
-    del mw
-    # return mw
-
-
 EPS = 0.02
 
-# class mObject:
-#     a = 1
-#     b = 2
-#     @staticmethod
-#     def method():
-#         return "method return value"
 
-# @fixture()
-# def teardown_fixture():
-#     yield mObject()
-#     print("TEARDOWN FIXTURE")
-
-# # @fixture == @fixture()
-
-# @fixture()
-# def t2f(teardown_fixture):
-#     print(teardown_fixture)
-#     print("VAL A?", teardown_fixture.a)
-#     print("VAL B?", teardown_fixture.b)
-#     print("VAL METHOD?", teardown_fixture.method())
-#     print("_____EXIT T2F_____")
-#     yield teardown_fixture
-#     # return teardown_fixture
-#     print("TEARDOWN T2F")
-
-# def test_teardown(t2f: mObject):
-#     print(t2f)
-#     print("VAL A?", t2f.a)
-#     print("VAL B?", t2f.b)
-#     print("VAL METHOD?", t2f.method())
-
-
-from ies_optim import 柴油信息
-
-
-# @fixture(scope="session")
-# def 测试柴油信息():
-
-#     return 柴油信息(设备名称="柴油1", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L"))
-
-
-from ies_optim import 柴油发电信息
-
-
-@fixture(scope="session")
-def 测试柴油发电信息():
-
-    return 柴油发电信息(
-        生产厂商="柴油发电1",
-        设备型号="柴油发电1",
-        设备名称="柴油发电1",
-        RatedPower=20,
-        PowerDeltaLimit=1,
-        PowerStartupLimit=1,
-        CostPerMachine=100,
-        CostPerYearPerMachine=100,
-        VariationalCostPerWork=100,
-        Life=20,
-        BuildCostPerMachine=10,
-        BuildBaseCost=10,
-        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=1,
-        MaxDeviceCount=1,
-        MinDeviceCount=1,
-    )
-
-
-from ies_optim import 柴油发电模型, 柴油发电ID
-
-
-@fixture()
-def 测试柴油发电ID():
-    devID = 柴油发电ID(ID=0, 燃料接口=1, 电接口=2)
-    return devID
-
-
-@fixture()
-def 测试柴油发电模型(
-    测试柴油发电信息: 柴油发电信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油发电ID: 柴油发电ID
-):
-    mDieselEngineModel = 柴油发电模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油发电ID, 设备信息=测试柴油发电信息
-    )
-    return mDieselEngineModel
-
-
-from typing import Protocol, Any
-
-
-class Request(Protocol):
-    param: Any
-    cache: Any
-
-
-@fixture(scope="session", params=["设计规划", "仿真模拟"], ids=["PLANNING", "SIMULATION"])
-def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
-    import numpy as np
-
-    print(type(request))
-    # breakpoint()
-
-    a = abs(np.random.random((24,))).tolist()
-    # a = abs(np.random.random((8760,))).tolist()
-
-    return 计算参数(
-        计算目标="经济",
-        # 计算目标="经济_环保",
-        # 计算目标="环保",
-        计算步长="小时",
-        典型日=True,
-        典型日代表的日期=[1],
-        # 典型日=False,
-        # 计算类型="仿真模拟",
-        计算类型=request.param,
-        # 计算类型="设计规划",
-        风速=a,
-        光照=a,
-        气温=a,
-        年利率=0.1,
-    )
-
-
-# def test_init():
-#     print("hello test")
+def check_solver_result(s_results):
+    assert s_results, "no solver result."
+    TC = s_results.solver.termination_condition
+    SS = s_results.solver.status
+    normalSSs = [SolverStatus.ok, SolverStatus.warning]
+    normalTCs = [
+        TerminationCondition.globallyOptimal,
+        TerminationCondition.locallyOptimal,
+        TerminationCondition.feasible,
+        TerminationCondition.optimal,
+        # TerminationCondition.maxTimeLimit,
+    ]
+    error_msg = []
+    if TC not in normalTCs:
+        error_msg.append(f"abnormal termination condition: {TC}")
+    if SS not in normalSSs:
+        error_msg.append(f"abnormal solver status: {TC}")
+    if error_msg:
+        raise Exception("\n".join(error_msg))
 
 
 def test_convertMonthToDays():
-    from ies_optim import convertMonthToDays, month_days
-
     assert convertMonthToDays(1) == sum(month_days[:1])
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
 
 
-from ies_optim import 设备模型
-
-
-@fixture
-def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):
-    mDeviceModel = 设备模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=1)
-    yield mDeviceModel
-
-
-# from collections import namedtuple
 import pytest
 
 # BUG: BigM <= 1e+8
@@ -194,20 +60,7 @@ import pytest
 @pytest.mark.parametrize(
     "v1_within", [Boolean, pytest.param(NonNegativeReals, marks=pytest.mark.xfail)]
 )
-def test_BinVarMultiplySingle(
-    model_wrapper: ModelWrapper,
-    # 测试计算参数: 计算参数,
-    测试设备模型: 设备模型,
-    v0_within,
-    v0_init,
-    v1_within,
-    v1_init,
-    result,
-    max_v0,
-    min_v0,
-    sense,
-    v0_is_constant,
-):
+def test_BinVarMultiplySingle(None):
     assert min_v0 <= max_v0
     if v0_is_constant:
         v0 = v0_init
@@ -215,21 +68,16 @@ def test_BinVarMultiplySingle(
         v0 = 测试设备模型.单变量(
             "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
         )
-
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
-    # obj_expr = v1
-    obj_expr = v_result
-    # if sense == maximize:
-    #     obj_expr = -obj_expr
-    # OBJ = model_wrapper.Objective(expr=obj_expr, sense=minimize)
-    OBJ = model_wrapper.Objective(expr=obj_expr, sense=sense)
-
+    OBJ = model_wrapper.Objective(expr=v_result, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         s_results = solver.solve(model_wrapper.model, tee=True)
         print("SOLVER RESULTS?")
         print(s_results)
+        check_solver_result(s_results)
+
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
         print(f"PROD: {value(v_result)}")
