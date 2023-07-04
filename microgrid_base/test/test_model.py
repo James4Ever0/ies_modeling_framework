@@ -334,12 +334,12 @@ def test_分月电价(hour_index, expected_price, power):
 
 @pytest.mark.parametrize("_input, output", [(100, 90), (200, 190)])
 @pytest.mark.parametrize("sense", [minimize, maximize])
-@pytest.mark.parametrize("direction", [False, True])
+@pytest.mark.parametrize("input_only", [False, True])
 def test_传输线(
-    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, sense, direction
+    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, sense, input_only
 ):
     测试传输线模型.constraints_register()
-    if direction:
+    if input_only:
         测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == _input)
     else:
         测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == output)
@@ -355,8 +355,8 @@ def test_传输线(
         assert abs(value(测试传输线模型.电输出[0]) - output) < EPS
         assert abs(value(测试传输线模型.电输出[2]) - output) < EPS
 
-        assert abs(-value(测试传输线模型.电输入[0]) - output) < EPS
-        assert abs(-value(测试传输线模型.电输入[2]) - output) < EPS
+        assert abs(-value(测试传输线模型.电输入[0]) - _input) < EPS
+        assert abs(-value(测试传输线模型.电输入[2]) - _input) < EPS
 
 
 @pytest.mark.parametrize("device_count", [500 / 20])
