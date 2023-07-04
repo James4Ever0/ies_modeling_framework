@@ -204,7 +204,7 @@ import numpy as np
     )  # unit: m^3
     {# obj_expr = 测试柴油模型.总成本年化 #}
     obj_expr = 测试柴油模型.燃料接口[0]
-{{ solveModel("obj_expr", "minimize")}}
+{{ solveModel("obj_expr")}}
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
@@ -222,7 +222,7 @@ import numpy as np
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-{{solveModel("obj_expr", "minimize")}}
+{{solveModel("obj_expr")}}
         print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
@@ -246,7 +246,7 @@ def test_电价模型():
     # breakpoint()
     assert myPriceModel == myInfo.PriceModel
 
-{% call parametrizeTestHelper("DayToMonth","")%}
+{% call parametrizeTestHelper("DayToMonth","", autoSense=false)%}
     {% call parametrize("day_index, expected_month")%}
     [
         (1, 0),
@@ -261,7 +261,7 @@ def test_电价模型():
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
-{% call parametrizeTestHelper("分月电价","")%}
+{% call parametrizeTestHelper("分月电价","", autoSense=false)%}
     {% call parametrize("hour_index, expected_price, power")%}
     [
         (2, 4 * 0.0001 * 1, 4),
@@ -277,7 +277,6 @@ def test_电价模型():
     assert abs(mprice - expected_price) == 0
 
 {% call parametrizeTestHelper("风力发电", "Device")%}
-    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
     {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(0.5**3)),(100,100 ),(150,100), (200,100 ), (210, 0)]{% endcall%}
 {% endcall%}
     windspeed_array = [windspeed]*24
@@ -290,7 +289,6 @@ def test_电价模型():
 {# likely to be inversed efficiency. #}
 {% call parametrizeTestHelper("双向变流器", "Device")%}
     {% call parametrize("_input, output")%}[(100, 98), (200,196)]{% endcall%}
-    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
     {% call parametrize("direction")%}[False,True]{% endcall%}
 {% endcall%}
     if direction:
@@ -307,7 +305,6 @@ def test_电价模型():
 
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}
-    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
     {% call parametrize("input_only")%}[False,True]{% endcall%}
 {% endcall%}
     if input_only:
@@ -327,7 +324,6 @@ def test_电价模型():
 {# if making no "more" constraints we will solve it. #}
 {% call parametrizeTestHelper("锂电池", "Device")%}
     {% call parametrize("device_count")%}[500/20]{% endcall%}
-    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
 {% endcall%}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100)) #}
     测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x >= 0)

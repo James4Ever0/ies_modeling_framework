@@ -229,13 +229,16 @@ def test_Piecewise(
 
 
 @pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
+@pytest.mark.parametrize("sense", [minimize, maximize])
+def test_柴油(
+    model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour, sense
+):
     测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-    model_wrapper.Objective(expr=obj_expr, sense=minimize)
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -256,19 +259,21 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         (20, 20, -1 * 0.001 * 20),
     ],
 )
+@pytest.mark.parametrize("sense", [minimize, maximize])
 def test_柴油发电(
     model_wrapper: ModelWrapper,
     测试柴油发电模型: 柴油发电模型,
     power_output,
     expected_val,
     expected_diesel,
+    sense,
 ):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-    model_wrapper.Objective(expr=obj_expr, sense=minimize)
+    model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -332,7 +337,6 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
-@pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize(
     "windspeed, output",
     [
@@ -346,7 +350,8 @@ def test_分月电价(hour_index, expected_price, power):
         (210, 0),
     ],
 )
-def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, sense, windspeed, output):
+@pytest.mark.parametrize("sense", [minimize, maximize])
+def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, windspeed, output, sense):
     测试风力发电模型.constraints_register()
     windspeed_array = [windspeed] * 24
     # override the windspeed.
@@ -365,10 +370,10 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
 
 
 @pytest.mark.parametrize("_input, output", [(100, 98), (200, 196)])
-@pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize("direction", [False, True])
+@pytest.mark.parametrize("sense", [minimize, maximize])
 def test_双向变流器(
-    model_wrapper: ModelWrapper, 测试双向变流器模型: 双向变流器模型, _input, output, sense, direction
+    model_wrapper: ModelWrapper, 测试双向变流器模型: 双向变流器模型, _input, output, direction, sense
 ):
     测试双向变流器模型.constraints_register()
     if direction:
@@ -393,10 +398,10 @@ def test_双向变流器(
 
 
 @pytest.mark.parametrize("_input, output", [(100, 90), (200, 190)])
-@pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize("input_only", [False, True])
+@pytest.mark.parametrize("sense", [minimize, maximize])
 def test_传输线(
-    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, sense, input_only
+    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, input_only, sense
 ):
     测试传输线模型.constraints_register()
     if input_only:
