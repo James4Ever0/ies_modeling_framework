@@ -66,7 +66,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
     {# model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}}) #}
-    OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}})
+    model_wrapper.Objective(expr={{objective}}, sense={{sense}})
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5 
@@ -181,7 +181,8 @@ import numpy as np
     x_vals = np.linspace(0, 2, 2)
     y_vals = x_vals + 2
     测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
-{{solveModel("y[0]")}}
+    obj_expr = y[0]
+{{solveModel("obj_expr")}}
         assert abs(value(obj_expr) - y_expected) <= EPS
 
 # if use timeout as solver option, usually not so good.
