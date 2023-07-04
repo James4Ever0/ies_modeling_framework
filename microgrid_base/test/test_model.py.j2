@@ -41,8 +41,11 @@ def test_convertMonthToDays():
 
 import pytest
 {% set paramStringList = []%}
-{% macro parametrizeTestHelper(testName,_params)%}
+{% macro parametrizeTestHelper(testName,_params="Auto")%}
 {# shall you ensure no parameter is undefined.#}
+    {% if _params = "Auto"%}
+        {% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
+    {% endif%}
 {% do paramStringList.append(_params)%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
@@ -64,10 +67,6 @@ def test_{{testName}}({{",".join(paramStringList)}}):
         check_solver_result(s_results)
 
 {% endmacro %}
-{% macro parametrizeTestModelHelper(modelName, caller)%}
-{% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
-{{parametrizeTestHelper(modelName, _params, caller)}}
-{% endmacro%}
 
 # BUG: BigM <= 1e+8
 {# {% call parametrizeTestHelper("BinVarMultiplySingle")%} #}
@@ -188,6 +187,13 @@ import numpy as np
     ]
     {% endcall%}
 {% endcall%}
+def test_柴油发电(
+    model_wrapper: ModelWrapper,
+    测试柴油发电模型: 柴油发电模型,
+    power_output,
+    expected_val,
+    expected_diesel,
+):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
