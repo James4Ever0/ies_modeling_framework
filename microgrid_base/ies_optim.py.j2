@@ -543,7 +543,8 @@ class ModelWrapper:
         {% endif %}
         {% set init_argname = "initialize"%}
             {% if k == 'Var'%}
-        _{{init_argname}} = kwargs.get({{qstr(init_argname)}}, None)
+        _{{init_argname}} = kwargs.get({{qstr(init_argname)}}, 0)
+        {# _{{init_argname}} = kwargs.get({{qstr(init_argname)}}, None) #}
             {% endif %}
         if {{qstr(init_argname)}} in kwargs.keys(): del kwargs[{{qstr(init_argname)}}]
         ret = {{k}}({{mv+", {}=_{}".format(init_argname, init_argname) if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
