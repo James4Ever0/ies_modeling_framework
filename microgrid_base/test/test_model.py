@@ -313,7 +313,6 @@ def test_分月电价(hour_index, expected_price, power):
 
 @pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
 def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
-    测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
@@ -331,11 +330,28 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
 
-@pytest.mark.parametrize("input, output", [])
-def test_双向变流器(model_wrapper: ModelWrapper, 测试双向变流器模型: 双向变流器模型, input, output):
-    ...
+@pytest.mark.parametrize("device_count", [500 / 20])
+def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count):
+    测试锂电池模型.RangeConstraintMulti(
+        测试锂电池模型.电接口, lambda x: x == 500 * (10 / 100) / (50 / 100)
+    )
+    model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
 
-
-@pytest.mark.parametrize("input, output", [])
-def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, input, output):
-    ...
+        assert abs(value(测试锂电池模型.DeviceCount)) == device_count
+        assert (
+            abs(
+                value(
+                    测试锂电池模型.CurrentTotalActualCapacity[0]
+                    + 500 * (测试锂电池模型.设备信息.MinSOC / 100)
+                )
+                - 500 * (测试锂电池模型.设备信息.InitSOC / 100)
+            )
+            < EPS
+        )
