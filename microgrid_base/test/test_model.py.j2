@@ -64,9 +64,9 @@ def test_{{testName}}({{",".join(paramStringList)}}):
         check_solver_result(s_results)
 
 {% endmacro %}
-{% macro parametrizeTeseModelHelper(modelName)%}
+{% macro parametrizeTestModelHelper(modelName, caller)%}
 {% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
-{{parametrizeTestHelper(modelName, _params)}}
+{{parametrizeTestHelper(modelName, _params, caller)}}
 {% endmacro%}
 
 # BUG: BigM <= 1e+8
@@ -179,22 +179,15 @@ import numpy as np
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-
+{% call parametrizeTestModelHelper("柴油发电") %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
-@pytest.mark.parametrize(
-    "power_output, expected_val, expected_diesel",
+    {% call parametrize("power_output, expected_val, expected_diesel")%}
     [
         (10, 10, -3 * 0.001 * 10),
         (20, 20, -1 * 0.001 * 20),
-    ],
-)
-def test_柴油发电(
-    model_wrapper: ModelWrapper,
-    测试柴油发电模型: 柴油发电模型,
-    power_output,
-    expected_val,
-    expected_diesel,
-):
+    ]
+    {% endcall%}
+{% endcall%}
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
