@@ -1899,7 +1899,7 @@ class 光伏发电模型(设备模型):
 
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
-
+        if 
         self.DeviceCount.setlb(self.MaxDeviceCount)
         self.DeviceCount.setub(self.MinDeviceCount)
 
