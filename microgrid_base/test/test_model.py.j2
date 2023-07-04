@@ -187,7 +187,7 @@ import numpy as np
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-{% call parametrizeTestHelper("柴油发电", "Device") %}
+{% call parametrizeTestHelper("柴油发电", "Device", autoRegister=False) %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
     {% call parametrize("power_output, expected_val, expected_diesel") %}
     [
@@ -258,7 +258,7 @@ def test_电价模型():
 {% call parametrizeTestHelper("柴油", "Device")%}
     {% call parametrize("diesel_rate, fee_rate_per_hour")%}[(1, 2), (3, 6)]{%endcall%}
 {%endcall%}
-    测试柴油模型.constraints_register()
+    {# 测试柴油模型.constraints_register() #}
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
