@@ -279,9 +279,15 @@ def test_电价模型():
 {% call parametrizeTestHelper("光伏发电", "Device", autoSense=false, autoRegister=false)%}
     {% call parametrize("illumination, output")%}[(),()]{% endcall%}
 {% endcall%}
+    illumination_array = [illumination]*24
 
-    windspeed_array = [windspeed]*24
-
+    测试光伏发电模型.计算参数.光照 = windspeed_array
+    测试光伏发电模型.constraints_register()
+{{ solveModel("测试光伏发电模型.电接口[0]+测试光伏发电模型.电接口[2]", sense='maximize') }}
+        devCount = 测试风力发电模型.设备信息.DeviceCount
+        assert abs(value(测试光伏发电模型.电接口[0]) - output*devCount)< EPS
+        assert abs(value(测试光伏发电模型.电接口[2]) - output*devCount)< EPS
+    
 {% call parametrizeTestHelper("风力发电", "Device", autoSense=false, autoRegister=false)%}
     {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(((50-10)/90)**3)),(100,100 ),(150,100), (200,100), (210, 0)]{% endcall%}
 {% endcall%}
