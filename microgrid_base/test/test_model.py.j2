@@ -284,16 +284,15 @@ def test_电价模型():
     {% call parametrize("input, output")%}[]{% endcall%}
 {% endcall%}
     ...
-
-
 #}
 
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("input, output")%}[]{% endcall%}
 {% endcall%}
-    ...
+    测试传输线模型.RangeConstraintMulti(测试传输线模型.电接口, expression = lambda x: x == 100)
+{{ solveModel("测试传输线模型.总成本年化")}}
 
-{# infeasible! #}
+{# infeasible! just why? #}
 {% call parametrizeTestHelper("锂电池", "Device")%}
     {% call parametrize("device_count")%}[500/20]{% endcall%}
     {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
