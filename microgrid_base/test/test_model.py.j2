@@ -66,9 +66,10 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {% endmacro %}
 
 # BUG: BigM <= 1e+8
+{# {% call parametrizeHelper("BinVarMultiplySingle")%} #}
 {% call parametrizeHelper("BinVarMultiplySingle", "model_wrapper: ModelWrapper, 测试设备模型: 设备模型")%}
-    {%call parametrize("v0_is_constant")%}[False, True]{% endcall%}
-    {%call parametrize("v0_within, min_v0, max_v0, sense, result")%}
+    {% call parametrize("v0_is_constant")%}[False, True]{% endcall%}
+    {% call parametrize("v0_within, min_v0, max_v0, sense, result")%}
     [
         (Reals, -1, 10, minimize, -1),
         (Reals, -1, 10, maximize, 10),

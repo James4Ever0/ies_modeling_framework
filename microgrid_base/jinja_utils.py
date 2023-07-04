@@ -53,7 +53,7 @@ def code_and_template_path(base_name):
     return code_path, template_path
 
 
-def load_template(template_path):
+def load_template(template_path, extra_func_dict={}):
     try:
         assert template_path.endswith(".j2")
     except:
@@ -82,6 +82,7 @@ def load_template(template_path):
         len=len,
         repr=repr,
         #  join=myJoin
+        **extra_func_dict,
     )
     tpl.globals.update(func_dict)
     return tpl
