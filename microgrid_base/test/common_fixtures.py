@@ -250,9 +250,9 @@ def 测试锂电池信息():
         BuildCostPerCapacity=20,
         BuildBaseCost=20,
         InitSOC=30,
-        MaxTotalCapacity=500,
-        MinTotalCapacity=500,
-        TotalCapacity=500,
+        MaxTotalCapacity=(mcap := 500),
+        MinTotalCapacity=mcap,
+        TotalCapacity=mcap,
     )
     return val
 
