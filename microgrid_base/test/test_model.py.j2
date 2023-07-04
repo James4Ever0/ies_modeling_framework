@@ -282,6 +282,7 @@ def test_电价模型():
     ...
 #}
 
+{# likely to be inversed efficiency. #}
 {% call parametrizeTestHelper("双向变流器", "Device")%}
     {% call parametrize("_input, output")%}[(100, 98), (200,196)]{% endcall%}
     {% call parametrize("sense")%}[minimize, maximize]{% endcall%}

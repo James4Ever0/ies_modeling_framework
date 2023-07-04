@@ -1133,8 +1133,12 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
         self.RangeConstraint(self.储能端_.x , self.储能端, lambda x,y: x==y)
 
-        self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: x == y*self.Efficiency)
-        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency)
+        # wrong! negative is input.
+        {# self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: x == y*self.Efficiency)
+        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency) #}
+
+        self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: y == x *self.Efficiency)
+        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: y == x *self.Efficiency)
 
         {% elif class_name in 单向变电器列表%}
         # TODO: figure out what "PowerParameter" does
