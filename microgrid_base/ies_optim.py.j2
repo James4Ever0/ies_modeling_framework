@@ -1082,9 +1082,11 @@ class {{class_name}}模型(设备模型):
         {% elif class_name in ['传输线']%}
         self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗') 
         {%endif%}
-        
+
+        {% if class_name not in ["传输线"]%}
         self.POSNEG_是否购买 = self.单表达式生成指示变量('POSNEG_是否购买', self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
+        {% endif%}
 
     def constraints_register(self):
         super().constraints_register()
