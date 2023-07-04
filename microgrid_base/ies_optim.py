@@ -3880,6 +3880,7 @@ def compute(
 
     for e in devInstDict.values():
         if type(e) == 柴油模型:
+        # if type(e) == 柴油模型:
             environment_obj_exprs.append(
                 (sum(e.燃料接口.values()) / e.计算参数.迭代步数) * 8760 * e.CO2
             )
