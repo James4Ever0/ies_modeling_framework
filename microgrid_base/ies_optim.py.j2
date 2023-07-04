@@ -1114,9 +1114,10 @@ class {{class_name}}模型(设备模型):
 
         # windspeed (m/s) -> current power per device (kW)
         WS = np.array(self.计算参数.风速)
-        单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, np.logical_and(WS >self.MinWindSpeed,WS <= self.RatedWindSpeed) , np.logical_and(WS >self.RatedWindSpeed, WS <=self.MaxWindSpeed) , WS > self.MaxWindSpeed], [0,
-        {#lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),#} 
-        lambda x: ((发电曲线参数 * (x - self.MinWindSpeed)) ** 3), self.RatedPower, 0])
+        self.单台发电功率 = 单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, np.logical_and(WS >self.MinWindSpeed,WS <= self.RatedWindSpeed) , np.logical_and(WS >self.RatedWindSpeed, WS <=self.MaxWindSpeed) , WS > self.MaxWindSpeed], [0,
+        lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), 
+        {# lambda x: ((发电曲线参数 * (x - self.MinWindSpeed)) ** 3),  #}
+        self.RatedPower, 0])
         单台发电功率 = 单台发电功率.tolist()
         {% endif %}
 
