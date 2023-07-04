@@ -41,9 +41,9 @@ def test_convertMonthToDays():
 
 import pytest
 {% set paramStringList = []%}
-{% macro parametrizeTestHelper(testName,_params="Auto")%}
+{% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
-    {% if _params = "Auto"%}
+    {% if _params = "Device"%}
         {% set _params = "model_wrapper: ModelWrapper, 测试{modelName}模型: {modelName}模型".format(modelName=modelName) %}
     {% endif%}
 {% if _params != ""%}
@@ -181,7 +181,7 @@ import numpy as np
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-{% call parametrizeTestHelper("柴油发电") %}
+{% call parametrizeTestHelper("柴油发电", "Auto") %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
     {% call parametrize("power_output, expected_val, expected_diesel") %}
     [
@@ -234,47 +234,20 @@ def test_电价模型():
     month_index = convertDaysToMonth(day_index)
     assert month_index == expected_month
 
-
-@pytest.mark.parametrize(
-    "hour_index, expected_price, power",
+{% call parametrizeTestHelper("分月电价","")%}
+    {% call parametrize("hour_index, expected_price, power")%}
     [
         (2, 4 * 0.0001 * 1, 4),
         (24 * 40, 4 * 0.0001 * 2, 4),
         (24 * 30 * 2 + 10, 4 * 0.0001 * 3, 4),
         pytest.param(8760, 4 * 0.0001 * 12, 4, marks=pytest.mark.xfail),
         (8779, 4 * 0.0001 * 12, 4),
-    ],
-)
-def test_分月电价(hour_index, expected_price, power):
-    {# from ies_optim import 分月电价 #}
-
+    ]
+    {%endcall%}
+{%endcall%}
     myPriceModel = 分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
-
-
-{# from ies_optim import 柴油模型, 计算参数, 柴油信息, 柴油ID #}
-
-
-@fixture
-def 测试柴油ID():
-    devId = 柴油ID(ID=1, 燃料接口=2)
-    return devId
-
-
-@fixture
-def 测试柴油信息():
-    devInfo = 柴油信息(设备名称="Any", Price=(2, "万元/L"), 热值=(2, "kWh/L"), CO2=(2, "kg/L"))
-    return devInfo
-
-
-@fixture
-def 测试柴油模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试柴油ID: 柴油ID, 测试柴油信息: 柴油信息):
-    mDieselModel = 柴油模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试柴油ID, 设备信息=测试柴油信息
-    )
-    return mDieselModel
-
 
 @pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
 def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
