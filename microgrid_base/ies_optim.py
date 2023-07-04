@@ -2128,8 +2128,9 @@ class 风力发电模型(设备模型):
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
-        self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount == y)
-        # self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
+        # too many devices.
+        # self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount == y)
+        self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
 
         if self.计算参数.计算步长 == "秒":
             总最大功率 = self.RatedPower * self.DeviceCount
