@@ -291,13 +291,13 @@ def test_电价模型():
         测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.储能端, expression = lambda x: x == -_input)
     else:
         测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.线路端, expression = lambda x: x == -_input)
-{{ solveModel("测试双向变流器模型.SumRange(测试双向变流器模型.电输出)") }}
+{{ solveModel("测试双向变流器模型.总成本年化") }}
         if direction:
             assert abs(value(测试双向变流器模型.线路端[0]) - output) < EPS
             assert abs(value(测试双向变流器模型.线路端[2]) - output) < EPS
         else:
-            assert abs(value(测试双向变流器模型.线路端[0]) - output) < EPS
-            assert abs(value(测试双向变流器模型.线路端[2]) - output) < EPS
+            assert abs(value(测试双向变流器模型.储能端[0]) - output) < EPS
+            assert abs(value(测试双向变流器模型.储能端[2]) - output) < EPS
 
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}

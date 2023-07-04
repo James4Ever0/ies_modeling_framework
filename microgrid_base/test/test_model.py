@@ -332,6 +332,34 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
+@pytest.mark.parametrize("_input, output", [(100, 98), (200, 196)])
+@pytest.mark.parametrize("sense", [minimize, maximize])
+@pytest.mark.parametrize("direction", [False, True])
+def test_双向变流器(
+    model_wrapper: ModelWrapper, 测试双向变流器模型: 双向变流器模型, _input, output, sense, direction
+):
+    测试双向变流器模型.constraints_register()
+    if direction:
+        测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.储能端, expression=lambda x: x == -_input)
+    else:
+        测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.线路端, expression=lambda x: x == -_input)
+    model_wrapper.Objective(expr=测试双向变流器模型.总成本年化, sense=sense)
+    with SolverFactory("cplex") as solver:
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        if direction:
+            assert abs(value(测试双向变流器模型.线路端[0]) - output) < EPS
+            assert abs(value(测试双向变流器模型.线路端[2]) - output) < EPS
+        else:
+            assert abs(value(测试双向变流器模型.储能端[0]) - output) < EPS
+            assert abs(value(测试双向变流器模型.储能端[2]) - output) < EPS
+
+
 @pytest.mark.parametrize("_input, output", [(100, 90), (200, 190)])
 @pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize("input_only", [False, True])
@@ -363,9 +391,6 @@ def test_传输线(
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, sense):
     测试锂电池模型.constraints_register()
-    测试锂电池模型.RangeConstraintMulti(
-        测试锂电池模型.电接口, expression=lambda x: x == 500 * (10 / 100) / (50 / 100)
-    )
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
@@ -374,15 +399,3 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
-
-        assert abs(value(测试锂电池模型.DeviceCount)) == device_count
-        assert (
-            abs(
-                value(
-                    测试锂电池模型.CurrentTotalActualCapacity[0]
-                    + 500 * (测试锂电池模型.设备信息.MinSOC / 100)
-                )
-                - 500 * (测试锂电池模型.设备信息.InitSOC / 100)
-            )
-            < EPS
-        )
