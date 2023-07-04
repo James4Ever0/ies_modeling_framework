@@ -181,7 +181,7 @@ import numpy as np
 # if use timeout as solver option, usually not so good.
 # you will not get accurate results.
 
-{% call parametrizeTestHelper("柴油发电", "Auto") %}
+{% call parametrizeTestHelper("柴油发电", "Device") %}
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
     {% call parametrize("power_output, expected_val, expected_diesel") %}
     [
@@ -249,57 +249,19 @@ def test_电价模型():
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
-@pytest.mark.parametrize("diesel_rate, fee_rate_per_hour", [(1, 2), (3, 6)])
-def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, diesel_rate, fee_rate_per_hour):
+{% call parametrizeTestHelper("柴油", "Device")%}
+    {% call parametrize("diesel_rate, fee_rate_per_hour")%}[(1, 2), (3, 6)]{%endcall%}
+{%endcall%}
     测试柴油模型.constraints_register()
     测试柴油模型.RangeConstraintMulti(
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-    测试柴油模型.mw.Objective(expr=obj_expr, sense=minimize)
-    with SolverFactory("cplex") as solver:
-        print(">>>SOLVING<<<")
-        s_results = solver.solve(model_wrapper.model, tee=True)
-        print("SOLVER RESULTS?")
-        print(s_results)
+{{ solveModel("obj_expr")}}
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
-
-from ies_optim import 双向变流器ID, 双向变流器模型, 双向变流器信息
-
-
-@fixture
-def 测试双向变流器信息():
-    devInfo = 双向变流器信息(
-        设备名称="双向变流器",
-        生产厂商="Any",
-        设备型号="双向变流器1",
-        RatedPower=100,
-        Efficiency=98,
-        CostPerKilowatt=2,
-        CostPerYearPerKilowatt=2,
-        VariationalCostPerWork=2,
-        Life=10,
-        BuildCostPerKilowatt=2,
-        BuildBaseCost=2,
-        MaxDeviceCount=1,
-        MinDeviceCount=1,
-        DeviceCount=1,
-    )
-    return devInfo
-
-
-@fixture
-def 测试双向变流器模型(
-    测试双向变流器信息: 双向变流器信息, model_wrapper: ModelWrapper, 测试双向变流器ID: 双向变流器ID, 测试计算参数: 计算参数
-):
-    devModel = 双向变流器模型(
-        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试双向变流器ID, 设备信息=测试双向变流器信息
-    )
-    return devModel
-
-
+{% call parametrizeTestHelper("双向变流器", "Device")%}
 @pytest.mark.parametrize("input, output", [])
 def test_双向变流器():
     ...
