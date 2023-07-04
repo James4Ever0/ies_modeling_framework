@@ -275,10 +275,6 @@ def test_电价模型():
 
 
 {# 
-{% call parametrizeTestHelper("双向变流器", "Device")%}
-    {% call parametrize("input, output")%}[]{% endcall%}
-{% endcall%}
-    ...
 
 {% call parametrizeTestHelper("风力发电", "Device")%}
     {% call parametrize("input, output")%}[]{% endcall%}
@@ -287,9 +283,11 @@ def test_电价模型():
 #}
 
 {% call parametrizeTestHelper("双向变流器", "Device")%}
-    {% call parametrize("input, output")%}[]{% endcall%}
+    {% call parametrize("_input, output")%}[(100, 98), (200,190)]{% endcall%}
+    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
+    {% call parametrize("input_only")%}[False,True]{% endcall%}
 {% endcall%}
-    ...
+    测试双向变流器模型.储能端
 
 {% call parametrizeTestHelper("传输线", "Device")%}
     {% call parametrize("_input, output")%}[(100, 90), (200,190)]{% endcall%}
