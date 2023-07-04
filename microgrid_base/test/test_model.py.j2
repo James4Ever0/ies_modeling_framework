@@ -65,8 +65,8 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 @pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
-    model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}})
-    {# OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}}) #}
+    {# model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}}) #}
+    OBJ = model_wrapper.Objective(expr={{objective}}, sense={{sense}})
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5 

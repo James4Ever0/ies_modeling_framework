@@ -82,7 +82,7 @@ def test_BinVarMultiplySingle(
         )
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
-    model_wrapper.Objective(expr=v_result, sense=sense)
+    OBJ = model_wrapper.Objective(expr=v_result, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -134,7 +134,7 @@ def test_VarMultiplySingle(
 
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
     obj_expr = v0_v1[0] + param * (v0[0] + v1[0])
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
+    OBJ = model_wrapper.Objective(expr=obj_expr, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -170,7 +170,7 @@ def test_单表达式生成指示变量(
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
-    model_wrapper.Objective(expr=v0, sense=sense)
+    OBJ = model_wrapper.Objective(expr=v0, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -211,7 +211,7 @@ def test_Piecewise(
     x_vals = np.linspace(0, 2, 2)
     y_vals = x_vals + 2
     测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
-    model_wrapper.Objective(expr=y[0], sense=sense)
+    OBJ = model_wrapper.Objective(expr=y[0], sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -247,7 +247,7 @@ def test_柴油发电(
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
-    model_wrapper.Objective(expr=obj_expr, sense="minimize")
+    OBJ = model_wrapper.Objective(expr=obj_expr, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -317,7 +317,7 @@ def test_柴油(model_wrapper: ModelWrapper, 测试柴油模型: 柴油模型, d
         测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
-    model_wrapper.Objective(expr=obj_expr, sense="minimize")
+    OBJ = model_wrapper.Objective(expr=obj_expr, sense=minimize)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -335,7 +335,7 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, lambda x: x == 500 * (10 / 100) / (50 / 100)
     )
-    model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
+    OBJ = model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
