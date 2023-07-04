@@ -335,6 +335,9 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
+import math
+
+
 @pytest.mark.parametrize(
     "windspeed, output",
     [
