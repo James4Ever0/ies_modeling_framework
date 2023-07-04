@@ -41,7 +41,11 @@ def test_convertMonthToDays():
 
 import pytest
 {% set paramStringList = []%}
-{% macro parametrizeTestHelper(testName,_params, autoRegister=true)%}
+{% macro parametrize(mParamString) %}
+    {% do paramStringList.append(mParamString) %}
+@pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
+{% endmacro%}
+{% macro parametrizeTestHelper(testName,_params, autoRegister=true, autoSense=true)%}
 {# shall you ensure no parameter is undefined.#}
     {% set isDevice = false%}
     {% if _params == "Device"%}
@@ -62,10 +66,6 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
     {% do paramStringList.clear() %}
     {# do not use "set" #}
-{% endmacro%}
-{% macro parametrize(mParamString) %}
-    {% do paramStringList.append(mParamString) %}
-@pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
 {% macro solveModel(objective, sense='sense')%}
     {# model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}}) #}
@@ -274,6 +274,7 @@ def test_电价模型():
     assert abs(mprice - expected_price) == 0
 
 {% call parametrizeTestHelper("风力发电", "Device")%}
+    {% call parametrize("sense")%}[minimize, maximize]{% endcall%}
     {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(0.5**3)),(100,100 ),(150,100), (200,100 ), (210, 0)]{% endcall%}
 {% endcall%}
     windspeed_array = [windspeed]*24

@@ -332,6 +332,7 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
+@pytest.mark.parametrize("sense", [minimize, maximize])
 @pytest.mark.parametrize(
     "windspeed, output",
     [
@@ -345,7 +346,7 @@ def test_分月电价(hour_index, expected_price, power):
         (210, 0),
     ],
 )
-def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, windspeed, output):
+def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风力发电模型, sense, windspeed, output):
     测试风力发电模型.constraints_register()
     windspeed_array = [windspeed] * 24
     # override the windspeed.
