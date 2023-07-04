@@ -267,6 +267,8 @@ def test_电价模型():
         val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
+
+{# 
 {% call parametrizeTestHelper("双向变流器", "Device")%}
     {% call parametrize("input, output")%}[]{% endcall%}
 {% endcall%}
@@ -277,6 +279,12 @@ def test_电价模型():
 {% endcall%}
     ...
 
+{% call parametrizeTestHelper("传输线", "Device")%}
+    {% call parametrize("input, output")%}[]{% endcall%}
+{% endcall%}
+    ...
+
+#}
 
 {% call parametrizeTestHelper("锂电池", "Device")%}
     {% call parametrize("input, output")%}[]{% endcall%}
