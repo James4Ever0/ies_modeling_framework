@@ -128,38 +128,18 @@ def test_{{testName}}({{",".join(paramStringList)}}):
         assert abs(value(obj_expr) - expected) <= EPS
 
 {% call parametrizeTestHelper("单表达式生成指示变量", commonDevTestParam) %}
-@pytest.mark.parametrize(
-    "v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs",
+    {% call parametrize("v0_min, v0_max, sense, expected_v0, expected_v1_b_pos, expected_v1_x_pos, expected_v1_b_neg, expected_v1_x_neg, expected_v1_x_abs")%}
     [
         (-1, 5, maximize, 5, 1, 5, 0, 0, 5),
         (-1, 5, minimize, -1, 0, 0, 1, 1, 1),
         (-2, 5, minimize, -2, 0, 0, 1, 2, 2),
-    ],
-)
-def test_单表达式生成指示变量(
-    model_wrapper: ModelWrapper,
-    测试设备模型: 设备模型,
-    v0_min,
-    v0_max,
-    sense,
-    expected_v0,
-    expected_v1_b_pos,
-    expected_v1_x_pos,
-    expected_v1_b_neg,
-    expected_v1_x_neg,
-    expected_v1_x_abs,
-):
+    ]
+    {% endcall%}
+{% endcall%}
     v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
-    obj_expr = v0
-    model_wrapper.Objective(expr=obj_expr, sense=sense)
-
-    with SolverFactory("cplex") as solver:
-        print(">>>SOLVING<<<")
-        s_results = solver.solve(model_wrapper.model, tee=True)
-        print("SOLVER RESULTS?")
-        print(s_results)
+{{solveModel('v0')}}
         assert abs(expected_v0 - value(v0)) <= EPS
         assert abs(expected_v1_b_pos - value(v1.b_pos)) <= EPS
         assert abs(expected_v1_x_neg - value(v1.x_neg)) <= EPS
