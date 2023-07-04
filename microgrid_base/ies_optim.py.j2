@@ -966,11 +966,10 @@ class {{class_name}}模型(设备模型):
         {% if psc == "设计规划" %}
             # BUG: if unbounded, then we get some error.
             {% if class_name not in ['传输线']%}
-                {% if class_name in ['锂电池']%}
-                {% elif class_name in ['']%}
-                {% set mbounds = "(self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)"%}
+                {% if class_name not in ['锂电池','光伏发电']%}
+                {% set mbounds = "bounds = (self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)"%}
                 {% else%}
-            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers, bounds = {{mbounds}}) # type: ignore
+            self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers, {{mbounds}}) # type: ignore
             """
             单位： 个
             """
