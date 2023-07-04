@@ -43,16 +43,16 @@ import pytest
 {% set paramStringList = []%}
 {% macro parametrizeTestHelper(testName,_params)%}
 {# shall you ensure no parameter is undefined.#}
+{% set paramStringList = []%}
     {% if _params == "Device"%}
         {% set _params = "model_wrapper: ModelWrapper, 测试{testName}模型: {testName}模型".format(testName=testName) %}
     {% endif%}
-{% if _params != ""%}
-    {% do paramStringList.append(_params)%}
-{% endif%}
+    {% if _params != ""%}
+        {% do paramStringList.append(_params)%}
+    {% endif%}
 {{caller()}}
 def test_{{testName}}({{",".join(paramStringList)}}):
 {# def test_{{testName}}({{join(",",paramStringList)}}): #}
-{% set paramStringList = []%}
 {% endmacro%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
