@@ -67,7 +67,8 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 
 # BUG: BigM <= 1e+8
 {# {% call parametrizeHelper("BinVarMultiplySingle")%} #}
-{% call parametrizeHelper("BinVarMultiplySingle", "model_wrapper: ModelWrapper, 测试设备模型: 设备模型")%}
+{% set commonDevTestParam ="model_wrapper: ModelWrapper, 测试设备模型: 设备模型" %}
+{% call parametrizeHelper("BinVarMultiplySingle", commonDevTestParam)%}
     {% call parametrize("v0_is_constant")%}[False, True]{% endcall%}
     {% call parametrize("v0_within, min_v0, max_v0, sense, result")%}
     [
@@ -105,27 +106,16 @@ def test_{{testName}}({{",".join(paramStringList)}}):
                 assert False, f"Wrong sense: {sense}"
         assert abs(value(v_result) - result) <= EPS
 
-
-@pytest.mark.parametrize(
-    "v0_min, v0_max, v1_min, v1_max, sense, expected, param",
+{% call parametrizeHelper("VarMultiplySingle", commonDevTestParam)%}
+    {% call parametrize("v0_min, v0_max, v1_min, v1_max, sense, expected, param")%}
     [
         (1, 5, 2, 4, minimize, 2, 0),
         (1, 5, 2, 4, maximize, 20, 0),
         (-1, 3, -2, 4, minimize, -10, -2),
         (-1, 3, -2, 4, maximize, 8, -2),
-    ],
-)
-def test_VarMultiplySingle(
-    model_wrapper: ModelWrapper,
-    测试设备模型: 设备模型,
-    v0_min,
-    v0_max,
-    v1_min,
-    v1_max,
-    sense,
-    expected,
-    param,
-):
+    ]
+    {% endcall %}
+{% endcall %}
     v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)
 
