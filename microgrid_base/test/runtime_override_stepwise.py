@@ -64,14 +64,13 @@ def overwrite_func(func, c_locals, c_globals):
     print(funcdef.body)  # no comment?
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
-    print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
+    print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
 
     changed_source = ast.dump(funcdef)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     # new_func = exec()
     # return new_func
-
 
 # c.myfunc()
 
@@ -89,7 +88,6 @@ print(c_globals)
 
 # new_func = overwrite_func(c.myfunc, c_locals, c_globals)
 # c.myfunc = MethodType(new_func, c)
-
 
 # mycode = """
 # def newfunc(): return None
