@@ -16,6 +16,8 @@ class MyClass:
         print("abc")
         print("def")
         # mycomment
+        for _ in range(20):
+            print('in range')
         assert False, "you cannot pass"
         print("hjk")
         yield "myflag"  # you may yield flag.
@@ -60,14 +62,14 @@ def overwrite_func(func, c_locals, c_globals):
     #     print(cn)
     funcdef = func_ast.body[0]
     print(funcdef.body)  # no comment?
+    # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
     print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
-    # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
 
     changed_source = ast.dump(funcdef)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
-    new_func = exec()
+    # new_func = exec()
     # return new_func
 
 
@@ -95,4 +97,4 @@ print(c_globals)
 
 # exec(mycode)
 print()
-c.inspect_class()
+# c.inspect_class()
