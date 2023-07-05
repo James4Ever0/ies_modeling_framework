@@ -1,11 +1,8 @@
-
-
+def dec(f):
+    return f
 
 class MyClass:
     val = 1
-    @staticmethod
-    def dec(f):
-        return f
 
     @dec
     def myfunc(self):
@@ -81,3 +78,10 @@ print(c_globals)
 
 # new_func = overwrite_func(c.myfunc, c_locals, c_globals)
 # c.myfunc = MethodType(new_func, c)
+
+
+mycode = """
+def newfunc(): return None
+"""
+
+newfunc = eval(mycode)
