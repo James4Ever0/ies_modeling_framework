@@ -3,7 +3,7 @@
 
 import os
 filename = os.path.basename(__file__)
-"""Stepwise source code manipulation for testing.
+__doc__ = """Stepwise source code manipulation for testing.
 
 Note:
     Some functions only works with Python 3.9 and above.
@@ -119,7 +119,8 @@ def inspect_locals_and_globals(c):
 if __name__ == "__main__":
     import docopt
     
-    arguments = docopt(__doc__, version='Naval Fate 2.0')
+    print(__doc__)
+    arguments = docopt.docopt(__doc__, version='Stepwise Test Util 1.0')
     print(arguments)
     
     if test:
