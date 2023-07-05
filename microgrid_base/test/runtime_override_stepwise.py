@@ -29,7 +29,8 @@ class MyClass:
 c = MyClass()
 
 import inspect
-import ast
+# import ast
+import ast_comments as ast
 import astor
 import re
 
@@ -57,7 +58,8 @@ def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash 
     print("SOURCE CODE CLEANED".center(70, "="))
     print(func_source_cleaned)
     print()
-    func_ast = ast.parse(func_source_cleaned, type_comments=True)
+    # func_ast = ast.parse(func_source_cleaned, type_comments=True)
+    func_ast = ast.parse(func_source_cleaned)
     print(func_ast)  # unexpected indent, if not cleaned.
     print(func_ast.body)  # [<_ast.FunctionDef object at 0x1048a1a00>]
     # for cn in ast.iter_child_nodes(func_ast):
@@ -84,6 +86,7 @@ def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash 
                 break
         if _k: # only use that keyword one time.
             # can't you preserve comments in ast?
+            # pip3 install ast-comments
             keywords.pop(_k)
     funcdef.body = new_body
     changed_source = astor.to_source(funcdef)
