@@ -2,13 +2,13 @@
 #!/usr/bin/env conda run -n base --live-stream --no-capture-output python --
 # ref: https://www.baeldung.com/linux/shebang-types
 
-import os
-filename = os.path.basename(__file__)
-__doc__ = """Stepwise source code manipulation for testing.
+# import os
+# filename = os.path.basename(__file__)
+# __doc__ = """Stepwise source code manipulation for testing.
 
-Usage:
-    -i <file>, --input <file>
-""".format(filename=filename)
+# Usage:
+#     -t
+# """.format(filename=filename)
 
 # doc = __doc__
 from pydantic import BaseModel
@@ -109,12 +109,16 @@ def inspect_locals_and_globals(c):
     c.globals = MethodType(lambda self: globals(), c)
 
 if __name__ == "__main__":
-    import docopt
+    # import docopt
     
     # print(__doc__)
-    arguments = docopt.docopt(__doc__, help=False, version='Stepwise Test Util 1.0')
-    print(arguments)
-    breakpoint()
+    # arguments = docopt.docopt(__doc__, help=False, version='Stepwise Test Util 1.0')
+    import argparse
+    argparser =  argparse.ArgumentParser()
+    argparser.add_argument('-t', '--test', action='store_true', default=False)
+    argparser.add_argument('-i', '--input', type=str)
+    # print(arguments)
+    # breakpoint()
     
     if test:
         def dec(f):
