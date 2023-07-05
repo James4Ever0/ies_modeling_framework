@@ -72,46 +72,50 @@ if sys.version_info >= (3, 9):
         print("CHANGED SOURCE".center(70, "="))
         print(changed_source)
         return changed_source, funcname
+else:
+    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords:set):
+        # implement it by calling conda.
+        ...
+
+def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
+    import inspect
+    # import ast
+    import re
     
-    def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
-        import inspect
-        # import ast
-        import re
-        
-        # get definition and return a new func.
-        # test: add "yield" after every line.
-        # func_ast = astor.code_to_ast(func)
-        # print(func_ast)
-        # deprecated?
+    # get definition and return a new func.
+    # test: add "yield" after every line.
+    # func_ast = astor.code_to_ast(func)
+    # print(func_ast)
+    # deprecated?
 
-        # what is the name of the function?
+    # what is the name of the function?
 
-        func_source = inspect.getsource(func)
-        # return new_func
-        find_def = r"^( +)def"  # not async
-        FDRegex = re.compile(find_def, flags=re.MULTILINE)
-        strip_blanks = FDRegex.findall(func_source)[0]
-        blank_count = len(strip_blanks)
-        # print("BLANK COUNT:", blank_count) # BLANK COUNT: 4
-        indent_replace = r"^ " + ("{%d}" % blank_count)
-        # print(repr(indent_replace))
-        IRRegex = re.compile(indent_replace, flags=re.MULTILINE)
-        func_source_cleaned = IRRegex.sub("", func_source)
-        print("SOURCE CODE CLEANED".center(70, "="))
-        print(func_source_cleaned)
-        print()
-        
-        changed_source = add_stepwise_lines_to_func_source(func_source_cleaned, keywords)
-        exec(changed_source, c_locals, c_globals)
-        print(locals().keys())
+    func_source = inspect.getsource(func)
+    # return new_func
+    find_def = r"^( +)def"  # not async
+    FDRegex = re.compile(find_def, flags=re.MULTILINE)
+    strip_blanks = FDRegex.findall(func_source)[0]
+    blank_count = len(strip_blanks)
+    # print("BLANK COUNT:", blank_count) # BLANK COUNT: 4
+    indent_replace = r"^ " + ("{%d}" % blank_count)
+    # print(repr(indent_replace))
+    IRRegex = re.compile(indent_replace, flags=re.MULTILINE)
+    func_source_cleaned = IRRegex.sub("", func_source)
+    print("SOURCE CODE CLEANED".center(70, "="))
+    print(func_source_cleaned)
+    print()
+    
+    changed_source, funcname = add_stepwise_lines_to_func_source(func_source_cleaned, keywords)
+    exec(changed_source, c_locals, c_globals)
+    print(locals().keys())
 
-        new_func = eval(funcname)  # not in locals.
-        # new_func = locals()[funcname]
-        return new_func
+    new_func = eval(funcname)  # not in locals.
+    # new_func = locals()[funcname]
+    return new_func
 
 from types import MethodType
 
-def inspect_locals_and_globals(c):
+def add_locals_and_globals_inspectors(c):
     c.locals = MethodType(lambda self: locals(), c)
     c.globals = MethodType(lambda self: globals(), c)
 
@@ -159,7 +163,7 @@ if __name__ == "__main__":
 
         c = MyClass()
 
-        inspect_locals_and_globals(c)
+        add_locals_and_globals_inspectors(c)
         c_locals = c.locals()
         c_globals = c.globals()
 
