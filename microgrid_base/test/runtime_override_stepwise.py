@@ -80,6 +80,7 @@ def overwrite_func(func, c_locals, c_globals): # nameclash warning!
     print(changed_source)
     exec(changed_source, c_locals, c_globals)
     print(locals().keys())
+
     new_func = eval(funcname) # not in locals.
     # new_func = locals()[funcname]
     return new_func
@@ -111,3 +112,5 @@ c.myfunc = MethodType(new_func, c)
 exec_result = c.myfunc()
 print(type(exec_result))
 # c.inspect_class()
+for flag in exec_result:
+    print("RECEVICED FLAG:", flag)
