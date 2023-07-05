@@ -35,6 +35,10 @@ import ast_comments as ast
 import astor
 import re
 
+import astunparse
+# no comment support!
+# unparse_func = astor.to_source
+unparse_func = astunparse.unparse
 
 def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
     # get definition and return a new func.
@@ -77,7 +81,7 @@ def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"})
     new_body = []
     for item in funcdef.body:
         new_body.append(item)
-        item_code = astor.to_source(item)
+        item_code = unparse_func(item)
         _k = None
         for keyword in keywords:
             if keyword in item_code:
@@ -90,7 +94,7 @@ def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"})
             # pip3 install ast-comments
             keywords.remove(_k)
     funcdef.body = new_body
-    changed_source = astor.to_source(funcdef) # cannot convert comment back to source.
+    changed_source = unparse_func(funcdef) # cannot convert comment back to source.
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     exec(changed_source, c_locals, c_globals)
