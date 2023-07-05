@@ -54,4 +54,5 @@ def overwrite_func(func):
 
 new_func = overwrite_func(c.myfunc)
 c.myfunc = new_func
-c.
+c.__setattr__("__local__", lambda: locals())
+c.__setattr__("__global__", lambda: globals())
