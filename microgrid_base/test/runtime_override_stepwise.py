@@ -26,8 +26,10 @@ from pydantic import BaseModel
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 
 import sys
+
 if sys.version_info >= (3, 9):
-    def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
+    def add_stepwise_lines_to_func_source(func_source, keywords:set): ...
+    def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
         import inspect
         # import ast
         import ast_comments as ast
