@@ -1,6 +1,7 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
+{% macro (cn)%}{% endmacro%}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 {# consider to type check all variable operations #}
@@ -950,6 +951,7 @@ import numpy as np
 import math
 
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
+{% set SO.class_name = class_name %}
 
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
