@@ -1209,7 +1209,7 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
                 {# self.mw.Constraint(self.原电接口.x[0] == self.EPS) #}
-                {# override suspicious constraints with init values.#}
+                {# override suspicious constraints with init values. #}
                 self.原电接口.x[0].set_value(self.EPS)
             elif self.设备信息.循环边界条件 == '日间连接':
                 self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
