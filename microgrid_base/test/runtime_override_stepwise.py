@@ -131,8 +131,11 @@ else:
             with open(input_path, "w+") as f:
                 content = data.json()
                 f.write(content)
+            commandline = "conda run -n base - {filename}".format(filename = os.path.basename(__file__))
+            os.system(commandline)
             processed_data = SourceCodeExchange.parse_file(output_path)
-            changed_source, funcname = 
+            changed_source, funcname = processed_data.source_code, processed_data.funcname
+            return changed_source, funcname
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
