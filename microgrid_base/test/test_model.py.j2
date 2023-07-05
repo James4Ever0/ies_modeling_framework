@@ -89,6 +89,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 
 # BUG: BigM <= 1e+8
 {# {% call parametrizeTestHelper("BinVarMultiplySingle")%} #}
+{% set TDM = %}
 {% set commonDevTestParam ="model_wrapper: ModelWrapper, 测试设备模型: 设备模型" %}
 {% call parametrizeTestHelper("BinVarMultiplySingle", commonDevTestParam, autoSense=false)%}
     {% call parametrize("v0_is_constant")%}[False, True]{% endcall%}
@@ -203,13 +204,13 @@ import numpy as np
     {% call parametrize("diesel_rate, fee_rate_per_hour")%}[(1, 2), (3, 6)]{%endcall%}
 {%endcall%}
     {# 测试柴油模型.constraints_register() #}
-    测试柴油模型.RangeConstraintMulti(
-        测试柴油模型.燃料接口, expression=lambda x: x == diesel_rate
+    {{SO.TDF}}.RangeConstraintMulti(
+        {{SO.TDF}}.燃料接口, expression=lambda x: x == diesel_rate
     )  # unit: m^3
     {# obj_expr = 测试柴油模型.总成本年化 #}
-    obj_expr = 测试柴油模型.燃料接口[0]
+    obj_expr = {{SO.TDF}}.燃料接口[0]
 {{ solveModel("obj_expr")}}
-        val_fee = value(测试柴油模型.总成本年化 / 1000) / 8760
+        val_fee = value({{SO.TDF}}.总成本年化 / 1000) / 8760
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
 {% call parametrizeTestHelper("柴油发电", "Device", autoRegister=false,autoSense=false) %}
@@ -221,16 +222,16 @@ import numpy as np
     ]
     {% endcall %}
 {% endcall %}
-    测试柴油发电模型.燃料热值 = 1
-    测试柴油发电模型.constraints_register()
-    测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
-    obj_expr = 测试柴油发电模型.总成本年化
+    {{SO.TDF}}.燃料热值 = 1
+    {{SO.TDF}}.constraints_register()
+    {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电输出, expression=lambda x: x == power_output)
+    obj_expr = {{SO.TDF}}.总成本年化
     print("年化:", obj_expr)
 {{solveModel("obj_expr", sense='minimize')}}
-        print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
-        print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
-        assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
+        print("ELECTRICITY:", value({{SO.TDF}}.原电输出[0]), expected_val)
+        print("DIESEL:", value({{SO.TDF}}.柴油输入[0]), expected_diesel)
+        assert abs(value({{SO.TDF}}.原电输出[0]) - expected_val) <= EPS
+        assert abs(value({{SO.TDF}}.柴油输入[0]) - expected_diesel) <= 0.0015
         # breakpoint()
 
 def test_电价模型():
@@ -286,12 +287,12 @@ def test_电价模型():
 {% endcall%}
     illumination_array = [illumination]*24
 
-    测试光伏发电模型.计算参数.光照 = illumination_array
-    测试光伏发电模型.constraints_register()
-{{ solveModel("测试光伏发电模型.电接口[0]+测试光伏发电模型.电接口[2]", sense='maximize') }}
-        devCount = 测试光伏发电模型.MaxDeviceCount
-        assert abs(value(测试光伏发电模型.电接口[0]) - output*devCount)< EPS
-        assert abs(value(测试光伏发电模型.电接口[2]) - output*devCount)< EPS
+    {{SO.TDF}}.计算参数.光照 = illumination_array
+    {{SO.TDF}}.constraints_register()
+{{ solveModel("{tdf}.电接口[0]+{tdf}.电接口[2]".format(tdf=SO.TDF), sense='maximize') }}
+        devCount = {{SO.TDF}}.MaxDeviceCount
+        assert abs(value({{SO.TDF}}.电接口[0]) - output*devCount)< EPS
+        assert abs(value({{SO.TDF}}.电接口[2]) - output*devCount)< EPS
     
 {% call parametrizeTestHelper("风力发电", "Device", autoSense=false, autoRegister=false)%}
     {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(((50-10)/90)**3)),(100,100 ),(150,100), (200,100), (210, 0)]{% endcall%}
@@ -301,7 +302,7 @@ def test_电价模型():
     {{SO.TDF}}.计算参数.风速 = windspeed_array
     {{SO.TDF}}.constraints_register()
 {# {{ solveModel("测试风力发电模型.总成本年化", sense='minimize') }} #}
-{{ solveModel("{}.电接口[0]+测试风力发电模型.电接口[2]", sense='maximize') }}
+{{ solveModel("{tdf}.电接口[0]+{tdf}.电接口[2]".format(tdf=SO.TDF), sense='maximize') }}
         devCount = {{SO.TDF}}.设备信息.DeviceCount
         assert abs(value({{SO.TDF}}.DeviceCount) - devCount)< EPS
         assert abs(value({{SO.TDF}}.单台发电功率[0]) - output)< EPS
