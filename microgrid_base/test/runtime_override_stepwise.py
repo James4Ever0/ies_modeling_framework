@@ -17,19 +17,20 @@ from pydantic import BaseModel
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 
-import inspect
-# import ast
-import ast_comments as ast
-# import astor
-import re
-
-# import astunparse
-# no comment support!
-# unparse_func = astor.to_source
-# unparse_func = astunparse.unparse
-unparse_func = ast.unparse
 
 def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
+    
+    import inspect
+    # import ast
+    import ast_comments as ast
+    import re
+
+    # import astunparse
+    # no comment support!
+    # unparse_func = astor.to_source
+    # unparse_func = astunparse.unparse
+    unparse_func = ast.unparse
+    
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -93,51 +94,11 @@ def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"})
     # new_func = locals()[funcname]
     return new_func
 
-
-# c.myfunc()
-
 from types import MethodType
 
 def inspect_locals_and_globals(c):
     c.locals = MethodType(lambda self: locals(), c)
     c.globals = MethodType(lambda self: globals(), c)
-# c.__setattr__("__locals__", lambda self: locals())
-# c.__setattr__("__globals__", lambda self: globals())
-inspect_locals_and_globals(c)
-c_locals = c.locals()
-c_globals = c.globals()
-
-print(c_locals.keys())
-print(c_globals.keys())
-
-new_func = overwrite_func(c.myfunc, c_locals, c_globals)
-c.myfunc = MethodType(new_func, c)
-
-# mycode = """
-# def newfunc(): return None
-# """
-
-# # exec(mycode)
-# print()
-# expect a generator.
-exec_result = c.myfunc()
-print(type(exec_result))
-# c.inspect_class()
-# for flag in exec_result:
-#     print("RECEVICED FLAG:", flag)
-# AssertionError: you cannot pass
-
-def myiterator():
-    yield 2
-    return 1 # stopped iteration.
-    # if you want to "return", just don't insert any "yield" statements.
-
-a = myiterator()  # generator.
-print(a)
-print()
-
-for it in a:
-    print(it)
 
 if __name__ == "__main__":
     if test:
@@ -170,3 +131,32 @@ if __name__ == "__main__":
                 return "abc"
 
         c = MyClass()
+
+        inspect_locals_and_globals(c)
+        c_locals = c.locals()
+        c_globals = c.globals()
+
+        print(c_locals.keys())
+        print(c_globals.keys())
+
+        new_func = overwrite_func(c.myfunc, c_locals, c_globals)
+        c.myfunc = MethodType(new_func, c)
+
+        exec_result = c.myfunc()
+        print(type(exec_result))
+        # c.inspect_class()
+        # for flag in exec_result:
+        #     print("RECEVICED FLAG:", flag)
+        # AssertionError: you cannot pass
+
+        def myiterator():
+            yield 2
+            return 1 # stopped iteration.
+            # if you want to "return", just don't insert any "yield" statements.
+
+        a = myiterator()  # generator.
+        print(a)
+        print()
+
+        for it in a:
+            print(it)
