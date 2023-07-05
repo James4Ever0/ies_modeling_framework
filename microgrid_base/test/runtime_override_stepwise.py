@@ -95,10 +95,13 @@ else:
     def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
         # implement it by calling conda.
         # use temporary directory.
-        data = SourceCodeExchange(
-            source_code=func_source_cleaned, keywords=keywords, processed=False
-        )
-        data.output
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir_name = tmpdir.name
+            data = SourceCodeExchange(
+                source_code=func_source_cleaned, keywords=keywords, processed=False
+            )
+            data.output
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
