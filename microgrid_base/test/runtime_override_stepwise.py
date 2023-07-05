@@ -83,7 +83,8 @@ def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash 
                 new_body.append(stepwise_expr)
                 _k = keyword
                 break
-        if _k:
+        if _k: # only use that keyword one time.
+            # can't you preserve comments in ast?
             keywords.pop(_k)
     funcdef.body = new_body
     changed_source = astor.to_source(funcdef)
