@@ -25,82 +25,82 @@ from pydantic import BaseModel
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 
+import sys
+if sys.version_info >= (3, 9):
+    def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
+        import inspect
+        # import ast
+        import ast_comments as ast
+        import re
 
-def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
-    
-    import inspect
-    # import ast
-    import ast_comments as ast
-    import re
+        # import astunparse
+        # no comment support!
+        # unparse_func = astor.to_source
+        # unparse_func = astunparse.unparse
+        unparse_func = ast.unparse
+        
+        # get definition and return a new func.
+        # test: add "yield" after every line.
+        # func_ast = astor.code_to_ast(func)
+        # print(func_ast)
+        # deprecated?
 
-    # import astunparse
-    # no comment support!
-    # unparse_func = astor.to_source
-    # unparse_func = astunparse.unparse
-    unparse_func = ast.unparse
-    
-    # get definition and return a new func.
-    # test: add "yield" after every line.
-    # func_ast = astor.code_to_ast(func)
-    # print(func_ast)
-    # deprecated?
+        # what is the name of the function?
 
-    # what is the name of the function?
+        func_source = inspect.getsource(func)
+        # return new_func
+        find_def = r"^( +)def"  # not async
+        FDRegex = re.compile(find_def, flags=re.MULTILINE)
+        strip_blanks = FDRegex.findall(func_source)[0]
+        blank_count = len(strip_blanks)
+        # print("BLANK COUNT:", blank_count) # BLANK COUNT: 4
+        indent_replace = r"^ " + ("{%d}" % blank_count)
+        # print(repr(indent_replace))
+        IRRegex = re.compile(indent_replace, flags=re.MULTILINE)
+        func_source_cleaned = IRRegex.sub("", func_source)
+        print("SOURCE CODE CLEANED".center(70, "="))
+        print(func_source_cleaned)
+        print()
+        # func_ast = ast.parse(func_source_cleaned, type_comments=True)
+        func_ast = ast.parse(func_source_cleaned)
+        print(func_ast)  # unexpected indent, if not cleaned.
+        print(func_ast.body)  # [<_ast.FunctionDef object at 0x1048a1a00>]
+        # for cn in ast.iter_child_nodes(func_ast):
+        #     print(cn)
+        funcdef = func_ast.body[0]
+        funcname = funcdef.name
+        print(funcdef.body)  # no comment?
+        # breakpoint()
+        # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
+        print(dir(funcdef))
+        print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
 
-    func_source = inspect.getsource(func)
-    # return new_func
-    find_def = r"^( +)def"  # not async
-    FDRegex = re.compile(find_def, flags=re.MULTILINE)
-    strip_blanks = FDRegex.findall(func_source)[0]
-    blank_count = len(strip_blanks)
-    # print("BLANK COUNT:", blank_count) # BLANK COUNT: 4
-    indent_replace = r"^ " + ("{%d}" % blank_count)
-    # print(repr(indent_replace))
-    IRRegex = re.compile(indent_replace, flags=re.MULTILINE)
-    func_source_cleaned = IRRegex.sub("", func_source)
-    print("SOURCE CODE CLEANED".center(70, "="))
-    print(func_source_cleaned)
-    print()
-    # func_ast = ast.parse(func_source_cleaned, type_comments=True)
-    func_ast = ast.parse(func_source_cleaned)
-    print(func_ast)  # unexpected indent, if not cleaned.
-    print(func_ast.body)  # [<_ast.FunctionDef object at 0x1048a1a00>]
-    # for cn in ast.iter_child_nodes(func_ast):
-    #     print(cn)
-    funcdef = func_ast.body[0]
-    funcname = funcdef.name
-    print(funcdef.body)  # no comment?
-    # breakpoint()
-    # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
-    print(dir(funcdef))
-    print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
+        # changed_source = ast.dump(funcdef)
+        new_body = []
+        for item in funcdef.body:
+            new_body.append(item)
+            item_code = unparse_func(item)
+            _k = None
+            for keyword in keywords:
+                if keyword in item_code:
+                    stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
+                    new_body.append(stepwise_expr)
+                    _k = keyword
+                    break
+            if _k: # only use that keyword one time.
+                # can't you preserve comments in ast?
+                # pip3 install ast-comments
+                keywords.remove(_k)
+        funcdef.body = new_body
+        changed_source = unparse_func(funcdef) # cannot convert comment back to source.
+        print("CHANGED SOURCE".center(70, "="))
+        print(changed_source)
+        exec(changed_source, c_locals, c_globals)
+        print(locals().keys())
 
-    # changed_source = ast.dump(funcdef)
-    new_body = []
-    for item in funcdef.body:
-        new_body.append(item)
-        item_code = unparse_func(item)
-        _k = None
-        for keyword in keywords:
-            if keyword in item_code:
-                stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
-                new_body.append(stepwise_expr)
-                _k = keyword
-                break
-        if _k: # only use that keyword one time.
-            # can't you preserve comments in ast?
-            # pip3 install ast-comments
-            keywords.remove(_k)
-    funcdef.body = new_body
-    changed_source = unparse_func(funcdef) # cannot convert comment back to source.
-    print("CHANGED SOURCE".center(70, "="))
-    print(changed_source)
-    exec(changed_source, c_locals, c_globals)
-    print(locals().keys())
-
-    new_func = eval(funcname)  # not in locals.
-    # new_func = locals()[funcname]
-    return new_func
+        new_func = eval(funcname)  # not in locals.
+        # new_func = locals()[funcname]
+        return new_func
 
 from types import MethodType
 
