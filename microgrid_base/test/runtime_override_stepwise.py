@@ -4,6 +4,7 @@ class MyClass:
     def myfunc(self):
         print("abc")
         print("def")
+        # mycomment
         assert False, "you cannot pass"
         print("hjk")
 
@@ -33,7 +34,12 @@ def overwrite_func(func):
     print()
     func_ast = ast.parse(func_source_cleaned)
     print(func_ast) # unexpected indent, if not cleaned.
-    ast.iter_child_nodes()
+    print(func_ast.body) # [<_ast.FunctionDef object at 0x1048a1a00>]
+    # for cn in ast.iter_child_nodes(func_ast):
+    #     print(cn)
+    funcdef = func_ast.body[0]
+    print(funcdef.body)
+    # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
 
 
 # c.myfunc()
