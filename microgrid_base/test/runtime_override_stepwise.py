@@ -60,3 +60,4 @@ c_locals = c.__locals__()
 c_globals = c.__globals__()
 
 print(c_locals)
+print(c_globals)
