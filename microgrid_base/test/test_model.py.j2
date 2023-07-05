@@ -43,6 +43,7 @@ import pytest
 
 {# store shared objects. mainly "testDeviceFixture"#}
 {% set SO = namespace(TDF = "") %}
+{% set CTDF = "测试设备模型"%}
 {% set paramStringList = []%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
@@ -89,8 +90,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 
 # BUG: BigM <= 1e+8
 {# {% call parametrizeTestHelper("BinVarMultiplySingle")%} #}
-{% set TDM = %}
-{% set commonDevTestParam ="model_wrapper: ModelWrapper, 测试设备模型: 设备模型" %}
+{% set commonDevTestParam ="model_wrapper: ModelWrapper, {ctdf}: 设备模型".format(ctdf=CTDF) %}
 {% call parametrizeTestHelper("BinVarMultiplySingle", commonDevTestParam, autoSense=false)%}
     {% call parametrize("v0_is_constant")%}[False, True]{% endcall%}
     {% call parametrize("v0_within, min_v0, max_v0, sense, result")%}
@@ -109,11 +109,11 @@ def test_{{testName}}({{",".join(paramStringList)}}):
     if v0_is_constant:
         v0 = v0_init
     else:
-        v0 = 测试设备模型.单变量(
+        v0 = {{CTDF}}.单变量(
             "v0", within=v0_within, initialize=v0_init, bounds=(min_v0, max_v0)
         )
-    v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
-    v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
+    v1 = {{CTDF}}.单变量("v1", within=v1_within, initialize=v1_init)
+    v_result = {{CTDF}}.BinVarMultiplySingle(v1, v0)
 {{solveModel('v_result')}}
         print(f"v0: {value(v0)}")
         print(f"v1: {value(v1)}")
@@ -139,13 +139,13 @@ def test_{{testName}}({{",".join(paramStringList)}}):
     ]
     {% endcall %}
 {% endcall %}
-    v0 = 测试设备模型.变量列表("v0", bounds=(v0_min, v0_max))
+    v0 = {{CTDF}}.变量列表("v0", bounds=(v0_min, v0_max))
     v0_dict = dict(var=v0, max=v0_max, min=v0_min)
 
-    v1 = 测试设备模型.变量列表("v1", bounds=(v1_min, v1_max))
+    v1 = {{CTDF}}.变量列表("v1", bounds=(v1_min, v1_max))
     v1_dict = dict(var=v1, max=v1_max, min=v1_min)
 
-    v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
+    v0_v1 = {{CTDF}}.Multiply(v0_dict, v1_dict, "v0_v1")
     obj_expr = v0_v1[0] + param * (v0[0] + v1[0])
 {{solveModel('obj_expr')}}
         assert abs(value(obj_expr) - expected) <= EPS
@@ -159,8 +159,8 @@ def test_{{testName}}({{",".join(paramStringList)}}):
     ]
     {% endcall%}
 {% endcall%}
-    v0 = 测试设备模型.单变量("v0", bounds=(v0_min, v0_max))
-    v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
+    v0 = {{CTDF}}.单变量("v0", bounds=(v0_min, v0_max))
+    v1 = {{CTDF}}.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
 {{solveModel('v0')}}
         assert abs(expected_v0 - value(v0)) <= EPS
@@ -187,11 +187,11 @@ import numpy as np
     ]
     {% endcall %}
 {% endcall %}
-    x = [测试设备模型.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
-    y = [测试设备模型.单变量("y")]
+    x = [{{CTDF}}.单变量("x", initialize=x_init, bounds=(x_init, x_init))]
+    y = [{{CTDF}}.单变量("y")]
     x_vals = np.linspace(0, 2, 2)
     y_vals = x_vals + 2
-    测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
+    {{CTDF}}.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
     obj_expr = y[0]
 {{solveModel("obj_expr")}}
         assert abs(value(obj_expr) - y_expected) <= EPS
