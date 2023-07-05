@@ -7,6 +7,7 @@ class MyClass:
         # mycomment
         assert False, "you cannot pass"
         print("hjk")
+        yield "myflag" # you may yield flag.
         return "abc"
 
 
@@ -14,6 +15,7 @@ c = MyClass()
 
 import inspect
 import ast
+import astor
 import re
 
 def overwrite_func(func):
