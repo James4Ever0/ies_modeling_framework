@@ -32,13 +32,14 @@ c = MyClass()
 import inspect
 # import ast
 import ast_comments as ast
-import astor
+# import astor
 import re
 
-import astunparse
+# import astunparse
 # no comment support!
 # unparse_func = astor.to_source
 # unparse_func = astunparse.unparse
+unparse_func = ast.unparse
 
 def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
     # get definition and return a new func.
