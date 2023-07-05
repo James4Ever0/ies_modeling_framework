@@ -97,12 +97,14 @@ print(c_locals)
 print(c_globals)
 
 new_func = overwrite_func(c.myfunc, c_locals, c_globals)
-# c.myfunc = MethodType(new_func, c)
+c.myfunc = MethodType(new_func, c)
 
 # mycode = """
 # def newfunc(): return None
 # """
 
-# exec(mycode)
-print()
+# # exec(mycode)
+# print()
+# expect a generator.
+exec_result = c.myfunc()
 # c.inspect_class()
