@@ -52,9 +52,9 @@ def overwrite_func(func):
 
 # c.myfunc()
 
-new_func = overwrite_func(c.myfunc)
-c.myfunc = new_func
+# new_func = overwrite_func(c.myfunc)
+# c.__setattr__("new_func", new_func)
 c.__setattr__("__locals__", lambda self: locals())
 c.__setattr__("__globals__", lambda self: globals())
 c_locals = c.__locals__()
-c_locals = c.__locals__()
+c_globals = c.__globals__()
