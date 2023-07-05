@@ -69,10 +69,12 @@ def overwrite_func(func, c_locals, c_globals):
     print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
 
     # changed_source = ast.dump(funcdef)
-    changed_source = astor.to_source(funcdef)
     new_body = []
     for item in funcdef.body:
         new_body.append(item)
+        stepwise_expr = ast.parse("yield '{}'".format('myflag')).body[0]
+        new_body.append(stepwise_expr)
+    changed_source = astor.to_source(funcdef)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     # new_func = exec()
