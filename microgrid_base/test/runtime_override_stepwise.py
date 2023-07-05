@@ -31,16 +31,19 @@ except:
 
 import os
 
+
 class ExchangePaths:
     input = "input.json"
     output = "output.json"
+
     @staticmethod
-    def getInputPath(basedir:str):
+    def getInputPath(basedir: str):
         return os.path.join(basedir, ExchangePaths.input)
 
     @staticmethod
-    def getOutputPath(basedir:str):
+    def getOutputPath(basedir: str):
         return os.path.join(basedir, ExchangePaths.output)
+
 
 class SourceCodeExchange(BaseModel):
     source_code: str
@@ -55,10 +58,10 @@ class SourceCodeExchange(BaseModel):
         else:
             assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
         return v
-    
-    @validator('funcname')
+
+    @validator("funcname")
     def validate_funcname(cls, v, info):
-        if info.context.get('processed'):
+        if info.context.get("processed"):
             assert v != "", "Invalid funcname: {} (Shall not be empty)".format(repr(v))
         else:
             assert v == "", "Invalid funcname: {} (Shall be empty)".format(repr(v))
@@ -121,20 +124,26 @@ else:
         # use temporary directory.
         import tempfile
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir_name = tmpdir.name
+        with tempfile.TemporaryDirectory() as tmpdir: # str!
+            # tmpdir_name = tmpdir.name
             data = SourceCodeExchange(
                 source_code=func_source_cleaned, keywords=keywords, processed=False
             )
-            input_path =ExchangePaths.getInputPath(tmpdir_name)
-            output_path = ExchangePaths.getOutputPath(tmpdir_name)
+            input_path = ExchangePaths.getInputPath(tmpdir)
+            output_path = ExchangePaths.getOutputPath(tmpdir)
             with open(input_path, "w+") as f:
                 content = data.json()
                 f.write(content)
-            commandline = "conda run -n base - {filename}".format(filename = os.path.basename(__file__))
+            commandline = "conda run -n base --no-capture-output --live-stream python {filename} -i {input_path}".format(
+                filename=os.path.basename(__file__), input_path=input_path
+            )
+            print("EXCUTING: {}".format(commandline))
             os.system(commandline)
             processed_data = SourceCodeExchange.parse_file(output_path)
-            changed_source, funcname = processed_data.source_code, processed_data.funcname
+            changed_source, funcname = (
+                processed_data.source_code,
+                processed_data.funcname,
+            )
             return changed_source, funcname
 
 
