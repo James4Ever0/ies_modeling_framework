@@ -24,8 +24,18 @@ from pydantic import BaseModel
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-
-class SourcecodeProtocl
+from pydantic import validator
+class SourceCodeExchange(BaseModel):
+    source_code:str
+    keywords:set = set()
+    processed:bool
+    
+    @validator('keywords')
+    def validate_keywords(cls, v, params):
+        if params.processed:
+            keywords == set()
+        else:
+            keywords != set()
 
 import sys
 
