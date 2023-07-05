@@ -3,6 +3,12 @@ def dec(f):
 
 class MyClass:
     val = 1
+    
+    @staticmethod
+    def newfunc(): return 'a'
+    
+    def inspect_class():
+        
 
     @dec
     def myfunc(self):
