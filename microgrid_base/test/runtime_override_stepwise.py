@@ -24,15 +24,15 @@ from pydantic import BaseModel
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-from pydantic import validator
+from pydantic import field_validator, FieldValidationInfo
 class SourceCodeExchange(BaseModel):
     source_code:str
     keywords:set = set()
     processed:bool
     
-    @validator('keywords')
-    def validate_keywords(cls, v, info):
-        if info.processed:
+    @field_validator('keywords')
+    def validate_keywords(cls, v, info: FieldValidationInfo):
+        if info.context.get('processed'):
             assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
         else:
             assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
