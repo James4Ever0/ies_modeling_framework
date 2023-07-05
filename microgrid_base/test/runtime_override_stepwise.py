@@ -116,11 +116,12 @@ if __name__ == "__main__":
     import argparse
     argparser =  argparse.ArgumentParser()
     argparser.add_argument('-t', '--test', action='store_true', default=False)
-    argparser.add_argument('-i', '--input', type=str)
+    argparser.add_argument('-i', '--input', type=str, default=None)
     # print(arguments)
     # breakpoint()
+    arguments = argparser.parse_args()
     
-    if test:
+    if arguments.test:
         def dec(f):
             return f
 
@@ -179,3 +180,7 @@ if __name__ == "__main__":
 
         for it in a:
             print(it)
+    elif arguments.input:
+        print("INPUT FILE PATH:", arguments.input)
+    else:
+        argparser.print_help()
