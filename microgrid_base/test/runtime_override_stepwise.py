@@ -1,3 +1,4 @@
+# shall not use shebang.
 #!/usr/bin/env conda run -n base --live-stream --no-capture-output python --
 # ref: https://www.baeldung.com/linux/shebang-types
 
@@ -7,7 +8,6 @@ __doc__ = """Stepwise source code manipulation for testing.
 
 Usage:
     -i <file>, --input <file>
-    -t, --test
 """.format(filename=filename)
 
 # doc = __doc__
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     import docopt
     
     # print(__doc__)
-    arguments = docopt.docopt(__doc__, version='Stepwise Test Util 1.0')
+    arguments = docopt.docopt(__doc__, help=False, version='Stepwise Test Util 1.0')
     print(arguments)
     breakpoint()
     
