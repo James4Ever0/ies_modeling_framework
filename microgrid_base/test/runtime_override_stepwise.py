@@ -1,13 +1,18 @@
+import os
+filename = os.path.basename(__file__)
 """Stepwise source code manipulation for testing.
 
 Note:
     Some functions only works with Python 3.9 and above.
 
 Usage:
-    runtime_override_stepwise.py -f <file>
+    {filename} (-i | --input) <file>
+    {filename} (-t | test)
 
+Options:
+    -i --input <file>  Input file
 
-"""
+""".format(filename=filename)
 
 doc = __doc__
 from pydantic import BaseModel
