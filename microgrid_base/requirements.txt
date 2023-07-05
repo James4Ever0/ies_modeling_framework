@@ -17,4 +17,5 @@ pandas==1.2.4
 sympy
 progressbar2
 pytest
-returns
+# returns
+ast-comments
