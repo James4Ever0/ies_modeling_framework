@@ -3,6 +3,7 @@ def dec(f):
 
 
 class MyClass:
+    val = 1
     @dec
     def myfunc(self):
         print("abc")
@@ -22,7 +23,7 @@ import astor
 import re
 
 
-def overwrite_func(func):
+def overwrite_func(func, c_locals, c_globals):
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -57,15 +58,18 @@ def overwrite_func(func):
 
 # c.myfunc()
 
-# new_func = overwrite_func(c.myfunc)
-# c.__setattr__("new_func", new_func)
 from types import MethodType
 
 c.locals = MethodType(lambda self: locals(), c)
+c.globals = MethodType(lambda self: globals(), c)
 # c.__setattr__("__locals__", lambda self: locals())
 # c.__setattr__("__globals__", lambda self: globals())
 c_locals = c.locals()
-# c_globals = c.__globals__()
+c_globals = c.globals()
 
 print(c_locals)
-# print(c_globals)
+print(c_globals)
+
+
+# new_func = overwrite_func(c.myfunc, c_locals, c_globals)
+# c.__setattr__("new_func", new_func)
