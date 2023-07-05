@@ -20,7 +20,8 @@ class MyClass:
             print('in range')
         assert False, "you cannot pass"
         print("hjk")
-        yield "myflag"  # you may yield flag.
+        # every comment shall be ignored.
+        # yield "myflag"  # you may yield flag.
         return "abc"
 
 
@@ -30,7 +31,6 @@ import inspect
 import ast
 import astor
 import re
-
 
 def overwrite_func(func, c_locals, c_globals):
     # get definition and return a new func.
