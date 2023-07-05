@@ -1,4 +1,5 @@
-#!/Users/jamesbrown/opt/miniconda3/bin/conda run 
+#!/Users/jamesbrown/opt/miniconda3/bin/conda run -n base --live-stream --no-capture-output python
+
 import os
 filename = os.path.basename(__file__)
 """Stepwise source code manipulation for testing.
