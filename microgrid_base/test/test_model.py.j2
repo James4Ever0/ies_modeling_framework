@@ -341,6 +341,7 @@ def test_电价模型():
 
 {# infeasible! just why? #}
 {# if making no "more" constraints we will solve it. #}
+{# you need to parametrize your test. to prevent further issues, use signature based "yield" insertion strategy. #}
 {% call parametrizeTestHelper("锂电池", "Device", autoRegister=false)%}
 {# {% call parametrizeTestHelper("锂电池", "Device")%} #}
     {% call parametrize("device_count")%}[500/20]{% endcall%}
