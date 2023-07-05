@@ -25,6 +25,11 @@ from pydantic import BaseModel
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 from pydantic import field_validator
+import os
+
+class ExchangePaths:
+    input = "input.json"
+    output = "output.json"
 
 
 class SourceCodeExchange(BaseModel):
@@ -96,12 +101,15 @@ else:
         # implement it by calling conda.
         # use temporary directory.
         import tempfile
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_name = tmpdir.name
             data = SourceCodeExchange(
                 source_code=func_source_cleaned, keywords=keywords, processed=False
             )
-            data.output
+            input_path =
+            with open(
+                data.json()
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
@@ -228,7 +236,7 @@ if __name__ == "__main__":
 
         for it in a:
             print(it)
-    elif input_path:= arguments.input:
+    elif input_path := arguments.input:
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
         add_stepwise_lines_to_func_source()
