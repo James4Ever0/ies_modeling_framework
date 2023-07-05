@@ -28,19 +28,55 @@ from pydantic import BaseModel
 import sys
 
 if sys.version_info >= (3, 9):
-    def add_stepwise_lines_to_func_source(func_source, keywords:set): ...
-    
-    def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
-        import inspect
-        # import ast
+    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords:set):
         import ast_comments as ast
-        import re
-
+        
         # import astunparse
         # no comment support!
         # unparse_func = astor.to_source
         # unparse_func = astunparse.unparse
         unparse_func = ast.unparse
+        
+        # func_ast = ast.parse(func_source_cleaned, type_comments=True)
+        func_ast = ast.parse(func_source_cleaned)
+        print(func_ast)  # unexpected indent, if not cleaned.
+        print(func_ast.body)  # [<_ast.FunctionDef object at 0x1048a1a00>]
+        # for cn in ast.iter_child_nodes(func_ast):
+        #     print(cn)
+        funcdef = func_ast.body[0]
+        funcname = funcdef.name
+        print(funcdef.body)  # no comment?
+        # breakpoint()
+        # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
+        print(dir(funcdef))
+        print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
+
+        # changed_source = ast.dump(funcdef)
+        new_body = []
+        for item in funcdef.body:
+            new_body.append(item)
+            item_code = unparse_func(item)
+            _k = None
+            for keyword in keywords:
+                if keyword in item_code:
+                    stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
+                    new_body.append(stepwise_expr)
+                    _k = keyword
+                    break
+            if _k: # only use that keyword one time.
+                # can't you preserve comments in ast?
+                # pip3 install ast-comments
+                keywords.remove(_k)
+        funcdef.body = new_body
+        changed_source = unparse_func(funcdef) # cannot convert comment back to source.
+        print("CHANGED SOURCE".center(70, "="))
+        print(changed_source)
+        return changed_source, funcname
+    
+    def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
+        import inspect
+        # import ast
+        import re
         
         # get definition and return a new func.
         # test: add "yield" after every line.
@@ -65,7 +101,7 @@ if sys.version_info >= (3, 9):
         print(func_source_cleaned)
         print()
         
-        changed_source = add_stepwise_lines_to_func_source(func_source_cleaned)
+        changed_source = add_stepwise_lines_to_func_source(func_source_cleaned, keywords)
         exec(changed_source, c_locals, c_globals)
         print(locals().keys())
 
