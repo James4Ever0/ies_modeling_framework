@@ -1,9 +1,12 @@
-def dec(f):
-    return f
+
 
 
 class MyClass:
     val = 1
+    @staticmethod
+    def dec(f):
+        return f
+
     @dec
     def myfunc(self):
         print("abc")
@@ -54,6 +57,12 @@ def overwrite_func(func, c_locals, c_globals):
     print(dir(funcdef))
     print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
+
+    changed_source = ast.dump(funcdef)
+    print("CHANGED SOURCE".center(70, "="))
+    print(changed_source)
+    new_func = exec()
+    # return new_func
 
 
 # c.myfunc()
