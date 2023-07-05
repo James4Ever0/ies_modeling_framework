@@ -94,6 +94,7 @@ else:
 
     def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
         # implement it by calling conda.
+        # use temporary directory.
         data = SourceCodeExchange(
             source_code=func_source_cleaned, keywords=keywords, processed=False
         )
@@ -225,9 +226,8 @@ if __name__ == "__main__":
         for it in a:
             print(it)
     elif input_path:= arguments.input:
-        
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
-        add_stepwise_lines_to_func_source
+        add_stepwise_lines_to_func_source()
     else:
         argparser.print_help()
