@@ -9,8 +9,8 @@ Note:
     Some functions only works with Python 3.9 and above.
 
 Usage:
-    (-i | --input) <file>
-    (-t | test)
+    {filename} -i <file>, --input <file>
+    {filename} -t, --test
 
 Options:
     -i --input <file>     Input json file for parsing, 
