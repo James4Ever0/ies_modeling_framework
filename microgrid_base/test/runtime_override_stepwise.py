@@ -13,14 +13,18 @@ class MyClass:
 
 c = MyClass()
 
-import inspect
-import ast
+# import inspect
+# import ast
 import astor
-import re
+# import re
 
 def overwrite_func(func):
     # get definition and return a new func.
     # test: add "yield" after every line.
+    func_ast = astor.code_to_ast(func)
+    print(func_ast)
+    # deprecated?
+    """ 
     func_source = inspect.getsource(func)
     # return new_func
     find_def = r"^( +)def"
@@ -45,7 +49,7 @@ def overwrite_func(func):
     print(dir(funcdef))
     print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
-
+    """
 
 # c.myfunc()
 
