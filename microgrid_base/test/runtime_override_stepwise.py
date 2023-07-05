@@ -25,6 +25,8 @@ from pydantic import BaseModel
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 
+class SourcecodeProtocl
+
 import sys
 
 if sys.version_info >= (3, 9):
@@ -115,7 +117,7 @@ def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warnin
 
 from types import MethodType
 
-def add_locals_and_globals_inspectors(c):
+def add_locals_and_globals_inspectors_to_instance(c):
     c.locals = MethodType(lambda self: locals(), c)
     c.globals = MethodType(lambda self: globals(), c)
 
@@ -163,7 +165,7 @@ if __name__ == "__main__":
 
         c = MyClass()
 
-        add_locals_and_globals_inspectors(c)
+        add_locals_and_globals_inspectors_to_instance(c)
         c_locals = c.locals()
         c_globals = c.globals()
 
@@ -195,5 +197,7 @@ if __name__ == "__main__":
             print(it)
     elif arguments.input:
         print("INPUT FILE PATH:", arguments.input)
+        data = 
+        add_stepwise_lines_to_func_source
     else:
         argparser.print_help()
