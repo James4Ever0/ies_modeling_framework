@@ -58,3 +58,5 @@ c.__setattr__("__locals__", lambda self: locals())
 c.__setattr__("__globals__", lambda self: globals())
 c_locals = c.__locals__()
 c_globals = c.__globals__()
+
+print(c_locals)
