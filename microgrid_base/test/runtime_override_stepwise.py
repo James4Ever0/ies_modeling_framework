@@ -1,3 +1,6 @@
+# it is a small function which can be run as commandline tool.
+# just invoke conda while testing. do not try to run the whole environment in python3.9
+
 def dec(f):
     return f
 
