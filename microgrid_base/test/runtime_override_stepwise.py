@@ -34,6 +34,13 @@ import os
 class ExchangePaths:
     input = "input.json"
     output = "output.json"
+    @staticmethod
+    def getInputPath(basedir:str):
+        return os.path.join(basedir, ExchangePaths.input)
+
+    @staticmethod
+    def getOutputPath(basedir:str):
+        return os.path.join(basedir, ExchangePaths.output)
 
 class SourceCodeExchange(BaseModel):
     source_code: str
@@ -110,11 +117,12 @@ else:
             data = SourceCodeExchange(
                 source_code=func_source_cleaned, keywords=keywords, processed=False
             )
-            input_path = os.path.join(tmpdir_name, ExchangePaths.input)
+            input_path =ExchangePaths.getInputPath(tmpdir_name)
+            output_path = ExchangePaths.getOutputPath(tmpdir_name)
             with open(input_path, "w+") as f:
                 content = data.json()
                 f.write(content)
-            output_path = os.path.join(tmpdir)
+            processed_data = SourceCodeExchange.process(input_filename
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
