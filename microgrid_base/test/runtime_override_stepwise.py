@@ -29,6 +29,8 @@ def overwrite_func(func, c_locals, c_globals):
     # func_ast = astor.code_to_ast(func)
     # print(func_ast)
     # deprecated?
+    
+    # what is the name of the function?
 
     func_source = inspect.getsource(func)
     # return new_func
@@ -84,4 +86,4 @@ mycode = """
 def newfunc(): return None
 """
 
-newfunc = eval(mycode)
+exec(mycode)
