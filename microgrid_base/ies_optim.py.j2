@@ -1,7 +1,7 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
-{% macro stepwise_flag(class_name, flag_name)%}{% if SO.class_name == class_name%}{{' STEPWISE FLAG [{}] '.format(flag_name).center(30, "#")}}{% endif %}{% endmacro%}
+{% macro stepwise_flag(class_name, flag_name)%}{% if SO.class_name == class_name%}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#")}}{% endif %}{% endmacro%}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 {# consider to type check all variable operations #}
