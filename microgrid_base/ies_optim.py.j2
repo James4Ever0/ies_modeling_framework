@@ -685,11 +685,11 @@ class 设备模型:
         一个极大数
         """
         self.EPS = 1e-4
-        {# usually you want to use it initialization, not constraints! #}
+        {# usually you want to use it in initialization, not constraints! #}
         """
         一个极小数
         """
-        {% for e0 in financial_param_names%}
+        {% for e0 in financial_param_names %}
         self.{{e0}} = 0
         {% endfor %}
         self.年化率 = 1
