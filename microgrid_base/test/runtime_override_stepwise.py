@@ -13,7 +13,8 @@
 # doc = __doc__
 from pydantic import BaseModel
 from collections import namedtuple
- = namedtuple("",["changed_source","funcname"] )
+
+FuncSourceWithName = namedtuple("FuncSourceWithName",["changed_source","funcname"] )
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
 
@@ -117,7 +118,7 @@ if sys.version_info >= (3, 9):
         changed_source = unparse_func(funcdef)  # cannot convert comment back to source.
         print("CHANGED SOURCE".center(70, "="))
         print(changed_source)
-        return changed_source, funcname
+        return FuncSource(changed_source, funcname)
 
 else:
 
@@ -142,12 +143,10 @@ else:
             print("EXCUTING: {}".format(commandline))
             os.system(commandline)
             processed_data = SourceCodeExchange.parse_file(output_path)
-            changed_source, funcname = (
-                processed_data.source_code,
-                processed_data.funcname,
+            return FuncSourceWithName(
+                changed_source = processed_data.source_code,
+                funcname = processed_data.funcname,
             )
-            return changed_source, funcname
-
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
     import inspect
