@@ -8,8 +8,8 @@ class MyClass:
     def newfunc(): return 'a'
     
     def inspect_class(self):
-        print(locals())
-        print(globals())
+        print(locals().keys())
+        print(globals().keys())
 
     @dec
     def myfunc(self):
@@ -79,7 +79,9 @@ def overwrite_func(func, c_locals, c_globals): # nameclash warning!
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     exec(changed_source, c_locals, c_globals)
-    new_func = locals()[funcname]
+    print(locals().keys())
+    new_func = eval(funcname) # not in locals.
+    # new_func = locals()[funcname]
     return new_func
 
 # c.myfunc()
@@ -93,8 +95,8 @@ c.globals = MethodType(lambda self: globals(), c)
 c_locals = c.locals()
 c_globals = c.globals()
 
-print(c_locals)
-print(c_globals)
+print(c_locals.keys())
+print(c_globals.keys())
 
 new_func = overwrite_func(c.myfunc, c_locals, c_globals)
 c.myfunc = MethodType(new_func, c)
@@ -107,4 +109,5 @@ c.myfunc = MethodType(new_func, c)
 # print()
 # expect a generator.
 exec_result = c.myfunc()
+print(type(exec_result))
 # c.inspect_class()
