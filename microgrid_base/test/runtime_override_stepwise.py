@@ -1,4 +1,6 @@
+def dec(f): return f
 class MyClass:
+    @dec
     def myfunc(self):
         print("abc")
         print("def")
@@ -29,8 +31,9 @@ def overwrite_func(func):
     print("SOURCE CODE CLEANED".center(70, "="))
     print(func_source_cleaned)
     print()
-    # func_ast = ast.parse(func_source_cleaned)
-    # print(func_ast) # unexpected indent, if not cleaned.
+    func_ast = ast.parse(func_source_cleaned)
+    print(func_ast) # unexpected indent, if not cleaned.
+    func_ast.
 
 
 # c.myfunc()
