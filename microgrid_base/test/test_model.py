@@ -44,6 +44,7 @@ def test_convertMonthToDays():
 
 import pytest
 
+
 # BUG: BigM <= 1e+8
 @pytest.mark.parametrize("v0_is_constant", [False, True])
 @pytest.mark.parametrize(
@@ -335,9 +336,6 @@ def test_分月电价(hour_index, expected_price, power):
     assert abs(mprice - expected_price) == 0
 
 
-import math
-
-
 @pytest.mark.parametrize("illumination, output", [(5, 49), (10, 98), (20, 98)])
 def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光伏发电模型, illumination, output):
     illumination_array = [illumination] * 24
@@ -451,7 +449,6 @@ def test_传输线(
 @pytest.mark.parametrize("device_count", [500 / 20])
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, sense):
-    测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=lambda x: x <= 0
     )  # means charging the battery.
