@@ -2,6 +2,9 @@
 
 """
 
+doc = __doc__
+from pydantic import BaseModel
+
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
 
@@ -95,10 +98,12 @@ def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"})
 
 from types import MethodType
 
-c.locals = MethodType(lambda self: locals(), c)
-c.globals = MethodType(lambda self: globals(), c)
+def inspect_locals_and_globals(c):
+    c.locals = MethodType(lambda self: locals(), c)
+    c.globals = MethodType(lambda self: globals(), c)
 # c.__setattr__("__locals__", lambda self: locals())
 # c.__setattr__("__globals__", lambda self: globals())
+inspect_locals_and_globals(c)
 c_locals = c.locals()
 c_globals = c.globals()
 
@@ -135,4 +140,33 @@ for it in a:
     print(it)
 
 if __name__ == "__main__":
-    import docopt
+    if test:
+        def dec(f):
+            return f
+
+        class MyClass:
+            val = 1
+
+            @staticmethod
+            def newfunc():
+                return "a"
+
+            def inspect_class(self):
+                print(locals().keys())
+                print(globals().keys())
+
+            @dec
+            def myfunc(self):
+                print("abc")
+                print("def")
+                # mycomment
+                # mycomment_has_keyword
+                for _ in range(20):
+                    print("in range")
+                assert False, "you cannot pass"
+                print("hjk")
+                # every comment shall be ignored.
+                # yield "myflag"  # you may yield flag.
+                return "abc"
+
+        c = MyClass()
