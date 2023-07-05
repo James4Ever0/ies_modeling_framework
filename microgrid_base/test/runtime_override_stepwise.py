@@ -8,9 +8,12 @@
 # https://github.com/python-rope/rope
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
+# https://libcst.readthedocs.io/en/stable/why_libcst.html
 
 def dec(f):
     return f
+
+from pydantic import BaseModel
 
 class MyClass:
     val = 1
