@@ -1,12 +1,14 @@
 def dec(f):
     return f
 
+
 class MyClass:
     val = 1
-    
+
     @staticmethod
-    def newfunc(): return 'a'
-    
+    def newfunc():
+        return "a"
+
     def inspect_class(self):
         print(locals().keys())
         print(globals().keys())
@@ -17,7 +19,7 @@ class MyClass:
         print("def")
         # mycomment
         for _ in range(20):
-            print('in range')
+            print("in range")
         assert False, "you cannot pass"
         print("hjk")
         # every comment shall be ignored.
@@ -32,18 +34,19 @@ import ast
 import astor
 import re
 
-def overwrite_func(func, c_locals, c_globals): # nameclash warning!
+
+def overwrite_func(func, c_locals, c_globals):  # nameclash warning!
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
     # print(func_ast)
     # deprecated?
-    
+
     # what is the name of the function?
 
     func_source = inspect.getsource(func)
     # return new_func
-    find_def = r"^( +)def" # not async
+    find_def = r"^( +)def"  # not async
     FDRegex = re.compile(find_def, flags=re.MULTILINE)
     strip_blanks = FDRegex.findall(func_source)[0]
     blank_count = len(strip_blanks)
@@ -62,17 +65,17 @@ def overwrite_func(func, c_locals, c_globals): # nameclash warning!
     #     print(cn)
     funcdef = func_ast.body[0]
     funcname = funcdef.name
-    print(funcdef.body) # no comment?
+    print(funcdef.body)  # no comment?
     # breakpoint()
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
-    print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
+    print(funcdef.decorator_list)  # [<_ast.Name object at 0x103081b50>]
 
     # changed_source = ast.dump(funcdef)
     new_body = []
     for item in funcdef.body:
         new_body.append(item)
-        stepwise_expr = ast.parse("yield '{}'".format('myflag')).body[0]
+        stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
         new_body.append(stepwise_expr)
     funcdef.body = new_body
     changed_source = astor.to_source(funcdef)
@@ -81,9 +84,10 @@ def overwrite_func(func, c_locals, c_globals): # nameclash warning!
     exec(changed_source, c_locals, c_globals)
     print(locals().keys())
 
-    new_func = eval(funcname) # not in locals.
+    new_func = eval(funcname)  # not in locals.
     # new_func = locals()[funcname]
     return new_func
+
 
 # c.myfunc()
 
@@ -112,5 +116,19 @@ c.myfunc = MethodType(new_func, c)
 exec_result = c.myfunc()
 print(type(exec_result))
 # c.inspect_class()
-for flag in exec_result:
-    print("RECEVICED FLAG:", flag)
+# for flag in exec_result:
+#     print("RECEVICED FLAG:", flag)
+# AssertionError: you cannot pass
+
+
+def myiterator():
+    yield 2
+    return 1
+
+
+a = myiterator()  # generator.
+print(a)
+print()
+
+for it in a:
+    print(it)
