@@ -26,10 +26,11 @@ FuncSourceWithName = namedtuple("FuncSourceWithName", ["changed_source", "funcna
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-try:
-    from pydantic import field_validator as validator
-except:
-    from pydantic import validator
+# try:
+#     from pydantic import field_validator as validator
+# except:
+#     from pydantic import validator
+from pydantic import validator
 
 import os
 
