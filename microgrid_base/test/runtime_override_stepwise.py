@@ -7,8 +7,9 @@ class MyClass:
     @staticmethod
     def newfunc(): return 'a'
     
-    def inspect_class():
-        
+    def inspect_class(self):
+        print(locals())
+        print(globals())
 
     @dec
     def myfunc(self):
@@ -88,8 +89,10 @@ print(c_globals)
 # c.myfunc = MethodType(new_func, c)
 
 
-mycode = """
-def newfunc(): return None
-"""
+# mycode = """
+# def newfunc(): return None
+# """
 
-exec(mycode)
+# exec(mycode)
+print()
+c.inspect_class()
