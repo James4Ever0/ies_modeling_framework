@@ -38,7 +38,7 @@ import re
 import astunparse
 # no comment support!
 # unparse_func = astor.to_source
-unparse_func = astunparse.unparse
+# unparse_func = astunparse.unparse
 
 def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
     # get definition and return a new func.
