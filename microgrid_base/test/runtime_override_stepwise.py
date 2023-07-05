@@ -275,6 +275,8 @@ if __name__ == "__main__":
     elif input_path := arguments.input:
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
-        changed_source, funcname = add_stepwise_lines_to_func_source()
+        changed_source, funcname = add_stepwise_lines_to_func_source(func_source_cleaned= data.source_code, keywords=data.keywords)
+        with open(ExchangePaths.getOutputPath(os.path.dirname(input_path)),
+        SourceCodeExchange
     else:
         argparser.print_help()
