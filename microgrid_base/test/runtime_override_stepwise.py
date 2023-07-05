@@ -9,12 +9,12 @@ Note:
     Some functions only works with Python 3.9 and above.
 
 Usage:
-    --input=<file>
+    (-i | --input) <file>
     (-t | test)
 
 Options:
-    --input=<file>     Input json file for parsing, 
-    -t --test          Run test cases.
+    -i --input <file>     Input json file for parsing, 
+    -t --test             Run test cases.
 
 """.format(filename=filename)
 
