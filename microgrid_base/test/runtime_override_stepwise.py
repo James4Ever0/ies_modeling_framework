@@ -61,7 +61,8 @@ def overwrite_func(func, c_locals, c_globals):
     # for cn in ast.iter_child_nodes(func_ast):
     #     print(cn)
     funcdef = func_ast.body[0]
-    print(funcdef.body)  # no comment?
+    funcname = funcdef.name
+    print(funcdef.body) # no comment?
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
     print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
