@@ -21,8 +21,10 @@ def overwrite_func(func):
     print()
     # return new_func
     func_ast = ast.parse(func_source)
-    find_def = r"^\_+"
-    func_source.
+    find_def = r"^(\_+)def"
+    fdregex = re.compile(find_def, flags=re.MULTILINE)
+    strip_blanks = fdregex.findall(func_source)[0]
+    
     print(func_ast) # unexpected indent.
 
 
