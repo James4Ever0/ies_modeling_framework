@@ -24,7 +24,8 @@ def overwrite_func(func):
     find_def = r"^(\_+)def"
     fdregex = re.compile(find_def, flags=re.MULTILINE)
     strip_blanks = fdregex.findall(func_source)[0]
-    
+    blank_count = len(strip_blanks)
+    r"\_{}"
     print(func_ast) # unexpected indent.
 
 
