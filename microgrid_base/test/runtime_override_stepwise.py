@@ -17,11 +17,13 @@ def overwrite_func(func):
     # test: add "yield" after every line.
     func_source = inspect.getsource(func)
     # return new_func
-    find_def = r"^([]]+)def"
+    find_def = r"^( +)def"
     FDRegex = re.compile(find_def, flags=re.MULTILINE)
     strip_blanks = FDRegex.findall(func_source)[0]
     blank_count = len(strip_blanks)
-    indent_replace = r"^\_"+("{%d}" % blank_count)
+    # print("BLANK COUNT:", blank_count) # BLANK COUNT: 4
+    indent_replace = r"^ "+("{%d}" % blank_count)
+    # print(repr(indent_replace))
     IRRegex = re.compile(indent_replace, flags=re.MULTILINE)
     func_source_cleaned = IRRegex.sub("", func_source)
     print("SOURCE CODE CLEANED".center(70, "="))
