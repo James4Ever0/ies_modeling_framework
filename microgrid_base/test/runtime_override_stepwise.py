@@ -1,3 +1,7 @@
+"""
+
+"""
+
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
 
@@ -9,39 +13,6 @@
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-
-def dec(f):
-    return f
-
-from pydantic import BaseModel
-
-class MyClass:
-    val = 1
-
-    @staticmethod
-    def newfunc():
-        return "a"
-
-    def inspect_class(self):
-        print(locals().keys())
-        print(globals().keys())
-
-    @dec
-    def myfunc(self):
-        print("abc")
-        print("def")
-        # mycomment
-        # mycomment_has_keyword
-        for _ in range(20):
-            print("in range")
-        assert False, "you cannot pass"
-        print("hjk")
-        # every comment shall be ignored.
-        # yield "myflag"  # you may yield flag.
-        return "abc"
-
-
-c = MyClass()
 
 import inspect
 # import ast
@@ -162,3 +133,6 @@ print()
 
 for it in a:
     print(it)
+
+if __name__ == "__main__":
+    import docopt
