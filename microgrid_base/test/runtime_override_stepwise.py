@@ -137,7 +137,7 @@ else:
             with open(input_path, "w+") as f:
                 content = data.json()
                 f.write(content)
-            commandline = "conda run -n base --no-capture-output --live-stream python {filename} -i {input_path}".format(
+            commandline = "conda run -n base --no-capture-output --live-stream python {filename} -i '{input_path}'".format(
                 filename=os.path.basename(__file__), input_path=input_path
             )
             print("EXCUTING: {}".format(commandline))
@@ -275,8 +275,11 @@ if __name__ == "__main__":
     elif input_path := arguments.input:
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
-        changed_source, funcname = add_stepwise_lines_to_func_source(func_source_cleaned= data.source_code, keywords=data.keywords)
-        with open(ExchangePaths.getOutputPath(os.path.dirname(input_path)),
-        SourceCodeExchange
+        output = add_stepwise_lines_to_func_source(func_source_cleaned= data.source_code, keywords=data.keywords)
+        with open(ExchangePaths.getOutputPath(os.path.dirname(input_path)),'w+') as f:
+            output_data = SourceCodeExchange(source_code = output.changed_source, processed=True, funcname=output.funcname)
+            content = output_data.json()
+            f.write(content)
     else:
+sys.flags.utf8_mode
         argparser.print_help()
