@@ -32,7 +32,7 @@ import ast
 import astor
 import re
 
-def overwrite_func(func, c_locals, c_globals):
+def overwrite_func(func, c_locals, c_globals): # nameclash warning!
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -78,8 +78,9 @@ def overwrite_func(func, c_locals, c_globals):
     changed_source = astor.to_source(funcdef)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
-    # new_func = exec()
-    # return new_func
+    exec(changed_source, c_locals, c_globals)
+    new_func = locals()[funcname]
+    return new_func
 
 # c.myfunc()
 
