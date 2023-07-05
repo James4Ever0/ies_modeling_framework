@@ -70,6 +70,5 @@ c_globals = c.globals()
 print(c_locals)
 print(c_globals)
 
-
 # new_func = overwrite_func(c.myfunc, c_locals, c_globals)
-# c.__setattr__("new_func", new_func)
+# c.myfunc = MethodType(new_func, c)
