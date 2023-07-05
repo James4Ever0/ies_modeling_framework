@@ -43,7 +43,7 @@ def overwrite_func(func, c_locals, c_globals):
 
     func_source = inspect.getsource(func)
     # return new_func
-    find_def = r"^( +)def"
+    find_def = r"^( +)def" # not async
     FDRegex = re.compile(find_def, flags=re.MULTILINE)
     strip_blanks = FDRegex.findall(func_source)[0]
     blank_count = len(strip_blanks)
@@ -63,6 +63,7 @@ def overwrite_func(func, c_locals, c_globals):
     funcdef = func_ast.body[0]
     funcname = funcdef.name
     print(funcdef.body) # no comment?
+    breakpoint()
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
     print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
