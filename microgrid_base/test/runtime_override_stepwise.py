@@ -1,3 +1,4 @@
+#!/Users/jamesbrown/opt/miniconda3/bin/conda run 
 import os
 filename = os.path.basename(__file__)
 """Stepwise source code manipulation for testing.
@@ -10,7 +11,8 @@ Usage:
     {filename} (-t | test)
 
 Options:
-    -i --input <file>  Input file
+    -i --input <file>  Input json file for parsing, 
+    -t --test          Run test cases.
 
 """.format(filename=filename)
 
