@@ -31,11 +31,12 @@ class SourceCodeExchange(BaseModel):
     processed:bool
     
     @validator('keywords')
-    def validate_keywords(cls, v, params):
-        if params.processed:
-            keywords == set()
+    def validate_keywords(cls, v, info):
+        if info.processed:
+            assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
         else:
-            keywords != set()
+            assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
+        return v
 
 import sys
 
