@@ -25,31 +25,35 @@ from pydantic import BaseModel
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
 from pydantic import field_validator
+
+
 class SourceCodeExchange(BaseModel):
-    source_code:str
-    keywords:set = set()
-    processed:bool
-    
-    @field_validator('keywords')
+    source_code: str
+    keywords: set = set()
+    processed: bool
+
+    @field_validator("keywords")
     def validate_keywords(cls, v, info):
-        if info.context.get('processed'):
+        if info.context.get("processed"):
             assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
         else:
             assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
         return v
 
+
 import sys
 
 if sys.version_info >= (3, 9):
-    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords:set):
+
+    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
         import ast_comments as ast
-        
+
         # import astunparse
         # no comment support!
         # unparse_func = astor.to_source
         # unparse_func = astunparse.unparse
         unparse_func = ast.unparse
-        
+
         # func_ast = ast.parse(func_source_cleaned, type_comments=True)
         func_ast = ast.parse(func_source_cleaned)
         print(func_ast)  # unexpected indent, if not cleaned.
@@ -76,26 +80,32 @@ if sys.version_info >= (3, 9):
                     new_body.append(stepwise_expr)
                     _k = keyword
                     break
-            if _k: # only use that keyword one time.
+            if _k:  # only use that keyword one time.
                 # can't you preserve comments in ast?
                 # pip3 install ast-comments
                 keywords.remove(_k)
         funcdef.body = new_body
-        changed_source = unparse_func(funcdef) # cannot convert comment back to source.
+        changed_source = unparse_func(funcdef)  # cannot convert comment back to source.
         print("CHANGED SOURCE".center(70, "="))
         print(changed_source)
         return changed_source, funcname
+
 else:
-    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords:set):
+
+    def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
         # implement it by calling conda.
-        data = SourceCodeExchange(source_code = func_source_cleaned,keywords=keywords, processed = False )
+        data = SourceCodeExchange(
+            source_code=func_source_cleaned, keywords=keywords, processed=False
+        )
         data.output
 
-def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
+
+def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
     import inspect
+
     # import ast
     import re
-    
+
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -118,8 +128,10 @@ def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warnin
     print("SOURCE CODE CLEANED".center(70, "="))
     print(func_source_cleaned)
     print()
-    
-    changed_source, funcname = add_stepwise_lines_to_func_source(func_source_cleaned, keywords)
+
+    changed_source, funcname = add_stepwise_lines_to_func_source(
+        func_source_cleaned, keywords
+    )
     exec(changed_source, c_locals, c_globals)
     print(locals().keys())
 
@@ -127,26 +139,31 @@ def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warnin
     # new_func = locals()[funcname]
     return new_func
 
+
 from types import MethodType
+
 
 def add_locals_and_globals_inspectors_to_instance(c):
     c.locals = MethodType(lambda self: locals(), c)
     c.globals = MethodType(lambda self: globals(), c)
 
+
 if __name__ == "__main__":
     # import docopt
-    
+
     # print(__doc__)
     # arguments = docopt.docopt(__doc__, help=False, version='Stepwise Test Util 1.0')
     import argparse
-    argparser =  argparse.ArgumentParser()
-    argparser.add_argument('-t', '--test', action='store_true', default=False)
-    argparser.add_argument('-i', '--input', type=str, default=None)
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("-t", "--test", action="store_true", default=False)
+    argparser.add_argument("-i", "--input", type=str, default=None)
     # print(arguments)
     # breakpoint()
     arguments = argparser.parse_args()
-    
+
     if arguments.test:
+
         def dec(f):
             return f
 
@@ -183,8 +200,8 @@ if __name__ == "__main__":
 
         print(c_locals.keys())
         print(c_globals.keys())
-        
-        keywords = {'def', "has_keyword"}
+
+        keywords = {"def", "has_keyword"}
 
         new_func = overwrite_func(c.myfunc, c_locals, c_globals, keywords)
         c.myfunc = MethodType(new_func, c)
@@ -198,7 +215,7 @@ if __name__ == "__main__":
 
         def myiterator():
             yield 2
-            return 1 # stopped iteration.
+            return 1  # stopped iteration.
             # if you want to "return", just don't insert any "yield" statements.
 
         a = myiterator()  # generator.
@@ -207,9 +224,10 @@ if __name__ == "__main__":
 
         for it in a:
             print(it)
-    elif arguments.input:
-        print("INPUT FILE PATH:", arguments.input)
-        data = 
+    elif input_path:= arguments.input:
+        
+        print("INPUT FILE PATH:", input_path)
+        data = SourceCodeExchange.parse_file(input_path)
         add_stepwise_lines_to_func_source
     else:
         argparser.print_help()
