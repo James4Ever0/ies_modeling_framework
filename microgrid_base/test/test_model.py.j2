@@ -40,6 +40,9 @@ def test_convertMonthToDays():
     assert convertMonthToDays(11) == sum(month_days[:11])
 
 import pytest
+
+{# store shared objects.#}
+{% namespace %}
 {% set paramStringList = []%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
