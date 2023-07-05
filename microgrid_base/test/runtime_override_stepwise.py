@@ -24,14 +24,14 @@ from pydantic import BaseModel
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-from pydantic import field_validator, FieldValidationInfo
+from pydantic import field_validator
 class SourceCodeExchange(BaseModel):
     source_code:str
     keywords:set = set()
     processed:bool
     
     @field_validator('keywords')
-    def validate_keywords(cls, v, info: FieldValidationInfo):
+    def validate_keywords(cls, v, info):
         if info.context.get('processed'):
             assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
         else:
@@ -88,7 +88,8 @@ if sys.version_info >= (3, 9):
 else:
     def add_stepwise_lines_to_func_source(func_source_cleaned, keywords:set):
         # implement it by calling conda.
-        ...
+        data = SourceCodeExchange(source_code = func_source_cleaned,keywords=keywords, processed = False )
+        data.output
 
 def overwrite_func(func, c_locals, c_globals, keywords:set):  # nameclash warning!
     import inspect
