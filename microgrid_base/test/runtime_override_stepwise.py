@@ -9,7 +9,7 @@ Note:
     Some functions only works with Python 3.9 and above.
 
 Usage:
-    {filename} -i <file>, --input <file>
+    {filename} -i=<file>, --input=<file>
     {filename} -t, --test
 
 Options:
@@ -122,6 +122,7 @@ if __name__ == "__main__":
     # print(__doc__)
     arguments = docopt.docopt(__doc__, version='Stepwise Test Util 1.0')
     print(arguments)
+    breakpoint()
     
     if test:
         def dec(f):
