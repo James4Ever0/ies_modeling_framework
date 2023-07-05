@@ -1,6 +1,5 @@
 #!/usr/bin/env conda run -n base --live-stream --no-capture-output python
-
-# ref: https://www.baeldung.com/linux/shebang-types#:~:text=The%20shebang%20line%20has%20the%20following%20syntax%3A%20%23%21%2Fpath%2Fto%2Finterpreter,shebang%20sequence%20is%20optional%3A%20%23%21%20%2Fpath%2Fto%2Finterpreter%20arg1%20arg2
+# ref: https://www.baeldung.com/linux/shebang-types
 
 import os
 filename = os.path.basename(__file__)
@@ -19,7 +18,7 @@ Options:
 
 """.format(filename=filename)
 
-doc = __doc__
+# doc = __doc__
 from pydantic import BaseModel
 
 # it is a small function which can be run as commandline tool.
@@ -119,6 +118,10 @@ def inspect_locals_and_globals(c):
 
 if __name__ == "__main__":
     import docopt
+    
+    arguments = docopt(__doc__, version='Naval Fate 2.0')
+    print(arguments)
+    
     if test:
         def dec(f):
             return f
