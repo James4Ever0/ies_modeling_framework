@@ -1,21 +1,13 @@
-#!/usr/bin/env conda run -n base --live-stream --no-capture-output python
+#!/usr/bin/env conda run -n base --live-stream --no-capture-output python --
 # ref: https://www.baeldung.com/linux/shebang-types
 
 import os
 filename = os.path.basename(__file__)
 __doc__ = """Stepwise source code manipulation for testing.
 
-Note:
-    Some functions only works with Python 3.9 and above.
-
 Usage:
     -i <file>, --input <file>
     -t, --test
-
-Options:
-    -i --input <file>     Input json file for parsing, 
-    -t --test             Run test cases.
-
 """.format(filename=filename)
 
 # doc = __doc__
