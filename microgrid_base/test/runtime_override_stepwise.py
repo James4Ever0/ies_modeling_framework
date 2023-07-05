@@ -35,7 +35,7 @@ import astor
 import re
 
 
-def overwrite_func(func, c_locals, c_globals):  # nameclash warning!
+def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash warning!
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -74,6 +74,10 @@ def overwrite_func(func, c_locals, c_globals):  # nameclash warning!
     # changed_source = ast.dump(funcdef)
     new_body = []
     for item in funcdef.body:
+        item_code = astor.to_source(item)
+        for keyword in keywords:
+            if keyword in item_code:
+                break
         new_body.append(item)
         stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
         new_body.append(stepwise_expr)
