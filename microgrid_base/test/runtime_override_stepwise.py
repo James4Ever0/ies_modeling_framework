@@ -1,7 +1,11 @@
-"""Stepwise source code manipulation.
+"""Stepwise source code manipulation for testing.
 
 Note:
-    The commandline tool only works 
+    Some functions only works with Python 3.9 and above.
+
+Usage:
+    runtime_override_stepwise.py -f <file>
+
 
 """
 
