@@ -41,8 +41,8 @@ def test_convertMonthToDays():
 
 import pytest
 
-{# store shared objects.#}
-{% namespace %}
+{# store shared objects. mainly "testDeviceFixture"#}
+{% set sharedObjects = namespace(testDeviceFixture = "") %}
 {% set paramStringList = []%}
 {% macro parametrize(mParamString) %}
     {% do paramStringList.append(mParamString) %}
@@ -54,6 +54,7 @@ import pytest
     {% if _params == "Device"%}
         {% set isDevice = true%}
         {% set _params = "model_wrapper: ModelWrapper, 测试{testName}模型: {testName}模型".format(testName=testName) %}
+        {% set sharedObjects.testDeviceFixture = ""%}
     {% endif%}
     {% if _params != ""%}
         {% do paramStringList.append(_params)%}
