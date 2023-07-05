@@ -38,7 +38,8 @@ def overwrite_func(func, c_locals, c_globals):
     # func_ast = astor.code_to_ast(func)
     # print(func_ast)
     # deprecated?
-    ast.parse("yield '{}'".format('myflag'))
+    ast.expr()
+    stepwise_expr = ast.parse("yield '{}'".format('myflag')).body[0]
     
     # what is the name of the function?
 
