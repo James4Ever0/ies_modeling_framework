@@ -9,11 +9,11 @@ Note:
     Some functions only works with Python 3.9 and above.
 
 Usage:
-    {filename} (-i | --input) <file>
-    {filename} (-t | test)
+    --input=<file>
+    (-t | test)
 
 Options:
-    -i --input <file>  Input json file for parsing, 
+    --input=<file>     Input json file for parsing, 
     -t --test          Run test cases.
 
 """.format(filename=filename)
@@ -119,7 +119,7 @@ def inspect_locals_and_globals(c):
 if __name__ == "__main__":
     import docopt
     
-    print(__doc__)
+    # print(__doc__)
     arguments = docopt.docopt(__doc__, version='Stepwise Test Util 1.0')
     print(arguments)
     
