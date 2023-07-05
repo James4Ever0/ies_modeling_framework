@@ -36,7 +36,7 @@ import astor
 import re
 
 
-def overwrite_func(func, c_locals, c_globals, keywords = set()'def', "has_keyword"]):  # nameclash warning!
+def overwrite_func(func, c_locals, c_globals, keywords = {'def', "has_keyword"}):  # nameclash warning!
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
@@ -88,9 +88,9 @@ def overwrite_func(func, c_locals, c_globals, keywords = set()'def', "has_keywor
         if _k: # only use that keyword one time.
             # can't you preserve comments in ast?
             # pip3 install ast-comments
-            keywords.pop(_k)
+            keywords.remove(_k)
     funcdef.body = new_body
-    changed_source = astor.to_source(funcdef)
+    changed_source = astor.to_source(funcdef) # cannot convert comment back to source.
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     exec(changed_source, c_locals, c_globals)
