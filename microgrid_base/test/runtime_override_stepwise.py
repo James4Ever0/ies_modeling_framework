@@ -33,7 +33,7 @@ def overwrite_func(func):
     print()
     func_ast = ast.parse(func_source_cleaned)
     print(func_ast) # unexpected indent, if not cleaned.
-    func_ast.
+    ast.iter_child_nodes()
 
 
 # c.myfunc()
