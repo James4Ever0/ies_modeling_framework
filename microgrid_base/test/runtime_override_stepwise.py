@@ -12,6 +12,7 @@
 
 # doc = __doc__
 from pydantic import BaseModel
+from typing import NamedTuple
 
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
@@ -43,6 +44,7 @@ class ExchangePaths:
     @staticmethod
     def getOutputPath(basedir: str):
         return os.path.join(basedir, ExchangePaths.output)
+
 
 
 class SourceCodeExchange(BaseModel):
@@ -274,6 +276,6 @@ if __name__ == "__main__":
     elif input_path := arguments.input:
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
-        add_stepwise_lines_to_func_source()
+        changed_source, funcname = add_stepwise_lines_to_func_source()
     else:
         argparser.print_help()
