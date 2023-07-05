@@ -7,6 +7,7 @@ class MyClass:
         # mycomment
         assert False, "you cannot pass"
         print("hjk")
+        return "abc"
 
 
 c = MyClass()
@@ -32,13 +33,15 @@ def overwrite_func(func):
     print("SOURCE CODE CLEANED".center(70, "="))
     print(func_source_cleaned)
     print()
-    func_ast = ast.parse(func_source_cleaned)
+    func_ast = ast.parse(func_source_cleaned, type_comments=True)
     print(func_ast) # unexpected indent, if not cleaned.
     print(func_ast.body) # [<_ast.FunctionDef object at 0x1048a1a00>]
     # for cn in ast.iter_child_nodes(func_ast):
     #     print(cn)
     funcdef = func_ast.body[0]
-    print(funcdef.body)
+    print(funcdef.body) # no comment?
+    print(dir(funcdef))
+    print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
 
 
