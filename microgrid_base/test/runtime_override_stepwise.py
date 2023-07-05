@@ -24,13 +24,16 @@ from pydantic import BaseModel
 # https://redbaron.readthedocs.io/en/latest/
 # https://pybowler.io/
 # https://libcst.readthedocs.io/en/stable/why_libcst.html
-from pydantic import field_validator
+try:
+    from pydantic import field_validator as validator
+except:
+    from pydantic import validator
+
 import os
 
 class ExchangePaths:
     input = "input.json"
     output = "output.json"
-
 
 class SourceCodeExchange(BaseModel):
     source_code: str
@@ -107,9 +110,11 @@ else:
             data = SourceCodeExchange(
                 source_code=func_source_cleaned, keywords=keywords, processed=False
             )
-            input_path =
-            with open(
-                data.json()
+            input_path = os.path.join(tmpdir_name, ExchangePaths.input)
+            with open(input_path, "w+") as f:
+                content = data.json()
+                f.write(content)
+            output_path = os.path.join(tmpdir)
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
