@@ -118,7 +118,7 @@ if sys.version_info >= (3, 9):
         changed_source = unparse_func(funcdef)  # cannot convert comment back to source.
         print("CHANGED SOURCE".center(70, "="))
         print(changed_source)
-        return FuncSource(changed_source, funcname)
+        return FuncSourceWithName(changed_source=changed_source, funcname=funcname)
 
 else:
 
