@@ -63,7 +63,7 @@ def overwrite_func(func, c_locals, c_globals):
     funcdef = func_ast.body[0]
     funcname = funcdef.name
     print(funcdef.body) # no comment?
-    breakpoint()
+    # breakpoint()
     # [<_ast.Expr object at 0x105359550>, <_ast.Expr object at 0x105368100>, <_ast.Assert object at 0x105395790>, <_ast.Expr object at 0x105395a60>]
     print(dir(funcdef))
     print(funcdef.decorator_list) # [<_ast.Name object at 0x103081b50>]
@@ -74,6 +74,7 @@ def overwrite_func(func, c_locals, c_globals):
         new_body.append(item)
         stepwise_expr = ast.parse("yield '{}'".format('myflag')).body[0]
         new_body.append(stepwise_expr)
+    funcdef.body = new_body
     changed_source = astor.to_source(funcdef)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
