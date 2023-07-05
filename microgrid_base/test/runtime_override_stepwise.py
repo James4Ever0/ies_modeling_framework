@@ -12,8 +12,8 @@
 
 # doc = __doc__
 from pydantic import BaseModel
-from typing import NamedTuple
-
+from collections import namedtuple
+ = namedtuple("",["changed_source","funcname"] )
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
 
