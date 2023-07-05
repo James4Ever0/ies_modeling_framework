@@ -38,8 +38,6 @@ def overwrite_func(func, c_locals, c_globals):
     # func_ast = astor.code_to_ast(func)
     # print(func_ast)
     # deprecated?
-    ast.expr()
-    stepwise_expr = ast.parse("yield '{}'".format('myflag')).body[0]
     
     # what is the name of the function?
 
@@ -72,6 +70,9 @@ def overwrite_func(func, c_locals, c_globals):
 
     # changed_source = ast.dump(funcdef)
     changed_source = astor.to_source(funcdef)
+    new_body = []
+    for item in funcdef.body:
+        new_body.append(item)
     print("CHANGED SOURCE".center(70, "="))
     print(changed_source)
     # new_func = exec()
