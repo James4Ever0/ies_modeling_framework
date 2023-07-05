@@ -10,6 +10,7 @@ c = MyClass()
 
 import inspect
 import ast
+import re
 
 def overwrite_func(func):
     # get definition and return a new func.
@@ -20,6 +21,8 @@ def overwrite_func(func):
     print()
     # return new_func
     func_ast = ast.parse(func_source)
+    find_def = r"^\_+"
+    func_source.
     print(func_ast) # unexpected indent.
 
 
