@@ -1,4 +1,7 @@
-"""
+"""Stepwise source code manipulation.
+
+Note:
+    The commandline tool only works 
 
 """
 
@@ -101,6 +104,7 @@ def inspect_locals_and_globals(c):
     c.globals = MethodType(lambda self: globals(), c)
 
 if __name__ == "__main__":
+    import docopt
     if test:
         def dec(f):
             return f
