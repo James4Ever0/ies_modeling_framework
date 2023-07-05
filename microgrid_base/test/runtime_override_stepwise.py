@@ -26,6 +26,7 @@ def overwrite_func(func):
     # deprecated?
     
     func_source = inspect.getsource(func)
+    func.__
     # return new_func
     find_def = r"^( +)def"
     FDRegex = re.compile(find_def, flags=re.MULTILINE)
