@@ -4,6 +4,11 @@
 # for compatibility, better use python3.9
 # though using "redbaron" or some other code refactor tool also works.
 
+# refs:
+# https://github.com/python-rope/rope
+# https://redbaron.readthedocs.io/en/latest/
+# https://pybowler.io/
+
 def dec(f):
     return f
 
