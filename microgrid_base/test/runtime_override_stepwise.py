@@ -1,4 +1,6 @@
-#!/Users/jamesbrown/opt/miniconda3/bin/conda run -n base --live-stream --no-capture-output python
+#!/usr/bin/env conda run -n base --live-stream --no-capture-output python
+
+# ref: https://www.baeldung.com/linux/shebang-types#:~:text=The%20shebang%20line%20has%20the%20following%20syntax%3A%20%23%21%2Fpath%2Fto%2Finterpreter,shebang%20sequence%20is%20optional%3A%20%23%21%20%2Fpath%2Fto%2Finterpreter%20arg1%20arg2
 
 import os
 filename = os.path.basename(__file__)
