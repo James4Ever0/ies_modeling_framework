@@ -46,13 +46,22 @@ class SourceCodeExchange(BaseModel):
     source_code: str
     keywords: set = set()
     processed: bool
+    funcname: str = ""
 
-    @field_validator("keywords")
+    @validator("keywords")
     def validate_keywords(cls, v, info):
         if info.context.get("processed"):
             assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
         else:
             assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
+        return v
+    
+    @validator('funcname')
+    def validate_funcname(cls, v, info):
+        if info.context.get('processed'):
+            assert v != "", "Invalid funcname: {} (Shall not be empty)".format(repr(v))
+        else:
+            assert v == "", "Invalid funcname: {} (Shall be empty)".format(repr(v))
         return v
 
 
@@ -122,7 +131,8 @@ else:
             with open(input_path, "w+") as f:
                 content = data.json()
                 f.write(content)
-            processed_data = SourceCodeExchange.process(input_filename
+            processed_data = SourceCodeExchange.parse_file(output_path)
+            changed_source, funcname = 
 
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
