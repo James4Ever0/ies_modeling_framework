@@ -14,7 +14,7 @@
 from pydantic import BaseModel
 from collections import namedtuple
 
-FuncSourceWithName = namedtuple("FuncSourceWithName",["changed_source","funcname"] )
+FuncSourceWithName = namedtuple("FuncSourceWithName", ["changed_source", "funcname"])
 # it is a small function which can be run as commandline tool.
 # just invoke conda while testing. do not try to run the whole environment in python3.9
 
@@ -45,7 +45,6 @@ class ExchangePaths:
     @staticmethod
     def getOutputPath(basedir: str):
         return os.path.join(basedir, ExchangePaths.output)
-
 
 
 class SourceCodeExchange(BaseModel):
@@ -127,7 +126,7 @@ else:
         # use temporary directory.
         import tempfile
 
-        with tempfile.TemporaryDirectory() as tmpdir: # str!
+        with tempfile.TemporaryDirectory() as tmpdir:  # str!
             # tmpdir_name = tmpdir.name
             data = SourceCodeExchange(
                 source_code=func_source_cleaned, keywords=keywords, processed=False
@@ -144,9 +143,10 @@ else:
             os.system(commandline)
             processed_data = SourceCodeExchange.parse_file(output_path)
             return FuncSourceWithName(
-                changed_source = processed_data.source_code,
-                funcname = processed_data.funcname,
+                changed_source=processed_data.source_code,
+                funcname=processed_data.funcname,
             )
+
 
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
     import inspect
@@ -275,11 +275,20 @@ if __name__ == "__main__":
     elif input_path := arguments.input:
         print("INPUT FILE PATH:", input_path)
         data = SourceCodeExchange.parse_file(input_path)
-        output = add_stepwise_lines_to_func_source(func_source_cleaned= data.source_code, keywords=data.keywords)
-        with open(ExchangePaths.getOutputPath(os.path.dirname(input_path)),'w+') as f:
-            output_data = SourceCodeExchange(source_code = output.changed_source, processed=True, funcname=output.funcname)
+        output = add_stepwise_lines_to_func_source(
+            func_source_cleaned=data.source_code, keywords=data.keywords
+        )
+        with open(
+            output_path := ExchangePaths.getOutputPath(os.path.dirname(input_path)),
+            "w+",
+        ) as f:
+            print("WRITE TO:", output_path)
+            output_data = SourceCodeExchange(
+                source_code=output.changed_source,
+                processed=True,
+                funcname=output.funcname,
+            )
             content = output_data.json()
             f.write(content)
     else:
-sys.flags.utf8_mode
         argparser.print_help()
