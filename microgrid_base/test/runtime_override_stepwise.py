@@ -17,6 +17,7 @@ class MyClass:
         print("abc")
         print("def")
         # mycomment
+        # mycomment_has_keyword
         for _ in range(20):
             print("in range")
         assert False, "you cannot pass"
@@ -35,7 +36,7 @@ import astor
 import re
 
 
-def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash warning!
+def overwrite_func(func, c_locals, c_globals, keywords = set()'def', "has_keyword"]):  # nameclash warning!
     # get definition and return a new func.
     # test: add "yield" after every line.
     # func_ast = astor.code_to_ast(func)
