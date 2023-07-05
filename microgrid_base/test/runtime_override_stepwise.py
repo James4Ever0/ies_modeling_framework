@@ -76,11 +76,15 @@ def overwrite_func(func, c_locals, c_globals, keywords = ['def']):  # nameclash 
     for item in funcdef.body:
         new_body.append(item)
         item_code = astor.to_source(item)
+        _k = None
         for keyword in keywords:
             if keyword in item_code:
                 stepwise_expr = ast.parse("yield '{}'".format("myflag")).body[0]
                 new_body.append(stepwise_expr)
+                _k = keyword
                 break
+        if _k:
+            keywords.pop(_k)
     funcdef.body = new_body
     changed_source = astor.to_source(funcdef)
     print("CHANGED SOURCE".center(70, "="))
