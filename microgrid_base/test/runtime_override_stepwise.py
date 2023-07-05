@@ -120,11 +120,10 @@ print(type(exec_result))
 #     print("RECEVICED FLAG:", flag)
 # AssertionError: you cannot pass
 
-
 def myiterator():
     yield 2
-    return 1
-
+    return 1 # stopped iteration.
+    # if you want to "return", just don't insert any "yield" statements.
 
 a = myiterator()  # generator.
 print(a)
