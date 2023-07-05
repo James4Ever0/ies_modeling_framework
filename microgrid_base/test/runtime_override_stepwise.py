@@ -22,10 +22,11 @@ def overwrite_func(func):
     # return new_func
     func_ast = ast.parse(func_source)
     find_def = r"^(\_+)def"
-    fdregex = re.compile(find_def, flags=re.MULTILINE)
-    strip_blanks = fdregex.findall(func_source)[0]
+    FDRegex = re.compile(find_def, flags=re.MULTILINE)
+    strip_blanks = FDRegex.findall(func_source)[0]
     blank_count = len(strip_blanks)
-    r"\_{}"
+    indent_replace = r"^\_"+("{%d}" % blank_count)
+    IRRegex = 
     print(func_ast) # unexpected indent.
 
 
