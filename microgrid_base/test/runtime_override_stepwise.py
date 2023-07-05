@@ -1,7 +1,6 @@
 def dec(f):
     return f
 
-
 class MyClass:
     val = 1
 
