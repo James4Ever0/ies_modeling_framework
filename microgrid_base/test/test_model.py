@@ -351,7 +351,7 @@ def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光
         print(s_results)
         check_solver_result(s_results)
 
-        devCount = 测试光伏发电模型.MaxDeviceCount
+        devCount = value(测试光伏发电模型.DeviceCount)
         assert abs(value(测试光伏发电模型.电接口[0]) - output * devCount) < EPS
         assert abs(value(测试光伏发电模型.电接口[2]) - output * devCount) < EPS
 

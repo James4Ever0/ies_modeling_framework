@@ -290,7 +290,8 @@ def test_电价模型():
     {{SO.TDF}}.计算参数.光照 = illumination_array
     {{SO.TDF}}.constraints_register()
 {{ solveModel("{tdf}.电接口[0]+{tdf}.电接口[2]".format(tdf=SO.TDF), sense='maximize') }}
-        devCount = {{SO.TDF}}.MaxDeviceCount
+        devCount = value({{SO.TDF}}.DeviceCount)
+        {# devCount = {{SO.TDF}}.MaxDeviceCount #}
         assert abs(value({{SO.TDF}}.电接口[0]) - output*devCount)< EPS
         assert abs(value({{SO.TDF}}.电接口[2]) - output*devCount)< EPS
     
