@@ -268,11 +268,11 @@ if __name__ == "__main__":
 
         c = MyClass()
 
-        add_locals_and_globals_inspectors_to_instance(c)
-        c_locals = c.locals()
-        c_globals = c.globals()
-
-        print(c_locals.keys())
+        # add_locals_and_globals_inspectors_to_instance(c)
+        # c_locals = c.locals()
+        # c_globals = c.globals()
+        c_globals = 
+        # print(c_locals.keys())
         print(c_globals.keys())
 
         keywords = {"def", "has_keyword"}
