@@ -1077,7 +1077,7 @@ class {{class_name}}模型(设备模型):
 
             self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
             # constraint.
-            self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate
+            self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate)
 
         else:
 

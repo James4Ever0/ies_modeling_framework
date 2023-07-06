@@ -310,13 +310,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -2626,6 +2626,27 @@ class 锂电池模型(设备模型):
 
             self.TotalCapacity = self.DeviceCount * self.RatedCapacity  # type: ignore
 
+            # TODO: Verify if "compensated decay rate" works.
+
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, (self.BatteryStorageDecay / 100) * self.MaxTotalCapacity),
+                within=NonNegativeReals,
+            )  # the greater the value, the less our compensation is, the greater the real discharge is.
+            # constraint.
+            self.RangeConstraintMulti(
+                self.ActualTotalDecayRateCompensated,
+                expression=lambda x: x <= self.TotalStorageDecayRate,
+            )
+
+        else:
+
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, self.TotalStorageDecayRate),
+                within=NonNegativeReals,
+            )
+
         assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC < 1
         assert self.MinSOC > 0  # to ensure that battery will not be drained.
@@ -2676,22 +2697,23 @@ class 锂电池模型(设备模型):
             == self.InitActualCapacityPerUnit * self.DeviceCount
         )
 
-        self.CustomRangeConstraint(
+        self.CustomRangeConstraintMulti(
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
+            self.ActualTotalDecayRateCompensated,
             range(self.计算参数.迭代步数 - 1),
-            lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+            expression=lambda x, y, z, i: x[i] - z[i]
+            == (y[i] - y[i + 1]) * self.计算参数.时间参数,
         )
-
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
             self.原电接口.x_neg,
             self.电接口,
-            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-            - (x_neg + self.TotalStorageDecayRate) / self.ChargeEfficiency
+            self.ActualTotalDecayRateCompensated,
+            expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
+            - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
             == y,
         )
-
         for i in range(self.计算参数.迭代步数 - 1):
             self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
@@ -2719,9 +2741,8 @@ class 锂电池模型(设备模型):
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     >= -self.MaxTotalCapacityDeltaPerStep
                 )
-
                 self.mw.Constraint(
-                    self.原电接口.x[0]
+                    self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
                     == (
                         self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                         - self.CurrentTotalActualCapacity[0]
@@ -3067,18 +3088,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
