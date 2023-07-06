@@ -64,6 +64,17 @@ class SourceCodeExchange(BaseModel):
 
     @validator("keywords")
     def validate_keywords(cls, v, values):
+        """
+        Validate the "keywords" field.
+
+        Args:
+            cls: The class itself.
+            v: The value of the "keywords" field.
+            values: The values of all the fields in the model.
+
+        Returns:
+            The validated value of the "keywords" field.
+        """
         # print(values)
         # breakpoint()
         if processed := values.get("processed"):  # ERROR
@@ -82,6 +93,17 @@ class SourceCodeExchange(BaseModel):
 
     @validator("funcname")
     def validate_funcname(cls, v, values):
+        """
+        Validate the funcname parameter.
+
+        Parameters:
+            cls (class): The class object.
+            v (Any): The value to be validated.
+            values (Dict[str, Any]): The dictionary of values.
+
+        Returns:
+            Any: The validated value.
+        """
         if processed := values.get("processed"):
             assert (
                 v != ""
@@ -102,6 +124,16 @@ import sys
 if sys.version_info >= (3, 9):
 
     def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
+        """
+        Adds stepwise lines to the given function source code.
+
+        Parameters:
+            func_source_cleaned (str): The cleaned source code of the function.
+            keywords (set): A set of keywords to search for in the function source code.
+
+        Returns:
+            FuncSourceWithName: An object containing the changed source code and the function name.
+        """
         import ast_comments as ast
 
         # import astunparse
@@ -278,6 +310,11 @@ if __name__ == "__main__":
 
             @dec
             def myfunc(self):
+                """
+                Decorated function that prints "abc", "def", and "in range" 20 times.
+                Raises an AssertionError with the message "you cannot pass".
+                Returns the string "abc".
+                """
                 print("abc")
                 print("def")
                 # mycomment
