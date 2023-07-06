@@ -56,10 +56,10 @@ class SourceCodeExchange(BaseModel):
 
     @validator("keywords")
     def validate_keywords(cls, v, values):
-        if values.get("processed"): # ERROR
-            assert v == set(), "Invalid keywords: {} (Shall be empty)".format(v)
+        if values.get("processed"):  # ERROR
+            assert len(v) == 0, "Invalid keywords: {} (Shall be empty)".format(v)
         else:
-            assert v != set(), "Invalid keywords: {} (Shall not be empty)".format(v)
+            assert len(v) != 0, "Invalid keywords: {} (Shall not be empty)".format(v)
         return v
 
     @validator("funcname")
