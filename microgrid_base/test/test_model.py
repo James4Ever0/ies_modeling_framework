@@ -451,7 +451,10 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=lambda x: x <= 0
     )  # means charging the battery.
-    model_wrapper.Objective(expr=, sense=sense)
+    obj = 测试锂电池模型.总成本年化
+    print(value(obj), obj)
+    breakpoint()
+    model_wrapper.Objective(expr=obj, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
