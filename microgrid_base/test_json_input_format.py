@@ -2,6 +2,7 @@
 # input_path = "test/test_topo.json"
 # input_path = "template_input.json"
 input_path = "test/lithion_battery.json"
+# input_path = "test/lithion_battery.json"
 import json
 
 with open(input_path, "r") as f:
