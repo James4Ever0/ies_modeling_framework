@@ -367,9 +367,9 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         compensated_decay_rate = value({{SO.TDF}}.ActualTotalDecayRateCompensated[i])
         total_decay_rate = value({{SO.TDF}}.TotalStorageDecayRate)
         if 原电接口_xi>=0:
-            assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - compensated_decay_rate / {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - (total_decay_rate - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency == 电接口_i
         else:
-            assert (原电接口_xi - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert (原电接口_xi - (total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency == 电接口_i
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
@@ -384,7 +384,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[0]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[1]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[2]))
-        {# breakpoint() #}
+        breakpoint()
         print()
         print(value({{SO.TDF}}.电接口[0]))
         print(value({{SO.TDF}}.电接口[1]))
@@ -399,5 +399,6 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         print(value({{SO.TDF}}.CurrentTotalActualCapacity[2]))
         # all zero?
         # 0.0
-        breakpoint() #}
+        breakpoint() 
+#}
         {# assert abs(value(测试锂电池模型.CurrentTotalActualCapacity[0]+ 500 * (测试锂电池模型.设备信息.MinSOC/100)) - 500 * (测试锂电池模型.设备信息.InitSOC/100)) < EPS #}
