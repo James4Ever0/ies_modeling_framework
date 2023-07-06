@@ -21,6 +21,19 @@ class 曲线(BaseModel):
 
     @validator("x")
     def validate_x(cls, x: List[str]):
+        """
+        Validate the input list of strings `x` and return the validated list.
+
+        Args:
+            cls: The class of the validator.
+            x (List[str]): The input list of strings to be validated.
+
+        Returns:
+            List[str]: The validated list of strings.
+
+        Raises:
+            Exception: If the input list `x` is not valid.
+        """
         suffixMapping = {7200: "秒", 8760: "时"}
         for suffix in suffixMapping.values():
             if x[0].endswith(suffix):

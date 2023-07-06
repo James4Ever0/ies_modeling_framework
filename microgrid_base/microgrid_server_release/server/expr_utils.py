@@ -19,6 +19,15 @@ except:
 
 
 def find_parentheses(s):
+    """
+    Find all parentheses pairs in the given string.
+
+    Parameters:
+    - s (str): The input string to search for parentheses pairs.
+
+    Returns:
+    - result (List[str]): A list of all parentheses pairs found in the string.
+    """
     stack = []
     result = []  # EIPList
     for i, c in enumerate(progressbar(s)):
@@ -42,16 +51,35 @@ class RecursionContext(ContextManager):
         self.sys_recursion_limit = sys.getrecursionlimit()
 
     def __enter__(self):
-        """Return `self` upon entering the runtime context."""
+        """
+        Set recursion_limit to desired limit.
+        Return `self` upon entering the runtime context.
+        """
         sys.setrecursionlimit(self.recursion_limit)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Raise any exception triggered within the runtime context."""
+        """
+        Restore recursion_limit to previous limit.
+        Raise any exception triggered within the runtime context.
+        """
         sys.setrecursionlimit(self.sys_recursion_limit)
         return None
 
 def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
+    """
+    Parses a string representing an expression and returns a list of simplified subexpressions.
+
+    Args:
+        data (str): The string representation of the expression.
+        approach (Literal[1, 2], optional): The approach to use for simplification. Defaults to 1.
+
+    Returns:
+        list: A list of simplified subexpressions.
+
+    Raises:
+        AssertionError: If the approach is not 1 or 2.
+    """
     regex = re.compile(r"(\[\d+\])")
     subs = regex.findall(data)
     print(len(subs))
