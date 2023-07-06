@@ -1106,7 +1106,7 @@ class {{class_name}}模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量('POSNEG_是否购买', self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var): # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
         {% endif%}
@@ -1141,12 +1141,14 @@ class {{class_name}}模型(设备模型):
         单台发电功率 = 单台发电功率.tolist()
         {% endif %}
 
+        {# 
         # 设备台数约束
         {% if class_name not in ['传输线'] %}
         if self.计算参数.计算类型 == "规划设计":
             self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
         {% endif %}
+        #}
         
         # 输出输入功率约束
         {%if class_name in ['传输线']%}

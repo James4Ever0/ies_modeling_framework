@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -299,13 +299,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -321,24 +321,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -1903,18 +1903,13 @@ class 光伏发电模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         光电转换效率 = self.MaxPower / self.Area  # 1kW/m2光照下能产生的能量 省略除以1 单位: one
@@ -2100,7 +2095,7 @@ class 风力发电模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
@@ -2134,11 +2129,6 @@ class 风力发电模型(设备模型):
             [0, lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), self.RatedPower, 0],
         )
         单台发电功率 = 单台发电功率.tolist()
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
@@ -2305,18 +2295,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2371,7 +2361,7 @@ class 柴油发电模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
@@ -2380,11 +2370,6 @@ class 柴油发电模型(设备模型):
         # 设备特有约束（非变量）
         assert self.燃料热值 != 0
         assert type(self.燃料热值) in [int, float]
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
@@ -2664,18 +2649,13 @@ class 锂电池模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         self.RangeConstraintMulti(
@@ -2910,18 +2890,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2932,18 +2912,13 @@ class 变压器模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         # TODO: figure out what "PowerParameter" does
@@ -3103,18 +3078,13 @@ class 变流器模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
         # TODO: figure out what "PowerParameter" does
@@ -3251,18 +3221,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3273,18 +3243,13 @@ class 双向变流器模型(设备模型):
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
 
-        if isinstance(self.DeviceCount, Var):
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
             self.DeviceCount.setlb(self.MinDeviceCount)
             self.DeviceCount.setub(self.MaxDeviceCount)
 
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
-        if self.计算参数.计算类型 == "规划设计":
-            self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
-            self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
 
         # 输出输入功率约束
 
@@ -3405,18 +3370,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3426,8 +3391,6 @@ class 传输线模型(设备模型):
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
-
-        # 设备台数约束
 
         # 输出输入功率约束
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / self.计算参数.时间参数
