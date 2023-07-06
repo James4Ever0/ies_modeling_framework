@@ -207,8 +207,9 @@ def overwrite_func(func, c_globals, keywords: set):  # nameclash warning!
     changed_source, funcname = add_stepwise_lines_to_func_source(
         func_source_cleaned, keywords
     )
-    # exec(changed_source, globals=c_globals, locals= c_locals, /)
-    exec(changed_source,globals= c_globals)
+    # exec(changed_source, globals=None, locals=None, /)
+    # exec(changed_source, c_globals,c_locals, /)
+    exec(changed_source, c_globals)
     print(locals().keys())
 
     new_func = eval(funcname)  # not in locals.
