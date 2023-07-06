@@ -15,9 +15,9 @@ app = Celery(
 # ref: https://poe.com/s/PV9zAO91vGQjHJuZ4toR (GPT4)
 # import logging
 import better_exceptions
-
+from celery.utils.log import ColorFormatter # type: ignore
 # class CustomFormatter(logging.Formatter):
-class CustomFormatter(celery.utils.log.ColorFormatter):
+class CustomFormatter(ColorFormatter):
     def formatException(self, exc_info):
         """
         Format an exception using the given exc_info.
