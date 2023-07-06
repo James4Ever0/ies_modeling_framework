@@ -174,9 +174,10 @@ else:
                 funcname=processed_data.funcname,
             )
 
+
 def overwrite_func(func, keywords: set):  # nameclash warning!
-# def overwrite_func(func, c_globals, keywords: set): 
-# def overwrite_func(func, c_locals, c_globals, keywords: set):
+    # def overwrite_func(func, c_globals, keywords: set):
+    # def overwrite_func(func, c_locals, c_globals, keywords: set):
     import inspect
 
     # import ast
@@ -244,6 +245,12 @@ if __name__ == "__main__":
     if arguments.test:
 
         def dec(f):
+            """
+            Decorator function that takes a function as input and returns the same function.
+            """
+            """
+            Decorator function that takes a function as input and returns the same function.
+            """
             return f
 
         class MyClass:
@@ -251,9 +258,21 @@ if __name__ == "__main__":
 
             @staticmethod
             def newfunc():
+                """
+                A static method that returns the string "a".
+                """
                 return "a"
 
             def inspect_class(self):
+                """
+                A method that inspects the current class and prints the keys of the local and global scope.
+
+                Parameters:
+                    self: The instance of the class.
+
+                Returns:
+                    None
+                """
                 print(locals().keys())
                 print(globals().keys())
 
@@ -276,15 +295,16 @@ if __name__ == "__main__":
         # add_locals_and_globals_inspectors_to_instance(c)
         # c_locals = c.locals()
         # c_globals = c.globals()
-        c_globals = c.myfunc.__globals__
-        # c_globals = MyClass.__globals__
-        # c_globals = c.__globals__
-        # print(c_locals.keys())
-        print(c_globals.keys())
+        # c_globals = c.myfunc.__globals__
+        # # c_globals = MyClass.__globals__
+        # # c_globals = c.__globals__
+        # # print(c_locals.keys())
+        # print(c_globals.keys())
 
         keywords = {"def", "has_keyword"}
 
-        new_func = overwrite_func(c.myfunc, c_globals, keywords)
+        new_func = overwrite_func(c.myfunc, keywords)
+        # new_func = overwrite_func(c.myfunc, c_globals, keywords)
         # new_func = overwrite_func(c.myfunc, c_locals, c_globals, keywords)
         c.myfunc = MethodType(new_func, c)
 
@@ -296,6 +316,9 @@ if __name__ == "__main__":
         # AssertionError: you cannot pass
 
         def myiterator():
+            """
+            A generator function that yields the value 2 and then returns 1.
+            """
             yield 2
             return 1  # stopped iteration.
             # if you want to "return", just don't insert any "yield" statements.
