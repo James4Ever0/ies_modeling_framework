@@ -181,6 +181,16 @@ if sys.version_info >= (3, 9):
 else:
 
     def add_stepwise_lines_to_func_source(func_source_cleaned, keywords: set):
+        """
+        Adds stepwise lines to the function source code.
+
+        Args:
+            func_source_cleaned (str): The cleaned source code of the function.
+            keywords (set): A set of keywords.
+
+        Returns:
+            FuncSourceWithName: An object containing the changed source code and function name.
+        """
         # implement it by calling conda.
         # use temporary directory.
         import tempfile
@@ -209,6 +219,16 @@ else:
 
 def overwrite_func(func, keywords: set):  # nameclash warning!
     # def overwrite_func(func, c_globals, keywords: set):
+    """
+    Overwrites a given function with a modified version that inserts "yield" after every line containing given keywords.
+
+    Args:
+        func: The function to be overwritten.
+        keywords (set): A set of keywords to be inserted after each line in the modified function.
+
+    Returns:
+        The modified function.
+    """
     # def overwrite_func(func, c_locals, c_globals, keywords: set):
     import inspect
 
