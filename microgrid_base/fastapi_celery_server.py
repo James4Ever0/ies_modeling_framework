@@ -10,6 +10,10 @@ app = Celery(
     backend=f"redis://:{redis_password}@localhost:6380",
     # backend=f"redis://:{redis_password}@localhost:6379",
 )
+
+# override format exception logic.
+app.log.setup
+
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
 from solve_model import (
