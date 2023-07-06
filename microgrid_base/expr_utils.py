@@ -61,6 +61,19 @@ class RecursionContext(ContextManager):
         return None
 
 def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
+    """
+    Parses a string representing an expression and returns a list of simplified subexpressions.
+
+    Args:
+        data (str): The string representation of the expression.
+        approach (Literal[1, 2], optional): The approach to use for simplification. Defaults to 1.
+
+    Returns:
+        list: A list of simplified subexpressions.
+
+    Raises:
+        AssertionError: If the approach is not 1 or 2.
+    """
     regex = re.compile(r"(\[\d+\])")
     subs = regex.findall(data)
     print(len(subs))
