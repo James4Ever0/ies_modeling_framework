@@ -370,7 +370,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         if 原电接口_xi>=0:
             assert abs( 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - (_total_decay_rate - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency - 电接口_i )< EPS
         else:
-            assert abs((原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency - 电接口_i )< EPS
+            assert abs((原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency - 电接口_i) < EPS
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
