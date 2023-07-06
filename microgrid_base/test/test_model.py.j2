@@ -349,7 +349,7 @@ def test_电价模型():
 {# if making no "more" constraints we will solve it. #}
 {# you need to parametrize your test. to prevent further issues, use signature based "yield" insertion strategy. #}
 {# try to import our stepwise test util. #}
-from runtime_override_stepwise import 
+from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {% call parametrizeTestHelper("锂电池", "Device", autoRegister=false)%}
 {# {% call parametrizeTestHelper("锂电池", "Device")%} #}
     {% call parametrize("device_count")%}[500/20]{% endcall%}

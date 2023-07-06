@@ -174,7 +174,8 @@ else:
                 funcname=processed_data.funcname,
             )
 
-def overwrite_func(func, c_globals, keywords: set):  # nameclash warning!
+def overwrite_func(func, keywords: set):  # nameclash warning!
+# def overwrite_func(func, c_globals, keywords: set): 
 # def overwrite_func(func, c_locals, c_globals, keywords: set):
     import inspect
 
@@ -186,6 +187,7 @@ def overwrite_func(func, c_globals, keywords: set):  # nameclash warning!
     # func_ast = astor.code_to_ast(func)
     # print(func_ast)
     # deprecated?
+    c_globals = func.__globals__
 
     # what is the name of the function?
 
