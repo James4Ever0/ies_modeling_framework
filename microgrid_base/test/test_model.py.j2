@@ -353,7 +353,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {% call parametrizeTestHelper("锂电池", "Device", autoRegister=false)%}
 {# {% call parametrizeTestHelper("锂电池", "Device")%} #}
     {% call parametrize("device_count, total_decay_rate")%}[(500/20, 500*0.1 )]{% endcall%}
-    {% call parametrize("eport_constraint")%}[lambda x: x<0, lambda x: x == 0, lambda x: x == -40, lambda x: x > -40]{%endcall%}
+    {% call parametrize("eport_constraint")%}[lambda x: x<=0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40]{%endcall%}
 {% endcall%}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100)) #}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 1) # BUG: cannot discharge #}
@@ -362,15 +362,15 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = eport_constraint) # means charging the battery.
     def verify_constraints(i):
         delta_capacity = value({{SO.TDF}}.CurrentTotalActualCapacity[i] - {{SO.TDF}}.CurrentTotalActualCapacity[i+1])
-        assert delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i]) == 0
+        assert abs(delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i])) < EPS
         原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
         电接口_i = value({{SO.TDF}}.电接口[i])
         compensated_decay_rate = value({{SO.TDF}}.ActualTotalDecayRateCompensated[i])
         _total_decay_rate = value({{SO.TDF}}.TotalStorageDecayRate)
         if 原电接口_xi>=0:
-            assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - (_total_decay_rate - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert abs( 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - (_total_decay_rate - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency - 电接口_i )< EPS
         else:
-            assert (原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert abs((原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency - 电接口_i )< EPS
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count

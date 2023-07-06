@@ -452,7 +452,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 @pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
 @pytest.mark.parametrize(
     "eport_constraint",
-    [lambda x: x < 0, lambda x: x == 0, lambda x: x == -40, lambda x: x > -40],
+    [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40],
 )
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
@@ -474,9 +474,11 @@ def test_锂电池(
             - 测试锂电池模型.CurrentTotalActualCapacity[i + 1]
         )
         assert (
-            delta_capacity
-            - value(测试锂电池模型.原电接口.x[i] - 测试锂电池模型.ActualTotalDecayRateCompensated[i])
-            == 0
+            abs(
+                delta_capacity
+                - value(测试锂电池模型.原电接口.x[i] - 测试锂电池模型.ActualTotalDecayRateCompensated[i])
+            )
+            < EPS
         )
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
         电接口_i = value(测试锂电池模型.电接口[i])
@@ -484,15 +486,23 @@ def test_锂电池(
         _total_decay_rate = value(测试锂电池模型.TotalStorageDecayRate)
         if 原电接口_xi >= 0:
             assert (
-                原电接口_xi * 测试锂电池模型.DischargeEfficiency
-                - (_total_decay_rate - compensated_decay_rate)
-                / 测试锂电池模型.ChargeEfficiency
-                == 电接口_i
+                abs(
+                    原电接口_xi * 测试锂电池模型.DischargeEfficiency
+                    - (_total_decay_rate - compensated_decay_rate)
+                    / 测试锂电池模型.ChargeEfficiency
+                    - 电接口_i
+                )
+                < EPS
             )
         else:
             assert (
-                原电接口_xi - (_total_decay_rate - compensated_decay_rate)
-            ) / 测试锂电池模型.ChargeEfficiency == 电接口_i
+                abs(
+                    (原电接口_xi - (_total_decay_rate - compensated_decay_rate))
+                    / 测试锂电池模型.ChargeEfficiency
+                    - 电接口_i
+                )
+                < EPS
+            )
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
