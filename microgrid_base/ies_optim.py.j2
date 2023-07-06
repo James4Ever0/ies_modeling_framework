@@ -1182,6 +1182,8 @@ class {{class_name}}模型(设备模型):
         # (kW/m2) * m2 * one * one -> kW
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
 
+        self.RangeConstraintMulti(self.电输出, expression = lambda x: x<= self.MaxPower*self.DeviceCount*self.PowerConversionEfficiency)
+
         {% elif class_name in ['风力发电'] %}
         self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
 
