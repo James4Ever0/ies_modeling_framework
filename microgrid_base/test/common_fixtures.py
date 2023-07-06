@@ -104,7 +104,7 @@ def 测试光伏发电信息():
         设备型号="光伏发电1",
         Area=10,
         PowerConversionEfficiency=98,
-        MaxPower=100,
+        MaxPower=10,
         PowerDeltaLimit=1,
         CostPerKilowatt=10,
         CostPerYearPerKilowatt=10,
