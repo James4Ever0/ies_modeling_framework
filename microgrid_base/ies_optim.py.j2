@@ -1528,14 +1528,16 @@ class 节点基类(BaseModel):
     id:int = Field(title = "节点ID")
 
 class 锚点节点(节点基类):
-    type = 
+    type: Literal['锚点']
     port_name:{{normal_str}} = Field(title = '锚点名称')
     device_id:{{non_neg_int}} = Field(title = '锚点所对应设备ID')
     
 class 母线节点(节点基类):
+    {# type: Literal['母线'] #}
     conn: conlist({{normal_str}}, min_items=2)  = Field(title = '母线连接线类型列表', description = '包括连接到母线上的连接线和合并线类型')# connection/merge types to literal.
 
 class 设备接口映射(BaseModel):
+    type: Literal['']
     subtype: {{normal_str}} = Field(title = "接口类型")
     id: {{non_neg_int}} = Field(title = "接口ID", description = "拓扑图上与设备、母线、连接线的ID相比较具有唯一性的ID")
 
