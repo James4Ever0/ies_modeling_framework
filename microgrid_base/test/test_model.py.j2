@@ -362,5 +362,6 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
         print(value(测试锂电池模型.电接口[0]))
+        print(value(测试锂电池模型.原电接口[0]))
         breakpoint()
         {# assert abs(value(测试锂电池模型.CurrentTotalActualCapacity[0]+ 500 * (测试锂电池模型.设备信息.MinSOC/100)) - 500 * (测试锂电池模型.设备信息.InitSOC/100)) < EPS #}

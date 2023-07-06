@@ -467,4 +467,5 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
 
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
         print(value(测试锂电池模型.电接口[0]))
+        print(value(测试锂电池模型.原电接口[0]))
         breakpoint()
