@@ -1073,10 +1073,13 @@ class {{class_name}}模型(设备模型):
 
             # TODO: Verify if "compensated decay rate" works.
 
-            self.ActualTotalDecayRateCompensated = self.变量列表('', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
+            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
             # constraint.
+            self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate
+
         else:
 
+            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
 
         assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC < 1
@@ -1214,8 +1217,8 @@ class {{class_name}}模型(设备模型):
 
         self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
         {# power = delta(capacity)/delta(time)#}
-        
-        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y)
+{#         
+        self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y) #}
 
         for i in range(self.计算参数.迭代步数-1):
             self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
