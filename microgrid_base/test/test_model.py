@@ -470,7 +470,7 @@ def test_锂电池(
             == 0
         )
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
-        电接口_i = 测试锂电池模型.电接口[i]
+        电接口_i = value(测试锂电池模型.电接口[i])
         if 原电接口_xi >= 0:
             assert (
                 原电接口_xi * 测试锂电池模型.DischargeEfficiency
