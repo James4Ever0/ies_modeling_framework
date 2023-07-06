@@ -1527,6 +1527,9 @@ class 节点基类(BaseModel):
     subtype:{{normal_str}} = Field(title = "节点次类型")
     id:int = Field(title = "节点ID")
 
+class 连线节点(节点基类):
+    type: Literal['连接线','合并线']
+
 class 锚点节点(节点基类):
     type: Literal['锚点']
     port_name:{{normal_str}} = Field(title = '锚点名称')
@@ -1560,7 +1563,7 @@ class mDict(BaseModel):
             "典型日代表的日期": [],
             "计算类型": "设计规划",
             "风速": [], "光照":[],"气温":[] ,"年利率":0.1})
-    nodes:conlist(Union[锚点节点,设备节点,母线节点,节点基类], min_items=5) = Field(
+    nodes:conlist(Union[锚点节点,设备节点,母线节点,连线节点], min_items=5) = Field(
         title="节点",
         description="由所有节点ID和属性字典组成的列表", example =[ {
                 "type": "锚点",

@@ -20,3 +20,4 @@ progressbar2
 pytest
 # returns
 # ast-comments
+better-exceptions

@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -310,24 +310,24 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -2305,18 +2305,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -3084,18 +3084,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3251,18 +3251,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3737,18 +3737,22 @@ class 仿真结果(BaseModel):
 
 
 class 节点基类(BaseModel):
-    type: constr(min_length=1) = Field(title="节点类型")
     subtype: constr(min_length=1) = Field(title="节点次类型")
     id: int = Field(title="节点ID")
 
 
+class 连线节点(节点基类):
+    type: Literal["连接线", "合并线"]
+
+
 class 锚点节点(节点基类):
-    # type
+    type: Literal["锚点"]
     port_name: constr(min_length=1) = Field(title="锚点名称")
     device_id: conint(ge=0) = Field(title="锚点所对应设备ID")
 
 
 class 母线节点(节点基类):
+    type: Literal["母线"]
     conn: conlist(constr(min_length=1), min_items=2) = Field(
         title="母线连接线类型列表", description="包括连接到母线上的连接线和合并线类型"
     )  # connection/merge types to literal.
@@ -3760,6 +3764,7 @@ class 设备接口映射(BaseModel):
 
 
 class 设备节点(节点基类):
+    type: Literal["设备"]
     ports: Dict[constr(min_length=1), 设备接口映射] = Field(
         title="设备接口映射", description="描述设备所对应接口的类型和接口ID"
     )
@@ -3785,7 +3790,7 @@ class mDict(BaseModel):
             "年利率": 0.1,
         },
     )
-    nodes: conlist(Union[锚点节点, 设备节点, 母线节点, 节点基类], min_items=5) = Field(
+    nodes: conlist(Union[锚点节点, 设备节点, 母线节点, 连线节点], min_items=5) = Field(
         title="节点",
         description="由所有节点ID和属性字典组成的列表",
         example=[
