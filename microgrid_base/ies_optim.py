@@ -2682,6 +2682,10 @@ class 锂电池模型(设备模型):
             range(self.计算参数.迭代步数 - 1),
             lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
         )
+        
+        # shall modify this model
+        
+        self.DecayChargingRate = self.ChargingRate - self.TotalStorageDecayRate
 
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
