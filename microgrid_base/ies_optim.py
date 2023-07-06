@@ -321,13 +321,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -2626,27 +2626,6 @@ class 锂电池模型(设备模型):
 
             self.TotalCapacity = self.DeviceCount * self.RatedCapacity  # type: ignore
 
-            # TODO: Verify if "compensated decay rate" works.
-
-            self.ActualTotalDecayRateCompensated = self.变量列表(
-                "总补偿衰减率",
-                bounds=(0, (self.BatteryStorageDecay / 100) * self.MaxTotalCapacity),
-                within=NonNegativeReals,
-            )  # the greater the value, the less our compensation is, the greater the real discharge is.
-            # constraint.
-            self.RangeConstraintMulti(
-                self.ActualTotalDecayRateCompensated,
-                expression=lambda x: x <= self.TotalStorageDecayRate,
-            )
-
-        else:
-
-            self.ActualTotalDecayRateCompensated = self.变量列表(
-                "总补偿衰减率",
-                bounds=(0, self.TotalStorageDecayRate),
-                within=NonNegativeReals,
-            )
-
         assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC < 1
         assert self.MinSOC > 0  # to ensure that battery will not be drained.
@@ -2674,6 +2653,26 @@ class 锂电池模型(设备模型):
         """
         单位: kW
         """
+
+        # TODO: Verify if "compensated decay rate" works.
+        if self.计算参数.计算类型 == "设计规划":
+
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, (self.BatteryStorageDecay / 100) * self.MaxTotalCapacity),
+                within=NonNegativeReals,
+            )  # the greater the value, the less our compensation is, the greater the real discharge is.
+            # constraint.
+            self.RangeConstraintMulti(
+                self.ActualTotalDecayRateCompensated,
+                expression=lambda x: x <= self.TotalStorageDecayRate,
+            )
+        else:
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, self.TotalStorageDecayRate),
+                within=NonNegativeReals,
+            )
 
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
@@ -3250,18 +3249,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）

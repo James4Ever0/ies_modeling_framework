@@ -1072,18 +1072,6 @@ class {{class_name}}模型(设备模型):
 
             self.TotalCapacity = self.DeviceCount * self.RatedCapacity # type: ignore
 
-            {% if needStorageDecayCompensation%}
-            # TODO: Verify if "compensated decay rate" works.
-
-            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
-            # constraint.
-            self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate)
-
-        else:
-
-            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
-            {% endif%}
-
         assert self.MaxSOC >= self.MinSOC
         assert self.MaxSOC < 1
         {# assert self.MaxSOC <= 1 #}
@@ -1107,6 +1095,17 @@ class {{class_name}}模型(设备模型):
         """
         单位: kW
         """
+
+            {% if needStorageDecayCompensation%}
+        # TODO: Verify if "compensated decay rate" works.
+        if self.计算参数.计算类型 == "设计规划":
+
+            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
+            # constraint.
+            self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate)
+        else:
+            self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
+            {% endif%}
 
         {%elif class_name in ['双向变流器']%}
         self.线路端_ = self.变量列表_带指示变量("线路端_") 
@@ -1224,12 +1223,12 @@ class {{class_name}}模型(设备模型):
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
             self.ActualTotalDecayRateCompensated,
-            range(self.计算参数.迭代步数 - 1),
+            customRange = range(self.计算参数.迭代步数 - 1),
             expression = 
             lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
         )
             {% else%}
-        self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
+        self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, customRange = range(self.计算参数.迭代步数-1),expression =  lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
             {% endif%}
         {# power = delta(capacity)/delta(time)#}
             {% if needStorageDecayCompensation%}
