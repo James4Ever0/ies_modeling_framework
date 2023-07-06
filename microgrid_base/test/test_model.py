@@ -471,15 +471,16 @@ def test_锂电池(
         )
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
         电接口_i = value(测试锂电池模型.电接口[i])
+        compensated_decay_rate = value(测试锂电池模型.ActualTotalDecayRateCompensated[i])
         if 原电接口_xi >= 0:
             assert (
                 原电接口_xi * 测试锂电池模型.DischargeEfficiency
-                - 测试锂电池模型.ActualTotalDecayRateCompensated[i] / 测试锂电池模型.ChargeEfficiency
+                - compensated_decay_rate / 测试锂电池模型.ChargeEfficiency
                 == 电接口_i
             )
         else:
             assert (
-                原电接口_xi - 测试锂电池模型.ActualTotalDecayRateCompensated[i]
+                原电接口_xi - compensated_decay_rate
             ) / 测试锂电池模型.ChargeEfficiency == 电接口_i
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)

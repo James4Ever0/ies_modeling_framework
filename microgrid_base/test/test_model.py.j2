@@ -364,10 +364,11 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         assert delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i]) == 0
         原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
         电接口_i = value({{SO.TDF}}.电接口[i])
+        compensated_decay_rate = value({{SO.TDF}}.ActualTotalDecayRateCompensated[i])
         if 原电接口_xi>=0:
-            assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - {{SO.TDF}}.ActualTotalDecayRateCompensated[i] / {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - compensated_decay_rate / {{SO.TDF}}.ChargeEfficiency == 电接口_i
         else:
-            assert (原电接口_xi - {{SO.TDF}}.ActualTotalDecayRateCompensated[i] )/ {{SO.TDF}}.ChargeEfficiency == 电接口_i
+            assert (原电接口_xi - compensated_decay_rate )/ {{SO.TDF}}.ChargeEfficiency == 电接口_i
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
