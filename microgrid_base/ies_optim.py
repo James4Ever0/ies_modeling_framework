@@ -2689,7 +2689,7 @@ class 锂电池模型(设备模型):
         
         # cannot be fixed bound.
         if 设计规划:
-            self.ActualTotalDecayRateCompensated = Var([...], bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals)
+            self.ActualTotalDecayRateCompensated = Var([...], bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge is.
             # constraint.
             self.ActualTotalDecayRateCompensated <= self.TotalStorageDecayRate
         else:
@@ -2701,7 +2701,7 @@ class 锂电池模型(设备模型):
             self.电接口,
             self.ActualTotalDecayRateCompensated, 
             expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
-            - (x_neg + z) / self.ChargeEfficiency
+            - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
             == y,
         )
 
