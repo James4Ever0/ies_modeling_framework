@@ -2679,7 +2679,7 @@ class 锂电池模型(设备模型):
         self.CustomRangeConstraintMulti(
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
-            self.DischargeRate,
+            self.ActualTotalDecayRateCompensated,
             range(self.计算参数.迭代步数 - 1),
             expression = 
             lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
@@ -2694,6 +2694,7 @@ class 锂电池模型(设备模型):
             self.ActualTotalDecayRateCompensated <= self.TotalStorageDecayRate
         else:
             self.ActualTotalDecayRateCompensated = Var([...], bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
+        
         
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
@@ -2734,7 +2735,7 @@ class 锂电池模型(设备模型):
                 )
 
                 self.mw.Constraint(
-                    self.原电接口.x[0] - self.DischargeRate[0]
+                    self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
                     == (
                         self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                         - self.CurrentTotalActualCapacity[0]
