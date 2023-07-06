@@ -13,21 +13,27 @@ app = Celery(
 
 # override format exception logic.
 # ref: https://poe.com/s/PV9zAO91vGQjHJuZ4toR (GPT4)
-# import logging
+
 import better_exceptions
-from celery.utils.log import ColorFormatter # type: ignore
+import sys
+from celery.utils.log import ColorFormatter  # type: ignore
+
 # class CustomFormatter(logging.Formatter):
 class CustomFormatter(ColorFormatter):
     def formatException(self, exc_info):
         """
-        Format an exception using the given exc_info.
+        Format the exception information and return the formatted string.
 
-        Args:
-            exc_info: A tuple containing information about the exception.
+        Parameters:
+            exc_info (tuple): The exception information tuple.
 
         Returns:
-            A formatted string representing the exception.
+            str: The formatted exception string.
         """
+
+        if exc_info and not isinstance(exc_info, tuple):
+            exc_info = sys.exc_info() # copied from `ColorFormatter.formatException`
+    
         lines = better_exceptions.format_exception(*exc_info)
         return "".join(lines)
 
@@ -52,7 +58,7 @@ from fastapi_datamodel_template import CalculationResult
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
-# def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
+    # def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:
     # raise Exception("ERROR MSG")
     # error_name = "ERROR_NAME"; error_log = 'ERROR_LOG'
     # self.update_state(
@@ -78,12 +84,12 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
     # try:
     resultList = solveModelFromCalcParamList(calcParamList)
     # except Exception as ex:
-        # import traceback
+    # import traceback
 
-        # error_log = traceback.format_exc()
-        # error_name = type(ex).__name__
-        # print("************CELERY ERROR************")
-        # print(error_log)
+    # error_log = traceback.format_exc()
+    # error_name = type(ex).__name__
+    # print("************CELERY ERROR************")
+    # print(error_log)
 
     if resultList != []:
         # success = True
@@ -94,7 +100,7 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
     else:
         raise Exception("Empty result list.")
         # calculation_result = CalculationResult(
-        #     error_log = "Empty result list.", resultList=resultList, success=False, 
+        #     error_log = "Empty result list.", resultList=resultList, success=False,
         # )
         # self.update_state(
         #     state="FAILURE", meta={"exc_type": error_name, "exc_message": error_log, 'custom':'...'}
@@ -114,4 +120,4 @@ app.conf.update(worker_time_limit=time_limit)
 
 if __name__ == "__main__":
     worker = app.Worker()
-    worker.start() # type:ignore
+    worker.start()  # type:ignore
