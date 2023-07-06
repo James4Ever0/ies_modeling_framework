@@ -314,7 +314,7 @@ class {{class_name}}ID(设备ID):
     "生产厂商",
     "设备型号",
 ]%}
-{% set deviceIdentifiers =deviceBaseIdentifiers + deviceOptionalIdentifiers %}
+{% set deviceIdentifiers = deviceBaseIdentifiers + deviceOptionalIdentifiers %}
 
 class 设备基础信息(BaseModel):
 {% for i in deviceBaseIdentifiers%}
