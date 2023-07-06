@@ -363,7 +363,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         delta_capacity = value({{SO.TDF}}.CurrentTotalActualCapacity[i] - {{SO.TDF}}.CurrentTotalActualCapacity[i+1])
         assert delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i]) == 0
         原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
-        电接口_i = {{SO.TDF}}.电接口[i]
+        电接口_i = value({{SO.TDF}}.电接口[i])
         if 原电接口_xi>=0:
             assert 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - {{SO.TDF}}.ActualTotalDecayRateCompensated[i] / {{SO.TDF}}.ChargeEfficiency == 电接口_i
         else:
