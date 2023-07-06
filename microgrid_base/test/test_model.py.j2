@@ -362,7 +362,12 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     def verify_constraints(i):
         delta_capacity = value({{SO.TDF}}.CurrentTotalActualCapacity[i] - {{SO.TDF}}.CurrentTotalActualCapacity[i+1])
         assert delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i]) == 0
-        
+        原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
+        电接口_i = {{SO.TDF}}.电接口[i]
+        if 原电接口_xi>=0:
+            assert 
+        else:
+            assert 
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
