@@ -174,7 +174,6 @@ else:
                 funcname=processed_data.funcname,
             )
 
-
 def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
     import inspect
 
