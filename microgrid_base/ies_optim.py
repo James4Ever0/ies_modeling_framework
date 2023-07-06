@@ -2685,9 +2685,6 @@ class 锂电池模型(设备模型):
         
         # shall modify this model
         
-        self.DecayChargeRate = (self.ChargeRate - self.TotalStorageDecayRate)
-        self.DischargeRate = 
-
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
             self.原电接口.x_neg,
