@@ -1174,6 +1174,7 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount )
         {% elif class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 省略除以1 单位: one
+        assert 光电转换效率<1, "光电转换效率shu zhi bu zheng c"
         总最大功率 = self.MaxPower * self.DeviceCount
         总面积 = self.Area * self.DeviceCount
 
