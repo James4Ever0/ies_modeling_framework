@@ -238,7 +238,7 @@ def 测试锂电池信息():
         RatedCapacity=20,
         BatteryDeltaLimit=10,
         ChargeEfficiency=50,
-        DischargeEfficiency=50,
+        DischargeEfficiency=60,
         MaxSOC=90,
         MinSOC=10,
         # BatteryStorageDecay=0,
