@@ -36,6 +36,16 @@ import os
 
 
 def iterate_till_keyword(iterator, keyword: str):
+    """
+    Iterate through the given iterator until the specified keyword is found.
+
+    Parameters:
+        - iterator: An iterator object.
+        - keyword: A string representing the keyword to stop the iteration.
+
+    Returns:
+        None
+    """
     while True:
         it = next(iterator)
         if it == keyword:
@@ -49,10 +59,28 @@ class ExchangePaths:
 
     @staticmethod
     def getInputPath(basedir: str):
+        """
+        A static method that takes a base directory as input and returns the path to the input file.
+        
+        Parameters:
+            basedir (str): The base directory.
+        
+        Returns:
+            str: The path to the input file.
+        """
         return os.path.join(basedir, ExchangePaths.input)
 
     @staticmethod
     def getOutputPath(basedir: str):
+        """
+        Get the output path by joining the base directory with the output path.
+
+        Args:
+            basedir (str): The base directory.
+
+        Returns:
+            str: The output path.
+        """
         return os.path.join(basedir, ExchangePaths.output)
 
 
@@ -276,6 +304,11 @@ from types import MethodType
 
 
 def add_locals_and_globals_inspectors_to_instance(c):
+    """
+    Adds local and global inspectors to the given instance.
+
+    :param c: The instance to add the inspectors to.
+    """
     c.locals = MethodType(lambda self: locals(), c)
     c.globals = MethodType(lambda self: globals(), c)
 

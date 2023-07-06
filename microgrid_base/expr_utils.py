@@ -19,6 +19,15 @@ except:
 
 
 def find_parentheses(s):
+    """
+    Find all parentheses pairs in the given string.
+
+    Parameters:
+    - s (str): The input string to search for parentheses pairs.
+
+    Returns:
+    - result (List[str]): A list of all parentheses pairs found in the string.
+    """
     stack = []
     result = []  # EIPList
     for i, c in enumerate(progressbar(s)):
