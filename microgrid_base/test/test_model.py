@@ -449,15 +449,46 @@ def test_传输线(
 from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 
 
-@pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
+@pytest.mark.parametrize(
+    "device_count, total_decay_rate, init_capacity", [(500 / 20, 500 * 0.1)]
+)
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
-    model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, total_decay_rate, sense
+    model_wrapper: ModelWrapper,
+    测试锂电池模型: 锂电池模型,
+    device_count,
+    total_decay_rate,
+    init_capacity,
+    sense,
 ):
     测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=lambda x: x <= 0
     )  # means charging the battery.
+
+    def verify_constraints(i):
+        delta_capacity = value(
+            测试锂电池模型.CurrentTotalActualCapacity[i]
+            - 测试锂电池模型.CurrentTotalActualCapacity[i + 1]
+        )
+        assert (
+            delta_capacity
+            - value(测试锂电池模型.原电接口.x[i] - 测试锂电池模型.ActualTotalDecayRateCompensated[i])
+            == 0
+        )
+        原电接口_xi = value(测试锂电池模型.原电接口.x[i])
+        电接口_i = 测试锂电池模型.电接口[i]
+        if 原电接口_xi >= 0:
+            assert (
+                原电接口_xi * 测试锂电池模型.DischargeEfficiency
+                - 测试锂电池模型.ActualTotalDecayRateCompensated[i] / self.ChargeEfficiency
+                == 电接口_i
+            )
+        else:
+            assert (
+                原电接口_xi - 测试锂电池模型.ActualTotalDecayRateCompensated[i]
+            ) / self.ChargeEfficiency == 电接口_i
+
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
@@ -469,9 +500,15 @@ def test_锂电池(
 
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
         assert abs(value(测试锂电池模型.TotalStorageDecayRate) - total_decay_rate) < EPS
-        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[0]))
-        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[1]))
-        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[2]))
+        assert (
+            abs(
+                value(测试锂电池模型.CurrentTotalActualCapacity[0] + 测试锂电池模型.MinSOC * 500)
+                - init_capacity
+            )
+            < EPS
+        )
+        for i in range(5):
+            verify_constraints(i)
         print()
         print(value(测试锂电池模型.电接口[0]))
         print(value(测试锂电池模型.电接口[1]))
@@ -482,8 +519,10 @@ def test_锂电池(
         print(value(测试锂电池模型.原电接口.x[2]))
         print()
         print(value(测试锂电池模型.CurrentTotalActualCapacity[0]))
-        print(value(测试锂电池模型.CurrentTotalActualCapacity[1]))
+        print(
+            value(测试锂电池模型.CurrentTotalActualCapacity[1])
+        )  # this is not the "real" total capacity. add "total min capacity" first.
         print(value(测试锂电池模型.CurrentTotalActualCapacity[2]))
         # all zero?
         # 0.0
-        breakpoint()
+        breakpoint()  # }
