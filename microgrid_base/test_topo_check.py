@@ -276,4 +276,3 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
-
