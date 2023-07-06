@@ -34,6 +34,8 @@ from pydantic import validator
 
 import os
 
+def iterate_till_keyword(iterator, keyword:str):
+    for it
 
 class ExchangePaths:
     input = "input.json"
