@@ -34,8 +34,14 @@ from pydantic import validator
 
 import os
 
-def iterate_till_keyword(iterator, keyword:str):
-    for it
+
+def iterate_till_keyword(iterator, keyword: str):
+    while True:
+        it = next(iterator)
+        if it == keyword:
+            print(f"Stopped iteration at keyword: '{keyword}'")
+            break
+
 
 class ExchangePaths:
     input = "input.json"
@@ -54,7 +60,7 @@ class SourceCodeExchange(BaseModel):
     source_code: str
     processed: bool
     funcname: str = ""
-    keywords: set = set() # validation values follows the order.
+    keywords: set = set()  # validation values follows the order.
 
     @validator("keywords")
     def validate_keywords(cls, v, values):
@@ -76,10 +82,18 @@ class SourceCodeExchange(BaseModel):
 
     @validator("funcname")
     def validate_funcname(cls, v, values):
-        if processed:=values.get("processed"):
-            assert v != "", "Processed: {}\nInvalid funcname: {} (Shall not be empty)".format(processed, repr(v))
+        if processed := values.get("processed"):
+            assert (
+                v != ""
+            ), "Processed: {}\nInvalid funcname: {} (Shall not be empty)".format(
+                processed, repr(v)
+            )
         else:
-            assert v == "", "Processed: {}\nInvalid funcname: {} (Shall be empty)".format(processed, repr(v))
+            assert (
+                v == ""
+            ), "Processed: {}\nInvalid funcname: {} (Shall be empty)".format(
+                processed, repr(v)
+            )
         return v
 
 
