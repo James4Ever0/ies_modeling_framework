@@ -273,7 +273,9 @@ if __name__ == "__main__":
         # add_locals_and_globals_inspectors_to_instance(c)
         # c_locals = c.locals()
         # c_globals = c.globals()
-        c_globals = c.__globals__
+        c_globals = c.myfunc.__globals__
+        # c_globals = MyClass.__globals__
+        # c_globals = c.__globals__
         # print(c_locals.keys())
         print(c_globals.keys())
 
