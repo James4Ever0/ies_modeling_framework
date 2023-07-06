@@ -360,11 +360,13 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     {{SO.TDF}}.constraints_register()
     {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = lambda x: x <= 0) # means charging the battery.
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
-        assert abs(value(测试锂电池模型.DeviceCount)) == device_count
-        print(value(测试锂电池模型.电接口[0]))
-        print(value(测试锂电池模型.原电接口.x[0]))
-        print(value(测试锂电池模型.原电接口.x[1]))
-        print(value(测试锂电池模型.原电接口.x[2]))
+        assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
+        print(value({{SO.TDF}}.电接口[0]))
+        print(value({{SO.TDF}}.电接口[1]))
+        print(value({{SO.TDF}}.电接口[2]))
+        print(value({{SO.TDF}}.原电接口.x[0]))
+        print(value({{SO.TDF}}.原电接口.x[1]))
+        print(value({{SO.TDF}}.原电接口.x[2]))
         # all zero?
         # 0.0
         breakpoint()
