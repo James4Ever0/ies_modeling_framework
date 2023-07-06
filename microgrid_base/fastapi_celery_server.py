@@ -12,7 +12,16 @@ app = Celery(
 )
 
 # override format exception logic.
-app.log.setup
+import logging
+class CustomFormatter(logging.Formatter):
+    def formatException(self, exc_info):
+        # Customize the exception formatting here
+        return "Custom formatted exception: {}".format(
+            super().formatException(exc_info)
+        )
+custom_formatter = CustomFormatter()
+for handler in app.log.get_default_logger().handlers:
+    handler.setFormatter(custom_formatter)
 
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
