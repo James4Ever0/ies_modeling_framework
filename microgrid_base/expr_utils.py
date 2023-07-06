@@ -51,12 +51,18 @@ class RecursionContext(ContextManager):
         self.sys_recursion_limit = sys.getrecursionlimit()
 
     def __enter__(self):
-        """Return `self` upon entering the runtime context."""
+        """
+        Set recursion_limit to desired limit.
+        Return `self` upon entering the runtime context.
+        """
         sys.setrecursionlimit(self.recursion_limit)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Raise any exception triggered within the runtime context."""
+        """
+        Restore recursion_limit to previous limit.
+        Raise any exception triggered within the runtime context.
+        """
         sys.setrecursionlimit(self.sys_recursion_limit)
         return None
 
