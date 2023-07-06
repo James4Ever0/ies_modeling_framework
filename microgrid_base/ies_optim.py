@@ -2676,11 +2676,13 @@ class 锂电池模型(设备模型):
             == self.InitActualCapacityPerUnit * self.DeviceCount
         )
 
-        self.CustomRangeConstraint(
+        self.CustomRangeConstraintMulti(
             self.原电接口.x,
             self.CurrentTotalActualCapacity,
+            self.DischargeRate,
             range(self.计算参数.迭代步数 - 1),
-            lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+            expression = 
+            lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
         )
         
         # shall modify this model
