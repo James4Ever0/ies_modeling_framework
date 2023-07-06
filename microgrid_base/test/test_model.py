@@ -469,9 +469,14 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
         print(value(测试锂电池模型.电接口[0]))
         print(value(测试锂电池模型.电接口[1]))
         print(value(测试锂电池模型.电接口[2]))
+        print()
         print(value(测试锂电池模型.原电接口.x[0]))
         print(value(测试锂电池模型.原电接口.x[1]))
         print(value(测试锂电池模型.原电接口.x[2]))
+        print()
+        print(value(测试锂电池模型.CurrentTotalActualCapacity[0]))
+        print(value(测试锂电池模型.CurrentTotalActualCapacity[1]))
+        print(value(测试锂电池模型.CurrentTotalActualCapacity[2]))
         # all zero?
         # 0.0
         breakpoint()
