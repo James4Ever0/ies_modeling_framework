@@ -466,6 +466,10 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
         check_solver_result(s_results)
 
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
+        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[0]))
+        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[1]))
+        print(value(测试锂电池模型.ActualTotalDecayRateCompensated[2]))
+        print()
         print(value(测试锂电池模型.电接口[0]))
         print(value(测试锂电池模型.电接口[1]))
         print(value(测试锂电池模型.电接口[2]))
