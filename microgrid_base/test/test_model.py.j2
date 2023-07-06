@@ -283,8 +283,8 @@ def test_电价模型():
 {# import math #}
 
 {% call parametrizeTestHelper("光伏发电", "Device", autoSense=false, autoRegister=false)%}
-    {% call parametrize("illumination, output")%}[(5, 49), (10,98),(20,98)]{% endcall%}
-{% endcall%}
+    {% call parametrize("illumination, output")%}[(5, 49), (10,98),(20,98)]{% endcall %}
+{% endcall %}
     illumination_array = [illumination]*24
 
     {{SO.TDF}}.计算参数.光照 = illumination_array
