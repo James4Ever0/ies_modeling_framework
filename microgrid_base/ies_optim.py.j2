@@ -541,7 +541,7 @@ class ModelWrapper:
                 {# print("_____________ERROR LOG_____________") #}
                 examineSubExprDegree(expr)
                 {# print("_____________ERROR LOG_____________") #}
-            error_msg = f"{{k}}: Unacceptable polynomial degree for expression."
+            error_msg = f"[{{k}}] Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}

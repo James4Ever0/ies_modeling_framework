@@ -191,7 +191,7 @@ def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warni
 
     func_source = inspect.getsource(func)
     # return new_func
-    find_def = r"^( +)def"  # not async
+    find_def = r"^( +)(?:def|async)"  # not async
     FDRegex = re.compile(find_def, flags=re.MULTILINE)
     strip_blanks = FDRegex.findall(func_source)[0]
     blank_count = len(strip_blanks)
