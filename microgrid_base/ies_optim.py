@@ -2685,12 +2685,18 @@ class 锂电池模型(设备模型):
         
         # shall modify this model
         
+        # cannot be fixed bound.
+        self.DischargeRate = Var([...], bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
+        
+        self.TotalStorageDecayRate
+        
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
             self.原电接口.x_neg,
             self.电接口,
-            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-            - (x_neg + self.TotalStorageDecayRate) / self.ChargeEfficiency
+            self.DischargeRate, 
+            expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
+            - (x_neg + z) / self.ChargeEfficiency
             == y,
         )
 
