@@ -174,7 +174,8 @@ else:
                 funcname=processed_data.funcname,
             )
 
-def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warning!
+def overwrite_func(func, c_globals, keywords: set):  # nameclash warning!
+# def overwrite_func(func, c_locals, c_globals, keywords: set):
     import inspect
 
     # import ast
@@ -206,7 +207,8 @@ def overwrite_func(func, c_locals, c_globals, keywords: set):  # nameclash warni
     changed_source, funcname = add_stepwise_lines_to_func_source(
         func_source_cleaned, keywords
     )
-    exec(changed_source, c_locals, c_globals)
+    # exec(changed_source, locals= c_locals, globals=c_globals)
+    exec(changed_source,globals= c_globals)
     print(locals().keys())
 
     new_func = eval(funcname)  # not in locals.
@@ -271,13 +273,14 @@ if __name__ == "__main__":
         # add_locals_and_globals_inspectors_to_instance(c)
         # c_locals = c.locals()
         # c_globals = c.globals()
-        c_globals = 
+        c_globals = c.__globals__
         # print(c_locals.keys())
         print(c_globals.keys())
 
         keywords = {"def", "has_keyword"}
 
-        new_func = overwrite_func(c.myfunc, c_locals, c_globals, keywords)
+        new_func = overwrite_func(c.myfunc, c_globals, keywords)
+        # new_func = overwrite_func(c.myfunc, c_locals, c_globals, keywords)
         c.myfunc = MethodType(new_func, c)
 
         exec_result = c.myfunc()
