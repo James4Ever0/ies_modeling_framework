@@ -335,7 +335,6 @@ def test_分月电价(hour_index, expected_price, power):
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
-
 @pytest.mark.parametrize("illumination, output", [(1, 9.8), (0.5, 4.9), (2, 9.8)])
 def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光伏发电模型, illumination, output):
     illumination_array = [illumination] * 24
