@@ -3737,12 +3737,13 @@ class 仿真结果(BaseModel):
 
 
 class 节点基类(BaseModel):
-    type: constr(min_length=1) = Field(title="节点类型")
+    # type: constr(min_length=1) = Field(title="节点类型")
     subtype: constr(min_length=1) = Field(title="节点次类型")
     id: int = Field(title="节点ID")
 
 
 class 锚点节点(节点基类):
+    type
     port_name: constr(min_length=1) = Field(title="锚点名称")
     device_id: conint(ge=0) = Field(title="锚点所对应设备ID")
 

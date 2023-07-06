@@ -1523,11 +1523,12 @@ class 仿真结果(BaseModel):
     {% endfor %}
 
 class 节点基类(BaseModel):
-    type:{{normal_str}} = Field(title = "节点类型")
+    {# type:{{normal_str}} = Field(title = "节点类型") #}
     subtype:{{normal_str}} = Field(title = "节点次类型")
     id:int = Field(title = "节点ID")
 
 class 锚点节点(节点基类):
+    type = 
     port_name:{{normal_str}} = Field(title = '锚点名称')
     device_id:{{non_neg_int}} = Field(title = '锚点所对应设备ID')
     
