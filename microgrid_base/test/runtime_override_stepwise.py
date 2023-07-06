@@ -50,14 +50,14 @@ class ExchangePaths:
 
 class SourceCodeExchange(BaseModel):
     source_code: str
-    keywords: set = set()
     processed: bool
     funcname: str = ""
+    keywords: set = set() # validation values follows the order.
 
     @validator("keywords")
     def validate_keywords(cls, v, values):
-        print(values)
-        breakpoint()
+        # print(values)
+        # breakpoint()
         if processed := values.get("processed"):  # ERROR
             assert (
                 len(v) == 0
