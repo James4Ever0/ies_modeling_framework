@@ -352,7 +352,7 @@ def test_电价模型():
 from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {% call parametrizeTestHelper("锂电池", "Device", autoRegister=false)%}
 {# {% call parametrizeTestHelper("锂电池", "Device")%} #}
-    {% call parametrize("device_count")%}[500/20]{% endcall%}
+    {% call parametrize("device_count, total_decay_rate")%}[500/20, 500*0.1]{% endcall%}
 {% endcall%}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100)) #}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 1) # BUG: cannot discharge #}
@@ -361,6 +361,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = lambda x: x <= 0) # means charging the battery.
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
+        assert abs(value({{SO.TDF}}.TotalStorageDecayRate) - total_decay_rate)
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[0]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[1]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[2]))
