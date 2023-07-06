@@ -2687,12 +2687,11 @@ class 锂电池模型(设备模型):
         
         # cannot be fixed bound.
         if 设计规划:
-            self.DischargeRate = Var([...], bounds = (0,self.MaxDeviceCount*self.BatteryStorageDecay), within=NonNegativeReals)
-            self.DischargeRate  <= 
+            self.DischargeRate = Var([...], bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals)
+            # constraint.
+            self.DischargeRate <= self.TotalStorageDecayRate
         else:
             self.DischargeRate = Var([...], bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
-        
-        self.TotalStorageDecayRate
         
         self.RangeConstraintMulti(
             self.原电接口.x_pos,
@@ -2733,7 +2732,7 @@ class 锂电池模型(设备模型):
                 )
 
                 self.mw.Constraint(
-                    self.原电接口.x[0]
+                    self.原电接口.x[0] - self.DischargeRate[0]
                     == (
                         self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                         - self.CurrentTotalActualCapacity[0]
