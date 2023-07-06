@@ -360,7 +360,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     {{SO.TDF}}.constraints_register()
     {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = lambda x: x <= 0) # means charging the battery.
     def verify_constraints(i):
-        delta_capacity =value( {{SO.TDF}}.CurrentTotalActualCapacity[i] - {{SO.TDF}}.CurrentTotalActualCapacity[i+1])
+        delta_capacity = value({{SO.TDF}}.CurrentTotalActualCapacity[i] - {{SO.TDF}}.CurrentTotalActualCapacity[i+1])
         delta_capacity - value({{SO.TDF}}.原电接口.x[i] - {{SO.TDF}}.ActualTotalDecayRateCompensated[i])
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
