@@ -450,13 +450,22 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 
 
 @pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
+@pytest.mark.parametrize(
+    "eport_constraint",
+    [lambda x: x < 0, lambda x: x == 0, lambda x: x == -40, lambda x: x > -40],
+)
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
-    model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, total_decay_rate, sense
+    model_wrapper: ModelWrapper,
+    测试锂电池模型: 锂电池模型,
+    device_count,
+    total_decay_rate,
+    eport_constraint,
+    sense,
 ):
     测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
-        测试锂电池模型.电接口, expression=lambda x: x <= 0
+        测试锂电池模型.电接口, expression=eport_constraint
     )  # means charging the battery.
 
     def verify_constraints(i):
@@ -472,16 +481,17 @@ def test_锂电池(
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
         电接口_i = value(测试锂电池模型.电接口[i])
         compensated_decay_rate = value(测试锂电池模型.ActualTotalDecayRateCompensated[i])
-        total_decay_rate = value(测试锂电池模型.TotalStorageDecayRate)
+        _total_decay_rate = value(测试锂电池模型.TotalStorageDecayRate)
         if 原电接口_xi >= 0:
             assert (
                 原电接口_xi * 测试锂电池模型.DischargeEfficiency
-                - (total_decay_rate - compensated_decay_rate) / 测试锂电池模型.ChargeEfficiency
+                - (_total_decay_rate - compensated_decay_rate)
+                / 测试锂电池模型.ChargeEfficiency
                 == 电接口_i
             )
         else:
             assert (
-                原电接口_xi - (total_decay_rate - compensated_decay_rate)
+                原电接口_xi - (_total_decay_rate - compensated_decay_rate)
             ) / 测试锂电池模型.ChargeEfficiency == 电接口_i
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
