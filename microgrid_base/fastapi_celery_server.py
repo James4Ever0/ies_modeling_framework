@@ -12,13 +12,17 @@ app = Celery(
 )
 
 # override format exception logic.
+# ref: https://poe.com/s/PV9zAO91vGQjHJuZ4toR (GPT4)
 import logging
+
 class CustomFormatter(logging.Formatter):
     def formatException(self, exc_info):
         # Customize the exception formatting here
-        return "Custom formatted exception: {}".format(
-            super().formatException(exc_info)
-        )
+        # return "Custom formatted exception: {}".format(
+        #     super().formatException(exc_info)
+        # )
+        ...
+
 custom_formatter = CustomFormatter()
 for handler in app.log.get_default_logger().handlers:
     handler.setFormatter(custom_formatter)
