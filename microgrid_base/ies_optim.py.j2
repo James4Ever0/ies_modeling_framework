@@ -1,6 +1,7 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
+{% set needStorageDecayCompensation=true%}
 {% macro stepwise_flag(class_name, flag_name)%}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#")}}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
@@ -1215,7 +1216,19 @@ class {{class_name}}模型(设备模型):
 
         self.mw.Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.DeviceCount)
 
+
+            {% if needStorageDecayCompensation%}
+        self.CustomRangeConstraintMulti(
+            self.原电接口.x,
+            self.CurrentTotalActualCapacity,
+            self.ActualTotalDecayRateCompensated,
+            range(self.计算参数.迭代步数 - 1),
+            expression = 
+            lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+        )
+            {% else%}
         self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, range(self.计算参数.迭代步数-1), lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
+            {% endif%}
         {# power = delta(capacity)/delta(time)#}
 
         self.RangeConstraintMulti(
