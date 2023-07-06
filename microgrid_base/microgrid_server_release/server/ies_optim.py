@@ -299,13 +299,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -332,13 +332,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -1276,9 +1276,10 @@ class ModelWrapper:
             print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
             print("EXPR:", expr_repr)
-
-            # TODO: use regex to simplify expression here.
-            examineSubExprDegree(expr)
+            # only if deg > 0 we need further inspection.
+            if deg > 0:
+                # TODO: use regex to simplify expression here.
+                examineSubExprDegree(expr)
             error_msg = f"Constraint: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("CON")
@@ -1317,9 +1318,10 @@ class ModelWrapper:
             print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
             print("EXPR:", expr_repr)
-
-            # TODO: use regex to simplify expression here.
-            examineSubExprDegree(expr)
+            # only if deg > 0 we need further inspection.
+            if deg > 0:
+                # TODO: use regex to simplify expression here.
+                examineSubExprDegree(expr)
             error_msg = f"Objective: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("OBJ")
@@ -2716,7 +2718,7 @@ class 锂电池模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == "日间独立":
-                self.mw.Constraint(self.原电接口.x[0] == self.EPS)
+                self.原电接口.x[0].set_value(self.EPS)
             elif self.设备信息.循环边界条件 == "日间连接":
                 self.mw.Constraint(
                     self.CurrentTotalActualCapacity[0]
@@ -2741,7 +2743,7 @@ class 锂电池模型(设备模型):
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         elif self.计算参数.计算类型 == "仿真模拟":
-            self.mw.Constraint(self.原电接口.x[0] == self.EPS)
+            self.原电接口.x[0].set_value(self.EPS)
 
         # 计算年化
         # unit: one
@@ -2908,18 +2910,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3403,18 +3405,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）

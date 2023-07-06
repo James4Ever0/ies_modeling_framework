@@ -535,11 +535,12 @@ class ModelWrapper:
             print("EXPR DEG:", deg)
             expr_repr =f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
             print('EXPR:',  expr_repr)
-
-            # TODO: use regex to simplify expression here.
-            {# print("_____________ERROR LOG_____________") #}
-            examineSubExprDegree(expr)
-            {# print("_____________ERROR LOG_____________") #}
+            # only if deg > 0 we need further inspection.
+            if deg >0:
+                # TODO: use regex to simplify expression here.
+                {# print("_____________ERROR LOG_____________") #}
+                examineSubExprDegree(expr)
+                {# print("_____________ERROR LOG_____________") #}
             error_msg = f"{{k}}: Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
         name = self.getSpecialName("{{k[:3].upper()}}")
