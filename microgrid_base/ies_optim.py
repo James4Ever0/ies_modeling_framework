@@ -2686,7 +2686,11 @@ class 锂电池模型(设备模型):
         # shall modify this model
         
         # cannot be fixed bound.
-        self.DischargeRate = Var([...], bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
+        if 设计规划:
+            self.DischargeRate = Var([...], bounds = (0,self.MaxDeviceCount*self.BatteryStorageDecay), within=NonNegativeReals)
+            self.DischargeRate  <= 
+        else:
+            self.DischargeRate = Var([...], bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
         
         self.TotalStorageDecayRate
         
