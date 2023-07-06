@@ -2768,6 +2768,7 @@ class 锂电池模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+        breakpoint()
 
         self.处理最终财务输出(self)
 
