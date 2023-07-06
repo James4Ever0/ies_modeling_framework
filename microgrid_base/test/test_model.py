@@ -335,6 +335,7 @@ def test_分月电价(hour_index, expected_price, power):
     mprice = myPriceModel.getFee(power, time_in_day=hour_index)
     assert abs(mprice - expected_price) == 0
 
+
 @pytest.mark.parametrize("illumination, output", [(1, 9.8), (0.5, 4.9), (2, 9.8)])
 def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光伏发电模型, illumination, output):
     illumination_array = [illumination] * 24
@@ -445,17 +446,17 @@ def test_传输线(
         assert abs(-value(测试传输线模型.电输入[2]) - _input) < EPS
 
 
+from runtime_override_stepwise import iterate_till_keyword, overwrite_func
+
+
 @pytest.mark.parametrize("device_count", [500 / 20])
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, sense):
+    测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=lambda x: x <= 0
     )  # means charging the battery.
-    obj = 测试锂电池模型.总成本年化
-    # print(value(obj), obj)
-    # breakpoint()
-    # all objectives are zero.
-    model_wrapper.Objective(expr=obj, sense=sense)
+    model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
@@ -463,3 +464,5 @@ def test_锂电池(model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池
         print("SOLVER RESULTS?")
         print(s_results)
         check_solver_result(s_results)
+
+        assert abs(value(测试锂电池模型.DeviceCount)) == device_count
