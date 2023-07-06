@@ -372,7 +372,9 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
         assert abs(value({{SO.TDF}}.TotalStorageDecayRate) - total_decay_rate) < EPS
-        assert abs(value({{SO.TDF}}.CurrentTotalActualCapacity[0]+{{SO.TDF}}.MinSOC*500)  - init_capacity) < EPS
+
+        init_capacity = value({{SO.TDF}}.DeviceCount) * {{SO.TDF}}.InitSOC * {{SO.TDF}}.RatedCapacity
+        assert abs(value({{SO.TDF}}.CurrentTotalActualCapacity[0]+{{SO.TDF}}.MinSOC*500) - init_capacity) < EPS
         for i in range(5):
             verify_constraints(i)
 {# 
