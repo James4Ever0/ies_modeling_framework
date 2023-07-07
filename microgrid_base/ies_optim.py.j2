@@ -734,7 +734,8 @@ class 设备模型:
         var = self.mw.Var(self.getVarName(varName) ,self.getRange(mrange), **kwargs)
         return var
 
-    def RangeConstraint(self, var_1, var_2, expression, /,mrange:range = None):
+    def RangeConstraint(self, var_1, var_2, /, expression=... ,mrange:range = None):
+        assert expression !=...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
 
@@ -798,7 +799,8 @@ class 设备模型:
         x_var, # x_var
         y_var, # y_var
         x_vals: List[float],
-        y_vals: List[float], /,
+        y_vals: List[float],
+         {# /, #}
      range_list:Union[List[int], None]=None, 
      pw_repn='MC', 
      {# pw_repn='SOS2',  #}
