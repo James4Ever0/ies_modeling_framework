@@ -281,13 +281,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -321,13 +321,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -712,9 +712,6 @@ class 柴油发电信息(设备信息):
 
 
 class 锂电池信息(设备信息):
-    needStorageDecayCompensation: bool = Field(
-        default=True, title="是否允许可变存储衰减补偿", description="开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减"
-    )
 
     循环边界条件: constr(min_length=1) = Field(title="循环边界条件")
 
@@ -2306,18 +2303,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -2616,12 +2613,6 @@ class 锂电池模型(设备模型):
 
         # 设备特有约束（变量）
 
-        self.needStorageDecayCompensation: bool = self.设备信息.needStorageDecayCompensation
-
-        """
-        开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减
-        """
-
         assert self.InitSOC >= self.MinSOC
         assert self.InitSOC <= self.MaxSOC
         self.InitActualCapacityPerUnit = (
@@ -2663,29 +2654,25 @@ class 锂电池模型(设备模型):
         单位: kW
         """
 
-        if self.needStorageDecayCompensation:
-            # TODO: Verify if "compensated decay rate" works.
-            if self.计算参数.计算类型 == "设计规划":
+        # TODO: Verify if "compensated decay rate" works.
+        if self.计算参数.计算类型 == "设计规划":
 
-                self.ActualTotalDecayRateCompensated = self.变量列表(
-                    "总补偿衰减率",
-                    bounds=(
-                        0,
-                        (self.BatteryStorageDecay / 100) * self.MaxTotalCapacity,
-                    ),
-                    within=NonNegativeReals,
-                )  # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
-                # constraint.
-                self.RangeConstraintMulti(
-                    self.ActualTotalDecayRateCompensated,
-                    expression=lambda x: x <= self.TotalStorageDecayRate,
-                )
-            else:
-                self.ActualTotalDecayRateCompensated = self.变量列表(
-                    "总补偿衰减率",
-                    bounds=(0, self.TotalStorageDecayRate),
-                    within=NonNegativeReals,
-                )
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, (self.BatteryStorageDecay / 100) * self.MaxTotalCapacity),
+                within=NonNegativeReals,
+            )  # the greater the value, the less our compensation is, the greater the real discharge is.
+            # constraint.
+            self.RangeConstraintMulti(
+                self.ActualTotalDecayRateCompensated,
+                expression=lambda x: x <= self.TotalStorageDecayRate,
+            )
+        else:
+            self.ActualTotalDecayRateCompensated = self.变量列表(
+                "总补偿衰减率",
+                bounds=(0, self.TotalStorageDecayRate),
+                within=NonNegativeReals,
+            )
 
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
@@ -2709,39 +2696,23 @@ class 锂电池模型(设备模型):
             == self.InitActualCapacityPerUnit * self.DeviceCount
         )
 
-        if self.needStorageDecayCompensation:
-            self.CustomRangeConstraintMulti(
-                self.原电接口.x,
-                self.CurrentTotalActualCapacity,
-                self.ActualTotalDecayRateCompensated,
-                customRange=range(self.计算参数.迭代步数 - 1),
-                expression=lambda x, y, z, i: x[i] - z[i]
-                == (y[i] - y[i + 1]) * self.计算参数.时间参数,
-            )
-            self.RangeConstraintMulti(
-                self.原电接口.x_pos,
-                self.原电接口.x_neg,
-                self.电接口,
-                self.ActualTotalDecayRateCompensated,
-                expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
-                - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
-                == y,
-            )
-        else:
-            self.CustomRangeConstraint(
-                self.原电接口.x,
-                self.CurrentTotalActualCapacity,
-                customRange=range(self.计算参数.迭代步数 - 1),
-                expression=lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
-            )
-            self.RangeConstraintMulti(
-                self.原电接口.x_pos,
-                self.原电接口.x_neg,
-                self.电接口,
-                expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-                - (x_neg + self.TotalStorageDecayRate) / self.ChargeEfficiency
-                == y,
-            )
+        self.CustomRangeConstraintMulti(
+            self.原电接口.x,
+            self.CurrentTotalActualCapacity,
+            self.ActualTotalDecayRateCompensated,
+            customRange=range(self.计算参数.迭代步数 - 1),
+            expression=lambda x, y, z, i: x[i] - z[i]
+            == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+        )
+        self.RangeConstraintMulti(
+            self.原电接口.x_pos,
+            self.原电接口.x_neg,
+            self.电接口,
+            self.ActualTotalDecayRateCompensated,
+            expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
+            - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
+            == y,
+        )
         for i in range(self.计算参数.迭代步数 - 1):
             self.mw.Constraint(
                 self.CurrentTotalActualCapacity[i + 1]
@@ -2769,24 +2740,14 @@ class 锂电池模型(设备模型):
                     - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
                     >= -self.MaxTotalCapacityDeltaPerStep
                 )
-                if self.needStorageDecayCompensation:
-                    self.mw.Constraint(
-                        self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
-                        == (
-                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                            - self.CurrentTotalActualCapacity[0]
-                        )
-                        * self.计算参数.时间参数
+                self.mw.Constraint(
+                    self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
+                    == (
+                        self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
+                        - self.CurrentTotalActualCapacity[0]
                     )
-                else:
-                    self.mw.Constraint(
-                        self.原电接口.x[0]
-                        == (
-                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                            - self.CurrentTotalActualCapacity[0]
-                        )
-                        * self.计算参数.时间参数
-                    )
+                    * self.计算参数.时间参数
+                )
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         elif self.计算参数.计算类型 == "仿真模拟":
@@ -3288,18 +3249,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
