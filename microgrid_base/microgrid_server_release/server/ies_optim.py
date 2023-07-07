@@ -310,35 +310,35 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
+    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
     """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -1497,20 +1497,20 @@ class 设备模型:
         self.SID += 1
         return specialVarName
 
-    def 单变量(self, varName: str, /, **kwargs):
+    def 单变量(self, varName: str, **kwargs):
         var = self.mw.Var(self.getVarName(varName), **kwargs)
         return var
 
-    def getRange(self, /, mrange: range = None):
+    def getRange(self, mrange: range = None):
         if mrange is None:
             mrange = range(self.计算参数.迭代步数)
         return mrange
 
-    def 变量列表(self, varName: str, /, mrange: range = None, **kwargs):
+    def 变量列表(self, varName: str, mrange: range = None, **kwargs):
         var = self.mw.Var(self.getVarName(varName), self.getRange(mrange), **kwargs)
         return var
 
-    def RangeConstraint(self, var_1, var_2, /, expression=..., mrange: range = None):
+    def RangeConstraint(self, var_1, var_2, expression=..., mrange: range = None):
         assert expression != ...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
@@ -1523,7 +1523,7 @@ class 设备模型:
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
     def CustomRangeConstraint(
-        self, var_1, var_2, /, customRange: range = ..., expression=...
+        self, var_1, var_2, customRange: range = ..., expression=...
     ):
         assert customRange is not ...
         for i in customRange:
@@ -1537,10 +1537,10 @@ class 设备模型:
         for i in customRange:
             self.mw.Constraint(expression(*vars, i))
 
-    def SumRange(self, var_1, /, mrange: range = None):
+    def SumRange(self, var_1, mrange: range = None):
         return sum([var_1[i] for i in self.getRange(mrange)])
 
-    def 单变量转列表(self, var, /, dup: int = None):
+    def 单变量转列表(self, var, dup: int = None):
         if dup is None:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
@@ -1560,7 +1560,7 @@ class 设备模型:
         return ret
 
     def 变量列表_带指示变量(
-        self, varName: str, /, exprList: list = None, within=Reals, mrange: range = None
+        self, varName: str, exprList: list = None, within=Reals, mrange: range = None
     ) -> POSNEG:
         if exprList:
             x = exprList
@@ -1666,7 +1666,7 @@ class 设备模型:
                 f"Nonlinear expression found while breaking down.\nExpression type: {type(expr)}"
             )
 
-    def BinVarMultiplySingle(self, b_var, x_var, /, recurse=True):
+    def BinVarMultiplySingle(self, b_var, x_var, recurse=True):
         assert b_var.is_binary()
         assert type(x_var) is not pyomo.core.base.var.IndexedVar
 
@@ -1705,7 +1705,7 @@ class 设备模型:
             return h * factor
 
     def Multiply(
-        self, dict_mx: dict, dict_my: dict, varName: str, /, precision=10, within=Reals
+        self, dict_mx: dict, dict_my: dict, varName: str, precision=10, within=Reals
     ):  # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx["var"], dict_mx["max"], dict_mx["min"]
@@ -3130,18 +3130,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3292,18 +3292,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3441,18 +3441,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）

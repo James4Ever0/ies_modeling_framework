@@ -722,19 +722,19 @@ class 设备模型:
         self.SID +=1
         return specialVarName
 
-    def 单变量(self, varName: str,/, **kwargs):
+    def 单变量(self, varName: str, **kwargs):
         var = self.mw.Var(self.getVarName(varName) ,**kwargs)
         return var
     
-    def getRange(self, /,mrange:range = None):
+    def getRange(self, mrange:range = None):
         if mrange is None: mrange = range(self.计算参数.迭代步数)
         return mrange
 
-    def 变量列表(self, varName: str,/, mrange:range = None, **kwargs):
+    def 变量列表(self, varName: str, mrange:range = None, **kwargs):
         var = self.mw.Var(self.getVarName(varName) ,self.getRange(mrange), **kwargs)
         return var
 
-    def RangeConstraint(self, var_1, var_2, /, expression=... ,mrange:range = None):
+    def RangeConstraint(self, var_1, var_2,  expression=... ,mrange:range = None):
         assert expression !=...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
@@ -744,7 +744,7 @@ class 设备模型:
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(self, var_1, var_2, /, customRange:range=..., expression= ...):
+    def CustomRangeConstraint(self, var_1, var_2,  customRange:range=..., expression= ...):
         assert customRange is not ...
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
@@ -755,10 +755,10 @@ class 设备模型:
         for i in customRange:
             self.mw.Constraint(expression(*vars, i))
     
-    def SumRange(self,var_1, /, mrange:range=None):
+    def SumRange(self,var_1,  mrange:range=None):
         return {{- sum_reduce('[var_1[i] for i in self.getRange(mrange)]')}}
     
-    def 单变量转列表(self, var, /, dup:int=None):
+    def 单变量转列表(self, var,  dup:int=None):
         if dup is None:
             dup = self.计算参数.迭代步数
         return [var for _ in range(dup)]
@@ -770,7 +770,7 @@ class 设备模型:
         ret = POSNEG(posneg.x[0], posneg.x_pos[0], posneg.x_neg[0], posneg.b_pos[0], posneg.b_neg[0], posneg.x_abs[0])
         return ret
     
-    def 变量列表_带指示变量(self, varName:str, /, exprList:list=None, within= Reals, mrange:range=None) -> POSNEG:
+    def 变量列表_带指示变量(self, varName:str,  exprList:list=None, within= Reals, mrange:range=None) -> POSNEG:
         if exprList:
             x = exprList
         else:
@@ -800,7 +800,7 @@ class 设备模型:
         y_var, # y_var
         x_vals: List[float],
         y_vals: List[float],
-         {# /, #}
+         {#  #}
      range_list:Union[List[int], None]=None, 
      pw_repn='MC', 
      {# pw_repn='SOS2',  #}
@@ -860,7 +860,7 @@ class 设备模型:
             except:
                 ... #}
     
-    def BinVarMultiplySingle(self, b_var, x_var, /, recurse=True):
+    def BinVarMultiplySingle(self, b_var, x_var,  recurse=True):
     {# def BinVarMultiplySingle(self, b_var, x_var, recurse=False): #}
         assert b_var.is_binary()
         assert type(x_var) is not {{IndexedVar}}
@@ -908,7 +908,7 @@ class 设备模型:
             return h * factor
         {# return h*divider #}
 
-    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str, /, precision = 10, within = Reals): # two continuous multiplication
+    def Multiply(self,dict_mx:dict, dict_my:dict, varName:str,  precision = 10, within = Reals): # two continuous multiplication
         #  (x+y)^2 - (x-y)^2 = 4xy
         mx, max_mx, min_mx = dict_mx['var'], dict_mx['max'], dict_mx['min']
         my, max_my, min_my = dict_my['var'], dict_my['max'], dict_my['min']
