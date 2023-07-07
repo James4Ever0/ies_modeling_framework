@@ -226,7 +226,7 @@ def 测试柴油发电模型(
 
 # =================================锂电池==================================
 
-
+# you may need to parametrize this fixture. also create lithion battery with different parameters.
 @fixture
 def 测试锂电池信息():
     val = 锂电池信息(
@@ -267,7 +267,6 @@ def 测试锂电池ID():
         电接口=12,
     )
     return val
-
 
 @fixture
 def 测试锂电池模型(测试锂电池信息: 锂电池信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试锂电池ID: 锂电池ID):
