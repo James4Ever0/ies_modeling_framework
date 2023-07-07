@@ -384,6 +384,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% endif%}
     {% else %}
         {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
+        {# special variables for non-load #}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
