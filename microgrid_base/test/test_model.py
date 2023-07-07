@@ -452,10 +452,8 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 @pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
 @pytest.mark.parametrize(
     "ie, eport_constraint_dynamic",
-    list(
-        enumerate(
-            [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40]
-        )
+    enumerate(
+        [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40]
     ),
 )
 @pytest.mark.parametrize("sense", [minimize, maximize])
