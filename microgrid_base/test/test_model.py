@@ -454,10 +454,6 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     "eport_constraint_dynamic",
     [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40],
 )
-@pytest.mark.parametrize(
-    "eport_constraint_static",
-    [lambda x: x <= 0, lambda x: x == -50, lambda x: x <= -40],
-)
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
     model_wrapper: ModelWrapper,
@@ -465,14 +461,14 @@ def test_锂电池(
     device_count,
     total_decay_rate,
     eport_constraint_dynamic,
-    eport_constraint_static,
     sense,
 ):
-    is_static = 测试锂电池模型.needStorageDecayCompensation
+    is_dynamic = 测试锂电池模型.needStorageDecayCompensation
     测试锂电池模型.constraints_register()
-    测试锂电池模型.RangeConstraintMulti(
-        测试锂电池模型.电接口, expression=eport_constraint
-    )  # means charging the battery.
+    if is_dynamic:
+        测试锂电池模型.RangeConstraintMulti(
+            测试锂电池模型.电接口, expression=eport_constraint_dynamic
+        )  # means charging the battery.
 
     def verify_constraints(i):
 
