@@ -385,6 +385,9 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {% else %}
         {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
         {# special variables for non-load #}
+        {% if class_name in ['锂电池']%}
+    ... : bool = True
+        {% endif%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
