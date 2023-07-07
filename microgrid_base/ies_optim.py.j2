@@ -1065,7 +1065,11 @@ class {{class_name}}模型(设备模型):
             )
         {% elif class_name  == '锂电池' %}
 
-        self.needStorageDecayCompensation = self.设备信息.needStorageDecayCompensation
+        self.needStorageDecayCompensation:bool = self.设备信息.needStorageDecayCompensation
+
+        """
+        开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减
+        """
 
         assert self.InitSOC >= self.MinSOC
         assert self.InitSOC <= self.MaxSOC
@@ -1266,19 +1270,20 @@ class {{class_name}}模型(设备模型):
                 self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
 
                 self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] >=-self.MaxTotalCapacityDeltaPerStep)
-                if needStorageDecayCompensation:
+                if self.needStorageDecayCompensation:
             {# {% if needStorageDecayCompensation%} #}
-                self.mw.Constraint(
-                    self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
-                    == (
-                        self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                        - self.CurrentTotalActualCapacity[0]
+                    self.mw.Constraint(
+                        self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
+                        == (
+                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
+                            - self.CurrentTotalActualCapacity[0]
+                        )
+                        * self.计算参数.时间参数
                     )
-                    * self.计算参数.时间参数
-                )
-            {%else%}
-                self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalActualCapacity[0]) * {{时间步长参数}} )
-            {% endif%}
+            {# {%else%} #}
+                else:
+                    self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalActualCapacity[0]) * {{时间步长参数}} )
+            {# {% endif%} #}
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         elif self.计算参数.计算类型 == "仿真模拟":
