@@ -743,7 +743,7 @@ class 设备模型:
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(self, var_1, var_2, /, customRange:range=..., expression):
+    def CustomRangeConstraint(self, var_1, var_2, /, customRange:range=..., expression= ...):
         assert customRange is not ...
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
