@@ -451,8 +451,12 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 
 @pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
 @pytest.mark.parametrize(
-    "eport_constraint",
+    "eport_constraint_dynamic",
     [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40],
+)
+@pytest.mark.parametrize(
+    "eport_constraint_static",
+    [lambda x: x <= 0, lambda x: x == -50, lambda x: x <= -40],
 )
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
@@ -460,29 +464,32 @@ def test_锂电池(
     测试锂电池模型: 锂电池模型,
     device_count,
     total_decay_rate,
-    eport_constraint,
+    eport_constraint_dynamic,
+    eport_constraint_static,
     sense,
 ):
+    is_static = 测试锂电池模型.needStorageDecayCompensation
     测试锂电池模型.constraints_register()
     测试锂电池模型.RangeConstraintMulti(
         测试锂电池模型.电接口, expression=eport_constraint
     )  # means charging the battery.
 
     def verify_constraints(i):
+
+        if is_dynamic:
+            compensated_decay_rate = value(测试锂电池模型.ActualTotalDecayRateCompensated[i])
+        else:
+            compensated_decay_rate = 0
         delta_capacity = value(
             测试锂电池模型.CurrentTotalActualCapacity[i]
             - 测试锂电池模型.CurrentTotalActualCapacity[i + 1]
         )
         assert (
-            abs(
-                delta_capacity
-                - value(测试锂电池模型.原电接口.x[i] - 测试锂电池模型.ActualTotalDecayRateCompensated[i])
-            )
+            abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] - compensated_decay_rate))
             < EPS
         )
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
         电接口_i = value(测试锂电池模型.电接口[i])
-        compensated_decay_rate = value(测试锂电池模型.ActualTotalDecayRateCompensated[i])
         _total_decay_rate = value(测试锂电池模型.TotalStorageDecayRate)
         if 原电接口_xi >= 0:
             assert (
