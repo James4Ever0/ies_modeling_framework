@@ -730,15 +730,15 @@ class 设备模型:
         if mrange is None: mrange = range(self.计算参数.迭代步数)
         return mrange
 
-    def 变量列表(self, varName: str, mrange:range = None, **kwargs):
+    def 变量列表(self, varName: str,/, mrange:range = None, **kwargs):
         var = self.mw.Var(self.getVarName(varName) ,self.getRange(mrange), **kwargs)
         return var
 
-    def RangeConstraint(self, var_1, var_2, expression, mrange:range = None):
+    def RangeConstraint(self, var_1, var_2, expression, /,mrange:range = None):
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
 
-    def RangeConstraintMulti(self, *vars, expression=..., mrange:range=None): # keyword argument now.
+    def RangeConstraintMulti(self, *vars, /,expression=..., mrange:range=None): # keyword argument now.
         assert expression is not ...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
@@ -1053,7 +1053,7 @@ class {{class_name}}模型(设备模型):
             self.RangeConstraint(self.柴油输入_, self.柴油输入, lambda x,y: x == y)
         else:
             self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
-            self.RangeConstraint(self.原电输出 ,self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
+            self.RangeConstraint(self.原电输出, self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
             # change #1: add line to define "self.柴油输入"
             self.RangeConstraint(
             # self.RangeConstraintMulti(
