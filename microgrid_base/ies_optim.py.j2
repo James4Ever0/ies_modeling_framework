@@ -1,7 +1,7 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
-{% set needStorageDecayCompensation=true%}
+{# {% set needStorageDecayCompensation=true%} #}
 {% macro stepwise_flag(class_name, flag_name)%}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#")}}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
@@ -386,7 +386,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
         {# special variables for non-load device info #}
         {% if class_name in ['锂电池']%}
-    needStorageDecayCompensation : bool = True
+    needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减")
         {% endif%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
