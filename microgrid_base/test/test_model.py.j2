@@ -354,6 +354,8 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {# {% call parametrizeTestHelper("锂电池", "Device")%} #}
     {% call parametrize("device_count, total_decay_rate")%}[(500/20, 500*0.1 )]{% endcall%}
     {% call parametrize("ie, eport_constraint_dynamic")%}enumerate([lambda x: x<=0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40]){%endcall%}
+    {# with enumerate -> list: 170 items #}
+    {# without: 170 items #}
     {# {% call parametrize("eport_constraint_static")%}[lambda x: x<=0, lambda x: x == -50, lambda x: x <= -40]{%endcall%} #}
     {# {% call parametrize("eport_constraint_static")%}[lambda x: x<=0, lambda x: x == -50, lambda x: x <= -40]{%endcall%} #}
 {% endcall%}
