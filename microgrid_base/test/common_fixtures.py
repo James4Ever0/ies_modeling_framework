@@ -227,9 +227,10 @@ def 测试柴油发电模型(
 # =================================锂电池==================================
 
 # you may need to parametrize this fixture. also create lithion battery with different parameters.
-@fixture
-def 测试锂电池信息():
-    flag = ...
+# @fixture
+@fixture(params = [True, False], ids = ["AllowDynamicDecayCompensation","DisallowDynamicDecayCompensation"])
+def 测试锂电池信息(request: Request):
+    flag = request.param
     val = 锂电池信息(
         设备名称="锂电池",
         生产厂商="Any",
