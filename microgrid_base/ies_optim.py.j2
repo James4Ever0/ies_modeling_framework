@@ -55,7 +55,7 @@ from pydantic import BaseModel, Field, validator
 
 {# import pint #}
 
-from unit_utils import (
+from .unit_utils import (
     unitFactorCalculator,
     ureg,
     standard_units,
@@ -446,7 +446,7 @@ def find_parentheses(s):
                     result.append(s[start:i+1]) # 将括号对加入结果列表
     return result #}
 
-from expr_utils import getExprStrParsedToExprList
+from .expr_utils import getExprStrParsedToExprList
 
 {# mystr = '(1,2,3), (((1+2),2),5,(6,7)) 23'
 print(find_parentheses(mystr)) #}
