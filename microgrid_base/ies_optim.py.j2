@@ -384,9 +384,9 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% endif%}
     {% else %}
         {% set super_class, mstrs, mdigits, mtables = NonLoadDeviceDict[class_name] %}
-        {# special variables for non-load #}
+        {# special variables for non-load device info #}
         {% if class_name in ['锂电池']%}
-    ... : bool = True
+    needStorageDecayCompensation : bool = True
         {% endif%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
@@ -396,7 +396,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% endfor %}
     
         {% for psc, mdigit in mdigits %}
-    {{ mdigit[0] }}: {{non_neg_float}} = Field(title = "{{mdigit[1]}}", description =     "名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}")
+    {{ mdigit[0] }}: {{non_neg_float}} = Field(title = "{{mdigit[1]}}", description =   "名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}")
     """
     名称: {{ mdigit[1] }}
     单位: {{ mdigit[2] }}
