@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field, validator
 # three computation modes:
 
 
-from .unit_utils import (
+from unit_utils import (
     unitFactorCalculator,
     ureg,
     standard_units,

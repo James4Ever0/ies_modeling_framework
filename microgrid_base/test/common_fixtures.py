@@ -1,8 +1,8 @@
 from pytest import fixture
 import sys
 
-# sys.path.append("../")
-from ..ies_optim import *
+sys.path.append("../")
+from ies_optim import *
 
 
 @fixture
