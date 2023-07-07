@@ -1,4 +1,4 @@
-from common_fixtures import *
+from .common_fixtures import *
 
 from typing import cast
 
