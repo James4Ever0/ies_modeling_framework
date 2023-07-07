@@ -722,11 +722,11 @@ class 设备模型:
         self.SID +=1
         return specialVarName
 
-    def 单变量(self, varName: str, **kwargs):
+    def 单变量(self, varName: str,/, **kwargs):
         var = self.mw.Var(self.getVarName(varName) ,**kwargs)
         return var
     
-    def getRange(self, mrange:range = None):
+    def getRange(self, /,mrange:range = None):
         if mrange is None: mrange = range(self.计算参数.迭代步数)
         return mrange
 
@@ -743,11 +743,12 @@ class 设备模型:
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(self, var_1, var_2, customRange:range, expression):
+    def CustomRangeConstraint(self, var_1, var_2, /, customRange:range=..., expression):
+        assert customRange is not ...
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
     
-    def CustomRangeConstraintMulti(self, *vars, customRange:range=..., expression=...):
+    def CustomRangeConstraintMulti(self, *vars, /, customRange:range=..., expression=...):
         assert expression is not ...
         assert customRange is not ...
         for i in customRange:
