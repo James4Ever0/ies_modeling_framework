@@ -538,3 +538,6 @@ def test_锂电池(
         )
         for i in range(5):
             verify_constraints(i)
+
+        if last_capacity := value(测试锂电池模型.CurrentTotalActualCapacity[23]) < 0:
+            assert abs(last_capacity) <= EPS

@@ -394,6 +394,9 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         assert abs(value({{SO.TDF}}.CurrentTotalActualCapacity[0]+{{SO.TDF}}.MinSOC*500) - init_capacity) < EPS
         for i in range(5):
             verify_constraints(i)
+
+        if last_capacity:= value({{SO.TDF}}.CurrentTotalActualCapacity[23]) <0:
+            assert abs(last_capacity)<=EPS
 {# 
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[0]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[1]))
