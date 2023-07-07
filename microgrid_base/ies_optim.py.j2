@@ -1065,6 +1065,8 @@ class {{class_name}}模型(设备模型):
             )
         {% elif class_name  == '锂电池' %}
 
+        self.needStorageDecayCompensation = self.设备信息.needStorageDecayCompensation
+
         assert self.InitSOC >= self.MinSOC
         assert self.InitSOC <= self.MaxSOC
         self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
