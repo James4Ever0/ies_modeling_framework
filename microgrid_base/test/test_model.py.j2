@@ -396,7 +396,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
             verify_constraints(i)
 
         if last_capacity:= value({{SO.TDF}}.CurrentTotalActualCapacity[len({{SO.TDF}}.计算参数.风速)-1]) < 0:
-            assert abs(last_capacity)<=EPS
+            assert abs(last_capacity) <= EPS
 {# 
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[0]))
         print(value({{SO.TDF}}.ActualTotalDecayRateCompensated[1]))
