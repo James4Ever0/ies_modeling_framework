@@ -738,7 +738,7 @@ class 设备模型:
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
 
-    def RangeConstraintMulti(self, *vars, /,expression=..., mrange:range=None): # keyword argument now.
+    def RangeConstraintMulti(self, *vars, expression=..., mrange:range=None): # keyword argument now.
         assert expression is not ...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
@@ -748,7 +748,7 @@ class 设备模型:
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
     
-    def CustomRangeConstraintMulti(self, *vars, /, customRange:range=..., expression=...):
+    def CustomRangeConstraintMulti(self, *vars, customRange:range=..., expression=...):
         assert expression is not ...
         assert customRange is not ...
         for i in customRange:
