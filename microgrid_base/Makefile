@@ -1,1 +1,3 @@
-# shall you generate this automatically.
+# shall you generate template automatically.
+
+make_template: generate_

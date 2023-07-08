@@ -28,4 +28,5 @@ for fname in os.listdir("."):
             tree.body = tree.body[: myindex + 1]
             source_code = astor.to_source(tree)
             exec(source_code)
+            print("MAKE DEF IN FILE:", fname)
             print(MAKEFILE)  # type: ignore
