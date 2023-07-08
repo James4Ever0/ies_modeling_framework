@@ -45,5 +45,5 @@ load_render_and_format(
     generate_path.split(".")[0] + ".j2",
     generate_path,
     render_params=dict(python_files=python_files),
-    banner="MAKEFILE RENDER",
+    banner="MAKEFILE TMP RENDER",
 )
