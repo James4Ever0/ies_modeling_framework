@@ -1,5 +1,6 @@
 {%defmacro J(mlist)%}{{" ".join(mlist)}}{% endmacro%}
-{% for in %}
-{{J(inputs)}}: {{fpath}} {{J()}}
-    python3 $< {{J(args)}}
+{% for e in python_files%}
+{{J(e.outputs)}}: {{e.fpath}} {{J(e.inputs)}}
+    python3 $< {{J(e.args)}}
+
 {% endfor%}
