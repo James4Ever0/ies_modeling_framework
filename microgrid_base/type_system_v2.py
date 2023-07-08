@@ -39,11 +39,12 @@ SAVE_PREFIX = "microgrid_v2"
 
 
 MAKEFILE = dict(
-    inputs=[figure_path],
+    inputs=[],
     outputs=[
+        figure_path,
         j1 := generate_filename("device_port_type_mapping", SAVE_PREFIX),
         j2 := generate_filename("connectivity_matrix", SAVE_PREFIX),
-        j3:=generate_filename("all_types_structured", SAVE_PREFIX)
+        j3 := generate_filename("all_types_structured", SAVE_PREFIX),
     ],
     args=["-p"],
 )
@@ -537,6 +538,7 @@ all_types_structured = {
     "合并线": {k: [e for e in v if Mergeable.check(e)] for k, v in wire_types.items()},
 }
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
+
 print_with_banner(all_types_structured, j3)
 
 mtypes = set([e for k, v in types.items() for e in v])

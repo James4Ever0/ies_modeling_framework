@@ -13,4 +13,5 @@ for fname in os.listdir("."):
         content = read_file(fname)
         tree = ast.parse(content)
         for elem in tree.body: # shall be an assignment.
-            print(elem)
+            if isinstance(elem, ast.Assign):
+                
