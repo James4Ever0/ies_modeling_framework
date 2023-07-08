@@ -156,8 +156,8 @@ def 测试风力发电信息():
         Life=20,
         BuildCostPerKilowatt=20,
         BuildBaseCost=20,
-        MaxDeviceCount=(devCount:=3),
-        MinDeviceCount=devCount-0.5,
+        MaxDeviceCount=(devCount := 3),
+        MinDeviceCount=devCount - 0.5,
         DeviceCount=devCount,
     )
     return val
@@ -228,7 +228,10 @@ def 测试柴油发电模型(
 
 # you may need to parametrize this fixture. also create lithion battery with different parameters.
 # @fixture
-@fixture(params = [True, False], ids = ["AllowDynamicDecayCompensation","DisallowDynamicDecayCompensation"])
+@fixture(
+    params=[True, False],
+    ids=["AllowDynamicDecayCompensation", "DisallowDynamicDecayCompensation"],
+)
 def 测试锂电池信息(request: Request):
     flag = request.param
     val = 锂电池信息(
@@ -258,7 +261,7 @@ def 测试锂电池信息(request: Request):
         MaxTotalCapacity=(mcap := 500),
         MinTotalCapacity=mcap,
         TotalCapacity=mcap,
-        needStorageDecayCompensation = flag
+        needStorageDecayCompensation=flag,
     )
     return val
 
@@ -270,6 +273,7 @@ def 测试锂电池ID():
         电接口=12,
     )
     return val
+
 
 @fixture
 def 测试锂电池模型(测试锂电池信息: 锂电池信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试锂电池ID: 锂电池ID):
@@ -377,7 +381,7 @@ def 测试双向变流器信息():
         BuildCostPerKilowatt=2,
         BuildBaseCost=2,
         MaxDeviceCount=1,
-        MinDeviceCount=1-0.5,
+        MinDeviceCount=1 - 0.5,
         DeviceCount=1,
     )
     return val
