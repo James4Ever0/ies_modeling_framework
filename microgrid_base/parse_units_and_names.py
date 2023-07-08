@@ -9,7 +9,7 @@ microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 
 output_path = "microgrid_jinja_param_base.json"
 
-MAKEFILE = dict(inputs = [device_data_path_base, microgrid_device_port_path], outputs = [output_path])
+MAKEFILE = dict(inputs = [device_data_path_base, microgrid_device_port_path], outputs = [output_path], args = [])
 
 import pint
 

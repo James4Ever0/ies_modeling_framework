@@ -35,6 +35,8 @@ for fname in os.listdir("."):
             exec(source_code)
             print(("MAKEFILE ENTRY: %s" % fname).center(60, "="))
             print(MAKEFILE)  # type: ignore
+            for argname in ['inputs', 'outputs', 'args']:
+                assert argname in MAKEFILE.keys(), f"{argname} not in keys." # type:ignore
             MAKEFILE.update(fname=fname)  # type: ignore
             python_files.append(MAKEFILE.copy())  # type: ignore
             print()
