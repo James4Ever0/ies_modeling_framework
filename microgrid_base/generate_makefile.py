@@ -22,7 +22,8 @@ for fname in (fnames := os.listdir(".")):
         tree = ast.parse(content)
         # you shall walk over this. see if it imports any python file in the same directory.
         for it in ast.walk(tree):
-            ...
+            if isinstance(it, ast.Import):
+            elif isinstance(it)
         myindex = -1
         for index, elem in enumerate(tree.body):  # shall be an assignment.
             if isinstance(elem, ast.Assign):
