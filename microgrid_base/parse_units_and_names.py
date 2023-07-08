@@ -3,6 +3,11 @@
 
 device_data_path_base = "device_params_intermediate.json"
 
+microgrid_device_port_path = "microgrid_device_port_type_mapping.json"
+
+output_path = "microgrid_jinja_param_base.json"
+
+MAKEFILE = dict(inputs = [device_data_path_base, microgrid_device_port_path], outputs = [output_path])
 import pint
 
 import json
@@ -33,8 +38,6 @@ def get_table_format(k, u):
 
 with open(device_data_path_base, "r") as f:
     device_data = json.load(f)
-
-microgrid_device_port_path = "microgrid_device_port_type_mapping.json"
 
 with open(microgrid_device_port_path, "r") as f:
     port_dict = json.load(f)
@@ -535,7 +538,7 @@ rich.print(output_data)
 
 # write documents for api?
 # or just a whole bunch of generated documents inserted into places?
-output_path = "microgrid_jinja_param_base.json"
+
 with open(output_path, "w+") as f:
     f.write(json.dumps(output_data, indent=4, ensure_ascii=False))
 
