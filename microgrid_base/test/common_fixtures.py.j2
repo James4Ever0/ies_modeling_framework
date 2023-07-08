@@ -72,11 +72,11 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 
         {% call createTestFixture(devModelClassName, "测试{className}信息: {className}信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试{className}ID: {className}ID".format(className = infoClassName))%}
         PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试{{devIDClassName}}, 设备信息=测试{{devInfoClassName}}
-        {% endcall%}
+        {% endcall %}
     {% else%}
         {% call createTestFixture("设备模型", "model_wrapper: ModelWrapper, 测试计算参数: 计算参数") %}
         PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, ID=0
-        {% endcall%}
+        {% endcall %}
     {% endif %}
 
 {% endfor %}
