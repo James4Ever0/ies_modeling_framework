@@ -478,7 +478,7 @@ for index, row in port_df.iterrows():
 
 def print_with_banner(content, hyphen_saved_name, prefix):
     banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
-    print(f"=========[{banner}]=========")
+    print(f"=========[{filepath}]=========")
     rich.print(content)
     filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
     print("SAVING TO:", filepath)
