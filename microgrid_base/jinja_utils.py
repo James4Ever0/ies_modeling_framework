@@ -37,9 +37,9 @@ def load_render_and_format(
     if not needFormat: return
     try:
         result = black.format_str(result, mode=black.Mode())
+        print("Syntax Ok.")
         with open(output_path, "w+") as f:
             f.write(result)
-        print("Syntax Ok.")
     except:
         import traceback
 
