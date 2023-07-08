@@ -2,3 +2,4 @@
 
 Makefile.tmp: generate_makefile.py
 	python3 $< $@
+
