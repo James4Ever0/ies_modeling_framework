@@ -1,4 +1,4 @@
-MAKEFILE = dict(inputs = [''], outputs = [])
+MAKEFILE = dict(inputs = ['topo_check.py'], outputs = ['check_topo'], args = [])
 
 import json
 from topo_check import *

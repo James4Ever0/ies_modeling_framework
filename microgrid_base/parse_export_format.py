@@ -1,5 +1,11 @@
 excel_path = "设备信息库各参数.xlsx"
 
+from jinja_utils import code_and_template_path, load_render_and_format
+
+code_path, template_path = code_and_template_path("export_format_validate")
+
+output_path = "export_format.json"
+
 import json
 
 # from os import name
@@ -44,7 +50,6 @@ import rich
 # need processing.
 rich.print(data)
 
-output_path = "export_format.json"
 
 print("writing to:", output_path)
 
@@ -193,9 +198,6 @@ with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
 print("write to:", output_path)
 
-from jinja_utils import code_and_template_path, load_render_and_format
-
-code_path, template_path = code_and_template_path("export_format_validate")
 
 model_names = [f"{n}模型" for n in all_device_names]
 
