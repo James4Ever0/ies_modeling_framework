@@ -12,28 +12,28 @@ from pyomo.environ import *
 
 from pydantic import BaseModel
 import rich
-import io
-import logging
+# import io
+# import logging
 
-mstream = io.StringIO()
+# mstream = io.StringIO()
 # TODO: shall you test running under celery. shall you not using the root logger.
 # TODO: shall you save the log to file with "RotatingFileHandler"
 # logging.basicConfig(stream=mstream, level=logging.INFO)
-mStreamHandler = logging.StreamHandler(stream=mstream)
-import logging.handlers
-import os
+# mStreamHandler = logging.StreamHandler(stream=mstream)
+# import logging.handlers
+# import os
 
-log_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
-)
-mRotateFileHandler = logging.handlers.RotatingFileHandler(
-    log_path, maxBytes=1024 * 5 * 1024, backupCount=5
-)
-logger = logging.getLogger("SOLVE_MODEL_LOGGER")
-logger.propagate = False
-logger.setLevel(level=logging.INFO)
-logger.addHandler(mStreamHandler)
-logger.addHandler(mRotateFileHandler)
+# log_path = os.path.join(
+#     os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
+# )
+# mRotateFileHandler = logging.handlers.RotatingFileHandler(
+#     log_path, maxBytes=1024 * 5 * 1024, backupCount=5
+# )
+# logger = logging.getLogger("SOLVE_MODEL_LOGGER")
+# logger.propagate = False
+# logger.setLevel(level=logging.INFO)
+# logger.addHandler(mStreamHandler)
+# logger.addHandler(mRotateFileHandler)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)

@@ -36,7 +36,6 @@ MAKEFILE = dict(
 # 增加变流器和不可连接母线的连接
 import traceback
 
-
 import docopt
 
 from docopt import docopt
