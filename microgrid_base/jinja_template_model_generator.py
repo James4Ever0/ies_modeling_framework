@@ -7,17 +7,19 @@ from jinja_utils import *
 # the test code may not be generated.
 from param_base import *
 
-topo_code_output_path, topo_code_template_path = code_and_template_path(
-    "topo_check"
-)
+topo_code_output_path, topo_code_template_path = code_and_template_path("topo_check")
 
 ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
     "ies_optim"
-    )
+)
 
-MAKEFILE = dict(inputs = [topo_code_template_path, ies], outputs = [topo_code_output_path, ies_optim_code_output_path], args = [])
+MAKEFILE = dict(
+    inputs=[topo_code_template_path, ies_optim_code_template_path],
+    outputs=[topo_code_output_path, ies_optim_code_output_path],
+    args=[],
+)
+
 if __name__ == "__main__":
-
 
     load_render_and_format(
         template_path=topo_code_template_path,
