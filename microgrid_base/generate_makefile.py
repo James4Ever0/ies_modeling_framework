@@ -20,7 +20,7 @@ for fname in os.listdir("."):
             if isinstance(elem, ast.Assign):
                 targets = elem.targets
                 if len(targets) == 1:
-                    if targets[0].id == "MAKEFILE":
+                    if isinstance(targets[0], ast.Name) and targets[0].id == "MAKEFILE":
                         # this will be our last line.
                         myindex = index
                         break

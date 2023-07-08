@@ -1,3 +1,4 @@
 # shall you generate template automatically.
 
-make_template: generate_
+Makefile.tmp: generate_makefile.py
+	python3 $<
