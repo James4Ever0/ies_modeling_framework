@@ -1,4 +1,5 @@
 filepath ="ies_optim.py"
+output_path = ""
 with open(filepath, 'r') as f:
     content = f.read()
     

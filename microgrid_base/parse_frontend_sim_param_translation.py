@@ -1,5 +1,9 @@
 filepath = "frontend_sim_param_translation.js"
 
+output_path = "frontend_sim_param_translation.json"
+
+MAKEFILE = dict(inputs=[filepath], outputs=[output_path], args=[])
+
 import parse
 
 with open(filepath, "r") as f:
@@ -12,7 +16,7 @@ for line in lines:
     line = line.replace(":", ": ").replace(",", " , ").strip()
     while True:
         if " :" in line:
-            line = line.replace(" :",":")
+            line = line.replace(" :", ":")
         else:
             break
     result = parse.parse(
@@ -20,13 +24,10 @@ for line in lines:
     )
     if result:
         print(result)
-        resultMap[result["chineseName"].upper()] = result[
-            "englishName"
-        ]
+        resultMap[result["chineseName"].upper()] = result["englishName"]
 
 import json
 
-output_path = "frontend_sim_param_translation.json"
 print("writing to:", output_path)
 with open(output_path, "w+") as f:
     f.write(json.dumps(resultMap, ensure_ascii=False, indent=4))
