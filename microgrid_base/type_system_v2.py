@@ -40,8 +40,12 @@ SAVE_PREFIX = "microgrid_v2"
 
 MAKEFILE = dict(
     inputs=[figure_path],
-    outputs=[(j1 := ("device_port_type_mapping", SAVE_PREFIX),(j2:=("connectivity_matrix", SAVE_PREFIX)))],
-    args=[],
+    outputs=[
+        j1 := generate_filename("device_port_type_mapping", SAVE_PREFIX),
+        j2 := generate_filename("connectivity_matrix", SAVE_PREFIX),
+        j3:=generate_filename("all_types_structured", SAVE_PREFIX)
+    ],
+    args=["-p"],
 )
 
 
@@ -516,9 +520,7 @@ def exp_froz(frz):
 types_connectivity_matrix_for_json = {
     "{}_{}".format(*exp_froz(k)): v for k, v in types_connectivity_matrix.items()
 }
-print_with_banner(
-    types_connectivity_matrix_for_json, j2
-)  # must convert this one.
+print_with_banner(types_connectivity_matrix_for_json, j2)  # must convert this one.
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # print("=========[ALL TYPES STRUCTURED]=========")
@@ -535,7 +537,7 @@ all_types_structured = {
     "合并线": {k: [e for e in v if Mergeable.check(e)] for k, v in wire_types.items()},
 }
 # all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
-print_with_banner(all_types_structured, "all_types_structured", SAVE_PREFIX)
+print_with_banner(all_types_structured, j3)
 
 mtypes = set([e for k, v in types.items() for e in v])
 
