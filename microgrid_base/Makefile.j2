@@ -1,0 +1,5 @@
+{%defmacro join_by_space()%}
+{% for in %}
+: {{fpath}}
+    python3 $< {{}}
+{% endfor%}
