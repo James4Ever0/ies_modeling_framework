@@ -31,6 +31,7 @@ for fname in (fnames := os.listdir(".")):
                 mymodules.append(module)
         mymodules = set(mymodules)
         mymodules = [f"{m}.py" for m in mymodules]
+        required_pyfiles = [f for f in mymodules if f != fname and f in fnames]
         myindex = -1
         for index, elem in enumerate(tree.body):  # shall be an assignment.
             if isinstance(elem, ast.Assign):
@@ -41,6 +42,7 @@ for fname in (fnames := os.listdir(".")):
                         myindex = index
                         break
         if myindex != -1:
+            MAKEFILE: MakefileDict
             tree.body = tree.body[: myindex + 1]
             source_code = astor.to_source(tree)
             exec(source_code)
@@ -51,6 +53,7 @@ for fname in (fnames := os.listdir(".")):
                     argname in MAKEFILE.keys()
                 ), f"{argname} not in {MAKEFILE.keys()}"  # type:ignore
             MAKEFILE.update(fname=fname)  # type: ignore
+            MAKEFILE['outputs']
             python_files.append(MAKEFILE.copy())  # type: ignore
             print()
 
