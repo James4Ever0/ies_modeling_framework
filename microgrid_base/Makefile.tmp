@@ -1,0 +1,3 @@
+type_system.png microgrid_v2_device_port_type_mapping.json microgrid_v2_connectivity_matrix.json microgrid_v2_all_types_structured.json: type_system_v2.py 
+    python3 $< -p
+
