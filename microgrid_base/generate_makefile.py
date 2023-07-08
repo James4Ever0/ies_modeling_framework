@@ -7,6 +7,14 @@ assert (generate_path := sys.argv[-1]).endswith(".tmp")
 
 import ast
 import astor
+from typing import TypedDict, List
+
+
+class MakefileDict(TypedDict):
+    inputs: List[str]
+    outputs: List[str]
+    args: List[str]
+    fname: str
 
 
 def read_file(fname):
@@ -53,7 +61,8 @@ for fname in (fnames := os.listdir(".")):
                     argname in MAKEFILE.keys()
                 ), f"{argname} not in {MAKEFILE.keys()}"  # type:ignore
             MAKEFILE.update(fname=fname)  # type: ignore
-            MAKEFILE['outputs']
+            MAKEFILE["outputs"].extend(required_pyfiles)
+            MAKEFILE["outputs"] = list(set(MAKEFILE["outputs"]))
             python_files.append(MAKEFILE.copy())  # type: ignore
             print()
 
