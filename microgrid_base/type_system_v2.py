@@ -27,9 +27,22 @@ options = docopt(__doc__, version="2.0")
 PLOT_ONLY = options.get("--plot_only", False)
 # breakpoint()
 
-j1 = 
 
-MAKEFILE = dict(inputs=[figure_path], outputs=[], args=[])
+def generate_filename(hyphen_saved_name, prefix):
+    # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
+    rich.print(content)
+    filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
+    return filepath
+
+
+SAVE_PREFIX = "microgrid_v2"
+
+
+MAKEFILE = dict(
+    inputs=[figure_path],
+    outputs=[(j1 := ("device_port_type_mapping", SAVE_PREFIX),(j2:=("connectivity_matrix", SAVE_PREFIX)))],
+    args=[],
+)
 
 
 def check_valid_type_base_name(type_base_name):
@@ -104,9 +117,6 @@ class Suffix(PrefixSuffixBase):
 
 # 区分设备端口和连接线 端口是点 连接线是边
 # 给所有不可连接线增加随机hash值 方便观察
-
-SAVE_PREFIX = "microgrid_v2"
-
 
 import uuid
 
@@ -477,14 +487,9 @@ for index, row in port_df.iterrows():
                     "No port type definition for:", (mycat, mydevice, content)
                 )
 
-def generate_filename( hyphen_saved_name, prefix):
-    # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
-    rich.print(content)
-    filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
-    return filepath
 
-def print_with_banner(content,filepath):
-# def print_with_banner(content, hyphen_saved_name, prefix):
+def print_with_banner(content, filepath):
+    # def print_with_banner(content, hyphen_saved_name, prefix):
     # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
     rich.print(content)
     # filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
@@ -496,7 +501,7 @@ def print_with_banner(content,filepath):
 
 
 # print("=========[DEVICE PORT TYPE MAPPING]=========")
-print_with_banner(device_port_dict, "device_port_type_mapping", SAVE_PREFIX)
+print_with_banner(device_port_dict, j1)
 # print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
 
@@ -512,7 +517,7 @@ types_connectivity_matrix_for_json = {
     "{}_{}".format(*exp_froz(k)): v for k, v in types_connectivity_matrix.items()
 }
 print_with_banner(
-    types_connectivity_matrix_for_json, "connectivity_matrix", SAVE_PREFIX
+    types_connectivity_matrix_for_json, j2
 )  # must convert this one.
 # print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
