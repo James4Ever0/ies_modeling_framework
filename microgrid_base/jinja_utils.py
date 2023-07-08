@@ -22,7 +22,7 @@ class NeverUndefined(jinja2.StrictUndefined):
 
 
 def load_render_and_format(
-    template_path: str, output_path: str, render_params: dict, banner: str
+    template_path: str, output_path: str, render_params: dict, banner: str, needFormat:bool=True
 ):
     tpl = load_template(template_path)
     result = tpl.render(**render_params)
@@ -34,6 +34,7 @@ def load_render_and_format(
     # import black.Mode
     with open(output_path, "w+") as f:
         f.write(result)
+    if not needFormat: return
     try:
         result = black.format_str(result, mode=black.Mode())
         with open(output_path, "w+") as f:
