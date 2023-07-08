@@ -12,8 +12,11 @@ for fname in os.listdir("."):
     if fname.endswith(".py"):
         content = read_file(fname)
         tree = ast.parse(content)
-        for elem in tree.body: # shall be an assignment.
+        myindex = -1
+        for index, elem in enumerate(tree.body): # shall be an assignment.
             if isinstance(elem, ast.Assign):
                 targets = elem.targets
                 if len(targets) == 1:
-                    if targets[0].id
+                    if targets[0].id == "MAKEFILE":
+                        # this will be our last line.
+                        break
