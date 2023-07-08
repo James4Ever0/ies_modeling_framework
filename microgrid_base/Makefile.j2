@@ -1,5 +1,5 @@
-{%defmacro join_by_space()%}
+{%defmacro J(mlist)%}{{" ".join(mlist)}}{% endmacro%}
 {% for in %}
-: {{fpath}}
-    python3 $< {{}}
+{{J(inputs)}}: {{fpath}} {{J()}}
+    python3 $< {{J(args)}}
 {% endfor%}
