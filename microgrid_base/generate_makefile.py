@@ -31,6 +31,6 @@ for fname in os.listdir("."):
         if myindex != -1:
             tree.body = tree.body[: myindex + 1]
             source_code = astor.to_source(tree)
-            exec(source_code)
+            exec(source_code, {},{})
             print("MAKE DEF IN FILE:", fname)
             print(MAKEFILE)  # type: ignore

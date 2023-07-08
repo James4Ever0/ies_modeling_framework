@@ -8,16 +8,17 @@ Options:
     --version             Showing version.
 """
 
+import rich
 
 
 def generate_filename(hyphen_saved_name, prefix):
     # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
-    rich.print(content)
     filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
     return filepath
 
 
 SAVE_PREFIX = "microgrid_v2"
+figure_path = "type_system.png"
 
 
 MAKEFILE = dict(
@@ -33,11 +34,9 @@ MAKEFILE = dict(
 
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
 # 增加变流器和不可连接母线的连接
-import rich
 import traceback
 
 
-figure_path = "type_system.png"
 import docopt
 
 from docopt import docopt
