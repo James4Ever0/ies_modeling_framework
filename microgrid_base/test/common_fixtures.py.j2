@@ -2,7 +2,7 @@
 {# for better coding experience, refuse to use yaml but embrace python (autocomplete) #}
 {# render this to ".py.tmp" first, then modify it. #}
 
-{% macro createTestFixture(className, params = "")%}
+{% macro createTestFixture(className, params = "") %}
 @fixture
 def 测试{{className}}({{params}}):
     val = {{className}}(
@@ -52,7 +52,7 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 
 {% for _infoClassName, infoData in data.items() %}
     {% set infoClassName = _infoClassName.strip('信息') %}
-{{'# '+infoClassName.center(70, "=")}}
+{{'# {} #'.format(infoClassName.center(70, "="))}}
     {% if infoClassName != "计算参数" %}
         {% set devInfoClassName = infoClassName+"信息"%}
         {% set devModelClassName = infoClassName+"模型"%}
