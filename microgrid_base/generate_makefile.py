@@ -39,4 +39,11 @@ for fname in os.listdir("."):
             python_files.append(MAKEFILE.copy())  # type: ignore
             print()
 
-from jinja_utils import load_render_and_format, file
+from jinja_utils import load_render_and_format
+
+load_render_and_format(
+    generate_path.split(".")[0] + ".j2",
+    generate_path,
+    render_params=dict(python_files=python_files),
+    banner="MAKEFILE RENDER",
+)
