@@ -3,6 +3,7 @@ topo_check.py ies_optim.py: jinja_template_model_generator.py topo_check.py.j2 i
 
 export_format.json export_format_validate.py: parse_export_format.py export_format_validate.py.j2 设备信息库各参数.xlsx
     python3 $< 
+    
 
 frontend_sim_param_translation.json: parse_frontend_sim_param_translation.py frontend_sim_param_translation.js
     python3 $< 
