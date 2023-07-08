@@ -14,4 +14,6 @@ for fname in os.listdir("."):
         tree = ast.parse(content)
         for elem in tree.body: # shall be an assignment.
             if isinstance(elem, ast.Assign):
-                
+                targets = elem.targets
+                if len(targets) == 1:
+                    if targets[0].id
