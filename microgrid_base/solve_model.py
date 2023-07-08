@@ -8,7 +8,7 @@ except:
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
-from pyomo.util.infeasible import log_infeasible_constraints
+# from pyomo.util.infeasible import log_infeasible_constraints
 
 from pydantic import BaseModel
 import rich
