@@ -1,4 +1,3 @@
-
 """Creating IES topology type system.
 
 Usage:
@@ -14,18 +13,22 @@ Options:
 import rich
 import traceback
 
+
+figure_path = "type_system.png"
 import docopt
 
 from docopt import docopt
+
 # print(type(__doc__))
 # breakpoint()
 options = docopt(__doc__, version="2.0")
 # from turtle import backward
 # import pandas
-PLOT_ONLY = options.get('--plot_only', False)
+PLOT_ONLY = options.get("--plot_only", False)
 # breakpoint()
 
-MAKEFILE = dict(inputs = )
+MAKEFILE = dict(inputs=[figure_path], outputs=[], args=[])
+
 
 def check_valid_type_base_name(type_base_name):
     type_base_name = type_base_name.replace(" ", "").strip()
@@ -85,6 +88,7 @@ class Prefix(PrefixSuffixBase):
 class Suffix(PrefixSuffixBase):
     def __init__(self, suffix):
         super().__init__(suffix, prefix=False)
+
 
 # s0 = Prefix("s")
 # d = "s1000"
@@ -256,6 +260,7 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
 def transform_triplets(triplets, is_io, forward, backward):
     return [(e, is_io, forward, backward) for e in triplets_with_supertype(triplets)]
 
+
 # forward&backward for compatibility issues. just leave it be.
 
 from functools import reduce
@@ -319,12 +324,12 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
 
     # if forward:  # original
     types_connectivity_matrix.update(
-            {frozenset([start, connectable_wire_name]): unconnectable_output_wire_name}
-        )
+        {frozenset([start, connectable_wire_name]): unconnectable_output_wire_name}
+    )
     # if backward:
     types_connectivity_matrix.update(
-            {frozenset([end, connectable_wire_name]): unconnectable_input_wire_name}
-        )
+        {frozenset([end, connectable_wire_name]): unconnectable_input_wire_name}
+    )
 
 
 # rich.print(types)
@@ -486,11 +491,15 @@ def print_with_banner(content, hyphen_saved_name, prefix):
 print_with_banner(device_port_dict, "device_port_type_mapping", SAVE_PREFIX)
 # print("=========[CONNECTIVITY MATRIX]=========")
 rich.print(types_connectivity_matrix)
+
+
 def exp_froz(frz):
     lf = list(frz)
     if len(lf) == 1:
-        lf = lf+lf
+        lf = lf + lf
     return lf
+
+
 types_connectivity_matrix_for_json = {
     "{}_{}".format(*exp_froz(k)): v for k, v in types_connectivity_matrix.items()
 }
@@ -552,8 +561,10 @@ def alter_type_name(type_name):
     # breakpoint()
     return result
 
+
 def is_wire(name):
     return Connectable.check(name) or Unconnectable.check(name)
+
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # print(fzset, wire_name)
@@ -608,7 +619,6 @@ def plot_graph(G, figure_path: str, width=20, height=30, plot_only=False):
         plt.show()
 
 
-figure_path = "type_system.png"
 plot_graph(G, figure_path, plot_only=PLOT_ONLY)
 
 G1 = networkx.Graph()
@@ -638,7 +648,7 @@ for fzset, wire_name in types_connectivity_matrix.items():
             mstart = alter_type_name(mstart)
             mend = alter_type_name(mend)
             wire_name = alter_type_name(wire_name)
-            
+
             G1.add_edge(mstart, wire_name)
             G1.add_edge(mend, wire_name)
 
