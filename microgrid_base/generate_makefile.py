@@ -14,6 +14,7 @@ def read_file(fname):
         content = f.read()
         return content
 
+
 python_files = []
 for fname in os.listdir("."):
     if fname.endswith(".py"):
@@ -34,6 +35,8 @@ for fname in os.listdir("."):
             exec(source_code)
             print(("MAKEFILE ENTRY: %s" % fname).center(60, "="))
             print(MAKEFILE)  # type: ignore
-            MAKEFILE.update(fname=fname)
-            python_files.append()
+            MAKEFILE.update(fname=fname)  # type: ignore
+            python_files.append(MAKEFILE.copy())  # type: ignore
             print()
+
+from jinja_utils import load_render_and_format, file
