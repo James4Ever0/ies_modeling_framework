@@ -1,3 +1,5 @@
+MAKEFILE = dict(inputs = [''], outputs = [])
+
 import json
 from topo_check import *
 import rich
@@ -7,7 +9,6 @@ import rich
 ####################
 
 # FIXED: 加法器没有"output"
-
 
 def print_with_banner(data, banner: str):
     print()
