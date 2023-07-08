@@ -11,3 +11,6 @@ def read_file(fname):
 for fname in os.listdir("."):
     if fname.endswith(".py"):
         content = read_file(fname)
+        tree = ast.parse(content)
+        for elem in tree.body: # shall be an assignment.
+            print(elem)

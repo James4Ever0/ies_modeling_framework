@@ -25,6 +25,7 @@ options = docopt(__doc__, version="2.0")
 PLOT_ONLY = options.get('--plot_only', False)
 # breakpoint()
 
+MAKEFILE = dict(inputs = )
 
 def check_valid_type_base_name(type_base_name):
     type_base_name = type_base_name.replace(" ", "").strip()
