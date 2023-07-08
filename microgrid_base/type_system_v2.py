@@ -27,6 +27,8 @@ options = docopt(__doc__, version="2.0")
 PLOT_ONLY = options.get("--plot_only", False)
 # breakpoint()
 
+j1 = 
+
 MAKEFILE = dict(inputs=[figure_path], outputs=[], args=[])
 
 
@@ -475,14 +477,19 @@ for index, row in port_df.iterrows():
                     "No port type definition for:", (mycat, mydevice, content)
                 )
 
+def generate_filename( hyphen_saved_name, prefix):
+    # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
+    rich.print(content)
+    filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
+    return filepath
 
 def print_with_banner(content,filepath):
 # def print_with_banner(content, hyphen_saved_name, prefix):
-    banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
-    print(f"=========[{filepath}]=========")
+    # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
     rich.print(content)
-    filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
+    # filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
     print("SAVING TO:", filepath)
+    print(f"=========[{filepath}]=========")
     with open(filepath, "w+") as f:
         str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
