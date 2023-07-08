@@ -1,6 +1,10 @@
 import os
+import sys
 
+
+assert (generate_path := sys.argv[-1]).endswith(".tmp")
 # generate_path = "Makefile.tmp"
+
 import ast
 import astor
 

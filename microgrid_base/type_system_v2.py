@@ -8,24 +8,6 @@ Options:
     --version             Showing version.
 """
 
-# 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
-# 增加变流器和不可连接母线的连接
-import rich
-import traceback
-
-
-figure_path = "type_system.png"
-import docopt
-
-from docopt import docopt
-
-# print(type(__doc__))
-# breakpoint()
-options = docopt(__doc__, version="2.0")
-# from turtle import backward
-# import pandas
-PLOT_ONLY = options.get("--plot_only", False)
-# breakpoint()
 
 
 def generate_filename(hyphen_saved_name, prefix):
@@ -48,6 +30,25 @@ MAKEFILE = dict(
     ],
     args=["-p"],
 )
+
+# 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
+# 增加变流器和不可连接母线的连接
+import rich
+import traceback
+
+
+figure_path = "type_system.png"
+import docopt
+
+from docopt import docopt
+
+# print(type(__doc__))
+# breakpoint()
+options = docopt(__doc__, version="2.0")
+# from turtle import backward
+# import pandas
+PLOT_ONLY = options.get("--plot_only", False)
+# breakpoint()
 
 
 def check_valid_type_base_name(type_base_name):
