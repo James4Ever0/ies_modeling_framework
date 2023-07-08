@@ -30,6 +30,7 @@ for fname in (fnames := os.listdir(".")):
                 module = it.module
                 mymodules.append(module)
         mymodules = set(mymodules)
+        mymodules = [f"{m}.py" for m in mymodules]
         myindex = -1
         for index, elem in enumerate(tree.body):  # shall be an assignment.
             if isinstance(elem, ast.Assign):
