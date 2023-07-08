@@ -1,5 +1,5 @@
 main: test_model.py common_fixtures.py
-	pytest --capture=tee-sys --lfnf=all --lf $<
+	bash run_test.sh
 
 test_model.py: generate_test_model.py test_model.py.j2 
 	python3 $<
