@@ -23,9 +23,9 @@ for fname in (fnames := os.listdir(".")):
         # you shall walk over this. see if it imports any python file in the same directory.
         for it in ast.walk(tree):
             if isinstance(it, ast.Import):
-                ...
+                modules = [alias.name for alias in it.names]
             elif isinstance(it, ast.ImportFrom):
-                ...
+                module = it.module
         myindex = -1
         for index, elem in enumerate(tree.body):  # shall be an assignment.
             if isinstance(elem, ast.Assign):
