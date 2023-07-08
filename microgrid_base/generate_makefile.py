@@ -16,10 +16,11 @@ def read_file(fname):
 
 
 python_files = []
-for fname in os.listdir("."):
+for fname in (fnames := os.listdir(".")):
     if fname.endswith(".py"):
         content = read_file(fname)
         tree = ast.parse(content)
+        # you shall walk over this. see if it imports any python file in the same directory.
         myindex = -1
         for index, elem in enumerate(tree.body):  # shall be an assignment.
             if isinstance(elem, ast.Assign):
@@ -35,8 +36,10 @@ for fname in os.listdir("."):
             exec(source_code)
             print(("MAKEFILE ENTRY: %s" % fname).center(60, "="))
             print(MAKEFILE)  # type: ignore
-            for argname in ['inputs', 'outputs', 'args']:
-                assert argname in MAKEFILE.keys(), f"{argname} not in {MAKEFILE.keys()}" # type:ignore
+            for argname in ["inputs", "outputs", "args"]:
+                assert (
+                    argname in MAKEFILE.keys()
+                ), f"{argname} not in {MAKEFILE.keys()}"  # type:ignore
             MAKEFILE.update(fname=fname)  # type: ignore
             python_files.append(MAKEFILE.copy())  # type: ignore
             print()
