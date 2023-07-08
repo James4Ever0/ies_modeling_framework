@@ -1,0 +1,1 @@
+main: pytest --capture=tee-sys --lfnf --
