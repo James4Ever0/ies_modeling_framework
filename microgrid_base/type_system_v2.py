@@ -476,7 +476,8 @@ for index, row in port_df.iterrows():
                 )
 
 
-def print_with_banner(content, hyphen_saved_name, prefix):
+def print_with_banner(content,filepath):
+# def print_with_banner(content, hyphen_saved_name, prefix):
     banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
     print(f"=========[{filepath}]=========")
     rich.print(content)
