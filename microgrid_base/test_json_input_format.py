@@ -6,7 +6,7 @@ input_path = "test/test_topo.json"
 output_path = "export_format_test.json"
 
 # this is something different.
-MAKEFILE = dict(inputs=[input_path], output_path=[output_path], args=[])
+MAKEFILE = dict(inputs=[input_path], outputs=[output_path], args=[])
 
 import json
 
