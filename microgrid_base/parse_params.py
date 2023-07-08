@@ -14,6 +14,8 @@ csv_worklist = [
     ("设备接口-微电网参数", "microgrid_device_params_intermediate"), # this is not enough.
 ]
 
+MAKEFILE = dict(inputs= [[e[0]+".xlsx" for e in xlsx_worklist]], outputs = [], args = [])
+
 if FLAGS["XLSX"]:
     for (filepath, sheet_name, output_path) in xlsx_worklist:
         main_parser(f"{filepath}.xlsx", sheet_name, f"{output_path}.json")

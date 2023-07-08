@@ -6,6 +6,10 @@ code_path, template_path = code_and_template_path("export_format_validate")
 
 output_path = "export_format.json"
 
+MAKEFILE = dict(
+    inputs=[template_path, excel_path], outputs=[output_path, code_path], args=[]
+)
+
 import json
 
 # from os import name
@@ -133,7 +137,7 @@ simParamLUT = {
     "平均效率/平均COP": ["柴油发电", "传输线", "变压器", "锂电池", "变流器", "双向变流器"],
     "冷收入": [],
     "热收入": [],
-    "电收入": ['电负荷'],
+    "电收入": ["电负荷"],
     "蒸汽收入": [],
     "氢气收入": [],
 }
