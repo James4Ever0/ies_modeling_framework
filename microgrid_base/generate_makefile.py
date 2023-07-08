@@ -1,6 +1,6 @@
 import os
 
-generate_path = "Makefile.tmp"
+# generate_path = "Makefile.tmp"
 import ast
 import astor
 
