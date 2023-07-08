@@ -3,7 +3,13 @@ input_path = "test/test_topo.json"
 # input_path = "template_input.json"
 # input_path = "test/missing_param_input_dieselgenerator.json"
 # input_path = "test/lithion_battery.json"
+output_path = "export_format_test.json"
+
+
+MAKEFILE = dict(inputs = [input_path], output_path)
+
 import json
+
 
 with open(input_path, "r") as f:
     data = json.load(f)
@@ -35,5 +41,5 @@ resultList = solveModelFromCalcParamList(calcParamList)
 # breakpoint()
 rich.print(resultList[0]["simulationResultTable"])
 
-with open("export_format_test.json", "w") as f:
+with open(output_path, "w") as f:
     f.write(json.dumps(resultList, indent=4, ensure_ascii=False))

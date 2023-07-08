@@ -1,5 +1,8 @@
 filepath ="ies_optim.py"
-output_path = ""
+output_path = "constraints.log"
+
+MAKEFILE = dict(inputs = [filepath], outputs = [output_path], args = [">", output_path])
+
 with open(filepath, 'r') as f:
     content = f.read()
     
