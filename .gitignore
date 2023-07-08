@@ -23,7 +23,7 @@
 !*.js
 !*.ts
 !*.jl
-
+!Makefile
 # where we have all these passwords.
 # not `secrets` since this is builtin python module. will cause trouble.
 passwords.py
