@@ -78,15 +78,15 @@ def ReLU(val):
     "时间"
 ]%}
 {% macro iterParamDict(paramDict, has_list) %}
-    {% set flag = namespace(val=False)%}
+    {% set flag = namespace(val=False) %}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_") %}
         {% if flag.val == False%}
-            {% if PN not in commonParamNames%}
-                {% set flag.val=True%}
+            {% if PN not in commonParamNames %}
+                {% set flag.val=True %}
     ## UNIQ PARAMS ##
-            {% endif%}
-        {% endif%}
+            {% endif %}
+        {% endif %}
         {% if paramDef == None %}
             {% set t = 'str'%}
         {% elif paramDef[1] == 'one' and paramDef[0] == 1 and PN not in exceptionList %}
@@ -230,7 +230,7 @@ class {{devName}}仿真结果(BaseModel):
             dict(
             设备型号 = "model.设备信息.设备型号",
             设备台数 = "value(model.DeviceCount)",
-            设备维护费用 = TP_ANNUAL("value(model.年化率 * model.总固定维护成本 + model.总可变维护成本年化)"),
+            设备维护费用 = TP_ANNUAL("value(model.总固定维护成本 + model.总可变维护成本年化)"),
             )
         )
         %}
@@ -243,8 +243,8 @@ class {{devName}}仿真结果(BaseModel):
  发电功率=VLIST('model.电接口'),
  充电功率=VLISTNEG('model.电接口'),
  放电功率=VLISTPOS('model.电接口'),
- 荷电容量=VLIST_PAT('model.CurrentTotalActualCapacity', "{} + model.MinTotalCapacity"),
- 荷电状态=VLIST_PAT('model.CurrentTotalActualCapacity', "safeDiv({} + model.MinTotalCapacity , model.TotalCapacity)"),
+ 荷电容量=VLIST_PAT('model.CurrentTotalCapacity', "{}"),
+ 荷电状态=VLIST_PAT('model.CurrentTotalCapacity', "safeDiv({} , model.TotalCapacity)"),
  电转换功率=VLIST('model.电输出'),
 )
 %}
