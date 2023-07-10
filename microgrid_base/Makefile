@@ -8,10 +8,14 @@
 OS_TYPE = windows
 # OS_TYPE = macos
 
+PYTHON_ENV = -X utf8=1
+
 ifeq (${OS_TYPE}, macos)
-CONDA_ENV = rosetta
+CONDA_ENV = base
+PYTHON = /usr/bin/python3
 else
 CONDA_ENV = cplex
+PYTHON = python ${PYTHON_ENV}
 endif
 
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
@@ -54,7 +58,11 @@ LOG_DIRS = logs ${SERVER_RELEASE_DIR}/logs
 ################ META TARGETS ################
 
 main: code test_code ${LOG_DIRS}
+	ifeq (${OS_TYPE}, macos)
 	${CONDA} bash cplex_test.sh
+	else
+	${PYTHON} test_topo_check.py -f
+	endif
 
 ${LOG_DIRS}:
 	mkdir -p $@
@@ -99,22 +107,22 @@ templates: output_template.json template_input.json
 param_base.py: frontend_sim_param_translation.json microgrid_jinja_param_base.json ${MICROGRID_TYPESYS_JSONS} lib_parse_params.py
 
 topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS}
-	python3 jinja_template_model_generator.py
+	${PYTHON} jinja_template_model_generator.py
 
 export_format_validate.py export_format.json sim_param_export.xlsx: export_format_validate.py.j2 parse_export_format.py jinja_utils.py 设备信息库各参数.xlsx param_base.py unit_utils.py ${UNIT_DEFINITIONS}
-	python3 parse_export_format.py
+	${PYTHON} parse_export_format.py
 
 microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
-	python3 parse_units_and_names.py
+	${PYTHON} parse_units_and_names.py
 
 ${MICROGRID_TYPESYS_JSONS} ${TYPESYS_PLOTS}: type_system_v2.py utils.py
-	python3 type_system_v2.py -p
+	${PYTHON} type_system_v2.py -p
 
 frontend_sim_param_translation.json: frontend_sim_param_translation.js parse_frontend_sim_param_translation.py
-	python3 parse_frontend_sim_param_translation.py
+	${PYTHON} parse_frontend_sim_param_translation.py
 
 device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
-	python3 parse_params.py
+	${PYTHON} parse_params.py
 
 constraints.log: parse_optim_constraints.py ies_optim.py
-	python3 parse_optim_constraints.py > constraints.log
+	${PYTHON} parse_optim_constraints.py > constraints.log

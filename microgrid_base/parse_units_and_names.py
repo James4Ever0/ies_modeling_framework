@@ -9,7 +9,11 @@ microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 
 output_path = "microgrid_jinja_param_base.json"
 
-MAKEFILE = dict(inputs = [device_data_path_base, microgrid_device_port_path], outputs = [output_path], args = [])
+MAKEFILE = dict(
+    inputs=[device_data_path_base, microgrid_device_port_path],
+    outputs=[output_path],
+    args=[],
+)
 
 import pint
 
@@ -183,6 +187,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "VariationalCostPerWork": ("元/kWh", {"": ["可变维护成本"]}),
     "CostPerYearPerKilometer": ("万元/(km*年)", {"": ["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
+    "LifetimeCycleCount": ("one", {"": ["等效完全循环次数"]}),
     "Capacity": (
         "kWh",
         {
@@ -440,11 +445,11 @@ for key in keys:
                 # begin to parse it.
                 if val in COMMENT_TYPE:
                     continue
-                
+
                 from unit_utils import unitParser
 
                 result = unitParser(val)
-                
+
                 if result:
                     val_name, val_unit = (
                         result["val_name"].strip(),
@@ -507,7 +512,6 @@ for key in keys:
                         raise Exception(f"No compatibie unit found for {val_name}")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
-
                         v_param = getValueParam(uc, val_name)
                         if val_is_table:
                             (_, _, _, standard) = uc

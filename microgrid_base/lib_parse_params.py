@@ -7,6 +7,10 @@ import rich
 import numpy
 import json
 
+import sys
+
+if sys.win32:...
+
 def main_parser(filepath, sheet_name, output_path):
     excel_file = openpyxl.load_workbook(filepath)
     # excel_file = openpyxl.load_workbook(filepath, read_only=True)
