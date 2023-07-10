@@ -7,11 +7,19 @@ import rich
 import numpy
 import json
 
-import sys
-
-if sys.win32:...
+import os
+if os.name == "nt":
+    from win32com.client import Dispatch
+    def repair_excel(excel_path):
+        xlapp = Dispatch("Excel.Application")
+        xlapp.Visible=False
+        xlbook = xlapp.Workbooks.Open(os.path.abspath(excel_path))
+        xlbook.Save()
+        xlbook.Close()
 
 def main_parser(filepath, sheet_name, output_path):
+    if os.name == "nt":
+        repair_excel(filepath)
     excel_file = openpyxl.load_workbook(filepath)
     # excel_file = openpyxl.load_workbook(filepath, read_only=True)
     print('SHEET NAMES:')

@@ -381,10 +381,10 @@
                     87.66
                 ],
                 [
-                    "TotalDischargeCapacity",
-                    "生命周期总放电量",
-                    "kWh",
-                    "kWh",
+                    "LifetimeCycleCount",
+                    "等效完全循环次数",
+                    "次",
+                    "one",
                     1
                 ],
                 [

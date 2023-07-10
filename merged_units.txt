@@ -890,6 +890,7 @@ m3 = meter ** 3
 # to be more compatible.
 # one = [base_quantity]
 one = []
+次 = one
 percent = 0.01 one
 # % = percent
 

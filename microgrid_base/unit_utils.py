@@ -99,7 +99,7 @@ BASE_UNIT_TRANSLATION_TABLE = {
     "p_u_": [
         "p.u.",
     ],
-    "次": ["one"],
+    # "次": ["one"],
 }
 
 

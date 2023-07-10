@@ -1,2 +1,3 @@
 openpyxl
-pypiwin32
+pypiwin32 # for repairing xlsx on windows, on other oses may you need libreoffice for it.
+docopt
