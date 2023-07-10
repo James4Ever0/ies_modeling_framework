@@ -55,14 +55,16 @@ TEST_CODE = test_topo_check.py ${TEST_INPUT_FORMAT_FILES}
 
 LOG_DIRS = logs ${SERVER_RELEASE_DIR}/logs
 
+ifeq (${OS_TYPE}, macos)
+MAIN_EXEC=${CONDA} bash cplex_test.sh
+else
+MAIN_EXEC=${PYTHON} test_topo_check.py -f
+endif
+
 ################ META TARGETS ################
 
 main: code test_code ${LOG_DIRS}
-	ifeq (${OS_TYPE}, macos)
-	${CONDA} bash cplex_test.sh
-	else
-	${PYTHON} test_topo_check.py -f
-	endif
+	${MAIN_EXEC}
 
 ${LOG_DIRS}:
 	mkdir -p $@
