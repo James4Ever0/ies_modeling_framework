@@ -3,7 +3,7 @@
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
 {# {% set needStorageDecayCompensation=true%} #}
-{% macro stepwise_flag(class_name, flag_name)%}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#")}}{% endif %}{% endmacro %}
+{% macro stepwise_flag(class_name, flag_name) %}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#") }}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 {# consider to type check all variable operations #}
@@ -645,6 +645,12 @@ class 计算参数(BaseModel):
     {# @lru_cache(maxsize=1) #}
     @property
     def 时间参数(self):
+        """
+        如果计算步长为秒，那么返回3600
+        如果计算步长为小时，那么返回1
+
+        相当于返回一小时内有多少计算步长
+        """
         return (1 if self.计算步长 == "小时" else 3600)
     {# @property # 提前计算好了
     def 典型日列表(self): # 
@@ -652,8 +658,9 @@ class 计算参数(BaseModel):
     {# # like: (tday_index, tday_data, tday_count) #}
 
 class POSNEG:
-    def __init__(self, x, x_pos, x_neg, b_pos, b_neg, x_abs):
-        {%for f in ["x", "x_pos", "x_neg", "b_pos", "b_neg", "x_abs"]%}
+        {% set POSNEGParamNames = ["x", "x_pos", "x_neg", "b_pos", "b_neg", "x_abs"] %}
+    def __init__(self, {{",".join(POSNEGParamNames)}}):
+        {%for f in POSNEGParamNames%}
         self.{{f}} = {{f}}
         {%endfor%}
 
@@ -972,7 +979,7 @@ class {{class_name}}模型(设备模型):
         self.燃料热值:float = 0 # 需要拓扑解析之后进行赋值
         {% endif%}
         {% for psc, mdigit in mdigits %}
-        {% if psc in ["仿真模拟","设计规划"] %}
+        {% if psc in ["仿真模拟", "设计规划"] %}
         {# # psc: {{psc}} mflag: {{mflag}} #}
         {% if mflag.val != psc %}
         {% set mflag.val = psc%}
@@ -992,7 +999,8 @@ class {{class_name}}模型(设备模型):
             {% endif%}
         {% elif psc == "仿真模拟"%}
             {% if class_name == '锂电池'%}
-            self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity)
+            self.DeviceCount = round(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) # for better user experience.
+            {# self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) #}
             {% endif%}
         {% endif %}
         {%endif%}
@@ -1077,7 +1085,8 @@ class {{class_name}}模型(设备模型):
 
         assert self.InitSOC >= self.MinSOC
         assert self.InitSOC <= self.MaxSOC
-        self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity
+        {# self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity #}
+        self.InitCapacityPerUnit = self.InitSOC * self.RatedCapacity
 
         if self.计算参数.计算类型 == "设计规划":
             #  初始SOC
@@ -1094,18 +1103,33 @@ class {{class_name}}模型(设备模型):
 
         self.原电接口 = self.变量列表_带指示变量("原电接口") # 正 放电 负 充电
 
-        self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
+        {# self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC) #}
 
-        self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals)
+        self.CurrentTotalCapacity = self.变量列表('CurrentTotalCapacity', within=NonNegativeReals)
 
-        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore
+        # reserved expression list. do not use it in any constraints.
+        self.SOC = [self.CurrentTotalCapacity[i]/self.TotalCapacity for i in self.CurrentTotalCapacity]
+
+        if self.计算参数.计算类型 == '设计规划':
+            self.CurrentTotalCapacity.setlb(self.MinDeviceCount*self.MinSOC*self.RatedCapacity)
+            self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity)
+            
+            self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x >= self.TotalCapacity * self.MinSOC)
+            self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x <= self.TotalCapacity * self.MaxSOC)
+        else:
+            self.CurrentTotalCapacity.setlb(self.DeviceCount*self.MinSOC*self.RatedCapacity)
+            self.CurrentTotalCapacity.setub(self.DeviceCount*self.MaxSOC*self.RatedCapacity)
+
+        {# self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals) #}
+
+        {# self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore #}
 
         self.MaxTotalCapacityDeltaPerStep = self.BatteryDeltaLimit * self.TotalCapacity / ({{时间步长参数}})
         """
         单位: kWh
         """
 
-        self.TotalStorageDecayRate = (self.BatteryStorageDecay / 100) * self.TotalCapacity
+        self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
         """
         单位: kW
         """
@@ -1115,11 +1139,11 @@ class {{class_name}}模型(设备模型):
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
 
-                self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
+                self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
                 # constraint.
-                self.RangeConstraintMulti(self.ActualTotalDecayRateCompensated, expression=lambda x: x<=self.TotalStorageDecayRate)
+                self.RangeConstraintMulti(self.CurrentTotalPowerOfDecayCompensated, expression=lambda x: x<=self.TotalStoragePowerOfDecay)
             else:
-                self.ActualTotalDecayRateCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStorageDecayRate), within=NonNegativeReals)
+                self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStoragePowerOfDecay), within=NonNegativeReals)
             {# {% endif%} #}
 
         {%elif class_name in ['双向变流器']%}
@@ -1178,6 +1202,7 @@ class {{class_name}}模型(设备模型):
         #}
         
         # 输出输入功率约束
+
         {%if class_name in ['传输线']%}
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
         self.RangeConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
@@ -1228,17 +1253,18 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + self.BinVarMultiplySingle(z,总最小启动功率) == y)
 
         {%elif class_name in ['锂电池'] %}
-        self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity)
+        {# self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity) #}
 
-        self.mw.Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.DeviceCount)
+        self.mw.Constraint(self.CurrentTotalCapacity[0] == self.InitCapacityPerUnit * self.DeviceCount)
+        {# self.mw.Constraint(self.CurrentTotalActualCapacity[0] == self.InitActualCapacityPerUnit * self.DeviceCount) #}
 
 
             {# {% if needStorageDecayCompensation%} #}
         if self.needStorageDecayCompensation:
             self.CustomRangeConstraintMulti(
                 self.原电接口.x,
-                self.CurrentTotalActualCapacity,
-                self.ActualTotalDecayRateCompensated,
+                self.CurrentTotalCapacity,
+                self.CurrentTotalPowerOfDecayCompensated,
                 customRange = range(self.计算参数.迭代步数 - 1),
                 expression = 
                 lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
@@ -1247,23 +1273,23 @@ class {{class_name}}模型(设备模型):
                 self.原电接口.x_pos,
                 self.原电接口.x_neg,
                 self.电接口,
-                self.ActualTotalDecayRateCompensated, 
+                self.CurrentTotalPowerOfDecayCompensated, 
                 expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
-                - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
+                - (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency
                 == y,
             )
             {# {% else%} #}
         else:
-            self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalActualCapacity, customRange = range(self.计算参数.迭代步数-1),expression =  lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
-            self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStorageDecayRate)/self.ChargeEfficiency == y) 
+            self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalCapacity, customRange = range(self.计算参数.迭代步数-1),expression =  lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
+            self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStoragePowerOfDecay)/self.ChargeEfficiency == y) 
             {# {% endif%} #}
         {# power = delta(capacity)/delta(time)#}
             {# {% if needStorageDecayCompensation%} #}
             {# {%else%} #}
             {# {% endif%} #}
         for i in range(self.计算参数.迭代步数-1):
-            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
-            self.mw.Constraint(self.CurrentTotalActualCapacity[i+1] - self.CurrentTotalActualCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
 
         if self.计算参数.计算类型 == "设计规划":
             if self.设备信息.循环边界条件 == '日间独立':
@@ -1271,22 +1297,22 @@ class {{class_name}}模型(设备模型):
                 {# BUG: override suspicious constraints with init values. #}
                 self.原电接口.x[0].set_value(self.EPS)
             elif self.设备信息.循环边界条件 == '日间连接':
-                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
+                self.mw.Constraint(self.CurrentTotalCapacity[0] - self.CurrentTotalCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
 
-                self.mw.Constraint(self.CurrentTotalActualCapacity[0] - self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] >=-self.MaxTotalCapacityDeltaPerStep)
+                self.mw.Constraint(self.CurrentTotalCapacity[0] - self.CurrentTotalCapacity[self.计算参数.迭代步数-1] >=-self.MaxTotalCapacityDeltaPerStep)
                 if self.needStorageDecayCompensation:
             {# {% if needStorageDecayCompensation%} #}
                     self.mw.Constraint(
-                        self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
+                        self.原电接口.x[0] - self.CurrentTotalPowerOfDecayCompensated[0]
                         == (
-                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                            - self.CurrentTotalActualCapacity[0]
+                            self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
+                            - self.CurrentTotalCapacity[0]
                         )
                         * self.计算参数.时间参数
                     )
             {# {%else%} #}
                 else:
-                    self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalActualCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalActualCapacity[0]) * {{时间步长参数}} )
+                    self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalCapacity[0]) * {{时间步长参数}} )
             {# {% endif%} #}
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
@@ -1315,7 +1341,15 @@ class {{class_name}}模型(设备模型):
         {# 规划设计和仿真模拟都需要计算年化 #}
         {%with%}
         {% if class_name in ['锂电池'] %} 
-        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+self.TotalStorageDecayRate # kW
+
+        # TODO: to get LifetimeDischargeCapacityPerUnit working
+        self.LifetimeDischargeCapacityPerUnit = self.LifetimeCycleCount * self.RatedCapacity
+        """
+        单块电池生命周期总放电量
+        单位: kWh
+        """
+
+        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
         # avg power
 
         一小时总电变化量 = 计算范围内总平均功率 # 省略乘1
@@ -1323,7 +1357,7 @@ class {{class_name}}模型(设备模型):
 
         一年总电变化量 = 一小时总电变化量 * 8760
         
-        self.mw.Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.TotalDischargeCapacity * 0.85)
+        self.mw.Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.LifetimeDischargeCapacityPerUnit * 0.85)
         assert self.BatteryLife >=1
         assert self.Life >= self.BatteryLife
         Life = self.BatteryLife
@@ -1369,7 +1403,8 @@ class {{class_name}}模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPer{{vm}} * ({{ m}})
         self.总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本 
+        {# self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率 #}
 
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}

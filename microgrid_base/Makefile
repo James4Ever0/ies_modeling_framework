@@ -5,9 +5,17 @@
 
 ################ VARIABLES ################
 
-OS_TYPE = macos
+OS_TYPE = windows
+# OS_TYPE = macos
 
-CONDA = conda run -n rosetta --live-stream --no-capture-output
+ifeq (${OS_TYPE}, macos)
+CONDA_ENV = rosetta
+else
+CONDA_ENV = cplex
+endif
+
+CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
+# CONDA = conda run -n rosetta --live-stream --no-capture-output
 
 MICROGRID_TYPESYS_JSONS = microgrid_v2_all_types_structured.json microgrid_v2_connectivity_matrix.json microgrid_v2_device_port_type_mapping.json
 
