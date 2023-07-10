@@ -92,7 +92,8 @@ def solveModelFromCalcParamList(
     计算目标 = firstParam_graphparam["计算目标"]
 
     if 典型日:
-        assert len(calcParamList) > 1
+        assert len(calcParamList) >= 1 # 允许单典型日计算
+        # assert len(calcParamList) > 1
     else:
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
@@ -239,6 +240,7 @@ def solveModelFromCalcParamList(
                 timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
+            timeParam /= 8760 # eliminate invalid results
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
