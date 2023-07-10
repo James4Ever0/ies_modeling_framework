@@ -1,4 +1,5 @@
 # TODO: 典型日 最终输出结果需要展开为8760
+# TODO: add more "bounds" to variables
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 import pyomo.core.base
@@ -56,7 +57,6 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         price = self.Price
 
         return self.convert(price * power)
@@ -100,7 +100,6 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
@@ -138,7 +137,6 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title="长度为24的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 24)
 
         price = self.PriceList[current_time]
@@ -152,7 +150,6 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
@@ -177,7 +174,6 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -218,7 +214,6 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title="长度为24的阶梯电价列表", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 24)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -299,24 +294,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -403,7 +398,6 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
-
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -502,7 +496,6 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -607,7 +600,6 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -768,12 +760,12 @@ class 锂电池信息(设备信息):
     单位: percent/hour
     """
 
-    TotalDischargeCapacity: confloat(ge=0) = Field(
-        title="生命周期总放电量", description="名称: 生命周期总放电量\n单位: kWh"
+    LifetimeCycleCount: confloat(ge=0) = Field(
+        title="等效完全循环次数", description="名称: 等效完全循环次数\n单位: 次"
     )
     """
-    名称: 生命周期总放电量
-    单位: kWh
+    名称: 等效完全循环次数
+    单位: 次
     """
 
     BatteryLife: confloat(ge=0) = Field(title="电池换芯周期", description="名称: 电池换芯周期\n单位: 年")
@@ -864,7 +856,6 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
-
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -971,7 +962,6 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1054,7 +1044,6 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1137,7 +1126,6 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
-
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -1346,6 +1334,7 @@ class ModelWrapper:
 
 # 风、光照
 
+
 # 需要明确单位
 class 计算参数(BaseModel):
     典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
@@ -1416,6 +1405,12 @@ class 计算参数(BaseModel):
 
     @property
     def 时间参数(self):
+        """
+        如果计算步长为秒，那么返回3600
+        如果计算步长为小时，那么返回1
+
+        相当于返回一小时内有多少计算步长
+        """
         return 1 if self.计算步长 == "小时" else 3600
 
 
@@ -1617,7 +1612,6 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
-
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1679,7 +1673,6 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
-
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -1919,6 +1912,7 @@ class 光伏发电模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
+
         光电转换效率 = self.MaxPower / self.Area  # 1kW/m2光照下能产生的能量 省略除以1 单位: one
         assert 光电转换效率 <= 1, f"光电转换效率数值不正常: {光电转换效率} (应当在0-1之间)\n光电转换效率 = 单块最大功率 / 单块面积"
         总最大功率 = self.MaxPower * self.DeviceCount
@@ -1963,7 +1957,7 @@ class 光伏发电模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
         self.总建设费用 = self.BuildCostPerKilowatt * (总最大功率) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
@@ -2146,6 +2140,7 @@ class 风力发电模型(设备模型):
         单台发电功率 = 单台发电功率.tolist()
 
         # 输出输入功率约束
+
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
 
         if self.计算参数.计算步长 == "秒":
@@ -2177,7 +2172,7 @@ class 风力发电模型(设备模型):
             + self.BuildBaseCost
         )
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
@@ -2387,6 +2382,7 @@ class 柴油发电模型(设备模型):
         assert type(self.燃料热值) in [int, float]
 
         # 输出输入功率约束
+
         总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
 
         self.RangeConstraintMulti(
@@ -2433,7 +2429,7 @@ class 柴油发电模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
         self.总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
@@ -2506,12 +2502,12 @@ class 锂电池模型(设备模型):
         """
         assert self.BatteryStorageDecay >= 0
 
-        self.TotalDischargeCapacity: float = 设备信息.TotalDischargeCapacity
+        self.LifetimeCycleCount: float = 设备信息.LifetimeCycleCount
         """
-        名称: 生命周期总放电量
-        单位: kWh
+        名称: 等效完全循环次数
+        单位: 次
         """
-        assert self.TotalDischargeCapacity >= 0
+        assert self.LifetimeCycleCount >= 0
 
         self.BatteryLife: float = 设备信息.BatteryLife
         """
@@ -2590,9 +2586,9 @@ class 锂电池模型(设备模型):
             assert self.MinTotalCapacity >= 0
 
         if self.计算参数.计算类型 == "仿真模拟":
-            self.DeviceCount = math.floor(
+            self.DeviceCount = round(
                 self.设备信息.TotalCapacity / self.设备信息.RatedCapacity
-            )
+            )  # for better user experience.
             self.InitSOC: float = 设备信息.InitSOC * 0.01
             """
             名称: 初始SOC
@@ -2628,9 +2624,7 @@ class 锂电池模型(设备模型):
 
         assert self.InitSOC >= self.MinSOC
         assert self.InitSOC <= self.MaxSOC
-        self.InitActualCapacityPerUnit = (
-            self.InitSOC - self.MinSOC
-        ) * self.RatedCapacity
+        self.InitCapacityPerUnit = self.InitSOC * self.RatedCapacity
 
         if self.计算参数.计算类型 == "设计规划":
             #  初始SOC
@@ -2645,13 +2639,39 @@ class 锂电池模型(设备模型):
 
         self.原电接口 = self.变量列表_带指示变量("原电接口")  # 正 放电 负 充电
 
-        self.ActualCapacityPerUnit = self.RatedCapacity * (self.MaxSOC - self.MinSOC)
-
-        self.CurrentTotalActualCapacity = self.变量列表(
-            "CurrentTotalActualCapacity", within=NonNegativeReals
+        self.CurrentTotalCapacity = self.变量列表(
+            "CurrentTotalCapacity", within=NonNegativeReals
         )
 
-        self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit  # type: ignore
+        # reserved expression list. do not use it in any constraints.
+        self.SOC = [
+            self.CurrentTotalCapacity[i] / self.TotalCapacity
+            for i in self.CurrentTotalCapacity
+        ]
+
+        if self.计算参数.计算类型 == "设计规划":
+            self.CurrentTotalCapacity.setlb(
+                self.MinDeviceCount * self.MinSOC * self.RatedCapacity
+            )
+            self.CurrentTotalCapacity.setub(
+                self.MaxDeviceCount * self.MaxSOC * self.RatedCapacity
+            )
+
+            self.RangeConstraintMulti(
+                self.CurrentTotalCapacity,
+                expression=lambda x: x >= self.TotalCapacity * self.MinSOC,
+            )
+            self.RangeConstraintMulti(
+                self.CurrentTotalCapacity,
+                expression=lambda x: x <= self.TotalCapacity * self.MaxSOC,
+            )
+        else:
+            self.CurrentTotalCapacity.setlb(
+                self.DeviceCount * self.MinSOC * self.RatedCapacity
+            )
+            self.CurrentTotalCapacity.setub(
+                self.DeviceCount * self.MaxSOC * self.RatedCapacity
+            )
 
         self.MaxTotalCapacityDeltaPerStep = (
             self.BatteryDeltaLimit * self.TotalCapacity / (self.计算参数.时间参数)
@@ -2660,7 +2680,7 @@ class 锂电池模型(设备模型):
         单位: kWh
         """
 
-        self.TotalStorageDecayRate = (
+        self.TotalStoragePowerOfDecay = (
             self.BatteryStorageDecay / 100
         ) * self.TotalCapacity
         """
@@ -2670,8 +2690,7 @@ class 锂电池模型(设备模型):
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
-
-                self.ActualTotalDecayRateCompensated = self.变量列表(
+                self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
                     bounds=(
                         0,
@@ -2681,13 +2700,13 @@ class 锂电池模型(设备模型):
                 )  # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
                 # constraint.
                 self.RangeConstraintMulti(
-                    self.ActualTotalDecayRateCompensated,
-                    expression=lambda x: x <= self.TotalStorageDecayRate,
+                    self.CurrentTotalPowerOfDecayCompensated,
+                    expression=lambda x: x <= self.TotalStoragePowerOfDecay,
                 )
             else:
-                self.ActualTotalDecayRateCompensated = self.变量列表(
+                self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
-                    bounds=(0, self.TotalStorageDecayRate),
+                    bounds=(0, self.TotalStoragePowerOfDecay),
                     within=NonNegativeReals,
                 )
 
@@ -2703,21 +2722,16 @@ class 锂电池模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
-        self.RangeConstraintMulti(
-            self.CurrentTotalActualCapacity,
-            expression=lambda x: x <= self.TotalActualCapacity,
-        )
 
         self.mw.Constraint(
-            self.CurrentTotalActualCapacity[0]
-            == self.InitActualCapacityPerUnit * self.DeviceCount
+            self.CurrentTotalCapacity[0] == self.InitCapacityPerUnit * self.DeviceCount
         )
 
         if self.needStorageDecayCompensation:
             self.CustomRangeConstraintMulti(
                 self.原电接口.x,
-                self.CurrentTotalActualCapacity,
-                self.ActualTotalDecayRateCompensated,
+                self.CurrentTotalCapacity,
+                self.CurrentTotalPowerOfDecayCompensated,
                 customRange=range(self.计算参数.迭代步数 - 1),
                 expression=lambda x, y, z, i: x[i] - z[i]
                 == (y[i] - y[i + 1]) * self.计算参数.时间参数,
@@ -2726,15 +2740,15 @@ class 锂电池模型(设备模型):
                 self.原电接口.x_pos,
                 self.原电接口.x_neg,
                 self.电接口,
-                self.ActualTotalDecayRateCompensated,
+                self.CurrentTotalPowerOfDecayCompensated,
                 expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
-                - (x_neg + (self.TotalStorageDecayRate - z)) / self.ChargeEfficiency
+                - (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency
                 == y,
             )
         else:
             self.CustomRangeConstraint(
                 self.原电接口.x,
-                self.CurrentTotalActualCapacity,
+                self.CurrentTotalCapacity,
                 customRange=range(self.计算参数.迭代步数 - 1),
                 expression=lambda x, y, i: x[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
             )
@@ -2743,18 +2757,16 @@ class 锂电池模型(设备模型):
                 self.原电接口.x_neg,
                 self.电接口,
                 expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-                - (x_neg + self.TotalStorageDecayRate) / self.ChargeEfficiency
+                - (x_neg + self.TotalStoragePowerOfDecay) / self.ChargeEfficiency
                 == y,
             )
         for i in range(self.计算参数.迭代步数 - 1):
             self.mw.Constraint(
-                self.CurrentTotalActualCapacity[i + 1]
-                - self.CurrentTotalActualCapacity[i]
+                self.CurrentTotalCapacity[i + 1] - self.CurrentTotalCapacity[i]
                 <= self.MaxTotalCapacityDeltaPerStep
             )
             self.mw.Constraint(
-                self.CurrentTotalActualCapacity[i + 1]
-                - self.CurrentTotalActualCapacity[i]
+                self.CurrentTotalCapacity[i + 1] - self.CurrentTotalCapacity[i]
                 >= -self.MaxTotalCapacityDeltaPerStep
             )
 
@@ -2763,22 +2775,22 @@ class 锂电池模型(设备模型):
                 self.原电接口.x[0].set_value(self.EPS)
             elif self.设备信息.循环边界条件 == "日间连接":
                 self.mw.Constraint(
-                    self.CurrentTotalActualCapacity[0]
-                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
+                    self.CurrentTotalCapacity[0]
+                    - self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
                     <= self.MaxTotalCapacityDeltaPerStep
                 )
 
                 self.mw.Constraint(
-                    self.CurrentTotalActualCapacity[0]
-                    - self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
+                    self.CurrentTotalCapacity[0]
+                    - self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
                     >= -self.MaxTotalCapacityDeltaPerStep
                 )
                 if self.needStorageDecayCompensation:
                     self.mw.Constraint(
-                        self.原电接口.x[0] - self.ActualTotalDecayRateCompensated[0]
+                        self.原电接口.x[0] - self.CurrentTotalPowerOfDecayCompensated[0]
                         == (
-                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                            - self.CurrentTotalActualCapacity[0]
+                            self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
+                            - self.CurrentTotalCapacity[0]
                         )
                         * self.计算参数.时间参数
                     )
@@ -2786,8 +2798,8 @@ class 锂电池模型(设备模型):
                     self.mw.Constraint(
                         self.原电接口.x[0]
                         == (
-                            self.CurrentTotalActualCapacity[self.计算参数.迭代步数 - 1]
-                            - self.CurrentTotalActualCapacity[0]
+                            self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
+                            - self.CurrentTotalCapacity[0]
                         )
                         * self.计算参数.时间参数
                     )
@@ -2799,9 +2811,18 @@ class 锂电池模型(设备模型):
         # 计算年化
         # unit: one
 
+        # TODO: to get LifetimeDischargeCapacityPerUnit working
+        self.LifetimeDischargeCapacityPerUnit = (
+            self.LifetimeCycleCount * self.RatedCapacity
+        )
+        """
+        单块电池生命周期总放电量
+        单位: kWh
+        """
+
         计算范围内总平均功率 = (
             self.SumRange(self.原电接口.x_abs) / self.计算参数.迭代步数
-        ) + self.TotalStorageDecayRate  # kW
+        ) + self.TotalStoragePowerOfDecay  # kW
         # avg power
 
         一小时总电变化量 = 计算范围内总平均功率  # 省略乘1
@@ -2811,7 +2832,7 @@ class 锂电池模型(设备模型):
 
         self.mw.Constraint(
             一年总电变化量 * self.BatteryLife
-            <= self.DeviceCount * self.TotalDischargeCapacity * 0.85
+            <= self.DeviceCount * self.LifetimeDischargeCapacityPerUnit * 0.85
         )
         assert self.BatteryLife >= 1
         assert self.Life >= self.BatteryLife
@@ -2828,7 +2849,7 @@ class 锂电池模型(设备模型):
             + self.BuildBaseCost
         )
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((计算范围内总平均功率 * self.计算参数.迭代步数) / self.计算参数.迭代步数)
@@ -2961,18 +2982,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -2992,6 +3013,7 @@ class 变压器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
+
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
         self.RangeConstraint(
@@ -3018,7 +3040,7 @@ class 变压器模型(设备模型):
             + self.BuildBaseCost
         )
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
@@ -3130,18 +3152,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3158,6 +3180,7 @@ class 变流器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
+
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
         self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x * self.Efficiency == -y)
@@ -3180,7 +3203,7 @@ class 变流器模型(设备模型):
             + self.BuildBaseCost
         )
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
@@ -3351,7 +3374,7 @@ class 双向变流器模型(设备模型):
             + self.BuildBaseCost
         )
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总可变维护成本年化 = (
             (
@@ -3464,6 +3487,7 @@ class 传输线模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
+
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / self.计算参数.时间参数
         self.RangeConstraint(
             self.电输入_去除损耗.x, self.电输入, lambda x, y: x == y + TotalDecayPerStep
@@ -3480,7 +3504,7 @@ class 传输线模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
         self.总建设费用 = self.BuildCostPerKilometer * (self.Length) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
 
         self.总成本年化 = self.总固定成本年化
 
@@ -3849,6 +3873,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(

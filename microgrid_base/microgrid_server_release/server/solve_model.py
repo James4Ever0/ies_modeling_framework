@@ -8,32 +8,32 @@ except:
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
-from pyomo.util.infeasible import log_infeasible_constraints
+# from pyomo.util.infeasible import log_infeasible_constraints
 
 from pydantic import BaseModel
 import rich
-import io
-import logging
+# import io
+# import logging
 
-mstream = io.StringIO()
+# mstream = io.StringIO()
 # TODO: shall you test running under celery. shall you not using the root logger.
 # TODO: shall you save the log to file with "RotatingFileHandler"
 # logging.basicConfig(stream=mstream, level=logging.INFO)
-mStreamHandler = logging.StreamHandler(stream=mstream)
-import logging.handlers
-import os
+# mStreamHandler = logging.StreamHandler(stream=mstream)
+# import logging.handlers
+# import os
 
-log_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
-)
-mRotateFileHandler = logging.handlers.RotatingFileHandler(
-    log_path, maxBytes=1024 * 5 * 1024, backupCount=5
-)
-logger = logging.getLogger("SOLVE_MODEL_LOGGER")
-logger.propagate = False
-logger.setLevel(level=logging.INFO)
-logger.addHandler(mStreamHandler)
-logger.addHandler(mRotateFileHandler)
+# log_path = os.path.join(
+#     os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
+# )
+# mRotateFileHandler = logging.handlers.RotatingFileHandler(
+#     log_path, maxBytes=1024 * 5 * 1024, backupCount=5
+# )
+# logger = logging.getLogger("SOLVE_MODEL_LOGGER")
+# logger.propagate = False
+# logger.setLevel(level=logging.INFO)
+# logger.addHandler(mStreamHandler)
+# logger.addHandler(mRotateFileHandler)
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
@@ -92,7 +92,8 @@ def solveModelFromCalcParamList(
     计算目标 = firstParam_graphparam["计算目标"]
 
     if 典型日:
-        assert len(calcParamList) > 1
+        assert len(calcParamList) >= 1 # 允许单典型日计算
+        # assert len(calcParamList) > 1
     else:
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
@@ -180,7 +181,8 @@ def solveModelFromCalcParamList(
                 TerminationCondition.infeasible,
                 TerminationCondition.infeasibleOrUnbounded,
             ]:
-                mstream.truncate(0)
+                ...
+                # mstream.truncate(0)
                 # just don't do this.
                 # logger.info("logging infeasible constraints".center(70, "="))
                 # log_infeasible_constraints(
@@ -238,6 +240,7 @@ def solveModelFromCalcParamList(
                 timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
+            timeParam /= 8760 # TODO: eliminate invalid results
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
