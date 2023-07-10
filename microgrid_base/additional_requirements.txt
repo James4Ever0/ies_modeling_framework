@@ -1,3 +1,5 @@
 openpyxl
 pypiwin32 # for repairing xlsx on windows, on other oses may you need libreoffice for it.
 docopt
+matplotlib
+jinja2-error

@@ -3,6 +3,7 @@ import subprocess
 import black
 import jinja2
 
+import os
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
@@ -89,7 +90,7 @@ def load_template(template_path, extra_func_dict={}):
     return tpl
 
 
-def test(cmd: list, exec="python3"):
+def test(cmd: list, exec="python3" if os.name !="nt" else "python"):
     cmd = [exec] + cmd
     p = subprocess.run(cmd)
     p.check_returncode()
