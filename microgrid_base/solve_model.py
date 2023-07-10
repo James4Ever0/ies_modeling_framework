@@ -180,7 +180,8 @@ def solveModelFromCalcParamList(
                 TerminationCondition.infeasible,
                 TerminationCondition.infeasibleOrUnbounded,
             ]:
-                mstream.truncate(0)
+                ...
+                # mstream.truncate(0)
                 # just don't do this.
                 # logger.info("logging infeasible constraints".center(70, "="))
                 # log_infeasible_constraints(

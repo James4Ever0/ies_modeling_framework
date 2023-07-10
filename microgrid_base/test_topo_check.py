@@ -1,4 +1,4 @@
-MAKEFILE = dict(inputs = ['topo_check.py'], outputs = ['check_topo'], args = [])
+MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 
 import json
 from topo_check import *
@@ -9,6 +9,7 @@ import rich
 ####################
 
 # FIXED: 加法器没有"output"
+
 
 def print_with_banner(data, banner: str):
     print()
@@ -23,14 +24,23 @@ from export_format_validate import *
 
 import numpy as np
 
-a = abs(np.random.random((8760,))).tolist()
+a = abs(np.random.random((24,))).tolist()
+# a = abs(np.random.random((8760,))).tolist()
 
 # algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="仿真模拟", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
 algoParam = 计算参数(
     计算目标="经济",
     # 计算目标="经济_环保",
     # 计算目标="环保",
-    计算步长="小时", 典型日=False, 计算类型="设计规划", 风速=a, 光照=a, 气温=a, 年利率=0.1
+    计算步长="小时",
+    典型日代表的日期=[1, 2],
+    典型日=True,
+    # 典型日=False,
+    计算类型="设计规划",
+    风速=a,
+    光照=a,
+    气温=a,
+    年利率=0.1,
 ).dict()
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
@@ -42,7 +52,7 @@ P1 = 光伏发电信息(
     **devParam,
     Area=10,
     PowerConversionEfficiency=0.9,
-    MaxPower=20,
+    MaxPower=9,
     PowerDeltaLimit=1,
     CostPerKilowatt=100,
     CostPerYearPerKilowatt=100,
@@ -118,7 +128,13 @@ DEL2 = 变压器(
     ).dict(),
 )
 LOAD = 电负荷(
-    topo, param=电负荷信息(**devParam, EnergyConsumption=a, MaxEnergyConsumption=100, PriceModel = 常数电价(Price = 1)).dict()
+    topo,
+    param=电负荷信息(
+        **devParam,
+        EnergyConsumption=a,
+        MaxEnergyConsumption=100,
+        PriceModel=常数电价(Price=1),
+    ).dict(),
 )
 
 BAT = 锂电池(
@@ -137,13 +153,13 @@ BAT = 锂电池(
         DischargeEfficiency=0.9,
         BuildCostPerCapacity=10,
         BuildBaseCost=10,
-        InitSOC=0.5,
+        InitSOC=1.5,
         BatteryStorageDecay=10,
         BatteryLife=9,
-        LifetimeCycleCount=1000/20,
+        LifetimeCycleCount=1000 / 20,
         # TotalDischargeCapacity=1000,
-        MaxSOC=1,
-        MinSOC=0,
+        MaxSOC=2,
+        MinSOC=1,
         MaxTotalCapacity=200,
         MinTotalCapacity=100,
     ).dict(),
@@ -243,19 +259,19 @@ flag = sys.argv[-1]
 if flag in ["-f", "--full"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
     from fastapi_datamodel_template import EnergyFlowGraph
-    
+
     ### TEST PARSING ###
     # from filediff.diff import file_diff_compare
     from copy import deepcopy
-    
-    EFG = EnergyFlowGraph(mDictList = deepcopy(mdictList))
-    mdictList2 = EFG.dict()['mDictList']
+
+    EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
+    mdictList2 = EFG.dict()["mDictList"]
     # text1 = json.dumps(mdictList[0]['nodes'], indent=4, ensure_ascii=False)
     # text2 = json.dumps(mdictList2[0]['nodes'], indent=4, ensure_ascii=False)
-    
+
     # with open("input_1.json", 'w+') as f:
     #     f.write(text1)
-    
+
     # with open("input_2.json", 'w+') as f:
     #     f.write(text2)
     # # file_diff_compare(f1, f2, "diff_result.html")
@@ -265,13 +281,13 @@ if flag in ["-f", "--full"]:
     # diff_out = "diff_result.html"
     # numlines=0
     # show_all=False
-    
+
     # print("WRITE DIFF TO:",diff_out)
     # d = difflib.HtmlDiff(wrapcolumn=max_width)
     # with open(diff_out, 'w', encoding="u8") as f:
     #     f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
     # exit()
-    
+
     ### YOU MAY WANT TO DIFF IT ###
 
     calcParamList = mDictListToCalcParamList(mdictList2)
