@@ -15,7 +15,8 @@ CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 ifeq (${OS_TYPE}, macos)
 MAIN_EXEC=bash run_test.sh
 else
-MAIN_EXEC=${CONDA} python ${PYTHON_ENV} -m pytest --lf --lfnf=all --capture=tee-sys test_model.py
+MAIN_EXEC=python ${PYTHON_ENV} -m pytest --lf --lfnf=all --capture=tee-sys test_model.py
+# MAIN_EXEC=${CONDA} python ${PYTHON_ENV} -m pytest --lf --lfnf=all --capture=tee-sys test_model.py
 endif
 
 # main: run_test.sh test_model.py common_fixtures.py stepwise
