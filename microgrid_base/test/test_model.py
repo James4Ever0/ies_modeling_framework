@@ -289,7 +289,6 @@ def test_柴油发电(
 
 
 def test_电价模型():
-
     mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
         dict(
@@ -477,14 +476,12 @@ def test_锂电池(
             return  # skip other lambda expressions.
 
     def verify_constraints(i):
-
         if is_dynamic:
-            compensated_decay_rate = value(测试锂电池模型.ActualTotalDecayRateCompensated[i])
+            compensated_decay_rate = value(测试锂电池模型.TotalDecayRateCompensated[i])
         else:
             compensated_decay_rate = 0
         delta_capacity = value(
-            测试锂电池模型.CurrentTotalActualCapacity[i]
-            - 测试锂电池模型.CurrentTotalActualCapacity[i + 1]
+            测试锂电池模型.CurrentTotalCapacity[i] - 测试锂电池模型.CurrentTotalCapacity[i + 1]
         )
         assert (
             abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] - compensated_decay_rate))
@@ -492,7 +489,7 @@ def test_锂电池(
         )
         原电接口_xi = value(测试锂电池模型.原电接口.x[i])
         电接口_i = value(测试锂电池模型.电接口[i])
-        _total_decay_rate = value(测试锂电池模型.TotalStorageDecayRate)
+        _total_decay_rate = value(测试锂电池模型.TotalStoragePowerOfDecay)
         if 原电接口_xi >= 0:
             assert (
                 abs(
@@ -523,25 +520,19 @@ def test_锂电池(
         check_solver_result(s_results)
 
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
-        assert abs(value(测试锂电池模型.TotalStorageDecayRate) - total_decay_rate) < EPS
+        assert abs(value(测试锂电池模型.TotalStoragePowerOfDecay) - total_decay_rate) < EPS
 
         init_capacity = (
             value(测试锂电池模型.DeviceCount) * 测试锂电池模型.InitSOC * 测试锂电池模型.RatedCapacity
         )
 
-        assert (
-            abs(
-                value(测试锂电池模型.CurrentTotalActualCapacity[0] + 测试锂电池模型.MinSOC * 500)
-                - init_capacity
-            )
-            < EPS
-        )
+        assert abs(value(测试锂电池模型.CurrentTotalCapacity[0] * 500) - init_capacity) < EPS
         for i in range(5):
             verify_constraints(i)
 
         if (
             last_capacity := value(
-                测试锂电池模型.CurrentTotalActualCapacity[len(测试锂电池模型.计算参数.风速) - 1]
+                测试锂电池模型.CurrentTotalCapacity[len(测试锂电池模型.计算参数.风速) - 1]
             )
             < 0
         ):
