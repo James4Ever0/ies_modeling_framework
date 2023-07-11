@@ -4,6 +4,7 @@
 .PHONY: test
 
 ################ VARIABLES ################
+PLATFORM := $(shell )
 
 OS_TYPE = windows
 # OS_TYPE = macos
