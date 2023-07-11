@@ -483,7 +483,9 @@ def test_锂电池(
     def verify_constraints(i):
 
         if is_dynamic:
-            compensated_decay_rate = value(测试锂电池模型.TotalDecayRateCompensated[i])
+            compensated_decay_rate = value(
+                测试锂电池模型.CurrentTotalPowerOfDecayCompensated[i]
+            )
         else:
             compensated_decay_rate = 0
         delta_capacity = value(
