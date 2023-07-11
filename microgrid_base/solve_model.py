@@ -316,13 +316,13 @@ def solveModelFromCalcParamList(
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
-                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys() if k not in []
+                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys() if k not in ['元件名称']
                                 }
                             mdict = deepcopy(出力曲线字典[devId])
                             出力曲线字典.update(
                                 {
                                     devId: {
-                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期) if isinstance(list, v) else v
+                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期) if isinstance(v, list) else v
                                         for k, v in 出力曲线.dict().items()
                                     }
                                 }
