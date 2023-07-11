@@ -667,3 +667,49 @@ class 双向变流器出力曲线(BaseModel):
                 [value(e) for e in model.线路端_.x_pos.values()],
             ),
         )
+
+
+class 电负荷出力曲线(BaseModel):
+    元件名称: str
+
+    时间: List[int]
+    """
+    单位: one
+    """
+
+    ## UNIQ PARAMS ##
+    耗电功率: List[float]
+    """
+    单位: kW
+    """
+
+    @staticmethod
+    def export(model: 电负荷模型, timeParam: float):
+
+        return 电负荷出力曲线(
+            时间=list(range(model.计算参数.迭代步数)),
+            元件名称=model.设备信息.设备名称,
+        )
+
+
+class 传输线出力曲线(BaseModel):
+    元件名称: str
+
+    时间: List[int]
+    """
+    单位: one
+    """
+
+    ## UNIQ PARAMS ##
+    传输功率: List[float]
+    """
+    单位: kW
+    """
+
+    @staticmethod
+    def export(model: 传输线模型, timeParam: float):
+
+        return 传输线出力曲线(
+            时间=list(range(model.计算参数.迭代步数)),
+            元件名称=model.设备信息.设备名称,
+        )

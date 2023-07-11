@@ -4,6 +4,9 @@ import json
 from topo_check import *
 import rich
 
+
+datalen = 24
+# datalen = 8760
 ####################
 # build from code. #
 ####################
@@ -25,7 +28,8 @@ from export_format_validate import *
 import numpy as np
 
 # a = abs(np.random.random((24,))).tolist()
-a = abs(np.random.random((8760,))).tolist()
+a = [100]*datalen
+# a = abs(np.random.random((datalen,))).tolist()
 
 # algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="仿真模拟", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
 algoParam = 计算参数(
@@ -33,9 +37,9 @@ algoParam = 计算参数(
     # 计算目标="经济_环保",
     # 计算目标="环保",
     计算步长="小时",
-    # 典型日代表的日期=[1, 2],
-    # 典型日=True,
-    典型日=False,
+    典型日代表的日期=[1, 2],
+    典型日=True,
+    # 典型日=False,
     计算类型="设计规划",
     风速=a,
     光照=a,
@@ -75,12 +79,12 @@ DS = 柴油发电(
     topo,
     param=柴油发电信息(
         **devParam,
-        RatedPower=20,
-        PowerDeltaLimit=1,
+        RatedPower=2000,
+        PowerDeltaLimit=100,
         PowerStartupLimit=1,
-        CostPerMachine=100,
-        CostPerYearPerMachine=100,
-        VariationalCostPerWork=100,
+        CostPerMachine=1,
+        CostPerYearPerMachine=1,
+        VariationalCostPerWork=1,
         Life=20,
         BuildCostPerMachine=10,
         BuildBaseCost=10,
@@ -95,7 +99,7 @@ DEL1 = 变流器(
     topo,
     param=变流器信息(
         **devParam,
-        RatedPower=20,
+        RatedPower=20000,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
@@ -114,7 +118,7 @@ DEL2 = 变压器(
         **devParam,
         PowerParameter=0.9,
         LoadRedundancyParameter=1.2,
-        RatedPower=20,
+        RatedPower=20000,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
@@ -131,8 +135,8 @@ LOAD = 电负荷(
     topo,
     param=电负荷信息(
         **devParam,
-        EnergyConsumption=a,
-        MaxEnergyConsumption=100,
+        EnergyConsumption=[1]*len(a),
+        MaxEnergyConsumption=10,
         PriceModel=常数电价(Price=1),
     ).dict(),
 )
@@ -142,12 +146,12 @@ BAT = 锂电池(
     param=锂电池信息(
         **devParam,
         循环边界条件="日间连接",
-        RatedCapacity=20,
+        RatedCapacity=200,
         CostPerCapacity=100,
-        TotalCapacity=20,
+        TotalCapacity=2000,
         CostPerYearPerCapacity=100,
         VariationalCostPerWork=100,
-        Life=20,
+        Life=200000,
         BatteryDeltaLimit=0.1,
         ChargeEfficiency=0.9,
         DischargeEfficiency=0.9,
@@ -155,13 +159,13 @@ BAT = 锂电池(
         BuildBaseCost=10,
         InitSOC=1.5,
         BatteryStorageDecay=10,
-        BatteryLife=9,
-        LifetimeCycleCount=100000000 / 20,
+        BatteryLife=9000,
+        LifetimeCycleCount=100000000,
         # TotalDischargeCapacity=1000,
         MaxSOC=99,
         MinSOC=1,
-        MaxTotalCapacity=200,
-        MinTotalCapacity=100,
+        MaxTotalCapacity=2000,
+        MinTotalCapacity=1000,
     ).dict(),
 )
 
@@ -173,7 +177,7 @@ BC = 双向变流器(
     topo,
     param=双向变流器信息(
         **devParam,
-        RatedPower=10,
+        RatedPower=10000,
         Efficiency=0.9,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
@@ -181,9 +185,9 @@ BC = 双向变流器(
         Life=100,
         BuildCostPerKilowatt=100,
         BuildBaseCost=100,
-        MaxDeviceCount=200,
-        MinDeviceCount=100,
-        DeviceCount=1000000,
+        MaxDeviceCount=2000,
+        MinDeviceCount=1000,
+        DeviceCount=10000,
     ).dict(),
 )
 
@@ -294,3 +298,7 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
+
+# may you get infeasible constraints on some row.
+# Row 'c_e_x1988826_' infeasible, all entries at implied bounds.
+# but this row has been transformed by pyomo, which is hard to retrieve.
