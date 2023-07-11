@@ -86,7 +86,8 @@ import math
         current_time = math.floor(time_in_day%24)
 {% endmacro%}
 {% macro returnElectricPrice() %}
-        # unit: 
+        # unit: [currency]/[time]
+        # 万元/h
         return self.convert(price*power)
 {% endmacro%}
 {% macro getFeeWrapper()%}
