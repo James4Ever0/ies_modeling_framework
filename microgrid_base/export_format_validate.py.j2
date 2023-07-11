@@ -115,13 +115,14 @@ def ReLU(val):
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {% macro TP_ANNUAL(val)%}(({{val}}) * (timeParam/8760)){%endmacro%}
-{%macro VLIST(vlist)%}[value(e) for e in {{vlist}}.values()]{% endmacro%}
+{% macro IV(vlist)%}for e in {{vlist}}.values(){% endmacro%}
+{%macro VLIST(vlist)%}[value(e) IV(vlist)]{% endmacro%}
 {%macro ELIST(elist)%}[value(e) for e in {{elist}}]{% endmacro%}
-{% macro VLIST_PAT(vlist, pattern)%}[value({{pattern.format('e')}}) for e in {{vlist}}.values()]{% endmacro%}
-{%macro VLISTINV(vlist)%}[-value(e) for e in {{vlist}}.values()]{% endmacro%}
-{%macro VLISTDIV(vlist, div)%}[value(safeDiv(e,{{div}})) for e in {{vlist}}.values()]{% endmacro%}
-{%macro VLISTPOS(vlist)%}[ReLU(e) for e in {{vlist}}]{% endmacro%}
-{%macro VLISTNEG(vlist)%}[-ReLU(-e) for e in {{vlist}}]{% endmacro%}
+{% macro VLIST_PAT(vlist, pattern) %}[value({{pattern.format('e')}}) IV(vlist)]{% endmacro %}
+{%macro VLISTINV(vlist)%}[-value(e) IV(vlist)]{% endmacro%}
+{%macro VLISTDIV(vlist, div)%}[value(safeDiv(e,{{div}})) IV(vlist)]{% endmacro%}
+{%macro VLISTPOS(vlist)%}[ReLU(e) IV(vlist)]{% endmacro%}
+{%macro VLISTNEG(vlist)%}[-ReLU(-e) IV(vlist)]{% endmacro%}
 {%macro MVLIST(vlist)%}statistics.mean({{VLIST(vlist)}}){% endmacro%}
 {%macro MVLISTPOS(vlist)%}statistics.mean({{VLISTPOS(vlist)}}){% endmacro%}
 {%macro MVLISTNEG(vlist)%}statistics.mean({{VLISTNEG(vlist)}}){% endmacro%}
