@@ -5,4 +5,5 @@
     param2
 约束:
     param1 < param0
-    param1
+    param1 + param2 < param0
+    param1[i] + param2[i+1] < param0, i
