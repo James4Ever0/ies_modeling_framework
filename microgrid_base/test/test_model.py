@@ -532,7 +532,7 @@ def test_锂电池(
             value(测试锂电池模型.DeviceCount) * 测试锂电池模型.InitSOC * 测试锂电池模型.RatedCapacity
         )
 
-        assert abs(value(测试锂电池模型.CurrentTotalCapacity[0] * 500) - init_capacity) < EPS
+        assert abs(value(测试锂电池模型.CurrentTotalCapacity[0]) - init_capacity) < EPS
         for i in range(5):
             verify_constraints(i)
 

@@ -375,7 +375,7 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
     def verify_constraints(i):
 
         if is_dynamic:
-            compensated_decay_rate = value({{SO.TDF}}.TotalDecayRateCompensated[i])
+            compensated_decay_rate = value({{SO.TDF}}.TotalPowerOfDecayCompensated[i])
         else:
             compensated_decay_rate = 0
         delta_capacity = value({{SO.TDF}}.CurrentTotalCapacity[i] - {{SO.TDF}}.CurrentTotalCapacity[i+1])
@@ -394,16 +394,16 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 
         init_capacity = value({{SO.TDF}}.DeviceCount) * {{SO.TDF}}.InitSOC * {{SO.TDF}}.RatedCapacity
 
-        assert abs(value({{SO.TDF}}.CurrentTotalCapacity[0]*500) - init_capacity) < EPS
+        assert abs(value({{SO.TDF}}.CurrentTotalCapacity[0]) - init_capacity) < EPS
         for i in range(5):
             verify_constraints(i)
 
         if last_capacity:= value({{SO.TDF}}.CurrentTotalCapacity[len({{SO.TDF}}.计算参数.风速)-1]) < 0:
             assert abs(last_capacity) <= EPS
 {# 
-        print(value({{SO.TDF}}.TotalDecayRateCompensated[0]))
-        print(value({{SO.TDF}}.TotalDecayRateCompensated[1]))
-        print(value({{SO.TDF}}.TotalDecayRateCompensated[2]))
+        print(value({{SO.TDF}}.TotalPowerOfDecayCompensated[0]))
+        print(value({{SO.TDF}}.TotalPowerOfDecayCompensated[1]))
+        print(value({{SO.TDF}}.TotalPowerOfDecayCompensated[2]))
         breakpoint()
         print()
         print(value({{SO.TDF}}.电接口[0]))
