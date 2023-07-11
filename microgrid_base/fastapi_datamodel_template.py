@@ -117,21 +117,19 @@ class 单次计算结果(BaseModel):
         ],
     )
 
+
 class ParetoCurve(BaseModel):
-    x
+    x: List[float]
     x_label: str
-    y
+    y: List[float]
     y_label: str
+
 
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
     paretoCurve: Union[None, ParetoCurve] = None
     success: bool
     error_log: str
-    
-    @validator("paretoCurve")
-    def validate_paretoCurve(cls, v, values):
-        ...
 
 
 # class EnergyFlowGraph(BaseModel):
