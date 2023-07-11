@@ -16,7 +16,11 @@ if os.name == "nt":
         xlbook = xlapp.Workbooks.Open(os.path.abspath(excel_path))
         xlbook.Save()
         xlbook.Close()
-
+else:
+    # in macos
+    def repair_excel(excel_path):
+        soffice_bin = "/Applications/LibreOffice.app/Contents/MacOS/soffice"
+        commandline = f"{soffice_bin} --headless --convert-to"
 
 def main_parser(filepath, sheet_name, output_path):
     if os.name == "nt":
