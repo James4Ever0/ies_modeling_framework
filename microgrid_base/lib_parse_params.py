@@ -26,8 +26,9 @@ else:
             commandline = f"{soffice_bin} --headless --convert-to xlsx {os.path.abspath(excel_path)}"
 
 def main_parser(filepath, sheet_name, output_path):
-    if os.name == "nt":
-        repair_excel(filepath)
+    # if os.name == "nt":
+    repair_excel(filepath)
+    
     excel_file = openpyxl.load_workbook(filepath)
     # excel_file = openpyxl.load_workbook(filepath, read_only=True)
     print('SHEET NAMES:')
