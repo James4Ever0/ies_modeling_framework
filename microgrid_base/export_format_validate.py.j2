@@ -199,10 +199,10 @@ def ReLU(val):
         )
 {% endmacro%}
 
-{% macro update_obj(obj, paramDict, devName, CPN, check)%}
-    {% if devName in paramDict.keys()%}
+{% macro update_obj(obj, paramDict, devName, CPN, check) %}
+    {% if devName in paramDict.keys() %}
         {% if len(paramDict[devName]) == 0 %}
-            {% error "设备'{}'的独有参数未设置".format(devName)%}
+            {% error "设备'{}'的独有参数未设置".format(devName) %}
         {% endif%}
         {% for k, v in paramDict[devName]%}
             {% if k in CPN%}
