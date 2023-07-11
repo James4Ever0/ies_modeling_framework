@@ -116,6 +116,7 @@ def ReLU(val):
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
 {% macro TP_ANNUAL(val)%}(({{val}}) * (timeParam/8760)){%endmacro%}
 {%macro VLIST(vlist)%}[value(e) for e in {{vlist}}.values()]{% endmacro%}
+{%macro ELIST(elist)%}[value(e) for e in {{elist}}]{% endmacro%}
 {% macro VLIST_PAT(vlist, pattern)%}[value({{pattern.format('e')}}) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTINV(vlist)%}[-value(e) for e in {{vlist}}.values()]{% endmacro%}
 {%macro VLISTDIV(vlist, div)%}[value(safeDiv(e,{{div}})) for e in {{vlist}}.values()]{% endmacro%}
