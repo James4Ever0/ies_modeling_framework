@@ -28,7 +28,7 @@ else:
         with tempfile.TemporaryDirectory() as TD:
             tmpdir = os.path.abspath(TD)
             excel_path_abs = os.path.abspath(excel_path)
-            commandline = f"{soffice_bin} --headless --convert-to xlsx {excel_path_abs} --outdir {tmpdir}"
+            commandline = f"'{soffice_bin}' --headless --convert-to xlsx --outdir '{tmpdir}' '{excel_path_abs}'"
             os.system(commandline)
             os.system(
                 f"mv {os.path.join(tmpdir, os.path.basename(excel_path))} {excel_path_abs}"
