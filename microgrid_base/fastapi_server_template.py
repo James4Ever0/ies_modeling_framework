@@ -246,10 +246,11 @@ def get_calculation_result_async(calculation_id: str):
     calculation_result = (
         CalculationResult.parse_obj(calculation_result) if calculation_result else None
     )
-    if calculate
-    calculation_result.pareto
     
-    calculate_result_with_pareto = calculation_result
+    if isinstance(calculation_result, CalculationResult):
+        calculation_result
+    
+        calculate_result_with_pareto = calculation_result
 
     return CalculationAsyncResult(
         calculation_state=calculation_state,
