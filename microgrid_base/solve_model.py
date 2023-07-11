@@ -282,7 +282,7 @@ def solveModelFromCalcParamList(
                 0 for _ in range(8760)
             ]  # 1d array, placed when running under typical day mode.
             @beartype
-            def 填充出力曲线(出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]):
+            def 填充出力曲线(出力曲线模版: List[Union[float,int]], 典型日出力曲线: List[Union[int,float]], 典型日代表的日期: List[int]):
                 assert len(出力曲线模版) == 8760, f"Actual: {len(出力曲线模版)}"
                 rich.print(典型日出力曲线) # ANY? please use "beartype.
                 assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
@@ -316,13 +316,13 @@ def solveModelFromCalcParamList(
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
-                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys()
+                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys() if k not in []
                                 }
                             mdict = deepcopy(出力曲线字典[devId])
                             出力曲线字典.update(
                                 {
                                     devId: {
-                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
+                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期) if isinstance(list, v) else v
                                         for k, v in 出力曲线.dict().items()
                                     }
                                 }
