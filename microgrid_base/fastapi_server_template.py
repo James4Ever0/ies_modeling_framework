@@ -249,9 +249,10 @@ def get_calculation_result_async(calculation_id: str):
     )
     
     if isinstance(calculation_result, CalculationResult):
-        calculation_result.paretoCurve = ParetoCurve()
-    
-        calculate_result_with_pareto = calculation_result
+        if len(RL:=calculation_result.resultList)>1:
+            for result in RL:
+                ...
+            calculation_result.paretoCurve = ParetoCurve(x=,x_label=, y=, y_label=)
 
     return CalculationAsyncResult(
         calculation_state=calculation_state,
