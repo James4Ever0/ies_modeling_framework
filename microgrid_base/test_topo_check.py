@@ -75,8 +75,8 @@ DS = 柴油发电(
     topo,
     param=柴油发电信息(
         **devParam,
-        RatedPower=20,
-        PowerDeltaLimit=1,
+        RatedPower=2000,
+        PowerDeltaLimit=100,
         PowerStartupLimit=1,
         CostPerMachine=100,
         CostPerYearPerMachine=100,
@@ -95,7 +95,7 @@ DEL1 = 变流器(
     topo,
     param=变流器信息(
         **devParam,
-        RatedPower=20,
+        RatedPower=20000,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
@@ -114,7 +114,7 @@ DEL2 = 变压器(
         **devParam,
         PowerParameter=0.9,
         LoadRedundancyParameter=1.2,
-        RatedPower=20,
+        RatedPower=20000,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
@@ -131,8 +131,8 @@ LOAD = 电负荷(
     topo,
     param=电负荷信息(
         **devParam,
-        EnergyConsumption=a,
-        MaxEnergyConsumption=100,
+        EnergyConsumption=[1]*len(a),
+        MaxEnergyConsumption=10,
         PriceModel=常数电价(Price=1),
     ).dict(),
 )
