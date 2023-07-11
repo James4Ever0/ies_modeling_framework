@@ -142,9 +142,9 @@ BAT = 锂电池(
     param=锂电池信息(
         **devParam,
         循环边界条件="日间连接",
-        RatedCapacity=20,
+        RatedCapacity=200,
         CostPerCapacity=100,
-        TotalCapacity=20,
+        TotalCapacity=2000,
         CostPerYearPerCapacity=100,
         VariationalCostPerWork=100,
         Life=20,
@@ -155,13 +155,13 @@ BAT = 锂电池(
         BuildBaseCost=10,
         InitSOC=1.5,
         BatteryStorageDecay=10,
-        BatteryLife=9,
-        LifetimeCycleCount=100000000 / 20,
+        BatteryLife=9000,
+        LifetimeCycleCount=100000000,
         # TotalDischargeCapacity=1000,
         MaxSOC=99,
         MinSOC=1,
-        MaxTotalCapacity=200,
-        MinTotalCapacity=100,
+        MaxTotalCapacity=2000,
+        MinTotalCapacity=1000,
     ).dict(),
 )
 """
@@ -173,7 +173,7 @@ BC = 双向变流器(
     topo,
     param=双向变流器信息(
         **devParam,
-        RatedPower=10,
+        RatedPower=10000,
         Efficiency=0.9,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
