@@ -383,7 +383,8 @@ def solveModelFromCalcParamList(
                 performanceDataList=出力曲线列表,
                 simulationResultTable=仿真结果表_格式化,
                 objectiveResult=dict(
-                    financialObjective=..., environmentalObjective=...
+                    financialObjective=value(ret.calcTargetLUT["经济"]),
+                    environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
             )
             # except:
