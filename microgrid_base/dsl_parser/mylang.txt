@@ -11,9 +11,10 @@
     param1[i] + param2[i+1] < param0, (optional syntax) i: [0, maxIndex]
     param1[i] + param2[i+1] < param0, i = -1
     diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
-    (param1)
-    (+param1)
-    (-param1)
-    (?+param1)
-    (?-param1)
+    param1 # shall emit warning?
+    (param1) # valid syntax.
+    (+ param1)
+    (- param1)
+    (?+ param1)
+    (?- param1)
     |param1|
