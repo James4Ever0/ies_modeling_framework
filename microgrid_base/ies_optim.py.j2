@@ -91,8 +91,8 @@ import math
 {% macro getFeeWrapper()%}
 {{getFee()}}
 {{caller()}}
-{{ returnElectricPrice()}}
-{% endmacro%}
+{{ returnElectricPrice() }}
+{% endmacro %}
 from functools import lru_cache
 class 电价转换:
     @staticmethod
@@ -982,7 +982,7 @@ class {{class_name}}模型(设备模型):
         {% if psc in ["仿真模拟", "设计规划"] %}
         {# # psc: {{psc}} mflag: {{mflag}} #}
         {% if mflag.val != psc %}
-        {% set mflag.val = psc%}
+        {% set mflag.val = psc %}
         {# # after: psc: {{psc}} mflag: {{mflag}} #}
         if self.计算参数.计算类型 == "{{psc}}":
         {% if psc == "设计规划" %}
@@ -996,9 +996,9 @@ class {{class_name}}模型(设备模型):
             """
             单位： 个
             """
-            {% endif%}
-        {% elif psc == "仿真模拟"%}
-            {% if class_name == '锂电池'%}
+            {% endif %}
+        {% elif psc == "仿真模拟" %}
+            {% if class_name == '锂电池' %}
             self.DeviceCount = round(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) # for better user experience.
             {# self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) #}
             {% endif %}
