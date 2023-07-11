@@ -8,34 +8,41 @@ import numpy
 import json
 
 import os
+
 if os.name == "nt":
     from win32com.client import Dispatch
+
     def repair_excel(excel_path):
         xlapp = Dispatch("Excel.Application")
-        xlapp.Visible=False
+        xlapp.Visible = False
         xlbook = xlapp.Workbooks.Open(os.path.abspath(excel_path))
         xlbook.Save()
         xlbook.Close()
+
 else:
     # in macos
     def repair_excel(excel_path):
         import tempfile
+
         soffice_bin = "/Applications/LibreOffice.app/Contents/MacOS/soffice"
         with tempfile.TemporaryDirectory() as TD:
             tmpdir = os.path.abspath(TD)
             excel_path_abs = os.path.abspath(excel_path)
             commandline = f"{soffice_bin} --headless --convert-to xlsx {excel_path_abs} --outdir {tmpdir}"
             os.system(commandline)
-            os.system(f'mv {os.path.join(tmpdir, os.path.basename(excel_path))} {excel_path_abs}')
+            os.system(
+                f"mv {os.path.join(tmpdir, os.path.basename(excel_path))} {excel_path_abs}"
+            )
+
 
 def main_parser(filepath, sheet_name, output_path):
     # if os.name == "nt":
     repair_excel(filepath)
-    
+
     excel_file = openpyxl.load_workbook(filepath)
     # excel_file = openpyxl.load_workbook(filepath, read_only=True)
-    print('SHEET NAMES:')
-    print(excel_file.sheetnames) # ['Sheet1']
+    print("SHEET NAMES:")
+    print(excel_file.sheetnames)  # ['Sheet1']
     # from openpyxl.cell.cell import Cell, MergedCell
 
     sheet1 = excel_file[sheet_name]
@@ -122,7 +129,7 @@ def csv_parser(filename, output_path):
     df = pandas.read_csv(filename, header=None)
     dataClasses = [None, None]
     result = {}
-    lastEmpty=True
+    lastEmpty = True
     for index, row in df.iterrows():
         # print(row)
         # print(list(row))
@@ -137,14 +144,14 @@ def csv_parser(filename, output_path):
         # numpy.nan is a float, not an int, so we can't use it as a number
         if type(first) == str:
             first = first.strip()
-            if len(first)>0:
+            if len(first) > 0:
                 dataClasses[0] = first
         if type(second) == str:
             second = second.strip()
-            if len(second)>0:
+            if len(second) > 0:
                 if lastEmpty:
                     dataClasses[1] = second
-                    lastEmpty=False
+                    lastEmpty = False
                 else:
                     # now we begin to insert data.
                     if dataClasses[0] and dataClasses[1]:
@@ -154,5 +161,5 @@ def csv_parser(filename, output_path):
                             result[dataClasses[0]][dataClasses[1]] = []
                         result[dataClasses[0]][dataClasses[1]].append(second)
     rich.print(result)
-    with open(output_path,'w+') as f:
+    with open(output_path, "w+") as f:
         f.write(json.dumps(result, indent=4, ensure_ascii=False))
