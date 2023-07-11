@@ -3,8 +3,12 @@
 变量列表:
     param1
     param2
+指示变量列表: #不能直接使用
+单指示变量:
 约束:
     param1 < param0
     param1 + param2 < param0
     param1[i] + param2[i+1] < param0, (optional syntax) i: [0, maxIndex]
     param1[i] + param2[i+1] < param0, i = -1
+    diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
+    x_pos(param1)
