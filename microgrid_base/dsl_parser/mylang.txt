@@ -11,6 +11,9 @@
     param1[i] + param2[i+1] < param0, (optional syntax) i: [0, maxIndex]
     param1[i] + param2[i+1] < param0, i = -1
     diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
-    为正(param1)
-    绝对值(param1)
-    取正(param1)
+    (param1)
+    (+param1)
+    (-param1)
+    (?+param1)
+    (?-param1)
+    |param1|
