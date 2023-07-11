@@ -58,8 +58,9 @@ class 设备出力曲线(BaseModel):
     name: str = Field(title="设备名称")
     plot_list: List[出力曲线] = Field(title="出力曲线列表")
 
-
+class ObjectiveResults
 class 单次计算结果(BaseModel):
+    objectiveResults: = Field(title = )
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
