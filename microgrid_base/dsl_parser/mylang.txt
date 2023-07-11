@@ -3,10 +3,11 @@
 变量列表:
     param1
     param2
-    param5:[1,10]
+    param5: [1,10]
 指示变量列表: #不能直接使用
     param3
 单指示变量:
+    param7
 约束:
     param6 = param1 + param2 # intermediate expression list.
     param1 < param0
