@@ -58,11 +58,18 @@ class 设备出力曲线(BaseModel):
     name: str = Field(title="设备名称")
     plot_list: List[出力曲线] = Field(title="出力曲线列表")
 
+
 class ObjectiveResult(BaseModel):
-    financialObjective: float = Field(title = "经济目标值")
-    environmentalObjective: float = Field(title = "环保目标值")
+    financialObjective: float = Field(title="经济目标值")
+    environmentalObjective: float = Field(title="环保目标值")
+
+
 class 单次计算结果(BaseModel):
-    objectiveResults: ObjectiveResult = Field(title = "计算目标值结果" , description = "存放例如经济目标值、环保目标值的计算结果", example = {})
+    objectiveResults: ObjectiveResult = Field(
+        title="计算目标值结果",
+        description="存放例如经济目标值、环保目标值的计算结果",
+        example={"financialObjective": 2000, "environmentalObjective": 3000},
+    )
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
@@ -110,12 +117,16 @@ class 单次计算结果(BaseModel):
         ],
     )
 
+class ParetoCurve(BaseModel):
+    ...
 
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
-    paretoCurve: ...
+    paretoCurve: Union[None, ParetoCurve] = None
     success: bool
     error_log: str
+    
+    @validator()
 
 
 # class EnergyFlowGraph(BaseModel):
