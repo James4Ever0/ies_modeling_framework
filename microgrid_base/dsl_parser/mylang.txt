@@ -3,7 +3,9 @@
 变量列表:
     param1
     param2
+    param5:[1,10]
 指示变量列表: #不能直接使用
+    param3
 单指示变量:
 约束:
     param1 < param0
@@ -11,10 +13,10 @@
     param1[i] + param2[i+1] < param0, (optional syntax) i: [0, maxIndex]
     param1[i] + param2[i+1] < param0, i = -1
     diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
-    param1 # shall emit warning?
-    (param1) # valid syntax.
-    (+ param1)
-    (- param1)
-    (?+ param1)
-    (?- param1)
-    |param1|
+    param3 # shall emit warning?
+    (param3) # valid syntax.
+    (+ param3)
+    (- param3)
+    (?+ param3)
+    (?- param3)
+    |param3|
