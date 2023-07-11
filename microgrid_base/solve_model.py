@@ -310,6 +310,8 @@ def solveModelFromCalcParamList(
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
                         print("EXPORTING:", 出力曲线类.__name__)
+                        print("DATA:")
+                        rich.print(出力曲线)
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
