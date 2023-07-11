@@ -689,6 +689,7 @@ class 电负荷出力曲线(BaseModel):
         return 电负荷出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
+            耗电功率=[-value(e) for e in model.电接口.values()],
         )
 
 
@@ -712,4 +713,5 @@ class 传输线出力曲线(BaseModel):
         return 传输线出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
+            传输功率=[-value(e) for e in model.电输入.values()],
         )

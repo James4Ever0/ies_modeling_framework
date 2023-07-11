@@ -278,7 +278,7 @@ class {{devName}}仿真结果(BaseModel):
     "双向变流器":[
         ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ],
-    "电负荷":[('耗电功率', VLISTINV('model.'))],
+    "电负荷":[('耗电功率', VLISTINV('model.电接口'))],
     "传输线":[('传输功率', VLISTINV('model.电输入'))]
 }
 %}
