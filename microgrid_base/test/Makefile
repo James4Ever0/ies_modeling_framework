@@ -13,7 +13,7 @@ endif
 PYTHON_ENV = -X utf8=1
 
 ifeq (${OS_TYPE}, macos)
-CONDA_ENV = base
+CONDA_ENV = rosetta
 PYTHON = /usr/bin/python3
 else
 CONDA_ENV = cplex
