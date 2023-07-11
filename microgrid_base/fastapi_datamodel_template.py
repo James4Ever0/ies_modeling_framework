@@ -118,7 +118,10 @@ class 单次计算结果(BaseModel):
     )
 
 class ParetoCurve(BaseModel):
-    ...
+    x
+    x_label: str
+    y
+    y_label: str
 
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
