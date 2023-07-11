@@ -21,9 +21,9 @@ else:
     def repair_excel(excel_path):
         import tempfile
         soffice_bin = "/Applications/LibreOffice.app/Contents/MacOS/soffice"
-        commandline = f"{soffice_bin} --headless --convert-to"
         with tempfile.TemporaryDirectory() as TD:
             tmpdir = os.path.abspath(TD)
+            commandline = f"{soffice_bin} --headless --convert-to xlsx {os.path.abspath(excel_path)}"
 
 def main_parser(filepath, sheet_name, output_path):
     if os.name == "nt":
