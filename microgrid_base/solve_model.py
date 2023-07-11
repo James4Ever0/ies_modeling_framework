@@ -10,6 +10,8 @@ from export_format_validate import *
 from pyomo.environ import *
 # from pyomo.util.infeasible import log_infeasible_constraints
 
+# TODO: add pareto plot, change datastructure of solution result object.
+
 from pydantic import BaseModel
 import rich
 # import io
