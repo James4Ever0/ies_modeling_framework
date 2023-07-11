@@ -241,7 +241,7 @@ def solveModelFromCalcParamList(
                 timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
-            timeParam /= 8760 # TODO: eliminate invalid results
+            timeParam /= 8760 # TODO: eliminate invalid results due to timeParam
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
