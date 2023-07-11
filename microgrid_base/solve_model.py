@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict, Any, Union
 from beartype import beartype
+
 try:
     from typing import Literal
 except:
@@ -8,12 +9,14 @@ except:
 from ies_optim import ModelWrapper
 from export_format_validate import *
 from pyomo.environ import *
+
 # from pyomo.util.infeasible import log_infeasible_constraints
 
 # TODO: add pareto plot, change data structure of solution result object.
 
 from pydantic import BaseModel
 import rich
+
 # import io
 # import logging
 
@@ -94,7 +97,7 @@ def solveModelFromCalcParamList(
     计算目标 = firstParam_graphparam["计算目标"]
 
     if 典型日:
-        assert len(calcParamList) >= 1 # 允许单典型日计算
+        assert len(calcParamList) >= 1  # 允许单典型日计算
         # assert len(calcParamList) > 1
     else:
         assert len(calcParamList) == 1
@@ -243,7 +246,7 @@ def solveModelFromCalcParamList(
                 timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
-            timeParam /= 8760 # TODO: eliminate invalid results due to timeParam
+            timeParam /= 8760  # TODO: eliminate invalid results due to timeParam
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
@@ -253,7 +256,7 @@ def solveModelFromCalcParamList(
                 financial_dyn_obj_expr,
                 environment_obj_expr,
             ) = obj_exprs
-            
+
             # handle weights in objectives
 
             obj_time_param = 1 if not 典型日 else len(graph_data["典型日代表的日期"])
@@ -286,10 +289,15 @@ def solveModelFromCalcParamList(
             创建出力曲线模版 = lambda: [
                 0 for _ in range(8760)
             ]  # 1d array, placed when running under typical day mode.
+
             @beartype
-            def 填充出力曲线(出力曲线模版: List[Union[float,int]], 典型日出力曲线: List[Union[int,float]], 典型日代表的日期: List[int]):
+            def 填充出力曲线(
+                出力曲线模版: List[Union[float, int]],
+                典型日出力曲线: List[Union[int, float]],
+                典型日代表的日期: List[int],
+            ):
                 assert len(出力曲线模版) == 8760, f"Actual: {len(出力曲线模版)}"
-                rich.print(典型日出力曲线) # ANY? please use "beartype.
+                rich.print(典型日出力曲线)  # ANY? please use "beartype.
                 assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
                     出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
@@ -324,13 +332,17 @@ def solveModelFromCalcParamList(
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
-                                    k: 创建出力曲线模版() for k in 出力曲线.dict().keys() if k not in ['元件名称']
+                                    k: 创建出力曲线模版()
+                                    for k in 出力曲线.dict().keys()
+                                    if k not in ["元件名称"]
                                 }
                             mdict = deepcopy(出力曲线字典[devId])
                             出力曲线字典.update(
                                 {
                                     devId: {
-                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期) if isinstance(v, list) else v
+                                        k: 填充出力曲线(mdict[k], v, 典型日代表的日期)
+                                        if isinstance(v, list)
+                                        else v
                                         for k, v in 出力曲线.dict().items()
                                     }
                                 }
@@ -367,7 +379,13 @@ def solveModelFromCalcParamList(
                     }
                     elem["plot_list"].append(subElem)
                 出力曲线列表.append(elem)
-            return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化, objectiveResult = )
+            return dict(
+                performanceDataList=出力曲线列表,
+                simulationResultTable=仿真结果表_格式化,
+                objectiveResult=dict(
+                    financialObjective=..., environmentalObjective=...
+                ),
+            )
             # except:
             #     import traceback
 
