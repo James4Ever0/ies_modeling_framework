@@ -251,6 +251,8 @@ def solveModelFromCalcParamList(
                 financial_dyn_obj_expr,
                 environment_obj_expr,
             ) = obj_exprs
+            
+            # handle weights in objectives
 
             obj_time_param = 1 if not 典型日 else len(graph_data["典型日代表的日期"])
             calcTargetLUT["环保"] += environment_obj_expr * obj_time_param
