@@ -69,7 +69,7 @@ import pytest
 {% endif%}
 def test_{{testName}}({{",".join(paramStringList)}}):
     {# {{'#'}} {{_params}} {{autoRegister}} #}
-    {% if isDevice%}
+    {% if isDevice %}
         {% if autoRegister == true %}
     测试{{testName}}模型.constraints_register()
         {% endif%}
