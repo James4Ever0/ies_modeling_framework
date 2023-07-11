@@ -541,6 +541,3 @@ def test_锂电池(
             < 0
         ):
             assert abs(last_capacity) <= EPS
-# may you get infeasible constraints on some row.
-# Row 'c_e_x1988826_' infeasible, all entries at implied bounds.
-# but this row has been transformed by pyomo, which is hard to retrieve.

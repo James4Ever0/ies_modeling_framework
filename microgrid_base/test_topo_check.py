@@ -187,9 +187,9 @@ BC = 双向变流器(
     ).dict(),
 )
 
-连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
+# 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接柴油母线", DS.燃料接口, DSS.燃料接口)
-连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
+# 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
 
 连接线(topo, "不可连接电母线输入", DEL1.电输出, A3.id)
 连接线(topo, "不可连接电母线输出", A3.id, DEL2.电输入)
@@ -294,3 +294,7 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
+
+# may you get infeasible constraints on some row.
+# Row 'c_e_x1988826_' infeasible, all entries at implied bounds.
+# but this row has been transformed by pyomo, which is hard to retrieve.
