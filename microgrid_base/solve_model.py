@@ -236,7 +236,7 @@ def solveModelFromCalcParamList(
             典型日ID = calc_id
 
             if 典型日:
-                assert 计算步长 != "小时", f"典型日计算步长异常: {计算步长}"
+                assert 计算步长 == "小时", f"典型日计算步长异常: {计算步长}"
                 graph_data["典型日ID"] = 典型日ID
                 timeParam = 24 * len(graph_data["典型日代表的日期"])
             else:
