@@ -25,3 +25,4 @@ pytest
 better-exceptions
 pytest-depends
 pytest-timeout
+beartype

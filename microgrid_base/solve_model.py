@@ -1,6 +1,6 @@
 import json
 from typing import List, Dict, Any, Union
-
+from beartype import beartype
 try:
     from typing import Literal
 except:
@@ -281,9 +281,10 @@ def solveModelFromCalcParamList(
             创建出力曲线模版 = lambda: [
                 0 for _ in range(8760)
             ]  # 1d array, placed when running under typical day mode.
-
+            @beartype
             def 填充出力曲线(出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]):
                 assert len(出力曲线模版) == 8760, f"Actual: {len(出力曲线模版)}"
+                rich.print(典型日出力曲线) # ANY? please use "beartype.
                 assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
                     出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
