@@ -223,6 +223,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     else:
         return CalculationStateResult(calculation_state="NOT_CREATED")
 
+from fastapi_datamodel_template import ParetoCurve
 
 @remove_stale_tasks_decorator
 @app.get(
@@ -248,7 +249,7 @@ def get_calculation_result_async(calculation_id: str):
     )
     
     if isinstance(calculation_result, CalculationResult):
-        calculation_result
+        calculation_result.paretoCurve = ParetoCurve()
     
         calculate_result_with_pareto = calculation_result
 
