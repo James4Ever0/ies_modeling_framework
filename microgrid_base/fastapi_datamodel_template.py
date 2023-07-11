@@ -65,7 +65,7 @@ class ObjectiveResult(BaseModel):
 
 
 class 单次计算结果(BaseModel):
-    objectiveResults: ObjectiveResult = Field(
+    objectiveResult: ObjectiveResult = Field(
         title="计算目标值结果",
         description="存放例如经济目标值、环保目标值的计算结果",
         example={"financialObjective": 2000, "environmentalObjective": 3000},

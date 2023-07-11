@@ -250,9 +250,12 @@ def get_calculation_result_async(calculation_id: str):
     
     if isinstance(calculation_result, CalculationResult):
         if len(RL:=calculation_result.resultList)>1:
+            plotList = []
             for result in RL:
-                ...
-            calculation_result.paretoCurve = ParetoCurve(x=,x_label=, y=, y_label=)
+                OR = result.objectiveResult
+                plotList.append((OR.financialObjective,OR.environmentalObjective))
+            plotList.sort(lambda x: x[0])
+            calculation_result.paretoCurve = ParetoCurve(x=,x_label='经济', y=, y_label='环保')
 
     return CalculationAsyncResult(
         calculation_state=calculation_state,
