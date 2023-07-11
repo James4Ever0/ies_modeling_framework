@@ -367,7 +367,7 @@ def solveModelFromCalcParamList(
                     }
                     elem["plot_list"].append(subElem)
                 出力曲线列表.append(elem)
-            return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化)
+            return dict(performanceDataList=出力曲线列表, simulationResultTable=仿真结果表_格式化, objectiveResult = )
             # except:
             #     import traceback
 

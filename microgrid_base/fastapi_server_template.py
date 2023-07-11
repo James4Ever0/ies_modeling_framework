@@ -255,7 +255,7 @@ def get_calculation_result_async(calculation_id: str):
                 OR = result.objectiveResult
                 plotList.append((OR.financialObjective,OR.environmentalObjective))
             plotList.sort(lambda x: x[0])
-            calculation_result.paretoCurve = ParetoCurve(x=,x_label='经济', y=, y_label='环保')
+            calculation_result.paretoCurve = ParetoCurve(x=[e[0] for e in plotList],x_label='经济', y=[e[1] for e in plotList], y_label='环保')
 
     return CalculationAsyncResult(
         calculation_state=calculation_state,
