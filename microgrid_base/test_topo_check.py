@@ -139,7 +139,7 @@ LOAD = 电负荷(
         PriceModel=常数电价(Price=1),
     ).dict(),
 )
-"""
+
 BAT = 锂电池(
     topo,
     param=锂电池信息(
@@ -167,11 +167,11 @@ BAT = 锂电池(
         MinTotalCapacity=1000,
     ).dict(),
 )
-"""
+
 A1 = 母线(topo, "可连接供电端母线")
 A2 = 母线(topo, "可连接供电端母线")
 A3 = 母线(topo, "可连接电母线")
-"""
+
 BC = 双向变流器(
     topo,
     param=双向变流器信息(
@@ -189,7 +189,7 @@ BC = 双向变流器(
         DeviceCount=10000,
     ).dict(),
 )
-"""
+
 # 连接线(topo, "不可连接电储能端母线", BC.储能端, BAT.电接口)
 连接线(topo, "不可连接柴油母线", DS.燃料接口, DSS.燃料接口)
 # 连接线(topo, "不可连接电母线输入输出", BC.线路端, A3.id)
