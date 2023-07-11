@@ -23,7 +23,10 @@ else:
         soffice_bin = "/Applications/LibreOffice.app/Contents/MacOS/soffice"
         with tempfile.TemporaryDirectory() as TD:
             tmpdir = os.path.abspath(TD)
-            commandline = f"{soffice_bin} --headless --convert-to xlsx {os.path.abspath(excel_path)}"
+            excel_path_abs = os.path.abspath(excel_path)
+            commandline = f"{soffice_bin} --headless --convert-to xlsx {excel_path_abs} --outdir {tmpdir}"
+            os.system(commandline)
+            os.system(f'mv {os.path.join(tmpdir, os.path.basename(excel_path))} {excel_path_abs}')
 
 def main_parser(filepath, sheet_name, output_path):
     # if os.name == "nt":
