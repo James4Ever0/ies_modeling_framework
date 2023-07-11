@@ -126,8 +126,8 @@ def ReLU(val):
 {%macro MVLIST(vlist)%}statistics.mean({{VLIST(vlist)}}){% endmacro%}
 {%macro MVLISTPOS(vlist)%}statistics.mean({{VLISTPOS(vlist)}}){% endmacro%}
 {%macro MVLISTNEG(vlist)%}statistics.mean({{VLISTNEG(vlist)}}){% endmacro%}
-{% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro%}
-{% macro TP_MVLISTPOS(vlist)%}{{TP(MVLISTPOS(vlist))}}{% endmacro%}
+{% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro %}
+{% macro TP_MVLISTPOS(vlist)%}{{TP(MVLISTPOS(vlist))}}{% endmacro %}
 {% macro TP_MVLISTNEG(vlist)%}{{TP(MVLISTNEG(vlist))}}{% endmacro%}
 {% macro BIDIR_SINGLE_CVT(x,y)%}(safeDiv(sumVarList(model.{{x}}.x_pos),sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
 {% macro BIDIR_CVT_COP(x,y)%}value({{BIDIR_SINGLE_CVT(x,y)}}+ {{BIDIR_SINGLE_CVT(y,x)}})/model.计算参数.迭代步数{% endmacro%}
