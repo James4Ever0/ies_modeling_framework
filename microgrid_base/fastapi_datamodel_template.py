@@ -58,9 +58,10 @@ class 设备出力曲线(BaseModel):
     name: str = Field(title="设备名称")
     plot_list: List[出力曲线] = Field(title="出力曲线列表")
 
-class ObjectiveResults
+class ObjectiveResult(BaseModel):
+    ...
 class 单次计算结果(BaseModel):
-    objectiveResults: = Field(title = )
+    objectiveResults: ObjectiveResult = Field(title = "计算目标值列表" 存放)
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
@@ -111,6 +112,7 @@ class 单次计算结果(BaseModel):
 
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
+    paretoCurve: ...
     success: bool
     error_log: str
 
