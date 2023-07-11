@@ -181,9 +181,9 @@ BC = 双向变流器(
         Life=100,
         BuildCostPerKilowatt=100,
         BuildBaseCost=100,
-        MaxDeviceCount=200,
-        MinDeviceCount=100,
-        DeviceCount=1000000,
+        MaxDeviceCount=2000,
+        MinDeviceCount=1000,
+        DeviceCount=10000,
     ).dict(),
 )
 
