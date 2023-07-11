@@ -1,13 +1,15 @@
 变量:
     param0
+    param10
 变量列表:
     param1
     param2
     param5: [1,10]
+    param8
 指示变量列表: #不能直接使用
-    param3
+    param3 <- param8 # assignment symbol (<-): define relaionship between indicators and variables/expressions.
 单指示变量:
-    param7
+    param7 <- param10
 约束:
     param6 = param1 + param2 # intermediate expression list.
     param1 < param0
