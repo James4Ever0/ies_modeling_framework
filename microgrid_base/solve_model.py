@@ -283,8 +283,8 @@ def solveModelFromCalcParamList(
             ]  # 1d array, placed when running under typical day mode.
 
             def 填充出力曲线(出力曲线模版: List[float], 典型日出力曲线: List[float], 典型日代表的日期: List[int]):
-                assert len(出力曲线模版) == 8760
-                assert len(典型日出力曲线) == 24
+                assert len(出力曲线模版) == 8760, f"Actual: {len(出力曲线模版)}"
+                assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
                     出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
                 return 出力曲线模版
@@ -309,6 +309,7 @@ def solveModelFromCalcParamList(
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
+                        print("EXPORTING:", 出力曲线类.__name__)
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
