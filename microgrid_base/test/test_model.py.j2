@@ -39,8 +39,8 @@ def test_convertMonthToDays():
     assert convertMonthToDays(2) == sum(month_days[:2])
     assert convertMonthToDays(11) == sum(month_days[:11])
 
-def test_unitFactorCalculator():
-    ...
+{# def test_unitFactorCalculator():
+    ... #}
 
 import pytest
 
@@ -52,7 +52,7 @@ import pytest
     {% do paramStringList.append(mParamString) %}
 @pytest.mark.parametrize({{repr(mParamString)}},{{caller()}})
 {% endmacro%}
-{% macro parametrizeTestHelper(testName,_params, autoRegister=true, autoSense=true)%}
+{% macro parametrizeTestHelper(testName,_params, autoRegister=true, autoSense=true) %}
 {# shall you ensure no parameter is undefined.#}
     {% set isDevice = false%}
     {% if _params == "Device"%}
