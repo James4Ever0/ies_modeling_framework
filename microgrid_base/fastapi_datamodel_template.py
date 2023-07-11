@@ -126,7 +126,9 @@ class CalculationResult(BaseModel):
     success: bool
     error_log: str
     
-    @validator()
+    @validator("paretoCurve")
+    def validate_paretoCurve(cls, v, values):
+        ...
 
 
 # class EnergyFlowGraph(BaseModel):
