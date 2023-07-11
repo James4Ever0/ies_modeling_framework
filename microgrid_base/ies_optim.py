@@ -57,8 +57,11 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         price = self.Price
 
+        # unit: [currency]/[time]
+        # 万元/h
         return self.convert(price * power)
 
 
@@ -100,11 +103,14 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
         price = self.PriceList[month_index]
 
+        # unit: [currency]/[time]
+        # 万元/h
         return self.convert(price * power)
 
 
@@ -137,10 +143,13 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title="长度为24的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_time = math.floor(time_in_day % 24)
 
         price = self.PriceList[current_time]
 
+        # unit: [currency]/[time]
+        # 万元/h
         return self.convert(price * power)
 
 
@@ -150,6 +159,7 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
@@ -174,6 +184,7 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -214,6 +225,7 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title="长度为24的阶梯电价列表", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_time = math.floor(time_in_day % 24)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -294,13 +306,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -316,13 +328,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -398,6 +410,7 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
+
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -496,6 +509,7 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -600,6 +614,7 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -856,6 +871,7 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
+
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -962,6 +978,7 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1044,6 +1061,7 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1126,6 +1144,7 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
+
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -1333,7 +1352,6 @@ class ModelWrapper:
 # shall you assign port with variables.
 
 # 风、光照
-
 
 # 需要明确单位
 class 计算参数(BaseModel):
@@ -1612,6 +1630,7 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
+
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1673,6 +1692,7 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
+
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -2690,6 +2710,7 @@ class 锂电池模型(设备模型):
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
+
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
                     bounds=(
@@ -2982,18 +3003,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3315,18 +3336,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3873,7 +3894,6 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
-
 
 # partial if typical day mode is on.
 def compute(

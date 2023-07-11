@@ -4,13 +4,17 @@
 .PHONY: test
 
 ################ VARIABLES ################
+
 PLATFORM := $(shell python -c "import os; print(os.name)")
 ifeq (${PLATFORM}, )
 PLATFORM := $(shell python3 -c "import os; print(os.name)") # executed on macos
 endif
 
+ifeq (${PLATFORM}, nt)
 OS_TYPE = windows
-# OS_TYPE = macos
+else
+OS_TYPE = macos
+endif
 
 PYTHON_ENV = -X utf8=1
 
