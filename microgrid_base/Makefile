@@ -4,7 +4,10 @@
 .PHONY: test
 
 ################ VARIABLES ################
-PLATFORM := $(shell )
+PLATFORM := $(shell python -c "import os; print(os.name)")
+ifeq (${PLATFORM}, )
+PLATFORM := $(shell python3 -c "import os; print(os.name)") # executed on macos
+endif
 
 OS_TYPE = windows
 # OS_TYPE = macos
