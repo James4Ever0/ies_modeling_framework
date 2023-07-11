@@ -217,7 +217,7 @@ def solveModelFromCalcParamList(
         calcTargetLUT: Dict
         devInstDictList: List[Dict]
         PDList: List[Dict]
-        timeParamList: List[int]
+        timeParamList: List[Union[float, int]]
         graph_data_list: List
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
@@ -295,7 +295,8 @@ def solveModelFromCalcParamList(
                 graph_data = ret.graph_data_list[index]
                 典型日代表的日期 = graph_data["典型日代表的日期"]
                 timeParam = 24 * len(典型日代表的日期) if 典型日 else (8760 if 计算步长 == "小时" else 2)
-                # question
+                # TODO: fix inconsistent timeParam.
+                timeParam /= 8760
                 for devId, devInst in devInstDict.items():
                     devClassName = devInst.__class__.__name__.strip("模型")
                     # where you convert the units.
