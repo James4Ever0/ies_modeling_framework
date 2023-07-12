@@ -1,0 +1,44 @@
+from typing import List
+
+{% macro check_and_append(stmt, ies = "IES", env = "environment") %}
+if check_if_executable({{stmt}}, {{env}}):
+    environment = execute_statement({{stmt}}, {{env}})
+    {{ies}}.append({{stmt}})
+{% endmacro %}
+
+def check_if_executable(statement, environment) -> bool:
+    return is_executable
+
+def execute_statement(statement, environment):
+    return environment
+
+
+def functional_executor(statement_array:List, 
+    environment = ...):
+    IES = []
+    LES = []
+    for statement in statement_array:
+        TLES = [] # create it along the way.
+
+        # stage 1
+{{check_and_append("statement") | indent(4*2, true)}}
+        else:
+            TLES.append(statement)
+        
+        # stage 2
+        while True:
+            late_removal_indexes = []
+            for index, elem in enumerate(LES.copy()):
+{{check_and_append("elem") | indent(4*4, true)}}
+                    late_removal_indexes.append(index)
+            if len(late_removal_indexes) == 0:
+                break
+            LES = [e for i, e in enumerate(LES) if i not in late_removal_indexes]
+        
+        # stage 3
+        for elem in TLES:
+{{check_and_append("elem") | indent(4*3, true)}}
+            else:
+                LES.append(elem)
+    # usually, LES == []
+    return IES, LES

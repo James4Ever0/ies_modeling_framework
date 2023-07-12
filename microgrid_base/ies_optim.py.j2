@@ -561,7 +561,7 @@ class ModelWrapper:
             {% endif %}
         if {{qstr(init_argname)}} in kwargs.keys(): del kwargs[{{qstr(init_argname)}}]
         ret = {{k}}({{mv+", {}=_{}".format(init_argname, init_argname) if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
-{{double_check_setattr("self.model", "name", 'ret') | indent(2*4, True)}}
+{{double_check_setattr("self.model", "name", 'ret') | indent(2*4, true)}}
         {# self.model.__setattr__(name, ret) #}
         return ret
     {% endfor%}
@@ -618,7 +618,8 @@ class 计算参数(BaseModel):
     """
     单位: 摄氏度
     """
-    年利率: float
+    贴现率: {{non_neg_float}}
+    {# 年利率: float #}
     """
     单位: percent
     """
@@ -709,7 +710,7 @@ class 设备模型:
         {% for e0 in financial_param_names %}
         self.{{e0}} = 0
         {% endfor %}
-        self.年化率 = 1
+        self.年化率 = ...
     
     @staticmethod
     def 处理最终财务输出(mclass: 可购买类):
@@ -840,7 +841,7 @@ class 设备模型:
             unbounded_domain_var=unbounded_domain_var,
             warn_domain_coverage=False, # to suppress warning
         )
-{{double_check_setattr("self.mw.model", "piecewise_name", "PW") | indent(3*4, True)}}
+{{double_check_setattr("self.mw.model", "piecewise_name", "PW") | indent(3*4, true)}}
             {# assert getattr(self.mw.model,piecewise_name, None) is None, f"错误: 不能设置两次相同的变量名称\n重复变量: {piecewise_name}"
             self.mw.model.__setattr__(piecewise_name, PW)
             PWL.append(PW) #}
@@ -1007,7 +1008,7 @@ class {{class_name}}模型(设备模型):
             {% endif %}
         {% endif %}
         {%endif%}
-{{expand_unit_conversion(mdigit) | indent(4, True)}}
+{{expand_unit_conversion(mdigit) | indent(4, true)}}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
 {{expand_unit_conversion(mdigit,设备参数例外列表) }}
@@ -1368,27 +1369,35 @@ class {{class_name}}模型(设备模型):
         Life = self.Life
         {%endif%}
 
-        self.年化率 = ((1+(self.计算参数.年利率/100))** Life) / Life
+        if self.计算参数.贴现率 == 0:
+            {# self.年化率 = 1/Life #}
+            self.年化率 = 0 # 仿真模拟的时候 用于去除和年化率有关的目标
+        else:
+            贴现率 = self.计算参数.贴现率/100
+            年化率_CT = (1+贴现率) ** Life
+
+            self.年化率 = (贴现率*年化率_CT)/(年化率_CT - 1)
+        {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
-            {% set m='总最大功率'%}
+            {% set m='总最大功率' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
-        {%elif class_name in ['风力发电']+单向变电器列表+ ['双向变流器']%}
-            {% set m='self.DeviceCount * self.RatedPower'%}
+        {% elif class_name in ['风力发电']+单向变电器列表+ ['双向变流器'] %}
+            {% set m='self.DeviceCount * self.RatedPower' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
-        {% elif class_name in ['柴油发电']%}
-            {% set m='self.DeviceCount'%}
+        {% elif class_name in ['柴油发电'] %}
+            {% set m='self.DeviceCount' %}
             {% set vi = 'Machine' %}
             {% set vm = 'Machine' %}
             {% set vb = 'Machine' %}
             {% set vv = 'Work' %}
-        {% elif class_name in ["锂电池"]%}
-            {% set m='self.DeviceCount * self.RatedCapacity'%}
+        {% elif class_name in ["锂电池"] %}
+            {% set m='self.DeviceCount * self.RatedCapacity' %}
             {% set vi = 'Capacity' %}
             {% set vm = 'Capacity' %}
             {% set vb = 'Capacity' %}

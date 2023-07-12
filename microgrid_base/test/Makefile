@@ -1,26 +1,26 @@
 
-PLATFORM := $(shell python -c "import os; print(os.name)")
-ifeq (${PLATFORM}, )
-PLATFORM := $(shell python3 -c "import os; print(os.name)") # executed on macos
-endif
+# PLATFORM := $(shell python -c "import os; print(os.name)")
+# ifeq (${PLATFORM}, )
+# PLATFORM := $(shell python3 -c "import os; print(os.name)") # executed on macos
+# endif
 
-ifeq (${PLATFORM}, nt)
-OS_TYPE = windows
-else
-OS_TYPE = macos
-endif
+# ifeq (${PLATFORM}, nt)
+# OS_TYPE = windows
+# else
+# OS_TYPE = macos
+# endif
 
-PYTHON_ENV = -X utf8=1
+# PYTHON_ENV = -X utf8=1
 
-ifeq (${OS_TYPE}, macos)
-CONDA_ENV = rosetta
-PYTHON = /usr/bin/python3
-else
-CONDA_ENV = cplex
-PYTHON = python ${PYTHON_ENV}
-endif
+# ifeq (${OS_TYPE}, macos)
+# CONDA_ENV = rosetta
+# PYTHON = /usr/bin/python3
+# else
+# CONDA_ENV = cplex
+# PYTHON = python ${PYTHON_ENV}
+# endif
 
-CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
+# CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 
 ifeq (${OS_TYPE}, macos)
 MAIN_EXEC=bash run_test.sh

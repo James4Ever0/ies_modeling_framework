@@ -59,7 +59,17 @@ class 设备出力曲线(BaseModel):
     plot_list: List[出力曲线] = Field(title="出力曲线列表")
 
 
+class ObjectiveResult(BaseModel):
+    financialObjective: float = Field(title="经济目标值")
+    environmentalObjective: float = Field(title="环保目标值")
+
+
 class 单次计算结果(BaseModel):
+    objectiveResult: ObjectiveResult = Field(
+        title="计算目标值结果",
+        description="存放例如经济目标值、环保目标值的计算结果",
+        example={"financialObjective": 2000, "environmentalObjective": 3000},
+    )
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
@@ -108,8 +118,16 @@ class 单次计算结果(BaseModel):
     )
 
 
+class ParetoCurve(BaseModel):
+    x: List[float]
+    x_label: str
+    y: List[float]
+    y_label: str
+
+
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
+    paretoCurve: Union[None, ParetoCurve] = None
     success: bool
     error_log: str
 

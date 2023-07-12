@@ -35,7 +35,7 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
         风速=arr,
         光照=arr,
         气温=arr,
-        年利率=0.1,
+        贴现率=0.1,
     )
 
 

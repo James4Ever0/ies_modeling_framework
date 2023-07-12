@@ -25,6 +25,8 @@
     diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
     param3 # meaning: param3.x
     (param3) # deprecated.
+    mean(param3) # shall complain when passed in some non-list objects. but mean(param3+1) won't complain.
+    sum(param3)
     (|+ param3)
     (|- param3)
     (?+ param3) # type: binary variable list.

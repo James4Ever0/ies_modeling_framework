@@ -1,5 +1,6 @@
 # TODO: 典型日 最终输出结果需要展开为8760
 # TODO: add more "bounds" to variables
+# TODO: call external processor/parser to handle DSL, simplify expressions.
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 import pyomo.core.base
@@ -57,7 +58,6 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         price = self.Price
 
         # unit: [currency]/[time]
@@ -103,7 +103,6 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
@@ -143,7 +142,6 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title="长度为24的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 24)
 
         price = self.PriceList[current_time]
@@ -159,7 +157,6 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title="长度为12的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 24
         month_index = convertDaysToMonth(current_day_index)
 
@@ -184,7 +181,6 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -225,7 +221,6 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title="长度为24的阶梯电价列表", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 24)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -410,7 +405,6 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
-
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -509,7 +503,6 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -614,7 +607,6 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -871,7 +863,6 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
-
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -978,7 +969,6 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1061,7 +1051,6 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1144,7 +1133,6 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
-
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -1353,6 +1341,7 @@ class ModelWrapper:
 
 # 风、光照
 
+
 # 需要明确单位
 class 计算参数(BaseModel):
     典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
@@ -1392,7 +1381,7 @@ class 计算参数(BaseModel):
     """
     单位: 摄氏度
     """
-    年利率: float
+    贴现率: float
     """
     单位: percent
     """
@@ -1630,7 +1619,6 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
-
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1692,7 +1680,6 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
-
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -1971,7 +1958,10 @@ class 光伏发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilowatt * (总最大功率)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
@@ -2181,7 +2171,10 @@ class 风力发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -2443,7 +2436,10 @@ class 柴油发电模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
         self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
@@ -2710,7 +2706,6 @@ class 锂电池模型(设备模型):
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
-
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
                     bounds=(
@@ -2859,7 +2854,10 @@ class 锂电池模型(设备模型):
         assert self.Life >= self.BatteryLife
         Life = self.BatteryLife
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
         self.总固定维护成本 = self.CostPerYearPerCapacity * (
@@ -3050,7 +3048,10 @@ class 变压器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3213,7 +3214,10 @@ class 变流器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3384,7 +3388,10 @@ class 双向变流器模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3519,7 +3526,10 @@ class 传输线模型(设备模型):
         # unit: one
         Life = self.Life
 
-        self.年化率 = ((1 + (self.计算参数.年利率 / 100)) ** Life) / Life
+        贴现率 = self.计算参数.贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
 
         self.总采购成本 = self.CostPerKilometer * (self.Length)
         self.总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
@@ -3894,6 +3904,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(

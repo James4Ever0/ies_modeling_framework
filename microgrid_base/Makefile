@@ -3,7 +3,7 @@
 
 .PHONY: test
 
-################ VARIABLES ################
+################ ENVIRONMENT VARIABLES ################
 
 PLATFORM := $(shell python -c "import os; print(os.name)")
 ifeq (${PLATFORM}, )
@@ -28,6 +28,11 @@ endif
 
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
+
+export OS_TYPE PLATFORM PYTHON PYTHON_ENV CONDA_ENV
+
+################ VARIABLES ################
+
 
 MICROGRID_TYPESYS_JSONS = microgrid_v2_all_types_structured.json microgrid_v2_connectivity_matrix.json microgrid_v2_device_port_type_mapping.json
 
@@ -83,10 +88,16 @@ serve: release
 	cd ${SERVER_RELEASE_DIR}
 	bash fastapi_tmuxp.sh ${OS_TYPE}
 
+# ref: https://www.gnu.org/software/make/manual/html_node/Variables_002fRecursion.html
+
 test: release
-	${MAKE} -C test
+	${MAKE} -e -C test
+
+dsl:
+	${MAKE} -e -C dsl_parser
 
 # packup all necessary files for the test.
+
 release: code server ${LOG_DIRS}
 	rm -rf ${RELEASE_DIR}
 	rm -rf ${RELEASE_ARCHIVE}

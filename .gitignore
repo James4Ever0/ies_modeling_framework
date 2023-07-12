@@ -23,7 +23,14 @@
 !*.js
 !*.ts
 !*.jl
+
+# IES Language (DSL)
+!*.ies
+
+# make/build system
 !Makefile
+!build.ninja
+!SConstruct
 
 !*.yml
 !*.yaml
