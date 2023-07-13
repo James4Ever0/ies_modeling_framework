@@ -36,6 +36,7 @@
     sum(param3)
     |>param3
     |<param3
+    !param10 # meaning: break down a single variable into multiple decision (binary) variables bin_param10, with constraints
     ?>param3 # type: binary variable list.
     ?<param2 # when putting variable list like "param2", create or find indicator variable list along the way, then do the operation.
     ??>param3 # check if it is "really" positive, equivalent to: ?>(param3 - EPS), EPS = 1e-5. when used with integer variables (list), automatically use this form instead.
