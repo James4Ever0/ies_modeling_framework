@@ -10,8 +10,11 @@
 非负变量列表:
     param1
     param2
+    param11: [100] # size of 100, index from 0 to 99
     param5<0,100>: [1,10] # varName<lb, ub>: [index_start, index_end, [index_jump]], if variables has been passed to bounds, automatically calculate constant lb/ub for it, then add actual constraints
     param8
+二元变量列表:
+    param12: [11]
 指示变量列表: #不能直接使用
     param3 << param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
 单指示变量:
