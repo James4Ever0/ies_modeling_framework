@@ -39,6 +39,7 @@ for sense in [minimize, maximize]:
     solver = SolverFactory("cplex")
     # 求解器变量乱码,影响求解
     solver.options["read fileencoding"] = 'utf-8'
+    # TODO: get solver log.
     result = solver.solve(model, tee=True, io_options=io_options)
 
     TC = result.solver.termination_condition
