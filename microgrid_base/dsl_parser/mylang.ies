@@ -17,11 +17,11 @@
     param8
 二元变量列表:
     param12: [11]
-    bin_param10 <~ param10 # like ~param10
+    bin_param10 <param10>  # like ~param10
 指示变量列表: #不能直接使用
-    param3 <~ param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
+    param3 <param8>  # assignment symbol (<>): define relaionship between indicators and variables/expressions.
 单指示变量:
-    param7 <~ param10
+    param7 <param10>
 秒级约束: # 仿真独有的约束
 规划约束:
 仿真约束:
