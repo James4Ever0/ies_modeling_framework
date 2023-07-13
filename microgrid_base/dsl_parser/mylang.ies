@@ -1,4 +1,5 @@
 # highlight dsl with: https://github.com/textX/textX-LS
+# shall you generate typed or type casted code.
 常量: # 常量定义用于检验其是否已经被定义 不得在此处赋值
     const0
     const1
