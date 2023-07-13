@@ -1,5 +1,8 @@
 # from sympy import symbols
 
+# TODO: create more readable constraint names for easy debugging
+# TODO: extract infeasible constraints with relevant solver message
+
 # use pyomo
 from pyomo.environ import *
 
@@ -10,15 +13,19 @@ for sense in [minimize, maximize]:
     x = model.变量x = Var()
     y = model.变量y = Var()
     z = model.变量z = Var()
+    h = model.变量h = Var()
     # z = model.z = Var()
     # x, y, z = symbols("x y z")
     # infeasible on y.
     # unbounded
     # expressions = [y >= z, y <= 20, y >= 10, z <= 0, z >= -10, x <= 100 - y]
     # feasible
-    expressions = [y >= z, y <= 20, y >= 10, z <= 0, z >= -10, x <= 100 - y, x >= y - z]
+    # expressions = [y >= z, y <= 20, y >= 10, z <= 0, z >= -10, x <= 100 - y, x >= y - z]
     # infeasible
     # expressions = [y >= z, y >= 20, y <= 10, z <= 0, z >= -10, x <= 100 - y, x >= y - z]
+    # double infeasible (will not show both)
+    expressions = [y >= z, y >= 20, y <= 10, h >= 20, h <= 10, z <= 0, z >= -10, x <= 100 - (h+y)/2, x >= (h+y)/2 - z]
+    # Bound infeasibility column '变量y'.
     # check if is unbounded or infeasible.
     # try to comment that out, see if it can solve
     # red = reduce_inequalities(expresssions, [x])
@@ -35,6 +42,8 @@ for sense in [minimize, maximize]:
     result = solver.solve(model, tee=True, io_options=io_options)
 
     TC = result.solver.termination_condition
+    import rich
+    rich.print(result)
     normalTCs = [
         TerminationCondition.globallyOptimal,
         TerminationCondition.locallyOptimal,
