@@ -1,4 +1,8 @@
 # highlight dsl with: https://github.com/textX/textX-LS
+常量: # 常量定义用于检验其是否已经被定义 不得在此处赋值
+    const0
+    const1
+常量列表：
 变量: # 定义变量之前，先检查是否被定义了 如果被定义了 那么就不执行定义操作 例如设备台数
     param0
     param10
@@ -12,7 +16,7 @@
     param3 << param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
 单指示变量:
     param7 << param10
-秒级约束:
+秒级约束: # 仿真独有的约束
 规划约束:
 仿真约束:
 约束: # 不同的计算模式需要添加不同的约束 这里定义公共约束
@@ -20,19 +24,20 @@
     param1 < param0 
     param1 < 10 # constant bounds are recorded and compared.
     param1 + param2 < param0
-    param1[i] + param2[i+1] < param0, (optional syntax) i: [0, maxIndex]
-    param1[i] + param2[i+1] < param0, i = -1
-    diff(param1) = param0 # diff(param1) = param[i] - param[i+1]
+    param1[i] + param2[i+1] < param0, (optional syntax): [0, maxIndex]
+    param1[i] + param2[i+j] < param0: i = -1, j = [1,10]
+    diff(param1) = param0 # diff(param1) = (param[i] - param[i+1]) * timeparam 自动微分 默认是时间微分
     param3 # meaning: param3.x
     (param3) # deprecated.
     mean(param3) # shall complain when passed in some non-list objects. but mean(param3+1) won't complain.
     sum(param3)
-    (|+ param3)
-    (|- param3)
-    (?+ param3) # type: binary variable list.
-    (?- param2) # when putting variable list like "param2", create or find indicator variable list along the way, then do the operation.
-    (??+ param3) # check if it is "really" positive, equivalent to: (?+ param3 - EPS), EPS = 1e-5. when used with integer variables (list), automatically use this form instead.
-    (??- param3)
-    |param3|
-    param3 * param4 # linearization needed! need param3 and param4 to be bounded.
+    |>param3
+    |<param3
+    ?>param3 # type: binary variable list.
+    ?<param2 # when putting variable list like "param2", create or find indicator variable list along the way, then do the operation.
+    ??>param3 # check if it is "really" positive, equivalent to: ?>(param3 - EPS), EPS = 1e-5. when used with integer variables (list), automatically use this form instead.
+    ??<param3
+    ||param3
+    param3 * param4 # linearization needed! need param3 and param4 to be bounded. if unsure about its minima and maxima, then do not use it in other non-linear expression.
     param3 < param4 <= param5 # separate this into two expressions. check all symbols are of inequality or equality (=) and with same directions. enforce all symbols in expressions (with variables) are non-strict (>= <=) by automatic conversion.
+    const0 > const1 # make this into assertion, do not convert symbol in any way.

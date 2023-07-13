@@ -6,6 +6,7 @@
 @REM git add .
 @REM git commit -m 'update'
 @REM git push
+echo %USERNAME% executed commit script at %DATE% %TIME%
 git config --global --add safe.directory E:/works/jubilant-adventure2
 git pull
 git add .
