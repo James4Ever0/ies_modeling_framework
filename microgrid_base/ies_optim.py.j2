@@ -1368,7 +1368,7 @@ class {{class_name}}模型(设备模型):
         {%else%}
         Life = self.Life
         {%endif%}
-
+{# 
         if self.计算参数.贴现率 == 0:
             {# self.年化率 = 1/Life #}
             self.年化率 = 0 # 仿真模拟的时候 用于去除和年化率有关的目标
@@ -1376,7 +1376,8 @@ class {{class_name}}模型(设备模型):
             贴现率 = self.计算参数.贴现率/100
             年化率_CT = (1+贴现率) ** Life
 
-            self.年化率 = (贴现率*年化率_CT)/(年化率_CT - 1)
+            self.年化率 = (贴现率*年化率_CT)/(年化率_CT - 1) #}
+        self.年化率 = 计算年化率(贴现率, Life)
         {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
             {% set m='总最大功率' %}
@@ -1702,6 +1703,9 @@ class mDict(BaseModel):
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
+    assistantEquipmentLife: confloat(ge=0) = Field(
+        default=0, title="辅助设备寿命", description="用于计算辅助设备年化系数"
+    )
 
 from networkx import Graph
 

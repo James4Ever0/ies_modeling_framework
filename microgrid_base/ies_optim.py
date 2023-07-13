@@ -3876,7 +3876,7 @@ class mDict(BaseModel):
             "风速": [],
             "光照": [],
             "气温": [],
-            "年利率": 0.1,
+            "贴现率": 0.1,
         },
     )
     nodes: conlist(Union[锚点节点, 设备节点, 母线节点, 连线节点], min_items=5) = Field(
@@ -3900,8 +3900,7 @@ class mDict(BaseModel):
 
 
 class EnergyFlowGraph(BaseModel):
-    mDictList: List[mDict] = Field(title = "模型参数列表", description = "非典型日传入单个模型，典型日传入多个模型")
-    辅助设备寿命: confloat(ge=0) = Field(default = 0, title = "", description = "")
+    mDictList: List[mDict] = Field(title="模型参数列表", description="非典型日传入单个模型，典型日传入多个模型")
 
 
 from networkx import Graph

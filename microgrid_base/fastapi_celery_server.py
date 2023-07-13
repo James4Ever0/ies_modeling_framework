@@ -75,6 +75,10 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
         calculation_result (dict): 计算结果
     """
     mDictList = energyflow_graph["mDictList"]
+    辅助设备寿命 =  energyflow_graph['assistantEquipmentLife']
+    贴现率 = mDictList[0]['graph']['贴现率']
+    辅助设备年化系数 = 
+
     calcParamList = mDictListToCalcParamList(mDictList)
 
     resultList = []
