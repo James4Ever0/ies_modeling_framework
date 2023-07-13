@@ -15,7 +15,7 @@
     param8
 二元变量列表:
     param12: [11]
-    bin_param10 << param10 # like !param10
+    bin_param10 << param10 # like ~param10
 指示变量列表: #不能直接使用
     param3 << param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
 单指示变量:
@@ -37,7 +37,7 @@
     sum(param3)
     |>param3
     |<param3
-    !param10 # meaning: break down a single variable into multiple decision (binary) variables, bin_param10, with constraint param10_lb <= sum(bin_param10) <= param10, len(bin_param10) == param_10_ub, sum(bin_param10) == param10, and will broadcast this to all variables & varlist, by expanding into another dimension with size of param_10_ub. the lower bound and upper bound of param_10 must be constants. e.g. p0[i][j] < bp[j] * p1[i][j], which i is time index, all other indexs (j,k,l) are discrete indexs.
+    ~param10 # meaning: break down a single variable into multiple decision (binary) variables, bin_param10, with constraint param10_lb <= sum(bin_param10) <= param10, len(bin_param10) == param_10_ub, sum(bin_param10) == param10, and will broadcast this to all variables & varlist, by expanding into another dimension with size of param_10_ub. the lower bound and upper bound of param_10 must be constants. e.g. p0[i][j] < bp[j] * p1[i][j], which i is time index, all other indexs (j,k,l) are discrete indexs.
     ?>param3 # type: binary variable list.
     ?<param2 # when putting variable list like "param2", create or find indicator variable list along the way, then do the operation.
     ??>param3 # check if it is "really" positive, equivalent to: ?>(param3 - EPS), EPS = 1e-5. when used with integer variables (list), automatically use this form instead.
