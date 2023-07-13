@@ -4,10 +4,10 @@
     const1
 常量列表：
 实数变量: # 定义变量之前，先检查是否被定义了 如果被定义了 那么就不执行定义操作 例如设备台数
-    param0
+    <| param0 # 非正
 整数变量：
-    |> param10 # 非负
-    >> 
+    >| param10 # 非负
+    >> param11 # 正数
 变量列表:
 非负变量列表:
     param1
@@ -17,11 +17,11 @@
     param8
 二元变量列表:
     param12: [11]
-    bin_param10 << param10 # like ~param10
+    bin_param10 <~ param10 # like ~param10
 指示变量列表: #不能直接使用
-    param3 << param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
+    param3 <~ param8 # assignment symbol (<<): define relaionship between indicators and variables/expressions.
 单指示变量:
-    param7 << param10
+    param7 <~ param10
 秒级约束: # 仿真独有的约束
 规划约束:
 仿真约束:
