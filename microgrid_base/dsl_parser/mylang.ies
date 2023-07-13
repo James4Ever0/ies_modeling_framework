@@ -41,3 +41,5 @@
     param3 * param4 # linearization needed! need param3 and param4 to be bounded. if unsure about its minima and maxima, then do not use it in other non-linear expression.
     param3 < param4 <= param5 # separate this into two expressions. check all symbols are of inequality or equality (=) and with same directions. enforce all symbols in expressions (with variables) are non-strict (>= <=) by automatic conversion.
     const0 > const1 # make this into assertion, do not convert symbol in any way.
+    param3[0] := 1 # init val.
+    param3 := 0 # init all. val must be constant. execution order preserved.
