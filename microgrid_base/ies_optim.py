@@ -3900,7 +3900,8 @@ class mDict(BaseModel):
 
 
 class EnergyFlowGraph(BaseModel):
-    mDictList: List[mDict]
+    mDictList: List[mDict] = Field(title = "模型参数列表", description = "非典型日传入单个模型，典型日传入多个模型")
+    辅助设备寿命: confloat(ge=0) = Field(default = 0, title = "", description = "")
 
 
 from networkx import Graph
