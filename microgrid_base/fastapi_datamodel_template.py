@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, confloat
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any
 import networkx
@@ -128,6 +128,7 @@ class ParetoCurve(BaseModel):
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
     paretoCurve: Union[None, ParetoCurve] = None
+    residualEquipmentAnnualFactor:
     success: bool
     error_log: str
 
