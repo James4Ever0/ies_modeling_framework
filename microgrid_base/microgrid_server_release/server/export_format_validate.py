@@ -38,7 +38,7 @@ def safeDiv(val, div):
 from typing import TypeVar, overload
 T = TypeVar("T", str, int, float)
 @overload
-def safeAbs(val: T)
+def safeAbs(val: T) -> T: ...
 def safeAbs(val):
     if type(val) in [str]:
         return val
