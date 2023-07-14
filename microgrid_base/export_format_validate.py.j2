@@ -148,7 +148,8 @@ def ReLU(val):
 {% do dictValueToKeyValuePair(commonSimParams, CSPL)%}
 {% set simDevParamMapping = {
     "柴油": [
-       CSPL['柴油消耗费用']
+        CSPL['柴油消耗费用'],
+        CSPL['柴油消耗量'],
     ],
     "电负荷": [
         ("电负荷", TP("statistics.mean(model.设备信息.EnergyConsumption)")),
