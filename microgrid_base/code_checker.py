@@ -14,7 +14,11 @@ for fpath in files:
             tree = ast.parse(content)
             # walk over this.
             for el in ast.walk(tree):
-                ...
+                if isinstance(el, ast.Call):
+                    funcName = el.func.id
+                    args = el.args
+                    if len(args) >0:
+                        raise Exception(f"Found erroneous `Field` call at line {lineno}:\n{source_code}")
         except:
             traceback.print_exc()
             print(f"Invalid syntax found in file: {fpath}")

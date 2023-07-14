@@ -630,7 +630,7 @@ class 计算参数(BaseModel):
     """
     单位: 摄氏度
     """
-    贴现率: {{non_neg_float}}
+    贴现率: confloat(ge=0, le=100) = Field(title = "贴现率", description = "单位: percent")
     {# 年利率: float #}
     """
     单位: percent
