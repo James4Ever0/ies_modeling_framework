@@ -249,7 +249,7 @@ class {{devName}}仿真结果(BaseModel):
             )
         )
         %}
-        {% if devName not in []%}
+        {% if devName not in non]%}
     {% endif %}
     {% do update_obj(obj, simDevParamMapping, devName, commonParamNames, True)%}
 {% endcall%}
