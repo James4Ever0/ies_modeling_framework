@@ -63,6 +63,15 @@ class 柴油仿真结果(BaseModel):
     元件名称: str
 
     ## UNIQ PARAMS ##
+    柴油消耗量: float
+    """
+    单位: L <- m3
+    """
+
+    @validator("柴油消耗量")
+    def standard_unit_to_custom_柴油消耗量(cls, v):
+        return v / 0.0010000000000000002
+
     柴油消耗费用: float
     """
     单位: 万元
