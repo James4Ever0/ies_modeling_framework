@@ -1340,7 +1340,7 @@ class {{class_name}}模型(设备模型):
             {# {% endif%} #}
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
-        else: "仿真模拟"
+        else: # 仿真模拟
         {# elif self.计算参数.计算类型 == "仿真模拟": #}
             {# self.mw.Constraint(self.原电接口.x[0] == self.EPS) #}
             self.原电接口.x[0].set_value(self.EPS)

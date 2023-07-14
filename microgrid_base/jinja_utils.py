@@ -38,7 +38,9 @@ def load_render_and_format(
     print(result)
 
     # import black.Mode
-    with open(output_path, "w+") as f:
+    output_path_elems = output_path.split(".")
+    output_path_elems
+    with open(tmp_output_path, "w+") as f:
         f.write(result)
     if not needFormat:
         return
