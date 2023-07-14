@@ -114,7 +114,7 @@ def ReLU(val):
     {% endfor %}
 {% endmacro %}
 {% macro TP(val)%}(({{val}}) * timeParam){%endmacro%}
-{% macro TP_ANNUAL(val)%}(({{val}}) * (timeParam/8760)){%endmacro%}
+{% macro TP_ANNUAL(val)%}(({{val}}) * (timeParam/{{每年小时数}})){%endmacro%}
 {% macro IV(vlist)%}for e in {{vlist}}.values(){% endmacro%}
 {%macro VLIST(vlist)%}[value(e) {{IV(vlist)}}]{% endmacro%}
 {%macro ELIST(elist)%}[value(e) for e in {{elist}}]{% endmacro%}

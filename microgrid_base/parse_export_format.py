@@ -2,6 +2,8 @@ excel_path = "设备信息库各参数.xlsx"
 
 from jinja_utils import code_and_template_path, load_render_and_format
 
+from constants import *
+
 code_path, template_path = code_and_template_path("export_format_validate")
 
 output_path = "export_format.json"
@@ -205,7 +207,7 @@ print("write to:", output_path)
 
 model_names = [f"{n}模型" for n in all_device_names]
 
-render_params = dict(main_data=new_data, nonDevNames=nonDevNames)
+render_params = dict(main_data=new_data, nonDevNames=nonDevNames,每年小时数 = 每年小时数)
 # render_params = dict(model_names=model_names, main_data=new_data)
 
 load_render_and_format(

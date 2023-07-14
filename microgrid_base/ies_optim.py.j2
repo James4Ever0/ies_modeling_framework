@@ -7,6 +7,7 @@
 {% macro stepwise_flag(class_name, flag_name) %}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#") }}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
+from constants import *
 {# consider to type check all variable operations #}
 {# cast such type to all variables, to forbid 'var * var' #}
 import pyomo.core.base
@@ -639,11 +640,11 @@ class 计算参数(BaseModel):
     def 迭代步数(self):
         {# steps = None #}
         if self.计算步长 == "秒":
-            steps = 7200
+            steps = 两小时秒数
         elif self.计算步长 == "小时" and self.典型日 is False:
-            steps = 8760
+            steps = 每年小时数
         elif self.计算步长 == "小时" and self.典型日 is True:
-            steps = 24
+            steps = 每天小时数
         else:
             rich.print(self)
             raise Exception("未知计算参数")

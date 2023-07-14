@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, validator, confloat
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any
 import networkx
+from constants import *
 
 try:
     from typing import Literal
@@ -34,7 +35,7 @@ class 曲线(BaseModel):
         Raises:
             Exception: If the input list `x` is not valid.
         """
-        suffixMapping = {7200: "秒", 8760: "时"}
+        suffixMapping = {两小时秒数: "秒", 每年小时数: "时"}
         for suffix in suffixMapping.values():
             if x[0].endswith(suffix):
                 return x
