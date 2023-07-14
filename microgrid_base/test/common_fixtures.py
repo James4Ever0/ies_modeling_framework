@@ -72,7 +72,7 @@ def 测试电负荷信息():
         设备名称="电负荷",
         EnergyConsumption=[1]*每天小时数,
         MaxEnergyConsumption=3,
-        PriceModel=分月电价,
+        PriceModel=分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
     )
     return val
 
