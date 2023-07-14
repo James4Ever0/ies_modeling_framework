@@ -198,7 +198,6 @@ def ReLU(val):
 {% set paramKeys = _set(paramDict.keys()) %}
 {% set objKeys = _set(obj.keys()) %}
 {% do assert(paramKeys.__eq__(objKeys), "devName: {}\n{} (code uniq)\n{} (template uniq)".format(devName, paramKeys.difference(objKeys), objKeys.difference(paramKeys))) %}
-) %}
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
         {% if needAbs %}
