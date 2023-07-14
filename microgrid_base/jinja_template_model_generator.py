@@ -4,7 +4,7 @@
 
 from jinja_utils import *
 import constants
-constants_dict = {k:v for k,v in constants.__dict__ if not k.startswith("_")}
+constants_dict = {k:v for k,v in constants.__dict__.items() if not k.startswith("_")}
 # the test code may not be generated.
 from param_base import *
 
