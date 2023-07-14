@@ -1133,7 +1133,7 @@ class {{class_name}}模型(设备模型):
             
             self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x >= self.TotalCapacity * self.MinSOC)
             self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x <= self.TotalCapacity * self.MaxSOC)
-        else:
+        else: # 仿真模拟
             self.CurrentTotalCapacity.setlb(self.DeviceCount*self.MinSOC*self.RatedCapacity)
             self.CurrentTotalCapacity.setub(self.DeviceCount*self.MaxSOC*self.RatedCapacity)
 
