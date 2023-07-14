@@ -55,7 +55,7 @@ def load_render_and_format(
         import traceback
 
         traceback.print_exc()
-        raise Exception(f"Syntax Failed.\nTemporary cache saved to: {tmp_output_path}")
+        raise Exception(f"Syntax check failed.\nTemporary cache saved to: '{tmp_output_path}'")
     print("=" * 40)
 
 
