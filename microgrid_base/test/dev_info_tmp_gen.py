@@ -84,4 +84,8 @@ code_path, template_path = jinja_utils.code_and_template_path("test_export")
 jinja_utils.load_render_and_format(
     template_path,
     code_path,
-    render_params = dict(devNames = render_params['data'].keys() if key != ''), "TEST EXPORT")
+    render_params=dict(
+        devNames=[key for key in render_params["data"].keys() if key != 计算参数]
+    ),
+    banner="TEST EXPORT",
+)
