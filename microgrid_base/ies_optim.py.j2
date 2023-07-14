@@ -130,14 +130,14 @@ class 常数电价(BaseModel, 电价转换):
         price = self.Price
 {% endcall%}
 
-month_days = [31] * 12
+month_days = [31] * 每年月数
 month_days[1] = 28
 month_days[4 - 1] = month_days[6 - 1] = month_days[9 - 1] = month_days[11 - 1] = 30
-assert sum(month_days) == 365
+assert sum(month_days) == 每年天数
 
 def convertMonthToDays(month_index:int):
     {# cursor = month_index -1 #}
-    assert month_index in range(12)
+    assert month_index in range({{每年月数}})
     ret = sum(month_days[:month_index])
     return ret
 
@@ -152,7 +152,7 @@ def convertDaysToMonth(day_index:float):
     raise Exception("Invalid day index:", day_index)
 
 class 分月电价(BaseModel, 电价转换):
-    PriceList:Tuple[{{tuple_type_construct(12, "float")}}] =Field(title = "长度为12的价格数组", description = "{{电价单位描述}}")
+    PriceList:Tuple[{{tuple_type_construct({{每年月数}}, "float")}}] =Field(title = f"长度为{每年月数}的价格数组", description = "{{电价单位描述}}")
     
 {%call getFeeWrapper()%}
 {{getMonthIndexFromTimeInDay()}}
