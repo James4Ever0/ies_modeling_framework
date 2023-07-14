@@ -1,0 +1,1 @@
+curl -O http://localhost:9870/openapi.json

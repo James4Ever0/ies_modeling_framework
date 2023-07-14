@@ -1,0 +1,28 @@
+topo_check.py ies_optim.py: jinja_template_model_generator.py topo_check.py.j2 ies_optim.py.j2
+    python3 $< 
+
+export_format.json export_format_validate.py: parse_export_format.py export_format_validate.py.j2 设备信息库各参数.xlsx
+    python3 $< 
+    
+
+frontend_sim_param_translation.json: parse_frontend_sim_param_translation.py frontend_sim_param_translation.js
+    python3 $< 
+
+constraints.log: parse_optim_constraints.py ies_optim.py
+    python3 $< > constraints.log
+
+microgrid_device_params_intermediate.json device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
+    python3 $< 
+
+microgrid_jinja_param_base.json: parse_units_and_names.py device_params_intermediate.json microgrid_v2_device_port_type_mapping.json
+    python3 $< 
+
+export_format_test.json: test_json_input_format.py test/test_topo.json
+    python3 $< 
+
+check_topo: test_topo_check.py topo_check.py
+    python3 $< 
+
+type_system.png microgrid_v2_device_port_type_mapping.json microgrid_v2_connectivity_matrix.json microgrid_v2_all_types_structured.json: type_system_v2.py 
+    python3 $< -p
+

@@ -1,0 +1,40 @@
+{{ test}}
+
+{% macro mymacro(a,b) -%}
+source code path: {{ a }}
+file size: {{ b }}
+{% endmacro %}
+
+{% macro mycalledmacro(a,b) %}
+1st arg: {{a}}
+{{caller()}}
+2nd arg: {{b}}
+{{caller()}}
+{% endmacro%}
+
+{{ mymacro(1,2)}}
+
+{% macro mycalledmacroarg(a,b) %}
+{{ caller(a,b) }}
+{{a}}
+{{b}}
+{% endmacro%}
+
+----
+
+{% call mycalledmacro(2,3)%}
+{{ test}}
+{% endcall%}
+
+
+----
+
+{% call mycalledmacro(1,2)%}
+abcdefg
+{%endcall%}
+
+----
+
+{% call(arg1, arg2) mycalledmacroarg(3,4)%}
+{{ mymacro(arg1, arg2) }}
+{%endcall%}

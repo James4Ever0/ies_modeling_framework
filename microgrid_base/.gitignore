@@ -1,0 +1,5 @@
+!*.json
+!*.jsonl
+!*.csv
+!*.xlsx
+!*.tmp

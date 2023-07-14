@@ -1,0 +1,27 @@
+{%- for n in mylist -%}
+prefix: {{n}}
+{% endfor %}
+
+{% macro test()%}
+happy
+song
+    sing along
+{% endmacro%}
+
+{{test() | indent(4)}}
+
+{{test()}}
+
+{# {% error("exception",1)%} #}
+
+{% set v1, v2 = 1,2 %}
+{{v1}}
+{{v2}}
+
+{% macro mtest()-%}
+happy song
+{%- endmacro%}
+{% set v0 = mtest()%}
+
+v0: {{v0}}
+v0: {{v0}}

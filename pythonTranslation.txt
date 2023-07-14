@@ -1,0 +1,24 @@
+光照强度：intensity of illumination
+溴化锂：LiBrRe
+槽式光热：Trough photothermal
+槽式光热固体蓄热:Trough photothermal solid heat storage
+余气余热:Waste gas waste heat
+电锅炉：electric boiler
+热泵：heat pump 
+水源热泵:water-source heat pumps
+水冷螺杆机:Water-cooled screw machine
+地源热泵:ground source heat pump
+水蓄能罐:Water storage tank
+地源蒸汽发生器:Ground source steam generator
+地源蒸汽发生器固体蓄热:Ground source steam generator solid heat storage
+市政热水:Municipal hot water
+市政蒸汽：Municipal steam
+汽水：air water
+蒸汽_溴化锂:steam_LiBrRe
+平板光热:Plate photothermal
+相变蓄热：phase change heat storage
+热水电锅炉：hot water electric boiler
+热水：hot water
+高温热水：high temperature hot water
+热水溴化锂：hot water LiBrRe
+热水换热器：hot water Exchanger

@@ -1,0 +1,1 @@
+REG ADD "HKEY_LOCAL_MACHINE\Software\Microsoft\Command Processor" /v "Autorun" /t REG_SZ /d D:\project\jubilant-adventure\startup.cmd
