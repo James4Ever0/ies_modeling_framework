@@ -3,8 +3,10 @@
 # TODO: call external processor/parser to handle DSL, simplify expressions.
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
-{% set = "'if self.计算参数.计算类型 == "仿真模拟":
- == '设计规划:"%}
+{% set 设计规划 = "if self.计算参数.计算类型 == '设计规划':"%}
+{% set 仿真模拟 = "if self.计算参数.计算类型 == '仿真模拟':"%}
+{% set 秒 = 'if self.计算参数.计算步长 == "秒":'%}
+{% set 小时 = 'if self.计算参数.计算步长 == "小时":'%}
 {# {% set needStorageDecayCompensation=true%} #}
 {% macro stepwise_flag(class_name, flag_name) %}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#") }}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
