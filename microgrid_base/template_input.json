@@ -203,12 +203,12 @@
                 "type": "设备",
                 "subtype": "柴油发电",
                 "ports": {
-                    "电接口": {
-                        "subtype": "供电端输出",
-                        "id": 7
-                    },
                     "燃料接口": {
                         "subtype": "柴油输入",
+                        "id": 7
+                    },
+                    "电接口": {
+                        "subtype": "供电端输出",
                         "id": 8
                     }
                 },
@@ -247,15 +247,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电接口",
-                "subtype": "供电端输出",
+                "port_name": "燃料接口",
+                "subtype": "柴油输入",
                 "device_id": 6,
                 "id": 7
             },
             {
                 "type": "锚点",
-                "port_name": "燃料接口",
-                "subtype": "柴油输入",
+                "port_name": "电接口",
+                "subtype": "供电端输出",
                 "device_id": 6,
                 "id": 8
             },
@@ -308,12 +308,12 @@
                 "type": "设备",
                 "subtype": "变压器",
                 "ports": {
-                    "电输入": {
-                        "subtype": "电母线输入",
-                        "id": 13
-                    },
                     "电输出": {
                         "subtype": "变压器输出",
+                        "id": 13
+                    },
+                    "电输入": {
+                        "subtype": "电母线输入",
                         "id": 14
                     }
                 },
@@ -339,15 +339,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "电母线输入",
+                "port_name": "电输出",
+                "subtype": "变压器输出",
                 "device_id": 12,
                 "id": 13
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
-                "subtype": "变压器输出",
+                "port_name": "电输入",
+                "subtype": "电母线输入",
                 "device_id": 12,
                 "id": 14
             },
@@ -480,12 +480,12 @@
                 "type": "设备",
                 "subtype": "双向变流器",
                 "ports": {
-                    "储能端": {
-                        "subtype": "双向变流器储能端输入输出",
-                        "id": 23
-                    },
                     "线路端": {
                         "subtype": "双向变流器线路端输入输出",
+                        "id": 23
+                    },
+                    "储能端": {
+                        "subtype": "双向变流器储能端输入输出",
                         "id": 24
                     }
                 },
@@ -509,15 +509,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "储能端",
-                "subtype": "双向变流器储能端输入输出",
+                "port_name": "线路端",
+                "subtype": "双向变流器线路端输入输出",
                 "device_id": 22,
                 "id": 23
             },
             {
                 "type": "锚点",
-                "port_name": "线路端",
-                "subtype": "双向变流器线路端输入输出",
+                "port_name": "储能端",
+                "subtype": "双向变流器储能端输入输出",
                 "device_id": 22,
                 "id": 24
             },
@@ -612,11 +612,11 @@
             },
             {
                 "source": 7,
-                "target": 33
+                "target": 26
             },
             {
                 "source": 8,
-                "target": 26
+                "target": 33
             },
             {
                 "source": 9,
@@ -644,11 +644,11 @@
             },
             {
                 "source": 13,
-                "target": 29
+                "target": 30
             },
             {
                 "source": 14,
-                "target": 30
+                "target": 29
             },
             {
                 "source": 15,
@@ -712,11 +712,11 @@
             },
             {
                 "source": 23,
-                "target": 25
+                "target": 27
             },
             {
                 "source": 24,
-                "target": 27
+                "target": 25
             }
         ]
     }

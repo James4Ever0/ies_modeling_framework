@@ -1005,8 +1005,8 @@ class {{class_name}}模型(设备模型):
         {% if mflag.val != psc %}
         {% set mflag.val = psc %}
         {# # after: psc: {{psc}} mflag: {{mflag}} #}
-        {% set psc2 = "if self.计算参数.计算类型 == '{}':".format(psc) %}
-        {{psc2}}
+        {% set psc2 = "if self.计算参数.计算类型 == '{}'".format(psc) %}
+        {{psc2}}:
         {% if psc2 == 设计规划 %}
             # BUG: if unbounded, then we get some error.
             {% if class_name not in ['传输线']%}
