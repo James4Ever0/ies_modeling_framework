@@ -1380,7 +1380,7 @@ class {{class_name}}模型(设备模型):
         {%else%}
         Life = self.Life
         {%endif%}
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
         {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
             {% set m='总最大功率' %}

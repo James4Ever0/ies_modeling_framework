@@ -34,6 +34,7 @@ For more info on Pyomo, please check [this tutorial](https://www.shangyexinzhi.c
 * [x] define port types and connectivity matrix
 * [x] generate model code using jinja2 and macros
 * [x] prepare generative tests
+* [ ] type check undefined variables
 * [ ] define and parse `*.ies` DSL files
 
 ## File Structure
