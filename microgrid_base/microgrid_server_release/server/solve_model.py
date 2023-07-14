@@ -369,7 +369,8 @@ def solveModelFromCalcParamList(
                 for abbr, val in content_dict.items():
                     if abbr in ["元件名称", "时间"]:
                         continue
-                    plotName = f"{deviceType}{abbr}出力曲线"
+                    plotName = f"{deviceType}{abbr}曲线"
+                    # plotName = f"{deviceType}{abbr}出力曲线"
                     xData = content_dict["时间"]
                     yData = val
                     subElem = {
