@@ -19,4 +19,20 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
 ## File Structure
 
 - cplex_convex_debug: test files for debugging cplex solver
-    - init.sh: 
+    - init.sh: for moving `*.lp` files to this directory.
+- dsl_parser: iesl parser and code generator
+    - functional_base.py: experimental functional exeucution mechanism
+    - functional_base.py.j2: for generating functional_base.py.j2
+    - generate_code.py: for reading functional_base.py.j2 and generate python code
+    - lex_yacc.py: for tokenizing and parsing iesl code (experiment)
+    - Makefile: define iesl related build tasks
+    - mylang.ies: iesl language specification
+    - mylang.txt: legacy language specification
+    - pyomo_reduce_ineqalities.py: for calculating variable bounds from a system of ineqality expressions, used by iesl
+    - yacc_init.py: experimencal parser
+    - your_model_name.lp: experimental model export as lp files which contains Chinese charactors
+    - 柴油.ies: diesel power generator model written in iesl language
+- frontend_convert_format: convert non-standard frontend data into standard model specification format, used by frontend
+    - customToolbar.vue: code used by frontend, which includes logics for input data construction
+    - cvt.js
+- Makefile: main makefile for code generation, define build dependencies, handles environment variables.
