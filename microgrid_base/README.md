@@ -18,7 +18,7 @@ Minimum Python version is `3.9`.
 
 Install Python dependencies by `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt`.
 
-To run `celery`, you need to install `redis-server` and `rabbitmq-server`.
+To run `celery`, you need to install and run `redis-server` and `rabbitmq-server`.
 
 ## Developing
 
