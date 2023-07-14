@@ -197,7 +197,7 @@ def ReLU(val):
 {{caller()}}
 {% set paramKeys = _set(paramDict.keys()) %}
 {% set objKeys = _set(obj.keys()) %}
-[% do assert(paramKeys.__eq__(objKeys), "devName: {}\n{} (code) != {} (template)".format(devName, paramKeys, objKeys)) %]
+{% do assert(paramKeys.__eq__(objKeys), "devName: {}\n{} (code) != {} (template)".format(devName, paramKeys, objKeys)) %}
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
         {% if needAbs %}
