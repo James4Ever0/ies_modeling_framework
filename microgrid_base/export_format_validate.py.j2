@@ -1,7 +1,12 @@
 {# from ies_optim import {{ ",".join(model_names) }} #}
 {# import device ports. #}
 {# TODO: check export logic of lithium battery. #}
-{% macro assert(expr, message="")%}
+{% macro assert(expr, message) %}
+  {% if expr != true %}
+    {% error message %}
+  {% endif %}
+{% endmacro %}
+
 from typing import List
 
 from pyomo.environ import value
