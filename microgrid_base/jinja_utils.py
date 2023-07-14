@@ -5,6 +5,7 @@ import jinja2
 
 import os
 
+
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
         # ARGS: ("parameter 'myvar2' was not provided",)
@@ -23,7 +24,11 @@ class NeverUndefined(jinja2.StrictUndefined):
 
 
 def load_render_and_format(
-    template_path: str, output_path: str, render_params: dict, banner: str, needFormat:bool=True
+    template_path: str,
+    output_path: str,
+    render_params: dict,
+    banner: str,
+    needFormat: bool = True,
 ):
     tpl = load_template(template_path)
     result = tpl.render(**render_params)
@@ -35,7 +40,8 @@ def load_render_and_format(
     # import black.Mode
     with open(output_path, "w+") as f:
         f.write(result)
-    if not needFormat: return
+    if not needFormat:
+        return
     try:
         result = black.format_str(result, mode=black.Mode())
         print("Syntax Ok.")
@@ -80,6 +86,9 @@ def load_template(template_path, extra_func_dict={}):
     func_dict = dict(
         list=list,
         str=str,
+        _dict=dict,
+        _set=set, # avoid name collision
+        tuple=tuple,
         ord=ord,
         len=len,
         repr=repr,
@@ -90,7 +99,7 @@ def load_template(template_path, extra_func_dict={}):
     return tpl
 
 
-def test(cmd: list, exec="python3" if os.name !="nt" else "python"):
+def test(cmd: list, exec="python3" if os.name != "nt" else "python"):
     cmd = [exec] + cmd
     p = subprocess.run(cmd)
     p.check_returncode()
