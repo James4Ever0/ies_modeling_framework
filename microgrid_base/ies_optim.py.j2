@@ -3,6 +3,8 @@
 # TODO: call external processor/parser to handle DSL, simplify expressions.
 {# optional comment flag for our stepwise refactor. #}
 {%set SO = namespace(class_name="")%}
+{% set = "'if self.计算参数.计算类型 == "仿真模拟":
+ == ':"%}
 {# {% set needStorageDecayCompensation=true%} #}
 {% macro stepwise_flag(class_name, flag_name) %}{% if SO.class_name == class_name %}{{' STEPWISE FLAG [{}] '.format(flag_name).center(40, "#") }}{% endif %}{% endmacro %}
 from typing import Dict, List, Tuple, Union, Callable
@@ -1105,7 +1107,7 @@ class {{class_name}}模型(设备模型):
         {# self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity #}
         self.InitCapacityPerUnit = self.InitSOC * self.RatedCapacity
 
-        if self.计算参数.计算类型 == "设计规划":
+        {{设计规划}}
             #  初始SOC
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
