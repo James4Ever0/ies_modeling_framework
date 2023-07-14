@@ -1,6 +1,0 @@
-{%macro J(mlist)%}{{" ".join(mlist)}}{% endmacro%}
-{% for e in python_files%}
-{{J(e.outputs)}}: {{e.fname}} {{J(e.inputs)}}
-    python3 $< {{J(e.args)}}
-
-{% endfor%}

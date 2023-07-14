@@ -1,1 +1,0 @@
-env PATH="/Applications/CPLEX_Studio1210/cplex/bin/x86-64_osx:$PATH" python3 log_infeasible.py
