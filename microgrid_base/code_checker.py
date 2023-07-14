@@ -16,8 +16,8 @@ for fpath in files:
             # walk over this.
             for el in ast.walk(tree):
                 if isinstance(el, ast.Call):
-                    breakpoint()
-                    funcName = el.func.id
+                    # breakpoint()
+                    funcName = astor.to_source(el.func).strip()
                     args = el.args
                     if len(args) >0:
                         source_code = astor.to_source(el)
