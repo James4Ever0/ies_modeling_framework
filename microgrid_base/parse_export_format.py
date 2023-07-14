@@ -115,11 +115,17 @@ commonDevParams = ["设备型号", "设备台数", "设备维护费用"]
 commonParams = ["元件名称"]
 
 simDevParam = {name: [] for name in all_device_names}
-nonCountableDevNames = ['传输线']
+nonCountableDevNames = ["传输线"]
 for k in simDevParam.keys():
     simDevParam[k].extend(commonParams)
     if k not in nonDevNames:
-        simDevParam[k].extend([e for e in commonDevParams if (e != '' if k in nonCountableDevNames else True)])
+        simDevParam[k].extend(
+            [
+                e
+                for e in commonDevParams
+                if (e != "设备台数" if k in nonCountableDevNames else True)
+            ]
+        )
 
 simParamLUT = {
     "产冷量": [],
@@ -207,7 +213,12 @@ print("write to:", output_path)
 
 model_names = [f"{n}模型" for n in all_device_names]
 
-render_params = dict(main_data=new_data, nonDevNames=nonDevNames,每年小时数 = 每年小时数)
+render_params = dict(
+    main_data=new_data,
+    nonDevNames=nonDevNames,
+    nonCountableDevNames=nonCountableDevNames,
+    每年小时数=每年小时数,
+)
 # render_params = dict(model_names=model_names, main_data=new_data)
 
 load_render_and_format(

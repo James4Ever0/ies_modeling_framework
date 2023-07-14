@@ -36,7 +36,7 @@ def test_风力发电_export(测试风力发电模型):
 
 def test_柴油发电_export(测试柴油发电模型):
     timeParam = 10
-    测试柴油发电模型.热值 = 1
+    测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     for attrName in ["柴油发电仿真结果", "柴油发电出力曲线"]:
         if obj := globals().get(attrName, None):

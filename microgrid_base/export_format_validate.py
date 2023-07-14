@@ -140,10 +140,10 @@ class 光伏发电仿真结果(BaseModel):
         return 光伏发电仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             产电量=safeAbs(
                 ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
             ),
@@ -177,10 +177,10 @@ class 风力发电仿真结果(BaseModel):
         return 风力发电仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             产电量=safeAbs(
                 ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
             ),
@@ -228,10 +228,10 @@ class 柴油发电仿真结果(BaseModel):
         return 柴油发电仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             产电量=safeAbs(
                 ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
             ),
@@ -283,10 +283,10 @@ class 锂电池仿真结果(BaseModel):
         return 锂电池仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             平均效率_平均COP=safeAbs(
                 safeDiv(
                     ReLU(
@@ -342,10 +342,10 @@ class 变压器仿真结果(BaseModel):
         return 变压器仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             平均效率_平均COP=safeAbs(
                 -safeDiv(
                     statistics.mean([value(e) for e in model.电输入.values()]),
@@ -382,10 +382,10 @@ class 变流器仿真结果(BaseModel):
         return 变流器仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             平均效率_平均COP=safeAbs(
                 -safeDiv(
                     statistics.mean([value(e) for e in model.电输入.values()]),
@@ -422,10 +422,10 @@ class 双向变流器仿真结果(BaseModel):
         return 双向变流器仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
+            设备台数=safeAbs(value(model.DeviceCount)),
             平均效率_平均COP=safeAbs(
                 value(
                     (
@@ -451,11 +451,6 @@ class 传输线仿真结果(BaseModel):
 
     设备型号: str
 
-    设备台数: int
-    """
-    单位: one
-    """
-
     设备维护费用: float
     """
     单位: 万元
@@ -473,7 +468,6 @@ class 传输线仿真结果(BaseModel):
         return 传输线仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             设备型号=safeAbs(model.设备信息.设备型号),
-            设备台数=safeAbs(value(model.DeviceCount)),
             设备维护费用=safeAbs(
                 ((value(model.总固定维护成本 + model.总可变维护成本年化)) * (timeParam / 8760))
             ),
