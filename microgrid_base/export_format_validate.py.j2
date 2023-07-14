@@ -190,11 +190,12 @@ def ReLU(val):
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
 
-{% macro export_data_with_model(devName, obj, classType, needAbs=False)%}
+{% macro export_data_with_model(devName, obj, classType, paramDict, needAbs=False)%}
     @staticmethod
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
+[% do assert(_set) %]
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
         {% if needAbs %}
@@ -233,7 +234,7 @@ def ReLU(val):
 class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 {% set obj = {} %}
-{% call export_data_with_model(devName, obj, '仿真结果', needAbs=True)%}
+{% call export_data_with_model(devName, obj, '仿真结果', paramDict, needAbs=True)%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
@@ -303,7 +304,7 @@ class {{devName}}出力曲线(BaseModel):
 {{iterParamDict(paramDict, True)}}
 {% set obj = {} %}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))")) %}
-{% call export_data_with_model(devName, obj, '出力曲线') %}
+{% call export_data_with_model(devName, obj, '出力曲线', paramDict) %}
     {% do update_obj(obj, timeSeriesMapping, devName, [], False) %}
 {% endcall %}
 {% endfor %}
