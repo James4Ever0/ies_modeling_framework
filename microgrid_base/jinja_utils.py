@@ -2,7 +2,7 @@ import subprocess
 
 import black
 import jinja2
-
+import shutil
 import os
 
 
@@ -39,21 +39,23 @@ def load_render_and_format(
 
     # import black.Mode
     output_path_elems = output_path.split(".")
-    output_path_elems.insert(-1,"new")
-    with open(tmp_output_path:=".".join(output_path_elems), "w+") as f:
+    output_path_elems.insert(-1, "new")
+    with open(tmp_output_path := ".".join(output_path_elems), "w+") as f:
         f.write(result)
     if not needFormat:
+        shutil.move(tmp_output_path, output_path)
         return
     try:
         result = black.format_str(result, mode=black.Mode())
         print("Syntax Ok.")
         with open(output_path, "w+") as f:
             f.write(result)
+        os.remove(tmp_output_path)
     except:
         import traceback
 
         traceback.print_exc()
-        raise Exception("Syntax Failed. Temporary cache saved to: ")
+        raise Exception("Syntax Failed.\nTemporary cache saved to: ")
     print("=" * 40)
 
 
@@ -89,7 +91,7 @@ def load_template(template_path, extra_func_dict={}):
         list=list,
         str=str,
         _dict=dict,
-        _set=set, # avoid name collision
+        _set=set,  # avoid name collision
         tuple=tuple,
         ord=ord,
         len=len,
