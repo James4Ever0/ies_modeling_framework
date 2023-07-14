@@ -1077,7 +1077,7 @@ class {{class_name}}模型(设备模型):
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
 
-        if self.计算参数.计算类型 == "设计规划":
+        {{}}"设计规划":
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
             self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
