@@ -33,7 +33,7 @@ endif
 main: run_test.sh test_model.py common_fixtures.py
 	${MAIN_EXEC}
 
-test_model.py test_export.py: generate_test_model.py test_model.py.j2 test_export.py.j2
+test_model.py: generate_test_model.py test_model.py.j2
 	${PYTHON} $<
 
 common_fixtures.py.tmp: dev_info_tmp_gen.py common_fixtures.py.j2 
