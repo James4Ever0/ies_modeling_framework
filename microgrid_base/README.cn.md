@@ -30,10 +30,10 @@
 * [x] 创建算法服务
 * [x] 解析EXCEL中的输入参数
 * [x] 创建名称映射表
-* 定义端口类型和连接矩阵
+* [x] 定义端口类型和连接矩阵
 * [x] 使用jinja2和宏生成模型代码
 * [x] 准备生成测试
-* []定义和解析 `*.ies` DSL
+* [ ] 定义和解析 `*.ies` DSL
 
 ## 文件结构
 
@@ -43,14 +43,14 @@
     - functional_base.py: 实验性功能执行机制
     - functional_base.py.j2: 用于生成functional_base.py.j2。
     - generate_code.py：用于读取functional_base.py.j2并生成python代码。
-    - lex_yacc.py: 用于标记化和解析ISL代码（实验）
-    - Makefile: 定义与ISL相关的构建任务
+    - lex_yacc.py: 用于标记化和解析IES代码（实验）
+    - Makefile: 定义与IESLang相关的构建任务
     - mylang.ies: iesl 语言规范
     - mylang.txt: 传统语言规范
     - pyomo_reduce_ineqalities.py：用于从ineqality表达式系统中计算变量边界，被iesl使用。
     - yacc_init.py: 实验解析器
     - your_model_name.lp：实验模型导出为包含汉字的lp文件。
-    - 柴油.IS: 用ISL语言编写的柴油发电机模型
+    - 柴油.IS: 用IES语言编写的柴油发电机模型
 - frontend_convert_format: 将非标准的前端数据转换为标准的模型规范格式，供前端使用。
     - customToolbar.vue：前端使用的代码，包括输入数据构造逻辑
     - cvt.js: 非标准输入格式转换
