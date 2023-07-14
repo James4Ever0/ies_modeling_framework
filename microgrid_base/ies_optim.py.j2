@@ -51,7 +51,7 @@ from pydantic import BaseModel, Field, validator
 {# from functools import lru_cache #}
 
 {# item count is for list, length is for string.#}
-{% macro tuple_type_construct(l, t)%}{{", ".join([t]*l)}}{% endmacro%}
+{% macro tuple_type_construct(l, t) %}{{", ".join([t]*l)}}{% endmacro %}
 {# {% macro item_constraint(l)%}min_item = {{l}}, max_item= {{l}}{% endmacro%} #}
 
 {# ##########[PINT START]########## #}
