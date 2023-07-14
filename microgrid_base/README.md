@@ -34,5 +34,24 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
     - 柴油.ies: diesel power generator model written in iesl language
 - frontend_convert_format: convert non-standard frontend data into standard model specification format, used by frontend
     - customToolbar.vue: code used by frontend, which includes logics for input data construction
-    - cvt.js
-- Makefile: main makefile for code generation, define build dependencies, handles environment variables.
+    - cvt.js: non-standard input format conversion
+    - error_cvt.js: error message handling (translation)
+    - input_template_processed.json: example input template
+    - sample_parse.json: partial cleaned non-standard input data
+    - sample.json: raw non-standard input data
+- logs: directory reserved for logging
+    - .log: need to be touched in order to preserve this directory in release archive `release.7z`
+- makefile_ninja_pytest_incremental_test
+    - platform_detect_makefile: for detecting different os using makefile
+        - Makefile: os detect implementation
+    - construct_ninja_file.py: using package "ninja_syntax" to generate ninja.build file
+    - dodo.py: experiment of package "pydo"
+    - generic.py: python type system experiment
+    - lfnf.py: pytest file used for testing pytest "-lfnf" commandline flag
+    - Makefile.j2: test jinja template for generating Makefile
+    - mytest.py: pytest file using type hints and request fixture
+    - test_buffer.py: infinite loop for conda stdout buffer mechanism
+    - type_check.py: multiple experiments of python type system
+    - typecheck.py: 
+    
+- Makefile: main makefile for code generation, define build dependencies, handles and share environment variables across submake sessions.
