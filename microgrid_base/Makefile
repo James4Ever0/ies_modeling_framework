@@ -77,7 +77,7 @@ endif
 
 ################ META TARGETS ################
 
-main: code test_code ${LOG_DIRS}
+main: release
 	${MAIN_EXEC}
 
 ${LOG_DIRS}:
@@ -90,6 +90,9 @@ serve: release
 
 # ref: https://www.gnu.org/software/make/manual/html_node/Variables_002fRecursion.html
 
+code_check: code_checker.py code test_code ${LOG_DIRS} server
+	${PYTHON} $<
+
 test: release
 	${MAKE} -e -C test
 
@@ -98,7 +101,7 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: code server ${LOG_DIRS}
+release: code_check
 	rm -rf ${RELEASE_DIR}
 	rm -rf ${RELEASE_ARCHIVE}
 	mkdir -p ${SERVER_RELEASE_DIR}
