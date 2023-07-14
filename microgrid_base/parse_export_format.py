@@ -115,11 +115,11 @@ commonDevParams = ["设备型号", "设备台数", "设备维护费用"]
 commonParams = ["元件名称"]
 
 simDevParam = {name: [] for name in all_device_names}
-
+nonCountableDevNames = ['传输线']
 for k in simDevParam.keys():
     simDevParam[k].extend(commonParams)
     if k not in nonDevNames:
-        simDevParam[k].extend(commonDevParams)
+        simDevParam[k].extend([e for e in commonDevParams if (e != '' if k in nonCountableDevNames else True)])
 
 simParamLUT = {
     "产冷量": [],
