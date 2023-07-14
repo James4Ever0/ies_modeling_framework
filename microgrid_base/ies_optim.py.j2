@@ -160,7 +160,7 @@ class 分月电价(BaseModel, 电价转换):
 {% endcall%}
 
 class 分时电价(BaseModel, 电价转换):
-    PriceList: Tuple[{{tuple_type_construct(24, "float")}}] = Field(title = f"长度为{每天小时数}的价格数组", description = "{{电价单位描述}}")
+    PriceList: Tuple[{{tuple_type_construct({{每天小时数}}, "float")}}] = Field(title = f"长度为{每天小时数}的价格数组", description = "{{电价单位描述}}")
 {# 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -173,7 +173,7 @@ class 分时电价(BaseModel, 电价转换):
 {% endcall%}
 
 class 分时分月电价(BaseModel, 电价转换):
-    PriceStruct:Tuple[{{tuple_type_construct(12, "分时电价")}}] = Field(title = "长度为12的分时电价数组", description = "{{电价单位描述}}")
+    PriceStruct:Tuple[{{tuple_type_construct({{}}, "分时电价")}}] = Field(title = f"长度为{每年月数}的分时电价数组", description = "{{电价单位描述}}")
 {# {%call getFeeWrapper()%} #}
 {{ getFee()}}
 {{getMonthIndexFromTimeInDay()}}
@@ -205,10 +205,10 @@ class 阶梯电价(BaseModel):
         raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList:Tuple[{{tuple_type_construct(24,"阶梯电价")}}] = Field(title = "长度为24的阶梯电价列表", description = "{{电价单位描述}}")
+    PriceStructList:Tuple[{{tuple_type_construct({{每天小时数}}, "阶梯电价")}}] = Field(title = f"长度为{每天小时数}的阶梯电价列表", description = "{{电价单位描述}}")
 
 {{getFee()}}
-        current_time = math.floor(time_in_day%24)
+        current_time = math.floor(time_in_day%每天小时数)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
         return result
@@ -593,7 +593,7 @@ class 计算参数(BaseModel):
     计算步长: Literal["小时", '秒']
     典型日: bool
 
-    分时计价开始时间点: float = Field(default=0, title = '秒级仿真时 开始时间在一天中的哪个小时', description="取值范围: 0-24", ge=0, le=24)
+    分时计价开始时间点: float = Field(default=0, title = '秒级仿真时 开始时间在一天中的哪个小时', description=f"取值范围: 0-{每天小时数}", ge=0, le=每天小时数)
 
     {# @validator('分时计价开始时间点')
     def validate_starting_time(cls, v):
@@ -1544,7 +1544,7 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
-        getTimeInDay = lambda index: index if self.计算参数.计算步长 == '小时' else self.计算参数.分时计价开始时间点 + 24*convertMonthToDays(self.计算参数.分时计价开始月份) + (index/3600)
+        getTimeInDay = lambda index: index if self.计算参数.计算步长 == '小时' else self.计算参数.分时计价开始时间点 + 每天小时数*convertMonthToDays(self.计算参数.分时计价开始月份) + (index/每小时秒数)
 
         self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # positive?
 

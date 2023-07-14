@@ -244,7 +244,7 @@ def solveModelFromCalcParamList(
             if 典型日:
                 assert 计算步长 == "小时", f"典型日计算步长异常: {计算步长}"
                 graph_data["典型日ID"] = 典型日ID
-                timeParam = 24 * len(graph_data["典型日代表的日期"])
+                timeParam = 每天小时数 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 每年小时数 if 计算步长 == "小时" else 秒级仿真小时数  # how many hours?
             timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
@@ -299,9 +299,9 @@ def solveModelFromCalcParamList(
             ):
                 assert len(出力曲线模版) == 每年小时数, f"Actual: {len(出力曲线模版)}"
                 rich.print(典型日出力曲线)  # ANY? please use "beartype.
-                assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
+                assert len(典型日出力曲线) == 每天小时数, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
-                    出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
+                    出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
 
             for index, devInstDict in enumerate(ret.devInstDictList):
