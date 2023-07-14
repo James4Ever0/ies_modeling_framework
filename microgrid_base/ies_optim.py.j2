@@ -1006,7 +1006,7 @@ class {{class_name}}模型(设备模型):
         {% set mflag.val = psc %}
         {# # after: psc: {{psc}} mflag: {{mflag}} #}
         if self.计算参数.计算类型 == "{{psc}}":
-        {% if psc == "设计规划" %}
+        {% if psc2 == "设计规划" %}
             # BUG: if unbounded, then we get some error.
             {% if class_name not in ['传输线']%}
                 {# {% if class_name not in ['锂电池','光伏发电']%}
@@ -1018,11 +1018,12 @@ class {{class_name}}模型(设备模型):
             单位： 个
             """
             {% endif %}
-        {% elif psc == "仿真模拟" %}
+        {% elif psc2 == "仿真模拟" %}
             {% if class_name == '锂电池' %}
             self.DeviceCount = round(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) # for better user experience.
             {# self.DeviceCount = math.floor(self.设备信息.TotalCapacity / self.设备信息.RatedCapacity) #}
             {% endif %}
+        {% else%}
         {% endif %}
         {%endif%}
 {{expand_unit_conversion(mdigit) | indent(4, true)}}
@@ -1077,7 +1078,7 @@ class {{class_name}}模型(设备模型):
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
 
-        {{}}"设计规划":
+        {{设计规划}}
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
             self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
@@ -1131,7 +1132,7 @@ class {{class_name}}模型(设备模型):
         # reserved expression list. do not use it in any constraints.
         self.SOC = [self.CurrentTotalCapacity[i]/self.TotalCapacity for i in self.CurrentTotalCapacity]
 
-        if self.计算参数.计算类型 == '设计规划':
+        {{设计规划}}
             self.CurrentTotalCapacity.setlb(self.MinDeviceCount*self.MinSOC*self.RatedCapacity)
             self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity)
             
@@ -1158,7 +1159,7 @@ class {{class_name}}模型(设备模型):
             {# {% if needStorageDecayCompensation%} #}
         if self.needStorageDecayCompensation: 
             # TODO: Verify if "compensated decay rate" works.
-            if self.计算参数.计算类型 == "设计规划":
+            {{设计规划}}
 
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
                 # constraint.
@@ -1216,7 +1217,7 @@ class {{class_name}}模型(设备模型):
         {# 
         # 设备台数约束
         {% if class_name not in ['传输线'] %}
-        if self.计算参数.计算类型 == "规划设计":
+        {{规划设计}}
             self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
         {% endif %}
@@ -1312,7 +1313,7 @@ class {{class_name}}模型(设备模型):
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
 
-        if self.计算参数.计算类型 == "设计规划":
+        {{设计规划}}
             if self.设备信息.循环边界条件 == '日间独立':
                 {# self.mw.Constraint(self.原电接口.x[0] == self.EPS) #}
                 {# BUG: override suspicious constraints with init values. #}
