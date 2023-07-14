@@ -32,8 +32,8 @@ endif
 
 # main: run_test.sh test_model.py common_fixtures.py stepwise
 main: run_test.sh test_model.py test_export.py common_fixtures.py
-	${MAIN_EXEC} test_model.py
 	${MAIN_EXEC} test_export.py
+	${MAIN_EXEC} test_model.py
 
 test_model.py: generate_test_model.py test_model.py.j2
 	${PYTHON} $<
