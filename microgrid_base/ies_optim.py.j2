@@ -152,7 +152,7 @@ def convertDaysToMonth(day_index:float):
     raise Exception("Invalid day index:", day_index)
 
 class 分月电价(BaseModel, 电价转换):
-    PriceList:Tuple[{{tuple_type_construct({{每年月数}}, "float")}}] =Field(title = f"长度为{每年月数}的价格数组", description = "{{电价单位描述}}")
+    PriceList:Tuple[{{tuple_type_construct(每年月数, "float")}}] =Field(title = f"长度为{每年月数}的价格数组", description = "{{电价单位描述}}")
     
 {%call getFeeWrapper()%}
 {{getMonthIndexFromTimeInDay()}}
@@ -160,7 +160,7 @@ class 分月电价(BaseModel, 电价转换):
 {% endcall%}
 
 class 分时电价(BaseModel, 电价转换):
-    PriceList: Tuple[{{tuple_type_construct({{每天小时数}}, "float")}}] = Field(title = f"长度为{每天小时数}的价格数组", description = "{{电价单位描述}}")
+    PriceList: Tuple[{{tuple_type_construct(每天小时数, "float")}}] = Field(title = f"长度为{每天小时数}的价格数组", description = "{{电价单位描述}}")
 {# 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -173,7 +173,7 @@ class 分时电价(BaseModel, 电价转换):
 {% endcall%}
 
 class 分时分月电价(BaseModel, 电价转换):
-    PriceStruct:Tuple[{{tuple_type_construct({{}}, "分时电价")}}] = Field(title = f"长度为{每年月数}的分时电价数组", description = "{{电价单位描述}}")
+    PriceStruct:Tuple[{{tuple_type_construct(每年月数, "分时电价")}}] = Field(title = f"长度为{每年月数}的分时电价数组", description = "{{电价单位描述}}")
 {# {%call getFeeWrapper()%} #}
 {{ getFee()}}
 {{getMonthIndexFromTimeInDay()}}
@@ -205,7 +205,7 @@ class 阶梯电价(BaseModel):
         raise Exception("Unable to get electricity price with power:", power)
 
 class 分时阶梯电价(BaseModel):
-    PriceStructList:Tuple[{{tuple_type_construct({{每天小时数}}, "阶梯电价")}}] = Field(title = f"长度为{每天小时数}的阶梯电价列表", description = "{{电价单位描述}}")
+    PriceStructList:Tuple[{{tuple_type_construct(每天小时数, "阶梯电价")}}] = Field(title = f"长度为{每天小时数}的阶梯电价列表", description = "{{电价单位描述}}")
 
 {{getFee()}}
         current_time = math.floor(time_in_day%每天小时数)

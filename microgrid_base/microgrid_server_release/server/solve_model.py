@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict, Any, Union
 from beartype import beartype
+from constants import *
 
 try:
     from typing import Literal
@@ -243,10 +244,10 @@ def solveModelFromCalcParamList(
             if 典型日:
                 assert 计算步长 == "小时", f"典型日计算步长异常: {计算步长}"
                 graph_data["典型日ID"] = 典型日ID
-                timeParam = 24 * len(graph_data["典型日代表的日期"])
+                timeParam = 每天小时数 * len(graph_data["典型日代表的日期"])
             else:
-                timeParam = 8760 if 计算步长 == "小时" else 2  # how many hours?
-            timeParam /= 8760  # TODO: eliminate invalid results due to timeParam
+                timeParam = 每年小时数 if 计算步长 == "小时" else 秒级仿真小时数  # how many hours?
+            timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
@@ -287,7 +288,7 @@ def solveModelFromCalcParamList(
             出力曲线字典 = {}  # 设备ID: 设备出力曲线
 
             创建出力曲线模版 = lambda: [
-                0 for _ in range(8760)
+                0 for _ in range(每年小时数)
             ]  # 1d array, placed when running under typical day mode.
 
             @beartype
@@ -296,11 +297,11 @@ def solveModelFromCalcParamList(
                 典型日出力曲线: List[Union[int, float]],
                 典型日代表的日期: List[int],
             ):
-                assert len(出力曲线模版) == 8760, f"Actual: {len(出力曲线模版)}"
+                assert len(出力曲线模版) == 每年小时数, f"Actual: {len(出力曲线模版)}"
                 rich.print(典型日出力曲线)  # ANY? please use "beartype.
-                assert len(典型日出力曲线) == 24, f"Actual: {len(典型日出力曲线)}"
+                assert len(典型日出力曲线) == 每天小时数, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
-                    出力曲线模版[day_index * 24 : (day_index + 1) * 24] = 典型日出力曲线
+                    出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
 
             for index, devInstDict in enumerate(ret.devInstDictList):

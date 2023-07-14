@@ -3,6 +3,7 @@
 # TODO: call external processor/parser to handle DSL, simplify expressions.
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
+from constants import *
 import pyomo.core.base
 
 try:
@@ -70,6 +71,7 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         price = self.Price
 
         # unit: [currency]/[time]
@@ -77,10 +79,10 @@ class 常数电价(BaseModel, 电价转换):
         return self.convert(price * power)
 
 
-month_days = [31] * 12
+month_days = [31] * 每年月数
 month_days[1] = 28
 month_days[4 - 1] = month_days[6 - 1] = month_days[9 - 1] = month_days[11 - 1] = 30
-assert sum(month_days) == 365
+assert sum(month_days) == 每年天数
 
 
 def convertMonthToDays(month_index: int):
@@ -112,10 +114,11 @@ class 分月电价(BaseModel, 电价转换):
         float,
         float,
         float,
-    ] = Field(title="长度为12的价格数组", description="单位: 元/kWh")
+    ] = Field(title=f"长度为{每年月数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        current_day_index = time_in_day // 24
+
+        current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
         price = self.PriceList[month_index]
@@ -151,10 +154,11 @@ class 分时电价(BaseModel, 电价转换):
         float,
         float,
         float,
-    ] = Field(title="长度为24的价格数组", description="单位: 元/kWh")
+    ] = Field(title=f"长度为{每天小时数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        current_time = math.floor(time_in_day % 24)
+
+        current_time = math.floor(time_in_day % 每天小时数)
 
         price = self.PriceList[current_time]
 
@@ -166,10 +170,11 @@ class 分时电价(BaseModel, 电价转换):
 class 分时分月电价(BaseModel, 电价转换):
     PriceStruct: Tuple[
         分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价
-    ] = Field(title="长度为12的分时电价数组", description="单位: 元/kWh")
+    ] = Field(title=f"长度为{每年月数}的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        current_day_index = time_in_day // 24
+
+        current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
         _分时电价 = self.PriceStruct[month_index]
@@ -193,6 +198,7 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -230,10 +236,11 @@ class 分时阶梯电价(BaseModel):
         阶梯电价,
         阶梯电价,
         阶梯电价,
-    ] = Field(title="长度为24的阶梯电价列表", description="单位: 元/kWh")
+    ] = Field(title=f"长度为{每天小时数}的阶梯电价列表", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        current_time = math.floor(time_in_day % 24)
+
+        current_time = math.floor(time_in_day % 每天小时数)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
         return result
@@ -313,24 +320,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -346,13 +353,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -417,6 +424,7 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
+
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -515,6 +523,7 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -619,6 +628,7 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -875,6 +885,7 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
+
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -981,6 +992,7 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1063,6 +1075,7 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1145,6 +1158,7 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
+
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -1353,7 +1367,6 @@ class ModelWrapper:
 
 # 风、光照
 
-
 # 需要明确单位
 class 计算参数(BaseModel):
     典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
@@ -1361,7 +1374,11 @@ class 计算参数(BaseModel):
     典型日: bool
 
     分时计价开始时间点: float = Field(
-        default=0, title="秒级仿真时 开始时间在一天中的哪个小时", description="取值范围: 0-24", ge=0, le=24
+        default=0,
+        title="秒级仿真时 开始时间在一天中的哪个小时",
+        description=f"取值范围: 0-{每天小时数}",
+        ge=0,
+        le=每天小时数,
     )
 
     分时计价开始月份: int = Field(
@@ -1401,11 +1418,11 @@ class 计算参数(BaseModel):
     @property
     def 迭代步数(self):
         if self.计算步长 == "秒":
-            steps = 7200
+            steps = 两小时秒数
         elif self.计算步长 == "小时" and self.典型日 is False:
-            steps = 8760
+            steps = 每年小时数
         elif self.计算步长 == "小时" and self.典型日 is True:
-            steps = 24
+            steps = 每天小时数
         else:
             rich.print(self)
             raise Exception("未知计算参数")
@@ -1430,7 +1447,7 @@ class 计算参数(BaseModel):
 
         相当于返回一小时内有多少计算步长
         """
-        return 1 if self.计算步长 == "小时" else 3600
+        return 1 if self.计算步长 == "小时" else 每小时秒数
 
 
 class POSNEG:
@@ -1631,6 +1648,7 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
+
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1692,6 +1710,7 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
+
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -1969,7 +1988,7 @@ class 光伏发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (总最大功率)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
@@ -1979,7 +1998,7 @@ class 光伏发电模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -2178,7 +2197,7 @@ class 风力发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -2193,7 +2212,7 @@ class 风力发电模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -2439,7 +2458,7 @@ class 柴油发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
         self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
@@ -2449,7 +2468,7 @@ class 柴油发电模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -2706,6 +2725,7 @@ class 锂电池模型(设备模型):
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
+
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
                     bounds=(
@@ -2844,7 +2864,7 @@ class 锂电池模型(设备模型):
         一小时总电变化量 = 计算范围内总平均功率  # 省略乘1
         # kWh
 
-        一年总电变化量 = 一小时总电变化量 * 8760
+        一年总电变化量 = 一小时总电变化量 * 每年小时数
 
         self.mw.Constraint(
             一年总电变化量 * self.BatteryLife
@@ -2853,7 +2873,7 @@ class 锂电池模型(设备模型):
         assert self.BatteryLife >= 1
         assert self.Life >= self.BatteryLife
         Life = self.BatteryLife
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
         self.总固定维护成本 = self.CostPerYearPerCapacity * (
@@ -2868,7 +2888,7 @@ class 锂电池模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((计算范围内总平均功率 * self.计算参数.迭代步数) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -2997,18 +3017,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3043,7 +3063,7 @@ class 变压器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3058,7 +3078,7 @@ class 变压器模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -3166,18 +3186,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3205,7 +3225,7 @@ class 变流器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3220,7 +3240,7 @@ class 变流器模型(设备模型):
 
         self.总可变维护成本年化 = (
             ((-self.SumRange(self.电输入)) / self.计算参数.迭代步数)
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -3375,7 +3395,7 @@ class 双向变流器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3393,7 +3413,7 @@ class 双向变流器模型(设备模型):
                 ((self.SumRange(self.储能端_.x_neg) + self.SumRange(self.线路端_.x_neg)))
                 / self.计算参数.迭代步数
             )
-            * 8760
+            * 每年小时数
             * self.VariationalCostPerWork
         )
         # avg_power * 8760 = annual_work
@@ -3476,18 +3496,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3509,7 +3529,7 @@ class 传输线模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-        self.年化率 = 计算年化率(贴现率, Life)
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
 
         self.总采购成本 = self.CostPerKilometer * (self.Length)
         self.总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
@@ -3559,8 +3579,8 @@ class 电负荷模型(设备模型):
             lambda index: index
             if self.计算参数.计算步长 == "小时"
             else self.计算参数.分时计价开始时间点
-            + 24 * convertMonthToDays(self.计算参数.分时计价开始月份)
-            + (index / 3600)
+            + 每天小时数 * convertMonthToDays(self.计算参数.分时计价开始月份)
+            + (index / 每小时秒数)
         )
 
         self.IncomeRates = [
@@ -3572,7 +3592,7 @@ class 电负荷模型(设备模型):
             self.电接口, self.设备信息.EnergyConsumption, lambda x, y: x == -y
         )
 
-        年化费用 = (sum(self.IncomeRates) / len(self.IncomeRates)) * 8760
+        年化费用 = (sum(self.IncomeRates) / len(self.IncomeRates)) * 每年小时数
         # 已经是负数了
 
         self.总成本年化 = 年化费用
@@ -3690,7 +3710,7 @@ class 柴油模型(设备模型):
         super().constraints_register()
         平均消耗率 = self.SumRange(self.燃料接口) / self.计算参数.迭代步数
 
-        年化费用 = 平均消耗率 * self.Price * 8760
+        年化费用 = 平均消耗率 * self.Price * 每年小时数
 
         self.总成本年化 = 年化费用
         return 年化费用
@@ -3888,7 +3908,6 @@ class EnergyFlowGraph(BaseModel):
 
 from networkx import Graph
 
-
 # partial if typical day mode is on.
 def compute(
     devs: List[dict],
@@ -3997,7 +4016,7 @@ def compute(
     for e in devInstDict.values():
         if isinstance(e, 柴油模型):
             environment_obj_exprs.append(
-                (sum(e.燃料接口.values()) / e.计算参数.迭代步数) * 8760 * e.CO2
+                (sum(e.燃料接口.values()) / e.计算参数.迭代步数) * 每年小时数 * e.CO2
             )
 
     environment_obj_expr = sum(environment_obj_exprs)
