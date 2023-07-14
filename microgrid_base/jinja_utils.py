@@ -39,8 +39,8 @@ def load_render_and_format(
 
     # import black.Mode
     output_path_elems = output_path.split(".")
-    output_path_elems
-    with open(tmp_output_path, "w+") as f:
+    output_path_elems.insert(-1,"new")
+    with open(tmp_output_path:=".".join(output_path_elems), "w+") as f:
         f.write(result)
     if not needFormat:
         return
@@ -53,7 +53,7 @@ def load_render_and_format(
         import traceback
 
         traceback.print_exc()
-        raise Exception("Syntax Failed.")
+        raise Exception("Syntax Failed. Temporary cache saved to: ")
     print("=" * 40)
 
 
