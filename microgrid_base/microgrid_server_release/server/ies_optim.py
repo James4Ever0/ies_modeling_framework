@@ -36,6 +36,18 @@ import math
 # TODO: 每个月的都不同 #
 
 
+def 计算年化率(_贴现率, 寿命):
+    # 默认贴现率单位为%
+    if _贴现率 == 0:
+        年化率 = 0  # 仿真模拟的时候 用于去除和年化率有关的目标
+    else:
+        贴现率 = _贴现率 / 100
+        年化率_CT = (1 + 贴现率) ** Life
+
+        年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+    return 年化率
+
+
 from functools import lru_cache
 
 
@@ -301,24 +313,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
+    """
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -334,13 +346,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -1381,7 +1393,7 @@ class 计算参数(BaseModel):
     """
     单位: 摄氏度
     """
-    贴现率: float
+    贴现率: confloat(ge=0, le=100) = Field(title="贴现率", description="单位: percent")
     """
     单位: percent
     """
@@ -1472,7 +1484,7 @@ class 设备模型:
         self.总固定成本年化 = 0
         self.总成本年化 = 0
         self.总可变维护成本年化 = 0
-        self.年化率 = 1
+        self.年化率 = ...
 
     @staticmethod
     def 处理最终财务输出(mclass: 可购买类):
@@ -1957,11 +1969,7 @@ class 光伏发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (总最大功率)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (总最大功率)
@@ -2170,11 +2178,7 @@ class 风力发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -2435,11 +2439,7 @@ class 柴油发电模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
         self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
@@ -2853,11 +2853,7 @@ class 锂电池模型(设备模型):
         assert self.BatteryLife >= 1
         assert self.Life >= self.BatteryLife
         Life = self.BatteryLife
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerCapacity * (self.DeviceCount * self.RatedCapacity)
         self.总固定维护成本 = self.CostPerYearPerCapacity * (
@@ -3001,18 +2997,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3047,11 +3043,7 @@ class 变压器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3174,18 +3166,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3213,11 +3205,7 @@ class 变流器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3387,11 +3375,7 @@ class 双向变流器模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilowatt * (self.DeviceCount * self.RatedPower)
         self.总固定维护成本 = self.CostPerYearPerKilowatt * (
@@ -3492,18 +3476,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3525,11 +3509,7 @@ class 传输线模型(设备模型):
         # 计算年化
         # unit: one
         Life = self.Life
-
-        贴现率 = self.计算参数.贴现率 / 100
-        年化率_CT = (1 + 贴现率) ** Life
-
-        self.年化率 = (贴现率 * 年化率_CT) / (年化率_CT - 1)
+        self.年化率 = 计算年化率(贴现率, Life)
 
         self.总采购成本 = self.CostPerKilometer * (self.Length)
         self.总固定维护成本 = self.CostPerYearPerKilometer * (self.Length)
@@ -3901,6 +3881,9 @@ class mDict(BaseModel):
 
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
+    residualEquipmentLife: confloat(ge=0) = Field(
+        default=0, title="辅助设备寿命", description="单位：年\n用于计算辅助设备年化系数"
+    )
 
 
 from networkx import Graph

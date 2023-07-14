@@ -77,23 +77,23 @@ endif
 
 ################ META TARGETS ################
 
-main: release
+main: code_check
 	${MAIN_EXEC}
 
 ${LOG_DIRS}:
 	mkdir -p $@
 	touch $@/.log
 
-serve: release
+serve: code_check
 	cd ${SERVER_RELEASE_DIR}
 	bash fastapi_tmuxp.sh ${OS_TYPE}
 
 # ref: https://www.gnu.org/software/make/manual/html_node/Variables_002fRecursion.html
 
-code_check: code_checker.py code test_code ${LOG_DIRS} server
-	${PYTHON} $<
+code_check: code_checker.py release 
+	${PYTHON} code_checker.py
 
-test: release
+test: code_check
 	${MAKE} -e -C test
 
 dsl:
@@ -101,7 +101,9 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: code_check
+release: 
+
+release_partial: code test_code ${LOG_DIRS} server
 	rm -rf ${RELEASE_DIR}
 	rm -rf ${RELEASE_ARCHIVE}
 	mkdir -p ${SERVER_RELEASE_DIR}

@@ -53,7 +53,7 @@ from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
 # from celery.exceptions import Ignore
-
+from ies_optim import 计算年化率
 
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
@@ -75,6 +75,10 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
         calculation_result (dict): 计算结果
     """
     mDictList = energyflow_graph["mDictList"]
+    辅助设备寿命 =  energyflow_graph['residualEquipmentLife']
+    贴现率 = mDictList[0]['graph']['贴现率']
+    辅助设备年化系数 = 计算年化率(贴现率, 辅助设备寿命)
+
     calcParamList = mDictListToCalcParamList(mDictList)
 
     resultList = []
@@ -94,7 +98,7 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
     if resultList != []:
         # success = True
         calculation_result = CalculationResult(
-            resultList=resultList, success=True, error_log=""
+            resultList=resultList, success=True, error_log="",residualEquipmentAnnualFactor = 辅助设备年化系数 # TODO: 计算辅助设备年化参数
         ).dict()
         return calculation_result
     else:

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, confloat
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any
 import networkx
@@ -125,9 +125,13 @@ class ParetoCurve(BaseModel):
     y_label: str
 
 
+# you need to check if any "Field" is using "default" positional argument, which might leads to error.
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
     paretoCurve: Union[None, ParetoCurve] = None
+    residualEquipmentAnnualFactor: confloat(ge=0) = Field(
+        default=0, title="辅助设备年化系数", description="仿真模拟是0，设计规划为非0"
+    )
     success: bool
     error_log: str
 

@@ -1,7 +1,7 @@
 import ast
 import os
 import astor
-import traceback
+# import traceback
 
 # check pydantic field issues.
 
@@ -17,14 +17,15 @@ for fpath in files:
         
         except:
             # traceback.print_exc()
-            continue
             print(f"Invalid syntax found in file: {fpath}")
+            continue
             # might have some invalid syntax.
         for el in ast.walk(tree):
             if isinstance(el, ast.Call):
                 # breakpoint()
                 funcName = astor.to_source(el.func).strip()
-                args = el.args
-                if len(args) >0:
-                    source_code = astor.to_source(el)
-                    raise Exception(f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code.strip()}")
+                if "Field" in funcName:
+                    args = el.args
+                    if len(args) >0:
+                        source_code = astor.to_source(el)
+                        raise Exception(f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code.strip()}")
