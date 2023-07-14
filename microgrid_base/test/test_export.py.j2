@@ -11,4 +11,4 @@ def test_{{devName}}_export({{testModel}}):
     {{testModel}}.constraints_register()
     for attrName in ['{{devName}}仿真结果', '{{devName}}出力曲线']:
         if obj:=globals().get(attrName, None):
-            obj.export(, timeParam)
+            obj.export({{testModel}}, timeParam)
