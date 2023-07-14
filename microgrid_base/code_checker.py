@@ -23,6 +23,6 @@ for fpath in files:
                         source_code = astor.to_source(el)
                         raise Exception(f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code.strip()}")
         except:
-            traceback.print_exc()
+            # traceback.print_exc()
             print(f"Invalid syntax found in file: {fpath}")
             # might have some invalid syntax.
