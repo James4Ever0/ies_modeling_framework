@@ -7,6 +7,7 @@
   {% endif %}
 {% endmacro %}
 
+{% set nonCountableDevNames = ['传输线']%}
 from typing import List
 
 from pyomo.environ import value
@@ -249,7 +250,11 @@ class {{devName}}仿真结果(BaseModel):
             )
         )
         %}
-        {% if devName not in non]%}
+        {% if devName not in nonCountableDevNames %}
+            {% do obj.update(
+                设备台数 = "value(model.DeviceCount)",
+            )%}
+        {% endif%}
     {% endif %}
     {% do update_obj(obj, simDevParamMapping, devName, commonParamNames, True)%}
 {% endcall%}
