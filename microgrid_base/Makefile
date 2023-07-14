@@ -54,7 +54,7 @@ RELEASE_ARCHIVE = release.7z
 
 MODEL_CODE = topo_check.py ies_optim.py export_format_validate.py
 
-EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py
+EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py
 
 EXTRA_DATA_DEPS = export_format.json frontend_sim_param_translation.json
 
