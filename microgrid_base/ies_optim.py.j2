@@ -1707,7 +1707,7 @@ class mDict(BaseModel):
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
     residualEquipmentLife: confloat(ge=0) = Field(
-        default=0, title="辅助设备寿命", description="用于计算辅助设备年化系数"
+        default=0, title="辅助设备寿命", description="单位：年\n用于计算辅助设备年化系数"
     )
 
 from networkx import Graph
