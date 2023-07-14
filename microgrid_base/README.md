@@ -52,6 +52,23 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
     - mytest.py: pytest file using type hints and request fixture
     - test_buffer.py: infinite loop for conda stdout buffer mechanism
     - type_check.py: multiple experiments of python type system
-    - typecheck.py: 
-    
+    - typecheck.py: static check of exhausitiveness
+- microgrid_server_release: for service distribution
+    - init: setup scripts for server (incomplete)
+        - init.sh: bash setup script
+        - requirements.txt: python requirements file
+    - server: main server code
+        - export_format_validate.py: validate and export data to output
+        - export_format.json: used by `solve_model.py` for data validation
+        - expr_utils.py: for analyzing expressions in exceptions
+        - fastapi_celery_server.py: celery worker for model solving
+        - fastapi_datamodel_template.py: data exchange schema for api
+        - fastapi_server_template.py: fastapi server code, which defines apis
+        - fastapi_terminate_service.sh: for finding and killing previous algorithm service (for restart)
+        - fastapi_tmuxp.sh: launching service by creating four panes in one tmux session
+        - fastapi_tmuxp.yml: config file read by tmuxp, used to create tmux session
+        - frontend_sim_param_translation.json: translate Chinese table headers into predefined terms for output
+        - ies_optim.py: model definition and implementation
+        - passwords.py: stores password for redis, used by `fastapi_celery_server.py`
+        - solve_model.py: receive 
 - Makefile: main makefile for code generation, define build dependencies, handles and share environment variables across submake sessions.
