@@ -35,14 +35,6 @@ def safeDiv(val, div):
     except:
         return cmath.nan
 
-from typing import TypeVar, overload, Any
-T = TypeVar("T", str, int, float)
-
-@overload
-def safeAbs(val: T) -> T: ...
-
-@overload
-def safeAbs(val: Any) -> float:...
 
 def safeAbs(val):
     if type(val) in [str]:
@@ -91,8 +83,9 @@ class 柴油仿真结果(BaseModel):
         return 柴油仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             柴油消耗费用=safeAbs(((value(model.总成本年化)) * timeParam)),
-            柴油消耗量='a',
-            a=1
+            柴油消耗量=safeAbs(
+                ((statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam)
+            ),
         )
 
 
