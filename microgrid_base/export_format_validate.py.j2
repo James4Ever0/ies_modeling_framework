@@ -195,8 +195,9 @@ def ReLU(val):
     def export(model: {{devName}}模型, timeParam:float):
     {% do obj.update(dict(元件名称 = "model.设备信息.设备名称")) %}
 {{caller()}}
-[% set paramKeys = _set(paramDict.keys()) %}
-[% do assert(paramKeys.__eq__(_set(obj.keys())), "{} (code) != {} (template)".format()) %]
+{% set paramKeys = _set(paramDict.keys()) %}
+{% set objKeys = _set(obj.keys()) %}
+[% do assert(paramKeys.__eq__(objKeys), "devName: {}\n{} (code) != {} (template)".format(devName, paramKeys, objKeys)) %]
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
         {% if needAbs %}
