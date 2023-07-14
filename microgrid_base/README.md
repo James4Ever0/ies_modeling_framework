@@ -70,5 +70,8 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
         - frontend_sim_param_translation.json: translate Chinese table headers into predefined terms for output
         - ies_optim.py: model definition and implementation
         - passwords.py: stores password for redis, used by `fastapi_celery_server.py`
-        - solve_model.py: receive 
+        - solve_model.py: receive input as model specification, invoke optimization session and create results.
+        - template_input.json: example api input data format
+        - test_json_input_format.py: test reading file for input data, checking topology consistency, model solving and data exporting
+        - test_topo_check.py: test using code to construct model topology as input data, 
 - Makefile: main makefile for code generation, define build dependencies, handles and share environment variables across submake sessions.
