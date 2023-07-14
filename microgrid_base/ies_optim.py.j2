@@ -93,11 +93,11 @@ def 计算年化率(_贴现率,寿命):
     def getFee(self, power:float, time_in_day:float) -> float:
 {% endmacro%}
 {% macro getMonthIndexFromTimeInDay()%}
-        current_day_index = time_in_day//24
+        current_day_index = time_in_day//每天小时数
         month_index = convertDaysToMonth(current_day_index)
 {% endmacro%}
 {% macro getCurrentTimeFromTimeInDay()%}
-        current_time = math.floor(time_in_day%24)
+        current_time = math.floor(time_in_day%每天小时数)
 {% endmacro%}
 {% macro returnElectricPrice() %}
         # unit: [currency]/[time]
@@ -160,7 +160,7 @@ class 分月电价(BaseModel, 电价转换):
 {% endcall%}
 
 class 分时电价(BaseModel, 电价转换):
-    PriceList: Tuple[{{tuple_type_construct(24, "float")}}] = Field(title = "长度为24的价格数组", description = "{{电价单位描述}}")
+    PriceList: Tuple[{{tuple_type_construct(24, "float")}}] = Field(title = f"长度为{每天小时数}的价格数组", description = "{{电价单位描述}}")
 {# 
     @validator("PriceList")
     def checkPriceList(cls, val):
@@ -1372,7 +1372,7 @@ class {{class_name}}模型(设备模型):
         一小时总电变化量 = 计算范围内总平均功率 # 省略乘1
         # kWh
 
-        一年总电变化量 = 一小时总电变化量 * 8760
+        一年总电变化量 = 一小时总电变化量 * 每年小时数
         
         self.mw.Constraint(一年总电变化量 * self.BatteryLife <= self.DeviceCount * self.LifetimeDischargeCapacityPerUnit * 0.85)
         assert self.BatteryLife >=1
@@ -1438,7 +1438,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         {% if class_name not in ['传输线']%}
         {# 总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}} #}
-        self.总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 8760 * self.VariationalCostPer{{vv}} 
+        self.总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 每年小时数 * self.VariationalCostPer{{vv}} 
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
@@ -1550,7 +1550,7 @@ class {{class_name}}模型(设备模型):
 
         self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
 
-        年化费用 = (sum(self.IncomeRates)/len(self.IncomeRates)) * 8760
+        年化费用 = (sum(self.IncomeRates)/len(self.IncomeRates)) * 每年小时数
         # 已经是负数了
 
         {# 计价模型 #}
@@ -1561,7 +1561,7 @@ class {{class_name}}模型(设备模型):
             {% error('未知能源类型:', class_name)%}
         {% endif%}
 
-        年化费用 = 平均消耗率 * self.Price * 8760 
+        年化费用 = 平均消耗率 * self.Price * 每年小时数 
 
     {% else%}
         {% error("未知特殊类型:", k)%}
@@ -1798,7 +1798,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     for e in devInstDict.values():
         {# if type(e) == 柴油模型: #}
         if isinstance(e, 柴油模型):
-            environment_obj_exprs.append((sum(e.燃料接口.values())/e.计算参数.迭代步数)*8760 * e.CO2)
+            environment_obj_exprs.append((sum(e.燃料接口.values())/e.计算参数.迭代步数)*每年小时数 * e.CO2)
 
     environment_obj_expr = sum(environment_obj_exprs)
     
