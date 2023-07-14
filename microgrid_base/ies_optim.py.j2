@@ -1064,11 +1064,11 @@ class {{class_name}}模型(设备模型):
         {% endif%}
 
         {% if class_name in ['变压器']%}
-        {{设计规划}} # 在变压器和负荷的交换节点处做处理
+        {{设计规划}}: # 在变压器和负荷的交换节点处做处理
             self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/self.LoadRedundancyParameter # type: ignore
         {% endif%}
         {% if class_name in ['光伏发电']%}
-        {{设计规划}}
+        {{设计规划}}:
             # TODO：标准光照下出力
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
             self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
@@ -1080,7 +1080,7 @@ class {{class_name}}模型(设备模型):
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
 
-        {{设计规划}}
+        {{设计规划}}:
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
             self.原电输出 = self.Multiply(dict(var=self.单台发电功率,max=self.RatedPower, min=0), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "原电输出", within = NonNegativeReals)
@@ -1112,7 +1112,7 @@ class {{class_name}}模型(设备模型):
         {# self.InitActualCapacityPerUnit = (self.InitSOC - self.MinSOC) * self.RatedCapacity #}
         self.InitCapacityPerUnit = self.InitSOC * self.RatedCapacity
 
-        {{设计规划}}
+        {{设计规划}}:
             #  初始SOC
             self.MaxDeviceCount = math.floor(self.MaxTotalCapacity / self.RatedCapacity)
             self.MinDeviceCount = math.ceil(self.MinTotalCapacity / self.RatedCapacity)
@@ -1134,7 +1134,7 @@ class {{class_name}}模型(设备模型):
         # reserved expression list. do not use it in any constraints.
         self.SOC = [self.CurrentTotalCapacity[i]/self.TotalCapacity for i in self.CurrentTotalCapacity]
 
-        {{设计规划}}
+        {{设计规划}}:
             self.CurrentTotalCapacity.setlb(self.MinDeviceCount*self.MinSOC*self.RatedCapacity)
             self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity)
             
@@ -1161,7 +1161,7 @@ class {{class_name}}模型(设备模型):
             {# {% if needStorageDecayCompensation%} #}
         if self.needStorageDecayCompensation: 
             # TODO: Verify if "compensated decay rate" works.
-            {{设计规划}}
+            {{设计规划}}:
 
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,(self.BatteryStorageDecay/100)*self.MaxTotalCapacity), within=NonNegativeReals) # the greater the value, the less our compensation is, the greater the real discharge by decay is (will not emit to external ports).
                 # constraint.
@@ -1219,7 +1219,7 @@ class {{class_name}}模型(设备模型):
         {# 
         # 设备台数约束
         {% if class_name not in ['传输线'] %}
-        {{规划设计}}
+        {{设计规划}}:
             self.mw.Constraint(self.DeviceCount <= self.MaxDeviceCount)
             self.mw.Constraint(self.DeviceCount >= self.MinDeviceCount)
         {% endif %}
@@ -1315,7 +1315,7 @@ class {{class_name}}模型(设备模型):
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
 
-        {{设计规划}}
+        {{设计规划}}:
             if self.设备信息.循环边界条件 == '日间独立':
                 {# self.mw.Constraint(self.原电接口.x[0] == self.EPS) #}
                 {# BUG: override suspicious constraints with init values. #}
@@ -1349,7 +1349,7 @@ class {{class_name}}模型(设备模型):
 
         {# 秒级功率变化限制，有特定的变量限制 #}
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
-        {{秒":
+        {{秒}}:
             总最大功率 = {{'self.MaxPower' if class_name in ['光伏发电'] else 'self.RatedPower'}} * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1), expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
