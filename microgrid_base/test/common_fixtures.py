@@ -23,7 +23,7 @@ class Request(Protocol):
 def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
     import numpy as np
 
-    arr = abs(np.random.random((24,))).tolist()
+    arr = abs(np.random.random((每天小时数,))).tolist()
     return 计算参数(
         计算目标="经济",
         # 计算目标="经济_环保",
@@ -70,8 +70,8 @@ def 测试柴油模型(测试柴油信息: 柴油信息, model_wrapper: ModelWra
 def 测试电负荷信息():
     val = 电负荷信息(
         设备名称="电负荷",
-        EnergyConsumption=None,
-        MaxEnergyConsumption=None,
+        EnergyConsumption=[1]*每天小时数,
+        MaxEnergyConsumption=3,
         PriceModel=None,
     )
     return val
