@@ -12,7 +12,13 @@ The easiest way for setting this up is by installing all dependencies and then i
 
 On different system you may need to modify code in `Makefile` to ensure correct dependency resolution.
 
+Install CPLEX and Anaconda (for environment management) on your system. Do not use non-Linux OSes for deployment since they do not support `tmux`.
+
 Minimum Python version is `3.9`.
+
+Install Python dependencies by `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt`.
+
+To run `celery`, you need to install `redis-server` and `rabbitmq-server`.
 
 ## Developing
 
