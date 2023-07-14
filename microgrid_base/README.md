@@ -54,6 +54,8 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
     - type_check.py: multiple experiments of python type system
     - typecheck.py: static check of exhausitiveness
 - microgrid_server_release: for service distribution
+    - constants_en.txt: constants definitions imported by merged_units.txt
+    - merged_units.txt: modified unit definitions used by package "pint"
     - init: setup scripts for server (incomplete)
         - init.sh: bash setup script
         - requirements.txt: python requirements file
@@ -73,5 +75,13 @@ Inputs and outputs follow a standard format. Modeling language “IESLang” is 
         - solve_model.py: receive input as model specification, invoke optimization session and create results.
         - template_input.json: example api input data format
         - test_json_input_format.py: test reading file for input data, checking topology consistency, model solving and data exporting
-        - test_topo_check.py: test using code to construct model topology as input data, 
+        - test_topo_check.py: test using code to construct model topology as input data and check topology consistency, model solving and data exporting
+        - topo_check.py: utils for constructing model topology and checking
+        - unit_utils.py: utils for unit conversion
+    - test: code for testing
+        - sample_data: stores data which might causes problem to system
+        - common_fixtures.py: shared fixtures used by `test_model.py`
+        - common_fixtures.py.j2: code template which uses `ies_optim.py` for generating input data fixtures to `common_fixtures.py.tmp`
+        - common_fixtures.py.tmp: template generation target, used as reference while writing `common_fixtures.py`
+        
 - Makefile: main makefile for code generation, define build dependencies, handles and share environment variables across submake sessions.
