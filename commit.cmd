@@ -16,7 +16,7 @@ git push origin main
 
 
 
-cd microgrid/dsl_parser
+cd microgrid_base/dsl_parser
 git pull
 git add .
 git commit -m 'update'
