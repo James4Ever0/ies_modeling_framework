@@ -24,10 +24,15 @@ import pandas
 
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
+planningResultSchema = {}
+subSchemas = []
 for colIndex, col in enumerate(设计规划结果输出格式表格.T):
     firstElem = col[0]
     if isinstance(firstElem, str) and len(firstElem) == 4:
-        ...
+        mtable = firstElem
+        subSchemas.append((firstElem, colIndex))
+
+for 
 
 table_name = "仿真结果"
 
