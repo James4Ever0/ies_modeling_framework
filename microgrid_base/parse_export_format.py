@@ -1,12 +1,13 @@
 excel_path = "设备信息库各参数.xlsx"
 
 from jinja_utils import code_and_template_path, load_render_and_format
+import rich
 
 from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
-设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv" # parse this thing first. use 
+设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv" # parse this thing first.
 
 output_path = "export_format.json"
 
@@ -18,6 +19,11 @@ import json
 
 # from os import name
 import pandas
+
+设计规划结果输出格式表格 = pandas.read_csv(设计规划结果输出CSV)
+
+rich.print(设计规划结果输出格式表格)
+breakpoint()
 
 table_name = "仿真结果"
 
@@ -54,7 +60,6 @@ for i, r in table.iterrows():
         trough = 2
         data[key] = data.get(key, []) + [{"headings": headings, "devices": []}]
 
-import rich
 
 # need processing.
 rich.print(data)
