@@ -20,7 +20,7 @@ import json
 # from os import name
 import pandas
 
-设计规划结果输出格式表格 = pandas.read_csv(设计规划结果输出CSV)
+设计规划结果输出格式表格 = pandas.read_csv(设计规划结果输出CSV, on_bad_lines='warn', header=None) # you can ignore bad lines.
 
 rich.print(设计规划结果输出格式表格)
 breakpoint()
