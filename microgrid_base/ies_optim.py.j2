@@ -364,13 +364,16 @@ class 设备信息(设备基础信息):
 {% set NonLoadDeviceDict = {}%}
 
 {# 不是标准单位 #}
-{% set gasEmissionUnit = ""%}
-{% set fuelEmissionUnits = {
-        "CO2": "kg/L",
-        "NOX": "kg/L",
-        "SO2": "kg/L"
-    }
+{% set gasEmissionUnit = "kg/L" %}
+{% set fuelEmissionUnits = {} %}
+{% for gas in [
+        "CO2",
+        "NOX",
+        "SO2"
+    ]
 %}
+    {% do fuelEmissionUnits.update({gas, gasEmissionUnit}) %}
+{% endfor %}
 {% set 燃料能源相关数据默认单位 = {
     '柴油': {
         "Price": "万元/L",
