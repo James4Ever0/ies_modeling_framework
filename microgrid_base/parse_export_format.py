@@ -22,8 +22,12 @@ import pandas
 
 设计规划结果输出格式表格 = pandas.read_csv(设计规划结果输出CSV, on_bad_lines='warn', header=None) # you can ignore bad lines.
 
-rich.print(设计规划结果输出格式表格)
-breakpoint()
+# rich.print(设计规划结果输出格式表格)
+# breakpoint()
+for colIndex, col in enumerate(设计规划结果输出格式表格.T):
+    firstElem = col[0]
+    if isinstance(firstElem, str) and len(firstElem) == 4:
+        ...
 
 table_name = "仿真结果"
 
