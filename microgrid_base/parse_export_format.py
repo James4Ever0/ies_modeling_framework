@@ -6,10 +6,12 @@ from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
+设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv" # parse this thing first. use 
+
 output_path = "export_format.json"
 
 MAKEFILE = dict(
-    inputs=[template_path, excel_path], outputs=[output_path, code_path], args=[]
+    inputs=[template_path, excel_path, 设计规划结果输出CSV], outputs=[output_path, code_path], args=[]
 )
 
 import json
