@@ -428,7 +428,7 @@ def solveModelFromCalcParamList(
         fin_points = np.linspace(a, b, num=11)
         constraint_ranges = list(zip(fin_points[:-1].tolist(), fin_points[1:].tolist()))
         for fin_start, fin_end in constraint_ranges:
-            print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
+            print("{} <= "+target.upper()+"<= {}".format(fin_start, fin_end))  # constraint
             # min env under this condition. recalculate.
         return constraint_ranges
 
