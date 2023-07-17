@@ -382,8 +382,8 @@ class 设备信息(设备基础信息):
     }
 %}
 {% for key in 燃料能源相关数据默认单位.keys()%}
-    {% do 燃料能源相关数据默认单位.update(fuelEmissionUnits) %}
-{% endfor%}
+    {% do 燃料能源相关数据默认单位[key].update(fuelEmissionUnits) %}
+{% endfor %}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
     {% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
 {% endfor %}
