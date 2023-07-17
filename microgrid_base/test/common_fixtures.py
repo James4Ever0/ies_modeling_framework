@@ -1,5 +1,6 @@
 from pytest import fixture
 import sys
+
 sys.path.append("../")
 from ies_optim import *
 
@@ -44,7 +45,14 @@ def 测试计算参数(request: Request):  # _pytest.fixtures.SubRequest
 
 @fixture
 def 测试柴油信息():
-    val = 柴油信息(设备名称="柴油", Price=(2, "万元/L"), 热值=(2, "kWh/L"), CO2=(2, "kg/L"))
+    val = 柴油信息(
+        设备名称="柴油",
+        Price=(2, "万元/L"),
+        热值=(2, "kWh/L"),
+        CO2=(gasEmission := (2, "kg/L")),
+        NOX=gasEmission,
+        SO2=gasEmission,
+    )
     return val
 
 
@@ -70,7 +78,7 @@ def 测试柴油模型(测试柴油信息: 柴油信息, model_wrapper: ModelWra
 def 测试电负荷信息():
     val = 电负荷信息(
         设备名称="电负荷",
-        EnergyConsumption=[1]*每天小时数,
+        EnergyConsumption=[1] * 每天小时数,
         MaxEnergyConsumption=3,
         PriceModel=分月电价(PriceList=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
     )
@@ -225,6 +233,7 @@ def 测试柴油发电模型(
 
 # =================================锂电池================================== #
 
+
 # you may need to parametrize this fixture. also create lithion battery with different parameters.
 # @fixture
 @fixture(
@@ -248,7 +257,7 @@ def 测试锂电池信息(request: Request):
         # BatteryStorageDecay=0,
         BatteryStorageDecay=10,
         # TotalDischargeCapacity=100000000,
-        LifetimeCycleCount = 100000000/20,
+        LifetimeCycleCount=100000000 / 20,
         BatteryLife=20,
         CostPerCapacity=20,
         CostPerYearPerCapacity=20,
