@@ -32,7 +32,10 @@ for colIndex, col in enumerate(设计规划结果输出格式表格.T):
         mtable = firstElem
         subSchemas.append((firstElem, colIndex))
 
-for 
+for schemaName, index in subSchemas:
+    schemaHeaderIndex = index+1
+    englishSchemaHeader = schemaHeaderIndex+2
+
 
 table_name = "仿真结果"
 
