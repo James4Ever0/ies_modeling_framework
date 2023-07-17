@@ -364,13 +364,23 @@ class 设备信息(设备基础信息):
 {% set NonLoadDeviceDict = {}%}
 
 {# 不是标准单位 #}
+{% set gasEmissionUnit = ""%}
+{% set fuelEmissionUnits = {
+        "CO2": "kg/L",
+        "NOX": "kg/L",
+        "SO2": "kg/L"
+    }
+%}
 {% set 燃料能源相关数据默认单位 = {
-    '柴油':{
+    '柴油': {
         "Price": "万元/L",
         "热值": "kWh/L",
-        "CO2": "kg/L"
+        }
     }
-}%}
+%}
+{% for key in 燃料能源相关数据默认单位.keys()%}
+    {% do 燃料能源相关数据默认单位.update(fuelEmissionUnits) %}
+{% endfor%}
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
     {% do NonLoadDeviceDict.update({class_name: (super_class, mstrs, mdigits, mtables)})%}
 {% endfor %}
