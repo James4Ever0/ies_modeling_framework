@@ -1,5 +1,6 @@
 {
     "元件名称": "name",
+    "元件类型": "type",
     "设备型号": "modelNumber",
     "设备台数": "equiCounts",
     "产冷量": "coolingCapacity",

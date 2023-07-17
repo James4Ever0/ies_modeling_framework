@@ -4,7 +4,8 @@
 
 from jinja_utils import *
 import constants
-constants_dict = {k:v for k,v in constants.__dict__.items() if not k.startswith("_")}
+
+constants_dict = {k: v for k, v in constants.__dict__.items() if not k.startswith("_")}
 # the test code may not be generated.
 from param_base import *
 
@@ -21,7 +22,6 @@ MAKEFILE = dict(
 )
 
 if __name__ == "__main__":
-
     load_render_and_format(
         template_path=topo_code_template_path,
         output_path=topo_code_output_path,
@@ -33,7 +33,11 @@ if __name__ == "__main__":
     test(["test_topo_check.py"])
 
     render_params = dict(
-        设备库=设备库, 设备接口集合=设备接口集合, frontend_translation_table=frontend_translation_table, **constants_dict
+        设备库=设备库,
+        设备接口集合=设备接口集合,
+        frontend_translation_table=frontend_translation_table,
+        **constants_dict,
+        constants=constants_dict
     )
     load_render_and_format(
         template_path=ies_optim_code_template_path,

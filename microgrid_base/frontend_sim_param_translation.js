@@ -1,6 +1,7 @@
-// 计算结果表格数据
+// 计算结果表格数据,增加元件类型
 let resultTable=[{
     name: '电负荷1',  //元件名称
+    type: '电负荷', //元件类型
     modelNumber: 'SS1',//设备型号
     equiCounts: '1', //设备台数
     coolingCapacity: '0', //产冷量

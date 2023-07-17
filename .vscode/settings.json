@@ -11,4 +11,5 @@
     "python.linting.enabled": true,
     "python.analysis.autoImportCompletions": false,
     "editor.wordWrap": "on",
+    "python.analysis.typeCheckingMode": "basic",
 }

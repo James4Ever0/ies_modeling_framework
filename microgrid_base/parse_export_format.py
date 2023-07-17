@@ -21,6 +21,7 @@ table_name = "仿真结果"
 
 table = pandas.read_excel(excel_path, sheet_name=table_name, header=None)
 
+
 # print(table)
 def is_empty(elem):
     if type(elem) is str:
@@ -102,7 +103,6 @@ def convert_format(h_array):
 
 
 new_data["仿真结果"]["ALL"] = convert_format(data["仿真结果"][0]["headings"])
-
 from param_base import 设备接口集合
 
 all_device_names = list(设备接口集合.keys())
@@ -112,7 +112,10 @@ rich.print(all_device_names)
 
 nonDevNames = ["柴油", "电负荷"]
 commonDevParams = ["设备型号", "设备台数", "设备维护费用"]
-commonParams = ["元件名称"]
+commonParams = ["元件名称", "元件类型"]
+for paramName in commonParams:
+    if paramName not in (dictALL := new_data["仿真结果"]["ALL"]).keys():
+        dictALL.update({paramName: None})
 
 simDevParam = {name: [] for name in all_device_names}
 nonCountableDevNames = ["传输线"]
@@ -155,9 +158,11 @@ all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]
 all_sim_params = list(simParamLUT.keys()) + commonDevParams + commonParams
 
 excel_sim_params = set(new_data["仿真结果"]["ALL"].keys())
-assert excel_sim_params == set(
-    all_sim_params
-), f"参数不符合:\nEXCEL: {excel_sim_params}\nCODE: {all_sim_params}"
+
+assert (setEXC := set(excel_sim_params)) == (
+    setALL := set(all_sim_params)
+), f"参数不符合:\nEXCEL UNIQ: {setEXC.difference(setALL)}\nCODE UNIQ: {setALL.difference(setEXC)}"
+# ), f"参数不符合:\nEXCEL UNIQ: {setEXC.difference(setALL)}\nCODE UNIQ: {setALL.difference(setEXC)}"
 
 for dev in all_device_names:
     assert dev in all_devs_with_uniq_sim_param, f"'{dev}'没有仿真独有参数"

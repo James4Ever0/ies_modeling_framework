@@ -96,6 +96,7 @@ def load_template(template_path, extra_func_dict={}):
         ord=ord,
         len=len,
         repr=repr,
+        # eval=eval,
         #  join=myJoin
         **extra_func_dict,
     )

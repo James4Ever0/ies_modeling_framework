@@ -79,6 +79,7 @@ def ReLU(val):
 {% set exceptionList = ["平均效率_平均COP"] %}
 {% set commonParamNames = [
     "元件名称",
+    "元件类型",
     "设备型号",
     "设备台数",
     "设备维护费用",
@@ -242,12 +243,15 @@ class {{devName}}仿真结果(BaseModel):
 {{iterParamDict(paramDict, False)}}
 {% set obj = {} %}
 {% call export_data_with_model(devName, obj, '仿真结果', paramDict, needAbs=True)%}
+    {% do obj.update(                
+        元件类型 = "model.设备信息.__class__.__name__.strip('信息')"
+    )%}
     {% if devName not in nonDevNames %}
         {% do obj.update(
             dict(
-            设备型号 = "model.设备信息.设备型号",
-            设备维护费用 = TP_ANNUAL("value(model.总固定维护成本 + model.总可变维护成本年化)"),
-            )
+                设备型号 = "model.设备信息.设备型号",
+                设备维护费用 = TP_ANNUAL("value(model.总固定维护成本 + model.总可变维护成本年化)"),
+                )
         )
         %}
         {% if devName not in nonCountableDevNames %}
