@@ -9,6 +9,13 @@ try:
 except:
     from typing_extensions import Literal
 
+
+try:
+    from typing import assert_never
+except:
+    from typing_extensions import assert_never
+
+
 # from celery.states import PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
 
 # question: how to convert pydantic models to json?
@@ -71,8 +78,11 @@ class 单次计算结果(BaseModel):
         description="存放例如经济目标值、环保目标值的计算结果",
         example={"financialObjective": 2000, "environmentalObjective": 3000},
     )
+    planningResultTable: List[规划结果详情] = Field( title='规划结果详情列表', description = '方案内各机组信息') 
+    planningSummary: List[规划方案概览] = Field(title= '规划方案概览', description = '包括方案类型，方案总参数等等')
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
+        description= "每个设备逐步长出力情况",
         example=[
             {
                 "name": "Any",
@@ -117,7 +127,6 @@ class 单次计算结果(BaseModel):
             }
         ],
     )
-
 
 class ParetoCurve(BaseModel):
     x: List[float]

@@ -91,7 +91,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
         schemaHeader = schemaHeader.replace("/",'_') # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
-        if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaHeader):
+        if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaName):
             print("SKIPPING:", strippedSchemaHeader)
             continue
         planningResultSchema[schemaName].update(

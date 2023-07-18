@@ -296,13 +296,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -314,13 +314,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -336,13 +336,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -391,11 +391,25 @@ class 柴油信息(设备基础信息):
     """
     格式: [数值,单位]
     """
+    NOX: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
+        title="NOX", description="格式: [数值,单位]"
+    )
+    """
+    格式: [数值,单位]
+    """
+    SO2: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
+        title="SO2", description="格式: [数值,单位]"
+    )
+    """
+    格式: [数值,单位]
+    """
 
     class DefaultUnits:
         Price = "万元/L"
         热值 = "kWh/L"
         CO2 = "kg/L"
+        NOX = "kg/L"
+        SO2 = "kg/L"
 
 
 class 电负荷信息(设备基础信息):
@@ -2327,18 +2341,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -3002,18 +3016,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3333,18 +3347,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3607,6 +3621,8 @@ class 柴油模型(设备模型):
             Price: str
             热值: str
             CO2: str
+            NOX: str
+            SO2: str
 
         UnitsDict = {}
 
@@ -3688,6 +3704,58 @@ class 柴油模型(设备模型):
         单位: 标准单位 <- 现用单位
         """
         UnitsDict.update(dict(CO2=str(StandardUnit)))
+        ## PROCESSING: NOX
+        ### UNIT COMPATIBILITY CHECK ###
+        default_unit = self.设备信息.DefaultUnits.NOX
+        val_unit = self.设备信息.NOX[1]
+
+        has_exception, _ = getSingleUnitConverted(
+            default_unit=default_unit, val_unit=val_unit
+        )
+
+        if has_exception:
+            raise Exception(
+                f"Unit '{val_unit}' is not compatible with default unit '{default_unit}'"
+            )
+        ### UNIT COMPATIBILITY CHECK ###
+
+        ### UNIT CONVERSION ###
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ### UNIT CONVERSION ###
+
+        self.NOX = self.设备信息.NOX[0] * ConversionRate
+        """
+        单位: 标准单位 <- 现用单位
+        """
+        UnitsDict.update(dict(NOX=str(StandardUnit)))
+        ## PROCESSING: SO2
+        ### UNIT COMPATIBILITY CHECK ###
+        default_unit = self.设备信息.DefaultUnits.SO2
+        val_unit = self.设备信息.SO2[1]
+
+        has_exception, _ = getSingleUnitConverted(
+            default_unit=default_unit, val_unit=val_unit
+        )
+
+        if has_exception:
+            raise Exception(
+                f"Unit '{val_unit}' is not compatible with default unit '{default_unit}'"
+            )
+        ### UNIT COMPATIBILITY CHECK ###
+
+        ### UNIT CONVERSION ###
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ### UNIT CONVERSION ###
+
+        self.SO2 = self.设备信息.SO2[0] * ConversionRate
+        """
+        单位: 标准单位 <- 现用单位
+        """
+        UnitsDict.update(dict(SO2=str(StandardUnit)))
 
         self.Units = _Units.parse_obj(UnitsDict)
 
@@ -3758,6 +3826,37 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
 }  # type: ignore
+
+
+# export all these data with no dependency on calculation type.
+
+
+class 规划方案概览(BaseModel):
+    方案类型: str = Field(title="方案类型", description="对应字段：planType")
+    年化费用: float = Field(title="年化费用", description="单位: 万元\n对应字段：annualizedCost")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段：purchasingCost")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段：maintenanceFee")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段：CO2Emission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段：NOXEmission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段：SO2Emission")
+    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\n对应字段：coldLoad")
+    年热负荷: float = Field(title="年热负荷", description="单位: kWh\n对应字段：hotLoad")
+    年电负荷: float = Field(title="年电负荷", description="单位: kWh\n对应字段：eleLoad")
+    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\n对应字段：steamLoad")
+    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\n对应字段：hydrogenLoad")
+    年自来水消耗量: float = Field(title="年自来水消耗量", description="单位: t\n对应字段：waterConsumption")
+
+
+class 规划结果详情(BaseModel):
+    元件名称: str = Field(title="元件名称", description="对应字段：deviceName")
+    型号: str = Field(title="型号", description="对应字段：deviceModel")
+    数量: int = Field(title="数量", description="对应字段：deviceCount")
+    平均效率_平均COP: float = Field(title="平均效率_平均COP", description="对应字段：COP")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段：purchasingCost")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段：maintenanceFee")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段：CO2Emission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段：NOXEmission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段：SO2Emission")
 
 
 class 仿真结果(BaseModel):

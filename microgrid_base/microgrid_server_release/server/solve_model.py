@@ -57,12 +57,12 @@ def mDictListToCalcParamList(mdictList: List):
     calcParamList = []
 
     for md in mdictList:
-        topo_load = 拓扑图.from_json(md)  # static method
+        topo_load = 拓扑图.from_json(md)  # static method, consistency checked
         # print_with_banner(topo_load, "图对象")
         # how to check error now?
         # all connected?
 
-        topo_load.check_consistency()  # may still be good.
+        # topo_load.check_consistency()  # may not need to be checked twice, or you can modify some flag for skipping.
         ## COMPUTE THIS GRAPH ##
         # use devs, adders
 
@@ -424,11 +424,15 @@ def solveModelFromCalcParamList(
             raise Exception("Unable to perform multiobjective search.")
         elif a > b:
             a, b = b, a
-
+        # a is smaller than b.
         fin_points = np.linspace(a, b, num=11)
+        # remove last point to avoid duplicated results.
+        # total range count: 9
+        fin_points = fin_points[:-1]
+        # shall you remove one point.
         constraint_ranges = list(zip(fin_points[:-1].tolist(), fin_points[1:].tolist()))
         for fin_start, fin_end in constraint_ranges:
-            print("{} <= FIN <= {}".format(fin_start, fin_end))  # fin constraint
+            print(f"{fin_start} <= {target.upper()} <= {fin_end}")  # constraint
             # min env under this condition. recalculate.
         return constraint_ranges
 
