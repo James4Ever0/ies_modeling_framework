@@ -2,6 +2,7 @@ excel_path = "设备信息库各参数.xlsx"
 
 from jinja_utils import code_and_template_path, load_render_and_format
 import rich
+import re
 
 from constants import *
 
@@ -73,9 +74,9 @@ for schemaName, index in subSchemas:  # why we have nan here?
 
 rich.print(planningResultSchema)
 # need to remove few terms before saving to disk.
-removedTerms = {
-    '方案列表':['','',''],
-    '方案详情':['能源消耗费用','。+']
+removedTermRegexs = {
+    '方案列表':[r'年平均.+'],
+    '方案详情':['能源消耗费用',r'年.+收入']
 }
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
