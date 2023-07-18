@@ -11,9 +11,11 @@ code_path, template_path = code_and_template_path("export_format_validate")
 
 output_path = "export_format.json"
 
+planning_output_path = f"planning_{output_path}"
+
 MAKEFILE = dict(
     inputs=[template_path, excel_path, 设计规划结果输出CSV],
-    outputs=[output_path, code_path],
+    outputs=[output_path, code_path, planning_output_path],
     args=[],
 )
 
@@ -33,7 +35,12 @@ subSchemas = []
 
 for colIndex in (设计规划T := 设计规划结果输出格式表格.T):
     firstElem = (col := 设计规划T[colIndex].to_list())[0]
-    if isinstance(firstElem, str) and not isinstance(col[1], str) and len(firstElem) == 4 and firstElem.startswith('方案'):
+    if (
+        isinstance(firstElem, str)
+        and not isinstance(col[1], str)
+        and len(firstElem) == 4
+        and firstElem.startswith("方案")
+    ):
         # print(firstElem)
         # breakpoint()
         subSchemas.append((firstElem, colIndex))
@@ -42,7 +49,7 @@ planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
 
 from unit_utils import unitParserWrapper
 
-for schemaName, index in subSchemas: # why we have nan here?
+for schemaName, index in subSchemas:  # why we have nan here?
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     # rich.print(schemaHeaders)
     # breakpoint()
@@ -54,15 +61,20 @@ for schemaName, index in subSchemas: # why we have nan here?
         planningResultSchema[schemaName].update(
             {
                 strippedSchemaHeader: {
-                    "unit": schemaHeaderUnit, # could be "None"
+                    "unit": schemaHeaderUnit,  # could be "None"
                     "englishName": englishSchemaHeader,
                 }
             }
         )
 
 rich.print(planningResultSchema)
-breakpoint()
-
+# breakpoint()
+# store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
+with open(planning_output_path, "w+") as f:
+    f.write(json.dumps(planningResultSchema, indent=4, ensure_ascii=False))
+# ---- #
+# 
+# ---- #
 table_name = "仿真结果"
 
 table = pandas.read_excel(excel_path, sheet_name=table_name, header=None)
