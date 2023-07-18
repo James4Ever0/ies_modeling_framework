@@ -72,6 +72,11 @@ for schemaName, index in subSchemas:  # why we have nan here?
         )
 
 rich.print(planningResultSchema)
+# need to remove few terms before saving to disk.
+removedTerms = {
+    '方案列表':['','',''],
+    '方案详情':['能源消耗费用','。+']
+}
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
 with open(planning_output_path, "w+") as f:
