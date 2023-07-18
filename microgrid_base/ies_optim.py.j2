@@ -1657,7 +1657,8 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 {% for key, elemList in planningExportFormat.items()%}
 class{{planningResultKeyTranslationMap[key]}}(BaseModel):
-    {% for elem in elemList %}
+    {% for elemDict in elemList %}
+    {{valName}}: {{unit}} = Field(title="{{valName}}", description="对应字段：{}")
     {% endfor %}
 
 {% endfor %}
