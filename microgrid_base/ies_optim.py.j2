@@ -1655,10 +1655,14 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 {% set planningResultKeyTranslationMap = {'规划结果详情':'方案详情',"规划方案概览":"方案列表"}%}
 
-{% for key, elemList in planningExportFormat.items()%}
+{% for key, elemDict in planningExportFormat.items()%}
 class{{planningResultKeyTranslationMap[key]}}(BaseModel):
-    {% for elemDict in elemList %}
-    {{valName}}: {{unit}} = Field(title="{{valName}}", description="对应字段：{}")
+    {% for elemKey, elem in elemDict %}
+        {% set valName = elemKey%}
+        {% set valEnglishName = elem['englishName']%}
+        {% set valType = elem['type'] %}
+        {% set valUnit = elem['unit'] %}
+    {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit if valUnit}}\n对应字段：{{valEnglishName}}")
     {% endfor %}
 
 {% endfor %}
