@@ -273,7 +273,7 @@ class {{devName}}仿真结果(BaseModel):
  电转换功率=VLIST('model.电输出'),
 )
 %}
-{% set CTSL = {}%}
+{% set CTSL = {} %}
 {% do dictValueToKeyValuePair(commonTimeSeries, CTSL) %}
 {% set timeSeriesMapping = {
     "光伏发电": [
