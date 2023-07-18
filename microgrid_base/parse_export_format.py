@@ -7,12 +7,14 @@ from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
-设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv" # parse this thing first.
+设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv"  # parse this thing first.
 
 output_path = "export_format.json"
 
 MAKEFILE = dict(
-    inputs=[template_path, excel_path, 设计规划结果输出CSV], outputs=[output_path, code_path], args=[]
+    inputs=[template_path, excel_path, 设计规划结果输出CSV],
+    outputs=[output_path, code_path],
+    args=[],
 )
 
 import json
@@ -20,21 +22,26 @@ import json
 # from os import name
 import pandas
 
-设计规划结果输出格式表格 = pandas.read_csv(设计规划结果输出CSV, on_bad_lines='warn', header=None) # you can ignore bad lines.
+设计规划结果输出格式表格 = pandas.read_csv(
+    设计规划结果输出CSV, on_bad_lines="warn", header=None
+)  # you can ignore bad lines.
 
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
 planningResultSchema = {}
 subSchemas = []
-for colIndex, col in enumerate(设计规划结果输出格式表格.T):
+for colIndex, col in (设计规划T:=设计规划结果输出格式表格.T):
     firstElem = col[0]
     if isinstance(firstElem, str) and len(firstElem) == 4:
         mtable = firstElem
         subSchemas.append((firstElem, colIndex))
 
 for schemaName, index in subSchemas:
-    schemaHeaderIndex = index+1
-    englishSchemaHeader = schemaHeaderIndex+2
+    schemaHeader = 设计规划T[schemaHeaderIndex := index + 1]
+    englishSchemaHeader = 设计规划T[
+        englishSchemaHeaderIndex := schemaHeaderIndex + 2
+    ]
+    breakpoint()
 
 
 table_name = "仿真结果"
