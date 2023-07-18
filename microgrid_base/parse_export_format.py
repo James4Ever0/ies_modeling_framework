@@ -56,7 +56,7 @@ from unit_utils import unitParserWrapper
 
 # need to remove few terms before saving to disk.
 removeTermRegexes = {
-    '方案列表':[r'年平均.+'], # use non-greedy modifier (backtracking)
+    '方案列表':[r'年平均.+','方案名称'], # use non-greedy modifier (backtracking)
     '方案详情':['能源消耗费用',r'年.+?收入', '出力曲线']
 }
 hitRecords = {k: {e: False} for k,v in removeTermRegexes.items() for e in v}
@@ -93,12 +93,14 @@ for schemaName, index in subSchemas:  # why we have nan here?
 
 # check if all regexes have hits.
 errors = []
-for k,v in .items():
+for k,v in hitRecords.items():
     for e in v:
         if e is False:
+            errors.append(f'Error: regex {e.__repr__()} with no match!')
 
 if errors:
-    raise Exception("\n".join*errors))
+    raise Exception("\n".join(errors))
+
 rich.print(planningResultSchema)
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
