@@ -29,7 +29,7 @@ import pandas
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
 subSchemas = []
-# breakpoint()
+breakpoint()
 
 for colIndex in (设计规划T := 设计规划结果输出格式表格.T):
     firstElem = (col := 设计规划T[colIndex].to_list())[0]
