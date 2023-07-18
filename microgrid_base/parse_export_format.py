@@ -57,17 +57,18 @@ from unit_utils import unitParserWrapper
 # need to remove few terms before saving to disk.
 removeTermRegexes = {
     '方案列表':[r'年平均.+'],
-    '方案详情':['能源消耗费用',r'年.+收入']
+    '方案详情':['能源消耗费用',r'年.+收入', '出力曲线']
 }
+from typing import List
 
-def checkIfMatchAListOfRegexs(term:str, regexList:List):
+def checkIfMatchAListOfRegexes(term:str, regexList:List[str]):
     for regex in regexList:
         if re.match(regex, term):
             return True
     return False
 
 for schemaName, index in subSchemas:  # why we have nan here?
-    removeRegexs = removeTermRegexes[schemaName]
+    regexList = removeTermRegexes[schemaName]
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     # rich.print(schemaHeaders)
     # breakpoint()
@@ -76,6 +77,9 @@ for schemaName, index in subSchemas:  # why we have nan here?
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
+        if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList):
+            print("SKIPPING:", strippedSchemaHeader)
+            continue
         planningResultSchema[schemaName].update(
             {
                 strippedSchemaHeader: {

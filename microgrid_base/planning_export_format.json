@@ -20,14 +20,6 @@
             "unit": "万元",
             "englishName": "maintenanceFee"
         },
-        "年平均销售收入": {
-            "unit": "万元",
-            "englishName": "salesRevenue"
-        },
-        "年平均经营成本": {
-            "unit": "万元",
-            "englishName": "operatingCosts"
-        },
         "年碳排放": {
             "unit": "吨",
             "englishName": "CO2Emission"
@@ -90,30 +82,6 @@
             "unit": "万元",
             "englishName": "maintenanceFee"
         },
-        "能源消耗费用": {
-            "unit": "万元",
-            "englishName": "energyCost"
-        },
-        "年平均售冷收入": {
-            "unit": "万元",
-            "englishName": "coldIncome"
-        },
-        "年平均售热收入": {
-            "unit": "万元",
-            "englishName": "hotIncome"
-        },
-        "年平均售电收入": {
-            "unit": "万元",
-            "englishName": "eleIncome"
-        },
-        "年平均售蒸汽收入": {
-            "unit": "万元",
-            "englishName": "steamIncome"
-        },
-        "年平均售氢气收入": {
-            "unit": "万元",
-            "englishName": "hydrogenIncome"
-        },
         "年碳排放": {
             "unit": "吨",
             "englishName": "CO2Emission"
@@ -125,10 +93,6 @@
         "年SO2排放": {
             "unit": "吨",
             "englishName": "SO2Emission"
-        },
-        "出力曲线": {
-            "unit": null,
-            "englishName": "outputCurve"
         }
     }
 }
