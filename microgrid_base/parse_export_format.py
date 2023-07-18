@@ -54,7 +54,20 @@ planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
 
 from unit_utils import unitParserWrapper
 
+# need to remove few terms before saving to disk.
+removeTermRegexes = {
+    '方案列表':[r'年平均.+'],
+    '方案详情':['能源消耗费用',r'年.+收入']
+}
+
+def checkIfMatchAListOfRegexs(term:str, regexList:List):
+    for regex in regexList:
+        if re.match(regex, term):
+            return True
+    return False
+
 for schemaName, index in subSchemas:  # why we have nan here?
+    removeRegexs = removeTermRegexes[schemaName]
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     # rich.print(schemaHeaders)
     # breakpoint()
@@ -73,11 +86,6 @@ for schemaName, index in subSchemas:  # why we have nan here?
         )
 
 rich.print(planningResultSchema)
-# need to remove few terms before saving to disk.
-removedTermRegexs = {
-    '方案列表':[r'年平均.+'],
-    '方案详情':['能源消耗费用',r'年.+收入']
-}
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
 with open(planning_output_path, "w+") as f:
