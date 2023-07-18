@@ -3,6 +3,8 @@
 from enum import Enum
 # a = Enum('Color', ['RED', 'GREEN', 'BLUE'])
 from typing import Literal
+l = Literal['a','b']
+
 class a(Enum):
     RED='red'
     GREEN='green'

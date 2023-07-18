@@ -121,9 +121,11 @@ class 单次计算结果(BaseModel):
         ],
     )
     calculationType: CalculationType = Field(title="", description='')
+
     @validator('calculationType')
     def validate_calculationType(cls, v: CalculationType, values):
-        if v == CalculationType.
+        if v == ''
+        assert_never(v)
 
 
 class ParetoCurve(BaseModel):
