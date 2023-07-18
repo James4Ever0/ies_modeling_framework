@@ -1662,7 +1662,7 @@ class {{planningResultKeyTranslationMap[key]}}(BaseModel):
         {% set valEnglishName = elem['englishName'] %}
         {% set valType = elem['type'] %}
         {% set valUnit = elem['unit'] %}
-    {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段：{{valEnglishName}}")
+    {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}")
     {% endfor %}
 
 {% endfor %}
