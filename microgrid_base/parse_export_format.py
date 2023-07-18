@@ -24,6 +24,10 @@ import json
 # from os import name
 import pandas
 
+# --------------------------- #
+#   设计规划导出数据格式准备    #
+# --------------------------- #
+
 设计规划结果输出格式表格 = pandas.read_csv(
     设计规划结果输出CSV, on_bad_lines="warn", header=None
 )  # you can ignore bad lines.
@@ -72,9 +76,9 @@ rich.print(planningResultSchema)
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
 with open(planning_output_path, "w+") as f:
     f.write(json.dumps(planningResultSchema, indent=4, ensure_ascii=False))
-# ---- #
-# 
-# ---- #
+
+# -------------------------- #
+
 table_name = "仿真结果"
 
 table = pandas.read_excel(excel_path, sheet_name=table_name, header=None)
