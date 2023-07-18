@@ -29,12 +29,13 @@ import pandas
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
 subSchemas = []
-breakpoint()
+# breakpoint()
 
 for colIndex in (设计规划T := 设计规划结果输出格式表格.T):
     firstElem = (col := 设计规划T[colIndex].to_list())[0]
-    if isinstance(firstElem, str) and len(firstElem) == 4:
-        mtable = firstElem
+    if isinstance(firstElem, str) and not isinstance(col[1], str) and len(firstElem) == 4 and firstElem.startswith('方案'):
+        # print(firstElem)
+        # breakpoint()
         subSchemas.append((firstElem, colIndex))
 
 planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
@@ -43,8 +44,8 @@ from unit_utils import unitParserWrapper
 
 for schemaName, index in subSchemas: # why we have nan here?
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
-    rich.print(schemaHeaders)
-    breakpoint()
+    # rich.print(schemaHeaders)
+    # breakpoint()
     englishSchemaHeaders = 设计规划T[
         englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
