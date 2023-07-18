@@ -36,6 +36,7 @@ if __name__ == "__main__":
         设备库=设备库,
         设备接口集合=设备接口集合,
         frontend_translation_table=frontend_translation_table,
+        planningExportFormat=planningExportFormat,
         **constants_dict,
         constants=constants_dict
     )
