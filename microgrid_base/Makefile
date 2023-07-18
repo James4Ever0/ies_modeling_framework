@@ -56,7 +56,9 @@ MODEL_CODE = topo_check.py ies_optim.py export_format_validate.py
 
 EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py
 
-EXTRA_DATA_DEPS = export_format.json frontend_sim_param_translation.json
+EXPORT_FORMAT_SCHEMA = export_format.json planning_export_format.json
+
+EXTRA_DATA_DEPS = frontend_sim_param_translation.json ${EXPORT_FORMAT_SCHEMA}
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
@@ -136,7 +138,7 @@ param_base.py: frontend_sim_param_translation.json microgrid_jinja_param_base.js
 topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} jinja_template_model_generator.py
 
-export_format_validate.py export_format.json sim_param_export.xlsx: export_format_validate.py.j2 parse_export_format.py jinja_utils.py 设备信息库各参数.xlsx param_base.py unit_utils.py ${UNIT_DEFINITIONS}
+export_format_validate.py ${EXPORT_FORMAT_SCHEMA} sim_param_export.xlsx: export_format_validate.py.j2 parse_export_format.py jinja_utils.py 设备信息库各参数.xlsx param_base.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} parse_export_format.py
 
 microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}

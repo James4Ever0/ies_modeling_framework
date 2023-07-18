@@ -57,12 +57,12 @@ def mDictListToCalcParamList(mdictList: List):
     calcParamList = []
 
     for md in mdictList:
-        topo_load = 拓扑图.from_json(md)  # static method
+        topo_load = 拓扑图.from_json(md)  # static method, consistency checked
         # print_with_banner(topo_load, "图对象")
         # how to check error now?
         # all connected?
 
-        topo_load.check_consistency()  # may still be good.
+        # topo_load.check_consistency()  # may not need to be checked twice.
         ## COMPUTE THIS GRAPH ##
         # use devs, adders
 
