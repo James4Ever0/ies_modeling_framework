@@ -31,7 +31,7 @@ import pandas
 subSchemas = []
 # breakpoint()
 
-for colIndex in enumerate(设计规划T := 设计规划结果输出格式表格.T):
+for colIndex in (设计规划T := 设计规划结果输出格式表格.T):
     firstElem = (col := 设计规划T[colIndex].to_list())[0]
     if isinstance(firstElem, str) and len(firstElem) == 4:
         mtable = firstElem
@@ -56,8 +56,9 @@ for schemaName, index in subSchemas:
                 }
             }
         )
-    # breakpoint()
 
+rich.print(planningResultSchema)
+breakpoint()
 
 table_name = "仿真结果"
 
