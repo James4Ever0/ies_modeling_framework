@@ -71,6 +71,7 @@ class 单次计算结果(BaseModel):
         description="存放例如经济目标值、环保目标值的计算结果",
         example={"financialObjective": 2000, "environmentalObjective": 3000},
     )
+    planningResultTable: List[规划结果] = Field()
     performanceDataList: List[设备出力曲线] = Field(
         title="设备出力曲线列表",
         example=[
