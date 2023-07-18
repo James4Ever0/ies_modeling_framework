@@ -1651,6 +1651,17 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
 {% endmacro %}
 
+# export all these data with no dependency on calculation type.
+
+{% set planningResultKeyTranslationMap = {'规划结果详情':'',"规划方案概览":""}%}
+
+{% for key, elemList in .items()%}
+class{{planningResultKeyTranslationMap[key]}}(BaseModel):
+    {% for elem in elemList %}
+    {% endfor %}
+
+{% endfor %}
+
 class 仿真结果(BaseModel):
     {% for chineseName, englishName in frontend_translation_table.items()%}
     {% if chineseName in ['元件名称', '设备型号']%}
