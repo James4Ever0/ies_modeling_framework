@@ -28,7 +28,6 @@ import pandas
 
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
-planningResultSchema = {}
 subSchemas = []
 breakpoint()
 for colIndex in enumerate(设计规划T:=设计规划结果输出格式表格.T):
@@ -37,11 +36,15 @@ for colIndex in enumerate(设计规划T:=设计规划结果输出格式表格.T)
         mtable = firstElem
         subSchemas.append((firstElem, colIndex))
 
+planningResultSchema = {schemaName:{} for schemaName,_ in subSchemas}
+
 for schemaName, index in subSchemas:
-    schemaHeader = 设计规划T[schemaHeaderIndex := index + 1].to_list()
-    englishSchemaHeader = 设计规划T[
+    schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
+    englishSchemaHeaders = 设计规划T[
         englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
+    for (schemaHeader, englishSchemaHeader) in zip(schemaHeaders,englishSchemaHeaders):
+        planningResultSchema[schemaName]
     breakpoint()
 
 
