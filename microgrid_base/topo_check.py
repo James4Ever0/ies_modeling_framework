@@ -197,12 +197,15 @@ class 拓扑图:
         self.G.add_node(self.node_count, **kwargs)
         node_id = self.node_count
         self.node_count += 1
+        self.is_valid=False
         return node_id
 
     # monotonically adding a node.
     def check_consistency(self):  # return nothing.
         #  use subgraph
         # 提取所有母线ID
+        if self.is_valid:
+            return # skip duplicated checks.
         母线ID列表 = []
         合并线ID列表 = []
         for node_id, node_data in self.G.nodes.items():
@@ -359,6 +362,8 @@ class 拓扑图:
         self.is_valid = True
 
     def to_json(self) -> dict:
+        if self.is_valid is False:
+            self.check_consistency()
         data = json_graph.node_link_data(self.G)
         return data
 
@@ -367,7 +372,7 @@ class 拓扑图:
         # load data to graph
         G = json_graph.node_link_graph(data)
         kwargs = G.graph
-        topo = 拓扑图(**kwargs)
+        topo = 拓扑图(**kwargs) # not valid.
         topo.G = G
         topo.check_consistency()
         return topo

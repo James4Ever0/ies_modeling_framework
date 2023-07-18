@@ -62,7 +62,7 @@ def mDictListToCalcParamList(mdictList: List):
         # how to check error now?
         # all connected?
 
-        # topo_load.check_consistency()  # may not need to be checked twice.
+        # topo_load.check_consistency()  # may not need to be checked twice, or you can modify some flag for skipping.
         ## COMPUTE THIS GRAPH ##
         # use devs, adders
 
