@@ -156,3 +156,10 @@ def unitCleaner(val):
     )
     val = val.strip("*").strip(":").strip("：").strip()
     return val
+
+from typing import Tuple, Union
+def unitParserWrapper(val:str) -> Tuple[str, Union[str, None]]:
+    val = unitCleaner(val)
+    if parsed_val:=unitParser(val):
+        return ()
+    return (val, None)
