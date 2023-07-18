@@ -372,7 +372,7 @@ class 设备信息(设备基础信息):
         "SO2"
     ]
 %}
-    {% do fuelEmissionUnits.update({gas, gasEmissionUnit}) %}
+    {% do fuelEmissionUnits.update({gas: gasEmissionUnit}) %}
 {% endfor %}
 {% set 燃料能源相关数据默认单位 = {
     '柴油': {
@@ -1653,13 +1653,13 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 # export all these data with no dependency on calculation type.
 
-{% set planningResultKeyTranslationMap = {'规划结果详情':'方案详情',"规划方案概览":"方案列表"}%}
+{% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
-{% for key, elemDict in planningExportFormat.items()%}
+{% for key, elemDict in planningExportFormat.items() %}
 class{{planningResultKeyTranslationMap[key]}}(BaseModel):
-    {% for elemKey, elem in elemDict %}
-        {% set valName = elemKey%}
-        {% set valEnglishName = elem['englishName']%}
+    {% for elemKey, elem in elemDict.items() %}
+        {% set valName = elemKey %}
+        {% set valEnglishName = elem['englishName'] %}
         {% set valType = elem['type'] %}
         {% set valUnit = elem['unit'] %}
     {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段：{{valEnglishName}}")
