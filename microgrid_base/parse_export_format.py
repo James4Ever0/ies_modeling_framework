@@ -92,11 +92,13 @@ for schemaName, index in subSchemas:  # why we have nan here?
         )
 
 # check if all regexes have hits.
+errors = []
 for k,v in .items():
     for e in v:
         if e is False:
-            raise Exception("E
 
+if errors:
+    raise Exception("\n".join*errors))
 rich.print(planningResultSchema)
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
