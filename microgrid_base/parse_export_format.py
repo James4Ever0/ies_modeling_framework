@@ -29,7 +29,8 @@ import pandas
 # rich.print(设计规划结果输出格式表格)
 # breakpoint()
 subSchemas = []
-breakpoint()
+# breakpoint()
+
 for colIndex in enumerate(设计规划T := 设计规划结果输出格式表格.T):
     firstElem = (col := 设计规划T[colIndex].to_list())[0]
     if isinstance(firstElem, str) and len(firstElem) == 4:
@@ -38,21 +39,24 @@ for colIndex in enumerate(设计规划T := 设计规划结果输出格式表格.
 
 planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
 
+from unit_utils import unitParserWrapper
+
 for schemaName, index in subSchemas:
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     englishSchemaHeaders = 设计规划T[
         englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
+        strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         planningResultSchema[schemaName].update(
             {
                 strippedSchemaHeader: {
-                    "unit": schemaHeaderUnit,
+                    "unit": schemaHeaderUnit, # could be "None"
                     "englishName": englishSchemaHeader,
                 }
             }
         )
-    breakpoint()
+    # breakpoint()
 
 
 table_name = "仿真结果"
