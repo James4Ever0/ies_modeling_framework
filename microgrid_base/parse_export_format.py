@@ -41,7 +41,7 @@ planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
 
 from unit_utils import unitParserWrapper
 
-for schemaName, index in subSchemas: # remove nan
+for schemaName, index in subSchemas: # why we have nan here?
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     rich.print(schemaHeaders)
     breakpoint()
