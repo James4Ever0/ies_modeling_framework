@@ -69,6 +69,17 @@ def checkIfMatchAListOfRegexes(term:str, regexList:List[str], key:str):
             return True
     return False
 
+def getSchemaType(schemaHeader, schemaHeaderUnit):
+    if schemaHeaderUnit:
+        return 'float'
+    else:
+        if schemaHeader in ['数量']:
+            return 'int'
+        elif schemaHeader in ['平均效率_平均COP']:
+            return 'float'
+        else:
+            return 'str'
+
 for schemaName, index in subSchemas:  # why we have nan here?
     regexList = removeTermRegexes[schemaName]
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
@@ -78,6 +89,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
         englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
+        schemaHeader = schemaHeader.replace("/",'_') # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaHeader):
             print("SKIPPING:", strippedSchemaHeader)
@@ -87,6 +99,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
                 strippedSchemaHeader: {
                     "unit": schemaHeaderUnit,  # could be "None"
                     "englishName": englishSchemaHeader,
+                    "type": getSchemaType(schemaHeader, schemaHeaderUnit)
                 }
             }
         )
