@@ -115,7 +115,7 @@ release_prepare: code test_code ${LOG_DIRS} server
 	cp ${MODEL_CODE} ${EXTRA_CODE_DEPS} ${EXTRA_DATA_DEPS} ${SERVER_CODE} ${SERVER_SCRIPT} ${TEST_CODE} ${SERVER_RELEASE_DIR}
 	7z a ${RELEASE_ARCHIVE} ${RELEASE_DIR}
 
-code: ${MODEL_CODE} ${TEST_CODE} ${EXTRA_CODE_DEPS} ${EXTRA_DATA_DEPS}
+code: ${EXTRA_CODE_DEPS} ${EXTRA_DATA_DEPS} ${MODEL_CODE} ${TEST_CODE}
 
 server: server_code server_script
 
