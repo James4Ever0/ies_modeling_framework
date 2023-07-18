@@ -41,8 +41,10 @@ planningResultSchema = {schemaName: {} for schemaName, _ in subSchemas}
 
 from unit_utils import unitParserWrapper
 
-for schemaName, index in subSchemas:
+for schemaName, index in subSchemas: # remove nan
     schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
+    rich.print(schemaHeaders)
+    breakpoint()
     englishSchemaHeaders = 设计规划T[
         englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
