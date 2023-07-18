@@ -9,6 +9,13 @@ try:
 except:
     from typing_extensions import Literal
 
+
+try:
+    from typing import assert_never
+except:
+    from typing_extensions import assert_never
+
+
 # from celery.states import PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
 
 # question: how to convert pydantic models to json?

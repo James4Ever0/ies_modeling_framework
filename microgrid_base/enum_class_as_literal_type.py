@@ -3,7 +3,10 @@
 from enum import Enum
 # a = Enum('Color', ['RED', 'GREEN', 'BLUE'])
 from typing import Literal
-l = Literal['a','b']
+l:Literal['a','b'] = 'b'
+
+if isinstance(l,'c'):
+    print('never executed')
 
 class a(Enum):
     RED='red'
@@ -16,6 +19,8 @@ print(b, type(b))
 # assert (b == 'blue2') # false
 assert (b == 'blue') # true
 
+if b == a.GREEN:
+    print("NEVER EXECUTE")
 from pydantic import BaseModel
 class A(BaseModel):
     a0: a
