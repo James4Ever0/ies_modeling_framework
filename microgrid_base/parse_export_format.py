@@ -56,14 +56,16 @@ from unit_utils import unitParserWrapper
 
 # need to remove few terms before saving to disk.
 removeTermRegexes = {
-    '方案列表':[r'年平均.+'],
-    '方案详情':['能源消耗费用',r'年.+收入', '出力曲线']
+    '方案列表':[r'年平均.+'], # use non-greedy modifier (backtracking)
+    '方案详情':['能源消耗费用',r'年.+?收入', '出力曲线']
 }
+hitRecords = {k: {e: False} for k,v in removeTermRegexes.items() for e in v}
 from typing import List
 
-def checkIfMatchAListOfRegexes(term:str, regexList:List[str]):
+def checkIfMatchAListOfRegexes(term:str, regexList:List[str], key:str):
     for regex in regexList:
         if re.match(regex, term):
+            hitRecords[key][term] = True
             return True
     return False
 
@@ -77,7 +79,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
-        if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList):
+        if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaHeader):
             print("SKIPPING:", strippedSchemaHeader)
             continue
         planningResultSchema[schemaName].update(
@@ -88,6 +90,12 @@ for schemaName, index in subSchemas:  # why we have nan here?
                 }
             }
         )
+
+# check if all regexes have hits.
+for k,v in .items():
+    for e in v:
+        if e is False:
+            raise Exception("E
 
 rich.print(planningResultSchema)
 # breakpoint()
