@@ -1656,7 +1656,8 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 {% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
 {% for key, elemDict in planningExportFormat.items() %}
-class {{planningResultKeyTranslationMap[key]}}(BaseModel):
+    {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
+class {{planningResultExportClassName}}(BaseModel):
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}
         {% set valEnglishName = elem['englishName'] %}
@@ -1671,7 +1672,8 @@ class {{planningResultKeyTranslationMap[key]}}(BaseModel):
         for result in resultList:
             ...
         for deviceModel in deviceModelList:
-            ...
+            if deviceModel.
+        return {{planningResultExportClassName}}
     {% endif %}
 
 {% endfor %}
