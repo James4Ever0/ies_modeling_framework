@@ -1668,11 +1668,11 @@ class {{planningResultExportClassName}}(BaseModel):
 
     {% if key == "方案列表" %}
     @staticmethod
-    def export(resultList: List[规划结果详情], deviceModelList: List[设备模型]):
-        for result in resultList:
+    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果]):
+        for planningResult in planningResultList:
             ...
-        for deviceModel in deviceModelList:
-            if deviceModel.
+        for simulationResult in simulationResultList:
+            ...
         return {{planningResultExportClassName}}
     {% endif %}
 
