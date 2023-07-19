@@ -1667,35 +1667,6 @@ def getDuplicatedSchemaKeysSetFromDataModels(dataModel_0:BaseModel, dataModel_1:
     duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(requiredKeysSet_1)
     return duplicatedSchemaKeysSet
 
-{% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
-
-{% for key, elemDict in planningExportFormatList %}
-    {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
-class {{planningResultExportClassName}}(BaseModel):
-    {% for elemKey, elem in elemDict.items() %}
-        {% set valName = elemKey %}
-        {% set valEnglishName = elem['englishName'] %}
-        {% set valType = elem['type'] %}
-        {% set valUnit = elem['unit'] %}
-    {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}")
-    {% endfor %}
-
-    {% if key == "方案列表" %}
-    @staticmethod
-    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
-        params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
-        duplicate_params_planning_keys = getDuplicatedSchemaKeysSetFromDataModels(规划方案概览,规划结果详情)
-        for planningResult in planningResultList:
-            for duplicatedKey in duplicate_params_planning_keys:
-                params[duplicatedKey] = params.get(duplicatedKey,0)+(() if not np.isnan())
-        for simulationResult in simulationResultList:
-            ...
-        return {{planningResultExportClassName}}(
-            **params
-        )
-    {% endif %}
-
-{% endfor %}
 
 class 仿真结果(BaseModel):
     {% for chineseName, englishName in frontend_translation_table.items()%}
@@ -1720,6 +1691,38 @@ class 仿真结果(BaseModel):
     {% endif%} #}
 
     {% endfor %}
+
+{% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
+
+{% for key, elemDict in planningExportFormatList %}
+    {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
+class {{planningResultExportClassName}}(BaseModel):
+    {% for elemKey, elem in elemDict.items() %}
+        {% set valName = elemKey %}
+        {% set valEnglishName = elem['englishName'] %}
+        {% set valType = elem['type'] %}
+        {% set valUnit = elem['unit'] %}
+    {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}")
+    {% endfor %}
+
+    {% if key == "方案列表" %}
+    @staticmethod
+    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
+        params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
+        duplicate_params_planning_keys = getDuplicatedSchemaKeysSetFromDataModels(规划方案概览,规划结果详情)
+        for planningResult in planningResultList:
+            for duplicatedKey in duplicate_params_planning_keys:
+                val = getattr(planningResult, duplcatedKey)
+                params[duplicatedKey] = params.get(duplicatedKey,0)+(val if not np.isnan(val) else 0)
+        for simulationResult in simulationResultList:
+            ...
+        return {{planningResultExportClassName}}(
+            **params
+        )
+    {% endif %}
+
+{% endfor %}
+
 
 class 节点基类(BaseModel):
     {# type:{{normal_str}} = Field(title = "节点类型") #}
