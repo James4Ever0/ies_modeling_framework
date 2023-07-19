@@ -2722,6 +2722,7 @@ class 锂电池模型(设备模型):
         单位: kW
         """
 
+
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
