@@ -1665,6 +1665,11 @@ class {{planningResultKeyTranslationMap[key]}}(BaseModel):
     {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}")
     {% endfor %}
 
+    {% if %}
+    @staticmethod
+    def export(resultList: List[规划结果详情]):
+        for elem in 
+
 {% endfor %}
 
 class 仿真结果(BaseModel):
