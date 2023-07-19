@@ -1696,7 +1696,7 @@ class 仿真结果(BaseModel):
 
 
 {% for key, elemDict in planningExportFormatList %}
-    {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
+    {% set planningResultExportClassName = planningResultKeyTranslationMap[key] %}
 class {{planningResultExportClassName}}(BaseModel):
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}

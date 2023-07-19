@@ -2722,7 +2722,6 @@ class 锂电池模型(设备模型):
         单位: kW
         """
 
-
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
@@ -3832,32 +3831,23 @@ devInfoClassMap: Dict[str, BaseModel] = {
 # export all these data with no dependency on calculation type.
 
 
-class 规划方案概览(BaseModel):
-    方案类型: str = Field(title="方案类型", description="对应字段：planType")
-    年化费用: float = Field(title="年化费用", description="单位: 万元\n对应字段：annualizedCost")
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段：purchasingCost")
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段：maintenanceFee")
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段：CO2Emission")
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段：NOXEmission")
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段：SO2Emission")
-    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\n对应字段：coldLoad")
-    年热负荷: float = Field(title="年热负荷", description="单位: kWh\n对应字段：hotLoad")
-    年电负荷: float = Field(title="年电负荷", description="单位: kWh\n对应字段：eleLoad")
-    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\n对应字段：steamLoad")
-    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\n对应字段：hydrogenLoad")
-    年自来水消耗量: float = Field(title="年自来水消耗量", description="单位: t\n对应字段：waterConsumption")
+def getSchemaFromDataModel(dataModel: BaseModel):
+    schema = dataModel.schema()
 
 
-class 规划结果详情(BaseModel):
-    元件名称: str = Field(title="元件名称", description="对应字段：deviceName")
-    型号: str = Field(title="型号", description="对应字段：deviceModel")
-    数量: int = Field(title="数量", description="对应字段：deviceCount")
-    平均效率_平均COP: float = Field(title="平均效率_平均COP", description="对应字段：COP")
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段：purchasingCost")
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段：maintenanceFee")
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段：CO2Emission")
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段：NOXEmission")
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段：SO2Emission")
+def getRequiredKeysSetFromDataModel(dataModel: BaseModel):
+    schema = getSchemaFromDataModel(dataModel)
+    requiredKeys = schema["required"]
+    return set(requiredKeys)
+
+
+def getDuplicatedSchemaKeysSetFromDataModels(
+    dataModel_0: BaseModel, dataModel_1: BaseModel
+):
+    requiredKeysSet_0 = getRequiredKeysSetFromDataModels(dataModel_0)
+    requiredKeysSet_1 = getRequiredKeysSetFromDataModels(dataModel_1)
+    duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(requiredKeysSet_1)
+    return duplicatedSchemaKeysSet
 
 
 class 仿真结果(BaseModel):
@@ -3910,6 +3900,101 @@ class 仿真结果(BaseModel):
     steamIncome: float = Field(title="蒸汽收入")
 
     hydrogenIncome: float = Field(title="氢气收入")
+
+    waterConsumption: float = Field(title="自来水消耗量")
+
+    waterConsumptionCosts: float = Field(title="自来水消耗费用")
+
+
+class 规划结果详情(BaseModel):
+    元件名称: str = Field(title="元件名称", description="对应字段: deviceName")
+    型号: str = Field(title="型号", description="对应字段: deviceModel")
+    数量: int = Field(title="数量", description="对应字段: deviceCount")
+    平均效率_平均COP: float = Field(title="平均效率_平均COP", description="对应字段: COP")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
+
+    @staticmethod
+    def export(deviceModel: 设备模型, deviceSimulationResult: 仿真结果):
+        params = {}
+        params["元件名称"] = deviceModel.设备信息.设备名称
+        params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
+        params["数量"] = getattr(deviceModel.设备信息, "equiCounts", cmath.nan)
+        params["平均效率_平均COP"] = getattr(
+            deviceSimulationResult, "averageEfficiency", cmath.nan
+        )
+        params["设备采购成本"] = value(deviceModel.总采购成本)
+        params["设备年维护费"] = deviceSimulationResult.equipmentMaintenanceCosts
+        for attrName in ["年碳排放", "年NOX排放", "年SO2排放"]:
+            gasType = attrName.strip("年").strip("排放") if "碳" not in attrName else "CO2"
+
+            if type(deviceModel) in [柴油模型]:  # fuel unit: L
+                val = deviceSimulationResult.dieselConsumption * getattr(
+                    deviceModel.设备信息, gasType
+                )
+                # gas emission unit: kg
+            else:
+                val = cmath.nan
+            params[attrName] = val
+
+            return 规划结果详情(**params)
+
+
+class 规划方案概览(BaseModel):
+    方案类型: str = Field(title="方案类型", description="对应字段: planType")
+    年化费用: float = Field(title="年化费用", description="单位: 万元\n对应字段: annualizedCost")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
+    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\n对应字段: coldLoad")
+    年热负荷: float = Field(title="年热负荷", description="单位: kWh\n对应字段: hotLoad")
+    年电负荷: float = Field(title="年电负荷", description="单位: kWh\n对应字段: eleLoad")
+    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\n对应字段: steamLoad")
+    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\n对应字段: hydrogenLoad")
+    年自来水消耗量: float = Field(title="年自来水消耗量", description="单位: t\n对应字段: waterConsumption")
+
+    @staticmethod
+    def export(
+        planningResultList: List[规划结果详情],
+        simulationResultList: List[仿真结果],
+        totalAnnualFee: float,
+        planType: str,
+    ):  # totalAnnualFee is equivalent to our "financial" objective
+        params = dict(年化费用=totalAnnualFee, 方案类型=planType)
+
+        def updateParam(k, v):
+            if type(v) in [float, int]:
+                if not np.isnan(v):
+                    params[k] = params.get(k, 0) + v
+
+        duplicate_params_planning_keys = getDuplicatedSchemaKeysSetFromDataModels(
+            规划方案概览, 规划结果详情
+        )
+
+        for planningResult in planningResultList:
+            for duplicatedKey in duplicate_params_planning_keys:
+                val = getattr(planningResult, duplcatedKey)
+                updateParam(duplicatedKey, val)
+
+        remainedKeys = getRequiredKeysSetFromDataModel(规划结果详情).difference(
+            set(params.keys())
+        )
+
+        for simulationResult in simulationResultList:
+            for remainedKey in remainedKeys:
+                keyBase = remainedKey.strip("年").strip("负荷").strip("消耗量")
+                for keySuffix in []:
+                    attemptKey = f"{keyBase}{keySuffix}"
+                    if (val := getattr(simulationResult, attemptKey, ...)) is not ...:
+                        updateParam(remainedKey, val)
+                        break
+
+            return 规划方案概览(**params)
 
 
 class 节点基类(BaseModel):

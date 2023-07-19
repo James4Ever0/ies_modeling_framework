@@ -11,7 +11,6 @@ from pyomo.environ import *
 # may you hook arith methods to check expression (poly degree) on the way.
 
 # render constraints as latex. use sigma notation.
-
 EPS = 0.02
 
 
@@ -289,7 +288,6 @@ def test_柴油发电(
 
 
 def test_电价模型():
-
     mydata = dict(PriceList=[1] * 12)
     myInfo = 电负荷信息.parse_obj(
         dict(
@@ -477,7 +475,6 @@ def test_锂电池(
             return  # skip other lambda expressions.
 
     def verify_constraints(i):
-
         if is_dynamic:
             compensated_decay_rate = value(
                 测试锂电池模型.CurrentTotalPowerOfDecayCompensated[i]
