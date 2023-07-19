@@ -1694,6 +1694,7 @@ class 仿真结果(BaseModel):
 
 {% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
+
 {% for key, elemDict in planningExportFormatList %}
     {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
 class {{planningResultExportClassName}}(BaseModel):
@@ -1714,10 +1715,11 @@ class {{planningResultExportClassName}}(BaseModel):
             for duplicatedKey in duplicate_params_planning_keys:
                 val = getattr(planningResult, duplcatedKey)
                 params[duplicatedKey] = params.get(duplicatedKey,0)+(val if not np.isnan(val) else 0)
-        remainedKeys = 
+        remainedKeys = getRequiredKeysSetFromDataModel(规划结果详情).difference(set(params.keys()))
         for simulationResult in simulationResultList:
             for remainedKey in remainedKeys:
-
+                keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
+                val = getattr(simulationResult, attrName)
         return {{planningResultExportClassName}}(
             **params
         )
