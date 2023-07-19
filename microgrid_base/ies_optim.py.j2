@@ -1653,6 +1653,19 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 # export all these data with no dependency on calculation type.
 
+def getSchemaFromDataModel(dataModel: BaseModel):
+    schema = dataModel.schema()
+
+def getRequiredKeysSetFromDataModel(dataModel:BaseModel):
+    schema = getSchemaFromDataModel(dataModel)
+    requiredKeys = schema['required']
+    return set(requiredKeys)
+
+def getDuplicatedSchemaKeysSetFromDataModels(dataModel_0:BaseModel, dataModel_1:BaseModel):
+    requiredKeysSet_0 = getRequiredKeysSetFromDataModels(dataModel_0)
+    requiredKeysSet_1 = getRequiredKeysSetFromDataModels(dataModel_1)
+    duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(require)
+
 {% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
 {% for key, elemDict in planningExportFormat.items() %}
@@ -1670,7 +1683,7 @@ class {{planningResultExportClassName}}(BaseModel):
     @staticmethod
     def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
-        duplicate_params_planning = 规划方案概览.__
+        duplicate_params_planning = set(规划方案概览.schema()['required']).intersection(规划结果详情.schema()['required'])
         for planningResult in planningResultList:
             ...
         for simulationResult in simulationResultList:
