@@ -37,11 +37,14 @@ if __name__ == "__main__":
     # run test code.
     test(["test_topo_check.py"])
 
+    planningExportFormatList = list(planningExportFormat.items())
+    planningExportFormatList.sort(key=lambda x: 0 if x[0] == '方案详情' else 1)
+
     render_params = dict(
         设备库=设备库,
         设备接口集合=设备接口集合,
         frontend_translation_table=frontend_translation_table,
-        planningExportFormat=planningExportFormat,
+        planningExportFormatList=planningExportFormatList,
         **constants_dict,
         constants=constants_dict
     )

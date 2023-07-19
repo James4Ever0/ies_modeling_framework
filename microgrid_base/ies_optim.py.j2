@@ -1669,7 +1669,7 @@ def getDuplicatedSchemaKeysSetFromDataModels(dataModel_0:BaseModel, dataModel_1:
 
 {% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
-{% for key, elemDict in planningExportFormat.items() %}
+{% for key, elemDict in planningExportFormatList %}
     {{% set planningResultExportClassName == planningResultKeyTranslationMap[key]%}}
 class {{planningResultExportClassName}}(BaseModel):
     {% for elemKey, elem in elemDict.items() %}
