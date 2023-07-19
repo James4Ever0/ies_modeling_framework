@@ -1670,6 +1670,7 @@ class {{planningResultExportClassName}}(BaseModel):
     @staticmethod
     def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
+        duplicate_params_planning = 规划方案概览.__
         for planningResult in planningResultList:
             ...
         for simulationResult in simulationResultList:
