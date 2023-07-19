@@ -1737,14 +1737,20 @@ class {{planningResultExportClassName}}(BaseModel):
     def export(deviceModel: 设备模型, deviceSimulationResult: 仿真结果):
         params = {}
         params['元件名称'] = deviceModel.设备信息.设备名称
-        params['型号'] = getattr(deviceModel.设备信息, '设备型号', '-')
+        params['型号'] = getattr(deviceModel.设备信息, '设备型号', '')
         params['数量'] = getattr(deviceModel.设备信息,'equiCounts', cmath.nan)
         params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency',cmath.nan)
         params['设备采购成本'] = 
         params['设备年维护费'] = 
-        params['年碳排放'] = 
-        params['年NOX排放'] = 
-        params['年SO2排放'] = 
+        for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
+            gasType = attrName.strip('年').strip('排放') if '碳' not in attrName else 'CO2'
+
+            if type(deviceModel) in []:
+                val = ...
+            else:
+                val = cmath.nan
+            params[attrName] = val
+
     {% endif %}
             return {{planningResultExportClassName}}(
             **params
