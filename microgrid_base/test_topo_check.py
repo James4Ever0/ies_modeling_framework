@@ -28,7 +28,7 @@ from export_format_validate import *
 import numpy as np
 
 # a = abs(np.random.random((24,))).tolist()
-a = [100]*datalen
+a = [100] * datalen
 # a = abs(np.random.random((datalen,))).tolist()
 
 # algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="仿真模拟", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
@@ -74,7 +74,14 @@ PV1 = 光伏发电(topo, param=P1)  # 这种是增加新的光伏发电
 PV2 = 光伏发电(topo, param=P1)
 DSS = 柴油(
     topo,
-    param=柴油信息(设备名称="Any", Price=(10, "元/L"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
+    param=柴油信息(
+        设备名称="Any",
+        Price=(10, "元/L"),
+        热值=(10, "MJ/L"),
+        CO2=(gasEmission := (10, "kg/L")),
+        NOX=gasEmission,
+        SO2=gasEmission,
+    ).dict(),
     # param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
 )
 DS = 柴油发电(
@@ -137,7 +144,7 @@ LOAD = 电负荷(
     topo,
     param=电负荷信息(
         **devParam,
-        EnergyConsumption=[1]*len(a),
+        EnergyConsumption=[1] * len(a),
         MaxEnergyConsumption=10,
         PriceModel=常数电价(Price=1),
     ).dict(),

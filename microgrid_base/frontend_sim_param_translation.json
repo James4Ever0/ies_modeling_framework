@@ -23,5 +23,7 @@
     "热收入": "hotIncome",
     "电收入": "eletricIncome",
     "蒸汽收入": "steamIncome",
-    "氢气收入": "hydrogenIncome"
+    "氢气收入": "hydrogenIncome",
+    "自来水消耗量": "waterConsumption",
+    "自来水消耗费用": "waterConsumptionCosts"
 }
