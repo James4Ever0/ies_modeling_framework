@@ -1745,7 +1745,7 @@ class {{planningResultExportClassName}}(BaseModel):
         for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
             gasType = attrName.strip('年').strip('排放') if '碳' not in attrName else 'CO2'
 
-            if type(deviceModel) in []:
+            if type(deviceModel) in [柴油模型]:
                 val = ...
             else:
                 val = cmath.nan
