@@ -1720,6 +1720,8 @@ class {{planningResultExportClassName}}(BaseModel):
             for remainedKey in remainedKeys:
                 keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
                 val = getattr(simulationResult, attrName)
+                for in []:
+                    attemptKey = f"{keyBase}{keySuffix}"
         return {{planningResultExportClassName}}(
             **params
         )
