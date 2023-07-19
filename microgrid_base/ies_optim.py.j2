@@ -1714,8 +1714,10 @@ class {{planningResultExportClassName}}(BaseModel):
             for duplicatedKey in duplicate_params_planning_keys:
                 val = getattr(planningResult, duplcatedKey)
                 params[duplicatedKey] = params.get(duplicatedKey,0)+(val if not np.isnan(val) else 0)
+        remainedKeys = 
         for simulationResult in simulationResultList:
-            ...
+            for remainedKey in remainedKeys:
+
         return {{planningResultExportClassName}}(
             **params
         )
