@@ -1715,18 +1715,21 @@ class {{planningResultExportClassName}}(BaseModel):
                 if not np.isnan(v):
                     params[k] = params.get(k,0)+v
         duplicate_params_planning_keys = getDuplicatedSchemaKeysSetFromDataModels(规划方案概览,规划结果详情)
+
         for planningResult in planningResultList:
             for duplicatedKey in duplicate_params_planning_keys:
                 val = getattr(planningResult, duplcatedKey)
                 updateParam(duplicatedKey, val)
+
         remainedKeys = getRequiredKeysSetFromDataModel(规划结果详情).difference(set(params.keys()))
+
         for simulationResult in simulationResultList:
             for remainedKey in remainedKeys:
                 keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
                 for keySuffix in []:
                     attemptKey = f"{keyBase}{keySuffix}"
-                    if (val:=getattr(simulationResult, attemptKey,None)):
-                        params[duplicatedKey] = params.get(duplicatedKey,0)+(val if not np.isnan(val) else 0)
+                    if (val:=getattr(simulationResult, attemptKey,...)) is not ...:
+                        updateParam(remainedKey, val)
                         break
         return {{planningResultExportClassName}}(
             **params
