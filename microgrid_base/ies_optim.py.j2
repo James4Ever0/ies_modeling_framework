@@ -1668,12 +1668,15 @@ class {{planningResultExportClassName}}(BaseModel):
 
     {% if key == "方案列表" %}
     @staticmethod
-    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果]):
+    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
+        params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
         for planningResult in planningResultList:
             ...
         for simulationResult in simulationResultList:
             ...
-        return {{planningResultExportClassName}}
+        return {{planningResultExportClassName}}(
+            **params
+        )
     {% endif %}
 
 {% endfor %}
