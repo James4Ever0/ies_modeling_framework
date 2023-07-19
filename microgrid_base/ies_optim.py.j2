@@ -1664,7 +1664,8 @@ def getRequiredKeysSetFromDataModel(dataModel:BaseModel):
 def getDuplicatedSchemaKeysSetFromDataModels(dataModel_0:BaseModel, dataModel_1:BaseModel):
     requiredKeysSet_0 = getRequiredKeysSetFromDataModels(dataModel_0)
     requiredKeysSet_1 = getRequiredKeysSetFromDataModels(dataModel_1)
-    duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(require)
+    duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(requiredKeysSet_1)
+    return duplicatedSchemaKeysSet
 
 {% set planningResultKeyTranslationMap = {'方案详情': '规划结果详情', "方案列表": "规划方案概览"} %}
 
@@ -1683,7 +1684,7 @@ class {{planningResultExportClassName}}(BaseModel):
     @staticmethod
     def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
-        duplicate_params_planning = set(规划方案概览.schema()['required']).intersection(规划结果详情.schema()['required'])
+        duplicate_params_planning = getDuplicatedSchemaKeysSetFromDataModels(规划方案概览,规划结果详情)
         for planningResult in planningResultList:
             ...
         for simulationResult in simulationResultList:
