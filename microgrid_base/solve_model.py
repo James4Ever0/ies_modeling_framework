@@ -389,7 +389,7 @@ def solveModelFromCalcParamList(
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
                 planningResultTable=(planningResultList:=[规划结果详情.export(deviceModel, deviceSimulationResult) for deviceModel in deviceModelList]),
-                planningSummary=规划方案概览.export(planningResultList, simulationResultList),
+                planningSummary=规划方案概览.export(planningResultList, simulationResultList, totalAnnualFee, planType),
             )
             # except:
             #     import traceback
