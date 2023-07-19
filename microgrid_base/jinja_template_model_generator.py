@@ -15,14 +15,13 @@ ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_pat
     "ies_optim"
 )
 
-
-
 MAKEFILE = dict(
     inputs=[topo_code_template_path, ies_optim_code_template_path,
             (PEF:= "planning_export_format.json")],
     outputs=[topo_code_output_path, ies_optim_code_output_path],
     args=[],
 )
+
 import json
 with open(PEF, 'r') as f:
     planningExportFormat = json.loads(f.read())
