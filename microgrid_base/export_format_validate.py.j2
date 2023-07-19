@@ -152,9 +152,9 @@ def ReLU(val):
 {% macro dictValueToKeyValuePair(a,b)%}
 {% for k,v in a.items() %}
     {% do b.update({k: (k,v)}) %}
-{% endfor%}
-{% endmacro%}
-{% do dictValueToKeyValuePair(commonSimParams, CSPL)%}
+{% endfor %}
+{% endmacro %}
+{% do dictValueToKeyValuePair(commonSimParams, CSPL) %}
 {% set simDevParamMapping = {
     "柴油": [
         CSPL['柴油消耗费用'],

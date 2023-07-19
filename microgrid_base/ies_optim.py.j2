@@ -1706,8 +1706,8 @@ class {{planningResultExportClassName}}(BaseModel):
     {{valName}}: {{valType}} = Field(title="{{valName}}", description="{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}")
     {% endfor %}
 
-    {% if key == "方案列表" %}
     @staticmethod
+    {% if key == "方案列表" %}
     def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
         def updateParam(k,v):
@@ -1731,10 +1731,16 @@ class {{planningResultExportClassName}}(BaseModel):
                     if (val:=getattr(simulationResult, attemptKey,...)) is not ...:
                         updateParam(remainedKey, val)
                         break
-        return {{planningResultExportClassName}}(
+
+    {% else %}
+    {# 方案详情 #}
+    def export(deviceModel: 设备模型):
+        params = {}
+        params['元件名称'] = 
+    {% endif %}
+            return {{planningResultExportClassName}}(
             **params
         )
-    {% endif %}
 
 {% endfor %}
 
