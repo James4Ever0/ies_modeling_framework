@@ -1736,7 +1736,15 @@ class {{planningResultExportClassName}}(BaseModel):
     {# 方案详情 #}
     def export(deviceModel: 设备模型):
         params = {}
-        params['元件名称'] = 
+        params['元件名称'] = deviceModel.设备名称
+        params['型号'] = deviceModel
+        params['数量'] = 
+        params['平均效率_平均COP'] = 
+        params['设备采购成本'] = 
+        params['设备年维护费'] = 
+        params['年碳排放'] = 
+        params['年NOX排放'] = 
+        params['年SO2排放'] = 
     {% endif %}
             return {{planningResultExportClassName}}(
             **params
