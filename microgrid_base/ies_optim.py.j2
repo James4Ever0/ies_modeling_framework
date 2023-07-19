@@ -1719,11 +1719,10 @@ class {{planningResultExportClassName}}(BaseModel):
         for simulationResult in simulationResultList:
             for remainedKey in remainedKeys:
                 keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
-                val = getattr(simulationResult, attrName)
                 for keySuffix in []:
                     attemptKey = f"{keyBase}{keySuffix}"
-                    if getattr(simulationResult, attemptKey,None):
-
+                    if (val:=getattr(simulationResult, attemptKey,None)):
+                        params[duplicatedKey] = params.get(duplicatedKey,0)+(val if not np.isnan(val) else 0)
                         break
         return {{planningResultExportClassName}}(
             **params

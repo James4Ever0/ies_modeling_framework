@@ -25,4 +25,6 @@ let resultTable=[{
     eletricIncome: '123',  //电收入
     steamIncome: '123',  //蒸汽收入
     hydrogenIncome: '123',  //氢气收入
+    waterConsumption: '123', //自来水消耗量
+    waterConsumptionCosts: '123', //自来水消耗费用
 }]
