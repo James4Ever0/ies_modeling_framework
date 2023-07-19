@@ -1734,12 +1734,12 @@ class {{planningResultExportClassName}}(BaseModel):
 
     {% else %}
     {# 方案详情 #}
-    def export(deviceModel: 设备模型):
+    def export(deviceModel: 设备模型, deviceSimulationResult: 仿真结果):
         params = {}
-        params['元件名称'] = deviceModel.设备名称
-        params['型号'] = deviceModel
-        params['数量'] = 
-        params['平均效率_平均COP'] = 
+        params['元件名称'] = deviceModel.设备信息.设备名称
+        params['型号'] = getattr(deviceModel.设备信息, '设备型号', '-')
+        params['数量'] = getattr(deviceModel.设备信息,'equiCounts', cmath.nan)
+        params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency',cmath.nan)
         params['设备采购成本'] = 
         params['设备年维护费'] = 
         params['年碳排放'] = 
