@@ -66,7 +66,8 @@ def ReLU(val):
 {# in simulation mode #}
 {% set totalSimulationTimeInHour = "model.计算参数.总计算时长"%}
 {% set 典型日权重 = "(timeParam / {})".format(totalSimulationTimeInHour)%}
-{% set 年化权重 = "timeParam/每年小时数" %}
+{% set 年化权重 = "(timeParam / 每年小时数)" %}
+{% set extraParams = {"平均效率_平均COP": 典型日权重} %}
 {% macro BANNER(msg)%}
 {% set msglen = namespace(val=0)%}
 {% for e in list(msg)%}
@@ -212,7 +213,7 @@ def ReLU(val):
         return {{devName}}{{classType}}(
     {% for key, value in obj.items() %}
         {% if needAbs %}
-            {{key}} = safeAbs({{value}}),
+            {{key}} = safeAbs({{value if key not in extraParams.keys() else "({}) * ({})".format(value, extraParams[key])}}),
         {% else %}
             {{key}} = {{value}},
         {% endif %}
