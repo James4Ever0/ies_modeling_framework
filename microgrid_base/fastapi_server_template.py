@@ -223,7 +223,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     else:
         return CalculationStateResult(calculation_state="NOT_CREATED")
 
-from fastapi_datamodel_template import ParetoCurve
+# from fastapi_datamodel_template import ParetoCurve
 
 @remove_stale_tasks_decorator
 @app.get(
