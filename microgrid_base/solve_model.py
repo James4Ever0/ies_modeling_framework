@@ -374,6 +374,8 @@ def solveModelFromCalcParamList(
                         else:
                             出力曲线字典.update({devId: 出力曲线.dict()})
             仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+            仿真结果表_导出.fillna({})
+            仿真结果表_导出.fillna() # default "nan" or "null" fallback
             仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
             print()
             rich.print(出力曲线字典)
@@ -413,12 +415,12 @@ def solveModelFromCalcParamList(
                 ),
                 planningResultTable=(
                     planningResultList := [
-                        规划结果详情.export(deviceModel, deviceSimulationResult)
+                        规划结果详情.export(deviceModel, deviceSimulationResult, timeParam)
                         for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
                     ]
                 ),
                 planningSummary=规划方案概览.export(
-                    planningResultList, simulationResultList, totalAnnualFee, planType=targetTypeAsTargetName(ret.targetType)
+                    planningResultList, simulationResultList, totalAnnualFee = ret.calcTargetLUT['经济'], planType=targetTypeAsTargetName(ret.targetType)
                 ),
             )
             # except:
