@@ -384,6 +384,7 @@ def solveModelFromCalcParamList(
             # export_table = 仿真结果表.to_html()
             # may you change the format.
             仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+            simulationResultList = []
             # return 出力曲线字典, 仿真结果表_格式化
             出力曲线列表 = []
             for devId, content_dict in 出力曲线字典.items():
