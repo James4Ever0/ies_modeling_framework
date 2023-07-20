@@ -1744,7 +1744,7 @@ class {{planningResultExportClassName}}(BaseModel):
         params = {}
         params['元件名称'] = deviceModel.设备信息.设备名称
         params['型号'] = getattr(deviceModel.设备信息, '设备型号', '')
-        params['数量'] = getattr(deviceModel.设备信息,'equiCounts', cmath.nan)
+        params['数量'] = getattr(deviceModel.设备信息,'equiCounts', cmath.nan) # 不要累加数量！
         params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
         params['设备年维护费'] = deviceSimulationResult.equipmentMaintenanceCosts # 乘过时间参数就不用乘了

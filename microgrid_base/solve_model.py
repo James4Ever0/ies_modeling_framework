@@ -319,6 +319,11 @@ def solveModelFromCalcParamList(
                 for day_index in 典型日代表的日期:
                     出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
+            
+            仿真结果不可累加表头 = ["元件名称", 
+            '元件类型',
+            '设备型号',
+            "设备台数"]
 
             for index, devInstDict in enumerate(
                 ret.devInstDictList
@@ -341,7 +346,7 @@ def solveModelFromCalcParamList(
                     if 之前结果 == None:
                         仿真结果表[devInst] = 结果.dict()
                     else:
-                        仿真结果表[devInst] = {k: v + 之前结果[k] for k, v in 结果.dict().items()}
+                        仿真结果表[devInst] = {k: v + 之前结果[k] for k, v in 结果.dict().items() if k not in 仿真结果不可累加表头}
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
