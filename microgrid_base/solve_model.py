@@ -295,15 +295,13 @@ def solveModelFromCalcParamList(
         )
         return ret
 
-    def 合并结果表(结果,结果表:dict, 设备模型实例, 不可累加表头:List[str]):
+    def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
         之前结果 = deepcopy(结果表.get(设备模型实例, None))
         if 之前结果 == None:
             结果表[设备模型实例] = 结果.dict()
         else:
             结果表[设备模型实例] = {
-                k: v + 之前结果[k]
-                for k, v in 结果.dict().items()
-                if k not in 不可累加表头
+                k: v + 之前结果[k] for k, v in 结果.dict().items() if k not in 不可累加表头
             }
 
     def fetchResult(solved: bool, ret: CalcStruct):
@@ -350,24 +348,25 @@ def solveModelFromCalcParamList(
                     devClassName = devInst.__class__.__name__.strip("模型")
                     # where you convert the units.
                     # devName = devInst.设备信息.设备名称
-                    结果类 = globals()[f"{devClassName}仿真结果"] # 一定有的
+                    结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                    结果 = 结果类.export(devInst, timeParam)
-                    规划结果 = 规划结果详情.export(devInst, 结果)
+                    仿真结果 = 结果 = 结果类.export(devInst, timeParam)
+                    规划结果 = 规划结果详情.export(devInst, 仿真结果)
                     # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
                     # 之前结果 = deepcopy(仿真结果表.get(devInst, None))
                     # 之前规划结果 = deepcopy(规划结果表.get(devInst, None))
 
-                    合并结果表(结果, )
-                    if 之前结果 == None:
-                        仿真结果表[devInst] = 结果.dict()
-                    else:
-                        仿真结果表[devInst] = {
-                            k: v + 之前结果[k]
-                            for k, v in 结果.dict().items()
-                            if k not in 仿真结果不可累加表头
-                        }
+                    合并结果表(结果, 仿真结果表, devInst, 仿真结果不可累加表头)
+                    合并结果表(规划结果, 规划结果表, devInst, 规划结果详情不可累加表头)
+                    # if 之前结果 == None:
+                    #     仿真结果表[devInst] = 结果.dict()
+                    # else:
+                    #     仿真结果表[devInst] = {
+                    #         k: v + 之前结果[k]
+                    #         for k, v in 结果.dict().items()
+                    #         if k not in 仿真结果不可累加表头
+                    #     }
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
