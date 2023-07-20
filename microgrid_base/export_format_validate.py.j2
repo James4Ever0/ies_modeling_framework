@@ -69,15 +69,15 @@ def ReLU(val):
 {% set 年化权重 = "(timeParam / 每年小时数)" %}
 {% set extraParams = {"平均效率_平均COP": 典型日权重} %}
 {% macro BANNER(msg)%}
-{% set msglen = namespace(val=0)%}
-{% for e in list(msg)%}
-    {% set l = ord(e)%}
-    {% if l > 500 %}
-        {% set msglen.val =2+msglen.val%}
-    {% else %}
-        {% set msglen.val =1+msglen.val%}
-    {% endif %}
-{% endfor %}
+    {% set msglen = namespace(val=0)%}
+        {% for e in list(msg)%}
+            {% set l = ord(e)%}
+            {% if l > 500 %}
+                {% set msglen.val =2+msglen.val%}
+            {% else %}
+                {% set msglen.val =1+msglen.val%}
+            {% endif %}
+        {% endfor %}
 {{ "#" * (msglen.val+4)}}
 # {{msg}} #
 {{ "#" * (msglen.val+4)}}
