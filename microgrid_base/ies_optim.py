@@ -1450,6 +1450,12 @@ class 计算参数(BaseModel):
         相当于返回一小时内有多少计算步长
         """
         return 1 if self.计算步长 == "小时" else 每小时秒数
+    
+    @property
+    def 总计算时长(self):
+        """
+        返回计算
+        """
 
 
 class POSNEG:

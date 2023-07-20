@@ -64,6 +64,7 @@ def ReLU(val):
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
+{% set totalSimulationTimeInHour = "model.计算参数."%}
 {% macro BANNER(msg)%}
 {% set msglen = namespace(val=0)%}
 {% for e in list(msg)%}
