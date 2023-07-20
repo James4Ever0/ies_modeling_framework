@@ -227,15 +227,16 @@ def solveModelFromCalcParamList(
         PDList: List[Dict]
         timeParamList: List[Union[float, int]]
         graph_data_list: List
+        targetType: str
 
-    def calcTargetLUTAsTargetName(calcTargetLUT: dict):
-        targets = [k for k, v in calcTargetLUT.items() if v == 1]
+    def targetTypeAsTargetName(targetType: str):
+        targets = targetType.split("_")
         if len(targets) == 1:
             return f"{targets[0]}性最优"
         elif len(targets) == 2:
             return "多目标最优"
         else:
-            raise Exception("Invalid calcTargetLUT: {}".format(calcTargetLUT))
+            raise Exception("Invalid targetType: {}".format(targetType))
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
@@ -250,7 +251,7 @@ def solveModelFromCalcParamList(
         timeParamList = []
         graph_data_list = []
 
-        targetType = calcParamList[0][2][''] # graph_data @ elem_0
+        targetType = calcParamList[0][2]['计算目标'] # graph_data @ elem_0
 
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
@@ -290,7 +291,7 @@ def solveModelFromCalcParamList(
             PDList=PDList,
             timeParamList=timeParamList,
             graph_data_list=graph_data_list,
-            targetType = ... ,
+            targetType = targetType ,
         )
         return ret
 
@@ -412,7 +413,7 @@ def solveModelFromCalcParamList(
                     ]
                 ),
                 planningSummary=规划方案概览.export(
-                    planningResultList, simulationResultList, totalAnnualFee, planType=calcTargetLUTAsTargetName(ret.calcTargetLUT)
+                    planningResultList, simulationResultList, totalAnnualFee, planType=targetTypeAsTargetName(ret.targetType)
                 ),
             )
             # except:
