@@ -262,7 +262,7 @@ def solveModelFromCalcParamList(
                 timeParam = 每天小时数 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 每年小时数 if 计算步长 == "小时" else 秒级仿真小时数  # how many hours?
-            timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
+            # timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
