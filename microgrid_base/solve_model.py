@@ -339,12 +339,14 @@ def solveModelFromCalcParamList(
                     devClassName = devInst.__class__.__name__.strip("模型")
                     # where you convert the units.
                     # devName = devInst.设备信息.设备名称
-                    结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
+                    结果类 = globals()[f"{devClassName}仿真结果"] # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                     结果 = 结果类.export(devInst, timeParam)
+                    规划结果 = 规划结果详情.export(devInst, 结果)
                     # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
                     之前结果 = deepcopy(仿真结果表.get(devInst, None))
+                    之前规划结果 = deepcopy(规划结果表.get(devInst, None))
                     if 之前结果 == None:
                         仿真结果表[devInst] = 结果.dict()
                     else:
