@@ -341,6 +341,7 @@ def solveModelFromCalcParamList(
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                     结果 = 结果类.export(devInst, timeParam)
+                    # use this as 
                     # 仿真结果表.append(结果.dict())
                     之前结果 = deepcopy(仿真结果表.get(devInst, None))
                     if 之前结果 == None:
@@ -385,7 +386,7 @@ def solveModelFromCalcParamList(
             # export_table = 仿真结果表.to_html()
             # may you change the format.
             仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
-            simulationResultList = []
+            simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化
             出力曲线列表 = []
             for devId, content_dict in 出力曲线字典.items():
