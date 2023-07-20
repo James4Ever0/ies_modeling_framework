@@ -1454,8 +1454,9 @@ class 计算参数(BaseModel):
     @property
     def 总计算时长(self):
         """
-        返回计算
+        返回该计算模式下总共有多少小时
         """
+        return self.迭代步数 / self.时间参数
 
 
 class POSNEG:

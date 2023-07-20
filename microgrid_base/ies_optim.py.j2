@@ -698,6 +698,14 @@ class 计算参数(BaseModel):
         相当于返回一小时内有多少计算步长
         """
         return (1 if self.计算步长 == "小时" else 每小时秒数)
+    
+    @property
+    def 总计算时长(self):
+        """
+        返回该计算模式下总共有多少小时
+        """
+        return self.迭代步数 / self.时间参数
+
     {# @property # 提前计算好了
     def 典型日列表(self): # 
         ... #}

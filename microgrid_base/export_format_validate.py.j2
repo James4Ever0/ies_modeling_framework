@@ -64,7 +64,8 @@ def ReLU(val):
 
 {# where you prepare the export data. #}
 {# in simulation mode #}
-{% set totalSimulationTimeInHour = "model.计算参数."%}
+{% set totalSimulationTimeInHour = "model.计算参数.总计算时长"%}
+{% set 典型日权重 = "(timeParam / {})"%}
 {% macro BANNER(msg)%}
 {% set msglen = namespace(val=0)%}
 {% for e in list(msg)%}
@@ -175,7 +176,7 @@ def ReLU(val):
     "柴油发电": [
         CSPL['产电量'],
         CSPL['柴油消耗量'],
-        ("平均效率_平均COP","safeDiv({},model.燃料热值 * ({}))".format(commonSimParams['产电量'],commonSimParams['柴油消耗量']))
+        ("平均效率_平均COP","safeDiv({}, model.燃料热值 * ({})) * ({})".format(commonSimParams['产电量'],commonSimParams['柴油消耗量'], 典型日权重))
     ],
     "锂电池":[
         ("平均效率_平均COP", ("safeDiv(ReLU(({}) - ({})) , (-({})))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"))))
