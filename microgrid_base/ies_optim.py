@@ -3844,8 +3844,8 @@ def getRequiredKeysSetFromDataModel(dataModel: BaseModel):
 def getDuplicatedSchemaKeysSetFromDataModels(
     dataModel_0: BaseModel, dataModel_1: BaseModel
 ):
-    requiredKeysSet_0 = getRequiredKeysSetFromDataModels(dataModel_0)
-    requiredKeysSet_1 = getRequiredKeysSetFromDataModels(dataModel_1)
+    requiredKeysSet_0 = getRequiredKeysSetFromDataModel(dataModel_0)
+    requiredKeysSet_1 = getRequiredKeysSetFromDataModel(dataModel_1)
     duplicatedSchemaKeysSet = requiredKeysSet_0.intersection(requiredKeysSet_1)
     return duplicatedSchemaKeysSet
 

@@ -335,9 +335,14 @@ def solveModelFromCalcParamList(
 
             仿真结果不可累加表头 = [*(仿真结果字符串表头 := ["元件名称", "元件类型", "设备型号"]), "设备台数"]
             规划结果详情不可累加表头 = [
-    元件名称: str = Field(title="元件名称", description="对应字段: deviceName")
-    型号: str = Field(title="型号", description="对应字段: deviceModel")
-    数量: int = Field(title="数量", description="对应字段: deviceCount")]
+                *(
+                    规划结果详情字符串表头 := [
+                        "元件名称",
+                        "型号",
+                    ]
+                ),
+                "数量",
+            ]
 
             for index, devInstDict in enumerate(
                 ret.devInstDictList
@@ -354,8 +359,8 @@ def solveModelFromCalcParamList(
                     # devName = devInst.设备信息.设备名称
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                    仿真结果 = 结果 = 结果类.export(devInst, timeParam)
-                    规划结果 = 规划结果详情.export(devInst, 仿真结果)
+                    _仿真结果 = 结果 = 结果类.export(devInst, timeParam)
+                    规划结果 = 规划结果详情.export(devInst, _仿真结果)
                     # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
                     # 之前结果 = deepcopy(仿真结果表.get(devInst, None))
