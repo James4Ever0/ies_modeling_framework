@@ -334,7 +334,10 @@ def solveModelFromCalcParamList(
                 return 出力曲线模版
 
             仿真结果不可累加表头 = [*(仿真结果字符串表头 := ["元件名称", "元件类型", "设备型号"]), "设备台数"]
-            规划结果详情不可累加表头 = []
+            规划结果详情不可累加表头 = [
+    元件名称: str = Field(title="元件名称", description="对应字段: deviceName")
+    型号: str = Field(title="型号", description="对应字段: deviceModel")
+    数量: int = Field(title="数量", description="对应字段: deviceCount")]
 
             for index, devInstDict in enumerate(
                 ret.devInstDictList
