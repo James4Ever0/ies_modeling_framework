@@ -285,6 +285,7 @@ def solveModelFromCalcParamList(
             PDList=PDList,
             timeParamList=timeParamList,
             graph_data_list=graph_data_list,
+            targetType = ... ,
         )
         return ret
 
