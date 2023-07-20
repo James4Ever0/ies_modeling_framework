@@ -4,6 +4,7 @@ from beartype import beartype
 from typing import cast
 from constants import *
 
+
 try:
     from typing import Literal
 except:
@@ -238,7 +239,7 @@ def solveModelFromCalcParamList(
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
-        # calcParamList = cast(tuple,deepcopy(mCalcParamList))
+        # calcParamList = cast(tuple, deepcopy(mCalcParamList))
         calcTargetLUT = {
             "经济": 0,
             "环保": 0,
@@ -248,6 +249,8 @@ def solveModelFromCalcParamList(
         PDList = []
         timeParamList = []
         graph_data_list = []
+
+        targetType = calcParamList[0][2][''] # graph_data @ elem_0
 
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
