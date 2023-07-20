@@ -226,6 +226,17 @@ def solveModelFromCalcParamList(
         timeParamList: List[Union[float, int]]
         graph_data_list: List
 
+    def calcTargetLUTAsTargetName(calcTargetLUT):
+        if calcTargetLUT["经济"] == 1:
+            if calcTargetLUT["环保"] == 1:
+                return ""
+            else:
+                return ""
+        elif calcTargetLUT["环保"] == 1:
+            return ""
+        else:
+            raise Exception("Invalid calcTargetLUT: {}".format(calcTargetLUT))
+
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
         calcTargetLUT = {
@@ -304,7 +315,9 @@ def solveModelFromCalcParamList(
                     出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
 
-            for index, devInstDict in enumerate(ret.devInstDictList): # 多个典型日 多个相同拓扑结构的计算图对应的设备模型字典
+            for index, devInstDict in enumerate(
+                ret.devInstDictList
+            ):  # 多个典型日 多个相同拓扑结构的计算图对应的设备模型字典
                 graph_data = ret.graph_data_list[index]
                 典型日代表的日期 = graph_data["典型日代表的日期"]
                 timeParam = ret.timeParamList[index]
@@ -388,8 +401,15 @@ def solveModelFromCalcParamList(
                     financialObjective=value(ret.calcTargetLUT["经济"]),
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
-                planningResultTable=(planningResultList:=[规划结果详情.export(deviceModel, deviceSimulationResult) for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList]),
-                planningSummary=规划方案概览.export(planningResultList, simulationResultList, totalAnnualFee, planType),
+                planningResultTable=(
+                    planningResultList := [
+                        规划结果详情.export(deviceModel, deviceSimulationResult)
+                        for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
+                    ]
+                ),
+                planningSummary=规划方案概览.export(
+                    planningResultList, simulationResultList, totalAnnualFee, planType
+                ),
             )
             # except:
             #     import traceback
