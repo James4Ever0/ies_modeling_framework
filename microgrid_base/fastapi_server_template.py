@@ -247,15 +247,17 @@ def get_calculation_result_async(calculation_id: str):
     calculation_result = (
         CalculationResult.parse_obj(calculation_result) if calculation_result else None
     )
+
+    # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
     
-    if isinstance(calculation_result, CalculationResult):
-        if len(RL:=calculation_result.resultList)>1:
-            plotList = []
-            for result in RL:
-                OR = result.objectiveResult
-                plotList.append((OR.financialObjective,OR.environmentalObjective))
-            plotList.sort(lambda x: x[0])
-            calculation_result.paretoCurve = ParetoCurve(x=[e[0] for e in plotList],x_label='经济', y=[e[1] for e in plotList], y_label='环保')
+    # if isinstance(calculation_result, CalculationResult):
+    #     if len(RL:=calculation_result.resultList)>1:
+    #         plotList = []
+    #         for result in RL:
+    #             OR = result.objectiveResult
+    #             plotList.append((OR.financialObjective,OR.environmentalObjective))
+    #         plotList.sort(lambda x: x[0])
+    #         calculation_result.paretoCurve = ParetoCurve(x=[e[0] for e in plotList],x_label='经济', y=[e[1] for e in plotList], y_label='环保')
 
     return CalculationAsyncResult(
         calculation_state=calculation_state,

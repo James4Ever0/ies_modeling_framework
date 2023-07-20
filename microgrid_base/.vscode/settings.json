@@ -1,0 +1,9 @@
+{
+    "files.exclude": { // to ignore files to show.
+        "microgrid_server_release/*": true,
+    },
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    }
+}
