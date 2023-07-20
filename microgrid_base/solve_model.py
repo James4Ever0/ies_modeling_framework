@@ -304,7 +304,7 @@ def solveModelFromCalcParamList(
                     出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
 
-            for index, devInstDict in enumerate(ret.devInstDictList):
+            for index, devInstDict in enumerate(ret.devInstDictList): # 多个典型日 多个相同拓扑结构的计算图对应的设备模型字典
                 graph_data = ret.graph_data_list[index]
                 典型日代表的日期 = graph_data["典型日代表的日期"]
                 timeParam = ret.timeParamList[index]
