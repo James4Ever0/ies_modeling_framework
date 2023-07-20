@@ -226,14 +226,12 @@ def solveModelFromCalcParamList(
         timeParamList: List[Union[float, int]]
         graph_data_list: List
 
-    def calcTargetLUTAsTargetName(calcTargetLUT):
-        if calcTargetLUT["经济"] == 1:
-            if calcTargetLUT["环保"] == 1:
-                return ""
-            else:
-                return ""
-        elif calcTargetLUT["环保"] == 1:
-            return ""
+    def calcTargetLUTAsTargetName(calcTargetLUT: dict):
+        targets = [k for k, v in calcTargetLUT.items() if v == 1]
+        if len(targets) == 1:
+            return f"{targets[0]}性最优"
+        elif len(targets) == 2:
+            return "多目标最优"
         else:
             raise Exception("Invalid calcTargetLUT: {}".format(calcTargetLUT))
 
@@ -408,7 +406,7 @@ def solveModelFromCalcParamList(
                     ]
                 ),
                 planningSummary=规划方案概览.export(
-                    planningResultList, simulationResultList, totalAnnualFee, planType
+                    planningResultList, simulationResultList, totalAnnualFee, planType=calcTargetLUTAsTargetName(ret.calcTargetLUT)
                 ),
             )
             # except:
