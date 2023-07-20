@@ -128,17 +128,17 @@ class 单次计算结果(BaseModel):
         ],
     )
 
-class ParetoCurve(BaseModel):
-    x: List[float]
-    x_label: str
-    y: List[float]
-    y_label: str
+# class ParetoCurve(BaseModel):
+#     x: List[float]
+#     x_label: str
+#     y: List[float]
+#     y_label: str
 
 
 # you need to check if any "Field" is using "default" positional argument, which might leads to error.
 class CalculationResult(BaseModel):
     resultList: List[单次计算结果]
-    paretoCurve: Union[None, ParetoCurve] = None
+    # paretoCurve: Union[None, ParetoCurve] = None
     residualEquipmentAnnualFactor: confloat(ge=0) = Field(
         default=0, title="辅助设备年化系数", description="仿真模拟是0，设计规划为非0"
     )

@@ -388,7 +388,7 @@ def solveModelFromCalcParamList(
                     financialObjective=value(ret.calcTargetLUT["经济"]),
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
-                planningResultTable=(planningResultList:=[规划结果详情.export(deviceModel, deviceSimulationResult) for deviceModel in deviceModelList]),
+                planningResultTable=(planningResultList:=[规划结果详情.export(deviceModel, deviceSimulationResult) for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList]),
                 planningSummary=规划方案概览.export(planningResultList, simulationResultList, totalAnnualFee, planType),
             )
             # except:
