@@ -374,8 +374,9 @@ def solveModelFromCalcParamList(
                         else:
                             出力曲线字典.update({devId: 出力曲线.dict()})
             仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
-            仿真结果表_导出.fillna({elem:"" for elem in 仿真结果字符串表头})
-            仿真结果表_导出.fillna(cmath.nan) # default "nan" or "null" replacement, compatible with type "float"
+            # use "inplace" otherwise you have to manually assign return values.
+            仿真结果表_导出.fillna({elem:"" for elem in 仿真结果字符串表头}, inplace=True)
+            仿真结果表_导出.fillna(cmath.nan, inplace=True) # default "nan" or "null" replacement, compatible with type "float"
             仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
             print()
             rich.print(出力曲线字典)
