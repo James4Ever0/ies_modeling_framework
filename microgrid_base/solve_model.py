@@ -1,6 +1,7 @@
 import json
 from typing import List, Dict, Any, Union
 from beartype import beartype
+from typing import cast
 from constants import *
 
 try:
@@ -237,6 +238,7 @@ def solveModelFromCalcParamList(
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
+        # calcParamList = cast(tuple,deepcopy(mCalcParamList))
         calcTargetLUT = {
             "经济": 0,
             "环保": 0,
