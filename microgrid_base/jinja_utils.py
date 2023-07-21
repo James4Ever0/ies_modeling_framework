@@ -55,7 +55,7 @@ def load_render_and_format(
             typechecker_input_path = os.path.join(TP, os.path.basename(output_path))
             with open(typechecker_input_path, "w+") as f:
                 f.write(typechecker_input_path)
-            output = subprocess.Popen(['pyright', typechecker_input_path])
+            output = subprocess.run(['pyright', typechecker_input_path], capture_output=True)
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
