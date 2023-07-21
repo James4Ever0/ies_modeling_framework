@@ -340,11 +340,12 @@ render_params = dict(
     每年小时数=每年小时数,
 )
 # render_params = dict(model_names=model_names, main_data=new_data)
+from copy import deepcopy
 
 load_render_and_format(
-    template_path, code_path, render_params.copy(), banner="FORMAT_VALIDATE_CODE"
+    template_path, code_path, deepcopy(render_params), banner="FORMAT_VALIDATE_CODE"
 )
 
 load_render_and_format(
-    template_unit_path, code_unit_path, render_params, banner="FORMAT_UNIT_CODE"
+    template_unit_path, code_unit_path, deepcopy(render_params), banner="FORMAT_UNIT_CODE"
 )

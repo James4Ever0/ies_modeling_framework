@@ -93,8 +93,10 @@ def ReLU(val):
     "时间"
 ]%}
 {% set paramWithUnits = dict() %}
-{% macro iterParamDict(paramDict, has_list, className) %}
-    {% do paramWithUnits.update({className:list()}) %}
+{% macro iterParamDict(paramDict, has_list, className, needUpdate) %}
+    {% if needUpdate %}
+        {% do paramWithUnits.update({className:list()}) %}
+    {% endif %}
     {% set flag = namespace(val=False) %}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_") %}
