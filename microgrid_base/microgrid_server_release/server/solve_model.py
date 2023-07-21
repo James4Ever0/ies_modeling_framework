@@ -1,7 +1,9 @@
 import json
 from typing import List, Dict, Any, Union
 from beartype import beartype
+from typing import cast
 from constants import *
+
 
 try:
     from typing import Literal
@@ -225,9 +227,20 @@ def solveModelFromCalcParamList(
         PDList: List[Dict]
         timeParamList: List[Union[float, int]]
         graph_data_list: List
+        targetType: str
+
+    def targetTypeAsTargetName(targetType: str):
+        targets = targetType.split("_")
+        if len(targets) == 1:
+            return f"{targets[0]}性最优"
+        elif len(targets) == 2:
+            return "多目标最优"
+        else:
+            raise Exception("Invalid targetType: {}".format(targetType))
 
     def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
         calcParamList = deepcopy(mCalcParamList)
+        # calcParamList = cast(tuple, deepcopy(mCalcParamList))
         calcTargetLUT = {
             "经济": 0,
             "环保": 0,
@@ -238,6 +251,8 @@ def solveModelFromCalcParamList(
         timeParamList = []
         graph_data_list = []
 
+        targetType = calcParamList[0][2]["计算目标"]  # graph_data @ elem_0
+
         for calc_id, (devs, adders, graph_data, topo_G) in enumerate(calcParamList):
             典型日ID = calc_id
 
@@ -247,7 +262,7 @@ def solveModelFromCalcParamList(
                 timeParam = 每天小时数 * len(graph_data["典型日代表的日期"])
             else:
                 timeParam = 每年小时数 if 计算步长 == "小时" else 秒级仿真小时数  # how many hours?
-            timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
+            # timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
             timeParamList.append(timeParam)
             obj_exprs, devInstDict, PD = compute(
                 devs, adders, graph_data, topo_G, mw
@@ -276,8 +291,18 @@ def solveModelFromCalcParamList(
             PDList=PDList,
             timeParamList=timeParamList,
             graph_data_list=graph_data_list,
+            targetType=targetType,
         )
         return ret
+
+    def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
+        之前结果 = deepcopy(结果表.get(设备模型实例, None))
+        if 之前结果 == None:
+            结果表[设备模型实例] = 结果.dict()
+        else:
+            结果表[设备模型实例] = {
+                k: v + 之前结果[k] for k, v in 结果.dict().items() if k not in 不可累加表头
+            }
 
     def fetchResult(solved: bool, ret: CalcStruct):
         if solved:
@@ -285,6 +310,10 @@ def solveModelFromCalcParamList(
             import pandas as pd
 
             仿真结果表 = {}
+            规划结果表 = {}
+            """
+            规划结果详情表
+            """
             出力曲线字典 = {}  # 设备ID: 设备出力曲线
 
             创建出力曲线模版 = lambda: [
@@ -304,7 +333,20 @@ def solveModelFromCalcParamList(
                     出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
                 return 出力曲线模版
 
-            for index, devInstDict in enumerate(ret.devInstDictList):
+            仿真结果不可累加表头 = [*(仿真结果字符串表头 := ["元件名称", "元件类型", "设备型号"]), "设备台数"]
+            规划结果详情不可累加表头 = [
+                *(
+                    规划结果详情字符串表头 := [
+                        "元件名称",
+                        "型号",
+                    ]
+                ),
+                "数量",
+            ]
+
+            for index, devInstDict in enumerate(
+                ret.devInstDictList
+            ):  # 多个典型日 多个相同拓扑结构的计算图对应的设备模型字典
                 graph_data = ret.graph_data_list[index]
                 典型日代表的日期 = graph_data["典型日代表的日期"]
                 timeParam = ret.timeParamList[index]
@@ -317,13 +359,23 @@ def solveModelFromCalcParamList(
                     # devName = devInst.设备信息.设备名称
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
-                    结果 = 结果类.export(devInst, timeParam)
+                    _仿真结果 = 结果 = 结果类.export(devInst, timeParam)
+                    规划结果 = 规划结果详情.export(devInst, _仿真结果)
+                    # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
-                    之前结果 = deepcopy(仿真结果表.get(devInst, None))
-                    if 之前结果 == None:
-                        仿真结果表[devInst] = 结果.dict()
-                    else:
-                        仿真结果表[devInst] = {k: v + 之前结果[k] for k, v in 结果.dict().items()}
+                    # 之前结果 = deepcopy(仿真结果表.get(devInst, None))
+                    # 之前规划结果 = deepcopy(规划结果表.get(devInst, None))
+
+                    合并结果表(结果, 仿真结果表, devInst, 仿真结果不可累加表头)
+                    合并结果表(规划结果, 规划结果表, devInst, 规划结果详情不可累加表头)
+                    # if 之前结果 == None:
+                    #     仿真结果表[devInst] = 结果.dict()
+                    # else:
+                    #     仿真结果表[devInst] = {
+                    #         k: v + 之前结果[k]
+                    #         for k, v in 结果.dict().items()
+                    #         if k not in 仿真结果不可累加表头
+                    #     }
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
@@ -351,6 +403,11 @@ def solveModelFromCalcParamList(
                         else:
                             出力曲线字典.update({devId: 出力曲线.dict()})
             仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+            # use "inplace" otherwise you have to manually assign return values.
+            仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
+            仿真结果表_导出.fillna(
+                cmath.nan, inplace=True
+            )  # default "nan" or "null" replacement, compatible with type "float"
             仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
             print()
             rich.print(出力曲线字典)
@@ -359,6 +416,7 @@ def solveModelFromCalcParamList(
             # export_table = 仿真结果表.to_html()
             # may you change the format.
             仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+            simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化
             出力曲线列表 = []
             for devId, content_dict in 出力曲线字典.items():
@@ -387,6 +445,18 @@ def solveModelFromCalcParamList(
                 objectiveResult=dict(
                     financialObjective=value(ret.calcTargetLUT["经济"]),
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
+                ),
+                planningResultTable=(
+                    planningResultList := [
+                        规划结果详情.export(deviceModel, deviceSimulationResult, timeParam)
+                        for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
+                    ]
+                ),
+                planningSummary=规划方案概览.export(
+                    planningResultList,
+                    simulationResultList,
+                    totalAnnualFee=ret.calcTargetLUT["经济"],
+                    planType=targetTypeAsTargetName(ret.targetType),
                 ),
             )
             # except:
