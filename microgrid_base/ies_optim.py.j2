@@ -1714,17 +1714,27 @@ class 设备模型协议(Protocol):
 {% for key, elemDict in planningExportFormatList %}
     {% set planningResultExportClassName = planningResultKeyTranslationMap[key] %}
 class {{planningResultExportClassName}}(BaseModel):
+    {% set planningUnits = {}%}
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}
         {% set valEnglishName = elem['englishName'] %}
         {% set valType = elem['type'] %}
         {% set valUnit = elem['unit'] %}
         {% set description %}{{'单位: '+valUnit+'\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}{% endset %}
+        {% if valUnit != None%}
+            {% do planningUnits.update({valName: valUnit})%}
+        {% endif%}
     {{valName}}: {{valType}} = Field(title="{{valName}}", description={{repr(description)}})
     """
 {{description | indent(4, true)}}
     """
     {% endfor %}
+
+    class Units:
+    {% for in %}
+        {{key}} = {{unit}}
+
+    {% endfor%}
 
     @staticmethod
     {% if key == "方案列表" %}
