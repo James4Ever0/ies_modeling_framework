@@ -79,9 +79,9 @@ def mDictListToCalcParamList(mdictList: List):
     return calcParamList
 
 
-def translateSimParamTableHeaders(df: DataFrame):
+def translateDataframeHeaders(df: DataFrame, translationTable:Dict[str, str]):
     df_dict = df.to_dict()
-    df_dict_translated = {FSPT[k]: v for k, v in df_dict.items()}
+    df_dict_translated = {translationTable[k]: v for k, v in df_dict.items()}
     ret = DataFrame(df_dict_translated)
     return ret
 
@@ -408,7 +408,7 @@ def solveModelFromCalcParamList(
             仿真结果表_导出.fillna(
                 cmath.nan, inplace=True
             )  # default "nan" or "null" replacement, compatible with type "float"
-            仿真结果表_导出 = translateSimParamTableHeaders(仿真结果表_导出)
+            仿真结果表_导出 = translateDataframeHeaders(仿真结果表_导出, FSPT)
             print()
             rich.print(出力曲线字典)
             print()
