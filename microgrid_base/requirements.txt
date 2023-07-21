@@ -26,3 +26,4 @@ better-exceptions
 pytest-depends
 pytest-timeout
 beartype
+pyright # for checking undefined variables
