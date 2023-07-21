@@ -342,7 +342,7 @@ render_params = dict(
 # render_params = dict(model_names=model_names, main_data=new_data)
 
 load_render_and_format(
-    template_path, code_path, render_params, banner="FORMAT_VALIDATE_CODE"
+    template_path, code_path, render_params.copy(), banner="FORMAT_VALIDATE_CODE"
 )
 
 load_render_and_format(
