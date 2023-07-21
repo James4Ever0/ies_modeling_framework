@@ -92,8 +92,9 @@ def ReLU(val):
     "设备维护费用",
     "时间"
 ]%}
-{% set paramWithUnits = {} %}
+{% set paramWithUnits = dict() %}
 {% macro iterParamDict(paramDict, has_list, className) %}
+    {% do paramWithUnits.update({className:list()}) %}
     {% set flag = namespace(val=False) %}
     {% for paramName, paramDef in paramDict.items() %}
         {% set PN = paramName.replace("/","_") %}
@@ -113,7 +114,6 @@ def ReLU(val):
     {{PN}} :{{'List[{}]'.format(t) if ( t!='str' and has_list) else t}}
         {% if t!='str' %}
     {# mag, std, old #}
-    {% set paramWithUnits[className] = paramWithUnits.get(className, []) %}
     {% do paramWithUnits[className].append((PN, paramDef[2])) %}
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else "{} <- {}".format(paramDef[2], paramDef[1])}}
