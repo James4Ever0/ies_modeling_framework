@@ -4005,7 +4005,7 @@ class 规划结果详情(BaseModel):
             # fuel instances. we cannot allow diesel engines for this, since this will introduce errors in summation.
             if isinstance(deviceModel, 柴油模型):  # fuel unit: L
                 # L * (kg/L)
-
+                modelBaseName = deviceModel.__class__.__name__.strip("模型")
                 dieselConsumptionUnit = getattr(
                     globals().get(f"{modelBaseName}仿真结果导出单位"), f"{modelBaseName}消耗量"
                 )
@@ -4013,7 +4013,6 @@ class 规划结果详情(BaseModel):
                     (deviceSimulationResult.dieselConsumption, dieselConsumptionUnit),
                     getattr(deviceModel.设备信息, gasType),
                 )  # [数值，单位]
-                modelBaseName = deviceModel.__class__.__name__.strip("模型")
                 # gas emission unit: kg
                 # now you may want to convert this by acquiring units elsewhere...
                 target_unit = getattr(规划结果详情.Units, attrName)
