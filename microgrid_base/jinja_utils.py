@@ -1,5 +1,6 @@
 import subprocess
 
+from tempfile import TemporaryDirectory
 import black
 import jinja2
 import shutil
@@ -51,7 +52,10 @@ def load_render_and_format(
         result = black.format_str(result, mode=black.Mode())
         print("Formatter Ok.")
         with TemporaryDirectory() as TP:
-            
+            typechecker_input_path = os.path.join(TP, os.path.basename(output_path))
+            with open(typechecker_input_path, "w+") as f:
+                f.write(typechecker_input_path)
+            output = subprocess.check_output(['pyright', typechecker_input_path])
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
