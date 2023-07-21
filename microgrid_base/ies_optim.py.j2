@@ -1788,6 +1788,8 @@ class {{planningResultExportClassName}}(BaseModel):
                 # now you may want to convert this by acquiring units elsewhere...
                 target_unit = getattr({{planningResultExportClassName}}.Units, attrName)
                 {# magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit) #}
+                val_quantity = ureg.Unit()
+                val = 
                 {# val = magnitude * val_raw #}
                 # kg -> t (standard)
             else:
