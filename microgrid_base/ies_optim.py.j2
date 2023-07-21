@@ -1770,8 +1770,9 @@ class {{planningResultExportClassName}}(BaseModel):
             {# if type(deviceModel) in [柴油模型]: # fuel unit: L #}
                 # L * (kg/L)
                 val_raw = deviceSimulationResult.dieselConsumption * getattr(deviceModel.设备信息, gasType)
+                val_unit = globals().get(f'{deviceModel.__class__.__name__.strip("模型")}')
                 # gas emission unit: kg
-                magnitude, _ = unitFactorCalculator(ureg, standard_units, 'kg')
+                magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit)
                 val = magnitude * val_raw
                 # kg -> t (standard)
             else:
