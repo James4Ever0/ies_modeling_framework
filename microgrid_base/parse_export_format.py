@@ -20,8 +20,8 @@ output_path = "export_format.json"
 planning_output_path = f"planning_{output_path}"
 
 MAKEFILE = dict(
-    inputs=[template_path, excel_path, 设计规划结果输出CSV],
-    outputs=[output_path, code_path, planning_output_path],
+    inputs=[template_path, template_unit_path, excel_path, 设计规划结果输出CSV],
+    outputs=[output_path, code_path, code_unit_path, planning_output_path],
     args=[],
 )
 
@@ -340,6 +340,10 @@ render_params = dict(
     每年小时数=每年小时数,
 )
 # render_params = dict(model_names=model_names, main_data=new_data)
+
+load_render_and_format(
+    template_path, code_path, render_params, banner="FORMAT_VALIDATE_CODE"
+)
 
 load_render_and_format(
     template_path, code_path, render_params, banner="FORMAT_VALIDATE_CODE"
