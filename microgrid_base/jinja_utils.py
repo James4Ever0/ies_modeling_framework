@@ -4,7 +4,7 @@ import black
 import jinja2
 import shutil
 import os
-
+import pyright # for checking if really installed.
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
@@ -49,7 +49,9 @@ def load_render_and_format(
         # TODO: add more test, like checking for undefined variables, before rewriting the source file.
         # TODO: add rollback mechanism in makefile
         result = black.format_str(result, mode=black.Mode())
-        print("Syntax Ok.")
+        print("Formatter Ok.")
+        with TemporaryDirectory() as TP:
+            
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
