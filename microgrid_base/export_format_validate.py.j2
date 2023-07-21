@@ -112,6 +112,7 @@ def ReLU(val):
     {{PN}} :{{'List[{}]'.format(t) if ( t!='str' and has_list) else t}}
         {% if t!='str' %}
     {# mag, std, old #}
+    {% do .append(paramDef[2])%}
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else "{} <- {}".format(paramDef[2], paramDef[1])}}
     """
