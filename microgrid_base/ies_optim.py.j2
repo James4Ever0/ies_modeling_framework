@@ -1732,7 +1732,7 @@ class {{planningResultExportClassName}}(BaseModel):
 
     class Units:
     {% for key, unit in planningUnits.items() %}
-        {{key}} = {{unit}}
+        {{key}} = {{repr(unit)}}
     {% endfor %}
 
     @staticmethod
@@ -1788,8 +1788,9 @@ class {{planningResultExportClassName}}(BaseModel):
                 # now you may want to convert this by acquiring units elsewhere...
                 target_unit = getattr({{planningResultExportClassName}}.Units, attrName)
                 {# magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit) #}
-                val_quantity = ureg.Unit()
-                val = 
+                val_quantity = val_raw * ureg.Unit(val_unit)
+                val_quantity_target = val_quantity.to(target_unit)
+                val = val_quantity_target.magnitude
                 {# val = magnitude * val_raw #}
                 # kg -> t (standard)
             else:
