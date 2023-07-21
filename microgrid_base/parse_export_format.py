@@ -8,7 +8,7 @@ from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
-code_unit_path, template_unit_path = code_and_template_path("export_format_units")
+code_unit_path, template_unit_path = code_and_template_path("export_format_units") # TODO: mark this as dependency as "ies_optim.py"
 
 # you may also need to render some other code to avoid circular importing issues.
 
@@ -346,5 +346,5 @@ load_render_and_format(
 )
 
 load_render_and_format(
-    template_path, code_path, render_params, banner="FORMAT_VALIDATE_CODE"
+    template_unit_path, code_unit_path, render_params, banner="FORMAT_UNIT_CODE"
 )
