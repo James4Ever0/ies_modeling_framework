@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Union
 from beartype import beartype
 from typing import cast
 from constants import *
+import pandas as pd
 
 
 try:
@@ -55,7 +56,7 @@ from pandas import DataFrame
 from topo_check import 拓扑图
 
 ###
-
+def 导出结果表_格式化(结果表:DataFrame, 字符串表头:List[str], 翻译表:Dict[str, str]):
             仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
             # use "inplace" otherwise you have to manually assign return values.
             仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
@@ -322,7 +323,6 @@ def solveModelFromCalcParamList(
     def fetchResult(solved: bool, ret: CalcStruct):
         if solved:
             # try:
-            import pandas as pd
 
             仿真结果表 = {}
             规划结果表 = {}
