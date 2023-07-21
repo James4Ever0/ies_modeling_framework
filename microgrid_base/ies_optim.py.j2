@@ -1427,7 +1427,7 @@ class {{class_name}}模型(设备模型):
         self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
         {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
-            {% set m='总最大功率' %}
+            {% set m = '总最大功率' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
@@ -1475,7 +1475,7 @@ class {{class_name}}模型(设备模型):
         {% elif class_name in ['双向变流器']%}
             {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
         {%elif class_name in ['传输线'] %}
-            {% set m1='0'%}
+            {% set m1='0' %}
         {% else%}
             {% error("不支持的类型:", class_name) %}
         {% endif %}
