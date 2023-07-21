@@ -82,11 +82,17 @@ def getSchemaType(schemaHeader, schemaHeaderUnit):
 
 for schemaName, index in subSchemas:  # why we have nan here?
     regexList = removeTermRegexes[schemaName]
-    schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
+    # Assignment expressions within a subscript are supported only in Python 3.10 and newer
+    schemaHeaderIndex = index + 1
+    schemaHeaders = 设计规划T[schemaHeaderIndex].to_list()
+    # schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
     # rich.print(schemaHeaders)
     # breakpoint()
+    englishSchemaHeaderIndex = schemaHeaderIndex + 2
+    
     englishSchemaHeaders = 设计规划T[
-        englishSchemaHeaderIndex := schemaHeaderIndex + 2
+        englishSchemaHeaderIndex
+        # englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
         schemaHeader = schemaHeader.replace("/",'_') # for code generation
