@@ -1773,7 +1773,7 @@ class {{planningResultExportClassName}}(BaseModel):
                 # L * (kg/L)
 
                 dieselConsumptionUnit = getattr(globals().get(f'{modelBaseName}仿真结果导出单位'), f'{modelBaseName}消耗量')
-                val_raw, val_unit = multiplyWithUnit((deviceSimulationResult.dieselConsumption, dieselConsumptionUnit),getattr(deviceModel.设备信息, gasType)) # [数值，单位]
+                val_raw, val_unit = multiplyWithUnit((deviceSimulationResult.dieselConsumption, dieselConsumptionUnit), getattr(deviceModel.设备信息, gasType)) # [数值，单位]
                 modelBaseName = deviceModel.__class__.__name__.strip("模型")
                 # gas emission unit: kg
                 magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit)
