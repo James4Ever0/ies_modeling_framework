@@ -1,5 +1,9 @@
 {% from "export_format_validate.py.j2" import paramWithUnits %}
 
-{% for devName, (PN, unit) in paramWithUnits.items() %}
+{% for devName, paramNameAndUnitList in paramWithUnits.items() %}
+class {{devName}}仿真结果导出单位:
+    {% for PN, unit in paramNameAndUnitList %}
+    {{PN}} = {{repr(unit)}}
+    {% endfor%}
 
 {% endfor%}
