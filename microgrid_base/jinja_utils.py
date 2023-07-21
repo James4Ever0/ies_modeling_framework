@@ -46,7 +46,8 @@ def load_render_and_format(
         shutil.move(tmp_output_path, output_path)
         return
     try:
-        # TODO: add more test, like checking for undefined variables.
+        # TODO: add more test, like checking for undefined variables, before rewriting the source file.
+        # TODO: add rollback mechanism in makefile
         result = black.format_str(result, mode=black.Mode())
         print("Syntax Ok.")
         with open(output_path, "w+") as f:
