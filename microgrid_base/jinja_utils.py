@@ -56,6 +56,7 @@ def load_render_and_format(
             with open(typechecker_input_path, "w+") as f:
                 f.write(typechecker_input_path)
             output = subprocess.run(['pyright', typechecker_input_path], capture_output=True)
+            output.stdout # bytes!
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
