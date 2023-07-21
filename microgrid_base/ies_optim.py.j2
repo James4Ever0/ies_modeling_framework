@@ -1731,10 +1731,9 @@ class {{planningResultExportClassName}}(BaseModel):
     {% endfor %}
 
     class Units:
-    {% for in %}
+    {% for key, unit in planningUnits.items() %}
         {{key}} = {{unit}}
-
-    {% endfor%}
+    {% endfor %}
 
     @staticmethod
     {% if key == "方案列表" %}
@@ -1787,8 +1786,9 @@ class {{planningResultExportClassName}}(BaseModel):
                 modelBaseName = deviceModel.__class__.__name__.strip("模型")
                 # gas emission unit: kg
                 # now you may want to convert this by acquiring units elsewhere...
-                magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit)
-                val = magnitude * val_raw
+                target_unit = getattr({{planningResultExportClassName}}.Units, attrName)
+                {# magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit) #}
+                {# val = magnitude * val_raw #}
                 # kg -> t (standard)
             else:
                 val = cmath.nan
