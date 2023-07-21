@@ -1685,10 +1685,12 @@ class 仿真结果(BaseModel):
         {% set mtype = 'int'%}
     {% else %}
         {% set mtype  = 'float'%}
+        {# need to clarify units! #}
     {% endif%}
     {{englishName}} : {{mtype if mtype !='int' else 'float'}} = Field(title = "{{chineseName}}")
     {# {% if mtype in ['int', 'float']%} #}
 
+    {# unit conversion has been skipped. #}
     {# {%if mtype == 'int'%}
     @validator('{{englishName}}')
     def convert_number_{{englishName}}(cls, v):
