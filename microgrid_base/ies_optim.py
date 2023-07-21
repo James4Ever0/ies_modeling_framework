@@ -3990,7 +3990,6 @@ class 规划结果详情(BaseModel):
     # 出来的也是每个典型日对应的规划详情，需要根据设备ID进行合并
     def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam: float):
         params = {}
-        a = aa
         params["元件名称"] = deviceModel.设备信息.设备名称
         params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
         params["数量"] = getattr(deviceModel.设备信息, "equiCounts", cmath.nan)  # 不要累加数量！

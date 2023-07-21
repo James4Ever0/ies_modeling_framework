@@ -57,6 +57,7 @@ def load_render_and_format(
                 f.write(typechecker_input_path)
             output = subprocess.run(['pyright', typechecker_input_path], capture_output=True)
             output.stdout # bytes!
+            undefinedRegex = r"reportUndefinedVariable"
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
