@@ -447,10 +447,10 @@ def solveModelFromCalcParamList(
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
                 planningResultTable=(
-                    planningResultList := [
-                        规划结果详情.export(deviceModel, deviceSimulationResult, timeParam)
-                        for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
-                    ]
+                    # planningResultList := [
+                    #     规划结果详情.export(deviceModel, deviceSimulationResult, timeParam)
+                    #     for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
+                    # ]
                 ),
                 planningSummary=规划方案概览.export(
                     planningResultList,
