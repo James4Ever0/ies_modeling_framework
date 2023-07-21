@@ -8,6 +8,9 @@ from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
+# you may also need to render some other code to avoid circular importing issues.
+
+
 设计规划结果输出CSV = "设备信息库各参数-规划方案及详情.csv"  # parse this thing first.
 
 output_path = "export_format.json"
