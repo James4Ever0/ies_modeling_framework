@@ -166,3 +166,9 @@ def unitParserWrapper(val: str) -> Tuple[str, Union[str, None]]:
     if parsed_val := unitParser(val):
         return (parsed_val["val_name"], parsed_val["val_unit"])
     return (val, None)
+
+try:from typing import TypeAlias
+except: from typing_extensions import TypeAlias
+VAL_WITH_UNIT:TypeAlias = Tuple[Union[float, int], str]
+def multiplyWithUnit(val_with_unit_0:VAL_WITH_UNIT, val_with_unit_1:VAL_WITH_UNIT):
+    ...
