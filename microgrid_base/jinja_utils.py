@@ -5,8 +5,9 @@ import black
 import jinja2
 import shutil
 import os
-import pyright # for checking if really installed.
+import pyright  # for checking if really installed.
 import re
+
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
@@ -56,10 +57,16 @@ def load_render_and_format(
             typechecker_input_path = os.path.join(TP, os.path.basename(output_path))
             with open(typechecker_input_path, "w+") as f:
                 f.write(typechecker_input_path)
-            output = subprocess.run(['pyright', typechecker_input_path], capture_output=True, encoding='utf-8')
-            output.stdout # str now!
+            output = subprocess.run(
+                ["pyright", typechecker_input_path],
+                capture_output=True,
+                encoding="utf-8",
+            )
             errorRegex = r"^.+?reportUndefinedVariable.+$"
-            re.findall()
+            typeErrors = re.findall(errorRegex, output.stdout, re.MULTILINE)
+            if typeErrors:
+                typeErrors.insert(0, "Type error found in file '{}")
+                raise Exception("\n".join(typeErrors))
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
@@ -67,7 +74,9 @@ def load_render_and_format(
         import traceback
 
         traceback.print_exc()
-        raise Exception(f"Syntax check failed.\nTemporary cache saved to: '{tmp_output_path}'")
+        raise Exception(
+            f"Syntax check failed.\nTemporary cache saved to: '{tmp_output_path}'"
+        )
     print("=" * 40)
 
 
