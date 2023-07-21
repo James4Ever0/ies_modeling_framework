@@ -1427,7 +1427,7 @@ class {{class_name}}模型(设备模型):
         self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
         {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
-            {% set m = '总最大功率' %}
+            {% set m='总最大功率' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
@@ -1734,6 +1734,7 @@ class {{planningResultExportClassName}}(BaseModel):
     class Units:
     {% for key, unit in planningUnits.items() %}
         {{key}} = {{repr(unit)}}
+        a = abc
     {% endfor %}
 
     @staticmethod
