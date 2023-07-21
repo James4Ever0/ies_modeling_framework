@@ -54,7 +54,10 @@ def load_render_and_format(
         result = black.format_str(result, mode=black.Mode())
         print("Formatter Ok.")
         with TemporaryDirectory() as TP:
-            typechecker_input_path = os.path.join(TP, os.path.basename(output_path))
+
+            typechecker_input_path = os.path.join(
+                TP, base_output_path := os.path.basename(output_path)
+            )
             with open(typechecker_input_path, "w+") as f:
                 f.write(typechecker_input_path)
             output = subprocess.run(
@@ -65,8 +68,10 @@ def load_render_and_format(
             errorRegex = r"^.+?reportUndefinedVariable.+$"
             typeErrors = re.findall(errorRegex, output.stdout, re.MULTILINE)
             if typeErrors:
-                typeErrors.insert(0, "Type error found in file '{}")
-                raise Exception("\n".join(typeErrors))
+                typeErrors.insert(
+                    0, f"Type error found in file {repr(base_output_path)}"
+                )
+                raise Exception(f"\n{' '*4}".join(typeErrors))
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
