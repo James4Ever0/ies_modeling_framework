@@ -1766,11 +1766,12 @@ class {{planningResultExportClassName}}(BaseModel):
         for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
             gasType = attrName.strip('年').strip('排放') if '碳' not in attrName else 'CO2'
 
+            # fuel instances
             if isinstance(deviceModel, 柴油模型): # fuel unit: L
             {# if type(deviceModel) in [柴油模型]: # fuel unit: L #}
                 # L * (kg/L)
                 val_raw = deviceSimulationResult.dieselConsumption * getattr(deviceModel.设备信息, gasType)
-                val_unit = globals().get(f'{deviceModel.__class__.__name__.strip("模型")}')
+                val_unit = globals().get(f'{deviceModel.__class__.__name__.strip("模型")}仿真结果导出单位').
                 # gas emission unit: kg
                 magnitude, _ = unitFactorCalculator(ureg, standard_units, val_unit)
                 val = magnitude * val_raw
