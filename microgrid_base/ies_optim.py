@@ -1289,7 +1289,7 @@ class ModelWrapper:
         # TODO: call this function after model solved.
         for assumption in self.assumptions:
             assumption()
-        self.assumptions = []  # clear assumptions
+        self.assumptions = [] # clear assumptions
 
     def __del__(self):
         del self.model
