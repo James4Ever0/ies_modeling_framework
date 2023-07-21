@@ -174,7 +174,12 @@ except:
     from typing_extensions import TypeAlias
 VAL_WITH_UNIT: TypeAlias = Tuple[Union[float, int], str]
 
+def valueWithUnitToQuantity(val_with_unit:VAL_WITH_UNIT):
+    quantity = 
+    return quantity
+
 import beartype
 @beartype.beartype
 def multiplyWithUnit(val_with_unit_0: VAL_WITH_UNIT, val_with_unit_1: VAL_WITH_UNIT):
-    ...
+    q0 = val_with_unit_0[0] * ureg.Unit(val_with_unit_0[1])
+    q1 = val_with_unit_1[0] * ureg.Unit(val_with_unit_1[1])
