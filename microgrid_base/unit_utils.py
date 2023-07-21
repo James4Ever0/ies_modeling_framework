@@ -175,5 +175,6 @@ except:
 VAL_WITH_UNIT: TypeAlias = Tuple[Union[float, int], str]
 
 import beartype
+@beartype.beartype
 def multiplyWithUnit(val_with_unit_0: VAL_WITH_UNIT, val_with_unit_1: VAL_WITH_UNIT):
     ...
