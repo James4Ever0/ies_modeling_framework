@@ -6,6 +6,7 @@ import jinja2
 import shutil
 import os
 import pyright # for checking if really installed.
+import re
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
@@ -58,6 +59,7 @@ def load_render_and_format(
             output = subprocess.run(['pyright', typechecker_input_path], capture_output=True, encoding='utf-8')
             output.stdout # str now!
             errorRegex = r"^.+?reportUndefinedVariable.+$"
+            re.findall()
         with open(output_path, "w+") as f:
             f.write(result)
         os.remove(tmp_output_path)
