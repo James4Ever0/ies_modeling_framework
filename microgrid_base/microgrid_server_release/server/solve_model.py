@@ -360,7 +360,7 @@ def solveModelFromCalcParamList(
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                     _仿真结果 = 结果 = 结果类.export(devInst, timeParam)
-                    规划结果 = 规划结果详情.export(devInst, _仿真结果)
+                    规划结果 = 规划结果详情.export(devInst, _仿真结果, timeParam)
                     # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
                     # 之前结果 = deepcopy(仿真结果表.get(devInst, None))

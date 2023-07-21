@@ -3935,14 +3935,41 @@ class 设备模型协议(Protocol):
 
 class 规划结果详情(BaseModel):
     元件名称: str = Field(title="元件名称", description="对应字段: deviceName")
+    """
+    对应字段: deviceName
+    """
     型号: str = Field(title="型号", description="对应字段: deviceModel")
+    """
+    对应字段: deviceModel
+    """
     数量: int = Field(title="数量", description="对应字段: deviceCount")
+    """
+    对应字段: deviceCount
+    """
     平均效率_平均COP: float = Field(title="平均效率_平均COP", description="对应字段: COP")
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
+    """
+    对应字段: COP
+    """
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\\n对应字段: purchasingCost")
+    """
+    单位: 万元\n对应字段: purchasingCost
+    """
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\\n对应字段: maintenanceFee")
+    """
+    单位: 万元\n对应字段: maintenanceFee
+    """
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\\n对应字段: CO2Emission")
+    """
+    单位: 吨\n对应字段: CO2Emission
+    """
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\\n对应字段: NOXEmission")
+    """
+    单位: 吨\n对应字段: NOXEmission
+    """
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\\n对应字段: SO2Emission")
+    """
+    单位: 吨\n对应字段: SO2Emission
+    """
 
     @staticmethod
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
@@ -3980,18 +4007,59 @@ class 规划结果详情(BaseModel):
 
 class 规划方案概览(BaseModel):
     方案类型: str = Field(title="方案类型", description="对应字段: planType")
-    年化费用: float = Field(title="年化费用", description="单位: 万元\n对应字段: annualizedCost")
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
-    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\n对应字段: coldLoad")
-    年热负荷: float = Field(title="年热负荷", description="单位: kWh\n对应字段: hotLoad")
-    年电负荷: float = Field(title="年电负荷", description="单位: kWh\n对应字段: eleLoad")
-    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\n对应字段: steamLoad")
-    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\n对应字段: hydrogenLoad")
-    年自来水消耗量: float = Field(title="年自来水消耗量", description="单位: t\n对应字段: waterConsumption")
+    """
+    对应字段: planType
+    """
+    年化费用: float = Field(title="年化费用", description="单位: 万元\\n对应字段: annualizedCost")
+    """
+    单位: 万元\n对应字段: annualizedCost
+    """
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\\n对应字段: purchasingCost")
+    """
+    单位: 万元\n对应字段: purchasingCost
+    """
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\\n对应字段: maintenanceFee")
+    """
+    单位: 万元\n对应字段: maintenanceFee
+    """
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\\n对应字段: CO2Emission")
+    """
+    单位: 吨\n对应字段: CO2Emission
+    """
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\\n对应字段: NOXEmission")
+    """
+    单位: 吨\n对应字段: NOXEmission
+    """
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\\n对应字段: SO2Emission")
+    """
+    单位: 吨\n对应字段: SO2Emission
+    """
+    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\\n对应字段: coldLoad")
+    """
+    单位: kWh\n对应字段: coldLoad
+    """
+    年热负荷: float = Field(title="年热负荷", description="单位: kWh\\n对应字段: hotLoad")
+    """
+    单位: kWh\n对应字段: hotLoad
+    """
+    年电负荷: float = Field(title="年电负荷", description="单位: kWh\\n对应字段: eleLoad")
+    """
+    单位: kWh\n对应字段: eleLoad
+    """
+    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\\n对应字段: steamLoad")
+    """
+    单位: t\n对应字段: steamLoad
+    """
+    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\\n对应字段: hydrogenLoad")
+    """
+    单位: Nm³\n对应字段: hydrogenLoad
+    """
+    年自来水消耗量: float = Field(
+        title="年自来水消耗量", description="单位: t\\n对应字段: waterConsumption"
+    )
+    """
+    单位: t\n对应字段: waterConsumption
+    """
 
     @staticmethod
     def export(
