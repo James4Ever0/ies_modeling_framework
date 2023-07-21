@@ -114,7 +114,7 @@ def ReLU(val):
         {% if t!='str' %}
     {# mag, std, old #}
     {% do paramWithUnits[className] = paramWithUnits.get(className, []) %}
-    {% do paramWithUnits[className].append(paramDef[2]) %}
+    {% do paramWithUnits[className].append((PN, paramDef[2])) %}
     """
     单位: {{paramDef[2] if paramDef[0] == 1 else "{} <- {}".format(paramDef[2], paramDef[1])}}
     """
@@ -250,7 +250,7 @@ def ReLU(val):
         {% continue %}
     {% endif %}
 class {{devName}}仿真结果(BaseModel):
-{{iterParamDict(paramDict, false)}}
+{{iterParamDict(paramDict, false, devName)}}
 {% set obj = {} %}
 {% call export_data_with_model(devName, obj, '仿真结果', paramDict, needAbs=True)%}
     {% do obj.update(                
@@ -326,7 +326,7 @@ class {{devName}}出力曲线(BaseModel):
     {% do paramDict.update(dict(电功率 = paramDict.pop('充电功率'))) %}
     {# {% set paramDict['电功率'] = paramDict.pop('充电功率') %} #}
 {% endif%}
-{{iterParamDict(paramDict, true)}}
+{{iterParamDict(paramDict, true, devName)}}
 {% set obj = {} %}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))")) %}
 {% call export_data_with_model(devName, obj, '出力曲线', paramDict) %}
