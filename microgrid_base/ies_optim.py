@@ -323,13 +323,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -3041,18 +3041,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3980,10 +3980,15 @@ class 规划结果详情(BaseModel):
 
     class Units:
         设备采购成本 = "万元"
+        a = abc
         设备年维护费 = "万元"
+        a = abc
         年碳排放 = "吨"
+        a = abc
         年NOX排放 = "吨"
+        a = abc
         年SO2排放 = "吨"
+        a = abc
 
     @staticmethod
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
@@ -4096,17 +4101,29 @@ class 规划方案概览(BaseModel):
 
     class Units:
         年化费用 = "万元"
+        a = abc
         设备采购成本 = "万元"
+        a = abc
         设备年维护费 = "万元"
+        a = abc
         年碳排放 = "吨"
+        a = abc
         年NOX排放 = "吨"
+        a = abc
         年SO2排放 = "吨"
+        a = abc
         年冷负荷 = "kWh"
+        a = abc
         年热负荷 = "kWh"
+        a = abc
         年电负荷 = "kWh"
+        a = abc
         年蒸汽负荷 = "t"
+        a = abc
         年氢气负荷 = "Nm³"
+        a = abc
         年自来水消耗量 = "t"
+        a = abc
 
     @staticmethod
     def export(

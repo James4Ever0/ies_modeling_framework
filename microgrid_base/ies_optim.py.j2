@@ -1734,6 +1734,7 @@ class {{planningResultExportClassName}}(BaseModel):
     class Units:
     {% for key, unit in planningUnits.items() %}
         {{key}} = {{repr(unit)}}
+        {# test type checker #}
         a = abc
     {% endfor %}
 
