@@ -402,6 +402,7 @@ def solveModelFromCalcParamList(
                             )
                         else:
                             出力曲线字典.update({devId: 出力曲线.dict()})
+            def 
             仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
             # use "inplace" otherwise you have to manually assign return values.
             仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
