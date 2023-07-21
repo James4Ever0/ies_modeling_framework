@@ -1686,6 +1686,7 @@ class 仿真结果(BaseModel):
     {% else %}
         {% set mtype  = 'float'%}
         {# need to clarify units! #}
+        {# refer to "export_format_validate.py" for unit conversion details. #}
     {% endif%}
     {{englishName}} : {{mtype if mtype !='int' else 'float'}} = Field(title = "{{chineseName}}")
     {# {% if mtype in ['int', 'float']%} #}
