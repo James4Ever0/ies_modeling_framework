@@ -321,35 +321,35 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -3039,18 +3039,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3208,18 +3208,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3370,18 +3370,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3950,25 +3950,30 @@ class 规划结果详情(BaseModel):
     """
     对应字段: COP
     """
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\\n对应字段: purchasingCost")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
     """
-    单位: 万元\n对应字段: purchasingCost
+    单位: 万元
+    对应字段: purchasingCost
     """
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\\n对应字段: maintenanceFee")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
     """
-    单位: 万元\n对应字段: maintenanceFee
+    单位: 万元
+    对应字段: maintenanceFee
     """
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\\n对应字段: CO2Emission")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
     """
-    单位: 吨\n对应字段: CO2Emission
+    单位: 吨
+    对应字段: CO2Emission
     """
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\\n对应字段: NOXEmission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
     """
-    单位: 吨\n对应字段: NOXEmission
+    单位: 吨
+    对应字段: NOXEmission
     """
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\\n对应字段: SO2Emission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
     """
-    单位: 吨\n对应字段: SO2Emission
+    单位: 吨
+    对应字段: SO2Emission
     """
 
     @staticmethod
@@ -4010,55 +4015,65 @@ class 规划方案概览(BaseModel):
     """
     对应字段: planType
     """
-    年化费用: float = Field(title="年化费用", description="单位: 万元\\n对应字段: annualizedCost")
+    年化费用: float = Field(title="年化费用", description="单位: 万元\n对应字段: annualizedCost")
     """
-    单位: 万元\n对应字段: annualizedCost
+    单位: 万元
+    对应字段: annualizedCost
     """
-    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\\n对应字段: purchasingCost")
+    设备采购成本: float = Field(title="设备采购成本", description="单位: 万元\n对应字段: purchasingCost")
     """
-    单位: 万元\n对应字段: purchasingCost
+    单位: 万元
+    对应字段: purchasingCost
     """
-    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\\n对应字段: maintenanceFee")
+    设备年维护费: float = Field(title="设备年维护费", description="单位: 万元\n对应字段: maintenanceFee")
     """
-    单位: 万元\n对应字段: maintenanceFee
+    单位: 万元
+    对应字段: maintenanceFee
     """
-    年碳排放: float = Field(title="年碳排放", description="单位: 吨\\n对应字段: CO2Emission")
+    年碳排放: float = Field(title="年碳排放", description="单位: 吨\n对应字段: CO2Emission")
     """
-    单位: 吨\n对应字段: CO2Emission
+    单位: 吨
+    对应字段: CO2Emission
     """
-    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\\n对应字段: NOXEmission")
+    年NOX排放: float = Field(title="年NOX排放", description="单位: 吨\n对应字段: NOXEmission")
     """
-    单位: 吨\n对应字段: NOXEmission
+    单位: 吨
+    对应字段: NOXEmission
     """
-    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\\n对应字段: SO2Emission")
+    年SO2排放: float = Field(title="年SO2排放", description="单位: 吨\n对应字段: SO2Emission")
     """
-    单位: 吨\n对应字段: SO2Emission
+    单位: 吨
+    对应字段: SO2Emission
     """
-    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\\n对应字段: coldLoad")
+    年冷负荷: float = Field(title="年冷负荷", description="单位: kWh\n对应字段: coldLoad")
     """
-    单位: kWh\n对应字段: coldLoad
+    单位: kWh
+    对应字段: coldLoad
     """
-    年热负荷: float = Field(title="年热负荷", description="单位: kWh\\n对应字段: hotLoad")
+    年热负荷: float = Field(title="年热负荷", description="单位: kWh\n对应字段: hotLoad")
     """
-    单位: kWh\n对应字段: hotLoad
+    单位: kWh
+    对应字段: hotLoad
     """
-    年电负荷: float = Field(title="年电负荷", description="单位: kWh\\n对应字段: eleLoad")
+    年电负荷: float = Field(title="年电负荷", description="单位: kWh\n对应字段: eleLoad")
     """
-    单位: kWh\n对应字段: eleLoad
+    单位: kWh
+    对应字段: eleLoad
     """
-    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\\n对应字段: steamLoad")
+    年蒸汽负荷: float = Field(title="年蒸汽负荷", description="单位: t\n对应字段: steamLoad")
     """
-    单位: t\n对应字段: steamLoad
+    单位: t
+    对应字段: steamLoad
     """
-    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\\n对应字段: hydrogenLoad")
+    年氢气负荷: float = Field(title="年氢气负荷", description="单位: Nm³\n对应字段: hydrogenLoad")
     """
-    单位: Nm³\n对应字段: hydrogenLoad
+    单位: Nm³
+    对应字段: hydrogenLoad
     """
-    年自来水消耗量: float = Field(
-        title="年自来水消耗量", description="单位: t\\n对应字段: waterConsumption"
-    )
+    年自来水消耗量: float = Field(title="年自来水消耗量", description="单位: t\n对应字段: waterConsumption")
     """
-    单位: t\n对应字段: waterConsumption
+    单位: t
+    对应字段: waterConsumption
     """
 
     @staticmethod

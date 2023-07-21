@@ -1715,10 +1715,10 @@ class {{planningResultExportClassName}}(BaseModel):
         {% set valEnglishName = elem['englishName'] %}
         {% set valType = elem['type'] %}
         {% set valUnit = elem['unit'] %}
-        {% set description %}{{'单位: '+valUnit+'\\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}{% endset %}
+        {% set description %}{{'单位: '+valUnit+'\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}{% endset %}
     {{valName}}: {{valType}} = Field(title="{{valName}}", description={{repr(description)}})
     """
-    {{description}}
+{{description | indent(4, true)}}
     """
     {% endfor %}
 
