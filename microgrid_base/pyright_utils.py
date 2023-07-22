@@ -6,6 +6,7 @@ errorRegex = r"^.+?reportUndefinedVariable.+$"
 import parse
 import re
 
+
 def parse_version(version: str):
     p = parse.parse("{x:d}.{y:d}.{z:d}", version)
     return [p[k] for k in "xyz"]
@@ -67,5 +68,6 @@ if __name__ == "__main__":
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
     print(typeErrors)
-    assert typeErrors[0].endswith('test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
-    ]
+    assert typeErrors[0].endswith(
+        'test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
+    )
