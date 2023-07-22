@@ -29,7 +29,7 @@ def run(
     version = pyright.__pyright_version__
     if not check_version(version, MIN_PYRIGHT_VERSION):
         raise Exception(
-            f"Pyright version {version} does not meet minimum version {MIN_PYRIGHT_VERSION}\nPlease upgrade using "
+            f"Pyright version {version} does not meet minimum version {MIN_PYRIGHT_VERSION}\nPlease upgrade using `pip install -U pyright`"
         )
     # current_version = pyright.node.get_pkg_version(pkg_dir / 'package.json')
     # cache_dir = ROOT_CACHE_DIR / current_version
@@ -47,6 +47,7 @@ def run(
 pyright.cli.run = run
 # monkey patch end
 
+if __name__ == "__main__":
 args = ["watchdog_macos.py"]
 kwargs = dict(capture_output=True)
 result = pyright.cli.run(*args, capture_output=True)
