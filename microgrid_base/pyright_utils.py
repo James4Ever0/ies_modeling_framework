@@ -27,7 +27,10 @@ def run(
 ) -> Union["subprocess.CompletedProcess[bytes]", "subprocess.CompletedProcess[str]"]:
     ROOT_CACHE_DIR = pyright.utils.get_cache_dir() / "pyright-python"
     version = pyright.__pyright_version__
-    if not 
+    if not check_version(version, MIN_PYRIGHT_VERSION):
+        raise Exception(
+            f"Pyright version {version} does not meet minimum version {MIN_PYRIGHT_VERSION}\nPlease upgrade using "
+        )
     # current_version = pyright.node.get_pkg_version(pkg_dir / 'package.json')
     # cache_dir = ROOT_CACHE_DIR / current_version
     cache_dir = ROOT_CACHE_DIR / version
