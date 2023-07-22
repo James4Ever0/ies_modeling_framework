@@ -49,7 +49,7 @@ pyright.cli.run = run
 # monkey patch end
 
 if __name__ == "__main__":
-    args = ["ies_optim.py"]
+    args = ["test_undefined.py"]
     kwargs = dict(capture_output=True)
     run_result = pyright.cli.run(*args, capture_output=True, encoding='utf-8')
 
@@ -57,5 +57,7 @@ if __name__ == "__main__":
 
     rich.print(run_result)
     errorRegex = r".+?reportUndefinedVariable.+"
+    if "does not exist" in run_result.stderr:
+        raise Exception(f"Pyright error:\n{run_result.stderr}")
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     breakpoint()
