@@ -1,6 +1,7 @@
 MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
 
 import parse
+import re
 
 
 def parse_version(version: str):
@@ -50,8 +51,11 @@ pyright.cli.run = run
 if __name__ == "__main__":
     args = ["ies_optim.py"]
     kwargs = dict(capture_output=True)
-    result = pyright.cli.run(*args, capture_output=True)
+    run_result = pyright.cli.run(*args, capture_output=True, encoding='utf-8')
 
     import rich
 
-    rich.print(result)
+    rich.print(run_result)
+    errorRegex = r".+?reportUndefinedVariable.+"
+    typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
+    breakpoint()
