@@ -3,8 +3,13 @@ MIN_PYRIGHT_VERSION='1.1.317' # if lower than this version then raise exception.
 import parse
 
 def parse_version(version:str):
-    parse.parse(>)
+    p = parse.parse("{x:d}.{y:d}.{z:d}",version)
+    return [p[k] for k in "xyz"]
+
 def compare_version(current_version:str, minimum_version:str):
+    cp = parse_version(current_version)
+    mp = parse_version(minimum_version)
+    
     
 
 import pyright
