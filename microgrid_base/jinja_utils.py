@@ -67,10 +67,11 @@ def load_render_and_format(
             # )
             run_result = pyright_utils.run(typechecker_input_path, capture_output=True,encoding='utf-8')
             errorRegex = r"^.+?reportUndefinedVariable.+$"
-            typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
+            typeErrors = [e.strip() for e in re.findall(errorRegex, run_result.stdout, re.MULTILINE)]
             # breakpoint()
             if run_result.stderr:
-                raise Exception(f"Pyright error:\n{run_result.stderr}")
+                typeErrors.append("")
+                typeErrors.append(f"Pyright error:\n{run_result.stderr}")
             if typeErrors:
                 typeErrors.insert(
                     0, f"Type error found in file {repr(base_output_path)}"
