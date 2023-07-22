@@ -5,7 +5,7 @@ import black
 import jinja2
 import shutil
 import os
-import pyright  # for checking if really installed.
+import pyright_utils  # for checking if really installed.
 import re
 
 
@@ -60,13 +60,14 @@ def load_render_and_format(
             )
             with open(typechecker_input_path, "w+") as f:
                 f.write(typechecker_input_path)
-            output = subprocess.run(
-                ["pyright", typechecker_input_path],
-                capture_output=True,
-                encoding="utf-8",
-            )
+            # output = subprocess.run(
+            #     ["pyright", typechecker_input_path],
+            #     capture_output=True,
+            #     encoding="utf-8",
+            # )
+            run_result = 
             errorRegex = r"^.+?reportUndefinedVariable.+$"
-            typeErrors = re.findall(errorRegex, output.stdout, re.MULTILINE)
+            typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
             breakpoint()
             if typeErrors:
                 typeErrors.insert(

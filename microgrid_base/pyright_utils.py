@@ -48,10 +48,10 @@ pyright.cli.run = run
 # monkey patch end
 
 if __name__ == "__main__":
-args = ["watchdog_macos.py"]
-kwargs = dict(capture_output=True)
-result = pyright.cli.run(*args, capture_output=True)
+    args = ["ies_optim.py"]
+    kwargs = dict(capture_output=True)
+    result = pyright.cli.run(*args, capture_output=True)
 
-import rich
+    import rich
 
-rich.print(result)
+    rich.print(result)
