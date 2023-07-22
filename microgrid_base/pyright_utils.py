@@ -1,44 +1,53 @@
-MIN_PYRIGHT_VERSION='1.1.317' # if lower than this version then raise exception.
+MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
 
 import parse
 
-def parse_version(version:str):
-    p = parse.parse("{x:d}.{y:d}.{z:d}",version)
+
+def parse_version(version: str):
+    p = parse.parse("{x:d}.{y:d}.{z:d}", version)
     return [p[k] for k in "xyz"]
 
-def compare_version(current_version:str, minimum_version:str):
+
+def check_version(current_version: str, minimum_version: str):
     cp = parse_version(current_version)
     mp = parse_version(minimum_version)
-    
-    
+    for cv, mv in zip(cp, mp):
+        if cv < mv:
+            return False
+    return True
+
 
 import pyright
 from typing import Any, Union
 import subprocess
 
 # monkey patch start
-def run(                                      *args: str, **kwargs: Any
-) -> Union['subprocess.CompletedProcess[bytes]', 'subprocess.CompletedProcess[str]']:
-    ROOT_CACHE_DIR=pyright.utils.get_cache_dir() / 'pyright-python'
-    version=pyright.__pyright_version__
-    #current_version = pyright.node.get_pkg_version(pkg_dir / 'package.json')
-    #cache_dir = ROOT_CACHE_DIR / current_version
+def run(
+    *args: str, **kwargs: Any
+) -> Union["subprocess.CompletedProcess[bytes]", "subprocess.CompletedProcess[str]"]:
+    ROOT_CACHE_DIR = pyright.utils.get_cache_dir() / "pyright-python"
+    version = pyright.__pyright_version__
+    if not 
+    # current_version = pyright.node.get_pkg_version(pkg_dir / 'package.json')
+    # cache_dir = ROOT_CACHE_DIR / current_version
     cache_dir = ROOT_CACHE_DIR / version
     cache_dir.mkdir(exist_ok=True, parents=True)
-    pkg_dir = cache_dir / 'node_modules' / 'pyright'
+    pkg_dir = cache_dir / "node_modules" / "pyright"
 
-    script = pkg_dir / 'index.js'
+    script = pkg_dir / "index.js"
     if not script.exists():
-        raise RuntimeError(f'Expected CLI entrypoint: {script} to exist')
-    result=pyright.node.run('node', str(script), *args, **kwargs)
+        raise RuntimeError(f"Expected CLI entrypoint: {script} to exist")
+    result = pyright.node.run("node", str(script), *args, **kwargs)
     return result
 
-pyright.cli.run=run
+
+pyright.cli.run = run
 # monkey patch end
 
-args=['watchdog_macos.py']
-kwargs=dict(capture_output=True)
-result = pyright.cli.run(*args,capture_output=True)
+args = ["watchdog_macos.py"]
+kwargs = dict(capture_output=True)
+result = pyright.cli.run(*args, capture_output=True)
 
 import rich
+
 rich.print(result)
