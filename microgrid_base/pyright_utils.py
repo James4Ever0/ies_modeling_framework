@@ -60,4 +60,5 @@ if __name__ == "__main__":
     if "does not exist" in run_result.stderr:
         raise Exception(f"Pyright error:\n{run_result.stderr}")
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
-    breakpoint()
+    # breakpoint()
+    print(typeErrors)
