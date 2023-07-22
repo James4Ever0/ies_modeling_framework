@@ -67,6 +67,7 @@ def load_render_and_format(
             )
             errorRegex = r"^.+?reportUndefinedVariable.+$"
             typeErrors = re.findall(errorRegex, output.stdout, re.MULTILINE)
+            breakpoint()
             if typeErrors:
                 typeErrors.insert(
                     0, f"Type error found in file {repr(base_output_path)}"
