@@ -1,8 +1,8 @@
 MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
+errorRegex = r"^.+?reportUndefinedVariable.+$"
 
 import parse
 import re
-
 
 def parse_version(version: str):
     p = parse.parse("{x:d}.{y:d}.{z:d}", version)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     import rich
 
     rich.print(run_result)
-    errorRegex = r".+?reportUndefinedVariable.+"
+    # errorRegex = r".+?reportUndefinedVariable.+"
     # if "does not exist" in run_result.stderr:
     if run_result.stderr:
         raise Exception(f"Pyright error:\n{run_result.stderr}")
