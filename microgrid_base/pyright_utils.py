@@ -49,7 +49,7 @@ pyright.cli.run = run
 # monkey patch end
 
 if __name__ == "__main__":
-    args = ["test_undefined.py"]
+    args = ["../test_undefined.py"]
     kwargs = dict(capture_output=True)
     run_result = pyright.cli.run(*args, capture_output=True, encoding='utf-8')
 
