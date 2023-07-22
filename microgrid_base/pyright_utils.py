@@ -68,6 +68,6 @@ if __name__ == "__main__":
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
     print(typeErrors)
-    assert typeErrors[0].endswith(
+    assert typeErrors[0].endswith( 
         'test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
     )
