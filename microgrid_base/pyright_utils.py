@@ -1,6 +1,8 @@
 MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
 errorRegex = r"^.+?reportUndefinedVariable.+$"
 
+# use `os.strerror` to translate os-specific error code obtained by `subprocess.run`
+
 import parse
 import re
 
@@ -65,6 +67,5 @@ if __name__ == "__main__":
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
     print(typeErrors)
-    assert typeErrors == [
-        '  /Volumes/Toshiba XG3/works/jubilant-adventure2/test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
+    assert typeErrors[0].endswith('test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
     ]
