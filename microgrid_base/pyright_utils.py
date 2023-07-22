@@ -48,6 +48,7 @@ def run(
 pyright.cli.run = run
 # monkey patch end
 
+# short test.
 if __name__ == "__main__":
     # args = ["../test_undefined.py"]
     args = ['ies_optim.py']
