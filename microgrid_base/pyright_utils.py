@@ -1,5 +1,12 @@
 MIN_PYRIGHT_VERSION='1.1.317' # if lower than this version then raise exception.
 
+import parse
+
+def parse_version(version:str):
+    parse.parse(>)
+def compare_version(current_version:str, minimum_version:str):
+    
+
 import pyright
 from typing import Any, Union
 import subprocess
