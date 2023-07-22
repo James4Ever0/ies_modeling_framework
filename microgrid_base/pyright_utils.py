@@ -50,10 +50,10 @@ pyright.cli.run = run
 
 # short test.
 if __name__ == "__main__":
-    # args = ["../test_undefined.py"]
-    args = ['ies_optim.py']
+    args = ["../test_undefined.py"]
+    # args = ['ies_optim.py']
     kwargs = dict(capture_output=True)
-    run_result = pyright.cli.run(*args, capture_output=True, encoding='utf-8')
+    run_result = pyright.cli.run(*args, capture_output=True, encoding="utf-8")
 
     import rich
 
@@ -65,3 +65,6 @@ if __name__ == "__main__":
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
     print(typeErrors)
+    assert typeErrors == [
+        '  /Volumes/Toshiba XG3/works/jubilant-adventure2/test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
+    ]
