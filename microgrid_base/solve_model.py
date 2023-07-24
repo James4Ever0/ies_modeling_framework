@@ -55,21 +55,24 @@ with open("frontend_sim_param_translation.json", "r") as f:
 from pandas import DataFrame
 from topo_check import 拓扑图
 
-###
-def 导出结果表_格式化(结果表:DataFrame, 字符串表头:List[str], 翻译表:Dict[str, str]):
-            仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
-            # use "inplace" otherwise you have to manually assign return values.
-            仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
-            仿真结果表_导出.fillna(
-                cmath.nan, inplace=True
-            )  # default "nan" or "null" replacement, compatible with type "float"
-            仿真结果表_导出 = translateDataframeHeaders(仿真结果表_导出, FSPT)
 
-            仿真结果表_导出.head()
-            # 仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
-            # export_table = 仿真结果表.to_html()
-            # may you change the format.
-            仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+###
+def 导出结果表_格式化(结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str]):
+    仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+    # use "inplace" otherwise you have to manually assign return values.
+    仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
+    仿真结果表_导出.fillna(
+        cmath.nan, inplace=True
+    )  # default "nan" or "null" replacement, compatible with type "float"
+    仿真结果表_导出 = translateDataframeHeaders(仿真结果表_导出, FSPT)
+
+    仿真结果表_导出.head()
+    # 仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
+    # export_table = 仿真结果表.to_html()
+    # may you change the format.
+    仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+
+
 ###
 def mDictListToCalcParamList(mdictList: List):
     calcParamList = []
@@ -95,7 +98,7 @@ def mDictListToCalcParamList(mdictList: List):
     return calcParamList
 
 
-def translateDataframeHeaders(df: DataFrame, translationTable:Dict[str, str]):
+def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     df_dict = df.to_dict()
     df_dict_translated = {translationTable[k]: v for k, v in df_dict.items()}
     ret = DataFrame(df_dict_translated)
@@ -325,10 +328,7 @@ def solveModelFromCalcParamList(
             # try:
 
             仿真结果表 = {}
-            规划结果表 = {}
-            """
-            规划结果详情表
-            """
+            规划结果详情表 = {}
             出力曲线字典 = {}  # 设备ID: 设备出力曲线
 
             创建出力曲线模版 = lambda: [
@@ -375,14 +375,14 @@ def solveModelFromCalcParamList(
                     结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                     出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                     _仿真结果 = 结果 = 结果类.export(devInst, timeParam)
-                    规划结果 = 规划结果详情.export(devInst, _仿真结果, timeParam)
+                    _规划结果详情 = 规划结果详情.export(devInst, _仿真结果, timeParam)
                     # use this as input for planning data export export
                     # 仿真结果表.append(结果.dict())
                     # 之前结果 = deepcopy(仿真结果表.get(devInst, None))
                     # 之前规划结果 = deepcopy(规划结果表.get(devInst, None))
 
                     合并结果表(结果, 仿真结果表, devInst, 仿真结果不可累加表头)
-                    合并结果表(规划结果, 规划结果表, devInst, 规划结果详情不可累加表头)
+                    合并结果表(_规划结果详情, 规划结果详情表, devInst, 规划结果详情不可累加表头)
                     # if 之前结果 == None:
                     #     仿真结果表[devInst] = 结果.dict()
                     # else:
@@ -437,9 +437,9 @@ def solveModelFromCalcParamList(
             print()
             rich.print(出力曲线字典)
             print()
-            仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
-            规划设计表_导出, 规划设计表_格式化 = 导出结果表_格式化(仿真结果表,规划设计字符串表头,FSPT)
-            
+            仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT)
+            规划结果详情表_导出, 规划结果详情表_格式化 = 导出结果表_格式化(规划结果详情表, 规划结果详情字符串表头, ...)
+
             simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化
             出力曲线列表 = []
