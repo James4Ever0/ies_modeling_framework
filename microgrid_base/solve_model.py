@@ -438,6 +438,7 @@ def solveModelFromCalcParamList(
             rich.print(出力曲线字典)
             print()
             仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
+            规划设计表_导出, 规划设计表_格式化 = 导出结果表_格式化(仿真结果表,规划设计字符串表头,FSPT)
             
             simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化
