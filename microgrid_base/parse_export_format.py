@@ -104,6 +104,8 @@ for schemaName, index in subSchemas:  # why we have nan here?
         englishSchemaHeaderIndex
         # englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
+    breakpoint()
+    # 去除了自来水消耗
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
         schemaHeader = schemaHeader.replace("/", "_")  # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
