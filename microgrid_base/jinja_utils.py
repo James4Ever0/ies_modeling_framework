@@ -101,6 +101,7 @@ def load_render_and_format(
         with open(output_path, "w+") as f:
             f.write(backup_content)
         # ref: https://www.geeksforgeeks.org/python-os-utime-method/
+        # do not set this to 0 or something. will cause error.
         os.utime(
             output_path,
             times=(
