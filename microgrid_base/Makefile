@@ -76,7 +76,7 @@ ifeq (${OS_TYPE}, macos)
 MAIN_EXEC=bash cplex_test.sh
 # MAIN_EXEC=${CONDA} bash cplex_test.sh
 else
-MAIN_EXEC=${PYTHON} test_topo_check.py -f
+MAIN_EXEC=env BETTER_EXCEPTIONS=1 ${PYTHON} test_topo_check.py -f
 endif
 
 ################ META TARGETS ################
