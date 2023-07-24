@@ -1,5 +1,6 @@
 MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
-errorRegex = r"^.+?reportUndefinedVariable.+$"
+pyright_errors = ["reportImportCycles", "reportUndefinedVariable"]
+errorRegex = r"^.+?({}).+$".format("|".join(pyright_errors))
 
 # use `os.strerror` to translate os-specific error code obtained by `subprocess.run`
 
@@ -24,6 +25,7 @@ def check_version(current_version: str, minimum_version: str):
 import pyright
 from typing import Any, Union
 import subprocess
+
 
 # monkey patch start
 def run(
@@ -68,6 +70,6 @@ if __name__ == "__main__":
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
     print(typeErrors)
-    assert typeErrors[0].endswith( 
+    assert typeErrors[0].endswith(
         'test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
     )
