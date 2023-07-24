@@ -1723,12 +1723,12 @@ class 设备模型协议(Protocol):
     """
 {{elem['desc'] | indent(4, true)}}
     """
+
     {%endfor%}
 {% endmacro%}
 {% for key, elemDict in planningExportFormatList %}
     {% set planningResultExportClassName = planningResultKeyTranslationMap[key] %}
     {% set planningParamLUT = {"cn": [], 'en': []}%}
-class {{planningResultExportClassName}}_翻译(BaseModel):
     {% set planningUnits = {} %}
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}
@@ -1736,6 +1736,7 @@ class {{planningResultExportClassName}}_翻译(BaseModel):
         {% set valType = elem['type'] %}
         {% set valUnit = elem['unit'] %}
         {% set description %}{{'单位: '+valUnit+'\n' if valUnit != None else ''}}对应字段: {{valEnglishName}}{% endset %}
+        {% set description_en %}{{'单位: '+valUnit+'\n' if valUnit != None else ''}}对应字段: {{valName}}{% endset %}
         {% if valUnit != None%}
             {% do planningUnits.update({valName: valUnit})%}
         {% endif%}
@@ -1743,6 +1744,10 @@ class {{planningResultExportClassName}}_翻译(BaseModel):
         {% do planningParamLUT['cn'].append({"vn": valName, "vt": valType, "desc": description}) %}
         {% do planningParamLUT['en'].append({"vn": valEnglishName, "vt": valType, "desc": description_en}) %}
     {% endfor %}
+    {% set planningResultExportClassNameTranslated= planningResultExportClassName+"_翻译"%}
+class {{planningResultExportClassNameTranslated}}(BaseModel):
+{{createFieldsByList(planningParamLUT['en'])}}
+
 class {{planningResultExportClassName}}(BaseModel):
 {{createFieldsByList(planningParamLUT['cn'])}}
     class Units:
@@ -1750,6 +1755,12 @@ class {{planningResultExportClassName}}(BaseModel):
         {{key}} = {{repr(unit)}}
         {# test type checker #}
     {% endfor %}
+
+    def translate(self):
+        paramDict = self.to_dict()
+        TT = self.get_translation_table()
+        params = {TT[k]: v for k,v in paramDict.items()}
+        return {{planningResultExportClassNameTranslated}}.parse_obj(**params)
 
     @classmethod
     def get_translation_table(cls) -> Dict[str, str]:

@@ -495,7 +495,7 @@ def solveModelFromCalcParamList(
                     FSPT,
                     totalAnnualFee=value(ret.calcTargetLUT["经济"]),
                     planType=targetTypeAsTargetName(ret.targetType),
-                ),
+                ).translate(),
             )
             # except:
             #     import traceback
