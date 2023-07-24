@@ -441,7 +441,7 @@ def solveModelFromCalcParamList(
             print()
             rich.print(出力曲线字典)
             print()
-            breakpoint()
+            # breakpoint()
             仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT)
             breakpoint()
             规划结果详情表_未翻译, _, 规划结果详情表_格式化 = 导出结果表_格式化(
