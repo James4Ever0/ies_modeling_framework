@@ -1685,7 +1685,7 @@ def getDuplicatedSchemaKeysSetFromDataModels(dataModel_0:BaseModel, dataModel_1:
 {# TODO: 添加自来水消耗费用 自来水消耗量 #}
 class 仿真结果(BaseModel):
     {% for chineseName, englishName in frontend_translation_table.items()%}
-    {% if chineseName in ['元件名称', '设备型号']%}
+    {% if chineseName in ['元件名称', '设备型号', '元件类型']%}
         {% set mtype = 'str'%}
     {% elif chineseName in ["设备台数"]%}
         {% set mtype = 'int'%}
