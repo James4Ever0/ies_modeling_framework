@@ -100,7 +100,7 @@ def load_render_and_format(
         # os.remove(tmp_output_path)
         with open(output_path, "w+") as f:
             f.write(backup_content)
-        os.utime(output_path, (0, 0))  # to make this older than anything, must update!
+        os.utime(output_path, ns=(0, 0))  # to make this older than anything, must update!
 
         raise Exception(
             f"Code check failed.\nTemporary cache saved to: '{tmp_output_path}'"
