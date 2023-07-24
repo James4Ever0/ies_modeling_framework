@@ -320,14 +320,23 @@ def solveModelFromCalcParamList(
             targetType=targetType,
         )
         return ret
+    
+    def add_with_nan(v0,v1):
+        if pd.isna(v0):
+            return v1
+        elif pd.isna(v1):
+            return v0
+        else:
+            return v0+v1
 
     def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
         之前结果 = deepcopy(结果表.get(设备模型实例, None))
         if 之前结果 == None:
             结果表[设备模型实例] = 结果.dict()
         else:
+            # TODO: deal with "nan"
             结果表[设备模型实例] = {
-                k: v + 之前结果[k] for k, v in 结果.dict().items() if k not in 不可累加表头
+                k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
             }
 
     def fetchResult(solved: bool, ret: CalcStruct):
