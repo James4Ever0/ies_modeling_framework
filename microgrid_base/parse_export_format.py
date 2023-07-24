@@ -173,8 +173,13 @@ for i, r in table.iterrows():
             device = rlist[0]
             data[key][-1]["devices"].append(device)
     elif not is_empty(first_elem) and not is_empty(second_elem):
-        breakpoint()
-        headings = rlist[: rlist.index("")]
+        # breakpoint()
+        last_empty_index = len(rlist)
+        try:
+            last_empty_index = rlist.index("")
+        except:
+            pass
+        headings = rlist[: last_empty_index]
         trough = 2
         data[key] = data.get(key, []) + [{"headings": headings, "devices": []}]
 
