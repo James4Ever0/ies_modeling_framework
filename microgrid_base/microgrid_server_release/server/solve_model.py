@@ -104,6 +104,7 @@ def mDictListToCalcParamList(mdictList: List):
 
 def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     df_dict = df.to_dict()
+    breakpoint()
     df_dict_translated = {translationTable[k]: v for k, v in df_dict.items()}
     ret = DataFrame(df_dict_translated)
     return ret
@@ -443,7 +444,7 @@ def solveModelFromCalcParamList(
             print()
             # breakpoint()
             仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT)
-            breakpoint()
+            # breakpoint()
             规划结果详情表_未翻译, _, 规划结果详情表_格式化 = 导出结果表_格式化(
                 规划结果详情表, 规划结果详情字符串表头, 规划结果详情.get_translation_table()
             )

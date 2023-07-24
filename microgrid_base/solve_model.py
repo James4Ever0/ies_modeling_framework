@@ -58,7 +58,7 @@ from topo_check import 拓扑图
 
 ###
 def 导出结果表_格式化(
-    结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str]
+    结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str], columns:List[str]
 ) -> Tuple[DataFrame, DataFrame, List[Dict[str, Union[float, int, str]]]]:
     结果表_导出 = pd.DataFrame([v for _, v in 结果表.items()], columns=columns)
     # use "inplace" otherwise you have to manually assign return values.
@@ -104,6 +104,7 @@ def mDictListToCalcParamList(mdictList: List):
 
 def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     df_dict = df.to_dict()
+    # breakpoint()
     df_dict_translated = {translationTable[k]: v for k, v in df_dict.items()}
     ret = DataFrame(df_dict_translated)
     return ret
@@ -442,11 +443,11 @@ def solveModelFromCalcParamList(
             rich.print(出力曲线字典)
             print()
             # breakpoint()
-            仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT)
-            breakpoint()
+            仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT, 仿真结果.schema()['required'])
+            # breakpoint()
             规划结果详情表_未翻译, _, 规划结果详情表_格式化 = 导出结果表_格式化(
                 规划结果详情表, 规划结果详情字符串表头, 规划结果详情.get_translation_table()
-            )
+            , 规划结果详情.schema()['required'])
 
             simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_未翻译]
             planningResultList = [规划结果详情.parse_obj(e) for e in 规划结果详情表_未翻译]
