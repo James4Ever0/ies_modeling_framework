@@ -1745,7 +1745,16 @@ class {{planningResultExportClassName}}(BaseModel):
         schema = cls.schema()
         required_keys = schema['required']
         properties = schema['properties']
-        parse_result = parse.parse('对应字段: {englishTranslation}', description.split("\n")[-1])
+        translation_table = {}
+        for rk in required_keys:
+            prop = properties[rk]
+            desc = prop['description']
+            parse_result = parse.parse('对应字段: {englishTranslation}', desc.split("\n")[-1])
+            et = parse_result['englishTranslation']
+            translation_table[rk] = et
+        return translation_table
+
+
 
     @staticmethod
     {% if key == "方案列表" %}
