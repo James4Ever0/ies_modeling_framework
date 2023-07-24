@@ -4,7 +4,7 @@ from lib_parse_params import main_parser, csv_parser
 FLAGS = {"XLSX": True, "CSV": True}
 
 xlsx_worklist = [
-    ("设备信息库各参数_23_", "基础参数", "device_params_intermediate"),
+    ("设备信息库各参数_23_7_24", "基础参数", "device_params_intermediate"),
     # ("设备信息库各参数", "基础参数", "device_params_intermediate"),
     # ("设备信息库各参数", "设备参数", "device_params_intermediate"),
     # cannot work with all excel. damn it.
