@@ -1719,7 +1719,9 @@ class 设备模型协议(Protocol):
 
 {% for key, elemDict in planningExportFormatList %}
     {% set planningResultExportClassName = planningResultKeyTranslationMap[key] %}
+class {{planningResultExportClassName}}_翻译(BaseModel):
 class {{planningResultExportClassName}}(BaseModel):
+
     {% set planningUnits = {}%}
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}
@@ -1730,7 +1732,11 @@ class {{planningResultExportClassName}}(BaseModel):
         {% if valUnit != None%}
             {% do planningUnits.update({valName: valUnit})%}
         {% endif%}
+    
+        {% do planningParamLUT['cn'].append({"vn": valName, "vt": valType, "desc": description}) %}
+        {% do planningParamLUT['en'].append({"vn": valEnglishName, "vt": valType, "desc": description_en}) %}
     {{valName}}: {{valType}} = Field(title="{{valName}}", description={{repr(description)}})
+
     """
 {{description | indent(4, true)}}
     """
