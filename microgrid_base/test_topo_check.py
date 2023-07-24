@@ -270,6 +270,7 @@ import sys
 flag = sys.argv[-1]
 
 # if flag not in ["-p", "--partial"]:
+# TODO: add test of celery app
 if flag in ["-f", "--full"]:
 # if True: # override to debug.
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
