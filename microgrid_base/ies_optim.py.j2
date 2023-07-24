@@ -1758,9 +1758,9 @@ class {{planningResultExportClassName}}(BaseModel):
 
 
 
-    @staticmethod
     {% if key == "方案列表" %}
-    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], FSPT:Dict[str,str], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
+    @classmethod
+    def export(cls, planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], FSPT:Dict[str,str], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
         def updateParam(k,v):
             if type(v) in [float, int]:
@@ -1773,7 +1773,7 @@ class {{planningResultExportClassName}}(BaseModel):
                 val = getattr(planningResult, duplicatedKey)
                 updateParam(duplicatedKey, val)
 
-        remainedKeys = getRequiredKeysSetFromDataModel(规划结果详情).difference(set(params.keys()))
+        remainedKeys = getRequiredKeysSetFromDataModel(cls).difference(set(params.keys()))
 
         for simulationResult in simulationResultList:
             for remainedKey in remainedKeys:
@@ -1792,7 +1792,7 @@ class {{planningResultExportClassName}}(BaseModel):
         {% for devName in 设备接口集合.keys() %}
             {% do simExportClassList.append("{}仿真结果".format(devName)) %}
         {% endfor %} #}
-       
+    @staticmethod
     def export(deviceModel: 设备模型协议, deviceSimulationResult, timeParam:float):
     {# def export(deviceModel: 设备模型协议, deviceSimulationResult: Union[{{", ".join(simExportClassList)}}], timeParam:float): #}
     {# def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam:float): #}

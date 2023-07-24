@@ -318,13 +318,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -3026,18 +3026,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3987,10 +3987,9 @@ class 规划结果详情(BaseModel):
             translation_table[rk] = et
         return translation_table
 
-    @staticmethod
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
     # 出来的也是每个典型日对应的规划详情，需要根据设备ID进行合并
-
+    @staticmethod
     def export(deviceModel: 设备模型协议, deviceSimulationResult, timeParam: float):
         params = {}
         params["元件名称"] = deviceModel.设备信息.设备名称
@@ -4121,8 +4120,9 @@ class 规划方案概览(BaseModel):
             translation_table[rk] = et
         return translation_table
 
-    @staticmethod
+    @classmethod
     def export(
+        cls,
         planningResultList: List[规划结果详情],
         simulationResultList: List[仿真结果],
         FSPT: Dict[str, str],
@@ -4145,7 +4145,7 @@ class 规划方案概览(BaseModel):
                 val = getattr(planningResult, duplicatedKey)
                 updateParam(duplicatedKey, val)
 
-        remainedKeys = getRequiredKeysSetFromDataModel(规划结果详情).difference(
+        remainedKeys = getRequiredKeysSetFromDataModel(cls).difference(
             set(params.keys())
         )
 
