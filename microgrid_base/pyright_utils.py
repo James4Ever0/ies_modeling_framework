@@ -53,8 +53,8 @@ pyright.cli.run = run
 
 # short test.
 if __name__ == "__main__":
-    args = ["../test_undefined.py"]
-    # args = ['ies_optim.py']
+    # args = ["../test_undefined.py"]
+    args = ['ies_optim.py']
     kwargs = dict(capture_output=True)
     run_result = pyright.cli.run(*args, capture_output=True, encoding="utf-8")
 

@@ -6,6 +6,7 @@ from pydantic import conlist, conint, confloat, constr
 from constants import *
 import cmath
 import pyomo.core.base
+import parse
 from export_format_units import *
 
 try:
@@ -74,7 +75,6 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         price = self.Price
 
         # unit: [currency]/[time]
@@ -120,7 +120,6 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -160,7 +159,6 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每天小时数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 每天小时数)
 
         price = self.PriceList[current_time]
@@ -176,7 +174,6 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -201,7 +198,6 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -242,7 +238,6 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title=f"长度为{每天小时数}的阶梯电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 每天小时数)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -305,13 +300,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -334,13 +329,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -441,7 +436,6 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
-
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -540,7 +534,6 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -645,7 +638,6 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -902,7 +894,6 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
-
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -1009,7 +1000,6 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1092,7 +1082,6 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
-
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1175,7 +1164,6 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
-
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -1335,10 +1323,9 @@ class ModelWrapper:
         return ret
 
     def Var(self, name: str, *args, **kwargs):
-        _initialize = kwargs.get("initialize", 0)
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
-        ret = Var(*args, **kwargs, initialize=_initialize)
+        ret = Var(*args, **kwargs)
         assert (
             getattr(self.model, name, None) is None
         ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
@@ -1383,6 +1370,7 @@ class ModelWrapper:
 # shall you assign port with variables.
 
 # 风、光照
+
 
 # 需要明确单位
 class 计算参数(BaseModel):
@@ -1672,7 +1660,6 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
-
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1734,7 +1721,6 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
-
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -2365,18 +2351,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -2749,7 +2735,6 @@ class 锂电池模型(设备模型):
         if self.needStorageDecayCompensation:
             # TODO: Verify if "compensated decay rate" works.
             if self.计算参数.计算类型 == "设计规划":
-
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表(
                     "总补偿衰减率",
                     bounds=(
@@ -3210,18 +3195,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3985,10 +3970,41 @@ class 规划结果详情(BaseModel):
         年NOX排放 = "吨"
         年SO2排放 = "吨"
 
+    @classmethod
+    def get_translation_table(cls) -> Dict[str, str]:
+        schema = cls.schema()
+        required_keys = schema["required"]
+        properties = schema["properties"]
+        translation_table = {}
+        for rk in required_keys:
+            prop = properties[rk]
+            desc = prop["description"]
+            parse_result = parse.parse(
+                "对应字段: {englishTranslation}", desc.split("\n")[-1]
+            )
+            et = parse_result["englishTranslation"]
+            translation_table[rk] = et
+        return translation_table
+
     @staticmethod
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
     # 出来的也是每个典型日对应的规划详情，需要根据设备ID进行合并
-    def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam: float):
+    def export(
+        deviceModel: 设备模型协议,
+        deviceSimulationResult: Union[
+            柴油仿真结果,
+            电负荷仿真结果,
+            光伏发电仿真结果,
+            风力发电仿真结果,
+            柴油发电仿真结果,
+            锂电池仿真结果,
+            变压器仿真结果,
+            变流器仿真结果,
+            双向变流器仿真结果,
+            传输线仿真结果,
+        ],
+        timeParam: float,
+    ):
         params = {}
         params["元件名称"] = deviceModel.设备信息.设备名称
         params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
@@ -3997,9 +4013,7 @@ class 规划结果详情(BaseModel):
             deviceSimulationResult, "averageEfficiency", cmath.nan
         )
         params["设备采购成本"] = value(deviceModel.总采购成本) * (timeParam / 每年小时数)
-        params[
-            "设备年维护费"
-        ] = deviceSimulationResult.equipmentMaintenanceCosts  # 乘过时间参数就不用乘了
+        params["设备年维护费"] = deviceSimulationResult.设备维护费用  # 乘过时间参数就不用乘了
         for attrName in ["年碳排放", "年NOX排放", "年SO2排放"]:
             gasType = attrName.strip("年").strip("排放") if "碳" not in attrName else "CO2"
 
@@ -4011,7 +4025,7 @@ class 规划结果详情(BaseModel):
                     globals().get(f"{modelBaseName}仿真结果导出单位"), f"{modelBaseName}消耗量"
                 )
                 val_raw, val_unit = multiplyWithUnit(
-                    (deviceSimulationResult.dieselConsumption, dieselConsumptionUnit),
+                    (deviceSimulationResult.柴油消耗量, dieselConsumptionUnit),
                     getattr(deviceModel.设备信息, gasType),
                 )  # [数值，单位]
                 # gas emission unit: kg
@@ -4107,6 +4121,22 @@ class 规划方案概览(BaseModel):
         年蒸汽负荷 = "t"
         年氢气负荷 = "Nm³"
         年自来水消耗量 = "t"
+
+    @classmethod
+    def get_translation_table(cls) -> Dict[str, str]:
+        schema = cls.schema()
+        required_keys = schema["required"]
+        properties = schema["properties"]
+        translation_table = {}
+        for rk in required_keys:
+            prop = properties[rk]
+            desc = prop["description"]
+            parse_result = parse.parse(
+                "对应字段: {englishTranslation}", desc.split("\n")[-1]
+            )
+            et = parse_result["englishTranslation"]
+            translation_table[rk] = et
+        return translation_table
 
     @staticmethod
     def export(
@@ -4229,6 +4259,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(

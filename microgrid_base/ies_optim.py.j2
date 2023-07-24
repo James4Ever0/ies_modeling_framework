@@ -1787,8 +1787,12 @@ class {{planningResultExportClassName}}(BaseModel):
     {# 方案详情 #}
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
     # 出来的也是每个典型日对应的规划详情，需要根据设备ID进行合并
-    {% set simExportClassList = ["{}仿真结果".format(devName) for devName in 设备接口集合.keys()] %}
-    def export(deviceModel: 设备模型协议, deviceSimulationResult: Union[{{", ".join(simExportClassList)}}], timeParam:float):
+        {# {% set simExportClassList = [] %}
+        {% for devName in 设备接口集合.keys() %}
+            {% do simExportClassList.append("{}仿真结果".format(devName)) %}
+        {% endfor %} #}
+    def export(deviceModel: 设备模型协议, deviceSimulationResult, timeParam:float):
+    {# def export(deviceModel: 设备模型协议, deviceSimulationResult: Union[{{", ".join(simExportClassList)}}], timeParam:float): #}
     {# def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam:float): #}
         params = {}
         params['元件名称'] = deviceModel.设备信息.设备名称
@@ -1808,6 +1812,7 @@ class {{planningResultExportClassName}}(BaseModel):
                 modelBaseName = deviceModel.__class__.__name__.strip("模型")
                 dieselConsumptionUnit = getattr(globals().get(f'{modelBaseName}仿真结果导出单位'), f'{modelBaseName}消耗量')
                 val_raw, val_unit = multiplyWithUnit((deviceSimulationResult.柴油消耗量, dieselConsumptionUnit), getattr(deviceModel.设备信息, gasType)) # [数值，单位]
+                {# val_raw, val_unit = multiplyWithUnit((deviceSimulationResult.dieselConsumption, dieselConsumptionUnit), getattr(deviceModel.设备信息, gasType)) # [数值，单位] #}
                 # gas emission unit: kg
                 # now you may want to convert this by acquiring units elsewhere...
                 target_unit = getattr({{planningResultExportClassName}}.Units, attrName)
