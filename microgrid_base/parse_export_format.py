@@ -8,7 +8,9 @@ from constants import *
 
 code_path, template_path = code_and_template_path("export_format_validate")
 
-code_unit_path, template_unit_path = code_and_template_path("export_format_units") # TODO: mark this as dependency as "ies_optim.py"
+code_unit_path, template_unit_path = code_and_template_path(
+    "export_format_units"
+)  # TODO: mark this as dependency as "ies_optim.py"
 
 # you may also need to render some other code to avoid circular importing issues.
 
@@ -61,29 +63,32 @@ from unit_utils import unitParserWrapper
 
 # need to remove few terms before saving to disk.
 removeTermRegexes = {
-    '方案列表':[r'年平均.+','方案名称'], # use non-greedy modifier (backtracking)
-    '方案详情':['能源消耗费用',r'年.+?收入', '出力曲线']
+    "方案列表": [r"年平均.+", "方案名称"],  # use non-greedy modifier (backtracking)
+    "方案详情": ["能源消耗费用", r"年.+?收入", "出力曲线"],
 }
-hitRecords = {k: {e: False} for k,v in removeTermRegexes.items() for e in v}
+hitRecords = {k: {e: False} for k, v in removeTermRegexes.items() for e in v}
 from typing import List
 
-def checkIfMatchAListOfRegexes(term:str, regexList:List[str], key:str):
+
+def checkIfMatchAListOfRegexes(term: str, regexList: List[str], key: str):
     for regex in regexList:
         if re.match(regex, term):
             hitRecords[key][term] = True
             return True
     return False
 
+
 def getSchemaType(schemaHeader, schemaHeaderUnit):
     if schemaHeaderUnit:
-        return 'float'
+        return "float"
     else:
-        if schemaHeader in ['数量']:
-            return 'int'
-        elif schemaHeader in ['平均效率_平均COP']:
-            return 'float'
+        if schemaHeader in ["数量"]:
+            return "int"
+        elif schemaHeader in ["平均效率_平均COP"]:
+            return "float"
         else:
-            return 'str'
+            return "str"
+
 
 for schemaName, index in subSchemas:  # why we have nan here?
     regexList = removeTermRegexes[schemaName]
@@ -94,13 +99,13 @@ for schemaName, index in subSchemas:  # why we have nan here?
     # rich.print(schemaHeaders)
     # breakpoint()
     englishSchemaHeaderIndex = schemaHeaderIndex + 2
-    
+
     englishSchemaHeaders = 设计规划T[
         englishSchemaHeaderIndex
         # englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
     for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
-        schemaHeader = schemaHeader.replace("/",'_') # for code generation
+        schemaHeader = schemaHeader.replace("/", "_")  # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaName):
             print("SKIPPING:", strippedSchemaHeader)
@@ -110,17 +115,17 @@ for schemaName, index in subSchemas:  # why we have nan here?
                 strippedSchemaHeader: {
                     "unit": schemaHeaderUnit,  # could be "None"
                     "englishName": englishSchemaHeader,
-                    "type": getSchemaType(schemaHeader, schemaHeaderUnit)
+                    "type": getSchemaType(schemaHeader, schemaHeaderUnit),
                 }
             }
         )
 
 # check if all regexes have hits.
 errors = []
-for k,v in hitRecords.items():
+for k, v in hitRecords.items():
     for e in v:
         if e is False:
-            errors.append(f'Error: regex {e.__repr__()} with no match!')
+            errors.append(f"Error: regex {e.__repr__()} with no match!")
 
 if errors:
     raise Exception("\n".join(errors))
@@ -347,5 +352,8 @@ load_render_and_format(
 )
 
 load_render_and_format(
-    template_unit_path, code_unit_path, deepcopy(render_params), banner="FORMAT_UNIT_CODE"
+    template_unit_path,
+    code_unit_path,
+    deepcopy(render_params),
+    banner="FORMAT_UNIT_CODE",
 )
