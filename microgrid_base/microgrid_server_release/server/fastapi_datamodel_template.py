@@ -20,7 +20,8 @@ except:
 
 # question: how to convert pydantic models to json?
 # to json: json.dumps(model.dict())
-from ies_optim import EnergyFlowGraph, 仿真结果, 规划结果详情, 规划方案概览
+# from ies_optim import EnergyFlowGraph, 仿真结果, 规划结果详情, 规划方案概览
+from ies_optim import *
 
 
 class 曲线(BaseModel):

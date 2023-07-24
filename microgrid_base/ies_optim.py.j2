@@ -1757,7 +1757,8 @@ class {{planningResultExportClassName}}(BaseModel):
     {% endfor %}
 
     def translate(self):
-        paramDict = self.to_dict()
+        paramDict = self.dict()
+        {# paramDict = self.to_dict() #}
         TT = self.get_translation_table()
         params = {TT[k]: v for k,v in paramDict.items()}
         return {{planningResultExportClassNameTranslated}}.parse_obj(**params)
