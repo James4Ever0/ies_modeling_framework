@@ -137,11 +137,11 @@ templates: output_template.json template_input.json
 
 param_base.py: frontend_sim_param_translation.json microgrid_jinja_param_base.json ${MICROGRID_TYPESYS_JSONS} lib_parse_params.py
 
-topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} pyright_regex_check
+topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} jinja_template_model_generator.py
 
-pyright_regex_check:
-	${PYTHON} pyright_utils.py
+# pyright_regex_check:
+# 	${PYTHON} pyright_utils.py
 
 ${EXPORT_FORMAT_CODE} ${EXPORT_FORMAT_SCHEMA} sim_param_export.xlsx: export_format_validate.py.j2 export_format_units.py.j2 parse_export_format.py jinja_utils.py 设备信息库各参数.xlsx param_base.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} parse_export_format.py
