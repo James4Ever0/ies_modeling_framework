@@ -1716,13 +1716,20 @@ class 仿真结果(BaseModel):
 
 class 设备模型协议(Protocol):
     设备信息: 设备信息
-
+    
+{% macro createFieldsByList(lst)%}
+    {% for elem in lst%}
+    {{elem['vn']}}: {{elem['vt']}} = Field(title="{{elem['vn']}}", description={{repr(elem['desc'])}})
+    """
+{{elem['desc'] | indent(4, true)}}
+    """
+    {%endfor%}
+{% endmacro%}
 {% for key, elemDict in planningExportFormatList %}
     {% set planningResultExportClassName = planningResultKeyTranslationMap[key] %}
+    {% set planningParamLUT = {"cn": [], 'en': []}%}
 class {{planningResultExportClassName}}_翻译(BaseModel):
-class {{planningResultExportClassName}}(BaseModel):
-
-    {% set planningUnits = {}%}
+    {% set planningUnits = {} %}
     {% for elemKey, elem in elemDict.items() %}
         {% set valName = elemKey %}
         {% set valEnglishName = elem['englishName'] %}
@@ -1735,13 +1742,9 @@ class {{planningResultExportClassName}}(BaseModel):
     
         {% do planningParamLUT['cn'].append({"vn": valName, "vt": valType, "desc": description}) %}
         {% do planningParamLUT['en'].append({"vn": valEnglishName, "vt": valType, "desc": description_en}) %}
-    {{valName}}: {{valType}} = Field(title="{{valName}}", description={{repr(description)}})
-
-    """
-{{description | indent(4, true)}}
-    """
     {% endfor %}
-
+class {{planningResultExportClassName}}(BaseModel):
+{{createFieldsByList(planningParamLUT['cn'])}}
     class Units:
     {% for key, unit in planningUnits.items() %}
         {{key}} = {{repr(unit)}}
