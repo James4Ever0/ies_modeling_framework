@@ -59,13 +59,14 @@ from topo_check import 拓扑图
 ###
 def 导出结果表_格式化(
     结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str]
-) -> Tuple[DataFrame, List[Dict[str, Union[float, int, str]]]]:
+) -> Tuple[DataFrame, DataFrame, List[Dict[str, Union[float, int, str]]]]:
     结果表_导出 = pd.DataFrame([v for _, v in 结果表.items()], columns=columns)
     # use "inplace" otherwise you have to manually assign return values.
     结果表_导出.fillna({elem: "" for elem in 字符串表头}, inplace=True)
     结果表_导出.fillna(
         cmath.nan, inplace=True
     )  # default "nan" or "null" replacement, compatible with type "float"
+    结果表_未翻译 = 结果表_导出
     结果表_导出 = translateDataframeHeaders(结果表_导出, 翻译表)
 
     结果表_导出.head()
@@ -73,7 +74,7 @@ def 导出结果表_格式化(
     # export_table = 仿真结果表.to_html()
     # may you change the format.
     结果表_格式化 = 结果表_导出.to_dict(orient="records")
-    return 结果表_导出, 结果表_格式化
+    return 结果表_未翻译, 结果表_导出, 结果表_格式化
 
 
 ###
