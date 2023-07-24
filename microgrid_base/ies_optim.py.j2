@@ -1742,7 +1742,10 @@ class {{planningResultExportClassName}}(BaseModel):
 
     @classmethod
     def get_translation_table(cls):
-        cls.
+        schema = cls.schema()
+        required_keys = schema['required']
+        properties = schema['properties']
+        parse_result = parse.parse('对应字段: {englishTranslation}', description.split("\n")[-1])
 
     @staticmethod
     {% if key == "方案列表" %}
