@@ -43,6 +43,11 @@ def load_render_and_format(
     # import black.Mode
     output_path_elems = output_path.split(".")
     output_path_elems.insert(-1, "new")
+    if os.path.exists(output_path):
+        with open(output_path,'r') as f:
+            backup_content = f.read()
+    else:
+        backup_content = ""
     with open(tmp_output_path := ".".join(output_path_elems), "w+") as f:
         f.write(result)
     if not needFormat:
@@ -53,41 +58,46 @@ def load_render_and_format(
         # TODO: add rollback mechanism in makefile
         result = black.format_str(result, mode=black.Mode())
         print("Formatter Ok.")
-        with TemporaryDirectory() as TP:
-
-            typechecker_input_path = os.path.join(
-                TP, base_output_path := os.path.basename(output_path)
-            )
-            with open(typechecker_input_path, "w+") as f:
-                f.write(typechecker_input_path)
-            # output = subprocess.run(
-            #     ["pyright", typechecker_input_path],
-            #     capture_output=True,
-            #     encoding="utf-8",
-            # )
-            run_result = pyright_utils.run(
-                typechecker_input_path, capture_output=True, encoding="utf-8"
-            )
-            typeErrors = [
-                e.strip()
-                for e in re.findall(pyright_utils.errorRegex, run_result.stdout, re.MULTILINE)
-            ]
-            # breakpoint()
-            if run_result.stderr:
-                typeErrors.append("")
-                typeErrors.append(f"Pyright error:\n{run_result.stderr}")
-            if typeErrors:
-                typeErrors.insert(
-                    0, f"Type error found in file {repr(base_output_path)}"
-                )
-                raise Exception(f"\n{' '*4}".join(typeErrors))
+        # with TemporaryDirectory() as TP:
         with open(output_path, "w+") as f:
             f.write(result)
+        # do further type checking.
+    
+        # typechecker_input_path = os.path.join(
+        #     TP, base_output_path := os.path.basename(output_path)
+        # )
+        # with open(typechecker_input_path, "w+") as f:
+        #     f.write(typechecker_input_path)
+        # output = subprocess.run(
+        #     ["pyright", typechecker_input_path],
+        #     capture_output=True,
+        #     encoding="utf-8",
+        # )
+        run_result = pyright_utils.run(
+            output_path, capture_output=True, encoding="utf-8"
+        )
+        typeErrors = [
+            e.strip()
+            for e in re.findall(pyright_utils.errorRegex, run_result.stdout, re.MULTILINE)
+        ]
+        # breakpoint()
+        if run_result.stderr:
+            typeErrors.append("")
+            typeErrors.append(f"Pyright error:\n{run_result.stderr}")
+        if typeErrors:
+            typeErrors.insert(
+                0, f"Type error found in file {repr(output_path)}"
+            )
+            raise Exception(f"\n{' '*4}".join(typeErrors))
+        print("Pyright Ok.")
         os.remove(tmp_output_path)
     except:
         import traceback
-
         traceback.print_exc()
+        # os.remove(tmp_output_path)
+        with open(output_path, "w+") as f:
+            f.write(backup_content)
+
         raise Exception(
             f"Syntax check failed.\nTemporary cache saved to: '{tmp_output_path}'"
         )
