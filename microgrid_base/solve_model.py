@@ -58,19 +58,20 @@ from topo_check import 拓扑图
 
 ###
 def 导出结果表_格式化(结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str]):
-    仿真结果表_导出 = pd.DataFrame([v for _, v in 仿真结果表.items()], columns=columns)
+    结果表_导出 = pd.DataFrame([v for _, v in 结果表.items()], columns=columns)
     # use "inplace" otherwise you have to manually assign return values.
-    仿真结果表_导出.fillna({elem: "" for elem in 仿真结果字符串表头}, inplace=True)
-    仿真结果表_导出.fillna(
+    结果表_导出.fillna({elem: "" for elem in 字符串表头}, inplace=True)
+    结果表_导出.fillna(
         cmath.nan, inplace=True
     )  # default "nan" or "null" replacement, compatible with type "float"
-    仿真结果表_导出 = translateDataframeHeaders(仿真结果表_导出, FSPT)
+    结果表_导出 = translateDataframeHeaders(结果表_导出, 翻译表)
 
-    仿真结果表_导出.head()
+    结果表_导出.head()
     # 仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
     # export_table = 仿真结果表.to_html()
     # may you change the format.
-    仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
+    结果表_格式化 = 结果表_导出.to_dict(orient="records")
+    return 结果表_导出, 结果表_格式化
 
 
 ###
@@ -438,7 +439,7 @@ def solveModelFromCalcParamList(
             rich.print(出力曲线字典)
             print()
             仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT)
-            规划结果详情表_导出, 规划结果详情表_格式化 = 导出结果表_格式化(规划结果详情表, 规划结果详情字符串表头, ...)
+            规划结果详情表_导出, 规划结果详情表_格式化 = 导出结果表_格式化(规划结果详情表, 规划结果详情字符串表头, 规划结果详情.get_translation_table())
 
             simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化

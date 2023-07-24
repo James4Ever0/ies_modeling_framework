@@ -16,6 +16,7 @@ import cmath
 {# consider to type check all variable operations #}
 {# cast such type to all variables, to forbid 'var * var' #}
 import pyomo.core.base
+import parse
 from export_format_units import *
 {% set IndexedVar = "pyomo.core.base.var.IndexedVar" %}
 {% set GeneralVarData = "pyomo.core.base.var._GeneralVarData" %}
@@ -1741,7 +1742,7 @@ class {{planningResultExportClassName}}(BaseModel):
     {% endfor %}
 
     @classmethod
-    def get_translation_table(cls):
+    def get_translation_table(cls) -> Dict[str, str]:
         schema = cls.schema()
         required_keys = schema['required']
         properties = schema['properties']
