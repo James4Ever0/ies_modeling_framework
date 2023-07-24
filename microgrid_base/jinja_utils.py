@@ -44,7 +44,7 @@ def load_render_and_format(
     output_path_elems = output_path.split(".")
     output_path_elems.insert(-1, "new")
     if os.path.exists(output_path):
-        with open(output_path,'r') as f:
+        with open(output_path, "r") as f:
             backup_content = f.read()
     else:
         backup_content = ""
@@ -62,7 +62,7 @@ def load_render_and_format(
         with open(output_path, "w+") as f:
             f.write(result)
         # do further type checking.
-    
+
         # typechecker_input_path = os.path.join(
         #     TP, base_output_path := os.path.basename(output_path)
         # )
@@ -77,26 +77,30 @@ def load_render_and_format(
             output_path, capture_output=True, encoding="utf-8"
         )
         typeErrors = [
-            e.strip().replace(os.path.basename(output_path), os.path.basename(tmp_output_path))
-            for e in re.findall(pyright_utils.errorRegex, run_result.stdout, re.MULTILINE)
+            e.strip().replace(
+                os.path.basename(output_path), os.path.basename(tmp_output_path)
+            )
+            for e in re.findall(
+                pyright_utils.errorRegex, run_result.stdout, re.MULTILINE
+            )
         ]
         # breakpoint()
         if run_result.stderr:
             typeErrors.append("")
             typeErrors.append(f"Pyright error:\n{run_result.stderr}")
         if typeErrors:
-            typeErrors.insert(
-                0, f"Type error found in file {repr(output_path)}"
-            )
+            typeErrors.insert(0, f"Type error found in file {repr(output_path)}")
             raise Exception(f"\n{' '*4}".join(typeErrors))
         print("Pyright Ok.")
         os.remove(tmp_output_path)
     except:
         import traceback
+
         traceback.print_exc()
         # os.remove(tmp_output_path)
         with open(output_path, "w+") as f:
             f.write(backup_content)
+        os.utime(output_path, (0, 0))  # to make this older than anything, must update!
 
         raise Exception(
             f"Code check failed.\nTemporary cache saved to: '{tmp_output_path}'"
