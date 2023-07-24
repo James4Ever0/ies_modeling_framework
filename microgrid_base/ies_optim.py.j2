@@ -1801,7 +1801,7 @@ class {{planningResultExportClassName}}(BaseModel):
         params['数量'] = getattr(deviceModel.设备信息,'equiCounts', 0) # 不要累加数量！
         params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
-        params['设备年维护费'] = deviceSimulationResult.设备维护费用 # 乘过时间参数就不用乘了
+        params['设备年维护费'] = getattr(deviceSimulationResult, "设备维护费用", cmath.nan) # 乘过时间参数就不用乘了
         {# params['设备年维护费'] = deviceSimulationResult.equipmentMaintenanceCosts # 乘过时间参数就不用乘了 #}
         for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
             gasType = attrName.strip('年').strip('排放') if '碳' not in attrName else 'CO2'
@@ -1828,7 +1828,8 @@ class {{planningResultExportClassName}}(BaseModel):
             params[attrName] = val
 
     {% endif %}
-            return {{planningResultExportClassName}}(
+        {# FIX: return inside for loop #}
+        return {{planningResultExportClassName}}(
             **params
         )
 

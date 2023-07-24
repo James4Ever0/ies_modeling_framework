@@ -318,24 +318,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -351,13 +351,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -3026,18 +3026,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3195,18 +3195,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3505,18 +3505,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3999,7 +3999,9 @@ class 规划结果详情(BaseModel):
             deviceSimulationResult, "averageEfficiency", cmath.nan
         )
         params["设备采购成本"] = value(deviceModel.总采购成本) * (timeParam / 每年小时数)
-        params["设备年维护费"] = deviceSimulationResult.设备维护费用  # 乘过时间参数就不用乘了
+        params["设备年维护费"] = getattr(
+            deviceSimulationResult, "设备维护费用", cmath.nan
+        )  # 乘过时间参数就不用乘了
         for attrName in ["年碳排放", "年NOX排放", "年SO2排放"]:
             gasType = attrName.strip("年").strip("排放") if "碳" not in attrName else "CO2"
 
@@ -4025,7 +4027,7 @@ class 规划结果详情(BaseModel):
                 val = cmath.nan
             params[attrName] = val
 
-            return 规划结果详情(**params)
+        return 规划结果详情(**params)
 
 
 class 规划方案概览(BaseModel):
@@ -4160,7 +4162,7 @@ class 规划方案概览(BaseModel):
                         updateParam(remainedKey, val)
                         break
 
-            return 规划方案概览(**params)
+        return 规划方案概览(**params)
 
 
 class 节点基类(BaseModel):
