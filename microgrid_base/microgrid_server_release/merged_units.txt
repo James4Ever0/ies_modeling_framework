@@ -940,3 +940,5 @@ kWh = kW * hour
 千瓦每千米 = kW/km
 
 # kWh = 3600000 J
+
+吨 = metric_ton
