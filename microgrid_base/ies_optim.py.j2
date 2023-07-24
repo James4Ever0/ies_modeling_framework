@@ -1790,7 +1790,9 @@ class {{planningResultExportClassName}}(BaseModel):
                         updateParam(remainedKey, val)
                     {# FIX: early break #}
                     break
-
+        remainedKeys = getRequiredKeysSetFromDataModel(cls).difference(set(params.keys()))
+        for rk in remainedKeys:
+            params[rk] = cmath.nan
     {% else %}
     {# 方案详情 #}
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
