@@ -446,6 +446,7 @@ def solveModelFromCalcParamList(
             )
 
             simulationResultList = [仿真结果.parse_obj(e) for e in 仿真结果表_格式化]
+            planningResultList = [规划结果详情.parse_obj(e) for e in 规划结果详情表_格式化]
             # return 出力曲线字典, 仿真结果表_格式化
             出力曲线列表 = []
             for devId, content_dict in 出力曲线字典.items():
@@ -475,12 +476,7 @@ def solveModelFromCalcParamList(
                     financialObjective=value(ret.calcTargetLUT["经济"]),
                     environmentalObjective=value(ret.calcTargetLUT["环保"]),
                 ),
-                planningResultTable=(
-                    # planningResultList := [
-                    #     规划结果详情.export(deviceModel, deviceSimulationResult, timeParam)
-                    #     for deviceModel, deviceSimulationResult in deviceModelAndSimulationResultList
-                    # ]
-                ),
+                planningResultTable=规划结果详情表_格式化,
                 planningSummary=规划方案概览.export(
                     planningResultList,
                     simulationResultList,
