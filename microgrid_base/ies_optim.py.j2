@@ -1740,6 +1740,10 @@ class {{planningResultExportClassName}}(BaseModel):
         {# test type checker #}
     {% endfor %}
 
+    @classmethod
+    def get_translation_table(cls):
+        cls.
+
     @staticmethod
     {% if key == "方案列表" %}
     def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
