@@ -1780,15 +1780,15 @@ class {{planningResultExportClassName}}(BaseModel):
 
         for simulationResult in simulationResultList:
             for remainedKey in remainedKeys: # '年热负荷', '年电负荷', '年冷负荷', '年蒸汽负荷', '年氢气负荷'
-                keyBase = remainedKey.strip("年")
-                {# keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量') #}
-                {# for keySuffix in []: #}
-                    {# attemptKey = f"{keyBase}{keySuffix}" #}
-                if (val:=getattr(simulationResult, FSPT.get(keyBase,"NO_TRANSLATION"),...)) is not ...:
+                {# keyBase = remainedKey.strip("年") #}
+                keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
+                for keySuffix in ['负荷', '消耗量']:
+                    attemptKey = f"{keyBase}{keySuffix}"
+                    if (val:=getattr(simulationResult, FSPT.get(keyBase,"NO_TRANSLATION"),...)) is not ...:
                     {# if (val:=getattr(simulationResult, FSPT.get(attemptKey,...),...)) is not ...: #}
-                    updateParam(remainedKey, val)
+                        updateParam(remainedKey, val)
                     {# FIX: early break #}
-                    {# break #}
+                    break
 
     {% else %}
     {# 方案详情 #}
