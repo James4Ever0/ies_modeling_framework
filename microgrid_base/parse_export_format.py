@@ -1,5 +1,6 @@
 excel_path = "设备信息库各参数.xlsx"
-
+from lib_parse_params import repair_excel
+repair_excel(excel_path)
 from jinja_utils import code_and_template_path, load_render_and_format
 import rich
 import re
@@ -104,9 +105,10 @@ for schemaName, index in subSchemas:  # why we have nan here?
         englishSchemaHeaderIndex
         # englishSchemaHeaderIndex := schemaHeaderIndex + 2
     ].to_list()
-    breakpoint()
+    # breakpoint()
     # 去除了自来水消耗
-    for schemaHeader, englishSchemaHeader in zip(schemaHeaders, englishSchemaHeaders):
+    remove_isna = lambda it: filter(lambda e: not pandas.isna(e), it)
+    for schemaHeader, englishSchemaHeader in zip(remove_isna(schemaHeaders), remove_isna(englishSchemaHeaders)):
         schemaHeader = schemaHeader.replace("/", "_")  # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaName):
@@ -171,6 +173,7 @@ for i, r in table.iterrows():
             device = rlist[0]
             data[key][-1]["devices"].append(device)
     elif not is_empty(first_elem) and not is_empty(second_elem):
+        breakpoint()
         headings = rlist[: rlist.index("")]
         trough = 2
         data[key] = data.get(key, []) + [{"headings": headings, "devices": []}]

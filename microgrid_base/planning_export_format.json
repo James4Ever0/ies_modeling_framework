@@ -59,11 +59,6 @@
             "unit": "Nm³",
             "englishName": "hydrogenLoad",
             "type": "float"
-        },
-        "年自来水消耗量": {
-            "unit": "t",
-            "englishName": "waterConsumption",
-            "type": "float"
         }
     },
     "方案详情": {
