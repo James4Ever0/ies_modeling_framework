@@ -77,7 +77,7 @@ def load_render_and_format(
             output_path, capture_output=True, encoding="utf-8"
         )
         typeErrors = [
-            e.strip()
+            e.strip().replace(os.path.basename(output_path), os.path.basename(tmp_output_path))
             for e in re.findall(pyright_utils.errorRegex, run_result.stdout, re.MULTILINE)
         ]
         # breakpoint()
@@ -99,7 +99,7 @@ def load_render_and_format(
             f.write(backup_content)
 
         raise Exception(
-            f"Syntax check failed.\nTemporary cache saved to: '{tmp_output_path}'"
+            f"Code check failed.\nTemporary cache saved to: '{tmp_output_path}'"
         )
     print("=" * 40)
 
