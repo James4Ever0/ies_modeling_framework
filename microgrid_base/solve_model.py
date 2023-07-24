@@ -46,8 +46,8 @@ import rich
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
-    columns = dt["仿真结果"]["ALL"]
-    columns = [e if type(e) == str else e[0] for e in columns]
+    simulationResultColumns = dt["仿真结果"]["ALL"]
+    simulationResultColumns = [e if type(e) == str else e[0] for e in simulationResultColumns]
 
 with open("frontend_sim_param_translation.json", "r") as f:
     FSPT = json.load(f)
@@ -443,7 +443,8 @@ def solveModelFromCalcParamList(
             rich.print(出力曲线字典)
             print()
             # breakpoint()
-            仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT, 仿真结果.schema()['required'])
+            仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT, simulationResultColumns)
+            # 仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表, 仿真结果字符串表头, FSPT, 仿真结果.schema()['required'])
             # breakpoint()
             规划结果详情表_未翻译, _, 规划结果详情表_格式化 = 导出结果表_格式化(
                 规划结果详情表, 规划结果详情字符串表头, 规划结果详情.get_translation_table()
