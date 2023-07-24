@@ -1,5 +1,8 @@
 {
-    "search.exclude": { // to ignore files to show.
+    "search.exclude": { // to ignore files to search.
+        "microgrid_server_release/*": true,
+    },
+    "files.exclude": { // avoid accidentally jump to these files.
         "microgrid_server_release/*": true,
     },
     "launch": {
