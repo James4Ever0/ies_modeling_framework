@@ -318,13 +318,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -340,13 +340,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -3026,18 +3026,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3357,18 +3357,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3987,10 +3987,10 @@ class 规划结果详情(BaseModel):
             translation_table[rk] = et
         return translation_table
 
+    @classmethod
     # 此处的仿真结果是每个典型日的仿真结果，不是合并之后的仿真结果表格
     # 出来的也是每个典型日对应的规划详情，需要根据设备ID进行合并
-    @staticmethod
-    def export(deviceModel: 设备模型协议, deviceSimulationResult, timeParam: float):
+    def export(cls, deviceModel: 设备模型协议, deviceSimulationResult, timeParam: float):
         params = {}
         params["元件名称"] = deviceModel.设备信息.设备名称
         params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
@@ -4027,7 +4027,7 @@ class 规划结果详情(BaseModel):
                 val = cmath.nan
             params[attrName] = val
 
-        return 规划结果详情(**params)
+        return cls(**params)
 
 
 class 规划方案概览(BaseModel):
@@ -4153,12 +4153,14 @@ class 规划方案概览(BaseModel):
             for remainedKey in remainedKeys:
                 keyBase = remainedKey.strip("年")
                 if (
-                    val := getattr(simulationResult, FSPT.get(keyBase, ...), ...)
+                    val := getattr(
+                        simulationResult, FSPT.get(keyBase, "NO_TRANSLATION"), ...
+                    )
                 ) is not ...:
                     updateParam(remainedKey, val)
                     break
 
-        return 规划方案概览(**params)
+        return cls(**params)
 
 
 class 节点基类(BaseModel):
