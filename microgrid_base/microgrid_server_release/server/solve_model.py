@@ -492,6 +492,7 @@ def solveModelFromCalcParamList(
                 planningSummary=规划方案概览.export(
                     planningResultList,
                     simulationResultList,
+                    FSPT,
                     totalAnnualFee=ret.calcTargetLUT["经济"],
                     planType=targetTypeAsTargetName(ret.targetType),
                 ),

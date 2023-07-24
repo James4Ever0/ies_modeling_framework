@@ -1760,7 +1760,7 @@ class {{planningResultExportClassName}}(BaseModel):
 
     @staticmethod
     {% if key == "方案列表" %}
-    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
+    def export(planningResultList: List[规划结果详情], simulationResultList: List[仿真结果], FSPT:Dict[str,str], totalAnnualFee:float, planType: str): # totalAnnualFee is equivalent to our "financial" objective
         params = dict(年化费用 = totalAnnualFee, 方案类型 = planType)
         def updateParam(k,v):
             if type(v) in [float, int]:
@@ -1780,7 +1780,7 @@ class {{planningResultExportClassName}}(BaseModel):
                 keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
                 for keySuffix in []:
                     attemptKey = f"{keyBase}{keySuffix}"
-                    if (val:=getattr(simulationResult, attemptKey,...)) is not ...:
+                    if (val:=getattr(simulationResult, FSPT.get(attemptKey,...),...)) is not ...:
                         updateParam(remainedKey, val)
                         break
 
