@@ -606,7 +606,7 @@ class ModelWrapper:
         {# now we refuse to initialize anything. including var.#}
         if {{qstr(init_argname)}} in kwargs.keys():
             del kwargs[{{qstr(init_argname)}}]
-        ret = {{k}}({{mv+"" if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
+        ret = {{k}}({{mv if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
         {# ret = {{k}}({{mv+", {}=_{}".format(init_argname, init_argname) if k == "Var" else "expr = expr, *args[1:], **kwargs"}}) #}
 {{double_check_setattr("self.model", "name", 'ret') | indent(2*4, true)}}
         {# self.model.__setattr__(name, ret) #}
