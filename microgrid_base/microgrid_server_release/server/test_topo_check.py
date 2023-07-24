@@ -270,6 +270,7 @@ import sys
 flag = sys.argv[-1]
 
 if flag in ["-f", "--full"]:
+# if True: # override to debug.
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
     from fastapi_datamodel_template import EnergyFlowGraph
 
