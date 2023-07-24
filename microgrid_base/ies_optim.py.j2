@@ -1784,7 +1784,8 @@ class {{planningResultExportClassName}}(BaseModel):
                 keyBase = remainedKey.strip("年").strip('负荷').strip('消耗量')
                 for keySuffix in ['负荷', '消耗量']:
                     attemptKey = f"{keyBase}{keySuffix}"
-                    if (val:=getattr(simulationResult, FSPT.get(keyBase,"NO_TRANSLATION"),...)) is not ...:
+                {# if (val:=getattr(simulationResult, FSPT.get(keyBase,"NO_TRANSLATION"),...)) is not ...: #}
+                    if (val:=getattr(simulationResult, FSPT.get(attemptKey,"NO_TRANSLATION"), ...)) is not ...:
                     {# if (val:=getattr(simulationResult, FSPT.get(attemptKey,...),...)) is not ...: #}
                         updateParam(remainedKey, val)
                     {# FIX: early break #}
