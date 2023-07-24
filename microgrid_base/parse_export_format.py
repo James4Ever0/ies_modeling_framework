@@ -1,5 +1,6 @@
 excel_path = "设备信息库各参数.xlsx"
 from lib_parse_params import repair_excel
+
 repair_excel(excel_path)
 from jinja_utils import code_and_template_path, load_render_and_format
 import rich
@@ -108,7 +109,9 @@ for schemaName, index in subSchemas:  # why we have nan here?
     # breakpoint()
     # 去除了自来水消耗
     remove_isna = lambda it: filter(lambda e: not pandas.isna(e), it)
-    for schemaHeader, englishSchemaHeader in zip(remove_isna(schemaHeaders), remove_isna(englishSchemaHeaders)):
+    for schemaHeader, englishSchemaHeader in zip(
+        remove_isna(schemaHeaders), remove_isna(englishSchemaHeaders)
+    ):
         schemaHeader = schemaHeader.replace("/", "_")  # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaName):
@@ -179,7 +182,7 @@ for i, r in table.iterrows():
             last_empty_index = rlist.index("")
         except:
             pass
-        headings = rlist[: last_empty_index]
+        headings = rlist[:last_empty_index]
         trough = 2
         data[key] = data.get(key, []) + [{"headings": headings, "devices": []}]
 
@@ -281,6 +284,8 @@ simParamLUT = {
     "电收入": ["电负荷"],
     "蒸汽收入": [],
     "氢气收入": [],
+    "自来水消耗量": [],
+    "自来水消耗费用": [],
 }
 
 all_devs_with_uniq_sim_param = [i for k in simParamLUT.values() for i in k]

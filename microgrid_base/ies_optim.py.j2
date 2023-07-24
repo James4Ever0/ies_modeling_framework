@@ -1670,6 +1670,7 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 def getSchemaFromDataModel(dataModel: BaseModel):
     schema = dataModel.schema()
+    return schema
 
 def getRequiredKeysSetFromDataModel(dataModel:BaseModel):
     schema = getSchemaFromDataModel(dataModel)
