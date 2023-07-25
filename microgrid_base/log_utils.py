@@ -78,6 +78,7 @@ stdout_handler = StreamHandler(sys.stdout)  # test with this!
 stdout_handler.setLevel(logging.DEBUG)
 # stdout_handler.addFilter(MessageLengthAndFrequencyFilter)
 stdout_handler.addFilter(messageLengthAndFrequencyFilter) # method also works!
+stdout_handler.setFormatter(myFormatter)
 # do not use default logger!
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("microgrid")
