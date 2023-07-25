@@ -89,9 +89,9 @@ import math
 
 # TODO: 每个月的都不同 #
 
-def 计算年化率(_贴现率,寿命):
+def 计算年化率(_贴现率, 寿命):
     # 默认贴现率单位为%
-    if _贴现率 == 0:
+    if _贴现率 <= 0 or 寿命 <= 0:
         {# self.年化率 = 1/Life #}
         年化率 = 0 # 仿真模拟的时候 用于去除和年化率有关的目标
     else:
@@ -1932,7 +1932,7 @@ class mDict(BaseModel):
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
     residualEquipmentLife: confloat(ge=0) = Field(
-        default=0, title="辅助设备寿命", description="单位：年\n用于计算辅助设备年化系数"
+        default=0, title="辅助设备寿命", description="默认为0，年化率返回为1\n单位：年\n用于计算辅助设备年化系数"
     )
 
 from networkx import Graph
