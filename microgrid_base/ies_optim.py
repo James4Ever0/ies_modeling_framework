@@ -1901,7 +1901,7 @@ class 光伏发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             # BUG: if unbounded, then we get some error.
-            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
+            self.Devi43t = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
             """
             单位： 个
             """

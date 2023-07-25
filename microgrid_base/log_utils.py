@@ -85,9 +85,11 @@ logger.setLevel("DEBUG")
 logger.addHandler(stdout_handler)
 logger.addHandler(myHandler)
 
+from rich.pretty import pretty_repr
+
 def logger_print(*args):
-    format_string = " ".join(["%s"]*len(args))
-    logger.debug(format_string, *args)
+    format_string = "\n\n".join(["%s"]*len(args))
+    logger.debug(format_string, *[pretty_repr(arg) for arg in args])
 
 # logging.basicConfig(
 #     # filename=filename,
