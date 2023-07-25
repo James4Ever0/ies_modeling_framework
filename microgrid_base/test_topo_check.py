@@ -322,7 +322,7 @@ elif flag in ["-p", "--partial"]:
     print("RESULT:", resultList)
     if resultList:
         with open(saved_path:="test_output_partial.json",'w+') as f:
-            f.write(json.dumps(resultList, ensure_ascii=False, indent=4))
+            f.write(json.dumps(resultList, ensure_ascii=False, indent=4).replace("NaN", "nan"))
         print(f"dumped to: {saved_path}")
 
 elif flag != os.path.basename(__file__):
