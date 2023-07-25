@@ -50,13 +50,13 @@ from logging import StreamHandler
 import sys
 import os
 
-log_dir = os.path.join(os.path.dirpath(__file__), "logs")
+log_dir = os.path.join(os.path.dirname(__file__), "logs")
 
 if os.path.exists(log_dir):
     if not os.path.isdir(log_dir):
         raise Exception(f"Non-directory object taking place of log directory `{log_dir}`.")
 else:
-    os.path.mkdir(log_dir)
+    os.mkdir(log_dir)
 
 log_filename = os.path.join(log_dir, "debug.log")
 
