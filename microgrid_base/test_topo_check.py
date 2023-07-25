@@ -25,7 +25,7 @@ def print_with_banner(data, banner: str):
 from ies_optim import *
 from export_format_validate import *
 
-import numpy as np
+# import numpy as np
 
 # a = abs(np.random.random((24,))).tolist()
 a = [100] * datalen # this is not random.
@@ -276,6 +276,7 @@ from fastapi_datamodel_template import EnergyFlowGraph
 ### TEST PARSING ###
 # from filediff.diff import file_diff_compare
 from copy import deepcopy
+import os
 
 EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
 if flag in ["-f", "--full"]: # been replaced by celery full test.
@@ -314,7 +315,7 @@ elif flag in ["-p", "--partial"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
-else:
+elif flag != os.path.basename(__file__):
     raise Exception(f"Invalid command line arguments: {sys.argv}")
 
 # may you get infeasible constraints on some row.
