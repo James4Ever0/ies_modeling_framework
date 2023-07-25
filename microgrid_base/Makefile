@@ -155,7 +155,8 @@ ${MICROGRID_TYPESYS_JSONS} ${TYPESYS_PLOTS}: type_system_v2.py utils.py
 frontend_sim_param_translation.json: frontend_sim_param_translation.js parse_frontend_sim_param_translation.py
 	${PYTHON} parse_frontend_sim_param_translation.py
 
-device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
+# device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
+device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数_23_7_24.xlsx
 	${PYTHON} parse_params.py
 
 constraints.log: parse_optim_constraints.py ies_optim.py
