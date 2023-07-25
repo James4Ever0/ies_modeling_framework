@@ -10,7 +10,7 @@ import sys
 from sympy import sympify
 # import sympy
 from progressbar import progressbar
-
+from log_utils import logger_print
 try:
     from typing import Literal
 except:
@@ -82,7 +82,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
     """
     regex = re.compile(r"(\[\d+\])")
     subs = regex.findall(data)
-    print(len(subs))
+    logger_print(len(subs))
 
     # for sub in set(subs):
     #     data = data.replace(sub,"_Array")
@@ -110,7 +110,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         regex2 = re.compile(r"(((?P<term>\w+_Array) \+ )+((?P=term)))")
         summation = [(e[0], e[2]) for e in regex2.findall(data)]
         summation.sort(key=lambda x: -len(x[0]))
-        # print(len(summation))
+        # logger_print(len(summation))
         # summation = set(summation)
 
         # expr = ""
@@ -119,7 +119,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
             suffix = f"_SUM_OF_{e0.count('+')+1}"
             data = data.replace(e0, e2+suffix)
 
-        # print(data)
+        # logger_print(data)
         expr_repr = data
         from sympy.polys.polytools import Poly
 
@@ -138,30 +138,30 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         expr_list = []
         with RecursionContext() as RC:
             for subexpr in subexpr_strs:
-                print()
+                #print()
                 sympify_expr = sympify(subexpr)
                 sympify_expr = sympify_expr.simplify()
                 _p = Poly(sympify_expr)
                 fs = _p.free_symbols
-                print(f"FS: {fs}")
-                print()
+                logger_print(f"FS: {fs}")
+                #print()
                 for s in fs:
                     sname = str(s)
                     if sname in EIPMAP_REV.keys():
                         eip = EIPMAP_REV[sname]
                         eip_expr = sympify(eip)
                         eip_expr = eip_expr.simplify()
-                        print(f"{sname} = {eip_expr}")
+                        logger_print(f"{sname} = {eip_expr}")
                         sympify_expr = sympify_expr.subs(sympify(sname), eip_expr)
-                print("TERM EXPR:", sympify_expr)
+                logger_print("TERM EXPR:", sympify_expr)
                 expr_list.append(sympify_expr)
         # breakpoint()
         final_expr = sum(expr_list)
-        print("FINAL EXPR:")
-        print(final_expr)
+        logger_print("FINAL EXPR:")
+        logger_print(final_expr)
         #####################APPROACH 1#####################
         endtime = time.time()
-        print("APP1_TIME:", endtime - starting_time)
+        logger_print("APP1_TIME:", endtime - starting_time)
         return expr_list
         # APP1_TIME: 4.300285339355469
         # APP1_TIME: 4.084861993789673
@@ -189,19 +189,19 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         # exec(code)
         # codeLines.append(f"sympy_expr = {data}")
         for line in codeLines:
-            print("EXCECUTING: ", line[:200] + ("" if len(line) < 200 else "..."))
+            logger_print("EXCECUTING: ", line[:200] + ("" if len(line) < 200 else "..."))
             exec(line)
-        print("GETTING EXPR")
+        logger_print("GETTING EXPR")
         with RecursionContext() as RC:
             sympy_expr = eval(data)
-            print("SIMPLIFYING EXPR")
+            logger_print("SIMPLIFYING EXPR")
             sympy_expr = sympy_expr.simplify()
-            print()
-            print(sympy_expr)
+            #print()
+            logger_print(sympy_expr)
         #####################APPROACH 2#####################
         
-        print("FINAL EXPR:")
-        print(sympy_expr)
+        logger_print("FINAL EXPR:")
+        logger_print(sympy_expr)
         terms = sympy_expr.as_terms()
         termlist = []
         
@@ -210,7 +210,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
             termlist.append(term)
             
         endtime = time.time()
-        print("APP2_TIME:", endtime - starting_time)
+        logger_print("APP2_TIME:", endtime - starting_time)
         # APP2_TIME: 12.695726156234741
         # APP2_TIME: 11.072844982147217
         return termlist
