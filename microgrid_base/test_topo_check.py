@@ -284,8 +284,9 @@ if flag in ["-f", "--full"]: # been replaced by celery full test.
     ret = calculate_energyflow_graph_base(EFG.dict())
     print(ret)
     if ret:
-        with open("test_output_full.json",'w+') as f:
+        with open(saved_path:="test_output_full.json",'w+') as f:
             f.write(json.dumps(ret, ensure_ascii=False, indent=4))
+        print(f"dumped to: {saved_path}")
 # if True: # override to debug.
 elif flag in ["-p", "--partial"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
@@ -320,8 +321,10 @@ elif flag in ["-p", "--partial"]:
     rich.print(resultList)
     print("RESULT:", resultList)
     if resultList:
-        with open("test_output_partial.json",'w+') as f:
+        with open(saved_path:="test_output_partial.json",'w+') as f:
             f.write(json.dumps(resultList, ensure_ascii=False, indent=4))
+        print(f"dumped to: {saved_path}")
+
 elif flag != os.path.basename(__file__):
     raise Exception(f"Invalid command line arguments: {sys.argv}")
 
