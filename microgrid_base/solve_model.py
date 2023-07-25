@@ -481,7 +481,9 @@ def solveModelFromCalcParamList(
                         continue
                     plotName = f"{deviceType}{abbr}曲线"
                     # plotName = f"{deviceType}{abbr}出力曲线"
-                    xData = content_dict["时间"]
+                    # xData = content_dict["时间"]
+                    # override xData.
+                    xData = [f'{e}时' for e in range(len(val))]
                     yData = val
                     subElem = {
                         "name": plotName,
