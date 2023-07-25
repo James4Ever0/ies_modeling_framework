@@ -104,7 +104,7 @@ def 计算年化率(_贴现率, 寿命):
 {% set 电价单位 = "元/kWh"%}
 {% set 电价单位描述 = "单位: 元/kWh"%}
 
-{% macro getFee()%}
+{% macro getFee() %}
     def getFee(self, power:float, time_in_day:float) -> float:
 {% endmacro%}
 {% macro getMonthIndexFromTimeInDay()%}
