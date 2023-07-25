@@ -1,6 +1,12 @@
 from typing import Union
 from ies_optim import 计算年化率
 
+from solve_model import (
+    solveModelFromCalcParamList,
+    mDictListToCalcParamList,
+)
+
+from fastapi_datamodel_template import CalculationResult
 
 def calculate_energyflow_graph_base(energyflow_graph: dict) -> Union[None, dict]:
     # def calculate_energyflow_graph(self, energyflow_graph: dict) -> Union[None, dict]:

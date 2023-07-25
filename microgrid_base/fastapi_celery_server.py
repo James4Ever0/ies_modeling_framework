@@ -44,16 +44,11 @@ for handler in app.log.get_default_logger().handlers:
 
 # you'd better import models from other datamodel only file
 # you had not to pass anything like pydantic data model as parameter.
-from solve_model import (
-    solveModelFromCalcParamList,
-    mDictListToCalcParamList,
-)
-
-from fastapi_datamodel_template import CalculationResult
 
 # from microgrid_base.ies_optim import EnergyFlowGraph
 # from celery.exceptions import Ignore
 from fastapi_celery_functions import calculate_energyflow_graph_base
+
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
