@@ -12,7 +12,7 @@ import os
 if os.name == "nt":
     from win32com.client import Dispatch
 
-    def repair_excel(excel_path):
+    def repair_excel(excel_path): # you may need to restart system if this goes wrong.
         xlapp = Dispatch("Excel.Application")
         xlapp.Visible = False
         xlbook = xlapp.Workbooks.Open(os.path.abspath(excel_path))
