@@ -25,7 +25,7 @@ def print_with_banner(data, banner: str):
 from ies_optim import *
 from export_format_validate import *
 
-import numpy as np
+# import numpy as np
 
 # a = abs(np.random.random((24,))).tolist()
 a = [100] * datalen # this is not random.
@@ -278,7 +278,7 @@ from fastapi_datamodel_template import EnergyFlowGraph
 from copy import deepcopy
 import os
 
-EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
+EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList), residualEquipmentLife = 2) # override default.
 if flag in ["-f", "--full"]: # been replaced by celery full test.
     ret = calculate_energyflow_graph_base(EFG.dict())
     print(ret)
