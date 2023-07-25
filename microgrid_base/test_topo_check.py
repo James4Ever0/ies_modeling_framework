@@ -278,7 +278,7 @@ from fastapi_datamodel_template import EnergyFlowGraph
 from copy import deepcopy
 
 EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
-if flag in ["-f", "--full"]:
+if flag in ["-f", "--full"]: # been replaced by celery full test.
     ret = calculate_energyflow_graph_base(EFG.dict())
     print(ret)
 # if True: # override to debug.

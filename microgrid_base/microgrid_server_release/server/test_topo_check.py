@@ -269,18 +269,22 @@ import sys
 
 flag = sys.argv[-1]
 
-# if flag not in ["-p", "--partial"]:
+from fastapi_celery_functions import calculate_energyflow_graph_base
 # TODO: add test of celery app
-if flag in ["-f", "--full"]:
+from fastapi_datamodel_template import EnergyFlowGraph
+
+### TEST PARSING ###
+# from filediff.diff import file_diff_compare
+from copy import deepcopy
+
+EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
+if flag in ["-f", "--full"]: # been replaced by celery full test.
+    ret = calculate_energyflow_graph_base(EFG.dict())
+    print(ret)
 # if True: # override to debug.
+elif flag in ["-p", "--partial"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
-    from fastapi_datamodel_template import EnergyFlowGraph
 
-    ### TEST PARSING ###
-    # from filediff.diff import file_diff_compare
-    from copy import deepcopy
-
-    EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList))
     mdictList2 = EFG.dict()["mDictList"]
     # text1 = json.dumps(mdictList[0]['nodes'], indent=4, ensure_ascii=False)
     # text2 = json.dumps(mdictList2[0]['nodes'], indent=4, ensure_ascii=False)
@@ -310,6 +314,8 @@ if flag in ["-f", "--full"]:
     resultList = solveModelFromCalcParamList(calcParamList)
     rich.print(resultList)
     print("RESULT:", resultList)
+else:
+    raise Exception(f"Invalid command line arguments: {sys.argv}")
 
 # may you get infeasible constraints on some row.
 # Row 'c_e_x1988826_' infeasible, all entries at implied bounds.
