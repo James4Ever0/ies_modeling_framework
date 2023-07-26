@@ -5,6 +5,7 @@ you may use Dockerfile.
 import docker
 
 image_name = "microgrid_server"
+dockerfile_path = "."
 
 image_storage_dir = "images"
 import os
