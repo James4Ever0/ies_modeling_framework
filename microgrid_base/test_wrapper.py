@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from ies_optim import ModelWrapperContext
 from celery.app.task import Task
 Task.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls) # type: ignore[attr-defined]

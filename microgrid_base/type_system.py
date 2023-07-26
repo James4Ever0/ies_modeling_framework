@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # 风力、光伏、柴油机 增加不可连接的线 删除变流器节点的不可连接线
 # 增加变流器和不可连接母线的连接
 import rich

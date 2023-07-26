@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from lib_parse_params import main_parser, csv_parser
 
 # FLAGS = {"XLSX": False, "CSV": True}

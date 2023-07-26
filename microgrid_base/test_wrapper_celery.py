@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from test_wrapper import MAIN_NAME, app
 
 function_id = f"{MAIN_NAME}.mfunc"

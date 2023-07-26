@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import ast
 import os
 import astor
@@ -10,8 +12,8 @@ fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, content])
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
-# files = os.listdir(".")
-files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
+files = os.listdir(".")
+# files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
         with_template = (template_path:=f"{fpath}.j2") in files
@@ -40,9 +42,10 @@ for fpath in files:
                         )
             elif isinstance(el, ast.ImportFrom):
                 # check if really imported.
-                el_source = stripped_source(el)
-                if el_source == IMPORT_LOGGER_PRINT:
-                    found_import_log_utils = True
+                if el.level == 0: # root level.
+                    el_source = stripped_source(el)
+                    if el_source == IMPORT_LOGGER_PRINT:
+                        found_import_log_utils = True
         if not found_import_log_utils: # just import, do not change the print logic.
             # if no template was found, fix just one. if template found, fix both.
 

@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from pydantic import BaseModel, Field, validator, confloat
 from networkx.readwrite import json_graph
 from typing import Mapping, List, Tuple, Union, Dict, Any

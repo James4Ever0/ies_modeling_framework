@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # from enum import StrEnum
 # a = StrEnum('Color', ['RED', 'GREEN', 'BLUE'])
 from enum import Enum

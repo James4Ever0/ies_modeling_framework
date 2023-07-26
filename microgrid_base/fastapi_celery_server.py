@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from celery import Celery
 from passwords import redis_password
 from typing import Union

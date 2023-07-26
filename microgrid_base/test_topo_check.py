@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 
 import json

@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # first get the titles.
 # 解析设备参数表 可能也适用于设备接口信息解析
 import openpyxl

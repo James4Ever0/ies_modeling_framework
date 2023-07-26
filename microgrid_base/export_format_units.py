@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 class 柴油仿真结果导出单位:
     柴油消耗量 = "L"
     柴油消耗费用 = "万元"

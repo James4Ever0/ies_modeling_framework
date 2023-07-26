@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 """Creating IES topology type system.
 
 Usage:

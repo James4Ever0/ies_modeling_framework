@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import networkx
 from networkx.readwrite import json_graph
 

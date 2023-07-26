@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 每小时秒数 = 3600
 每天小时数 = 24
 每年天数 = 365

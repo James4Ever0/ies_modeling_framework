@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 excel_path = "设备信息库各参数.xlsx"
 from lib_parse_params import repair_excel
 

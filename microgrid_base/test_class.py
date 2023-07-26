@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 class A:
     def __init__(self):
         ...

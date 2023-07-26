@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 filepath ="ies_optim.py"
 output_path = "constraints.log"
 

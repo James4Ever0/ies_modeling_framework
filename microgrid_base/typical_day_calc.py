@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import numpy
 import scipy # for KNN
 from pydantic import BaseModel, validator, Field

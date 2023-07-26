@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 MIN_PYRIGHT_VERSION = "1.1.317"  # if lower than this version then raise exception.
 pyright_errors = ["reportImportCycles", "reportUndefinedVariable"]
 errorRegex = r"^.+?({}).+$".format("|".join(pyright_errors))

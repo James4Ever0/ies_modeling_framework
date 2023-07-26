@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import os
 os.environ['http_proxy'] = ""
 os.environ['https_proxy'] = ""

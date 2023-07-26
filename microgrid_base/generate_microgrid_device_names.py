@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # path = "microgrid_device_params_intermediate.json"
 
 # 电负荷 柴油原件需要单独列出来

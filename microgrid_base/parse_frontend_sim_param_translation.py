@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 filepath = "frontend_sim_param_translation.js"
 
 output_path = "frontend_sim_param_translation.json"

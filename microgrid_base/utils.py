@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import pandas
 
 def fix_csv_and_return_dataframe(csv_path):

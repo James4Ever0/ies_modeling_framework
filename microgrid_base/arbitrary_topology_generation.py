@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # import networkx as nx
 # from aco_tsp import ACO, Graph
 

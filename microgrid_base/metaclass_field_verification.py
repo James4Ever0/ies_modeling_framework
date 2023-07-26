@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # def mproperty(ptype:type, doc:str):
 # def fget(self):
 #     return

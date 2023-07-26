@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # input_path = "test_data.json"
 input_path = "test/test_topo.json"
 # input_path = "template_input.json"
