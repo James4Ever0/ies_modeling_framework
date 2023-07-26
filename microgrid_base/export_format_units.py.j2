@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 {% from "export_format_validate.py.j2" import paramWithUnits with context%}
 {% for devName, paramNameAndUnitList in paramWithUnits.items() %}
 class {{devName}}仿真结果导出单位:

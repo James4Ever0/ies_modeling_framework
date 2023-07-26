@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # TODO: 典型日 最终输出结果需要展开为8760
 # TODO: add more "bounds" to variables
 # TODO: call external processor/parser to handle DSL, simplify expressions.
