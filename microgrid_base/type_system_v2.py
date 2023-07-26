@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-"""Creating IES topology type system.
+__doc__ = """Creating IES topology type system.
 
 Usage:
     type_system_v2.py [(-p | --plot_only) | --version]
