@@ -5,6 +5,7 @@ from solve_model import (
     solveModelFromCalcParamList,
     mDictListToCalcParamList,
 )
+from log_utils import logger_print
 
 from fastapi_datamodel_template import CalculationResult
 
@@ -43,8 +44,8 @@ def calculate_energyflow_graph_base(energyflow_graph: dict) -> Union[None, dict]
 
     # error_log = traceback.format_exc()
     # error_name = type(ex).__name__
-    # print("************CELERY ERROR************")
-    # print(error_log)
+    # logger_print("************CELERY ERROR************")
+    # logger_print(error_log)
 
     if resultList != []:
         # success = True

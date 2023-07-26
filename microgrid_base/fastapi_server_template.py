@@ -6,6 +6,7 @@ host = "0.0.0.0"
 import traceback
 
 import celery
+from log_utils import logger_print
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
@@ -100,13 +101,13 @@ def celery_on_message(body: dict):
     Args:
         body (dict): 更新的任务信息
     """
-    print("BODY TYPE?", type(body))
-    print("ON MESSAGE?", body)
+    logger_print("BODY TYPE?", type(body))
+    logger_print("ON MESSAGE?", body)
 
     task_id = body["task_id"]
     status = body["status"]
 
-    print("TASK STATUS?", status)
+    logger_print("TASK STATUS?", status)
     if status == "FAILURE":
         error_log_dict[task_id] = body.get("traceback", "")
 
@@ -132,16 +133,16 @@ def background_on_message(task: AsyncResult):
     # shall you not check here.
     # and not the message callback.
     status = task.status
-    print("TASK STATUS?", status)
+    logger_print("TASK STATUS?", status)
     print()
     
-    print("VALUE TYPE?", type(value))  # str, '14'
-    print("TASK VALUE?", value)
+    logger_print("VALUE TYPE?", type(value))  # str, '14'
+    logger_print("TASK VALUE?", value)
     if status == 'SUCCESS':
-        print("TASK RESULT SET")
+        logger_print("TASK RESULT SET")
         taskResult[task.id] = value # this will be exception.
     else:
-        print("NOT SETTING TASK RESULT")
+        logger_print("NOT SETTING TASK RESULT")
 
 # Reference: https://github.com/tiangolo/fastapi/issues/459
 
@@ -283,12 +284,12 @@ def revoke_calculation(calculation_id: str):
     revoke_result = "failed"
     calculation_state = None
     if calculation_id in taskDict.keys():
-        print("TERMINATING TASK:", calculation_id)
+        logger_print("TERMINATING TASK:", calculation_id)
         taskDict[calculation_id].revoke(terminate=True)
         revoke_result = "success"
         calculation_state = get_calculation_state(calculation_id).calculation_state
     else:
-        print("TASK DOES NOT EXIST:", calculation_id)
+        logger_print("TASK DOES NOT EXIST:", calculation_id)
         calculation_state = "NOT_CREATED"
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
