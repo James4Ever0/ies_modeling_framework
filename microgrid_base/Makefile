@@ -105,9 +105,9 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: release_prepare code_check
+release: code test_code ${LOG_DIRS} server code_check release_prepare
 
-release_prepare: code test_code ${LOG_DIRS} server
+release_prepare:
 	rm -rf ${RELEASE_DIR}
 	rm -rf ${RELEASE_ARCHIVE}
 	mkdir -p ${SERVER_RELEASE_DIR}

@@ -125,5 +125,5 @@ for fpath in files:
 
 if fixed:
     import sys
-    print("Please rerun the make command for changes!")
+    logger_print("Please rerun the `make` command for changes!")
     sys.exit(1)
