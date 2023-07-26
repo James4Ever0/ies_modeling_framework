@@ -29,7 +29,8 @@ with open(image_storage_gitignore, "w+") as f:
     f.write("*\n")
 
 images = client.images.list()
-if image_name not in images:
+image_tags = [tag.split(":")[0] for image in images for tag in image.tags]
+if image_name not in image_tags:
     if not os.path.exists(image_path):
         # first build the image, then export.
         client.images.build(path = dockerfile_path)
