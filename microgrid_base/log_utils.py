@@ -38,7 +38,7 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
     # logger_print(dir(record))
     accepted = False
     msg = record.msg
-
+    # shall you 
     if len(msg) < HUGE_MSG_THRESHOLD:
         if allow_logging:  # then this is some short message.
             accepted = True
