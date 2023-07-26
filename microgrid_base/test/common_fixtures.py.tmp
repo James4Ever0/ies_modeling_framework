@@ -2,6 +2,9 @@ from pytest import fixture
 import sys
 
 sys.path.append("../")
+import typing
+if typing.TYPE_CHECKING:
+    from ..ies_optim import *
 from ies_optim import *
 
 

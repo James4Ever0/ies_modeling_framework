@@ -37,12 +37,12 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
     schedule.run_pending()
     # logger_print(dir(record))
     accepted = False
-    msg = record.msg
+    # msg = record.msg
     # shall you intercept the args...
-    args = record.args # tuple. let's reset it.
+    # args = record.args # tuple. let's reset it.
     # breakpoint()
-    record.msg = msg % args
-    record.args = ()
+    msg = record.msg = record.msg % record.args
+    args = record.args = ()
 
     if len(msg) < HUGE_MSG_THRESHOLD:
         if allow_logging:  # then this is some short message.
