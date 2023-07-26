@@ -2,8 +2,13 @@ from pytest import fixture
 import sys
 
 sys.path.append("../")
-from ies_optim import *
+# from ies_optim import *
 
+import typing
+if typing.TYPE_CHECKING:
+    from ..ies_optim import *
+else:
+    from ies_optim import *
 
 @fixture
 def model_wrapper():
