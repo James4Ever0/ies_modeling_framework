@@ -22,6 +22,9 @@ if typing.TYPE_CHECKING:
 else:
     from ies_optim import *
 
+import os
+os.environ[VAR_INIT_AS_ZERO] = '1'
+
 @fixture
 def model_wrapper():
     mw = ModelWrapper()

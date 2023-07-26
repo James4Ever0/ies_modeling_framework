@@ -10,6 +10,10 @@ if typing.TYPE_CHECKING:
 else:
     from ies_optim import *
 
+import os
+
+os.environ[VAR_INIT_AS_ZERO] = "1"
+
 
 @fixture
 def model_wrapper():
@@ -316,8 +320,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输出=14,
-        电输入=15,
+        电输入=14,
+        电输出=15,
     )
     return val
 
@@ -396,8 +400,8 @@ def 测试双向变流器信息():
 def 测试双向变流器ID():
     val = 双向变流器ID(
         ID=19,
-        储能端=20,
-        线路端=21,
+        线路端=20,
+        储能端=21,
     )
     return val
 
