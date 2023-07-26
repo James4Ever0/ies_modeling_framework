@@ -131,7 +131,7 @@ def getSingleUnitConverted(default_unit, val_unit):
         raise Exception("Compatible units are zero for value unit:", val_unit)
     if not default_unit_compatible == compatible_units:
         has_exception = True
-        print(
+        logger_print(
             "Unit {} not compatible with default unit {}".format(val_unit, default_unit)
         )
     else:
