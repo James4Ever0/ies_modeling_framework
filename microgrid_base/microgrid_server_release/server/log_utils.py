@@ -112,12 +112,12 @@ from rich.pretty import pretty_repr
 
 def logger_print(*args):
     if len(args) != 0:
-        # format_string = "\n\n".join(["%s"] * len(args))
+        format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!
-        # logger.debug(format_string, *[pretty_repr(arg) for arg in args], stacklevel=2) # it is been called elsewhere.
-        logger.debug(
-            "\n\n".join([pretty_repr(arg) for arg in args]), stacklevel=2
-        )  # it is been called elsewhere.
+        logger.debug(format_string, *[pretty_repr(arg) if not isinstance(arg, str) else arg for arg in args], stacklevel=2) # it is been called elsewhere.
+        # logger.debug(
+        #     "\n\n".join([pretty_repr(arg) if not isinstance(str, arg) else arg for arg in args]), stacklevel=2
+        # )  # it is been called elsewhere.
 
 
 import datetime
