@@ -3,8 +3,11 @@ import os
 import astor
 import re
 # import traceback
+IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 
 # check pydantic field issues.
+
+stripped_source = lambda el: astor.to_source(el).strip()
 
 files = os.listdir(".")
 for fpath in files:
@@ -24,22 +27,24 @@ for fpath in files:
         for el in ast.walk(tree):
             if isinstance(el, ast.Call):
                 # breakpoint()
-                funcName = astor.to_source(el.func).strip()
+                funcName = stripped_source(el.func)
                 if "Field" in funcName:
                     if len(el.args) > 0 or len(el.keywords) == 0:
-                        source_code = astor.to_source(el)
+                        source_code = stripped_source(el)
                         raise Exception(
-                            f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code.strip()}"
+                            f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code}"
                         )
-            elif isinstance(el, ...):
+            elif isinstance(el, ast.ImportFrom):
                 # check if really imported.
-                found_import_log_utils = True
+                el_source = stripped_source(el)
+                if el_source == IMPORT_LOGGER_PRINT:
+                    found_import_log_utils = True
         if not found_import_log_utils: # just import, do not change the print logic.
             # if no template was found, fix just one. if template found, fix both.
             with_template = (template_path:=f"{fpath}.j2") in files
 
             print(f"fixing logging issue in file: {fpath}")
-            fix_content = lambda old_content: "\n\n".join(["from log_utils import logger_print", content])
+            fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, content])
             with open(fpath, 'w+') as f:
                 f.write(fix_content(content))
             if with_template:
