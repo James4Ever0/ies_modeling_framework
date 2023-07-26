@@ -3,8 +3,9 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 """
 
 # python version check
-import sys # recommend: 3.11.2
-MIN_PY_VERSION = (3,8)
+import sys  # recommend: 3.11.2
+
+MIN_PY_VERSION = (3, 8)
 if sys.version_info < MIN_PY_VERSION:
     raise Exception(f"Please use Python {'.'.join(MIN_PY_VERSION)} and above.")
 
@@ -85,8 +86,8 @@ myHandler = RotatingFileHandler(
 )
 myHandler.setLevel(logging.DEBUG)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
-FORMAT = ( # add timestamp.
-    "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s" # miliseconds already included!
+FORMAT = (  # add timestamp.
+    "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
     # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
     # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
 )
@@ -111,9 +112,12 @@ from rich.pretty import pretty_repr
 
 def logger_print(*args):
     if len(args) != 0:
-        format_string = "\n\n".join(["%s"] * len(args))
+        # format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!
-        logger.debug(format_string, *[pretty_repr(arg) for arg in args], stacklevel=2) # it is been called elsewhere.
+        # logger.debug(format_string, *[pretty_repr(arg) for arg in args], stacklevel=2) # it is been called elsewhere.
+        logger.debug(
+            "\n\n".join([pretty_repr(arg) for arg in args]), stacklevel=2
+        )  # it is been called elsewhere.
 
 
 import datetime
