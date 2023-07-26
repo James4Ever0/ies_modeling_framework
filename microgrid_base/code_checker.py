@@ -32,8 +32,8 @@ def fix_import_logger_in_content(fpath):
     )
     return fixed_cnt
 
-
-FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))" # "rich." is part of the match, so it will be replaced. composing the replacement string only needs part of the match (not the "rich." part), so we don't include that in the named group.
+FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\())"
+# FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))" # "rich." is part of the match, so it will be replaced. composing the replacement string only needs part of the match (not the "rich." part), so we don't include that in the named group.
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
 
 

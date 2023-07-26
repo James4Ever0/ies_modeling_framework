@@ -495,7 +495,7 @@ for key in keys:
                     #     # logger_print("COMPATIBLE UNITS", compatible_units)
                     #     if not default_unit_compatible == compatible_units:
                     #         has_exception = True
-                    #         print(
+                    #         logger_print(
                     #             "Unit {} not compatible with default unit {}".format(
                     #                 val_unit, default_unit
                     #             )
