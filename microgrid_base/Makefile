@@ -46,7 +46,7 @@ RELEASE_INIT_DIR = ${RELEASE_DIR}/init
 
 # RELEASE_TEST_DIR = ${RELEASE_DIR}/test
 
-SERVER_CODE = fastapi_celery_server.py fastapi_datamodel_template.py fastapi_server_template.py
+SERVER_CODE = fastapi_celery_server.py fastapi_datamodel_template.py fastapi_server_template.py fastapi_celery_functions.py
 
 SERVER_SCRIPT = fastapi_terminate_service.sh fastapi_tmuxp.sh fastapi_tmuxp.yml
 

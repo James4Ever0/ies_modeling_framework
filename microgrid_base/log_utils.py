@@ -3,7 +3,7 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 """
 
 # python version check
-import sys
+import sys # recommend: 3.11.2
 MIN_PY_VERSION = (3,8)
 if sys.version_info < MIN_PY_VERSION:
     raise Exception(f"Please use Python {'.'.join(MIN_PY_VERSION)} and above.")
