@@ -12,7 +12,7 @@ IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:
 
 def open_file_and_modify_content(fpath:str, func: Callable[[str], str]):
     with open(fpath, 'r') as f:
-        cnt = f.read(fpath)
+        cnt = f.read()
     fixed_cnt = func(cnt)
     with open(fpath, 'w+') as f:
         f.write(fixed_cnt)
@@ -28,7 +28,7 @@ REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
 
 def fix_print_statement_in_content(fpath:str):
     # with open(fpath, 'r') as f:
-    #     cnt = f.read(fpath)
+    #     cnt = f.read()
     # fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
     fixed_cnt = open_file_and_modify_content(fpath, lambda cnt: re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE))
     # with open(fpath, 'w+') as f:
@@ -46,7 +46,6 @@ for fpath in files:
     
         # with open(template_path, 'r') as f:
         #     template_content = f.read()
-        template_content = fix_print_statement_in_content(template_path)
 
         found_import_log_utils = False if fpath != "log_utils.py" else True
 
@@ -92,6 +91,8 @@ for fpath in files:
             # with open(fpath, 'w+') as f:
             #     f.write(fix_import_logger_in_content(content))
         if with_template:
+            template_content = fix_print_statement_in_content(template_path)
+    
             has_import_on_root = re.findall(IMPORT_LOGGER_PRINT_REGEX, template_content, re.MULTILINE)
             if len(has_import_on_root) == 0:
                 print(f"fixing logging issue in template: {template_path}")
