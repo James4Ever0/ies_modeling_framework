@@ -5,11 +5,16 @@ import os
 import astor
 import re
 # import traceback
+
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
-REPLACE_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
-# check pydantic field issues.
+
 fix_import_logger_in_content = lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
+
+FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
+REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
+fix_print_statement_in_content = lambda cnt: re.sub(FIND_PRINT_REGEX, "(?<!print)
+
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
@@ -20,6 +25,8 @@ for fpath in files:
         with_template = (template_path:=f"{fpath}.j2") in files
 
         found_import_log_utils = False if fpath != "log_utils.py" else True
+
+        # check pydantic field issues.
         # read this file.
         with open(fpath, "r") as f:
             content = f.read()
