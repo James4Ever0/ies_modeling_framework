@@ -9,6 +9,7 @@ import astor
 files = os.listdir(".")
 for fpath in files:
     if fpath.endswith(".py"):
+        found_import_log_utils = False if fpath != "log_utils.py" else True
         # read this file.
         with open(fpath, "r") as f:
             content = f.read()
@@ -30,3 +31,10 @@ for fpath in files:
                         raise Exception(
                             f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code.strip()}"
                         )
+            elif isinstance(el, ...):
+                # check if really imported.
+                found_import_log_utils = True
+        if not found_import_log_utils: # just import, do not change the print logic.
+            print("fixing logging issue on file:")
+            with open(fpath, 'w+') as f:
+                f.writelines(["from log_utils import "])
