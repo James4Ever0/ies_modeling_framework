@@ -9,12 +9,12 @@ IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 REPLACE_PRINT_REGEX = r"(?<!logger_)(?<print_statement>:(rich.|)(print\(.+\)))"
 # check pydantic field issues.
-fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, old_content])
+fix_import_logger_in_content = lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
-files = os.listdir(".")
-# files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
+# files = os.listdir(".")
+files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
         with_template = (template_path:=f"{fpath}.j2") in files
@@ -52,7 +52,7 @@ for fpath in files:
 
             print(f"fixing logging issue in file: {fpath}")
             with open(fpath, 'w+') as f:
-                f.write(fix_content(content))
+                f.write(fix_import_logger_in_content(content))
         if with_template:
             with open(template_path, 'r') as f:
                 template_content = f.read()
@@ -61,4 +61,4 @@ for fpath in files:
                 print(f"fixing logging issue in template: {template_path}")
 
                 with open(template_path, 'w+') as f:
-                    f.write(fix_content(template_content))
+                    f.write(fix_import_logger_in_content(template_content))
