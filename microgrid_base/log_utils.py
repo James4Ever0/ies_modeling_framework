@@ -2,6 +2,8 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
+
 import logging
 import schedule
 
@@ -63,7 +65,7 @@ log_filename = os.path.join(log_dir, "debug.log")
 from logging.handlers import RotatingFileHandler
 
 myHandler = RotatingFileHandler(
-    log_filename, maxBytes=1024 * 1024 * 3, backupCount=3, encoding="utf-8"
+    log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
 )
 myHandler.setLevel(logging.DEBUG)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
@@ -92,6 +94,7 @@ def logger_print(*args):
     format_string = "\n\n".join(["%s"]*len(args))
     logger.debug(format_string, *[pretty_repr(arg) for arg in args])
 
+logger_print("START LOGGING AT: {}".center("_", 100)
 # logging.basicConfig(
 #     # filename=filename,
 #     # level=logging.getLogger().getEffectiveLevel(),
