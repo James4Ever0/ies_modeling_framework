@@ -33,7 +33,7 @@ def fix_import_logger_in_content(fpath):
     return fixed_cnt
 
 
-FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))"
+FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))" # 
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
 
 

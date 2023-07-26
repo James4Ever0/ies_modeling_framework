@@ -8,7 +8,7 @@ def abc(): return 1
 logger_print("abc")
 logger_print('def')
 
-# import rich
+import rich
 
 def myfunc():
     logger_print('hjk')
