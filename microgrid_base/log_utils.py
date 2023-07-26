@@ -93,8 +93,8 @@ from rich.pretty import pretty_repr
 def logger_print(*args):
     format_string = "\n\n".join(["%s"]*len(args))
     logger.debug(format_string, *[pretty_repr(arg) for arg in args])
-
-logger_print("START LOGGING AT: {}".center("_", 100)
+import datetime
+logger_print(f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70-2,"+"))
 # logging.basicConfig(
 #     # filename=filename,
 #     # level=logging.getLogger().getEffectiveLevel(),
