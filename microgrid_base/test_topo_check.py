@@ -17,10 +17,10 @@ datalen = 24
 
 
 def print_with_banner(data, banner: str):
-    print()
-    print("=" * 40 + f"[{banner}]")
-    rich.print(data)
-    print()
+    logger_print()
+    logger_print("=" * 40 + f"[{banner}]")
+    logger_print(data)
+    logger_print()
 
 
 # you may need pydantic here. verify then import to compute graph.
@@ -284,11 +284,11 @@ EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList), residualEquipmentLife = 2) 
 
 if flag in ["-f", "--full"]: # been replaced by celery full test.
     ret = calculate_energyflow_graph_base(EFG.dict())
-    print(ret)
+    logger_print(ret)
     if ret:
         with open(saved_path:="test_output_full.json",'w+') as f:
             f.write(json.dumps(ret, ensure_ascii=False, indent=4))
-        print(f"dumped to: {saved_path}")
+        logger_print(f"dumped to: {saved_path}")
 # if True: # override to debug.
 elif flag in ["-p", "--partial"]:
     from solve_model import solveModelFromCalcParamList, mDictListToCalcParamList
@@ -310,7 +310,7 @@ elif flag in ["-p", "--partial"]:
     # numlines=0
     # show_all=False
 
-    # print("WRITE DIFF TO:",diff_out)
+    # logger_print("WRITE DIFF TO:",diff_out)
     # d = difflib.HtmlDiff(wrapcolumn=max_width)
     # with open(diff_out, 'w', encoding="u8") as f:
     #     f.write(d.make_file(text1, text2, context=not show_all, numlines=numlines))
@@ -320,12 +320,12 @@ elif flag in ["-p", "--partial"]:
 
     calcParamList = mDictListToCalcParamList(mdictList2)
     resultList = solveModelFromCalcParamList(calcParamList)
-    rich.print(resultList)
-    print("RESULT:", resultList)
+    logger_print(resultList)
+    logger_print("RESULT:", resultList)
     if resultList:
         with open(saved_path:="test_output_partial.json",'w+') as f:
             f.write(json.dumps(resultList, ensure_ascii=False, indent=4).replace("NaN", "nan"))
-        print(f"dumped to: {saved_path}")
+        logger_print(f"dumped to: {saved_path}")
 
 elif flag != os.path.basename(__file__):
     raise Exception(f"Invalid command line arguments: {sys.argv}")

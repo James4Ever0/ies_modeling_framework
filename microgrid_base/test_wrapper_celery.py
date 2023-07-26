@@ -13,7 +13,7 @@ import rich
 
 while True:
     time.sleep(1)
-    print("STATUS?", task.status)
-    # print(dir(task), type(task))
-    rich.print(task.__dict__)
+    logger_print("STATUS?", task.status)
+    # logger_print(dir(task), type(task))
+    logger_print(task.__dict__)
     

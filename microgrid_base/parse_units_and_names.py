@@ -99,7 +99,7 @@ for k, v in device_data.items():
 # 没有其他类元件：母线和母线接口
 
 
-# rich.print(data_is_excel)
+# logger_print(data_is_excel)
 # breakpoint()
 # cat -> name -> [bool]
 
@@ -117,8 +117,8 @@ import parse
 
 keys = list(data.keys())
 
-rich.print(keys)
-rich.print(data)
+logger_print(keys)
+logger_print(data)
 
 CHAR_TYPE = ["生产厂商", "设备型号"]
 
@@ -209,12 +209,12 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
 #     v_unit = v[0]
 #     mag, munit = unitFactorCalculator(ureg, standard_units, v_unit)
 #     if mag != 1:
-#         print("-"*20)
-#         print("ERROR! MAGNITUDE:", mag)
-#         print("KEY:", k)
-#         print("ORIGINAL UNIT:", v_unit)
-#         print("CONVERTED UNIT:", munit)
-#         print("-"*20)
+#         logger_print("-"*20)
+#         logger_print("ERROR! MAGNITUDE:", mag)
+#         logger_print("KEY:", k)
+#         logger_print("ORIGINAL UNIT:", v_unit)
+#         logger_print("CONVERTED UNIT:", munit)
+#         logger_print("-"*20)
 #         raise Exception("Standard Unit Error")
 
 # TODO: check if units are compatible. set standard units.
@@ -264,11 +264,11 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
             TRANSLATION_TABLE[v2] = TRANSLATION_TABLE.get(v2, []) + [k0]
         # BASE_CLASS_TO_UNIT_TABLE[k] = BASE_CLASS_TO_UNIT_TABLE.get(k0, []) + [v[0]]
 
-# print()
-# rich.print(BASE_CLASS_TO_UNIT_TABLE)
+# logger_print()
+# logger_print(BASE_CLASS_TO_UNIT_TABLE)
 # breakpoint()
-# print()
-# rich.print(TRANSLATION_TABLE)
+# logger_print()
+# logger_print(TRANSLATION_TABLE)
 # breakpoint()
 
 # BASE_CLASS_TO_UNIT_TABLE = {
@@ -276,8 +276,8 @@ for k, v in BASE_TRANSLATION_TABLE_WITH_BASE_UNIT.items():
 # }
 
 
-# rich.print(BASE_TRANSLATION_TABLE)
-# rich.print(TRANSLATION_TABLE)
+# logger_print(BASE_TRANSLATION_TABLE)
+# logger_print(TRANSLATION_TABLE)
 # breakpoint()
 # TRANSLATION_TABLE = revert_dict(BASE_TRANSLATION_TABLE)
 # TRANSLATION_TABLE = revert_dict({k: v for k, v in BASE_TRANSLATION_TABLE.items()})
@@ -335,10 +335,10 @@ def getUnitConverted(val_name, val_unit):
             continue
         elif val:
             # get factor:
-            print("TRANS {} -> {}".format(val_name, base_class))  # [PS]
+            logger_print("TRANS {} -> {}".format(val_name, base_class))  # [PS]
             mag, standard = unitFactorCalculator(ureg, standard_units, val_unit)
-            # print("STANDARD:", standard)
-            # print("MAGNITUDE TO STANDARD:", mag)
+            # logger_print("STANDARD:", standard)
+            # logger_print("MAGNITUDE TO STANDARD:", mag)
             has_exception = False
             return has_exception, (base_class, val_unit, mag, standard)
     return True, (None, None, None, None)  # has_exception, uc
@@ -366,31 +366,31 @@ def wrapper_uc_vp(val_name, val_unit):
 
 
 for key in keys:
-    rich.print(data[key].keys())
+    logger_print(data[key].keys())
     # val_list = data[key]
     output_data[key] = {}
-    # print(key)
+    # logger_print(key)
     # breakpoint()
     for subkey in data[key].keys():
         output_data[key][subkey] = {"设备参数": [], "设计规划": [], "仿真模拟": []}
         val_list = data[key][subkey]
-        # rich.print(val_list)
-        print("____" * 10 + "[{}-{}]".format(key, subkey))
+        # logger_print(val_list)
+        logger_print("____" * 10 + "[{}-{}]".format(key, subkey))
         meta_type = None
         for index, val in enumerate(val_list):
             val_is_table = data_is_excel[key][subkey][
                 index
             ]  # TODO: USE THIS VALUE TO CHECK IF IS TABLE! (also the data format)
-            print("____" * 10)
+            logger_print("____" * 10)
             from unit_utils import unitCleaner
 
             val = unitCleaner(val)
-            print(val)
+            logger_print(val)
             if val in CHAR_TYPE:
-                print("CHAR_TYPE")
+                logger_print("CHAR_TYPE")
                 output_data[key][subkey]["设备参数"].append(val)
             elif val in META_TYPE or val in SKIP_TYPE:
-                print("META_TYPE")
+                logger_print("META_TYPE")
                 meta_type = val
                 # appending values, presumed.
                 if meta_type in SKIP_TYPE:
@@ -438,7 +438,7 @@ for key in keys:
                     params["仿真模拟"].append("设备选型")
                     output_data[key][subkey].update(params)
 
-                    rich.print(params)
+                    logger_print(params)
                     # str? -> str
                     # tuple -> number with unit
                     # dict -> table
@@ -471,12 +471,12 @@ for key in keys:
                     # for base_class in base_classes:
                     #     default_unit = BASE_CLASS_TO_UNIT_TABLE[base_class]
                     #     # iterate through all base classes.
-                    #     print("DEFAULT UNIT:", default_unit)
+                    #     logger_print("DEFAULT UNIT:", default_unit)
                     #     default_unit_real = ureg.Unit(default_unit)
                     #     default_unit_compatible = ureg.get_compatible_units(
                     #         default_unit_real
                     #     )
-                    #     print("TRANS {} -> {}".format(val_name, base_class))
+                    #     logger_print("TRANS {} -> {}".format(val_name, base_class))
                     #     if val_unit:
                     #         for (
                     #             trans_source_unit,
@@ -488,11 +488,11 @@ for key in keys:
                     #         # parse this unit!
                     #     else:
                     #         val_unit = default_unit
-                    #         print("USING DEFAULT UNIT")
-                    #     print("UNIT", val_unit)
+                    #         logger_print("USING DEFAULT UNIT")
+                    #     logger_print("UNIT", val_unit)
                     #     unit = ureg.Unit(val_unit)
                     #     compatible_units = ureg.get_compatible_units(val_unit)
-                    #     # print("COMPATIBLE UNITS", compatible_units)
+                    #     # logger_print("COMPATIBLE UNITS", compatible_units)
                     #     if not default_unit_compatible == compatible_units:
                     #         has_exception = True
                     #         print(
@@ -506,8 +506,8 @@ for key in keys:
                     #         mag, standard = unitFactorCalculator(
                     #             ureg, standard_units, val_unit
                     #         )
-                    #         print("STANDARD:", standard)
-                    #         print("MAGNITUDE TO STANDARD:", mag)
+                    #         logger_print("STANDARD:", standard)
+                    #         logger_print("MAGNITUDE TO STANDARD:", mag)
                     #         has_exception = False
                     #         break
                     if has_exception:
@@ -517,7 +517,7 @@ for key in keys:
                         v_param = getValueParam(uc, val_name)
                         if val_is_table:
                             (_, _, _, standard) = uc
-                            print("TABLE VALUE:", val_name, standard)
+                            logger_print("TABLE VALUE:", val_name, standard)
                             table_format = get_table_format(  # 基本上都是负载率
                                 val_name, standard
                             )  # unit vs
@@ -542,8 +542,8 @@ for key in keys:
                 else:
                     raise Exception("Unknown Value:", val)
 
-print()
-rich.print(output_data)
+logger_print()
+logger_print(output_data)
 
 # write documents for api?
 # or just a whole bunch of generated documents inserted into places?
@@ -551,4 +551,4 @@ rich.print(output_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(output_data, indent=4, ensure_ascii=False))
 
-print("SAVED TO:", output_path)
+logger_print("SAVED TO:", output_path)

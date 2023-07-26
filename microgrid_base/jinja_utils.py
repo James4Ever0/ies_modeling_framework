@@ -38,9 +38,9 @@ def load_render_and_format(
     tpl = load_template(template_path)
     result = tpl.render(**render_params)
 
-    print()
-    print("______________________[{}]".format(banner))
-    print(result)
+    logger_print()
+    logger_print("______________________[{}]".format(banner))
+    logger_print(result)
 
     # import black.Mode
     output_path_elems = output_path.split(".")
@@ -59,7 +59,7 @@ def load_render_and_format(
         # TODO: add more test, like checking for undefined variables, before rewriting the source file.
         # TODO: add rollback mechanism in makefile
         result = black.format_str(result, mode=black.Mode())
-        print("Formatter Ok.")
+        logger_print("Formatter Ok.")
         # with TemporaryDirectory() as TP:
         with open(output_path, "w+") as f:
             f.write(result)
@@ -93,7 +93,7 @@ def load_render_and_format(
         if typeErrors:
             typeErrors.insert(0, f"Type error found in file {repr(output_path)}")
             raise Exception(f"\n{' '*4}".join(typeErrors))
-        print("Pyright Ok.")
+        logger_print("Pyright Ok.")
         os.remove(tmp_output_path)
     except:
         import traceback
@@ -115,7 +115,7 @@ def load_render_and_format(
         raise Exception(
             f"Code check failed.\nTemporary cache saved to: '{tmp_output_path}'"
         )
-    print("=" * 40)
+    logger_print("=" * 40)
 
 
 def code_and_template_path(base_name):
@@ -143,8 +143,8 @@ def load_template(template_path, extra_func_dict={}):
     )
     tpl = env.get_template(template_path)
     # def myJoin(mstr, mlist):
-    #     print("STR:", repr(mstr))
-    #     print("LIST:", repr(mlist))
+    #     logger_print("STR:", repr(mstr))
+    #     logger_print("LIST:", repr(mlist))
     #     return mstr.join(mlist)
     func_dict = dict(
         list=list,

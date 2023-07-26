@@ -9,8 +9,9 @@ import schedule
 
 # ft = logging.Filter("myfilter") # default filter is just a string checker
 allow_logging = True
-allow_huge_logging=True
+allow_huge_logging = True
 HUGE_MSG_THRESHOLD = 100
+
 
 def refresh_logger_lock():
     global allow_logging
@@ -21,25 +22,27 @@ def refresh_huge_logger_lock():
     global allow_huge_logging
     allow_huge_logging = True
 
+
 schedule.every(0.3).seconds.do(refresh_logger_lock)
 schedule.every(1).seconds.do(refresh_huge_logger_lock)
 
 
 # class MessageLengthAndFrequencyFilter:
-    
+
+
 #     @staticmethod
 def messageLengthAndFrequencyFilter(record: logging.LogRecord):
     # def filter(record: logging.LogRecord):
     global allow_logging, allow_huge_logging, HUGE_MSG_THRESHOLD
     schedule.run_pending()
-    # print(dir(record))
+    # logger_print(dir(record))
     accepted = False
     msg = record.msg
 
     if len(msg) < HUGE_MSG_THRESHOLD:
-        if allow_logging: # then this is some short message.
-            accepted=True
-            allow_logging=False
+        if allow_logging:  # then this is some short message.
+            accepted = True
+            allow_logging = False
     else:
         if allow_huge_logging:
             record.msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."])
@@ -56,7 +59,9 @@ log_dir = os.path.join(os.path.dirname(__file__), "logs")
 
 if os.path.exists(log_dir):
     if not os.path.isdir(log_dir):
-        raise Exception(f"Non-directory object taking place of log directory `{log_dir}`.")
+        raise Exception(
+            f"Non-directory object taking place of log directory `{log_dir}`."
+        )
 else:
     os.mkdir(log_dir)
 
@@ -79,7 +84,7 @@ myHandler.setFormatter(myFormatter)
 stdout_handler = StreamHandler(sys.stdout)  # test with this!
 stdout_handler.setLevel(logging.DEBUG)
 # stdout_handler.addFilter(MessageLengthAndFrequencyFilter)
-stdout_handler.addFilter(messageLengthAndFrequencyFilter) # method also works!
+stdout_handler.addFilter(messageLengthAndFrequencyFilter)  # method also works!
 stdout_handler.setFormatter(myFormatter)
 # do not use default logger!
 # logger = logging.getLogger(__name__)
@@ -90,11 +95,18 @@ logger.addHandler(myHandler)
 
 from rich.pretty import pretty_repr
 
+
 def logger_print(*args):
-    format_string = "\n\n".join(["%s"]*len(args))
-    logger.debug(format_string, *[pretty_repr(arg) for arg in args])
+    if len(args) != 0:
+        format_string = "\n\n".join(["%s"] * len(args))
+        logger.debug(format_string, *[pretty_repr(arg) for arg in args])
+
+
 import datetime
-logger_print(f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70-2,"+"))
+
+logger_print(
+    f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70 - 2, "+")
+)
 # logging.basicConfig(
 #     # filename=filename,
 #     # level=logging.getLogger().getEffectiveLevel(),
@@ -104,9 +116,10 @@ logger_print(f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center
 #     handlers=[stdout_handler],
 # )
 
-if __name__ == "__main__": # just a test.
+if __name__ == "__main__":  # just a test.
     import time
+
     for i in range(100):
         time.sleep(0.1)
         logger.debug(f"test debug message {i}")
-        logger.debug(f"test huge message {i} "*100) # huge mssage
+        logger.debug(f"test huge message {i} " * 100)  # huge mssage

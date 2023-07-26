@@ -61,9 +61,9 @@ if __name__ == "__main__":
 
     # tpl = load_template(ies_optim_code_output_path)
     # result = tpl.render(type_sys=type_sys, dparam=dparam)
-    # print()
-    # print("______________________[{}]".format("IES CODE"))
-    # print(result)
+    # logger_print()
+    # logger_print("______________________[{}]".format("IES CODE"))
+    # logger_print(result)
 
     # with open(ies_optim_code_output_path, "w+") as f:
     #     f.write(result)

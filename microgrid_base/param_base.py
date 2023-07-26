@@ -37,7 +37,7 @@ dparam = read_json(dparam_path)
     for dev_name, ports in devs.items()
 }
 #########################
-# rich.print(设备接口集合)
+# logger_print(设备接口集合)
 # breakpoint()
 #########################
 连接类型映射表 = {

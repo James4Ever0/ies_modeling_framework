@@ -11,8 +11,8 @@ class A:
 class B:
     def __init__(self, a: A):
         self.a = a
-        print("CLASS NAME?", self.__class__.__name__)
-        print("CREATING B")
+        logger_print("CLASS NAME?", self.__class__.__name__)
+        logger_print("CREATING B")
 
 
 a = A()
@@ -39,33 +39,33 @@ G.add_edge(4, 5)
 # G.neighbors(node_id)
 for n_with_items in G.nodes.items():
     n, d = n_with_items
-    print("NODE", n, type(n))
-    print("DATA", d, type(d))
+    logger_print("NODE", n, type(n))
+    logger_print("DATA", d, type(d))
     # G.nodes[n]
 
-print()
+logger_print()
 G.nodes[2]["attr2"] = 2
 
-print(G.nodes[2])  # attrs of this node.
+logger_print(G.nodes[2])  # attrs of this node.
 
-print()
-# print(list(G.neighbors(1)))
+logger_print()
+# logger_print(list(G.neighbors(1)))
 components = list(nx.connected_components(G))
-print(components)
+logger_print(components)
 
-print()
-print(G.graph, type(G.graph)) # this is dict.
+logger_print()
+logger_print(G.graph, type(G.graph)) # this is dict.
 
 from networkx.readwrite import json_graph
 
 data = json_graph.node_link_data(G)
 
-print()
-rich.print(data)
+logger_print()
+logger_print(data)
 
 G0 = json_graph.node_link_graph(data)
 
-print("GRAPH DATA?",G0.graph)
+logger_print("GRAPH DATA?",G0.graph)
 
 # attribute just do not collide with id.
 
@@ -75,7 +75,7 @@ class BM(BaseModel):
     a :float
 
 new_bm = BM.parse_obj(dict(a = 1))
-rich.print(new_bm)
+logger_print(new_bm)
 
 from typing import  Dict
 a : Dict[int, dict] = {1:{}}

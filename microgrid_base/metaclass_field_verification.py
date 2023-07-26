@@ -33,8 +33,8 @@ class MyABC(metaclass=abc.ABCMeta):
 
 
 MyABC.register(dict)
-print(issubclass(MyABC, dict))
-print(issubclass(dict, MyABC))  # True
+logger_print(issubclass(MyABC, dict))
+logger_print(issubclass(dict, MyABC))  # True
 
 
 class mclass(MyABC):
@@ -83,7 +83,7 @@ def is_positive(x):  # type: ignore
 a0 = -1
 # is_positive(a0) and a0-1
 if is_positive(a0):
-    print(a0)  # positive now.
+    logger_print(a0)  # positive now.
 
 is_positive(False)
 
@@ -157,7 +157,7 @@ g = f * 1
 # g = mymul(E , f)
 # g = E.__mul__(f)
 h = g * 2
-print(h)
+logger_print(h)
 # assert_type(h, mybase[str])
 
 import time
@@ -165,36 +165,36 @@ import time
 
 class MyMeta(type):
     def __new__(cls, name, bases, dct):
-        print("-----------------------------------")
-        print("Allocating memory for class", name)
-        print(cls)
-        print(bases)
+        logger_print("-----------------------------------")
+        logger_print("Allocating memory for class", name)
+        logger_print(cls)
+        logger_print(bases)
         dct["new_var"] = "new"
-        print(dct)
+        logger_print(dct)
         s = super(MyMeta, cls)
-        print(s)
-        print()
+        logger_print(s)
+        logger_print()
         return s.__new__(cls, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
 
         s = super(MyMeta, cls)
-        print(s)
-        print()
+        logger_print(s)
+        logger_print()
         s.__init__(name, bases, dct)  # not working. maybe it is on "bases" or "name"
 
-        print("-----------------------------------")
-        print("Initializing class", name)
-        print(cls)
-        print(bases)
+        logger_print("-----------------------------------")
+        logger_print("Initializing class", name)
+        logger_print(cls)
+        logger_print(bases)
         cls.init_var = f"init{time.time()}"  # no?
-        print(dct)
+        logger_print(dct)
 
     def __call__(cls, *args, **kwds):
-        print("__call__ of ", str(cls))
-        print("__call__ *args=", str(args))
-        print("__call__ **kargs=", str(kwds))
-        print()
+        logger_print("__call__ of ", str(cls))
+        logger_print("__call__ *args=", str(args))
+        logger_print("__call__ **kargs=", str(kwds))
+        logger_print()
         # return cls( *args, **kwds)
         return type.__call__(cls, *args, **kwds)
 
@@ -204,17 +204,17 @@ class MyMeta(type):
 
 class MyKlass(metaclass=MyMeta):
     # def __new__(cls, a):
-    #     print("myklass new")
-    #     print(dir(cls))
+    #     logger_print("myklass new")
+    #     logger_print(dir(cls))
     #     super(MyKlass, cls).__new__(cls)
-    #     print()
+    #     logger_print()
     init_var: str
 
     def __init__(self, a):
         self.a = a
-        print("class non-meta init")
-        print(dir(self))
-        print()
+        logger_print("class non-meta init")
+        logger_print(dir(self))
+        logger_print()
 
     def foo(self, param):
         pass
@@ -223,13 +223,13 @@ class MyKlass(metaclass=MyMeta):
 
 
 mk = MyKlass(a=1)
-print("*" * 50)
+logger_print("*" * 50)
 mk2 = MyKlass(a=9)
 dir(mk2)
-print(mk.init_var)
-print(mk2.init_var)
-# print(MyMeta.init_var)
+logger_print(mk.init_var)
+logger_print(mk2.init_var)
+# logger_print(MyMeta.init_var)
 
 from string import Template
 t = Template("$arr value $arr2").substitute(arr=["a", "b"], arr2=["c", "d"])
-print(t)
+logger_print(t)

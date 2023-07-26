@@ -64,14 +64,14 @@ if __name__ == "__main__":
 
     import rich
 
-    rich.print(run_result)
+    logger_print(run_result)
     # errorRegex = r".+?reportUndefinedVariable.+"
     # if "does not exist" in run_result.stderr:
     if run_result.stderr:
         raise Exception(f"Pyright error:\n{run_result.stderr}")
     typeErrors = re.findall(errorRegex, run_result.stdout, re.MULTILINE)
     # breakpoint()
-    print(typeErrors)
+    logger_print(typeErrors)
     assert typeErrors[0].endswith(
         'test_undefined.py:1:5 - error: "b" is not defined (reportUndefinedVariable)'
     )

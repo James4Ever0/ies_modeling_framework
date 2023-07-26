@@ -166,7 +166,7 @@ def solveModelFromCalcParamList(
         #     exprs = list(new_exprs)
 
         #     output_path = "dump.json"
-        #     print("DUMPING COND TO:", output_path)
+        #     logger_print("DUMPING COND TO:", output_path)
         #     with open(output_path, "w+") as f:
         #         import json
 
@@ -180,24 +180,24 @@ def solveModelFromCalcParamList(
         with SolverFactory("cplex") as solver:
             # try:
             solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
-            print(">>>SOLVING<<<")
+            logger_print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
             results = solver.solve(mw.model, tee=True)
-            print("SOLVER RESULTS?")
-            rich.print(results)
+            logger_print("SOLVER RESULTS?")
+            logger_print(results)
 
             # breakpoint() # TODO: check diesel engine issues.
 
             # except:
             #     import traceback
             #     traceback.print_exc()
-            # print(">>>SOLVER ERROR<<<")
+            # logger_print(">>>SOLVER ERROR<<<")
             # breakpoint()
             # "Solver (cplex) did not exit normally"
             # return False  # you can never get value here.
             # breakpoint()
-            # print("OBJECTIVE?")
+            # logger_print("OBJECTIVE?")
             # OBJ.display()
             # try:
 
@@ -241,12 +241,12 @@ def solveModelFromCalcParamList(
             if error_msg:
                 raise Exception("\n".join(error_msg))
 
-            print("OBJ:", value(OBJ))
+            logger_print("OBJ:", value(OBJ))
             # export value.
             # import json
             solved = True
             # except:
-            # print("NO SOLUTION.")
+            # logger_print("NO SOLUTION.")
         return solved
 
     class CalcStruct(BaseModel):
@@ -360,7 +360,7 @@ def solveModelFromCalcParamList(
                 典型日代表的日期: List[int],
             ):
                 assert len(出力曲线模版) == 每年小时数, f"Actual: {len(出力曲线模版)}"
-                rich.print(典型日出力曲线)  # ANY? please use "beartype.
+                logger_print(典型日出力曲线)  # ANY? please use "beartype.
                 assert len(典型日出力曲线) == 每天小时数, f"Actual: {len(典型日出力曲线)}"
                 for day_index in 典型日代表的日期:
                     出力曲线模版[day_index * 每天小时数 : (day_index + 1) * 每天小时数] = 典型日出力曲线
@@ -412,9 +412,9 @@ def solveModelFromCalcParamList(
 
                     if 出力曲线类:
                         出力曲线 = 出力曲线类.export(devInst, timeParam)
-                        print("EXPORTING:", 出力曲线类.__name__)
-                        print("DATA:")
-                        rich.print(出力曲线)
+                        logger_print("EXPORTING:", 出力曲线类.__name__)
+                        logger_print("DATA:")
+                        logger_print(出力曲线)
                         if 典型日:
                             if 出力曲线字典.get(devId, None) is None:
                                 出力曲线字典[devId] = {
@@ -443,18 +443,18 @@ def solveModelFromCalcParamList(
             #     cmath.nan, inplace=True
             # )  # default "nan" or "null" replacement, compatible with type "float"
             # 仿真结果表_导出 = translateDataframeHeaders(仿真结果表_导出, FSPT)
-            # print()
-            # rich.print(出力曲线字典)
-            # print()
+            # logger_print()
+            # logger_print(出力曲线字典)
+            # logger_print()
             # 仿真结果表_导出.head()
             # # 仿真结果表_导出, 仿真结果表_格式化 = 导出结果表_格式化(仿真结果表,仿真结果字符串表头,FSPT)
             # # export_table = 仿真结果表.to_html()
             # # may you change the format.
             # 仿真结果表_格式化 = 仿真结果表_导出.to_dict(orient="records")
             ############################
-            print()
-            rich.print(出力曲线字典)
-            print()
+            logger_print()
+            logger_print(出力曲线字典)
+            logger_print()
             # breakpoint()
             仿真结果表_未翻译, _, 仿真结果表_格式化 = 导出结果表_格式化(
                 仿真结果表, 仿真结果字符串表头, FSPT, simulationResultColumns
@@ -554,7 +554,7 @@ def solveModelFromCalcParamList(
         # shall you remove one point.
         constraint_ranges = list(zip(fin_points[:-1].tolist(), fin_points[1:].tolist()))
         for fin_start, fin_end in constraint_ranges:
-            print(f"{fin_start} <= {target.upper()} <= {fin_end}")  # constraint
+            logger_print(f"{fin_start} <= {target.upper()} <= {fin_end}")  # constraint
             # min env under this condition. recalculate.
         return constraint_ranges
 
@@ -652,5 +652,5 @@ def solveModelFromCalcParamList(
     #     traceback.print_exc()
     #     #         breakpoint()  # you need to turn off these breakpoints in release.
     #     # breakpoint()
-    print("SOLVER WORKER END.")
+    logger_print("SOLVER WORKER END.")
     return resultList

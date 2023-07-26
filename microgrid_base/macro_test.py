@@ -8,4 +8,4 @@ env = Environment(loader = FileSystemLoader('./'))
 tpl = env.get_template(template_path)
 
 script = tpl.render(test='test_string')
-print(script)
+logger_print(script)

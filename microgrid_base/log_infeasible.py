@@ -44,17 +44,17 @@ solver = SolverFactory("cplex")
 solution = solver.solve(m, tee=True)
 # after solving.
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
-print()
-print("SOLVER STATUS?", solution.solver.status)
-print("TERMINATION CONDITION?", solution.solver.termination_condition)  # infeasible.
+logger_print()
+logger_print("SOLVER STATUS?", solution.solver.status)
+logger_print("TERMINATION CONDITION?", solution.solver.termination_condition)  # infeasible.
 
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
-print(value(m.z))
+logger_print(value(m.z))
 
 mstream.seek(0)
 logging_data = mstream.read()
 # alternative:
 # logging_data = mstream.getvalue()
 mstream.truncate(0)
-print("LOGGING DATA:")
-print(logging_data)
+logger_print("LOGGING DATA:")
+logger_print(logging_data)

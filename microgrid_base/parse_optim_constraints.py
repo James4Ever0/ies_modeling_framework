@@ -11,7 +11,7 @@ with open(filepath, 'r') as f:
 import ast
 
 mfile = ast.parse(content)
-# print(mfile, dir(mfile))
+# logger_print(mfile, dir(mfile))
 # breakpoint()
 
 import astor
@@ -19,8 +19,8 @@ import astor
 TS = lambda ast_tree: astor.code_gen.to_source(ast_tree)
 
 def printTypeAndNameHint(TYPE:str, NAME: str, indent:int=0):
-    print()
-    print(f"{' '*indent}[{TYPE}]========================[{NAME}]")
+    logger_print()
+    logger_print(f"{' '*indent}[{TYPE}]========================[{NAME}]")
 
 def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, indent = 0):
     if not trial:
@@ -33,7 +33,7 @@ def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, i
                 callCode = astor.to_source(w).strip().replace(callName, callName.split(".")[-1])
                 hasCode=True
                 if not trial:
-                    print(" "*(indent+4)+callCode)
+                    logger_print(" "*(indent+4)+callCode)
     if trial:
         if hasCode:
             walkElemAndPrintConstraint(elem, TYPE, NAME, trial=False, indent=indent)
@@ -43,7 +43,7 @@ def walkElemAndPrintConstraint(elem: ast.AST, TYPE:str, NAME: str, trial=True, i
 for elem in mfile.body:
     if type(elem) == ast.ClassDef:
         cname = elem.name
-        # print(cname)
+        # logger_print(cname)
         if cname.endswith('模型'):
             if cname == "设备模型":
                 printTypeAndNameHint("CLASS", cname)

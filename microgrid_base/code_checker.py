@@ -19,7 +19,7 @@ def open_file_and_modify_content(
         cnt = f.read()
     fixed_cnt = func(cnt)
     if fixed_cnt != cnt:
-        print(f"{modify_msg}: {fpath}")
+        logger_print(f"fixing {modify_msg} issue in file: {fpath}")
     with open(fpath, "w+") as f:
         f.write(fixed_cnt)
     return fixed_cnt
@@ -28,12 +28,12 @@ def open_file_and_modify_content(
 def fix_import_logger_in_content(fpath):
     # fixed_cnt = "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
     fixed_cnt = open_file_and_modify_content(
-        fpath, lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt]), ""
+        fpath, lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt]), "logger import"
     )
     return fixed_cnt
 
 
-FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
+FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))"
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
 
 
@@ -44,7 +44,7 @@ def fix_print_statement_in_content(fpath: str):
     fixed_cnt = open_file_and_modify_content(
         fpath,
         lambda cnt: re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE),
-        "",
+        "print statement",
     )
     # with open(fpath, 'w+') as f:
     #     f.write(fixed_cnt)
@@ -53,12 +53,12 @@ def fix_print_statement_in_content(fpath: str):
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
-# files = os.listdir(".")
-files = [
-    "test_replace_logger.py",
-    "test_replace_logger_no_template.py",
-    "test_replace_logger.py.j2",
-]  # files for test!
+files = os.listdir(".")
+# files = [
+#     "test_replace_logger.py",
+#     "test_replace_logger_no_template.py",
+#     "test_replace_logger.py.j2",
+# ]  # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
         with_template = (template_path := f"{fpath}.j2") in files
@@ -83,7 +83,7 @@ for fpath in files:
             # walk over this.
         except:
             # traceback.print_exc()
-            print(f"Invalid syntax found in file: {fpath}")
+            logger_print(f"Invalid syntax found in file: {fpath}")
             continue
             # might have some invalid syntax.
         for el in ast.walk(tree):
@@ -105,7 +105,7 @@ for fpath in files:
         if not found_import_log_utils:  # just import, do not change the print logic.
             # if no template was found, fix just one. if template found, fix both.
 
-            # print(f"fixing logging issue in file: {fpath}")
+            # logger_print(f"fixing logging issue in file: {fpath}")
             fix_import_logger_in_content(fpath)
             # with open(fpath, 'w+') as f:
             #     f.write(fix_import_logger_in_content(content))
@@ -116,7 +116,7 @@ for fpath in files:
                 IMPORT_LOGGER_PRINT_REGEX, template_content, re.MULTILINE
             )
             if len(has_import_on_root) == 0:
-                # print(f"fixing logging issue in template: {template_path}")
+                # logger_print(f"fixing logging issue in template: {template_path}")
                 fix_import_logger_in_content(template_path)
                 # with open(template_path, 'w+') as f:
                 #     f.write(fix_import_logger_in_content(template_content))

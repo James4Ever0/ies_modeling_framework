@@ -41,23 +41,23 @@ if test == "create_task":
     data = EnergyFlowGraph(mDictList=mDictList)
     # mdata = mDictList[0]['nodes'][25] # 25-35
     # import rich
-    # rich.print(mdata) # 设备
+    # logger_print(mdata) # 设备
     r = requests.post(url, json=data.dict())
-    print(r.json())
-    print(r.status_code)
+    logger_print(r.json())
+    logger_print(r.status_code)
 elif test == "check_result":
     r = requests.get(result_url, params=check_data)
-    print(r.status_code)
-    print(r.content)
+    logger_print(r.status_code)
+    logger_print(r.content)
     output_path = "output_template.json"
-    print(f"writing to: {output_path}")
+    logger_print(f"writing to: {output_path}")
     with open(output_path, "w+") as f:
         f.write(json.dumps(r.json(), indent=4, ensure_ascii=False))
 elif test == "check_status":
     r = requests.get(status_url, params=check_data)
-    print(r.status_code)
-    print(r.content)
+    logger_print(r.status_code)
+    logger_print(r.content)
 else:
     raise Exception("TEST IS NOT CREATED:", test)
 # t = 设备节点.parse_obj(mdata)
-# print(t)
+# logger_print(t)

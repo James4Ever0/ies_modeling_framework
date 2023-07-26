@@ -44,7 +44,7 @@ import pandas
     设计规划结果输出CSV, on_bad_lines="warn", header=None
 )  # you can ignore bad lines.
 
-# rich.print(设计规划结果输出格式表格)
+# logger_print(设计规划结果输出格式表格)
 # breakpoint()
 subSchemas = []
 # breakpoint()
@@ -57,7 +57,7 @@ for colIndex in (设计规划T := 设计规划结果输出格式表格.T):
         and len(firstElem) == 4
         and firstElem.startswith("方案")
     ):
-        # print(firstElem)
+        # logger_print(firstElem)
         # breakpoint()
         subSchemas.append((firstElem, colIndex))
 
@@ -100,7 +100,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
     schemaHeaderIndex = index + 1
     schemaHeaders = 设计规划T[schemaHeaderIndex].to_list()
     # schemaHeaders = 设计规划T[schemaHeaderIndex := index + 1].to_list()
-    # rich.print(schemaHeaders)
+    # logger_print(schemaHeaders)
     # breakpoint()
     englishSchemaHeaderIndex = schemaHeaderIndex + 2
 
@@ -117,7 +117,7 @@ for schemaName, index in subSchemas:  # why we have nan here?
         schemaHeader = schemaHeader.replace("/", "_")  # for code generation
         strippedSchemaHeader, schemaHeaderUnit = unitParserWrapper(schemaHeader)
         if checkIfMatchAListOfRegexes(strippedSchemaHeader, regexList, schemaName):
-            print("SKIPPING:", strippedSchemaHeader)
+            logger_print("SKIPPING:", strippedSchemaHeader)
             continue
         planningResultSchema[schemaName].update(
             {
@@ -139,7 +139,7 @@ for k, v in hitRecords.items():
 if errors:
     raise Exception("\n".join(errors))
 
-rich.print(planningResultSchema)
+logger_print(planningResultSchema)
 # breakpoint()
 # store this to file. remember to mention this file in Makefile. automation tools like "dyndep" in ninja, or "submake" can be used.
 with open(planning_output_path, "w+") as f:
@@ -152,7 +152,7 @@ table_name = "仿真结果"
 table = pandas.read_excel(excel_path, sheet_name=table_name, header=None)
 
 
-# print(table)
+# logger_print(table)
 def is_empty(elem):
     if type(elem) is str:
         return elem.strip() == ""
@@ -190,10 +190,10 @@ for i, r in table.iterrows():
 
 
 # need processing.
-rich.print(data)
+logger_print(data)
 
 
-print("writing to:", output_path)
+logger_print("writing to:", output_path)
 
 new_data = {k: {} for k in data.keys()}
 
@@ -227,7 +227,7 @@ def convert_format(h_array):
             unit = default_unit_maps.get(elem, None)
         if unit:
             old_unit_name = translateUnit(unit)
-            print("processing:", elem_name)
+            logger_print("processing:", elem_name)
             mag, new_unit_name = unitFactorCalculator(
                 ureg, standard_units, old_unit_name
             )
@@ -242,8 +242,8 @@ from param_base import 设备接口集合
 
 all_device_names = list(设备接口集合.keys())
 
-print()
-rich.print(all_device_names)
+logger_print()
+logger_print(all_device_names)
 
 nonDevNames = ["柴油", "电负荷"]
 commonDevParams = ["设备型号", "设备台数", "设备维护费用"]
@@ -324,9 +324,9 @@ import pandas as pd
 
 df = pd.DataFrame(tableRepr, index=None)
 
-print(df.head())
+logger_print(df.head())
 filepath = "sim_param_export.xlsx"
-print(f"writing to: {filepath}")
+logger_print(f"writing to: {filepath}")
 df.to_excel(filepath, index=False)
 
 for d in all_device_names:
@@ -346,11 +346,11 @@ for elem in data[k]:
         new_data[k][d] = convert_format(h)
 
 
-print()
-rich.print(new_data)
+logger_print()
+logger_print(new_data)
 with open(output_path, "w+") as f:
     f.write(json.dumps(new_data, indent=4, ensure_ascii=False))
-print("write to:", output_path)
+logger_print("write to:", output_path)
 
 
 model_names = [f"{n}模型" for n in all_device_names]

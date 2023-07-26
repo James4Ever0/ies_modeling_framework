@@ -14,4 +14,4 @@ with open(path, 'r') as f:
 
 import rich
 
-rich.print(data)
+logger_print(data)

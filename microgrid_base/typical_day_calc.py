@@ -23,7 +23,7 @@ month_days[1] = 28
 month_days[4 - 1] = month_days[6 - 1] = month_days[9 - 1] = month_days[11 - 1] = 30
 
 mdr = numpy.cumsum(month_days)
-print(mdr)
+logger_print(mdr)
 
 spring_days = [d for d in range(mdr[1], mdr[4])]
 summer_days = [d for d in range(mdr[4], mdr[7])]

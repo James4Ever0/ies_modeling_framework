@@ -134,7 +134,7 @@ def background_on_message(task: AsyncResult):
     # and not the message callback.
     status = task.status
     logger_print("TASK STATUS?", status)
-    print()
+    logger_print()
     
     logger_print("VALUE TYPE?", type(value))  # str, '14'
     logger_print("TASK VALUE?", value)

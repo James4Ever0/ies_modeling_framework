@@ -15,11 +15,11 @@ from pyomo.core.expr.sympy_tools import sympyify_expression
 
 objmap, vis = sympyify_expression(model.e)
 import rich
-rich.print(objmap)
+logger_print(objmap)
 from sympy import Mul
 # 'getPyomoSymbol', 'getSympySymbol', 'i', 'pyomo2sympy', 'sympy2pyomo', 'sympyVars'
-rich.print(vis) # sympy expression.
+logger_print(vis) # sympy expression.
 breakpoint()
-rich.print(vis.as_terms()) # ([(2, ((2.0, 0.0), (0,), ())), (2*x0**2, ((2.0, 0.0), (2,), ()))], [x0])
+logger_print(vis.as_terms()) # ([(2, ((2.0, 0.0), (0,), ())), (2*x0**2, ((2.0, 0.0), (2,), ()))], [x0])
 # (terms, symbols)
 # terms = [(expr, deg, pow)]

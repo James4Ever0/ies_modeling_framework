@@ -42,7 +42,7 @@ import docopt
 
 from docopt import docopt
 
-# print(type(__doc__))
+# logger_print(type(__doc__))
 # breakpoint()
 options = docopt(__doc__, version="2.0")
 # from turtle import backward
@@ -96,7 +96,7 @@ class PrefixSuffixBase:
         zd = {e: 0 for e in sl}
         s1 = nd == zd
         s2 = sld == nwd
-        # print(s1, s2)
+        # logger_print(s1, s2)
         # breakpoint()
         return s1 and s2
 
@@ -204,10 +204,10 @@ def triplets_with_supertype(triplet_map, length=3):
             try:
                 assert len(triplet) == length
             except:
-                print()
-                print("ERROR!")
-                print()
-                rich.print(triplet_map)
+                logger_print()
+                logger_print("ERROR!")
+                logger_print()
+                logger_print(triplet_map)
                 raise Exception(
                     f"Error when unpacking triplet map with length {length}.",
                 )
@@ -271,7 +271,7 @@ for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
     types_connectivity_matrix.update({frozenset([start, end]): created})
 
 # a = [(e, True) for e in triplets_with_supertype(io_coax_triplets)]
-# print(a)
+# logger_print(a)
 # breakpoint()
 
 
@@ -301,7 +301,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     else:
         start = Input(i)  # input <- adder_output <- adder
         end = Output(o)  # output -> adder_input -> adder
-    # print(i,o, start, end,wire_name)
+    # logger_print(i,o, start, end,wire_name)
     # breakpoint()
     mWireNames = (
         connectable_wire_name,
@@ -350,7 +350,7 @@ for (i, o, wire_name, supertype), is_io, forward, backward in reduce(
     )
 
 
-# rich.print(types)
+# logger_print(types)
 
 # {
 #     '母线输入',
@@ -376,7 +376,7 @@ import json
 #         for k0, v0 in v.items():
 #             keys.append(k0)
 
-# rich.print(keys)
+# logger_print(keys)
 csv_path = "设备接口-离网型微电网.csv"
 
 from utils import fix_csv_and_return_dataframe
@@ -402,7 +402,7 @@ port_df = fix_csv_and_return_dataframe(csv_path)
 
 # port_df = pandas.read_csv(csv_path, header=None, on_bad_lines="warn")
 
-# print(port_df)
+# logger_print(port_df)
 import numpy
 
 mycat = None
@@ -452,13 +452,13 @@ device_with_single_port_to_port_type.update(
 mapped_types = set()
 type_to_device_LUT = {}
 
-rich.print(device_with_single_port_to_port_type)
+logger_print(device_with_single_port_to_port_type)
 
 for index, row in port_df.iterrows():
-    # print(row.tolist())
-    # print(row.tolist())
+    # logger_print(row.tolist())
+    # logger_print(row.tolist())
     cat, content = row.tolist()[:2]
-    print([cat, content])
+    logger_print([cat, content])
     if not (cat is numpy.nan or cat is None):
         mycat = cat
         device_port_dict[mycat] = {}  # init
@@ -487,7 +487,7 @@ for index, row in port_df.iterrows():
                     port_type, []
                 ) + [f"{mydevice}-{content}"]
             else:
-                # rich.print(device_port_dict)
+                # logger_print(device_port_dict)
                 # breakpoint()
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
@@ -497,19 +497,19 @@ for index, row in port_df.iterrows():
 def print_with_banner(content, filepath):
     # def print_with_banner(content, hyphen_saved_name, prefix):
     # banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
-    rich.print(content)
+    logger_print(content)
     # filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
-    print("SAVING TO:", filepath)
-    print(f"=========[{filepath}]=========")
+    logger_print("SAVING TO:", filepath)
+    logger_print(f"=========[{filepath}]=========")
     with open(filepath, "w+") as f:
         str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
 
 
-# print("=========[DEVICE PORT TYPE MAPPING]=========")
+# logger_print("=========[DEVICE PORT TYPE MAPPING]=========")
 print_with_banner(device_port_dict, j1)
-# print("=========[CONNECTIVITY MATRIX]=========")
-rich.print(types_connectivity_matrix)
+# logger_print("=========[CONNECTIVITY MATRIX]=========")
+logger_print(types_connectivity_matrix)
 
 
 def exp_froz(frz):
@@ -523,12 +523,12 @@ types_connectivity_matrix_for_json = {
     "{}_{}".format(*exp_froz(k)): v for k, v in types_connectivity_matrix.items()
 }
 print_with_banner(types_connectivity_matrix_for_json, j2)  # must convert this one.
-# print("=========[DEVICE PORT TYPES]=========")
+# logger_print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
-# print("=========[ALL TYPES STRUCTURED]=========")
+# logger_print("=========[ALL TYPES STRUCTURED]=========")
 wire_types_json = {k: list(v) for k, v in wire_types.items()}
 
-# print(wire_types_json)
+# logger_print(wire_types_json)
 # breakpoint()
 
 all_types_structured = {
@@ -548,8 +548,8 @@ diff_1 = mapped_types.difference(mtypes)
 diff_2 = mtypes.difference(mapped_types)
 
 if not (diff_1 == set() and diff_2 == set()):
-    print("MAPPED TYPES UNIQ:", diff_1)
-    print("DEVICE TYPES UNIQ:", diff_2)
+    logger_print("MAPPED TYPES UNIQ:", diff_1)
+    logger_print("DEVICE TYPES UNIQ:", diff_2)
     raise Exception("Mapped types does not equal to existing device types")
 
 # now the final: validity check!
@@ -567,7 +567,7 @@ import copy
 
 
 def alter_type_name(type_name):
-    print("ALTER TYPE NAME:", type_name)
+    logger_print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         if type_name.endswith("]"):
             type_name = type_name[:-4]
@@ -575,7 +575,7 @@ def alter_type_name(type_name):
         # breakpoint()
     else:
         result = type_name
-    # print("RESULT?", result)
+    # logger_print("RESULT?", result)
     # breakpoint()
     return result
 
@@ -585,7 +585,7 @@ def is_wire(name):
 
 
 for fzset, wire_name in types_connectivity_matrix.items():
-    # print(fzset, wire_name)
+    # logger_print(fzset, wire_name)
     start, end = exp_froz(fzset)
 
     start = alter_type_name(start)
@@ -596,12 +596,12 @@ for fzset, wire_name in types_connectivity_matrix.items():
     G.add_edge(wire_name, end)
     # G.add_edge(start, end)
 
-# print(G.nodes)
+# logger_print(G.nodes)
 
 for node_name in G.nodes:
     neighbors = G.neighbors(node_name)
-    print("NODE:", node_name)
-    print("    NEIGHBOR:", [n for n in neighbors])
+    logger_print("NODE:", node_name)
+    logger_print("    NEIGHBOR:", [n for n in neighbors])
 
 # import matplotlib.font_manager as fm
 
@@ -630,7 +630,7 @@ def plot_graph(G, figure_path: str, width=20, height=30, plot_only=False):
 
     networkx.draw_kamada_kawai(G, with_labels=True, font_weight="bold", **draw_options)
 
-    print("Saving graph figure to:", figure_path)
+    logger_print("Saving graph figure to:", figure_path)
 
     plt.savefig(figure_path)
     if not plot_only:
@@ -650,7 +650,7 @@ def lookup_type_to_device(type_name):
 
 
 for fzset, wire_name in types_connectivity_matrix.items():
-    # print(fzset, wire_name)
+    # logger_print(fzset, wire_name)
     start, end = exp_froz(fzset)
     for ds, ds_port in lookup_type_to_device(start):
         for de, de_port in lookup_type_to_device(end):

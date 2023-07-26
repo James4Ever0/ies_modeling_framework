@@ -27,10 +27,10 @@ MAKEFILE = dict(
 if FLAGS["XLSX"]:
     for (filepath, sheet_name, output_path) in xlsx_worklist:
         main_parser(f"{filepath}.xlsx", sheet_name, f"{output_path}.json")
-        print("____")
+        logger_print("____")
 
 
 if FLAGS["CSV"]:
     for (filepath, output_path) in csv_worklist:
         csv_parser(f"{filepath}.csv", f"{output_path}.json")
-        print("____")
+        logger_print("____")

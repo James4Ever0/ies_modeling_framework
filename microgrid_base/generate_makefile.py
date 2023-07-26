@@ -56,8 +56,8 @@ for fname in (fnames := os.listdir(".")):
             tree.body = tree.body[: myindex + 1]
             source_code = astor.to_source(tree)
             exec(source_code)
-            print(("MAKEFILE ENTRY: %s" % fname).center(60, "="))
-            print(MAKEFILE)  # type: ignore
+            logger_print(("MAKEFILE ENTRY: %s" % fname).center(60, "="))
+            logger_print(MAKEFILE)  # type: ignore
             for argname in ["inputs", "outputs", "args"]:
                 assert (
                     argname in MAKEFILE.keys()
@@ -66,11 +66,11 @@ for fname in (fnames := os.listdir(".")):
             MAKEFILE["outputs"].extend(required_pyfiles)
             MAKEFILE["outputs"] = list(set(MAKEFILE["outputs"]))
             python_files.append(MAKEFILE.copy())  # type: ignore
-            print()
+            logger_print()
 
 from jinja_utils import load_render_and_format
 
-# print(python_files)
+# logger_print(python_files)
 # breakpoint()
 load_render_and_format(
     generate_path.split(".")[0] + ".j2",

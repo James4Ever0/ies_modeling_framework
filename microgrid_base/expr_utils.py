@@ -138,13 +138,13 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         expr_list = []
         with RecursionContext() as RC:
             for subexpr in subexpr_strs:
-                #print()
+                #logger_print()
                 sympify_expr = sympify(subexpr)
                 sympify_expr = sympify_expr.simplify()
                 _p = Poly(sympify_expr)
                 fs = _p.free_symbols
                 logger_print(f"FS: {fs}")
-                #print()
+                #logger_print()
                 for s in fs:
                     sname = str(s)
                     if sname in EIPMAP_REV.keys():
@@ -196,7 +196,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
             sympy_expr = eval(data)
             logger_print("SIMPLIFYING EXPR")
             sympy_expr = sympy_expr.simplify()
-            #print()
+            #logger_print()
             logger_print(sympy_expr)
         #####################APPROACH 2#####################
         
