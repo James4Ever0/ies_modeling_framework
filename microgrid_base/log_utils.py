@@ -38,7 +38,12 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
     # logger_print(dir(record))
     accepted = False
     msg = record.msg
-    # shall you 
+    # shall you intercept the args...
+    args = record.args # tuple. let's reset it.
+    # breakpoint()
+    record.msg = msg % args
+    record.args = ()
+
     if len(msg) < HUGE_MSG_THRESHOLD:
         if allow_logging:  # then this is some short message.
             accepted = True
@@ -122,4 +127,5 @@ if __name__ == "__main__":  # just a test.
     for i in range(100):
         time.sleep(0.1)
         logger.debug(f"test debug message {i}")
+        logger.debug(f"test debug message {i} %s", "myarg")
         logger.debug(f"test huge message {i} " * 100)  # huge mssage
