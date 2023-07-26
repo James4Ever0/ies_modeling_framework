@@ -12,8 +12,8 @@ fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, content])
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
-files = os.listdir(".")
-# files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
+# files = os.listdir(".")
+files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_replace_logger.py.j2"] # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
         with_template = (template_path:=f"{fpath}.j2") in files
