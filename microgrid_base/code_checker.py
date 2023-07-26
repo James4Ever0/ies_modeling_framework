@@ -10,18 +10,20 @@ from typing import Callable
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
-
+fixed=False
 
 def open_file_and_modify_content(
     fpath: str, func: Callable[[str], str], modify_msg: str
 ):
+    global fixed
     with open(fpath, "r") as f:
         cnt = f.read()
     fixed_cnt = func(cnt)
     if fixed_cnt != cnt:
         logger_print(f"fixing {modify_msg} issue in file: {fpath}")
-    with open(fpath, "w+") as f:
-        f.write(fixed_cnt)
+        fixed = True
+        with open(fpath, "w+") as f: # only modify file when necessary.
+            f.write(fixed_cnt)
     return fixed_cnt
 
 
@@ -120,3 +122,8 @@ for fpath in files:
                 fix_import_logger_in_content(template_path)
                 # with open(template_path, 'w+') as f:
                 #     f.write(fix_import_logger_in_content(template_content))
+
+if fixed:
+    import sys
+    print("Please rerun the make command for changes!")
+    sys.exit(1)

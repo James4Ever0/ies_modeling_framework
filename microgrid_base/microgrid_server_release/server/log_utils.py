@@ -2,6 +2,12 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# python version check
+import sys # recommend: 3.11.2
+MIN_PY_VERSION = (3,8)
+if sys.version_info < MIN_PY_VERSION:
+    raise Exception(f"Please use Python {'.'.join(MIN_PY_VERSION)} and above.")
+
 # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 
 import logging
@@ -80,8 +86,8 @@ myHandler = RotatingFileHandler(
 myHandler.setLevel(logging.DEBUG)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
 FORMAT = ( # add timestamp.
-    # "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
-    "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
+    "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s" # miliseconds already included!
+    # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
     # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
 )
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
@@ -106,6 +112,7 @@ from rich.pretty import pretty_repr
 def logger_print(*args):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
+        # python 3.8+ required!
         logger.debug(format_string, *[pretty_repr(arg) for arg in args], stacklevel=2) # it is been called elsewhere.
 
 

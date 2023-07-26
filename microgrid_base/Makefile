@@ -64,7 +64,7 @@ EXTRA_DATA_DEPS = frontend_sim_param_translation.json ${EXPORT_FORMAT_SCHEMA}
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
-INIT_FILES = requirements.txt init.sh
+INIT_FILES = requirements.txt init.sh conda_init.sh
 
 TEST_INPUT_FORMAT_FILES = template_input.json test_json_input_format.py
 
