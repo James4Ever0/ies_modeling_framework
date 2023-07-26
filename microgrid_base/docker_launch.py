@@ -5,10 +5,10 @@ you may use Dockerfile.
 import docker
 import os
 
-
-client = docker.DockerClient(
-    base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
-)
+client = docker.from_env()
+# client = docker.DockerClient(
+#     base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
+# )
 
 image_name = "microgrid_server"
 dockerfile_path = "."
@@ -28,11 +28,11 @@ else:
 with open(image_storage_gitignore, "w+") as f:
     f.write("*\n")
 
-docker.client.images.build
-if no_imported_image:
-    if no_exported_image:
+images = client.images.list()
+if image_name not in images:
+    if not os.path.exists(image_path):
         # first build the image, then export.
-        ...
+        client.images.build(path = dockerfile_path)
     # load the exported image.
 
 # run the command to launch server within image from here.
