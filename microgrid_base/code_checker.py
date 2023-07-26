@@ -4,23 +4,35 @@ import ast
 import os
 import astor
 import re
+from typing import Callable
 # import traceback
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 
-def fix_import_logger_in_content(cnt):
-    fixed_cnt = "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
+def open_file_and_modify_content(fpath:str, func: Callable[[str], str]):
+    with open(fpath, 'r') as f:
+        cnt = f.read(fpath)
+    fixed_cnt = func(cnt)
+    with open(fpath, 'w+') as f:
+        f.write(fixed_cnt)
+    return fixed_cnt
+
+def fix_import_logger_in_content(fpath):
+    # fixed_cnt = "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
+    fixed_cnt = open_file_and_modify_content(fpath, lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt]))
     return fixed_cnt
 
 FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
+
 def fix_print_statement_in_content(fpath:str):
-    with open(fpath, 'r') as f:
-        cnt = f.read(fpath)
-    fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
-    with open(fpath, 'w+') as f:
-        f.write(fixed_cnt)
+    # with open(fpath, 'r') as f:
+    #     cnt = f.read(fpath)
+    # fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
+    fixed_cnt = open_file_and_modify_content(fpath, lambda cnt: re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE))
+    # with open(fpath, 'w+') as f:
+    #     f.write(fixed_cnt)
     return fixed_cnt
 
 
@@ -76,12 +88,13 @@ for fpath in files:
             # if no template was found, fix just one. if template found, fix both.
 
             print(f"fixing logging issue in file: {fpath}")
-            with open(fpath, 'w+') as f:
-                f.write(fix_import_logger_in_content(content))
+            fix_import_logger_in_content(fpath)
+            # with open(fpath, 'w+') as f:
+            #     f.write(fix_import_logger_in_content(content))
         if with_template:
             has_import_on_root = re.findall(IMPORT_LOGGER_PRINT_REGEX, template_content, re.MULTILINE)
             if len(has_import_on_root) == 0:
                 print(f"fixing logging issue in template: {template_path}")
-
-                with open(template_path, 'w+') as f:
-                    f.write(fix_import_logger_in_content(template_content))
+                fix_import_logger_in_content(template_path)
+                # with open(template_path, 'w+') as f:
+                #     f.write(fix_import_logger_in_content(template_content))
