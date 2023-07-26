@@ -6,6 +6,18 @@ import docker
 
 image_name = "microgrid_server"
 
+image_storage_dir = "images"
+import os
+image_storage_gitignore = os.path.join(image_storage_dir, ".gitignore")
+
+if os.path.exists(image_storage_dir):
+    if not os.path.isdir(image_storage_dir):
+        raise Exception("'%s' exists and is not a directory!"% image_storage_dir)
+else:
+    os.mkdir(image_storage_dir)
+
+with open(image_storage_gitignore, 'w+') as f:
+    f.write("*\n")
 
 if no_imported_image:
     if no_exported_image:
