@@ -2,6 +2,12 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# python version check
+import sys
+MIN_PY_VERSION = (3,8)
+if sys.version_info < MIN_PY_VERSION:
+    raise Exception(f"Please use Python {'.'.join(MIN_PY_VERSION)} and above.")
+
 # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 
 import logging
