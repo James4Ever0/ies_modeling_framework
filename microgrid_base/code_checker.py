@@ -4,12 +4,13 @@ import astor
 import re
 # import traceback
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
-
+IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 # check pydantic field issues.
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
-files = os.listdir(".")
+# files = os.listdir(".")
+files = ["test_replace_logger.py", "test_replace_logger_no_template.py"] # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
         found_import_log_utils = False if fpath != "log_utils.py" else True
@@ -51,7 +52,7 @@ for fpath in files:
                 print(f"fixing logging issue in template: {template_path}")
                 with open(template_path, 'r') as f:
                     template_content = f.read()
-                has_import_on_root = re.findall(r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(| .+)$", template_content, re.MULTILINE)
+                has_import_on_root = re.findall(IMPORT_LOGGER_PRINT_REGEX, template_content, re.MULTILINE)
                 if len(has_import_on_root) == 0:
                     with open(template_path, 'w+') as f:
                         f.write(fix_content(template_content))
