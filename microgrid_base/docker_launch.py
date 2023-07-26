@@ -3,11 +3,19 @@ create or import docker environment with scripts.
 you may use Dockerfile.
 """
 import docker
+import os
+
+import docker
+if os.name == 'nt':
+    
+client = docker.DockerClient()
+else:
 
 image_name = "microgrid_server"
 dockerfile_path = "."
 
 image_storage_dir = "images"
+image_path = os.path.join(image_storage_dir, f"{image_name}.tar")
 import os
 image_storage_gitignore = os.path.join(image_storage_dir, ".gitignore")
 
@@ -20,6 +28,7 @@ else:
 with open(image_storage_gitignore, 'w+') as f:
     f.write("*\n")
 
+docker.client.images.build
 if no_imported_image:
     if no_exported_image:
         # first build the image, then export.
