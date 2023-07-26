@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # input_path = "test_data.json"
 input_path = "test/test_topo.json"
 # input_path = "template_input.json"
@@ -29,9 +31,9 @@ import rich
 from solve_model import mDictListToCalcParamList, solveModelFromCalcParamList
 
 for index, mDict in enumerate(EFG.mDictList):
-    rich.print(mDict)
-    print()
-    print(f"_____parsing mDict #{index}_____")
+    logger_print(mDict)
+    logger_print()
+    logger_print(f"_____parsing mDict #{index}_____")
     topo = 拓扑图.from_json(mDict.dict())
     topo.check_consistency()
 
@@ -39,7 +41,7 @@ mDictList = EFG.dict()["mDictList"]
 calcParamList = mDictListToCalcParamList(mDictList)
 resultList = solveModelFromCalcParamList(calcParamList)
 # breakpoint()
-rich.print(resultList[0]["simulationResultTable"])
+logger_print(resultList[0]["simulationResultTable"])
 
 with open(output_path, "w") as f:
     f.write(json.dumps(resultList, indent=4, ensure_ascii=False))

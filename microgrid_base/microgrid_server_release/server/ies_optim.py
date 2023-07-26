@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # TODO: 典型日 最终输出结果需要展开为8760
 # TODO: add more "bounds" to variables
 # TODO: call external processor/parser to handle DSL, simplify expressions.
@@ -205,7 +207,7 @@ class 阶梯电价(BaseModel):
                     or self.PriceStruct[index + 1].LowerLimit >= power
                 ):
                     return elem.getFee(power, time_in_day)
-        rich.print(self)
+        logger_print(self)
         raise Exception("Unable to get electricity price with power:", power)
 
 
@@ -1242,9 +1244,9 @@ from expr_utils import getExprStrParsedToExprList
 def withBanner(banner: str = ""):
     def decorator(func):
         def inner_func(*args, **kwargs):
-            print(f"_____________{banner}_____________")
+            logger_print(f"_____________{banner}_____________")
             val = func(*args, **kwargs)
-            print(f"_____________{banner}_____________")
+            logger_print(f"_____________{banner}_____________")
             return val
 
         return inner_func
@@ -1256,16 +1258,16 @@ def withBanner(banner: str = ""):
 def examineSubExprDegree(expr):
     data = str(expr)
     exprlist = getExprStrParsedToExprList(data)
-    print("ANALYSING TERMS")
+    logger_print("ANALYSING TERMS")
     for subexpr in progressbar(exprlist):
         subpoly = Poly(subexpr)
         subpoly_deg = subpoly.total_degree()
         if subpoly_deg not in [0, 1]:
-            print()
-            print("Abnormal subexpression poly degree:", subpoly_deg)
+            logger_print()
+            logger_print("Abnormal subexpression poly degree:", subpoly_deg)
             # recover expression representation
-            print("Abnormal expression:", subexpr)
-    print()
+            logger_print("Abnormal expression:", subexpr)
+    logger_print()
 
 
 class ModelWrapper:
@@ -1295,16 +1297,16 @@ class ModelWrapper:
     def Constraint(self, *args, **kwargs):
         expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
         if expr is None:
-            print("ARGS:", args)
-            print("KWARGS:", kwargs)
+            logger_print("ARGS:", args)
+            logger_print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method 'Constraint'")
         deg = getattr(expr, "polynomial_degree", 0)
         if deg:
             deg = expr.polynomial_degree()
         if deg != 1:
-            print("EXPR DEG:", deg)
+            logger_print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
-            print("EXPR:", expr_repr)
+            logger_print("EXPR:", expr_repr)
             # only if deg > 0 we need further inspection.
             if deg > 0:
                 # TODO: use regex to simplify expression here.
@@ -1336,16 +1338,16 @@ class ModelWrapper:
     def Objective(self, *args, **kwargs):
         expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
         if expr is None:
-            print("ARGS:", args)
-            print("KWARGS:", kwargs)
+            logger_print("ARGS:", args)
+            logger_print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method 'Objective'")
         deg = getattr(expr, "polynomial_degree", 0)
         if deg:
             deg = expr.polynomial_degree()
         if deg != 1:
-            print("EXPR DEG:", deg)
+            logger_print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
-            print("EXPR:", expr_repr)
+            logger_print("EXPR:", expr_repr)
             # only if deg > 0 we need further inspection.
             if deg > 0:
                 # TODO: use regex to simplify expression here.
@@ -1429,7 +1431,7 @@ class 计算参数(BaseModel):
         elif self.计算步长 == "小时" and self.典型日 is True:
             steps = 每天小时数
         else:
-            rich.print(self)
+            logger_print(self)
             raise Exception("未知计算参数")
         errors = []
 
@@ -1493,7 +1495,7 @@ class 可购买类(Protocol):
 
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
-        print("Building Device Model:", self.__class__.__name__)
+        logger_print("Building Device Model:", self.__class__.__name__)
         self.mw = mw
         self.PD = PD
         self.计算参数 = 计算参数实例
@@ -1527,7 +1529,7 @@ class 设备模型:
     def constraints_register(self):
         if self.__class__.__name__ == "设备模型":
             raise NotImplementedError("Must be implemented by subclasses.")
-        print("REGISTERING: ", self.__class__.__name__)
+        logger_print("REGISTERING: ", self.__class__.__name__)
 
     def getVarName(self, varName: str):
         VN = f"DI_{self.ID}_VN_{varName}"  # use underscore.
@@ -3785,17 +3787,17 @@ class ModelWrapperContext:
         self.mw = mw
 
     def __enter__(self):
-        print("ENTER MODEL WRAPPER CONTEXT")
+        logger_print("ENTER MODEL WRAPPER CONTEXT")
         return self.mw
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         # we don't have to take care of this.
         if exc_type == None:
-            print("NO ERROR IN MODEL WRAPPER CONTEXT")
+            logger_print("NO ERROR IN MODEL WRAPPER CONTEXT")
         else:
-            print("ERROR IN MODEL WRAPPER CONTEXT")
+            logger_print("ERROR IN MODEL WRAPPER CONTEXT")
         del self.mw
-        print("EXITING MODEL WRAPPER CONTEXT")
+        logger_print("EXITING MODEL WRAPPER CONTEXT")
 
 
 devInstClassMap: Dict[str, 设备模型] = {
@@ -4476,14 +4478,14 @@ def compute(
 
         # add them all.
 
-        print("_" * 20)
+        logger_print("_" * 20)
         display_var_names = lambda indexs: "\n    ".join([str(PD[i]) for i in indexs])
-        print(f"INPUTS:{display_var_names(input_indexs)}")
-        print()
-        print(f"OUTPUTS:{display_var_names(output_indexs)}")
-        print()
-        print(f"IO:{display_var_names(io_indexs)}")
-        print("_" * 20)
+        logger_print(f"INPUTS:{display_var_names(input_indexs)}")
+        logger_print()
+        logger_print(f"OUTPUTS:{display_var_names(output_indexs)}")
+        logger_print()
+        logger_print(f"IO:{display_var_names(io_indexs)}")
+        logger_print("_" * 20)
 
         for j in range(algoParam.迭代步数):
             seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
@@ -4496,7 +4498,7 @@ def compute(
                 continue
             input_anchor_0 = G.nodes[input_indexs[0]]
             if input_anchor_0["subtype"] == "变压器输出":
-                print(f"Building Converter Constraint #{cnt}")
+                logger_print(f"Building Converter Constraint #{cnt}")
                 cnt += 1
                 assert io_indexs == []
 

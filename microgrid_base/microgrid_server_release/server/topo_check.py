@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import networkx
 from networkx.readwrite import json_graph
 
@@ -12,7 +14,7 @@ from networkx.readwrite import json_graph
 
 
 def getMainAndSubType(data):
-    print("DATA:", data)
+    logger_print("DATA:", data)
     return data["type"], data["subtype"]
 
 
@@ -207,13 +209,13 @@ class 拓扑图:
         合并线ID列表 = []
         for node_id, node_data in self.G.nodes.items():
             node_type, node_subtype = getMainAndSubType(node_data)
-            print("NODE TYPE:", node_type)
-            print("NODE SUBTYPE:", node_subtype)
+            logger_print("NODE TYPE:", node_type)
+            logger_print("NODE SUBTYPE:", node_subtype)
             neighbors = list(self.G.neighbors(node_id))
-            print("NEIGHBORS:", neighbors)
+            logger_print("NEIGHBORS:", neighbors)
             for n in neighbors:
-                print(self.G.nodes[n])
-            print("=" * 40)
+                logger_print(self.G.nodes[n])
+            logger_print("=" * 40)
             if node_type == "母线":
                 母线ID列表.append(node_id)
                 assert node_subtype in 母线类型, f"节点 #{node_id} 不存在的母线类型: {node_subtype}"
@@ -309,12 +311,12 @@ class 拓扑图:
             else:
                 raise Exception("unknown node type:", node_type)
         subgraph = self.G.subgraph(母线ID列表 + 合并线ID列表)  # check again.
-        print("母线ID列表:", 母线ID列表)
+        logger_print("母线ID列表:", 母线ID列表)
         self.合并母线ID集合列表 = list(networkx.connected_components(subgraph))
         self.合并母线ID集合列表 = [
             set([i for i in e if i not in 合并线ID列表]) for e in self.合并母线ID集合列表
         ]
-        print("合并母线ID集合列表:", self.合并母线ID集合列表)
+        logger_print("合并母线ID集合列表:", self.合并母线ID集合列表)
         for id_set in self.合并母线ID集合列表:
             has_input = False
             has_output = False
@@ -346,15 +348,15 @@ class 拓扑图:
                 if output_conns[0] == "不可连接柴油母线输出":
                     assert len(output_conns) == 1, "节点 #{node_id} 柴油母线有且只有一个与柴油元件的连接"
             else:
-                print()
-                print("============ERROR LOG============")
-                print()
+                logger_print()
+                logger_print("============ERROR LOG============")
+                logger_print()
                 for n in id_set:
-                    print("母线:", self.G.nodes[n])
-                print()
-                print("INPUT:", has_input)
-                print("OUTPUT:", has_output)
-                print()
+                    logger_print("母线:", self.G.nodes[n])
+                logger_print()
+                logger_print("INPUT:", has_input)
+                logger_print("OUTPUT:", has_output)
+                logger_print()
                 raise Exception(f"母线组{id_set}未实现至少一进一出")
         self.is_valid = True
 

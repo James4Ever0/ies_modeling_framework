@@ -1,3 +1,6 @@
+from log_utils import logger_print
+
+
 from typing import List
 from constants import *
 

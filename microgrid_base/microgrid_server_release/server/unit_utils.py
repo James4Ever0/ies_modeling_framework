@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import pint
 from os.path import abspath, dirname, join
 
@@ -33,7 +35,7 @@ def unitFactorCalculator(
     new_units_list = []
     for unit, power in units:
         # if type(unit)!=str:
-        print("UNIT?", unit, "POWER?", power)
+        logger_print("UNIT?", unit, "POWER?", power)
         compat_units = ureg.get_compatible_units(
             unit
         )  # the frozen set, as the token for exchange.
@@ -46,19 +48,19 @@ def unitFactorCalculator(
             raise Exception("No common units for:", unit)
         new_units_list.append((unit, power))
 
-    print("NEW UNITS LIST:", new_units_list)
+    logger_print("NEW UNITS LIST:", new_units_list)
     new_unit = ureg.UnitsContainer(tuple(new_units_list))
 
     new_quantity = quantity.to(new_unit)
 
-    print("OLD QUANTITY:", quantity)
-    print("NEW QUANTITY:", new_quantity)
+    logger_print("OLD QUANTITY:", quantity)
+    logger_print("NEW QUANTITY:", new_quantity)
 
     # get the magnitude?
     new_magnitude = new_quantity.magnitude  # you multiply that.
-    print("MAGNITUDE TO STANDARD:", new_magnitude)
+    logger_print("MAGNITUDE TO STANDARD:", new_magnitude)
     new_unit_name = str(new_unit)
-    print("STANDARD:", new_unit_name)
+    logger_print("STANDARD:", new_unit_name)
     return new_magnitude, new_unit_name
 
 
@@ -112,17 +114,17 @@ UNIT_TRANSLATION_TABLE = revert_dict(BASE_UNIT_TRANSLATION_TABLE)
 
 
 def getSingleUnitConverted(default_unit, val_unit):
-    print("DEFAULT UNIT:", default_unit)
+    logger_print("DEFAULT UNIT:", default_unit)
     default_unit_real = ureg.Unit(default_unit)
     default_unit_compatible = ureg.get_compatible_units(default_unit_real)
-    # print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
+    # logger_print("TRANS {} -> {}".format(val_name, base_class)) # [PS]
     if val_unit is None:
         val_unit = default_unit
-        print("USING DEFAULT UNIT")
-    print("UNIT", val_unit)
+        logger_print("USING DEFAULT UNIT")
+    logger_print("UNIT", val_unit)
     unit = ureg.Unit(val_unit)
     compatible_units = ureg.get_compatible_units(unit)
-    # print("COMPATIBLE UNITS", compatible_units)
+    # logger_print("COMPATIBLE UNITS", compatible_units)
     if default_unit_compatible == frozenset():
         raise Exception("Compatible units are zero for default unit:", default_unit)
     if compatible_units == frozenset():

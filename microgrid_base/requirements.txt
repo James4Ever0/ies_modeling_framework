@@ -1,5 +1,5 @@
 rich==13.3.5
-networkx==2.6.3
+networkx
 pyomo==6.5.0
 # pydantic
 pydantic==1.10.7
