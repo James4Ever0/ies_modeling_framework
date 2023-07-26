@@ -1,14 +1,15 @@
 from log_utils import logger_print
 
 import ast
-import os
+# import os
 import astor
 import re
 # import traceback
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
+REPLACE_PRINT_REGEX = r"(?<!logger_)(?<print_statement>:(rich.|)(print\(.+\)))"
 # check pydantic field issues.
-fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, content])
+fix_content = lambda old_content: "\n\n".join([IMPORT_LOGGER_PRINT, old_content])
 
 stripped_source = lambda el: astor.to_source(el).strip()
 
