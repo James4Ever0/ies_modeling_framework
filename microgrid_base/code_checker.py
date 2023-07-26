@@ -7,7 +7,7 @@ import re
 # import traceback
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
-REPLACE_PRINT_REGEX = r"(?<!logger_)(?P<print_statement>:(?:rich.|)(?:print\(.+\)))"
+REPLACE_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
 # check pydantic field issues.
 fix_import_logger_in_content = lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
 
