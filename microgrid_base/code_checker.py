@@ -38,11 +38,15 @@ for fpath in files:
             # if no template was found, fix just one. if template found, fix both.
             with_template = (template_path:=f"{fpath}.j2") in files
 
-            print("fixing logging issue on file:")
+            print(f"fixing logging issue in file: {fpath}")
+            fix_content = lambda old_content: "\n\n".join(["from log_utils import logger_print", content])
             with open(fpath, 'w+') as f:
-                f.write("\n\n".join(["from log_utils import logger_print", content]))
+                f.write(fix_content(content))
             if with_template:
-                print("fixing logging issue from template:")
+                print(f"fixing logging issue in template: {template_path}")
                 with open(template_path, 'r') as f:
                     template_content = f.read()
-                    re.findall(r"[ ]+?from[ ]+?", , re.MULTILINE)
+                has_import_on_root = re.findall(r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(| .+)$", template_content, re.MULTILINE)
+                if len(has_import_on_root) == 0:
+                    with open(template_path, 'w+') as f:
+                        f.write(fix_content(template_content))
