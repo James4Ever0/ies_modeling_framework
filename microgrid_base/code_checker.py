@@ -9,11 +9,19 @@ import re
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 
-fix_import_logger_in_content = lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
+def fix_import_logger_in_content(cnt):
+    fixed_cnt = "\n\n".join([IMPORT_LOGGER_PRINT, cnt])
+    return fixed_cnt
 
 FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.+\)))"
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
-fix_print_statement_in_content = lambda cnt: re.sub(FIND_PRINT_REGEX, "(?<!print)
+def fix_print_statement_in_content(fpath:str):
+    with open(fpath, 'r') as f:
+        cnt = f.read(fpath)
+    fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
+    with open(fpath, 'w+') as f:
+        f.write(fixed_cnt)
+    return fixed_cnt
 
 
 stripped_source = lambda el: astor.to_source(el).strip()
@@ -23,13 +31,23 @@ files = ["test_replace_logger.py", "test_replace_logger_no_template.py", "test_r
 for fpath in files:
     if fpath.endswith(".py"):
         with_template = (template_path:=f"{fpath}.j2") in files
+    
+        # with open(template_path, 'r') as f:
+        #     template_content = f.read()
+        template_content = fix_print_statement_in_content(template_path)
 
         found_import_log_utils = False if fpath != "log_utils.py" else True
 
+        # read and fix this file.
+        content = fix_print_statement_in_content(fpath)
+        # with open(fpath, "r") as f:
+        #     content = f.read()
+
+        # # fixing print statement issue.
+        # with open(fpath, 'w+') as f:
+        #     f.write(fix_print_statement_in_content(content))
+
         # check pydantic field issues.
-        # read this file.
-        with open(fpath, "r") as f:
-            content = f.read()
         try:
             tree = ast.parse(content)
             # walk over this.
@@ -61,8 +79,6 @@ for fpath in files:
             with open(fpath, 'w+') as f:
                 f.write(fix_import_logger_in_content(content))
         if with_template:
-            with open(template_path, 'r') as f:
-                template_content = f.read()
             has_import_on_root = re.findall(IMPORT_LOGGER_PRINT_REGEX, template_content, re.MULTILINE)
             if len(has_import_on_root) == 0:
                 print(f"fixing logging issue in template: {template_path}")
