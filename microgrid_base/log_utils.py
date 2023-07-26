@@ -106,6 +106,7 @@ from rich.pretty import pretty_repr
 def logger_print(*args):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
+        # python 3.8+ required!
         logger.debug(format_string, *[pretty_repr(arg) for arg in args], stacklevel=2) # it is been called elsewhere.
 
 
