@@ -10,6 +10,8 @@ import os
 import pyright_utils  # for checking if really installed.
 import re
 
+# live share's triple quote issue isn't fixed.
+
 def c2s(_str):
     """
     Camel case to snake case.
@@ -26,19 +28,27 @@ def c2s(_str):
     
 def s2c(_str, lower:bool):
     """
-    
+    Snake case to camel case.
     """
-    assert not _str.starswith("_")
+    assert not _str.startswith("_")
     lst = _str.split("_")
     first_letter = lst[0][0]
-    if lower:
     lst[0] = (first_letter.lower() if lower else first_letter.upper())+lst[0][1:]
     for i in range(1, len(lst)):
         lst[i] = lst[i].title()
     return "".join(lst)
 
 def s2cl(_str):
-return 
+    """
+    Snake case to camel case (starting with lower letter).
+    """
+    return s2c(_str, False)
+
+def s2cu(_str):
+    """
+    Snake case to camel case (starting with upper letter)
+    """
+    return s2c(_str, True)
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
@@ -184,6 +194,10 @@ def load_template(template_path, extra_func_dict={}):
         ord=ord,
         len=len,
         repr=repr,
+        c2s=c2s,
+        # s2c=s2c,
+        s2cl=s2cl,
+        s2cu=s2cu,
         # eval=eval,
         #  join=myJoin
         **extra_func_dict,
