@@ -46,7 +46,7 @@ def s2cl(_str):
 
 def s2cu(_str):
     """
-    Snake case to camel case (starting with upper letter)
+    Snake case to camel case (starting with upper letter).
     """
     return s2c(_str, True)
 
