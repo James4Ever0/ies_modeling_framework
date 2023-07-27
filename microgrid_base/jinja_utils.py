@@ -44,13 +44,13 @@ def s2cl(_str):
     """
     Snake case to camel case (starting with lower letter).
     """
-    return s2c(_str, False)
+    return s2c(_str, True)
 
 def s2cu(_str):
     """
     Snake case to camel case (starting with upper letter).
     """
-    return s2c(_str, True)
+    return s2c(_str, False)
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
