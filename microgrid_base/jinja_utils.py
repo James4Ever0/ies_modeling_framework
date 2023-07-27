@@ -20,25 +20,27 @@ def c2s(_str):
     """
     res = [_str[0].lower()]
     for c in _str[1:]:
-        if c in ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
-            res.append('_')
+        if c in ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+            res.append("_")
             res.append(c.lower())
         else:
             res.append(c)
-     
-    return ''.join(res)
 
-def s2c(_str, lower:bool):
+    return "".join(res)
+
+
+def s2c(_str, lower: bool):
     """
     Snake case to camel case.
     """
     assert not _str.startswith("_")
     lst = _str.split("_")
     first_letter = lst[0][0]
-    lst[0] = (first_letter.lower() if lower else first_letter.upper())+lst[0][1:]
+    lst[0] = (first_letter.lower() if lower else first_letter.upper()) + lst[0][1:]
     for i in range(1, len(lst)):
         lst[i] = lst[i].title()
     return "".join(lst)
+
 
 def s2cl(_str):
     """
@@ -46,11 +48,13 @@ def s2cl(_str):
     """
     return s2c(_str, True)
 
+
 def s2cu(_str):
     """
     Snake case to camel case (starting with upper letter).
     """
     return s2c(_str, False)
+
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
