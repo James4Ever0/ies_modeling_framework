@@ -1,4 +1,5 @@
 import pyomo
+import pyomo.core.base.
 
 pyomo_version = pyomo.__version__
 assert pyomo_version == (
