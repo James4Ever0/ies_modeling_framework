@@ -6,7 +6,6 @@ assert pyomo_version == (
     expected_pyomo_version := "6.5.0"
 ), f"Expected Pyomo version: {expected_pyomo_version}\nActual: {pyomo_version}"
 
-
 def write(self,
               filename=None,
               format=None,
@@ -82,5 +81,7 @@ def write(self,
                 str(filename),
                 str(format))
         return filename, smap_id
+from types import MethodType
 
-block._BlockData.write = 
+# to override instance methods.
+block._BlockData.write = MethodType(write, block._BlockData)
