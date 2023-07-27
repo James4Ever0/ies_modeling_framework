@@ -10,8 +10,35 @@ import os
 import pyright_utils  # for checking if really installed.
 import re
 
+def c2s(_str):
+    """
+    Camel case to snake case.
+    """
+    res = [_str[0].lower()]
+    for c in _str[1:]:
+        if c in ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
+            res.append('_')
+            res.append(c.lower())
+        else:
+            res.append(c)
+     
+    return ''.join(res)
+    
+def s2c(_str, lower:bool):
+    """
+    
+    """
+    assert not _str.starswith("_")
+    lst = _str.split("_")
+    first_letter = lst[0][0]
+    if lower:
+    lst[0] = (first_letter.lower() if lower else first_letter.upper())+lst[0][1:]
+    for i in range(1, len(lst)):
+        lst[i] = lst[i].title()
+    return "".join(lst)
 
-
+def s2cl(_str):
+return 
 
 class NeverUndefined(jinja2.StrictUndefined):
     def __init__(self, *args, **kwargs):
