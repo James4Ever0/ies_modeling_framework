@@ -2447,7 +2447,7 @@ class 柴油发电模型(设备模型):
         self.Piecewise(
             y_var=self.单台柴油输入,
             x_var=self.单台发电功率,
-            y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
+            y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load], # x[0]:油耗率（m3 / kWh <- L/kWh）; x[1]:负载率 (one <- percent)
             x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
         )
         # 柴油输入率: L/h
