@@ -200,7 +200,7 @@ def load_template(template_path, extra_func_dict={}):
         # s2c=s2c,
         s2cl=s2cl,
         s2cu=s2cu,
-        enumerate=enumerate,
+        # enumerate=enumerate,
         # eval=eval,
         #  join=myJoin
         **extra_func_dict,
