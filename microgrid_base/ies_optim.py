@@ -1,4 +1,5 @@
 from log_utils import logger_print
+import pyomo_patch
 
 VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
 

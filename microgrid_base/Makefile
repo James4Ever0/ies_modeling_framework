@@ -56,7 +56,7 @@ EXPORT_FORMAT_CODE = export_format_validate.py export_format_units.py
 
 MODEL_CODE = topo_check.py ies_optim.py ${EXPORT_FORMAT_CODE}
 
-EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py log_utils.py
+EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py log_utils.py pyomo_patch.py
 
 EXPORT_FORMAT_SCHEMA = export_format.json planning_export_format.json
 
