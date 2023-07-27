@@ -27,7 +27,7 @@ def c2s(_str):
             res.append(c)
      
     return ''.join(res)
-    
+
 def s2c(_str, lower:bool):
     """
     Snake case to camel case.
