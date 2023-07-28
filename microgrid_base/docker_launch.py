@@ -94,6 +94,8 @@ container = client.containers.run(
     # working_dir=os.path.join(mount_path, "server"),
 )
 # print(container.logs())
+import rich
+rich.print(container.__dict__)
 breakpoint()
 # for line in container.logs(stream=True):
 #     print(line.decode('utf-8').strip(), end=None)  # binary string.
