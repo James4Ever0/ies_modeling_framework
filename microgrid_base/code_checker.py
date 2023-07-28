@@ -10,7 +10,8 @@ from typing import Callable
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
-fixed=False
+fixed = False
+
 
 def open_file_and_modify_content(
     fpath: str, func: Callable[[str], str], modify_msg: str
@@ -22,7 +23,7 @@ def open_file_and_modify_content(
     if fixed_cnt != cnt:
         logger_print(f"fixing {modify_msg} issue in file: {fpath}")
         fixed = True
-        with open(fpath, "w+") as f: # only modify file when necessary.
+        with open(fpath, "w+") as f:  # only modify file when necessary.
             f.write(fixed_cnt)
     return fixed_cnt
 
@@ -34,6 +35,8 @@ def fix_import_logger_in_content(fpath):
     )
     return fixed_cnt
 
+
+# TODO: use a single regex instead of two.
 FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\())"
 FIND_PRINT_REGEX_FROMSTART = r"^((rich.|)(?P<print_statement>print\())"
 # FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))" # "rich." is part of the match, so it will be replaced. composing the replacement string only needs part of the match (not the "rich." part), so we don't include that in the named group.
@@ -44,10 +47,14 @@ def fix_print_statement_in_content(fpath: str):
     # with open(fpath, 'r') as f:
     #     cnt = f.read()
     # fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
-    def replace
+    def fix_print_statement(cnt: str):
+        for regex in [FIND_PRINT_REGEX, FIND_PRINT_REGEX_FROMSTART]:
+            cnt = re.sub(regex, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
+        return cnt
+
     fixed_cnt = open_file_and_modify_content(
         fpath,
-        lambda cnt: re.sub(regex, REPLACE_PRINT_REGEX, cnt, re.MULTILINE) for regex in [FIND_PRINT_REGEX, FIND_PRINT_REGEX_FROMSTART])
+        fix_print_statement,
         "print statement",
     )
     # with open(fpath, 'w+') as f:
@@ -127,5 +134,6 @@ for fpath in files:
 
 if fixed:
     import sys
+
     logger_print("Please rerun the `make` command for changes!")
     sys.exit(1)

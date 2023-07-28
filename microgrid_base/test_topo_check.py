@@ -30,7 +30,7 @@ from export_format_validate import *
 # import numpy as np
 
 # a = abs(np.random.random((24,))).tolist()
-a = [100] * datalen # this is not random.
+a = [100] * datalen  # this is not random.
 # a = abs(np.random.random((datalen,))).tolist()
 
 # algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="仿真模拟", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
@@ -272,6 +272,7 @@ import sys
 flag = sys.argv[-1]
 
 from fastapi_celery_functions import calculate_energyflow_graph_base
+
 # TODO: add test of celery app
 from fastapi_datamodel_template import EnergyFlowGraph
 
@@ -280,13 +281,15 @@ from fastapi_datamodel_template import EnergyFlowGraph
 from copy import deepcopy
 import os
 
-EFG = EnergyFlowGraph(mDictList=deepcopy(mdictList), residualEquipmentLife = 2) # override default.
+EFG = EnergyFlowGraph(
+    mDictList=deepcopy(mdictList), residualEquipmentLife=2
+)  # override default.
 
-if flag in ["-f", "--full"]: # been replaced by celery full test.
+if flag in ["-f", "--full"]:  # been replaced by celery full test.
     ret = calculate_energyflow_graph_base(EFG.dict())
     logger_print(ret)
     if ret:
-        with open(saved_path:="test_output_full.json",'w+') as f:
+        with open(saved_path := "test_output_full.json", "w+") as f:
             f.write(json.dumps(ret, ensure_ascii=False, indent=4))
         logger_print(f"dumped to: {saved_path}")
 # if True: # override to debug.
@@ -323,8 +326,12 @@ elif flag in ["-p", "--partial"]:
     logger_print(resultList)
     logger_print("RESULT:", resultList)
     if resultList:
-        with open(saved_path:="test_output_partial.json",'w+') as f:
-            f.write(json.dumps(resultList, ensure_ascii=False, indent=4).replace("NaN", "nan"))
+        with open(saved_path := "test_output_partial.json", "w+") as f:
+            f.write(
+                json.dumps(resultList, ensure_ascii=False, indent=4).replace(
+                    "NaN", "nan"
+                )
+            )
         logger_print(f"dumped to: {saved_path}")
 
 elif flag != os.path.basename(__file__):

@@ -116,14 +116,14 @@ except:
 
     traceback.print_exc()
     raise Exception("Error running new container.\nYou may restart the docker engine.")
-# print(container.logs())
+# logger_print(container.logs())
 # import rich
 
-# rich.print(container.__dict__)
+# logger_print(container.__dict__)
 # breakpoint()
 container_id = container.attrs["Config"]["Hostname"]
 container_name = container.attrs["Name"].strip("/")
-print(f"Container {container_id} ({container_name}) created.")
-print(f"Service available at: http://localhost:{server_port}")
+logger_print(f"Container {container_id} ({container_name}) created.")
+logger_print(f"Service available at: http://localhost:{server_port}")
 # for line in container.logs(stream=True):
-#     print(line.decode('utf-8').strip(), end=None)  # binary string.
+#     logger_print(line.decode('utf-8').strip(), end=None)  # binary string.
