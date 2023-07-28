@@ -89,14 +89,16 @@ print("pruning containers...")
 client.containers.prune()
 
 # BUG: error while creating mount source path
+# FIX: restart the 
 container = client.containers.run(
     image_tag,
     remove=True,
+    # remove=False, # to get the image hash.
     # command="ls -lth microgrid",
     # command="bash fastapi_tmuxp.sh",
-    # command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+    command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
     # command="bash -c 'cd microgrid/server && ls -lth .'",
-    command="echo 'hello world'",
+    # command="echo 'hello world'",
     detach=True,
     tty=True,
     volumes={
@@ -106,9 +108,12 @@ container = client.containers.run(
     # working_dir=os.path.join(mount_path, "server"),
 )
 # print(container.logs())
-import rich
+# import rich
 
-rich.print(container.__dict__)
-breakpoint()
+# rich.print(container.__dict__)
+# breakpoint()
+container_id = container.attrs['Config']['Hostname']
+container_name = container.attrs['Name'].strip("/")
+print(f"Container {container_id} ({container_name}) created.")
 # for line in container.logs(stream=True):
 #     print(line.decode('utf-8').strip(), end=None)  # binary string.
