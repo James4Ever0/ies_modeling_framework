@@ -62,7 +62,7 @@ if image_tag not in image_tags:
         os.system(f"docker save -o {image_path} {image_tag}")
     else:
         print("loading image...")
-        os.system(f'docker load -i {image_path}')
+        os.system(f"docker load -i {image_path}")
         # with open(image_path, "rb") as f:
         #     data = f.read()
         #     client.images.load(data)
@@ -70,10 +70,19 @@ if image_tag not in image_tags:
     # load the exported image.
 print("running container...")
 # run the command to launch server within image from here.
+host_path = "./microgrid_server_release"
+host_mount_path = os.path.abspath(host_path)
+if os.name == 'nt':
+    
 container = client.containers.run(
-    image_tag, remove=True, command="echo 'hello world'", detach=True
+    image_tag,
+    remove=True,
+    command="echo 'hello world'",
+    detach=True,
+    volumes={host_mount_path: {"bind": "/root/microgrid", "mode": "rw"}},
+    # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
 )
 # print(container.logs())
 
 for line in container.logs(stream=True):
-    print(line.strip()) # binary string.
+    print(line.strip())  # binary string.
