@@ -77,14 +77,16 @@ host_mount_path = os.path.abspath(host_path)
 #     disk_symbol, pathspec = host_mount_path.split(":")
 #     pathspec = pathspec.replace("\\", "/")
 #     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
+all_containers = client.containers.list(all=True)
+
 container = client.containers.run(
     image_tag,
     remove=True,
     # command="ls -lth microgrid",
     # command="bash fastapi_tmuxp.sh",
-    command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+    # command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
     # command="bash -c 'cd microgrid/server && ls -lth .'",
-    # command="echo 'hello world'",
+    command="echo 'hello world'",
     detach=True,
     tty=True,
     volumes={
