@@ -81,16 +81,19 @@ container = client.containers.run(
     image_tag,
     remove=True,
     # command="ls -lth microgrid",
-    command="bash fastapi_tmuxp.sh",
+    # command="bash fastapi_tmuxp.sh",
+    command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh'",
+    # command="bash -c 'cd microgrid/server && ls -lth .'",
     # command="echo 'hello world'",
     detach=True,
+    tty=True,
     volumes={
         host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}
     },
     # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
-    working_dir=os.path.join(mount_path, "server"),
+    # working_dir=os.path.join(mount_path, "server"),
 )
 # print(container.logs())
 
-# for line in container.logs(stream=True):
-#     print(line.strip())  # binary string.
+for line in container.logs(stream=True):
+    print(line.decode('utf-8').strip(), end=None)  # binary string.
