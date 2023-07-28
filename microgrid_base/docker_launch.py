@@ -31,21 +31,25 @@ with open(image_storage_gitignore, "w+") as f:
 images = client.images.list()
 image_tags = [tag for image in images for tag in image.tags]
 if image_tag not in image_tags:
+    print("image not found: %s" % image_tag)
     if not os.path.exists(image_path):
         # first build the image, then export.
+        print("building image...")
         client.images.build(path=dockerfile_path, tag=image_tag)
         image = client.images.get(image_tag)
         # image.save()
+        print("saving image...")
         with open(image_storage_dir, 'wb') as f:
             for chunk in image.save():
                 f.write(chunk)
     else:
+        print("loading image...")
         with open(image_storage_dir, 'rb') as f:
             data = f.read()
             client.images.load(data)
 
     # load the exported image.
-
+print("running container...")
 # run the command to launch server within image from here.
 container = client.containers.run(
     image_tag, remove=True, command="echo 'hello world'", detach=True
@@ -53,4 +57,4 @@ container = client.containers.run(
 # print(container.logs())
 
 for line in container.logs(stream=True):
-  print(line.strip())
+    print(line.strip())
