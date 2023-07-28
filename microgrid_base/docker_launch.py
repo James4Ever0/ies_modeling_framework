@@ -6,9 +6,18 @@ import docker
 import os
 
 client = docker.from_env()
+
+
 # client = docker.DockerClient(
 #     base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
 # )
+def build_image(image_tag, dockerfile_path, context_path):
+    command = f"docker build -t {image_tag} -f {dockerfile_path} {context_path}"
+    # print(command)
+    exit_code = os.system(command)
+    if exit_code:
+        raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
+
 
 image_tag = "microgrid_server:latest"
 intermediate_image_tag = "microgrid_init"
@@ -41,7 +50,8 @@ if image_tag not in image_tags:
         # client.images.build(
         #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
         # )
-
+        build_image(intermediate_image_tag, dockerfile_init_path, context_path)
+        build_image(image_tag, dockerfile_main_path, context_path)
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
