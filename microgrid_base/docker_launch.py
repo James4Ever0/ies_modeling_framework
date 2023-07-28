@@ -58,9 +58,10 @@ if image_tag not in image_tags:
         # with open(image_path, "wb") as f:
         #     for chunk in image.save():
         #         f.write(chunk)
-        os.system("docker save -o {} %s" % image_tag)
+        os.system(f"docker save -o {image_path} {image_tag}")
     else:
         print("loading image...")
+        os.system(f'docker load -i {image_path}')
         # with open(image_path, "rb") as f:
         #     data = f.read()
         #     client.images.load(data)
