@@ -121,7 +121,7 @@ except:
 # breakpoint()
 container_id = container.attrs["Config"]["Hostname"]
 container_name = container.attrs["Name"].strip("/")
-print(f"Container {container_id} ({container_name}) created.")
-print(f"Service available at: http://localhost:{server_port}")
+print(f"container {container_id} ({container_name}) created.")
+print(f"service available at: http://localhost:{server_port}")
 # for line in container.logs(stream=True):
 #     print(line.decode('utf-8').strip(), end=None)  # binary string.
