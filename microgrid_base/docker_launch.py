@@ -11,7 +11,8 @@ client = docker.from_env()
 # )
 
 image_tag = "microgrid_server:latest"
-dockerfile_path = "."
+context_path = "../../"
+dockerfile_path = "./jubilant-adventure2/microgrid_base/Dockerfile"
 
 image_storage_dir = "images"
 image_path = os.path.join(image_storage_dir, f"{image_tag.replace(':','_')}.tar")
@@ -35,16 +36,18 @@ if image_tag not in image_tags:
     if not os.path.exists(image_path):
         # first build the image, then export.
         print("building image...")
-        client.images.build(path=dockerfile_path, tag=image_tag)
+        client.images.build(
+            path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
+        )
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
-        with open(image_storage_dir, 'wb') as f:
+        with open(image_storage_dir, "wb") as f:
             for chunk in image.save():
                 f.write(chunk)
     else:
         print("loading image...")
-        with open(image_storage_dir, 'rb') as f:
+        with open(image_storage_dir, "rb") as f:
             data = f.read()
             client.images.load(data)
 
