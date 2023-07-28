@@ -35,7 +35,14 @@ if image_tag not in image_tags:
         # first build the image, then export.
         client.images.build(path=dockerfile_path, tag=image_tag)
         image = client.images.get(image_tag)
-        image.save()
+        # image.save()
+        with open(image_storage_dir, 'wb') as f:
+            for chunk in image.save():
+                f.write(chunk)
+    else:
+        with open(image_storage_dir, 'rb') as f:
+            data = f.read()
+            client.images.load(data)
 
     # load the exported image.
 
