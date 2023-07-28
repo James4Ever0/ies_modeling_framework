@@ -35,6 +35,7 @@ def fix_import_logger_in_content(fpath):
     return fixed_cnt
 
 FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\())"
+FIND_PRINT_REGEX_FROMSTART = r"^((rich.|)(?P<print_statement>print\())"
 # FIND_PRINT_REGEX = r"(?<!logger_)((rich.|)(?P<print_statement>print\(.*\)))" # "rich." is part of the match, so it will be replaced. composing the replacement string only needs part of the match (not the "rich." part), so we don't include that in the named group.
 REPLACE_PRINT_REGEX = "logger_\g<print_statement>"
 
@@ -43,9 +44,10 @@ def fix_print_statement_in_content(fpath: str):
     # with open(fpath, 'r') as f:
     #     cnt = f.read()
     # fixed_cnt = re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE)
+    def replace
     fixed_cnt = open_file_and_modify_content(
         fpath,
-        lambda cnt: re.sub(FIND_PRINT_REGEX, REPLACE_PRINT_REGEX, cnt, re.MULTILINE),
+        lambda cnt: re.sub(regex, REPLACE_PRINT_REGEX, cnt, re.MULTILINE) for regex in [FIND_PRINT_REGEX, FIND_PRINT_REGEX_FROMSTART])
         "print statement",
     )
     # with open(fpath, 'w+') as f:
