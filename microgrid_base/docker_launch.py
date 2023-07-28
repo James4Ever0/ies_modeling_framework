@@ -11,8 +11,10 @@ client = docker.from_env()
 # )
 
 image_tag = "microgrid_server:latest"
+intermediate_image_tag = "microgrid_init"
 context_path = "../../"
-dockerfile_path = "Dockerfile"
+dockerfile_init_path = "Dockerfile_init"
+dockerfile_main_path = "Dockerfile_main"
 
 image_storage_dir = "images"
 image_path = os.path.join(image_storage_dir, f"{image_tag.replace(':','_')}.tar")
@@ -39,11 +41,7 @@ if image_tag not in image_tags:
         # client.images.build(
         #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
         # )
-        command = f"docker build -t {image_tag} -f {dockerfile_path} {context_path}"
-        # print(command)
-        exit_code = os.system(command)
-        if exit_code:
-            raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
+
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
