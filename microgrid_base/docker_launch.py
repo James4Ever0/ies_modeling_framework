@@ -89,24 +89,29 @@ print("pruning containers...")
 client.containers.prune()
 
 # BUG: error while creating mount source path
-# FIX: restart the 
-container = client.containers.run(
-    image_tag,
-    remove=True,
-    # remove=False, # to get the image hash.
-    # command="ls -lth microgrid",
-    # command="bash fastapi_tmuxp.sh",
-    command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
-    # command="bash -c 'cd microgrid/server && ls -lth .'",
-    # command="echo 'hello world'",
-    detach=True,
-    tty=True,
-    volumes={
-        host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}
-    },
-    # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
-    # working_dir=os.path.join(mount_path, "server"),
-)
+# FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
+try:
+    container = client.containers.run(
+        image_tag,
+        remove=True,
+        # remove=False, # to get the image hash.
+        # command="ls -lth microgrid",
+        # command="bash fastapi_tmuxp.sh",
+        command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+        # command="bash -c 'cd microgrid/server && ls -lth .'",
+        # command="echo 'hello world'",
+        detach=True,
+        tty=True,
+        volumes={
+            host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}
+        },
+        # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
+        # working_dir=os.path.join(mount_path, "server"),
+    )
+except:
+    import traceback
+    traceback.print_exc()
+    raise Exception("Error running new container.\nYou may restart the docker engine.")
 # print(container.logs())
 # import rich
 
