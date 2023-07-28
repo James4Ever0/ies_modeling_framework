@@ -70,7 +70,6 @@ if image_tag not in image_tags:
         #     client.images.load(data)
 
     # load the exported image.
-print("running container...")
 # run the command to launch server within image from here.
 host_path = "./microgrid_server_release"
 host_mount_path = os.path.abspath(host_path)
@@ -80,16 +79,17 @@ if os.name == "nt":
     pathspec = pathspec.replace("\\", "/")
     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 all_containers = client.containers.list(all=True)
-print("stopping containers...")
+print("stopping running containers...")
 import progressbar
 
 for container in progressbar.progressbar(all_containers):
     container.stop()
-print("pruning containers...")
+print("pruning stopped containers...")
 client.containers.prune()
 
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
+print("running container...")
 try:
     container = client.containers.run(
         image_tag,
@@ -102,6 +102,7 @@ try:
         # command="echo 'hello world'",
         detach=True,
         tty=True,
+        ports={f"{(server_port:=9870)}/tcp": server_port},
         volumes={
             host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}
         },
@@ -110,6 +111,7 @@ try:
     )
 except:
     import traceback
+
     traceback.print_exc()
     raise Exception("Error running new container.\nYou may restart the docker engine.")
 # print(container.logs())
@@ -117,8 +119,9 @@ except:
 
 # rich.print(container.__dict__)
 # breakpoint()
-container_id = container.attrs['Config']['Hostname']
-container_name = container.attrs['Name'].strip("/")
+container_id = container.attrs["Config"]["Hostname"]
+container_name = container.attrs["Name"].strip("/")
 print(f"Container {container_id} ({container_name}) created.")
+print(f"Service available at: http://localhost:{server_port}")
 # for line in container.logs(stream=True):
 #     print(line.decode('utf-8').strip(), end=None)  # binary string.
