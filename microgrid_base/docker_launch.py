@@ -87,8 +87,6 @@ print("pruning containers...")
 client.containers.prune()
 
 # BUG: error while creating mount source path
-# [1]: https://qiita.com/sho-hata/items/579ab597e4015b9f19fe
-# [2]: https://www.nuits.jp/entry/docker-for-windows-mkdir-file-exists
 container = client.containers.run(
     image_tag,
     remove=True,
