@@ -78,8 +78,11 @@ host_mount_path = os.path.abspath(host_path)
 #     pathspec = pathspec.replace("\\", "/")
 #     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 all_containers = client.containers.list(all=True)
-for container in all_containers:
+print("stopping containers...")
+import progressbar
+for container in progressbar.progressbar(all_containers):
     container.stop()
+print('pruning containers...')
 client.containers.prune()
 
 container = client.containers.run(
