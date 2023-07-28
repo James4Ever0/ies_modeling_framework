@@ -55,12 +55,12 @@ if image_tag not in image_tags:
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
-        with open(image_storage_dir, "wb") as f:
+        with open(image_path, "wb") as f:
             for chunk in image.save():
                 f.write(chunk)
     else:
         print("loading image...")
-        with open(image_storage_dir, "rb") as f:
+        with open(image_path, "rb") as f:
             data = f.read()
             client.images.load(data)
 
