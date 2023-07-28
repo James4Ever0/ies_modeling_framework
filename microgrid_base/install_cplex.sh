@@ -1,0 +1,1 @@
+echo -e "2\n\n1\n\n\n\n\n" | ./cplex_128.bin

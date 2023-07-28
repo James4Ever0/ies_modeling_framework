@@ -12,7 +12,7 @@ client = docker.from_env()
 #     base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
 # )
 def build_image(image_tag, dockerfile_path, context_path):
-    command = f"docker build -t {image_tag} -f {dockerfile_path} {context_path}"
+    command = f"docker build -t {image_tag} -f {dockerfile_path} --progress plain {context_path}"
     # print(command)
     exit_code = os.system(command)
     if exit_code:
@@ -55,14 +55,15 @@ if image_tag not in image_tags:
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
-        with open(image_path, "wb") as f:
-            for chunk in image.save():
-                f.write(chunk)
+        # with open(image_path, "wb") as f:
+        #     for chunk in image.save():
+        #         f.write(chunk)
+        os.system("docker save -o {} %s" % image_tag)
     else:
         print("loading image...")
-        with open(image_path, "rb") as f:
-            data = f.read()
-            client.images.load(data)
+        # with open(image_path, "rb") as f:
+        #     data = f.read()
+        #     client.images.load(data)
 
     # load the exported image.
 print("running container...")
