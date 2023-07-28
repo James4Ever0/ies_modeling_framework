@@ -55,6 +55,7 @@ if image_tag not in image_tags:
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
+        # not working via api.
         # with open(image_path, "wb") as f:
         #     for chunk in image.save():
         #         f.write(chunk)
@@ -75,4 +76,4 @@ container = client.containers.run(
 # print(container.logs())
 
 for line in container.logs(stream=True):
-    print(line.strip())
+    print(line.strip()) # binary string.
