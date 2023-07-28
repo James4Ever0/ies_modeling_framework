@@ -73,18 +73,22 @@ print("running container...")
 host_path = "./microgrid_server_release"
 host_mount_path = os.path.abspath(host_path)
 # don't need this workaround when using docker-py.
-# if os.name == "nt":
-#     disk_symbol, pathspec = host_mount_path.split(":")
-#     pathspec = pathspec.replace("\\", "/")
-#     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
+if os.name == "nt":
+    disk_symbol, pathspec = host_mount_path.split(":")
+    pathspec = pathspec.replace("\\", "/")
+    host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 all_containers = client.containers.list(all=True)
 print("stopping containers...")
 import progressbar
+
 for container in progressbar.progressbar(all_containers):
     container.stop()
-print('pruning containers...')
+print("pruning containers...")
 client.containers.prune()
 
+# BUG: error while creating mount source path
+# [1]: https://qiita.com/sho-hata/items/579ab597e4015b9f19fe
+# [2]: https://www.nuits.jp/entry/docker-for-windows-mkdir-file-exists
 container = client.containers.run(
     image_tag,
     remove=True,
@@ -103,6 +107,7 @@ container = client.containers.run(
 )
 # print(container.logs())
 import rich
+
 rich.print(container.__dict__)
 breakpoint()
 # for line in container.logs(stream=True):
