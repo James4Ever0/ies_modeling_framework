@@ -7,7 +7,8 @@ flag = False
 new_lines = []
 for line in lines:
     if not flag:
-        if "conda initialize" in line:
+        if "mamba initialize" in line:
+        # if "conda initialize" in line:
             flag = True
         
     if flag:
