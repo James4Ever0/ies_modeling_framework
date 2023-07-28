@@ -33,12 +33,17 @@ image_tags = [tag for image in images for tag in image.tags]
 if image_tag not in image_tags:
     if not os.path.exists(image_path):
         # first build the image, then export.
-        model = client.images.build(path=dockerfile_path, tag=image_tag)
-        client.images.load
+        client.images.build(path=dockerfile_path, tag=image_tag)
+        image = client.images.get(image_tag)
+        image.save()
+
     # load the exported image.
 
 # run the command to launch server within image from here.
 container = client.containers.run(
     image_tag, remove=True, command="echo 'hello world'", detach=True
 )
-print(container.logs())
+# print(container.logs())
+
+for line in container.logs(stream=True):
+  print(line.strip())
