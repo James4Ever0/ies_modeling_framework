@@ -36,9 +36,10 @@ if image_tag not in image_tags:
     if not os.path.exists(image_path):
         # first build the image, then export.
         print("building image...")
-        client.images.build(
-            path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
-        )
+        # client.images.build(
+        #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
+        # )
+        os.system(f"docker build -f {dockerfile_path} -t {image_tag} {}")
         image = client.images.get(image_tag)
         # image.save()
         print("saving image...")
