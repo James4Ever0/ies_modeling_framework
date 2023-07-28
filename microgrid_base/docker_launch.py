@@ -11,8 +11,8 @@ client = docker.from_env()
 # )
 
 image_tag = "microgrid_server:latest"
-context_path = "..\\..\\"
-dockerfile_path = "jubilant-adventure2\\microgrid_base\\Dockerfile"
+context_path = "../../"
+dockerfile_path = "Dockerfile"
 
 image_storage_dir = "images"
 image_path = os.path.join(image_storage_dir, f"{image_tag.replace(':','_')}.tar")
