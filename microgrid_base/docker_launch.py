@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 """
 create or import docker environment with scripts.
 you may use Dockerfile.
@@ -15,7 +17,7 @@ client = docker.from_env()
 # )
 def build_image(image_tag, dockerfile_path, context_path):
     command = f"docker build -t {image_tag} -f {dockerfile_path} --progress plain {context_path}"
-    # print(command)
+    # logger_print(command)
     exit_code = os.system(command)
     if exit_code:
         raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
@@ -45,10 +47,10 @@ with open(image_storage_gitignore, "w+") as f:
 images = client.images.list()
 image_tags = [tag for image in images for tag in image.tags]
 if image_tag not in image_tags:
-    print("image not found: %s" % image_tag)
+    logger_print("image not found: %s" % image_tag)
     if not os.path.exists(image_path):
         # first build the image, then export.
-        print("building image...")
+        logger_print("building image...")
         # client.images.build(
         #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
         # )
@@ -56,14 +58,14 @@ if image_tag not in image_tags:
         build_image(image_tag, dockerfile_main_path, context_path)
         image = client.images.get(image_tag)
         # image.save()
-        print("saving image...")
+        logger_print("saving image...")
         # not working via api.
         # with open(image_path, "wb") as f:
         #     for chunk in image.save():
         #         f.write(chunk)
         os.system(f"docker save -o {image_path} {image_tag}")
     else:
-        print("loading image...")
+        logger_print("loading image...")
         os.system(f"docker load -i {image_path}")
         # with open(image_path, "rb") as f:
         #     data = f.read()
@@ -79,17 +81,17 @@ if os.name == "nt":
     pathspec = pathspec.replace("\\", "/")
     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 all_containers = client.containers.list(all=True)
-print("stopping running containers...")
+logger_print("stopping running containers...")
 import progressbar
 
 for container in progressbar.progressbar(all_containers):
     container.stop()
-print("pruning stopped containers...")
+logger_print("pruning stopped containers...")
 client.containers.prune()
 
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
-print("running container...")
+logger_print("running container...")
 try:
     container = client.containers.run(
         image_tag,

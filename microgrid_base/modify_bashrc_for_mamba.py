@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 with open(BASHRC:= "/root/.bashrc",'r') as f:
     lines = f.read().split("\n")
 
