@@ -80,13 +80,17 @@ host_mount_path = os.path.abspath(host_path)
 container = client.containers.run(
     image_tag,
     remove=True,
-    command="ls -lth microgrid",
+    # command="ls -lth microgrid",
+    command="bash fastapi_tmuxp.sh",
     # command="echo 'hello world'",
     detach=True,
-    volumes={host_mount_path: {"bind": "/root/microgrid", "mode": "rw"}},
+    volumes={
+        host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}
+    },
     # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
+    working_dir=os.path.join(mount_path, "server"),
 )
 # print(container.logs())
 
-for line in container.logs(stream=True):
-    print(line.strip())  # binary string.
+# for line in container.logs(stream=True):
+#     print(line.strip())  # binary string.
