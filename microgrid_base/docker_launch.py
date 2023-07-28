@@ -72,12 +72,16 @@ print("running container...")
 # run the command to launch server within image from here.
 host_path = "./microgrid_server_release"
 host_mount_path = os.path.abspath(host_path)
-if os.name == 'nt':
-    
+# don't need this workaround when using docker-py.
+# if os.name == "nt":
+#     disk_symbol, pathspec = host_mount_path.split(":")
+#     pathspec = pathspec.replace("\\", "/")
+#     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 container = client.containers.run(
     image_tag,
     remove=True,
-    command="echo 'hello world'",
+    command="ls -lth microgrid",
+    # command="echo 'hello world'",
     detach=True,
     volumes={host_mount_path: {"bind": "/root/microgrid", "mode": "rw"}},
     # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
