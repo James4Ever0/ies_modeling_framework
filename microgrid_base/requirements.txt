@@ -32,3 +32,4 @@ beartype
 astor
 pyright==1.1.317 # for checking undefined variables
 schedule
+pyhumps # for case (naming) related conversion
