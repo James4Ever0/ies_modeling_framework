@@ -15,3 +15,7 @@ $$
 $$
 \int b\, db
 $$
+
+$$
+\operatorname{Q}_{\text{negative}}(a)
+$$
