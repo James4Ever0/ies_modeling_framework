@@ -5,5 +5,13 @@
 formula:
 
 $$
-\sum_{b=1}^{10} a_{b}
+\sum_{b=1}^{10} a^{b}
+$$
+
+$$
+\frac{d}{d b} b
+$$
+
+$$
+\int b\, db
 $$
