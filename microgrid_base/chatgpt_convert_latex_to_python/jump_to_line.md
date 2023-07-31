@@ -5,5 +5,5 @@
 formula:
 
 $$
-\sum_{a=1}^{b} a
+\sum_{b=1}^{10} a_{b}
 $$
