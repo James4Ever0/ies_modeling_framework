@@ -5,6 +5,7 @@ create or import docker environment with scripts.
 you may use Dockerfile.
 """
 # TODO: replace with docker compose
+# TODO: put this into release archive
 
 import docker
 import os
