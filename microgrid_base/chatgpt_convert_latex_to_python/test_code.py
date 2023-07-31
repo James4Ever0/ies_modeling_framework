@@ -9,7 +9,7 @@ import sympy
 a, b= sympy.symbols("a^b b")
 # r = sympy.Range(1,10)
 
-summation = sympy.Sum(a, (b, 1, 10))
+summation = sympy.Sum(a, (b, 1, 10), )
 # summation = sympy.Sum(a, (a, 1, b), r)
 # summation = sympy.Sum(c[a], (a, 1, b), r)
 # summation
