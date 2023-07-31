@@ -30,6 +30,7 @@ def c2s(_str):
     #         res.append(c)
 
     # return "".join(res)
+    return humps.decamelize(_str)
 
 
 def s2c(_str, lower: bool):
