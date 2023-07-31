@@ -12,21 +12,23 @@ import re
 
 # live share's triple quote issue isn't fixed.
 
+import humps
 
 # ref: https://www.geeksforgeeks.org/python-program-to-convert-camel-case-string-to-snake-case/
 def c2s(_str):
     """
     Camel case to snake case.
     """
-    res = [_str[0].lower()]
-    for c in _str[1:]:
-        if c in ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
-            res.append("_")
-            res.append(c.lower())
-        else:
-            res.append(c)
+    return humps.
+    # res = [_str[0].lower()]
+    # for c in _str[1:]:
+    #     if c in ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    #         res.append("_")
+    #         res.append(c.lower())
+    #     else:
+    #         res.append(c)
 
-    return "".join(res)
+    # return "".join(res)
 
 
 def s2c(_str, lower: bool):
