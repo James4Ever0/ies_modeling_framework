@@ -49,5 +49,8 @@ $$
 $$
 {c}' = \cfrac{a}{1+\cfrac{c}{d}} \\
 \sqrt[3]{n} \\
-\lim_{x \to \infty} \frac{x}{x+1}
+\lim_{x \to \infty} \frac{x}{x+1} \\
+a \bmod 24 \\
+\Gamma(x) = x^2 \\
+\sigma
 $$
