@@ -7,6 +7,8 @@
 @REM npm install markdown-it markdown-it-mathjax3
 node render_latex.js
 @REM then pdf
-pandoc -o jump_to_line.pdf  jump_to_line.md
+@REM no unicode support?
+@REM pandoc -o jump_to_line.pdf --pdf-engine lualatex jump_to_line.md
+@REM pandoc -o jump_to_line.pdf --pdf-engine lualatex jump_to_line.md
 @REM pandoc -o jump_to_line.pdf  jump_to_line.html
 @REM playwright pdf jump_to_line.html jump_to_line.pdf
