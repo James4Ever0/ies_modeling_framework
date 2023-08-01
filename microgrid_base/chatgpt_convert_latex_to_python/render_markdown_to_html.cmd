@@ -1,5 +1,6 @@
 @REM python -m markdown -f jump_to_line.html -o html jump_to_line.md
 @REM https://facelessuser.github.io/pymdown-extensions/extensions/arithmatex/
+@REM https://mdit-py-plugins.readthedocs.io/
 @REM python render_markdown_with_latex.py
 
 @REM pandoc -o jump_to_line.html jump_to_line.md
