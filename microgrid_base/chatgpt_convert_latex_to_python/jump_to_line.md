@@ -69,3 +69,14 @@ $$
 $$
 
 natural does not contain zero, but natural_0 does
+
+intersection
+
+$$
+\left\{1, 2, \ldots, 10\right\} \\
+\left[0, 变量_{1}\right] \cap \mathbb{N}
+$$
+
+$$
+\left[-1, 1\right] \times \left[10, 100\right]
+$$

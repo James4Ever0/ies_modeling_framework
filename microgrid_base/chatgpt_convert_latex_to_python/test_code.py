@@ -32,7 +32,7 @@ c, d = sympy.symbols("变量1 变量2")
 # unacceptable form.
 # sympy.print_latex(10>= c >=1)
 sympy.print_latex(10 >= c)
-sympy.print_latex(sympy.S.Reals) # working.
+sympy.print_latex(sympy.S.Reals)  # working.
 sympy.print_latex(sympy.Interval(0, 1).contains(c))
 
 sympy.print_latex(sympy.S.Reals.contains(c))
@@ -43,5 +43,8 @@ print(dir(sympy.S.Reals))
 sympy.print_latex(sympy.ceiling(c))
 sympy.print_latex(sympy.Interval(0, 1))
 # sympy.print_latex(c*d) # this is bad syntax.
-sympy.print_latex(c*d, mul_symbol=r"\times")
-sympy.print_latex(sympy.Contains(c,sympy.S.Reals))
+sympy.print_latex(c * d, mul_symbol=r"\times")
+sympy.print_latex(sympy.Contains(c, sympy.S.Reals))
+
+sympy.print_latex(sympy.Intersection(sympy.S.Naturals, sympy.Interval(0, c)))
+
