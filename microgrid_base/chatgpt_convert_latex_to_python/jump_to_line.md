@@ -13,7 +13,7 @@ $$
 $$
 
 $$
-\int b\, db ,where
+\int b\, db ,where \  10 \ge b \ge 1
 $$
 
 $$
