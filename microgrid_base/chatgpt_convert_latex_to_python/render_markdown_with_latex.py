@@ -8,7 +8,7 @@ from markdown_it import MarkdownIt
 from mdit_py_plugins.dollarmath import dollarmath_plugin
 
 # shall you import some script around this.
-# no better than 
+# no better than markdown-it-mathjax3
 
 md = MarkdownIt().use(dollarmath_plugin)
 
