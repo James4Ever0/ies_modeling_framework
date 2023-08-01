@@ -9,4 +9,4 @@ node render_latex.js
 @REM then pdf
 @REM pandoc -o jump_to_line.pdf  jump_to_line.md
 @REM pandoc -o jump_to_line.pdf  jump_to_line.html
-phantomjs 
+playwright pdf jump_to_line.html jump_to_line.pdf
