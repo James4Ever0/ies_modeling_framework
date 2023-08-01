@@ -44,3 +44,4 @@ sympy.print_latex(sympy.ceiling(c))
 sympy.print_latex(sympy.Interval(0, 1))
 # sympy.print_latex(c*d) # this is bad syntax.
 sympy.print_latex(c*d, mul_symbol=r"\times")
+sympy.print_latex(sympy.Contains(c,sympy.S.Reals))

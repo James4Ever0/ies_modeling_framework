@@ -63,3 +63,7 @@ $$
 $$
 \frac{\mathrm{d}}{\mathrm{d} b} b
 $$
+
+$$
+变量_{1} \in \mathbb{R}
+$$
