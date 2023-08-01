@@ -19,3 +19,7 @@ $$
 $$
 \operatorname{Q}_{\text{negative}}(a)
 $$
+
+$$
+\mathbb{R}
+$$

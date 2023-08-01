@@ -28,3 +28,9 @@ sympy.print_latex(sympy.Derivative(b, b))
 sympy.print_latex(sympy.Integral(b, b))
 # sympy.print_latex(sympy.Q.negative(a))
 # sympy.print_latex(b)
+c, d = sympy.symbols("c d")
+# unacceptable form.
+# sympy.print_latex(10>= c >=1)
+sympy.print_latex(10 >= c)
+sympy.print_latex(sympy.S.Reals) # working.
+sympy.print_latex(sympy.Interval(0, 1).contains(c))
