@@ -1,1 +1,1 @@
-python -m pygments -o test_code.html test_code.py
+python -m pygments -S rrt -o test_code.html test_code.py
