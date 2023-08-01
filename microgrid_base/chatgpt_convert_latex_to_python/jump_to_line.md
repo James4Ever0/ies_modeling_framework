@@ -65,7 +65,7 @@ $$
 $$
 
 $$
-变量_{1} \in \mathbb{R}
+变量_{1} \in \mathbb{Q}, 变量_{1} > 0
 $$
 
 natural does not contain zero, but natural_0 does
