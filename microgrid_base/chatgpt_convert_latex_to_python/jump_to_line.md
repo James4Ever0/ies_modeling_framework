@@ -25,11 +25,11 @@ $$
 $$
 
 $$
-0 \leq c \wedge c \leq 1
+0 \leq c \leq 1
 $$
 
 for reals:
 
 $$
--\infty < c \wedge c < \infty
+c \in \mathbb{R}
 $$
