@@ -1,1 +1,1 @@
-pygmentize
+python -m pygments -o test_code.html test_code.py
