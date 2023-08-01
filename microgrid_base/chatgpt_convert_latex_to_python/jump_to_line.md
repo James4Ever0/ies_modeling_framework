@@ -53,5 +53,8 @@ $$
 a \bmod 24 \\
 \Gamma(x) = x^2 \\
 \sigma \delta \psi \epsilon \varepsilon \\
-3.14
+3.14 \\
+{x+1 \over x-1} + {c \over d} \\
+
+a \times b
 $$
