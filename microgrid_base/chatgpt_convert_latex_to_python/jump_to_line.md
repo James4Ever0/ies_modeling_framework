@@ -106,7 +106,6 @@ $$
 
 $$
 \left\{变量_{1}\; \middle|\; 变量_{1} \in \mathbb{R} \wedge 变量_{1} > 1 \wedge 变量_{1} < 10 \right\} 
-
 $$
 
 $$
