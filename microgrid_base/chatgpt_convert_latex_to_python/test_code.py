@@ -34,3 +34,6 @@ c, d = sympy.symbols("c d")
 sympy.print_latex(10 >= c)
 sympy.print_latex(sympy.S.Reals) # working.
 sympy.print_latex(sympy.Interval(0, 1).contains(c))
+
+sympy.print_latex(sympy.S.Reals.contains(c))
+print(dir(c))
