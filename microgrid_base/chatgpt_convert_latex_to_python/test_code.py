@@ -22,5 +22,5 @@ sympy.pretty_print(sympy.Derivative(b,b))
 sympy.print_latex(sympy.Derivative(b,b))
 
 sympy.print_latex(sympy.Integral(b,b))
-sympy.print_latex(sympy.Q.negative(a))
-sympy.print_latex(b)
+# sympy.print_latex(sympy.Q.negative(a))
+# sympy.print_latex(b)

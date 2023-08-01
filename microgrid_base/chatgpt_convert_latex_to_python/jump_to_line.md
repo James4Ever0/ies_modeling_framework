@@ -13,7 +13,7 @@ $$
 $$
 
 $$
-\int b\, db
+\int b\, db ,where
 $$
 
 $$
