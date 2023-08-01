@@ -2,6 +2,8 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# TODO: configure file handlers for celery logging
+
 # python version check
 from typing import Union
 
@@ -80,13 +82,21 @@ else:
     os.mkdir(log_dir)
 
 log_filename = os.path.join(log_dir, "debug.log")
+celery_log_filename = os.path.join(log_dir, "celery.log")
+
 
 from logging.handlers import RotatingFileHandler
 
-myHandler = RotatingFileHandler(
-    log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
-)
-myHandler.setLevel(logging.DEBUG)
+
+def makeRotatingFileHandler(log_filename: str):
+    myHandler = RotatingFileHandler(
+        log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
+    )
+    myHandler.setLevel(logging.DEBUG)
+    return myHandler
+
+
+myHandler = makeRotatingFileHandler(log_filename)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
 FORMAT = (  # add timestamp.
     "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
@@ -119,7 +129,11 @@ def logger_print(*args):
         logger.debug(
             format_string,
             *[
-                pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg
+                # fallback for older versions:
+                pretty_repr(arg)
+                if not any(isinstance(arg, t) for t in [bytes, str])
+                else arg
+                # pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg
                 for arg in args
             ],
             stacklevel=2,

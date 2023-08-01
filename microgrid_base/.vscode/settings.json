@@ -8,5 +8,6 @@
     "launch": {
         "configurations": [],
         "compounds": []
-    }
+    },
+    "python.formatting.provider": "black"
 }

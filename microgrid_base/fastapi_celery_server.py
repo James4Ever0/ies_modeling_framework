@@ -1,4 +1,4 @@
-from log_utils import logger_print
+from log_utils import logger_print, makeRotatingFileHandler, celery_log_filename
 
 from celery import Celery
 from passwords import redis_password
@@ -20,6 +20,7 @@ import better_exceptions
 import sys
 from celery.utils.log import ColorFormatter  # type: ignore
 
+
 # class CustomFormatter(logging.Formatter):
 class CustomFormatter(ColorFormatter):
     def formatException(self, exc_info):
@@ -34,14 +35,18 @@ class CustomFormatter(ColorFormatter):
         """
 
         if exc_info and not isinstance(exc_info, tuple):
-            exc_info = sys.exc_info() # copied from `ColorFormatter.formatException`
-    
+            exc_info = sys.exc_info()  # copied from `ColorFormatter.formatException`
+
         lines = better_exceptions.format_exception(*exc_info)
         return "".join(lines)
 
+
 custom_formatter = CustomFormatter()
 
-for handler in app.log.get_default_logger().handlers:
+celery_logger = app.log.get_default_logger()
+celery_logger.addHandler(makeRotatingFileHandler(celery_log_filename))
+
+for handler in celery_logger.handlers:
     handler.setFormatter(custom_formatter)
 
 # you'd better import models from other datamodel only file
@@ -51,11 +56,13 @@ for handler in app.log.get_default_logger().handlers:
 # from celery.exceptions import Ignore
 from fastapi_celery_functions import calculate_energyflow_graph_base
 
+
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
     ret = calculate_energyflow_graph_base(energyflow_graph)
     return ret
+
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)
