@@ -83,5 +83,7 @@ $$
 
 $$
 \left\{变量_{1}\; \middle|\; 变量_{1} \in \mathbb{R} \wedge 变量_{1} > 1 \right\} \\
-\left\{2 变量_{1}\; \middle|\; 变量_{1} \in \mathbb{Z}\right\}
+\left\{2 变量_{1}\; \middle|\; 变量_{1} \in \mathbb{Z}\right\} \\
+\left\{变量_{1}\; \middle|\; 变量_{1} \in \mathbb{R} \wedge 变量_{1} > 1 \wedge 变量_{1} < 10 \right\} \\
+\mathbb{Z} \cap \left[1, 变量_{2}\right]
 $$
