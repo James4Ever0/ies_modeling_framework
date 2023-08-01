@@ -1,1 +1,1 @@
-python -m pygments -O full,linenos=inline -f html -o test_code.html test_code.py
+python -m pygments -O full,linenos=inline,lineanchors=line -f html -o test_code.html test_code.py
