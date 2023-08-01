@@ -23,7 +23,7 @@ with sympy.assuming(sympy.Q.integer(a)):
     sympy.print_latex(summation)
 
 sympy.pretty_print(sympy.Derivative(b, b))
-sympy.print_latex(sympy.Derivative(b, b))
+sympy.print_latex(sympy.Derivative(b, b), diff_operator=r"\mathrm{d}")
 
 sympy.print_latex(sympy.Integral(b, b))
 # sympy.print_latex(sympy.Q.negative(a))

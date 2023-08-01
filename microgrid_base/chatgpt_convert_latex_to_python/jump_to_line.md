@@ -59,3 +59,7 @@ a \bmod 24 \\
 a \times b \\ 
 变量_{1}\times变量_{2}
 $$
+
+$$
+\frac{\mathrm{d}}{\mathrm{d} b} b
+$$
