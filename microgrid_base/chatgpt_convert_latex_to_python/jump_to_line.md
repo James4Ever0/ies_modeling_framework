@@ -13,7 +13,7 @@ $$
 $$
 
 $$
-\int b\, db ,{\rm where} \  10 \ge b \ge 1
+\int b\, \mathrm{d}b ,{\rm where} \  10 \ge b \ge 1
 $$
 
 $$
@@ -40,4 +40,12 @@ $$
 
 $$
 c \in \left[0, 1\right] \cap \mathbb{Z}
+$$
+
+$$
+{\rm dt}
+$$
+
+$$
+{c}' = \cfrac{a}{1+\cfrac{c}{d}}
 $$
