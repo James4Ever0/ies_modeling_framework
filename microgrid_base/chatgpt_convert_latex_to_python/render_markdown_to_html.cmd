@@ -7,5 +7,6 @@
 @REM npm install markdown-it markdown-it-mathjax3
 node render_latex.js
 @REM then pdf
-pandoc -o jump_to_line.pdf  jump_to_line.md
+@REM pandoc -o jump_to_line.pdf  jump_to_line.md
 @REM pandoc -o jump_to_line.pdf  jump_to_line.html
+phantomjs 
