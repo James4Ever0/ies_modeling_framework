@@ -47,5 +47,7 @@ $$
 $$
 
 $$
-{c}' = \cfrac{a}{1+\cfrac{c}{d}}
+{c}' = \cfrac{a}{1+\cfrac{c}{d}} \\
+\sqrt[3]{n} \\
+\lim_{x \to \infty} \frac{x}{x+1}
 $$
