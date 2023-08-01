@@ -33,3 +33,7 @@ for reals:
 $$
 c \in \mathbb{R}
 $$
+
+$$
+\left\lceil{c}\right\rceil
+$$
