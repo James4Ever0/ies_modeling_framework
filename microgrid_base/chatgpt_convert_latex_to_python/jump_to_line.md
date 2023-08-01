@@ -56,5 +56,6 @@ a \bmod 24 \\
 3.14 \\
 {x+1 \over x-1} + {c \over d} \\
 
-a \times b
+a \times b \\ 
+变量_{1}\times变量_{2}
 $$
