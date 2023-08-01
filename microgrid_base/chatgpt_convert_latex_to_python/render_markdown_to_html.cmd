@@ -9,6 +9,6 @@ node render_latex.js
 @REM then pdf
 @REM no unicode support?
 @REM pandoc -o jump_to_line.pdf --pdf-engine lualatex jump_to_line.md
-@REM pandoc -o jump_to_line.pdf --pdf-engine lualatex jump_to_line.md
+@REM pandoc -o jump_to_line.pdf --pdf-engine xelatex jump_to_line.md
 @REM pandoc -o jump_to_line.pdf  jump_to_line.html
-@REM playwright pdf jump_to_line.html jump_to_line.pdf
+playwright pdf jump_to_line.html jump_to_line.pdf
