@@ -52,5 +52,6 @@ $$
 \lim_{x \to \infty} \frac{x}{x+1} \\
 a \bmod 24 \\
 \Gamma(x) = x^2 \\
-\sigma
+\sigma \delta \psi \epsilon \varepsilon \\
+3.14
 $$
