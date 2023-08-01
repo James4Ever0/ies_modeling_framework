@@ -67,3 +67,5 @@ $$
 $$
 变量_{1} \in \mathbb{R}
 $$
+
+natural does not contain zero, but natural_0 does
