@@ -5,9 +5,12 @@
 # md.convertFile(input="jump_to_line.md", output="jump_to_line.html", encoding="utf-8")
 
 from markdown_it import MarkdownIt
-from mdit_py_plugins import dollarmath
+from mdit_py_plugins.dollarmath import dollarmath_plugin
 
-md = MarkdownIt().use(dollarmath)
+# shall you import some script around this.
+# no better than 
+
+md = MarkdownIt().use(dollarmath_plugin)
 
 sample_markdown=r"""
 # hello latex
