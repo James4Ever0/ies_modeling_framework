@@ -36,4 +36,7 @@ sympy.print_latex(sympy.S.Reals) # working.
 sympy.print_latex(sympy.Interval(0, 1).contains(c))
 
 sympy.print_latex(sympy.S.Reals.contains(c))
+print()
 print(dir(c))
+print()
+print(dir(sympy.S.Reals))
