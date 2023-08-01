@@ -9,6 +9,6 @@ line_range = range(10, 20+1)
 for a in soup.find_all('a'):
     print(a)
     print(dir(a))
-    span = a.next("span")
+    span = a.next_sibling()
     print(span)
     # find next sibling of "span".
