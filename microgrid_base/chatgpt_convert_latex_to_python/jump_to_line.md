@@ -80,3 +80,8 @@ $$
 $$
 \left[-1, 1\right] \times \left[10, 100\right]
 $$
+
+$$
+\left\{变量_{1}\; \middle|\; 变量_{1} \in \mathbb{R} \wedge 变量_{1} > 1 \right\} \\
+\left\{2 变量_{1}\; \middle|\; 变量_{1} \in \mathbb{Z}\right\}
+$$

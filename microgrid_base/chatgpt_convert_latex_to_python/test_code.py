@@ -48,3 +48,6 @@ sympy.print_latex(sympy.Contains(c, sympy.S.Reals))
 
 sympy.print_latex(sympy.Intersection(sympy.S.Naturals, sympy.Interval(0, c)))
 
+sympy.print_latex(sympy.ConditionSet(c, c>1, sympy.S.Reals))
+
+sympy.print_latex(sympy.imageset(sympy.Lambda(c, 2*c), sympy.S.Integers))
