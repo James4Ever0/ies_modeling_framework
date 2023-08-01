@@ -37,3 +37,7 @@ $$
 $$
 \left\lceil{c}\right\rceil
 $$
+
+$$
+c \in \left[0, 1\right] \cap \mathbb{Z}
+$$
