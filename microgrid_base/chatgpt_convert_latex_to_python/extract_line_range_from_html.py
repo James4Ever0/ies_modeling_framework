@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 soup = BeautifulSoup(open(input_file, 'r').read())
 
-import parse
 line_range = range(10, 20+1)
 # import rich
 
@@ -19,7 +18,8 @@ for a in soup.find_all('a'):
         elements_to_delete.append(a)
         for elem in a.next_siblings:
             # print(elem, elem.name)
-            if elem.name !='span':
+            if elem.name =='a':
+            # if elem.name !='span':
                 break
             else:
                 elements_to_delete.append(elem)
