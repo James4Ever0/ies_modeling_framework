@@ -9,28 +9,8 @@ soup = BeautifulSoup(open(input_file, "r").read())
 # import rich
 
 # insert into head
-css = open('highlight.css', 'r').read()
-js = """
-const span = 5
-
-setInterval(function() {
-    if(document.readyState=='complete'){
-        var url_hash = window.location.hash
-          var line_number = Number(url_hash.split("-")[1])
-          if (!Number.isNaN(line_number)){
-            for (var i=line_number-span; i<=line_number+span; i++){
-            var div_id = 'div-line-'+i
-            var div = document.getElementById(div_id)
-            if 
-            (div !== null){
-            div.setAttribute("class","highlight_line");
-            }
-    }
-  }
-  }
-}, 500);
-
-"""
+css = open('highlight_line.css', 'r').read()
+js = open('highlight_line.js', 'r').read()
 
 css_tag = soup.new_tag('style', type="text/css")
 css_tag.append(css)
