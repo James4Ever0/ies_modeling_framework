@@ -9,14 +9,9 @@ soup = BeautifulSoup(open(input_file, "r").read())
 # import rich
 
 # insert into head
-css = """
-.highlight_line{
-  background-color: green !important;
-}
-
-"""
+css = open('highlight.css', 'r').read()
 js = """
-const span = 10
+const span = 5
 
 setInterval(function() {
     if(document.readyState=='complete'){
