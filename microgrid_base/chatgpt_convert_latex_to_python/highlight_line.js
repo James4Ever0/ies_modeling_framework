@@ -12,6 +12,10 @@ setInterval(function () {
         previous_url_hash = url_hash
         var line_number = Number(url_hash.split("-")[1])
         if (!Number.isNaN(line_number)) {
+            
+            for (let elem of document.getElementsByClassName('highlight_line')){
+                elem.setAttribute("class","")
+            }
             for (var i = line_number - span; i <= line_number + span; i++) {
                 var div_id = 'div-line-' + i
                 var div = document.getElementById(div_id)
