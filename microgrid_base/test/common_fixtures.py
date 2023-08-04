@@ -154,15 +154,15 @@ def 测试光伏发电模型(
 # =================================风力发电================================= #
 
 
-@fixture(params=["定桨",变桨",标幺值"])
+@fixture(params=["定桨","变桨","标幺值"])
 def 测试风力发电信息(request:Request):
     val = 风力发电信息(
         设备名称="风力发电",
         生产厂商="Any",
         设备型号="风力发电1",
         machineType=request.param,
-        normalizedPower=[],
-        CutoutPower= 90,
+        normalizedPower=[0.5]*每天小时数,
+        CutoutPower= 100,
         RatedPower=100,
         RatedWindSpeed=100,
         MinWindSpeed=10,
