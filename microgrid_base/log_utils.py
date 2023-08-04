@@ -88,11 +88,11 @@ celery_log_filename = os.path.join(log_dir, "celery.log")
 from logging.handlers import RotatingFileHandler
 
 
-def makeRotatingFileHandler(log_filename: str):
+def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
     myHandler = RotatingFileHandler(
         log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
     )
-    myHandler.setLevel(logging.DEBUG)
+    myHandler.setLevel(level)
     return myHandler
 
 import pytz

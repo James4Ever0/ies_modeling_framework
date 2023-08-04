@@ -44,9 +44,12 @@ class CustomFormatter(ColorFormatter):
 
 
 custom_formatter = CustomFormatter()
+import logging
 
 celery_logger = app.log.get_default_logger()
-celery_logger.addHandler(makeRotatingFileHandler(celery_log_filename))
+celery_logger.addHandler(
+    makeRotatingFileHandler(celery_log_filename, level=logging.NOTSET)
+)
 
 for handler in celery_logger.handlers:
     handler.setFormatter(custom_formatter)
