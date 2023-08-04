@@ -373,6 +373,13 @@ class 设备信息(设备基础信息):
 
 {% endfor %}
 
+{# 设备特有类型 #}
+import enum
+class 风力发电类型(enum.StrEnum):
+    变桨 = enum.auto()
+    定桨 = enum.auto()
+    标幺值 = enum.auto()
+
 {% set NonLoadDeviceDict = {}%}
 
 {# 不是标准单位 #}
@@ -446,6 +453,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减")
         {% elif class_name in ['风力发电']%}
     machineType : 风力发电类型 = Field(default=风力发电类型.变桨, title = '选择风力发电类型', description = "定桨、变桨（默认）、标幺值")
+    :Union[None, List[float]]= Field(title="风力发电标幺值",)
         {% endif%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
