@@ -383,6 +383,8 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
 
         devCount = 测试风力发电模型.设备信息.DeviceCount
         assert abs(value(测试风力发电模型.DeviceCount) - devCount) < EPS
+        if 测试风力发电模型.设备信息.machineType == "标幺值":
+            output = 测试风力发电模型.设备信息.RatedPower * 0.5
         assert abs(value(测试风力发电模型.单台发电功率[0]) - output) < EPS
         assert abs(value(测试风力发电模型.单台发电功率[2]) - output) < EPS
         assert abs(value(测试风力发电模型.电接口[0]) - output * devCount) < EPS

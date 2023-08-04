@@ -164,6 +164,7 @@ def 测试风力发电信息():
         设备型号="风力发电1",
         machineType=None,
         normalizedPower=None,
+        CutoutPower=None,
         RatedPower=None,
         RatedWindSpeed=None,
         MinWindSpeed=None,
@@ -229,8 +230,8 @@ def 测试柴油发电信息():
 def 测试柴油发电ID():
     val = 柴油发电ID(
         ID=8,
-        燃料接口=9,
-        电接口=10,
+        电接口=9,
+        燃料接口=10,
     )
     return val
 
@@ -322,8 +323,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输出=14,
-        电输入=15,
+        电输入=14,
+        电输出=15,
     )
     return val
 
