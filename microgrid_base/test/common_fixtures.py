@@ -152,9 +152,8 @@ def 测试光伏发电模型(
 
 
 # =================================风力发电================================= #
-
-
-@fixture(params=["定桨","变桨","标幺值"],ids=[fixed pitch, variable pitch, per unit value])
+from jinja_utils import camelize_with_space
+@fixture(params=["定桨","变桨","标幺值"],ids=[camelize_with_space(i for i in ["Fixed pitch", "variable pitch", "per unit value"])
 def 测试风力发电信息(request:Request):
     val = 风力发电信息(
         设备名称="风力发电",
