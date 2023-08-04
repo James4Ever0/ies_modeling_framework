@@ -3,6 +3,7 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 """
 
 # TODO: configure file handlers for celery logging
+# TODO: find a tool or make some script to take input from stdin and log & filter output
 
 # python version check
 from typing import Union
@@ -171,6 +172,10 @@ def logger_print(*args):
 
 import datetime
 
+try:
+    terminal_column_size  = os.get_terminal_size().columns
+except:
+    terminal_column_size = 30
 logger_print(
     f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(
         os.get_terminal_size().columns, "+"

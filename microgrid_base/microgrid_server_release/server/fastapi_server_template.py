@@ -159,6 +159,7 @@ def background_on_message(task: AsyncResult):
 import fastapi
 
 app = FastAPI(
+    debug=True,
     description=description,
     version=version,
     tags_metadata=tags_metadata,
