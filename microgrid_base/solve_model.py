@@ -63,7 +63,11 @@ from topo_check import 拓扑图
 ###
 def 导出结果表_格式化(
     结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str], columns: List[str]
-) -> Tuple[List[Dict[str, Union[float, int, str]]], DataFrame, List[Dict[str, Union[float, int, str]]]]:
+) -> Tuple[
+    List[Dict[str, Union[float, int, str]]],
+    DataFrame,
+    List[Dict[str, Union[float, int, str]]],
+]:
     结果表_导出 = pd.DataFrame([v for _, v in 结果表.items()], columns=columns)
     # use "inplace" otherwise you have to manually assign return values.
     结果表_导出.fillna({elem: "" for elem in 字符串表头}, inplace=True)
@@ -181,16 +185,19 @@ def solveModelFromCalcParamList(
             # try:
             io_options = dict(symbolic_solver_labels=True)
             solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
-            solver.options["read fileencoding"] = 'utf-8'
+            solver.options["read fileencoding"] = "utf-8"
 
             logger_print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
             import tempfile
             import os
+
             with tempfile.TemporaryDirectory() as solver_log_dir:
-                solver_log = os.path.join(solver_log_dir,"solver.log")
-                results = solver.solve(mw.model, tee=True, io_options=io_options, logfile=solver_log)
+                solver_log = os.path.join(solver_log_dir, "solver.log")
+                results = solver.solve(
+                    mw.model, tee=True, io_options=io_options, logfile=solver_log
+                )
 
                 logger_print("SOLVER RESULTS?")
                 logger_print(results)
@@ -249,14 +256,32 @@ def solveModelFromCalcParamList(
                 if error_msg:
                     from log_utils import log_dir, timezone
                     import datetime
+
                     # import pytz
                     # tz = pytz.timezone("US/Eastern")
-                    timestamp=str(datetime.datetime.now(timezone)).replace(" ","_").replace("-","_").replace(".","_").replace(":","_")
-                    os.mkdir(solver_log_dir_with_timestamp:=os.path.join(f"pyomo_{timestamp}"))
-                    lp_filepath = os.path.join(solver_log_dir_with_timestamp,"model.lp")
+                    timestamp = (
+                        str(datetime.datetime.now(timezone))
+                        .replace(" ", "_")
+                        .replace("-", "_")
+                        .replace(".", "_")
+                        .replace(":", "_")
+                    )
+                    os.mkdir(
+                        solver_log_dir_with_timestamp := os.path.join(
+                            log_dir, f"pyomo_{timestamp}"
+                        )
+                    )
+                    lp_filepath = os.path.join(
+                        solver_log_dir_with_timestamp, "model.lp"
+                    )
                     mw.model.write(filename=lp_filepath, io_options=io_options)
                     import shutil
-                    shutil.move(solver_log,solver_log_dir_with_timestamp)
+
+                    shutil.move(solver_log, solver_log_dir_with_timestamp)
+                    
+                    error_msg.append("")
+                    error_msg.append("Solver log saved to: " + solver_log)
+                    error_msg.append("Model saved to: " + lp_filepath)
 
                     raise Exception("\n".join(error_msg))
 
@@ -341,14 +366,14 @@ def solveModelFromCalcParamList(
             targetType=targetType,
         )
         return ret
-    
-    def add_with_nan(v0,v1):
+
+    def add_with_nan(v0, v1):
         if pd.isna(v0):
             return v1
         elif pd.isna(v1):
             return v0
         else:
-            return v0+v1
+            return v0 + v1
 
     def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
         之前结果 = deepcopy(结果表.get(设备模型实例, None))
@@ -357,7 +382,9 @@ def solveModelFromCalcParamList(
         else:
             # TODO: deal with "nan"
             结果表[设备模型实例] = {
-                k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
+                k: add_with_nan(v, 之前结果[k])
+                for k, v in 结果.dict().items()
+                if k not in 不可累加表头
             }
 
     def fetchResult(solved: bool, ret: CalcStruct):
