@@ -187,8 +187,8 @@ app = FastAPI(
 async def request_validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    logger_print("request", request, logger=logger)
-    logger_print("exception", request, logger=logger)
+    logger_print("request", await request.body(), logger=logger)
+    logger_print("exception", exc.raw_errors, exc.body, logger=logger)
     return JSONResponse(
         status_code=HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": jsonable_encoder(exc.errors())},
