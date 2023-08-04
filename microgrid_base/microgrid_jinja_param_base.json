@@ -108,6 +108,13 @@
                 "生产厂商",
                 "设备型号",
                 [
+                    "CutoutPower",
+                    "切出功率",
+                    "kWp",
+                    "kilowatt",
+                    1.0
+                ],
+                [
                     "RatedPower",
                     "额定功率",
                     "kWp",
