@@ -178,7 +178,7 @@ except:
     terminal_column_size = 30
 logger_print(
     f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(
-        os.get_terminal_size().columns, "+"
+        terminal_column_size, "+"
     )
     # f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70 - 2, "+")
 )
