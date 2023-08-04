@@ -486,10 +486,10 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {%if class_name in ['风力发电']%}
     @validator("RatedPower")
     def checkRatedPower(cls, v, values):
-        
+        CutoutPower = values['CutoutPower'] 
+        assert CutoutPower <= v, f"切出功率({CutoutPower})必须小于额定功率({v})" 
         return v
         {% endif %}
-
 
         {% endfor %}
     {% endif %}
