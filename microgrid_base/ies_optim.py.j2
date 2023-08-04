@@ -444,6 +444,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {# special variables for non-load device info #}
         {% if class_name in ['锂电池']%}
     needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减")
+        {% elif class_name in ['风力发电']%}
+    machineType : 风力发电类型 = Field(default=风力发电类型.变桨， title)
         {% endif%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
