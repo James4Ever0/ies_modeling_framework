@@ -84,7 +84,7 @@ else:
 
 log_filename = os.path.join(log_dir, "debug.log")
 celery_log_filename = os.path.join(log_dir, "celery.log")
-
+fastapi_log_filename = os.path.join(log_dir, "fastapi.log")
 
 from logging.handlers import RotatingFileHandler
 
@@ -149,7 +149,7 @@ logger.addHandler(myHandler)
 from rich.pretty import pretty_repr
 
 
-def logger_print(*args):
+def logger_print(*args, logger = logger):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!

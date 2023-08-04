@@ -4,8 +4,14 @@
 port = 9870
 host = "0.0.0.0"
 import traceback
-
-import celery
+import logging
+from log_utils import fastapi_log_filename, stdout_handler, makeRotatingFileHandler
+fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
+logger = logging.getLogger("fastapi")
+logger.setLevel("DEBUG")
+logger.addHandler(stdout_handler)
+logger.addHandler(fastapi_log_handler)
+# import celery
 from log_utils import logger_print
 
 appName = "IES Optim Server Template"
