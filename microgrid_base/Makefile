@@ -72,6 +72,8 @@ TEST_CODE = test_topo_check.py ${TEST_INPUT_FORMAT_FILES}
 
 LOG_DIRS = logs ${SERVER_RELEASE_DIR}/logs
 
+PARAM_BASE_REQUIREMENTS = frontend_sim_param_translation.json microgrid_jinja_param_base.json ${MICROGRID_TYPESYS_JSONS} lib_parse_params.py
+
 ifeq (${OS_TYPE}, macos)
 MAIN_EXEC=bash cplex_test.sh
 # MAIN_EXEC=${CONDA} bash cplex_test.sh
@@ -135,9 +137,7 @@ templates: output_template.json template_input.json
 
 ################ IMPLEMENTATION ################
 
-param_base.py: frontend_sim_param_translation.json microgrid_jinja_param_base.json ${MICROGRID_TYPESYS_JSONS} lib_parse_params.py
-
-topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS}
+topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
 	${PYTHON} jinja_template_model_generator.py
 
 # pyright_regex_check:

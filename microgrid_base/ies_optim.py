@@ -349,13 +349,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -560,6 +560,12 @@ class 风力发电信息(设备信息):
         title="风力发电标幺值",
         description="空或数组(典型日长度为24,全年逐时长度为8760,秒级长度为7200)",
     )
+
+    CutoutPower: confloat(ge=0) = Field(title="切出功率", description="名称: 切出功率\n单位: kWp")
+    """
+    名称: 切出功率
+    单位: kWp
+    """
 
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
@@ -2057,6 +2063,13 @@ class 风力发电模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
+        self.CutoutPower: float = 设备信息.CutoutPower
+        """
+        名称: 切出功率
+        单位: kWp
+        """
+        assert self.CutoutPower >= 0
+
         self.RatedPower: float = 设备信息.RatedPower
         """
         名称: 额定功率
@@ -3407,18 +3420,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
