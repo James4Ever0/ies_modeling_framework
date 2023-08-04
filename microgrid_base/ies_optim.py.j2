@@ -1276,7 +1276,6 @@ class {{class_name}}模型(设备模型):
             lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), 
             {# lambda x: ((发电曲线参数 * (x - self.MinWindSpeed)) ** 3),  #}
             self.RatedPower, 0]) #}
-            定桨风机特有函数 = lambda
             self.单台发电功率 = 单台发电功率 = np.piecewise(
             WS,
             [
@@ -1287,7 +1286,7 @@ class {{class_name}}模型(设备模型):
             ],
             [   0, 
                 lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),
-                self.RatedPower if self.设备信息.machineType == 风力发电类型.变桨 else 定桨风机特有函数, 
+                self.RatedPower if self.设备信息.machineType == 风力发电类型.变桨 else (定桨风机特有函数:= 额定功率 +( (切出功率 - 额定功率)*(实际风速-额定风速)) / (切出风速-额定风速)), 
                 0 
             ],
             )
