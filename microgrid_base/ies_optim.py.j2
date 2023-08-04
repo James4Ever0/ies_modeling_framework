@@ -1276,9 +1276,11 @@ class {{class_name}}模型(设备模型):
             lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), 
             {# lambda x: ((发电曲线参数 * (x - self.MinWindSpeed)) ** 3),  #}
             self.RatedPower, 0])
-            单台发电功率 = 单台发电功率.tolist()
+            self.单台发电功率 = 单台发电功率 = 单台发电功率.tolist()
         elif self.设备信息.machineType in [风力发电类型.标幺值]:
-            assert (length:= len(self.设备信息.normalizedPower)) = (required_length:= self.计算参数.迭代步数), ''
+            assert self.设备信息.normalizedPower is not None, "标幺值风机不能传空的标幺值"
+            assert (length:= len(self.设备信息.normalizedPower)) = (required_length:= self.计算参数.迭代步数), f'标幺值长度不合理\n迭代步数: {required_length}\n实际: {length}'
+            self.单台发电功率 = 单台发电功率 = [ for normalizedPower  in self.设备信息.normalizedPower]
 
         {% endif %}
 
