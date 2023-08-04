@@ -95,6 +95,30 @@ def makeRotatingFileHandler(log_filename: str):
     myHandler.setLevel(logging.DEBUG)
     return myHandler
 
+import pytz
+# import logging
+import datetime
+
+
+class Formatter(logging.Formatter):
+    """override logging.Formatter to use an aware datetime object"""
+
+    def converter(self, timestamp):
+        # Create datetime in UTC
+        dt = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+        # Change datetime's timezone
+        return dt.astimezone(pytz.timezone('Asia/Shanghai'))
+
+    def formatTime(self, record, datefmt=None):
+        dt = self.converter(record.created)
+        if datefmt:
+            s = dt.strftime(datefmt)
+        else:
+            try:
+                s = dt.isoformat(timespec='milliseconds')
+            except TypeError:
+                s = dt.isoformat()
+        return s
 
 myHandler = makeRotatingFileHandler(log_filename)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
@@ -104,7 +128,8 @@ FORMAT = (  # add timestamp.
     # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
 )
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
-myFormatter = logging.Formatter(fmt=FORMAT)
+# myFormatter = logging.Formatter(fmt=FORMAT)
+myFormatter = 
 myHandler.setFormatter(myFormatter)
 
 stdout_handler = StreamHandler(sys.stdout)  # test with this!
