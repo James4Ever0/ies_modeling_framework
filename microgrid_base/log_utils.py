@@ -96,6 +96,7 @@ def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
     return myHandler
 
 import pytz
+timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
 # import logging
 import datetime
 
@@ -107,7 +108,7 @@ class Formatter(logging.Formatter):
         # Create datetime in UTC
         dt = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
         # Change datetime's timezone
-        return dt.astimezone(pytz.timezone('Asia/Shanghai'))
+        return dt.astimezone(timezone)
 
     def formatTime(self, record, datefmt=None):
         dt = self.converter(record.created)

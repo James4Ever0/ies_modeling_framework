@@ -1,4 +1,4 @@
-from log_utils import logger_print, makeRotatingFileHandler, celery_log_filename
+from log_utils import logger_print, makeRotatingFileHandler, celery_log_filename, timezone_str
 
 from celery import Celery
 from passwords import redis_password
@@ -20,7 +20,7 @@ import better_exceptions
 import sys
 from celery.utils.log import ColorFormatter  # type: ignore
 
-app.conf.update(CELERY_TIMEZONE="Asia/Shanghai", CELERY_ENABLE_UTC=False)
+app.conf.update(CELERY_TIMEZONE=timezone_str, CELERY_ENABLE_UTC=False)
 
 
 # class CustomFormatter(logging.Formatter):

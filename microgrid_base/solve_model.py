@@ -247,12 +247,12 @@ def solveModelFromCalcParamList(
                 if SS not in normalSSs:
                     error_msg.append(f"abnormal solver status: {TC}")
                 if error_msg:
-                    from log_utils import log_dir
+                    from log_utils import log_dir, timezone
                     import datetime
-                    import pytz
-                    tz = 
-                    timestamp=str(datetime.datetime.now(tz)).replace(" ","_").replace("-","_").replace(".","_").replace(":","_")
-                    os.mkdir(solver_log_dir_with_timestamp:=f"pyomo_{timestamp}")
+                    # import pytz
+                    # tz = pytz.timezone("US/Eastern")
+                    timestamp=str(datetime.datetime.now(timezone)).replace(" ","_").replace("-","_").replace(".","_").replace(":","_")
+                    os.mkdir(solver_log_dir_with_timestamp:=os.path.join(f"pyomo_{timestamp}"))
                     lp_filepath = os.path.join(solver_log_dir_with_timestamp,"model.lp")
                     mw.model.write(filename=lp_filepath, io_options=io_options)
                     import shutil
