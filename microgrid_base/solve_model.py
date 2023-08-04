@@ -186,64 +186,70 @@ def solveModelFromCalcParamList(
             logger_print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
-            results = solver.solve(mw.model, tee=True, io_options=io_options)
-            
-            logger_print("SOLVER RESULTS?")
-            logger_print(results)
+            import tempfile
+            import os
+            with tempfile.TemporaryDirectory() as solver_log_dir:
+                solver_log = os.path.join(solver_log_dir,"solver.log")
+                results = solver.solve(mw.model, tee=True, io_options=io_options, logfile=solver_log)
 
-            # breakpoint() # TODO: check diesel engine issues.
+                logger_print("SOLVER RESULTS?")
+                logger_print(results)
 
-            # except:
-            #     import traceback
-            #     traceback.print_exc()
-            # logger_print(">>>SOLVER ERROR<<<")
-            # breakpoint()
-            # "Solver (cplex) did not exit normally"
-            # return False  # you can never get value here.
-            # breakpoint()
-            # logger_print("OBJECTIVE?")
-            # OBJ.display()
-            # try:
+                # breakpoint() # TODO: check diesel engine issues.
 
-            assert results, "no solver result."
-            TC = results.solver.termination_condition
-            SS = results.solver.status
-            normalSSs = [SolverStatus.ok, SolverStatus.warning]
-            normalTCs = [
-                TerminationCondition.globallyOptimal,
-                TerminationCondition.locallyOptimal,
-                TerminationCondition.feasible,
-                TerminationCondition.optimal,
-            ]
-            error_msg = []
-            # strip away other logging data.
-            if TC in [
-                TerminationCondition.infeasible,
-                TerminationCondition.infeasibleOrUnbounded,
-            ]:
-                ...
-                # mstream.truncate(0)
-                # just don't do this.
-                # logger.info("logging infeasible constraints".center(70, "="))
-                # log_infeasible_constraints(
-                #     mw.model, log_expression=True, log_variables=True, logger=logger
-                # )
+                # except:
+                #     import traceback
+                #     traceback.print_exc()
+                # logger_print(">>>SOLVER ERROR<<<")
+                # breakpoint()
+                # "Solver (cplex) did not exit normally"
+                # return False  # you can never get value here.
+                # breakpoint()
+                # logger_print("OBJECTIVE?")
+                # OBJ.display()
+                # try:
 
-                # mstream.seek(0)
-                # infeasible_constraint_log = mstream.getvalue()
-                # mstream.truncate(0)
-                # if infeasible_constraint_log:
-                #     error_msg.append("")
-                #     error_msg.append(infeasible_constraint_log)
-                #     error_msg.append("")
-                #     error_msg.append("_" * 20)
-                #     error_msg.append("")
-            if TC not in normalTCs:
-                error_msg.append(f"abnormal termination condition: {TC}")
-            if SS not in normalSSs:
-                error_msg.append(f"abnormal solver status: {TC}")
-            if error_msg:
-                raise Exception("\n".join(error_msg))
+                assert results, "no solver result."
+                TC = results.solver.termination_condition
+                SS = results.solver.status
+                normalSSs = [SolverStatus.ok, SolverStatus.warning]
+                normalTCs = [
+                    TerminationCondition.globallyOptimal,
+                    TerminationCondition.locallyOptimal,
+                    TerminationCondition.feasible,
+                    TerminationCondition.optimal,
+                ]
+                error_msg = []
+                # strip away other logging data.
+                if TC in [
+                    TerminationCondition.infeasible,
+                    TerminationCondition.infeasibleOrUnbounded,
+                ]:
+                    ...
+                    # mstream.truncate(0)
+                    # just don't do this.
+                    # logger.info("logging infeasible constraints".center(70, "="))
+                    # log_infeasible_constraints(
+                    #     mw.model, log_expression=True, log_variables=True, logger=logger
+                    # )
+
+                    # mstream.seek(0)
+                    # infeasible_constraint_log = mstream.getvalue()
+                    # mstream.truncate(0)
+                    # if infeasible_constraint_log:
+                    #     error_msg.append("")
+                    #     error_msg.append(infeasible_constraint_log)
+                    #     error_msg.append("")
+                    #     error_msg.append("_" * 20)
+                    #     error_msg.append("")
+                if TC not in normalTCs:
+                    error_msg.append(f"abnormal termination condition: {TC}")
+                if SS not in normalSSs:
+                    error_msg.append(f"abnormal solver status: {TC}")
+                if error_msg:
+                    from log_utils import log_dir
+                    os.mkdir(solver_log_dir_with_timestamp:=)
+                    raise Exception("\n".join(error_msg))
 
             logger_print("OBJ:", value(OBJ))
             # export value.
