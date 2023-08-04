@@ -80,6 +80,7 @@ standard_units_name_list = [
     "m2",
     "m3",
     # "stere",
+    # TODO: make "kelvin" into standard unit, not celsius.
     "celsius",
     "metric_ton",  # this is weight.
     # "p_u_",

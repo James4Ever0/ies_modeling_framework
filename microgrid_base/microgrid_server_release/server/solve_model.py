@@ -63,7 +63,11 @@ from topo_check import 拓扑图
 ###
 def 导出结果表_格式化(
     结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str], columns: List[str]
-) -> Tuple[List[Dict[str, Union[float, int, str]]], DataFrame, List[Dict[str, Union[float, int, str]]]]:
+) -> Tuple[
+    List[Dict[str, Union[float, int, str]]],
+    DataFrame,
+    List[Dict[str, Union[float, int, str]]],
+]:
     结果表_导出 = pd.DataFrame([v for _, v in 结果表.items()], columns=columns)
     # use "inplace" otherwise you have to manually assign return values.
     结果表_导出.fillna({elem: "" for elem in 字符串表头}, inplace=True)
@@ -179,67 +183,107 @@ def solveModelFromCalcParamList(
         solved = False
         with SolverFactory("cplex") as solver:
             # try:
+            io_options = dict(symbolic_solver_labels=True)
             solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
+            solver.options["read fileencoding"] = "utf-8"
+
             logger_print(">>>SOLVING<<<")
             # results = solver.solve(mw.model, tee=True, keepfiles= True)
             # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
-            results = solver.solve(mw.model, tee=True)
-            logger_print("SOLVER RESULTS?")
-            logger_print(results)
+            import tempfile
+            import os
 
-            # breakpoint() # TODO: check diesel engine issues.
+            with tempfile.TemporaryDirectory() as solver_log_dir:
+                solver_log = os.path.join(solver_log_dir, "solver.log")
+                results = solver.solve(
+                    mw.model, tee=True, io_options=io_options, logfile=solver_log
+                )
 
-            # except:
-            #     import traceback
-            #     traceback.print_exc()
-            # logger_print(">>>SOLVER ERROR<<<")
-            # breakpoint()
-            # "Solver (cplex) did not exit normally"
-            # return False  # you can never get value here.
-            # breakpoint()
-            # logger_print("OBJECTIVE?")
-            # OBJ.display()
-            # try:
+                logger_print("SOLVER RESULTS?")
+                logger_print(results)
 
-            assert results, "no solver result."
-            TC = results.solver.termination_condition
-            SS = results.solver.status
-            normalSSs = [SolverStatus.ok, SolverStatus.warning]
-            normalTCs = [
-                TerminationCondition.globallyOptimal,
-                TerminationCondition.locallyOptimal,
-                TerminationCondition.feasible,
-                TerminationCondition.optimal,
-            ]
-            error_msg = []
-            # strip away other logging data.
-            if TC in [
-                TerminationCondition.infeasible,
-                TerminationCondition.infeasibleOrUnbounded,
-            ]:
-                ...
-                # mstream.truncate(0)
-                # just don't do this.
-                # logger.info("logging infeasible constraints".center(70, "="))
-                # log_infeasible_constraints(
-                #     mw.model, log_expression=True, log_variables=True, logger=logger
-                # )
+                # breakpoint() # TODO: check diesel engine issues.
 
-                # mstream.seek(0)
-                # infeasible_constraint_log = mstream.getvalue()
-                # mstream.truncate(0)
-                # if infeasible_constraint_log:
-                #     error_msg.append("")
-                #     error_msg.append(infeasible_constraint_log)
-                #     error_msg.append("")
-                #     error_msg.append("_" * 20)
-                #     error_msg.append("")
-            if TC not in normalTCs:
-                error_msg.append(f"abnormal termination condition: {TC}")
-            if SS not in normalSSs:
-                error_msg.append(f"abnormal solver status: {TC}")
-            if error_msg:
-                raise Exception("\n".join(error_msg))
+                # except:
+                #     import traceback
+                #     traceback.print_exc()
+                # logger_print(">>>SOLVER ERROR<<<")
+                # breakpoint()
+                # "Solver (cplex) did not exit normally"
+                # return False  # you can never get value here.
+                # breakpoint()
+                # logger_print("OBJECTIVE?")
+                # OBJ.display()
+                # try:
+
+                assert results, "no solver result."
+                TC = results.solver.termination_condition
+                SS = results.solver.status
+                normalSSs = [SolverStatus.ok, SolverStatus.warning]
+                normalTCs = [
+                    TerminationCondition.globallyOptimal,
+                    TerminationCondition.locallyOptimal,
+                    TerminationCondition.feasible,
+                    TerminationCondition.optimal,
+                ]
+                error_msg = []
+                # strip away other logging data.
+                if TC in [
+                    TerminationCondition.infeasible,
+                    TerminationCondition.infeasibleOrUnbounded,
+                ]:
+                    ...
+                    # mstream.truncate(0)
+                    # just don't do this.
+                    # logger.info("logging infeasible constraints".center(70, "="))
+                    # log_infeasible_constraints(
+                    #     mw.model, log_expression=True, log_variables=True, logger=logger
+                    # )
+
+                    # mstream.seek(0)
+                    # infeasible_constraint_log = mstream.getvalue()
+                    # mstream.truncate(0)
+                    # if infeasible_constraint_log:
+                    #     error_msg.append("")
+                    #     error_msg.append(infeasible_constraint_log)
+                    #     error_msg.append("")
+                    #     error_msg.append("_" * 20)
+                    #     error_msg.append("")
+                if TC not in normalTCs:
+                    error_msg.append(f"abnormal termination condition: {TC}")
+                if SS not in normalSSs:
+                    error_msg.append(f"abnormal solver status: {TC}")
+                if error_msg:
+                    from log_utils import log_dir, timezone
+                    import datetime
+
+                    # import pytz
+                    # tz = pytz.timezone("US/Eastern")
+                    timestamp = (
+                        str(datetime.datetime.now(timezone))
+                        .replace(" ", "_")
+                        .replace("-", "_")
+                        .replace(".", "_")
+                        .replace(":", "_")
+                    )
+                    os.mkdir(
+                        solver_log_dir_with_timestamp := os.path.join(
+                            log_dir, f"pyomo_{timestamp}"
+                        )
+                    )
+                    lp_filepath = os.path.join(
+                        solver_log_dir_with_timestamp, "model.lp"
+                    )
+                    mw.model.write(filename=lp_filepath, io_options=io_options)
+                    import shutil
+
+                    shutil.move(solver_log, solver_log_dir_with_timestamp)
+                    
+                    error_msg.append("")
+                    error_msg.append("Solver log saved to: " + solver_log)
+                    error_msg.append("Model saved to: " + lp_filepath)
+
+                    raise Exception("\n".join(error_msg))
 
             logger_print("OBJ:", value(OBJ))
             # export value.
@@ -322,14 +366,14 @@ def solveModelFromCalcParamList(
             targetType=targetType,
         )
         return ret
-    
-    def add_with_nan(v0,v1):
+
+    def add_with_nan(v0, v1):
         if pd.isna(v0):
             return v1
         elif pd.isna(v1):
             return v0
         else:
-            return v0+v1
+            return v0 + v1
 
     def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
         之前结果 = deepcopy(结果表.get(设备模型实例, None))
@@ -338,7 +382,9 @@ def solveModelFromCalcParamList(
         else:
             # TODO: deal with "nan"
             结果表[设备模型实例] = {
-                k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
+                k: add_with_nan(v, 之前结果[k])
+                for k, v in 结果.dict().items()
+                if k not in 不可累加表头
             }
 
     def fetchResult(solved: bool, ret: CalcStruct):

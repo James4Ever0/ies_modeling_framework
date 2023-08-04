@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from log_utils import logger_print, makeRotatingFileHandler, celery_log_filename, timezone_str
 
 from celery import Celery

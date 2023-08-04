@@ -2,7 +2,11 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# TODO: configure file handlers for celery logging
+
 # python version check
+from typing import Union
+
 import sys  # recommend: 3.11.2
 
 MIN_PY_VERSION = (3, 8)
@@ -78,13 +82,46 @@ else:
     os.mkdir(log_dir)
 
 log_filename = os.path.join(log_dir, "debug.log")
+celery_log_filename = os.path.join(log_dir, "celery.log")
+
 
 from logging.handlers import RotatingFileHandler
 
-myHandler = RotatingFileHandler(
-    log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
-)
-myHandler.setLevel(logging.DEBUG)
+
+def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
+    myHandler = RotatingFileHandler(
+        log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
+    )
+    myHandler.setLevel(level)
+    return myHandler
+
+import pytz
+timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
+# import logging
+import datetime
+
+
+class Formatter(logging.Formatter):
+    """override logging.Formatter to use an aware datetime object"""
+
+    def converter(self, timestamp):
+        # Create datetime in UTC
+        dt = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+        # Change datetime's timezone
+        return dt.astimezone(timezone)
+
+    def formatTime(self, record, datefmt=None):
+        dt = self.converter(record.created)
+        if datefmt:
+            s = dt.strftime(datefmt)
+        else:
+            try:
+                s = dt.isoformat(timespec='milliseconds')
+            except TypeError:
+                s = dt.isoformat()
+        return s
+
+myHandler = makeRotatingFileHandler(log_filename)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
 FORMAT = (  # add timestamp.
     "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
@@ -92,7 +129,8 @@ FORMAT = (  # add timestamp.
     # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
 )
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
-myFormatter = logging.Formatter(fmt=FORMAT)
+# myFormatter = logging.Formatter(fmt=FORMAT)
+myFormatter = Formatter(fmt=FORMAT)
 myHandler.setFormatter(myFormatter)
 
 stdout_handler = StreamHandler(sys.stdout)  # test with this!
@@ -114,16 +152,30 @@ def logger_print(*args):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!
-        logger.debug(format_string, *[pretty_repr(arg) if not isinstance(arg, str) else arg for arg in args], stacklevel=2) # it is been called elsewhere.
+        logger.debug(
+            format_string,
+            *[
+                # fallback for older versions:
+                pretty_repr(arg)
+                if not any(isinstance(arg, t) for t in [bytes, str])
+                else arg
+                # pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg
+                for arg in args
+            ],
+            stacklevel=2,
+        )  # it is been called elsewhere.
         # logger.debug(
-        #     "\n\n".join([pretty_repr(arg) if not isinstance(str, arg) else arg for arg in args]), stacklevel=2
+        #     "\n\n".join([pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg for arg in args]), stacklevel=2
         # )  # it is been called elsewhere.
 
 
 import datetime
 
 logger_print(
-    f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70 - 2, "+")
+    f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(
+        os.get_terminal_size().columns, "+"
+    )
+    # f"[START LOGGING AT: {datetime.datetime.now().isoformat()}]".center(70 - 2, "+")
 )
 # logging.basicConfig(
 #     # filename=filename,

@@ -1,5 +1,7 @@
 from log_utils import logger_print
-import pyomo_patch
+
+# TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
+# ref: https://pypi.org/project/StrEnum/
 
 VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
 
@@ -307,13 +309,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -325,13 +327,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -347,13 +349,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -381,6 +383,15 @@ class 设备信息(设备基础信息):
     生产厂商: constr(min_length=1) = Field(title="生产厂商")
 
     设备型号: constr(min_length=1) = Field(title="设备型号")
+
+
+import enum
+
+
+class 风力发电类型(enum.StrEnum):
+    变桨 = enum.auto()
+    定桨 = enum.auto()
+    标幺值 = enum.auto()
 
 
 class 柴油信息(设备基础信息):
@@ -541,6 +552,13 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
+    machineType: 风力发电类型 = Field(
+        default=风力发电类型.变桨, title="选择风力发电类型", description="定桨、变桨（默认）、标幺值"
+    )
+    normalizedPower: Union[None, List[float]] = Field(
+        title="风力发电标幺值", description="空或数组(典型日长度为24,全年逐时长度为8760,秒级长度为7200)"
+    )
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kWp")
     """
     名称: 额定功率
@@ -2177,23 +2195,44 @@ class 风力发电模型(设备模型):
         assert self.RatedWindSpeed >= self.MinWindSpeed
         assert self.MaxWindSpeed >= self.RatedWindSpeed
 
-        发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
+        if self.设备信息.machineType in [风力发电类型.变桨, 风力发电类型.定桨]:
+            发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
-        # windspeed (m/s) -> current power per device (kW)
-        WS = np.array(
-            self.计算参数.风速, dtype=np.float64
-        )  # BUG: before that it was "np.int64", which introduce errors.
-        self.单台发电功率 = 单台发电功率 = np.piecewise(
-            WS,
-            [
-                WS <= self.MinWindSpeed,
-                np.logical_and(WS > self.MinWindSpeed, WS <= self.RatedWindSpeed),
-                np.logical_and(WS > self.RatedWindSpeed, WS <= self.MaxWindSpeed),
-                WS > self.MaxWindSpeed,
-            ],
-            [0, lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), self.RatedPower, 0],
-        )
-        单台发电功率 = 单台发电功率.tolist()
+            # windspeed (m/s) -> current power per device (kW)
+            WS = np.array(
+                self.计算参数.风速, dtype=np.float64
+            )  # BUG: before that it was "np.int64", which introduce errors.
+            if self.设备信息.machineType == 风力发电类型.定桨:
+                定桨风机特有函数 = lambda 实际风速: self.RatedPower + (
+                    (self.CutoutPower - self.RatedPower) * (实际风速 - self.RatedWindSpeed)
+                ) / (self.MaxWindSpeed - self.RatedWindSpeed)
+            self.单台发电功率 = 单台发电功率 = np.piecewise(
+                WS,
+                [
+                    WS <= self.MinWindSpeed,
+                    np.logical_and(WS > self.MinWindSpeed, WS <= self.RatedWindSpeed),
+                    np.logical_and(WS > self.RatedWindSpeed, WS <= self.MaxWindSpeed),
+                    WS > self.MaxWindSpeed,
+                ],
+                [
+                    0,
+                    lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),
+                    self.RatedPower if self.设备信息.machineType == 风力发电类型.变桨 else 定桨风机特有函数,
+                    0,
+                ],
+            )
+            self.单台发电功率 = 单台发电功率 = 单台发电功率.tolist()
+        elif self.设备信息.machineType in [风力发电类型.标幺值]:
+            assert self.设备信息.normalizedPower is not None, "标幺值风机不能传空的标幺值"
+            assert (length := len(self.设备信息.normalizedPower)) == (
+                required_length := self.计算参数.迭代步数
+            ), f"标幺值长度不合理\n迭代步数: {required_length}\n实际: {length}"
+            self.单台发电功率 = 单台发电功率 = [
+                self.RatedPower * normalizedPower
+                for normalizedPower in self.设备信息.normalizedPower
+            ]
+        else:
+            raise Exception(f"未知风机类型：{self.设备信息.machineType}")
 
         # 输出输入功率约束
 
@@ -2360,18 +2399,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -2448,7 +2487,7 @@ class 柴油发电模型(设备模型):
         self.Piecewise(
             y_var=self.单台柴油输入,
             x_var=self.单台发电功率,
-            y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load], # x[0]:油耗率（m3 / kWh <- L/kWh）; x[1]:负载率 (one <- percent)
+            y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
             x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
         )
         # 柴油输入率: L/h
@@ -3035,18 +3074,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3366,18 +3405,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
