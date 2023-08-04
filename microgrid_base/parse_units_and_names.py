@@ -155,7 +155,12 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Length": ("km", {"": ["长度"]}),
     "Power": (
         "kW",
-        {"Rated-": ["额定功率", "变压器容量"], "UnitRated-": ["组件额定功率"], "Max-": ["最大发电功率"]},
+        {
+            "Rated-": ["额定功率", "变压器容量"],
+            "UnitRated-": ["组件额定功率"],
+            "Max-": ["最大发电功率"],
+            "Cutout-": ["切出功率"],
+        },
     ),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
