@@ -20,6 +20,8 @@ import better_exceptions
 import sys
 from celery.utils.log import ColorFormatter  # type: ignore
 
+app.conf.update(CELERY_TIMEZONE="Asia/Shanghai", CELERY_ENABLE_UTC=False)
+
 
 # class CustomFormatter(logging.Formatter):
 class CustomFormatter(ColorFormatter):

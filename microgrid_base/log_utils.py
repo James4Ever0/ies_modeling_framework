@@ -129,7 +129,7 @@ FORMAT = (  # add timestamp.
 )
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
 # myFormatter = logging.Formatter(fmt=FORMAT)
-myFormatter = 
+myFormatter = Formatter(fmt=FORMAT)
 myHandler.setFormatter(myFormatter)
 
 stdout_handler = StreamHandler(sys.stdout)  # test with this!
