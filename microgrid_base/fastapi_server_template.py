@@ -5,7 +5,7 @@ port = 9870
 host = "0.0.0.0"
 import traceback
 import logging
-from log_utils import fastapi_log_filename, stdout_handler, makeRotatingFileHandler
+from log_utils import fastapi_log_filename, stdout_handler, makeRotatingFileHandler, logger_print
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
 logger = logging.getLogger("fastapi")
 logger.setLevel("DEBUG")
@@ -45,14 +45,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
 from starlette.responses import JSONResponse #, Response
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
-async def request_validation_exception_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
-    
-    return JSONResponse(
-        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": jsonable_encoder(exc.errors())},
-    )
+
 
 # define the input structure here.
 from pydantic import BaseModel
@@ -188,6 +181,18 @@ app = FastAPI(
     # default_response_class=ORJSONResponse,
     default_response_class=fastapi.responses.ORJSONResponse,
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    logger_print("request", request, logger=logger)
+    logger_print("exception", request, logger=logger)
+    return JSONResponse(
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": jsonable_encoder(exc.errors())},
+    )
 
 
 @remove_stale_tasks_decorator

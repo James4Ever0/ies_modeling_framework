@@ -3,7 +3,8 @@ windows:
   - window_name: dev window
     layout: tiled
     panes:
-      - conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output env python fastapi_server_template.py | tee -a logs/fastapi.log
+      - conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output env python fastapi_server_template.py
+      # - conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output env python fastapi_server_template.py | tee -a logs/fastapi.log
       # - conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output python fastapi_server_template.py
       # - celery -A fastapi_celery_server worker --pool=prefork --concurrency=1
       - env PATH="$PATH${CPLEX_DIR}" conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output python fastapi_celery_server.py

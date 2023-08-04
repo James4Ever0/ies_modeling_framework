@@ -4,8 +4,14 @@
 port = 9870
 host = "0.0.0.0"
 import traceback
-
-import celery
+import logging
+from log_utils import fastapi_log_filename, stdout_handler, makeRotatingFileHandler, logger_print
+fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
+logger = logging.getLogger("fastapi")
+logger.setLevel("DEBUG")
+logger.addHandler(stdout_handler)
+logger.addHandler(fastapi_log_handler)
+# import celery
 from log_utils import logger_print
 
 appName = "IES Optim Server Template"
@@ -31,6 +37,15 @@ from fastapi_datamodel_template import (
     RevokeResult,
     CalculationStateResult,
 )
+from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+# from fastapi.utils import is_body_allowed_for_status_code
+# from starlette.exceptions import HTTPException
+from starlette.requests import Request
+from starlette.responses import JSONResponse #, Response
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+
 
 # define the input structure here.
 from pydantic import BaseModel
@@ -166,6 +181,18 @@ app = FastAPI(
     # default_response_class=ORJSONResponse,
     default_response_class=fastapi.responses.ORJSONResponse,
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    logger_print("request", request, logger=logger)
+    logger_print("exception", request, logger=logger)
+    return JSONResponse(
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": jsonable_encoder(exc.errors())},
+    )
 
 
 @remove_stale_tasks_decorator
