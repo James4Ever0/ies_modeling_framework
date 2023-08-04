@@ -1266,21 +1266,37 @@ class {{class_name}}模型(设备模型):
         assert self.RatedWindSpeed >=self.MinWindSpeed
         assert self.MaxWindSpeed >=self.RatedWindSpeed
 
-        if self.设备信息.machineType in [风力发电类型.变桨]:
+        if self.设备信息.machineType in [风力发电类型.变桨, 风力发电类型.定桨]:
 
             发电曲线参数 = self.RatedPower / ( (self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
             # windspeed (m/s) -> current power per device (kW)
             WS = np.array(self.计算参数.风速, dtype=np.float64) # BUG: before that it was "np.int64", which introduce errors.
-            self.单台发电功率 = 单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, np.logical_and(WS >self.MinWindSpeed,WS <= self.RatedWindSpeed) , np.logical_and(WS >self.RatedWindSpeed, WS <=self.MaxWindSpeed) , WS > self.MaxWindSpeed], [0,
+            {# self.单台发电功率 = 单台发电功率 = np.piecewise(WS, [WS<=self.MinWindSpeed, np.logical_and(WS >self.MinWindSpeed,WS <= self.RatedWindSpeed) , np.logical_and(WS >self.RatedWindSpeed, WS <=self.MaxWindSpeed) , WS > self.MaxWindSpeed], [0,
             lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), 
             {# lambda x: ((发电曲线参数 * (x - self.MinWindSpeed)) ** 3),  #}
-            self.RatedPower, 0])
+            self.RatedPower, 0]) #}
+            self.单台发电功率 = 单台发电功率 = np.piecewise(
+            WS,
+            [
+                WS <= self.MinWindSpeed,
+                np.logical_and(WS > self.MinWindSpeed, WS <= self.RatedWindSpeed),
+                np.logical_and(WS > self.RatedWindSpeed, WS <= self.MaxWindSpeed),
+                WS > self.MaxWindSpeed,
+            ],
+            [   0, 
+                lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3),
+                self.RatedPower if self.设备信息.machineType ==  else , 
+                0 
+            ],
+            )
             self.单台发电功率 = 单台发电功率 = 单台发电功率.tolist()
         elif self.设备信息.machineType in [风力发电类型.标幺值]:
             assert self.设备信息.normalizedPower is not None, "标幺值风机不能传空的标幺值"
             assert (length:= len(self.设备信息.normalizedPower)) = (required_length:= self.计算参数.迭代步数), f'标幺值长度不合理\n迭代步数: {required_length}\n实际: {length}'
-            self.单台发电功率 = 单台发电功率 = [ for normalizedPower  in self.设备信息.normalizedPower]
+            self.单台发电功率 = 单台发电功率 = [self.RatedPower*normalizedPower for normalizedPower  in self.设备信息.normalizedPower]
+        else:
+            raise Exception(f"未知风机类型：{self.设备信息.machineType}")
 
         {% endif %}
 
