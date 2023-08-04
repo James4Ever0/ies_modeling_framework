@@ -3,7 +3,7 @@ from log_utils import logger_print
 import pyomo
 import pyomo.core.base.block as block
 
-# TODO: add support for unicode export "*.lp" files in `solve_model.py``
+# TODO: add support for unicode export "*.lp" files in `solve_model.py`
 
 assert (pyomo_version := pyomo.__version__) == (
     expected_pyomo_version := "6.5.0"
