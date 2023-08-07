@@ -654,10 +654,13 @@ def solveModelFromCalcParamList(
     # 测试全年8760,没有典型日
 
     resultList = []
+    
+    commonParams = dict(典型日=典型日,
+                        计算步长=计算步长, 计算类型=计算类型)
     # try:
     if 计算目标 in ["经济", "环保"]:
         solved, result, _ = solve_model_and_fetch_result(
-            calcParamList, 计算目标, rangeDict={}, 典型日=典型日, 计算步长=计算步长
+            calcParamList, 计算目标, rangeDict={}, **commonParams
         )
         if result:
             resultList.append(result)
@@ -665,12 +668,12 @@ def solveModelFromCalcParamList(
         # breakpoint()
         rangeDict = {}
         solved, fin_result, rangeDict = solve_model_and_fetch_result(
-            calcParamList, "经济", rangeDict=rangeDict, 典型日=典型日, 计算步长=计算步长
+            calcParamList, "经济", rangeDict=rangeDict, **commonParams
         )
         # breakpoint()
         if rangeDict != {} and solved:
             solved, env_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "环保", rangeDict=rangeDict, 典型日=典型日, 计算步长=计算步长
+                calcParamList, "环保", rangeDict=rangeDict,**commonParams
             )
             # breakpoint()
             if solved:
@@ -697,9 +700,7 @@ def solveModelFromCalcParamList(
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList,
                         "经济",
-                        rangeDict=None,
-                        典型日=典型日,
-                        计算步长=计算步长,
+                        rangeDict=None,**commonParams,
                         additional_constraints=additional_constraints
                         # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )

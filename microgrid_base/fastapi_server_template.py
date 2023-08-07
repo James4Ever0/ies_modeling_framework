@@ -15,8 +15,8 @@ from log_utils import (
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
 logger = logging.getLogger("fastapi")
 logger.setLevel("DEBUG")
-logger.addHandler(stdout_handler)
 logger.addHandler(fastapi_log_handler)
+logger.addHandler(stdout_handler)
 # import celery
 from log_utils import logger_print
 
