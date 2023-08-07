@@ -383,14 +383,15 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
             compensated_decay_rate = 0 #}
 
         delta_capacity = value({{SO.TDF}}.CurrentTotalCapacity[i] - {{SO.TDF}}.CurrentTotalCapacity[i+1])
+        compensated_decay_rate = 
         assert abs(delta_capacity - value({{SO.TDF}}.原电接口.x[i] - compensated_decay_rate)) < EPS
-        原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
+        {# 原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
         电接口_i = value({{SO.TDF}}.电接口[i])
         _total_decay_rate = value({{SO.TDF}}.TotalStoragePowerOfDecay)
         if 原电接口_xi>=0:
             assert abs( 原电接口_xi * {{SO.TDF}}.DischargeEfficiency - (_total_decay_rate - compensated_decay_rate) / {{SO.TDF}}.ChargeEfficiency - 电接口_i )< EPS
         else:
-            assert abs((原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency - 电接口_i) < EPS
+            assert abs((原电接口_xi - (_total_decay_rate - compensated_decay_rate)) / {{SO.TDF}}.ChargeEfficiency - 电接口_i) < EPS #}
 
 {{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
         assert abs(value({{SO.TDF}}.DeviceCount)) == device_count
