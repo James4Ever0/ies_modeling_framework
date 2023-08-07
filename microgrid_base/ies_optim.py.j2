@@ -1479,9 +1479,9 @@ class {{class_name}}模型(设备模型):
         if self.计算参数.典型日:
             self.mw.Constraint((lambda x, y: x[self.计算参数.迭代步数 - 1] *self.计算参数.deltaT= (y[self.计算参数.迭代步数 - 1] * (1- self.计算参数.deltaT * self.sigma)  - y[0])) (self.原电接口.x,
             self.CurrentTotalCapacity))
-        else:
+        {# else:
             self.原电接口.x[self.计算参数.迭代步数 - 1].set_value(0)
-        
+         #}
 
         {% endif %}
 
@@ -1512,7 +1512,8 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """
 
-        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
+        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_pos)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
+        {# 计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW #}
         # avg power
 
         一小时总电变化量 = 计算范围内总平均功率 # 省略乘1
