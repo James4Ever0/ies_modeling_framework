@@ -1445,17 +1445,18 @@ class {{class_name}}模型(设备模型):
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) 
             #}
 
+{# 
         {{设计规划}}:
-            {# if self.设备信息.循环边界条件 == '日间独立':
+            # if self.设备信息.循环边界条件 == '日间独立':
                 # self.mw.Constraint(self.原电接口.x[0] == self.EPS)
                 # BUG: override suspicious constraints with init values.
-                self.原电接口.x[0].set_value(self.EPS) #}
+                # self.原电接口.x[0].set_value(self.EPS)
             if self.设备信息.循环边界条件 == '日间连接':
                 self.mw.Constraint(self.CurrentTotalCapacity[0] - self.CurrentTotalCapacity[self.计算参数.迭代步数-1] <=self.MaxTotalCapacityDeltaPerStep)
 
                 self.mw.Constraint(self.CurrentTotalCapacity[0] - self.CurrentTotalCapacity[self.计算参数.迭代步数-1] >=-self.MaxTotalCapacityDeltaPerStep)
                 if self.needStorageDecayCompensation:
-            {# {% if needStorageDecayCompensation%} #}
+            # {% if needStorageDecayCompensation%}
                     self.mw.Constraint(
                         self.原电接口.x[0] - self.CurrentTotalPowerOfDecayCompensated[0]
                         == (
@@ -1464,16 +1465,18 @@ class {{class_name}}模型(设备模型):
                         )
                         * self.计算参数.时间参数
                     )
-            {# {%else%} #}
+            # {%else%}
                 else:
                     self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalCapacity[0]) * {{时间步长参数}} )
-            {# {% endif%} #}
+            # {% endif%} 
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
         else: # 仿真模拟
-        {# elif self.计算参数.计算类型 == "仿真模拟": #}
-            {# self.mw.Constraint(self.原电接口.x[0] == self.EPS) #}
-            self.原电接口.x[0].set_value(self.EPS)
+        # elif self.计算参数.计算类型 == "仿真模拟": 
+            # self.mw.Constraint(self.原电接口.x[0] == self.EPS) 
+            self.原电接口.x[0].set_value(self.EPS) #}
+        if self.计算参数.
+        
 
         {% endif %}
 
