@@ -1240,13 +1240,18 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """
 
-        self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
+        {# self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
         """
         单位: kW
+        """ #}
+        self.sigma = (self.BatteryStorageDecay / 100) 
+        """
+        衰减率
+        单位: 1/h
         """
 
             {# {% if needStorageDecayCompensation%} #}
-        if self.needStorageDecayCompensation: 
+        {# if self.needStorageDecayCompensation: 
             # TODO: Verify if "compensated decay rate" works.
             {{设计规划}}:
 
@@ -1254,8 +1259,7 @@ class {{class_name}}模型(设备模型):
                 # constraint.
                 self.RangeConstraintMulti(self.CurrentTotalPowerOfDecayCompensated, expression=lambda x: x<=self.TotalStoragePowerOfDecay)
             else: # 仿真模拟
-                self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStoragePowerOfDecay), within=NonNegativeReals)
-            {# {% endif%} #}
+                self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStoragePowerOfDecay), within=NonNegativeReals) #}
 
         {%elif class_name in ['双向变流器']%}
         self.线路端_ = self.变量列表_带指示变量("线路端_") 
@@ -1405,7 +1409,7 @@ class {{class_name}}模型(设备模型):
                 {# self.CurrentTotalPowerOfDecayCompensated, #}
                 customRange = range(self.计算参数.迭代步数 - 1),
                 expression = 
-                lambda x, y, i: x[i] = (y[i] * (1- self..deltaT *self.TotalStoragePowerOfDecay)  - y[i + 1]) 
+                lambda x, y, i: x[i] *self.计算参数.deltaT= (y[i] * (1- self.计算参数.deltaT *self.TotalStoragePowerOfDecay)  - y[i + 1]) 
                 {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
             )
             self.RangeConstraintMulti(
