@@ -10,6 +10,7 @@ from log_utils import (
     stdout_handler,
     makeRotatingFileHandler,
     logger_print,
+    Formatter
 )
 
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)

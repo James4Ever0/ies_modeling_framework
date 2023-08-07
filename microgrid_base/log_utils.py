@@ -89,19 +89,18 @@ fastapi_log_filename = os.path.join(log_dir, "fastapi.log")
 from logging.handlers import RotatingFileHandler
 
 
-def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
-    myHandler = RotatingFileHandler(
-        log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
-    )
-    myHandler.setLevel(level)
-    return myHandler
+
 
 import pytz
 timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
 # import logging
 import datetime
 
-
+FORMAT = (  # add timestamp.
+    "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
+    # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
+    # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
+)
 class Formatter(logging.Formatter):
     """override logging.Formatter to use an aware datetime object"""
 
@@ -122,13 +121,17 @@ class Formatter(logging.Formatter):
                 s = dt.isoformat()
         return s
 
+def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
+    myHandler = RotatingFileHandler(
+        log_filename, maxBytes=1024 * 1024 * 15, backupCount=3, encoding="utf-8"
+    )
+    myHandler.setLevel(level)
+    myHandler.setFormatter(myFormatter)
+    return myHandler
+
 myHandler = makeRotatingFileHandler(log_filename)
 # myHandler.setLevel(logging.INFO) # will it log less things? yes.
-FORMAT = (  # add timestamp.
-    "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
-    # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
-    # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
-)
+
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
 # myFormatter = logging.Formatter(fmt=FORMAT)
 myFormatter = Formatter(fmt=FORMAT)

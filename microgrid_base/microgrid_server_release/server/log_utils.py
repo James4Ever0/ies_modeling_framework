@@ -62,7 +62,7 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
             allow_logging = False
     else:
         if allow_huge_logging:
-            record.msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."])
+            record.msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."]) # do not put stdout in front of file handler!
             accepted = True
             allow_huge_logging = False
     return accepted
@@ -143,8 +143,8 @@ stdout_handler.setFormatter(myFormatter)
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("microgrid")
 logger.setLevel("DEBUG")
+logger.addHandler(myHandler) # BUG: make sure long logs are unaffected in file.
 logger.addHandler(stdout_handler)
-logger.addHandler(myHandler)
 
 from rich.pretty import pretty_repr
 

@@ -15,8 +15,8 @@ from log_utils import (
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
 logger = logging.getLogger("fastapi")
 logger.setLevel("DEBUG")
-logger.addHandler(stdout_handler)
 logger.addHandler(fastapi_log_handler)
+logger.addHandler(stdout_handler)
 # import celery
 from log_utils import logger_print
 
@@ -195,6 +195,7 @@ app = FastAPI(
 async def request_validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    # TODO: log request body
     # logger_print("request", await request.body(), logger=logger)
     logger_print("exception", exc.raw_errors, exc.body, logger=logger)
     return JSONResponse(
