@@ -1400,31 +1400,32 @@ class {{class_name}}模型(设备模型):
 
 
             {# {% if needStorageDecayCompensation%} #}
-        if self.needStorageDecayCompensation:
+        {# if self.needStorageDecayCompensation: #}
             {# S(t) - (1-sigma*deltaT)*S(t-1) = (p0_pos - p0_neg)*deltaT #}
             {# deltaT = 1 if 计算步长 == 小时 else 1/3600 #}
-            self.CustomRangeConstraintMulti(
-                self.原电接口.x,
-                self.CurrentTotalCapacity,
-                {# self.CurrentTotalPowerOfDecayCompensated, #}
-                customRange = range(self.计算参数.迭代步数 - 1),
-                expression = 
-                lambda x, y, i: x[i] *self.计算参数.deltaT= (y[i] * (1- self.计算参数.deltaT *self.TotalStoragePowerOfDecay)  - y[i + 1]) 
-                {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
-            )
-            self.RangeConstraintMulti(
-                self.原电接口.x_pos,
-                self.原电接口.x_neg,
-                self.电接口,
-                self.CurrentTotalPowerOfDecayCompensated, 
-                expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency
-                - (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency
-                == y,
-            )
-            {# {% else%} #}
+        self.CustomRangeConstraintMulti(
+            self.原电接口.x,
+            self.CurrentTotalCapacity,
+            {# self.CurrentTotalPowerOfDecayCompensated, #}
+            customRange = range(self.计算参数.迭代步数 - 1),
+            expression = 
+            lambda x, y, i: x[i] *self.计算参数.deltaT= (y[i] * (1- self.计算参数.deltaT * self.sigma)  - y[i + 1]) 
+            {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
+        )
+        self.RangeConstraintMulti(
+            self.原电接口.x_pos,
+            self.原电接口.x_neg,
+            self.电接口,
+            {# self.CurrentTotalPowerOfDecayCompensated,  #}
+            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency- (x_neg + (self.TotalStoragePowerOfDecay)) / self.ChargeEfficiency== y,
+            {# expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency- (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency== y, #}
+        )
+        {# {% else%} #}
+{#             
         else:
             self.CustomRangeConstraint( self.原电接口.x, self.CurrentTotalCapacity, customRange = range(self.计算参数.迭代步数-1),expression =  lambda x,y,i: x[i] == (y[i] - y[i+1]) * {{时间步长参数}})
             self.RangeConstraintMulti(self.原电接口.x_pos, self.原电接口.x_neg, self.电接口,expression = lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg + self.TotalStoragePowerOfDecay)/self.ChargeEfficiency == y) 
+         #}
             {# {% endif%} #}
         {# power = delta(capacity)/delta(time)#}
             {# {% if needStorageDecayCompensation%} #}
