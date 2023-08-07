@@ -1437,7 +1437,9 @@ class {{class_name}}模型(设备模型):
             {# {% if needStorageDecayCompensation%} #}
             {# {%else%} #}
             {# {% endif%} #}
-        for i in range(self.计算参数.迭代步数-1):
+        for i in range(self.计算参数.迭代步数):
+            self.mw.Constraint(self.原电接口.x_abs <= self.)
+        {# for i in range(self.计算参数.迭代步数-1): #}
             {# 
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) 
