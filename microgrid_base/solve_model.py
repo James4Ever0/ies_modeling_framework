@@ -4,7 +4,7 @@ import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
 from typing import cast
-from constants import *
+from constants import * # pylance issue: unrecognized var names
 import pandas as pd
 import cmath
 # from ies_optim import 规划结果详情,规划方案概览
@@ -14,7 +14,7 @@ try:
 except:
     from typing_extensions import Literal
 from ies_optim import ModelWrapper
-from export_format_validate import * # issue: multiple star import (false positive)
+from export_format_validate import * # pylance issue: multiple star import (false positive)
 from pyomo.environ import *
 
 # from pyomo.util.infeasible import log_infeasible_constraints
@@ -371,8 +371,8 @@ def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表
             k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
         }
 
-
-def fetchResult(solved: bool, ret: CalcStruct):
+# TODO: unit test
+def fetchResult(solved: bool, ret: CalcStruct, 典型日):
     if solved:
         # try:
 
@@ -594,7 +594,7 @@ def prepareConstraintRangesFromDualObjectiveRange(
 def solve_model_and_fetch_result(
     calcParamList: List,
     calcTarget: str,
-    典型日: str,
+    典型日,
     计算步长,
     计算类型,
     rangeDict: Union[None, Dict] = None,
@@ -629,7 +629,7 @@ def solve_model_and_fetch_result(
                             f"{targetNameMappings['abbr'][calcTarget]}_{targetNameMappings['full'][key]}"
                         ] = value(ret.calcTargetLUT[key])
             if needResult:
-                result = fetchResult(solved, ret)  # use 'ret' to prepare result.
+                result = fetchResult(solved, ret, 典型日)  # use 'ret' to prepare result.
         return solved, result, rangeDict
 
 
