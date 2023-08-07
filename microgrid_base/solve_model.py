@@ -293,7 +293,7 @@ def targetTypeAsTargetName(targetType: str):
     else:
         raise Exception("Invalid targetType: {}".format(targetType))
 
-def getCalcStruct(mw: ModelWrapper, mCalcParamList: list):
+def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日):
     calcParamList = deepcopy(mCalcParamList)
     # calcParamList = cast(tuple, deepcopy(mCalcParamList))
     calcTargetLUT = {
@@ -590,6 +590,7 @@ def prepareConstraintRangesFromDualObjectiveRange(
 def solve_model_and_fetch_result(
     calcParamList: List,
     calcTarget: str,
+    典型日:str,
     rangeDict: Union[None, Dict] = None,
     needResult: bool = True,
     additional_constraints: Dict = {},
@@ -598,7 +599,7 @@ def solve_model_and_fetch_result(
         abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
     )
     with ModelWrapperContext() as mw:
-        ret = getCalcStruct(mw, calcParamList)
+        ret = getCalcStruct(mw, calcParamList, 典型日)
         for expr_name, constraints in additional_constraints.items():
             expr = ret.calcTargetLUT[expr_name]
             min_const = constraints.get("min", None)
@@ -649,19 +650,19 @@ def solveModelFromCalcParamList(
     resultList = []
     # try:
     if 计算目标 in ["经济", "环保"]:
-        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {})
+        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {},典型日=典型日,)
         if result:
             resultList.append(result)
     else:
         # breakpoint()
         rangeDict = {}
         solved, fin_result, rangeDict = solve_model_and_fetch_result(
-            calcParamList, "经济", rangeDict
+            calcParamList, "经济", rangeDict,典型日=典型日,
         )
         # breakpoint()
         if rangeDict != {} and solved:
             solved, env_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "环保", rangeDict
+                calcParamList, "环保", rangeDict,典型日=典型日,
             )
             # breakpoint()
             if solved:
@@ -688,7 +689,7 @@ def solveModelFromCalcParamList(
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList,
                         "经济",
-                        None,
+                        None,典型日=典型日,
                         additional_constraints=additional_constraints
                         # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
