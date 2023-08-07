@@ -1194,7 +1194,12 @@ class {{class_name}}模型(设备模型):
         {{设计规划}}:
             # TODO：标准光照下出力
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
-            self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
+            self.MinDeviceCo
+        # TODO: define some variables with expression
+        {% for attrName in ["机组年启动次数","机组年运行时间"]%}
+        self.{{attrName}} = ...
+        {% endif%}
+        unt = math.ceil(self.MinInstallArea/self.Area)
             assert self.MinDeviceCount>=0
             assert self.MaxDeviceCount>=self.MinDeviceCount
         {% elif class_name == "柴油发电" %}
