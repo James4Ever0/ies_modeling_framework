@@ -420,7 +420,7 @@ class 油耗规划算法(StrEnum):
 {% for class_name in 设备接口集合.keys() %}
 
 class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
-    def convertToStandard(self, attr:str):
+    def toStandard(self, attr:str):
         props = schema['properties']
         schema = self.schema()
         attr_alias_dict = {k: v.get('title', None) for k,v in props.items()}
