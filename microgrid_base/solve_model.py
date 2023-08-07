@@ -117,6 +117,7 @@ def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     ret = DataFrame(df_dict_translated)
     return ret
 
+
 from ies_optim import compute, ModelWrapperContext
 
 # obj_expr = 0
@@ -252,14 +253,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
                         log_dir, f"pyomo_{timestamp}"
                     )
                 )
-                lp_filepath = os.path.join(
-                    solver_log_dir_with_timestamp, "model.lp"
-                )
+                lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
                 mw.model.write(filename=lp_filepath, io_options=io_options)
                 import shutil
 
                 shutil.move(solver_log, solver_log_dir_with_timestamp)
-                
+
                 error_msg.append("")
                 error_msg.append("Solver log saved to: " + solver_log)
                 error_msg.append("Model saved to: " + lp_filepath)
@@ -293,7 +292,8 @@ def targetTypeAsTargetName(targetType: str):
     else:
         raise Exception("Invalid targetType: {}".format(targetType))
 
-def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日):
+
+def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步长,计算类型):
     calcParamList = deepcopy(mCalcParamList)
     # calcParamList = cast(tuple, deepcopy(mCalcParamList))
     calcTargetLUT = {
@@ -350,6 +350,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日):
     )
     return ret
 
+
 def add_with_nan(v0, v1):
     if pd.isna(v0):
         return v1
@@ -358,6 +359,7 @@ def add_with_nan(v0, v1):
     else:
         return v0 + v1
 
+
 def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表头: List[str]):
     之前结果 = deepcopy(结果表.get(设备模型实例, None))
     if 之前结果 == None:
@@ -365,10 +367,9 @@ def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表
     else:
         # TODO: deal with "nan"
         结果表[设备模型实例] = {
-            k: add_with_nan(v, 之前结果[k])
-            for k, v in 结果.dict().items()
-            if k not in 不可累加表头
+            k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
         }
+
 
 def fetchResult(solved: bool, ret: CalcStruct):
     if solved:
@@ -503,9 +504,7 @@ def fetchResult(solved: bool, ret: CalcStruct):
         出力曲线列表 = []
         for devId, content_dict in 出力曲线字典.items():
             deviceName = ret.devInstDictList[0][devId].设备信息.设备名称
-            deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip(
-                "模型"
-            )
+            deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip("模型")
             elem = {"name": deviceName, "plot_list": []}
             for abbr, val in content_dict.items():
                 if abbr in ["元件名称", "时间"]:
@@ -546,13 +545,16 @@ def fetchResult(solved: bool, ret: CalcStruct):
         #     traceback.print_exc()
     return None
 
+
 ## assume we have multiobjective here.
+
 
 class DualObjectiveRange(BaseModel):
     min_finance: float
     fin_env: float
     env_finance: float
     min_env: float
+
 
 def prepareConstraintRangesFromDualObjectiveRange(
     DOR: DualObjectiveRange, target: Union[Literal["fin"], Literal["env"]]
@@ -587,10 +589,12 @@ def prepareConstraintRangesFromDualObjectiveRange(
         # min env under this condition. recalculate.
     return constraint_ranges
 
+
 def solve_model_and_fetch_result(
     calcParamList: List,
     calcTarget: str,
-    典型日:str,
+    典型日: str,
+    计算步长,
     rangeDict: Union[None, Dict] = None,
     needResult: bool = True,
     additional_constraints: Dict = {},
@@ -599,7 +603,7 @@ def solve_model_and_fetch_result(
         abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
     )
     with ModelWrapperContext() as mw:
-        ret = getCalcStruct(mw, calcParamList, 典型日)
+        ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长)
         for expr_name, constraints in additional_constraints.items():
             expr = ret.calcTargetLUT[expr_name]
             min_const = constraints.get("min", None)
@@ -626,6 +630,7 @@ def solve_model_and_fetch_result(
                 result = fetchResult(solved, ret)  # use 'ret' to prepare result.
         return solved, result, rangeDict
 
+
 # if sys.argv[-1] in ["-f", "--full"]:
 def solveModelFromCalcParamList(
     calcParamList: List,
@@ -646,23 +651,24 @@ def solveModelFromCalcParamList(
         assert len(calcParamList) == 1
     # 测试全年8760,没有典型日
 
-
     resultList = []
     # try:
     if 计算目标 in ["经济", "环保"]:
-        solved, result, _ = solve_model_and_fetch_result(calcParamList, 计算目标, {},典型日=典型日,)
+        solved, result, _ = solve_model_and_fetch_result(
+            calcParamList, 计算目标, rangeDict={}, 典型日=典型日, 计算步长=计算步长
+        )
         if result:
             resultList.append(result)
     else:
         # breakpoint()
         rangeDict = {}
         solved, fin_result, rangeDict = solve_model_and_fetch_result(
-            calcParamList, "经济", rangeDict,典型日=典型日,
+            calcParamList, "经济", rangeDict=rangeDict, 典型日=典型日, 计算步长=计算步长
         )
         # breakpoint()
         if rangeDict != {} and solved:
             solved, env_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "环保", rangeDict,典型日=典型日,
+                calcParamList, "环保", rangeDict=rangeDict, 典型日=典型日, 计算步长=计算步长
             )
             # breakpoint()
             if solved:
@@ -689,7 +695,9 @@ def solveModelFromCalcParamList(
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList,
                         "经济",
-                        None,典型日=典型日,
+                        rangeDict=None,
+                        典型日=典型日,
+                        计算步长=计算步长,
                         additional_constraints=additional_constraints
                         # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
