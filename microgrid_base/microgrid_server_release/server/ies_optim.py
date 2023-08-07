@@ -327,13 +327,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -349,13 +349,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -400,7 +400,31 @@ class 风力发电类型(StrEnum):
     标幺值 = auto()
 
 
+class 油耗规划算法(StrEnum):
+    平均 = auto()
+    最佳 = auto()
+
+
 class 柴油信息(设备基础信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     Price: Tuple[confloat(gt=0), constr(min_length=1)] = Field(
         title="Price", description="格式: [数值,单位]"
     )
@@ -441,6 +465,25 @@ class 柴油信息(设备基础信息):
 
 
 class 电负荷信息(设备基础信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     # 正数
     EnergyConsumption: List[confloat(ge=0)] = Field(title="耗能功率表", description="单位: kW")
     """
@@ -460,6 +503,25 @@ class 电负荷信息(设备基础信息):
 
 
 class 光伏发电信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     Area: confloat(ge=0) = Field(title="光伏板面积", description="名称: 光伏板面积\n单位: m2")
     """
     名称: 光伏板面积
@@ -558,6 +620,25 @@ class 光伏发电信息(设备信息):
 
 
 class 风力发电信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     machineType: 风力发电类型 = Field(
         default=风力发电类型.变桨, title="选择风力发电类型", description="定桨、变桨（默认）、标幺值"
     )
@@ -677,6 +758,44 @@ class 风力发电信息(设备信息):
 
 
 class 柴油发电信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
+    unitAnnualOperatingTimeConstraint: bool = Field(
+        default=False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
+    )
+    maximumAnnualOperatingTimeLimitOfTheUnit: Union[conint(ge=0), None] = Field(
+        default=None, title="机组年运行时间最高限值", description="单位：次"
+    )
+    considerUnitStartUpCosts: bool = Field(
+        default=False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
+    )
+    unitSingleStartupCost: Union[conint(ge=0), None] = Field(
+        default=None, title="机组单次启动费用", description="单位：元/次"
+    )
+    unitPlanningAlgorithmSelection: 油耗规划算法 = Field(
+        default=油耗规划算法.平均, title="机组规划算法选择", description="平均/最佳"
+    )
+    averageLoadRate: Union[confloat(ge=0, le=100), None] = Field(
+        default=None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空"
+    )
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -781,6 +900,25 @@ class 柴油发电信息(设备信息):
 
 
 class 锂电池信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     循环边界条件: constr(min_length=1) = Field(title="循环边界条件")
 
     RatedCapacity: confloat(ge=0) = Field(title="额定容量", description="名称: 额定容量\n单位: kWh")
@@ -929,6 +1067,25 @@ class 锂电池信息(设备信息):
 
 
 class 变压器信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     Efficiency: confloat(ge=0) = Field(title="效率", description="名称: 效率\n单位: percent")
     """
     名称: 效率
@@ -1035,6 +1192,25 @@ class 变压器信息(设备信息):
 
 
 class 变流器信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1117,6 +1293,25 @@ class 变流器信息(设备信息):
 
 
 class 双向变流器信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
     """
     名称: 额定功率
@@ -1199,6 +1394,25 @@ class 双向变流器信息(设备信息):
 
 
 class 传输线信息(设备信息):
+    def toStandard(self, attr: str):
+        props = schema["properties"]
+        schema = self.schema()
+        attr_alias_dict = {k: v.get("title", None) for k, v in props.items()}
+        attrName = attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert (
+            attrName
+        ), f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
+        desc = props[attr]["description"]
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(
+            ureg, standard_units, val_unit
+        )
+        ret_val = val * ConversionRate
+        return ret_val
+
     PowerTransferDecay: confloat(ge=0) = Field(
         title="能量衰减系数", description="名称: 能量衰减系数\n单位: kW/km"
     )
@@ -2445,6 +2659,9 @@ class 柴油发电模型(设备模型):
         self.电输出 = self.电接口
         self.柴油输入 = self.燃料接口
 
+        # TODO: define some variables with expression
+        self.机组年启动次数 = ...
+        self.机组年运行时间 = ...
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
 
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
@@ -3004,18 +3221,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3335,18 +3552,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -4041,12 +4258,15 @@ class 规划结果详情(BaseModel):
     def export(cls, deviceModel: 设备模型协议, deviceSimulationResult, timeParam: float):
         params = {}
         params["元件名称"] = deviceModel.设备信息.设备名称
-        params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
+        params["设备型号"] = getattr(deviceModel.设备信息, "设备型号", "")
         params["数量"] = getattr(deviceModel.设备信息, "equiCounts", 0)  # 不要累加数量！
         params["平均效率_平均COP"] = getattr(
             deviceSimulationResult, "averageEfficiency", cmath.nan
         )
         params["设备采购成本"] = value(deviceModel.总采购成本) * (timeParam / 每年小时数)
+
+        params["机组年启动次数"] = value(getattr(deviceModel, "机组年启动次数", cmath.nan))
+        params["机组年运行时间"] = value(getattr(deviceModel, "机组年运行时间", cmath.nan))
         params["设备年维护费"] = getattr(
             deviceSimulationResult, "设备维护费用", cmath.nan
         )  # 乘过时间参数就不用乘了

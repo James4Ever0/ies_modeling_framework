@@ -5,7 +5,13 @@ port = 9870
 host = "0.0.0.0"
 import traceback
 import logging
-from log_utils import fastapi_log_filename, stdout_handler, makeRotatingFileHandler, logger_print
+from log_utils import (
+    fastapi_log_filename,
+    stdout_handler,
+    makeRotatingFileHandler,
+    logger_print,
+)
+
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
 logger = logging.getLogger("fastapi")
 logger.setLevel("DEBUG")
@@ -40,10 +46,11 @@ from fastapi_datamodel_template import (
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
+
 # from fastapi.utils import is_body_allowed_for_status_code
 # from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.responses import JSONResponse #, Response
+from starlette.responses import JSONResponse  # , Response
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -150,14 +157,15 @@ def background_on_message(task: AsyncResult):
     status = task.status
     logger_print("TASK STATUS?", status)
     logger_print()
-    
+
     logger_print("VALUE TYPE?", type(value))  # str, '14'
     logger_print("TASK VALUE?", value)
-    if status == 'SUCCESS':
+    if status == "SUCCESS":
         logger_print("TASK RESULT SET")
-        taskResult[task.id] = value # this will be exception.
+        taskResult[task.id] = value  # this will be exception.
     else:
         logger_print("NOT SETTING TASK RESULT")
+
 
 # Reference: https://github.com/tiangolo/fastapi/issues/459
 
@@ -187,7 +195,7 @@ app = FastAPI(
 async def request_validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    logger_print("request", await request.body(), logger=logger)
+    # logger_print("request", await request.body(), logger=logger)
     logger_print("exception", exc.raw_errors, exc.body, logger=logger)
     return JSONResponse(
         status_code=HTTP_422_UNPROCESSABLE_ENTITY,
@@ -252,7 +260,9 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     else:
         return CalculationStateResult(calculation_state="NOT_CREATED")
 
+
 # from fastapi_datamodel_template import ParetoCurve
+
 
 @remove_stale_tasks_decorator
 @app.get(
@@ -278,7 +288,7 @@ def get_calculation_result_async(calculation_id: str):
     )
 
     # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
-    
+
     # if isinstance(calculation_result, CalculationResult):
     #     if len(RL:=calculation_result.resultList)>1:
     #         plotList = []
@@ -308,7 +318,6 @@ def get_calculation_result_async(calculation_id: str):
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
-
     revoke_result = "failed"
     calculation_state = None
     if calculation_id in taskDict.keys():

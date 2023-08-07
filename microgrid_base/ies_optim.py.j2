@@ -429,8 +429,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         assert attrName, f"Cannot find attribute name in class '{className}' with query '{attr}'"
         val = getattr(self, attrName)
         desc = props[attr]['description']
-        unit = desc.replace("：", ":").split(":")[-1].strip()
-        assert unit, f"{className}.{attrName} does not have unit definition"
+        val_unit = desc.replace("：", ":").split(":")[-1].strip()
+        assert val_unit, f"{className}.{attrName} does not have unit definition"
         ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
         ret_val = val*ConversionRate
         return ret_val
@@ -1195,10 +1195,15 @@ class {{class_name}}模型(设备模型):
             # TODO：标准光照下出力
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
             self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
-            assert {# self.MinDeviceCount>=0
-            assert self.MaxDeviceC #}ount>=self{# .MinDeviceCount
+            assert self.MinDeviceCount>=0
+            assert self.MaxDeviceCount>=self.MinDeviceCount
         {% elif class_name == "柴油发电" %}
- #}        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
+        
+        # TODO: define some variables with expression
+        {% for attrName in ["机组年启动次数","机组年运行时间"]%}
+        self.{{attrName}} = ...
+        {% endfor%}
+        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
@@ -1966,13 +1971,13 @@ class {{planningResultExportClassName}}(BaseModel):
     {# def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam:float): #}
         params = {}
         params['元件名称'] = deviceModel.设备信息.设备名称
-        par平均效率_平均COPtr(deviceModel.设备信息, '设备型号', '')
+        params['设备型号'] = getattr(deviceModel.设备信息, '设备型号', '')
         params['数量'] = getattr(deviceModel.设备信息,'equiCounts', 0) # 不要累加数量！
         params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
 
         {% for k in ["机组年启动次数","机组年运行时间"] %}
-        params[{{k}}] = value(getattr(deviceModel,{{repr(k)}}, cmath.nan))
+        params[{{repr(k)}}] = value(getattr(deviceModel,{{repr(k)}}, cmath.nan))
         {% endfor %}
         params['设备年维护费'] = getattr(deviceSimulationResult, "设备维护费用", cmath.nan) # 乘过时间参数就不用乘了
         {# params['设备年维护费'] = deviceSimulationResult.equipmentMaintenanceCosts # 乘过时间参数就不用乘了 #}
