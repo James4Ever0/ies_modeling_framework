@@ -1201,9 +1201,9 @@ class {{class_name}}模型(设备模型):
         {% endif%}
 unt = math.ceil(self.MinInstallArea/self.Area)
             assert {# self.MinDeviceCount>=0
-            assert self.MaxDeviceC #}ount>=self.MinDeviceCount
+            assert self.MaxDeviceC #}ount>=self{# .MinDeviceCount
         {% elif class_name == "柴油发电" %}
-        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
+ #}        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
