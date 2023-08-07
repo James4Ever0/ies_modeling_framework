@@ -493,7 +493,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# 机组单次启动费用，单位：元/次 #}
     unitSingleStartupCost:Union[conint(ge=0), None]=Field(default =None, title="机组单次启动费用", description="单位：元/次")
     {# 机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。 #}
-    unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 title="机组规划算法选择", description="平均/最佳")
+    unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 ,title="机组规划算法选择", description="平均/最佳")
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
     averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
 
@@ -1194,12 +1194,7 @@ class {{class_name}}模型(设备模型):
         {{设计规划}}:
             # TODO：标准光照下出力
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
-            self.MinDeviceCo
-        # TODO: define some variables with expression
-        {% for attrName in ["机组年启动次数","机组年运行时间"]%}
-        self.{{attrName}} = ...
-        {% endif%}
-unt = math.ceil(self.MinInstallArea/self.Area)
+            self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
             assert {# self.MinDeviceCount>=0
             assert self.MaxDeviceC #}ount>=self{# .MinDeviceCount
         {% elif class_name == "柴油发电" %}
