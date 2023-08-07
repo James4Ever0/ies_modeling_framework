@@ -1240,9 +1240,9 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """ #}
 
-        self.MaxChargeOrDischargeRate =  self.BatteryDeltaLimit * self.TotalCapacity 
+        self.MaxTotalChargeOrDischargeRate =  self.BatteryDeltaLimit * self.TotalCapacity 
         """
-        最大充放功率
+        最大总充放功率
         单位: kW
         """"
 
@@ -1438,7 +1438,7 @@ class {{class_name}}模型(设备模型):
             {# {%else%} #}
             {# {% endif%} #}
         for i in range(self.计算参数.迭代步数):
-            self.mw.Constraint(self.原电接口.x_abs <= self.)
+            self.mw.Constraint(self.原电接口.x_abs <= self.MaxTotalChargeOrDischargeRate)
         {# for i in range(self.计算参数.迭代步数-1): #}
             {# 
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
