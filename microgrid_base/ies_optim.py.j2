@@ -1225,8 +1225,8 @@ class {{class_name}}模型(设备模型):
             self.CurrentTotalCapacity.setlb(self.MinDeviceCount*self.MinSOC*self.RatedCapacity)
             self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity) #}
             
-            self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x >= self.TotalCapacity * self.MinSOC)
-            self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x <= self.TotalCapacity * self.MaxSOC)
+        self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x >= self.TotalCapacity * self.MinSOC)
+        self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x <= self.TotalCapacity * self.MaxSOC)
         {# else: # 仿真模拟
             self.CurrentTotalCapacity.setlb(self.DeviceCount*self.MinSOC*self.RatedCapacity)
             self.CurrentTotalCapacity.setub(self.DeviceCount*self.MaxSOC*self.RatedCapacity) #}
@@ -1512,11 +1512,12 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """
 
-        计算范围内总平均功率 = (self.SumRange(self.原电接口.x_pos)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
+        计算范围内总平均放电功率 = (self.SumRange(self.原电接口.x_pos)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
         {# 计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW #}
         # avg power
 
-        一小时总电变化量 = 计算范围内总平均功率 # 省略乘1
+        一小时总电变化量 = 计算范围内总平均放电功率 # 省略乘1
+        {# 一小时总电变化量 = 计算范围内总平均功率 #}
         # kWh
 
         一年总电变化量 = 一小时总电变化量 * 每年小时数
@@ -1573,7 +1574,8 @@ class {{class_name}}模型(设备模型):
         {% if class_name in ['光伏发电','风力发电','柴油发电']%}
             {% set m1="self.SumRange(self.电输出)"%}
         {% elif class_name in ['锂电池']%}
-            {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%}
+            {% set m1="计算范围内总平均放电功率*self.计算参数.迭代步数"%}
+            {# {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%} #}
         {% elif class_name in 单向变电器列表+['传输线']%}
             {% set m1='-self.SumRange(self.电输入)'%}
         {% elif class_name in ['双向变流器']%}
