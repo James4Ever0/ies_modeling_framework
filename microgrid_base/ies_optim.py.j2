@@ -1437,8 +1437,8 @@ class {{class_name}}模型(设备模型):
             {# {% if needStorageDecayCompensation%} #}
             {# {%else%} #}
             {# {% endif%} #}
-        for i in range(self.计算参数.迭代步数):
-            self.mw.Constraint(self.原电接口.x_abs <= self.MaxTotalChargeOrDischargeRate)
+        {# for i in range(self.计算参数.迭代步数): #}
+        self.RangeConstraintMulti(self.原电接口.x_abs, expression = lambda x: x <= self.MaxTotalChargeOrDischargeRate)
         {# for i in range(self.计算参数.迭代步数-1): #}
             {# 
             self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
@@ -1512,7 +1512,7 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """
 
-        计算范围内总平均放电功率 = (self.SumRange(self.原电接口.x_pos)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW
+        计算范围内总平均放电功率 = (self.SumRange(self.原电接口.x_pos)/self.计算参数.迭代步数)# kW
         {# 计算范围内总平均功率 = (self.SumRange(self.原电接口.x_abs)/self.计算参数.迭代步数)+ self.TotalStoragePowerOfDecay # kW #}
         # avg power
 

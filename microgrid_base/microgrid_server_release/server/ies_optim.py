@@ -2814,11 +2814,13 @@ class 锂电池模型(设备模型):
             self.原电接口.x_neg,
             self.电接口,
             expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency
-            - (x_neg + (self.TotalStoragePowerOfDecay)) / self.ChargeEfficiency
+            - (x_neg) / self.ChargeEfficiency
             == y,
         )
-        for i in range(self.计算参数.迭代步数):
-            self.mw.Constraint(self.原电接口.x_abs <= self.MaxTotalChargeOrDischargeRate)
+        self.RangeConstraintMulti(
+            self.原电接口.x_abs,
+            expression=lambda x: x <= self.MaxTotalChargeOrDischargeRate,
+        )
 
         if self.计算参数.典型日:
             self.mw.Constraint(
@@ -2843,9 +2845,7 @@ class 锂电池模型(设备模型):
         单位: kWh
         """
 
-        计算范围内总平均放电功率 = (
-            self.SumRange(self.原电接口.x_pos) / self.计算参数.迭代步数
-        ) + self.TotalStoragePowerOfDecay  # kW
+        计算范围内总平均放电功率 = self.SumRange(self.原电接口.x_pos) / self.计算参数.迭代步数  # kW
         # avg power
 
         一小时总电变化量 = 计算范围内总平均放电功率  # 省略乘1
