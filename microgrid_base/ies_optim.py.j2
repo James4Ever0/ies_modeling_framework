@@ -1416,6 +1416,7 @@ class {{class_name}}模型(设备模型):
             customRange = range(self.计算参数.迭代步数 - 1),
             expression = 
             lambda x, y, i: x[i] *self.计算参数.deltaT== (y[i] * (1- self.计算参数.deltaT * self.sigma)  - y[i + 1]) 
+            # assume sigma = 
             {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
         )
         self.RangeConstraintMulti(
