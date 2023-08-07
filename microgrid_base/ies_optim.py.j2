@@ -377,7 +377,10 @@ class 设备信息(设备基础信息):
 {# import enum #}
 import sys
 
-if sys.version_info >= (3,11)
+if sys.version_info >= (3,11):
+    from enum import StrEnum
+else:
+    from strenum import StrEnum
 
 class 风力发电类型(StrEnum):
     变桨 = enum.auto()
