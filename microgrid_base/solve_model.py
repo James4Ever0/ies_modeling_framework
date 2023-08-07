@@ -1,19 +1,20 @@
 from log_utils import logger_print
 
 import json
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
 from typing import cast
 from constants import *
 import pandas as pd
-
+import cmath
+# from ies_optim import 规划结果详情,规划方案概览
 
 try:
     from typing import Literal
 except:
     from typing_extensions import Literal
 from ies_optim import ModelWrapper
-from export_format_validate import *
+from export_format_validate import * # issue: multiple star import (false positive)
 from pyomo.environ import *
 
 # from pyomo.util.infeasible import log_infeasible_constraints
@@ -595,6 +596,7 @@ def solve_model_and_fetch_result(
     calcTarget: str,
     典型日: str,
     计算步长,
+    计算类型,
     rangeDict: Union[None, Dict] = None,
     needResult: bool = True,
     additional_constraints: Dict = {},
@@ -603,7 +605,7 @@ def solve_model_and_fetch_result(
         abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
     )
     with ModelWrapperContext() as mw:
-        ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长)
+        ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长,计算类型)
         for expr_name, constraints in additional_constraints.items():
             expr = ret.calcTargetLUT[expr_name]
             min_const = constraints.get("min", None)
