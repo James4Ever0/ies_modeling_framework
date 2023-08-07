@@ -195,6 +195,7 @@ app = FastAPI(
 async def request_validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    # TODO: log request body
     # logger_print("request", await request.body(), logger=logger)
     logger_print("exception", exc.raw_errors, exc.body, logger=logger)
     return JSONResponse(
