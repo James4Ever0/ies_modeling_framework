@@ -1475,7 +1475,12 @@ class {{class_name}}模型(设备模型):
         # elif self.计算参数.计算类型 == "仿真模拟": 
             # self.mw.Constraint(self.原电接口.x[0] == self.EPS) 
             self.原电接口.x[0].set_value(self.EPS) #}
-        if self.计算参数.
+
+        if self.计算参数.典型日:
+            self.mw.Constraint((lambda x, y: x[self.计算参数.迭代步数 - 1] *self.计算参数.deltaT= (y[self.计算参数.迭代步数 - 1] * (1- self.计算参数.deltaT * self.sigma)  - y[0])) (self.原电接口.x,
+            self.CurrentTotalCapacity))
+        else:
+            
         
 
         {% endif %}
