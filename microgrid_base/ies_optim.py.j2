@@ -1971,9 +1971,9 @@ class {{planningResultExportClassName}}(BaseModel):
         params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
 
-        {% for k in [""机组年启动次数","机组年运行时间",
-]%}
+        {% for k in ["机组年启动次数","机组年运行时间"] %}
         params[{{k}}] = value(getattr(deviceModel,{{repr(k)}}, cmath.nan))
+        {% endfor %}
         params['设备年维护费'] = getattr(deviceSimulationResult, "设备维护费用", cmath.nan) # 乘过时间参数就不用乘了
         {# params['设备年维护费'] = deviceSimulationResult.equipmentMaintenanceCosts # 乘过时间参数就不用乘了 #}
         for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
