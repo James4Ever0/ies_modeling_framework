@@ -421,14 +421,18 @@ class 油耗规划算法(StrEnum):
 
 class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDeviceDict.keys() else "设备信息"}}):
     def convertToStandard(self, attr:str):
-        val = getattr(self, attr)
-        schema = self.schema()
         props = schema['properties']
+        schema = self.schema()
+        attr_alias_dict = {k: v.get('title', None) for k,v in props.items()}
+        attrName= attr if attr in props.keys() else attr_alias_dict[attr]
+        className = self.__class__.__name__
+        assert attrName, f"Cannot find attribute name in class '{className}' with query '{attr}'"
+        val = getattr(self, attrName)
         desc = props[attr]['description']
         unit = desc.replace("：", ":").split(":")[-1].strip()
-        assert unit, f"{self.__class__.__name__}{attr} does not have unit definition"
-        standard_unit = 
-        ret_val = val*magnitude
+        assert unit, f"{className}.{attrName} does not have unit definition"
+        ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
+        ret_val = val*ConversionRate
         return ret_val
             
     {% if class_name not in NonLoadDeviceDict.keys() %}
