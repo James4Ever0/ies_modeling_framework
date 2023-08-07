@@ -476,11 +476,11 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# 考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量) #}
     considerUnitStartUpCosts:bool=Field(default = False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
     {# 机组单次启动费用，单位：元/次 #}
-    unitSingleStartupCost:Union[int, None]=Field(default =None, title="机组单次启动费用", description="单位：元/次")
+    unitSingleStartupCost:Union[conint(ge=0), None]=Field(default =None, title="机组单次启动费用", description="单位：元/次")
     {# 机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。 #}
     unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 title="机组规划算法选择", description="平均/最佳")
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
-    averageLoadRate :confloat(ge=0, le=100), None = Field()
+    averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
 
         {% endif%}
         {% for psc, mstr in mstrs %}
