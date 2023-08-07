@@ -387,6 +387,10 @@ class 风力发电类型(StrEnum):
     定桨 = auto()
     标幺值 = auto()
 
+class 油耗规划算法(StrEnum):
+    平均= auto()
+    最佳= auto()
+
 {% set NonLoadDeviceDict = {}%}
 
 {# 不是标准单位 #}
@@ -466,13 +470,15 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# unitAnnualOperatingTimeConstraint:bool #}
     {# {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量") #}
     unitAnnualOperatingTimeConstraint:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
-    机组年运行时间最高限值，单位：次。
-    maximumAnnualOperatingTimeLimitOfTheUnit:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次")
+    {# 机组年运行时间最高限值，单位：次。 #}
+    maximumAnnualOperatingTimeLimitOfTheUnit:Union[int, None]=Field(default =None, title="机组年运行时间最高限值", description="单位：次")
     {# {{cws("Maximum annual operating time limit of the unit")}}:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次") #}
-    考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量)
-     considerUnitStartUpCosts:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次")
-    机组单次启动费用，单位：元/次
-    机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。
+    {# 考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量) #}
+    considerUnitStartUpCosts:bool=Field(default = False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
+    {# 机组单次启动费用，单位：元/次 #}
+    unitSingleStartupCost:Union[int, None]=Field(default =None, title="机组单次启动费用", description="单位：元/次")
+    {# 机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。 #}
+    unitSingleStartupCost: 油耗规划算法=Field(default =油耗规划算法. title="机组单次启动费用", description="单位：元/次")
     平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空）
 
         {% endif%}
