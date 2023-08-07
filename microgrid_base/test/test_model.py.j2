@@ -367,20 +367,21 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 {% endcall%}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 500 * (10/100) / (50/100)) #}
     {# 测试锂电池模型.RangeConstraintMulti(测试锂电池模型.电接口, expression = lambda x: x == 1) # BUG: cannot discharge #}
-    is_dynamic = {{SO.TDF}}.needStorageDecayCompensation
+    {# is_dynamic = {{SO.TDF}}.needStorageDecayCompensation #}
     {# #}
     {{SO.TDF}}.constraints_register()
-    if is_dynamic:
-        {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = eport_constraint_dynamic) # means charging the battery.
-    else:
-        if ie != 0: return # skip other lambda expressions.
+    {# if is_dynamic: #}
+    {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = eport_constraint_dynamic) # means charging the battery.
+    {# else: #}
+        {# if ie != 0: return # skip other lambda expressions. #}
     {# {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression = eport_constraint_dynamic if is_dynamic else eport_constraint_static) #}
     def verify_constraints(i):
-
+{# 
         if is_dynamic:
             compensated_decay_rate = value({{SO.TDF}}.CurrentTotalPowerOfDecayCompensated[i])
         else:
-            compensated_decay_rate = 0
+            compensated_decay_rate = 0 #}
+
         delta_capacity = value({{SO.TDF}}.CurrentTotalCapacity[i] - {{SO.TDF}}.CurrentTotalCapacity[i+1])
         assert abs(delta_capacity - value({{SO.TDF}}.原电接口.x[i] - compensated_decay_rate)) < EPS
         原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
