@@ -1235,10 +1235,12 @@ class {{class_name}}模型(设备模型):
 
         {# self.TotalActualCapacity = self.DeviceCount * self.ActualCapacityPerUnit # type: ignore #}
 
-        self.MaxTotalCapacityDeltaPerStep = self.BatteryDeltaLimit * self.TotalCapacity / ({{时间步长参数}})
+        {# self.MaxTotalCapacityDeltaPerStep = self.BatteryDeltaLimit * self.TotalCapacity / ({{时间步长参数}})
         """
         单位: kWh
-        """
+        """ #}
+
+        self.MaxChargeOrDischargeRate
 
         {# self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
         """
@@ -1432,8 +1434,8 @@ class {{class_name}}模型(设备模型):
             {# {%else%} #}
             {# {% endif%} #}
         for i in range(self.计算参数.迭代步数-1):
-            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
-            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep)
+            {# self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) #}
 
         {{设计规划}}:
             if self.设备信息.循环边界条件 == '日间独立':
