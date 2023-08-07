@@ -305,7 +305,7 @@ class 分时阶梯电价(BaseModel):
 
 {% set 单向变电器列表 = ['变压器', '变流器']%}
 
-{%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", 'BatteryDeltaLimit']%}
+{%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay"]%}
 # 8760 hours of data
 # several days of data to compute a year
 
@@ -1240,7 +1240,11 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """ #}
 
-        self.MaxChargeOrDischargeRate
+        self.MaxChargeOrDischargeRate =  self.BatteryDeltaLimit * self.TotalCapacity 
+        """
+        最大充放功率
+        单位: kW
+        """"
 
         {# self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
         """
@@ -1434,8 +1438,10 @@ class {{class_name}}模型(设备模型):
             {# {%else%} #}
             {# {% endif%} #}
         for i in range(self.计算参数.迭代步数-1):
-            {# self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
-            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) #}
+            {# 
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) 
+            #}
 
         {{设计规划}}:
             if self.设备信息.循环边界条件 == '日间独立':
