@@ -742,6 +742,15 @@ class 计算参数(BaseModel):
         相当于返回一小时内有多少计算步长
         """
         return (1 if self.计算步长 == "小时" else 每小时秒数)
+
+    @property
+    def deltaT(self):
+        """
+        如果计算步长为秒，那么返回1/3600
+        如果计算步长为小时，那么返回1
+
+        相当于返回多少计算步长
+        """
     
     @property
     def 总计算时长(self):
@@ -1388,13 +1397,14 @@ class {{class_name}}模型(设备模型):
             {# {% if needStorageDecayCompensation%} #}
         if self.needStorageDecayCompensation:
             {# S(t) - (1-sigma*deltaT)*S(t-1) = (p0_pos - p0_neg)*deltaT #}
+            {# deltaT = 1 if 计算步长 == 小时 else 1/3600 #}
             self.CustomRangeConstraintMulti(
                 self.原电接口.x,
                 self.CurrentTotalCapacity,
                 {# self.CurrentTotalPowerOfDecayCompensated, #}
                 customRange = range(self.计算参数.迭代步数 - 1),
                 expression = 
-                lambda x, y, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数,
+                lambda x, y, i: x[i]= (y[i] - y[i + 1]) * self.计算参数.时间参数,
                 {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
             )
             self.RangeConstraintMulti(
