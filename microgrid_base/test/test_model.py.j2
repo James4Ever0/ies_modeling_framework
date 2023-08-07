@@ -382,8 +382,8 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         else:
             compensated_decay_rate = 0 #}
 
-        delta_capacity = value({{SO.TDF}}.CurrentTotalCapacity[i] *(1-{{SO.TDF}}.sigma*{{SO.TDF}}.deltaT)- {{SO.TDF}}.CurrentTotalCapacity[i+1])
-        assert abs(delta_capacity - value({{SO.TDF}}.原电接口.x[i]*{{SO.TDF}}.deltaT)) < EPS
+        delta_capacity = value({{SO.TDF}}.CurrentTotalCapacity[i] *(1-{{SO.TDF}}.sigma*{{SO.TDF}}.计算参数.deltaT)- {{SO.TDF}}.CurrentTotalCapacity[i+1])
+        assert abs(delta_capacity - value({{SO.TDF}}.原电接口.x[i]*{{SO.TDF}}.计算参数.deltaT)) < EPS
         {# 原电接口_xi = value({{SO.TDF}}.原电接口.x[i])
         电接口_i = value({{SO.TDF}}.电接口[i])
         _total_decay_rate = value({{SO.TDF}}.TotalStoragePowerOfDecay)

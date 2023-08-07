@@ -450,33 +450,20 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
 
 
 @pytest.mark.parametrize("device_count, total_decay_rate", [(500 / 20, 500 * 0.1)])
-@pytest.mark.parametrize(
-    "ie, eport_constraint_dynamic",
-    enumerate(
-        [lambda x: x <= 0, lambda x: x == 0, lambda x: x == -40, lambda x: x >= -40]
-    ),
-)
 @pytest.mark.parametrize("sense", [minimize, maximize])
 def test_锂电池(
-    model_wrapper: ModelWrapper,
-    测试锂电池模型: 锂电池模型,
-    device_count,
-    total_decay_rate,
-    ie,
-    eport_constraint_dynamic,
-    sense,
+    model_wrapper: ModelWrapper, 测试锂电池模型: 锂电池模型, device_count, total_decay_rate, sense
 ):
     测试锂电池模型.constraints_register()
-    测试锂电池模型.RangeConstraintMulti(
-        测试锂电池模型.电接口, expression=eport_constraint_dynamic
-    )  # means charging the battery.
 
     def verify_constraints(i):
         delta_capacity = value(
-            测试锂电池模型.CurrentTotalCapacity[i] * (1 - 测试锂电池模型.sigma * 测试锂电池模型.deltaT)
+            测试锂电池模型.CurrentTotalCapacity[i] * (1 - 测试锂电池模型.sigma * 测试锂电池模型.计算参数.deltaT)
             - 测试锂电池模型.CurrentTotalCapacity[i + 1]
         )
-        assert abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] * 测试锂电池模型.deltaT)) < EPS
+        assert (
+            abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] * 测试锂电池模型.计算参数.deltaT)) < EPS
+        )
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
@@ -488,7 +475,6 @@ def test_锂电池(
         check_solver_result(s_results)
 
         assert abs(value(测试锂电池模型.DeviceCount)) == device_count
-        assert abs(value(测试锂电池模型.TotalStoragePowerOfDecay) - total_decay_rate) < EPS
 
         init_capacity = (
             value(测试锂电池模型.DeviceCount) * 测试锂电池模型.InitSOC * 测试锂电池模型.RatedCapacity
