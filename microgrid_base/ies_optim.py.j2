@@ -1221,15 +1221,15 @@ class {{class_name}}模型(设备模型):
         # reserved expression list. do not use it in any constraints.
         self.SOC = [self.CurrentTotalCapacity[i]/self.TotalCapacity for i in self.CurrentTotalCapacity]
 
-        {{设计规划}}:
+        {# {{设计规划}}:
             self.CurrentTotalCapacity.setlb(self.MinDeviceCount*self.MinSOC*self.RatedCapacity)
-            self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity)
+            self.CurrentTotalCapacity.setub(self.MaxDeviceCount*self.MaxSOC*self.RatedCapacity) #}
             
             self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x >= self.TotalCapacity * self.MinSOC)
             self.RangeConstraintMulti(self.CurrentTotalCapacity, expression = lambda x: x <= self.TotalCapacity * self.MaxSOC)
-        else: # 仿真模拟
+        {# else: # 仿真模拟
             self.CurrentTotalCapacity.setlb(self.DeviceCount*self.MinSOC*self.RatedCapacity)
-            self.CurrentTotalCapacity.setub(self.DeviceCount*self.MaxSOC*self.RatedCapacity)
+            self.CurrentTotalCapacity.setub(self.DeviceCount*self.MaxSOC*self.RatedCapacity) #}
 
         {# self.CurrentTotalActualCapacity = self.变量列表('CurrentTotalActualCapacity', within=NonNegativeReals) #}
 
