@@ -25,14 +25,22 @@ def build_image(image_tag, dockerfile_path, context_path):
 
 
 image_tag = "microgrid_server:latest"
+remote_image_tag = "agile4im/microgrid_server:latest"
 intermediate_image_tag = "microgrid_init"
 context_path = "../../"
 dockerfile_init_path = "Dockerfile_init"
 dockerfile_main_path = "Dockerfile_main"
 
+
+def docker_exec(cmd):
+    print("executing docker command: {}".format(cmd))
+    os.system(f"docker {cmd}")
+
+
 image_storage_dir = "images"
 image_path = os.path.join(image_storage_dir, f"{image_tag.replace(':','_')}.tar")
 import os
+import sys
 
 image_storage_gitignore = os.path.join(image_storage_dir, ".gitignore")
 
@@ -50,24 +58,29 @@ image_tags = [tag for image in images for tag in image.tags]
 if image_tag not in image_tags:
     logger_print("image not found: %s" % image_tag)
     if not os.path.exists(image_path):
-        # first build the image, then export.
-        logger_print("building image...")
-        # client.images.build(
-        #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
-        # )
-        build_image(intermediate_image_tag, dockerfile_init_path, context_path)
-        build_image(image_tag, dockerfile_main_path, context_path)
-        image = client.images.get(image_tag)
-        # image.save()
-        logger_print("saving image...")
-        # not working via api.
-        # with open(image_path, "wb") as f:
-        #     for chunk in image.save():
-        #         f.write(chunk)
-        os.system(f"docker save -o {image_path} {image_tag}")
+        if "-noremote" not in sys.argv:
+            # run remote pull command.
+            docker_exec(f"pull {remote_image_tag}")
+            docker_exec(f"tag {remote_image_tag} {image_tag}")
+        else:
+            # first build the image, then export.
+            logger_print("building image...")
+            # client.images.build(
+            #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
+            # )
+            build_image(intermediate_image_tag, dockerfile_init_path, context_path)
+            build_image(image_tag, dockerfile_main_path, context_path)
+            image = client.images.get(image_tag)
+            # image.save()
+            logger_print("saving image...")
+            # not working via api.
+            # with open(image_path, "wb") as f:
+            #     for chunk in image.save():
+            #         f.write(chunk)
+            docker_exec(f"save -o {image_path} {image_tag}")
     else:
         logger_print("loading image...")
-        os.system(f"docker load -i {image_path}")
+        docker_exec(f"load -i {image_path}")
         # with open(image_path, "rb") as f:
         #     data = f.read()
         #     client.images.load(data)

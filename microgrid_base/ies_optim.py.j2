@@ -374,8 +374,12 @@ class 设备信息(设备基础信息):
 {% endfor %}
 
 {# 设备特有类型 #}
-import enum
-class 风力发电类型(enum.StrEnum):
+{# import enum #}
+import sys
+
+if sys.version_info >= (3,11)
+
+class 风力发电类型(StrEnum):
     变桨 = enum.auto()
     定桨 = enum.auto()
     标幺值 = enum.auto()
@@ -1285,6 +1289,7 @@ class {{class_name}}模型(设备模型):
             lambda x: 发电曲线参数 * ((x - self.MinWindSpeed) ** 3), 
             self.RatedPower, 0]) #}
             if self.设备信息.machineType == 风力发电类型.定桨:
+                {# TODO: shall use translation table instead of manual translation #}
                 定桨风机特有函数 = lambda 实际风速: self.RatedPower +((self.CutoutPower - self.RatedPower)*(实际风速-self.RatedWindSpeed)) / (self.MaxWindSpeed-self.RatedWindSpeed)
             self.单台发电功率 = 单台发电功率 = np.piecewise(
             WS,
