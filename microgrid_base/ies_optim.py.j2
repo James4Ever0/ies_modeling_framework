@@ -1244,7 +1244,7 @@ class {{class_name}}模型(设备模型):
         """
         最大总充放功率
         单位: kW
-        """"
+        """
 
         {# self.TotalStoragePowerOfDecay = (self.BatteryStorageDecay / 100) * self.TotalCapacity
         """
@@ -1423,7 +1423,7 @@ class {{class_name}}模型(设备模型):
             self.原电接口.x_neg,
             self.电接口,
             {# self.CurrentTotalPowerOfDecayCompensated,  #}
-            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency- (x_neg + (self.TotalStoragePowerOfDecay)) / self.ChargeEfficiency== y,
+            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency- (x_neg ) / self.ChargeEfficiency== y,
             {# expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency- (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency== y, #}
         )
         {# {% else%} #}
@@ -1477,7 +1477,7 @@ class {{class_name}}模型(设备模型):
             self.原电接口.x[0].set_value(self.EPS) #}
 
         if self.计算参数.典型日:
-            self.mw.Constraint((lambda x, y: x[self.计算参数.迭代步数 - 1] *self.计算参数.deltaT= (y[self.计算参数.迭代步数 - 1] * (1- self.计算参数.deltaT * self.sigma)  - y[0])) (self.原电接口.x,
+            self.mw.Constraint((lambda x, y: x[self.计算参数.迭代步数 - 1] *self.计算参数.deltaT== (y[self.计算参数.迭代步数 - 1] * (1- self.计算参数.deltaT * self.sigma)  - y[0])) (self.原电接口.x,
             self.CurrentTotalCapacity))
         {# else:
             self.原电接口.x[self.计算参数.迭代步数 - 1].set_value(0)

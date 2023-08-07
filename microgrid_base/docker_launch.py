@@ -33,7 +33,7 @@ dockerfile_main_path = "Dockerfile_main"
 
 
 def docker_exec(cmd):
-    print("executing docker command: {}".format(cmd))
+    logger_print("executing docker command: {}".format(cmd))
     os.system(f"docker {cmd}")
 
 

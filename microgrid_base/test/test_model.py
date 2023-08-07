@@ -466,52 +466,17 @@ def test_锂电池(
     eport_constraint_dynamic,
     sense,
 ):
-    is_dynamic = 测试锂电池模型.needStorageDecayCompensation
     测试锂电池模型.constraints_register()
-    if is_dynamic:
-        测试锂电池模型.RangeConstraintMulti(
-            测试锂电池模型.电接口, expression=eport_constraint_dynamic
-        )  # means charging the battery.
-    else:
-        if ie != 0:
-            return  # skip other lambda expressions.
+    测试锂电池模型.RangeConstraintMulti(
+        测试锂电池模型.电接口, expression=eport_constraint_dynamic
+    )  # means charging the battery.
 
     def verify_constraints(i):
-        if is_dynamic:
-            compensated_decay_rate = value(
-                测试锂电池模型.CurrentTotalPowerOfDecayCompensated[i]
-            )
-        else:
-            compensated_decay_rate = 0
         delta_capacity = value(
-            测试锂电池模型.CurrentTotalCapacity[i] - 测试锂电池模型.CurrentTotalCapacity[i + 1]
+            测试锂电池模型.CurrentTotalCapacity[i] * (1 - 测试锂电池模型.sigma * 测试锂电池模型.deltaT)
+            - 测试锂电池模型.CurrentTotalCapacity[i + 1]
         )
-        assert (
-            abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] - compensated_decay_rate))
-            < EPS
-        )
-        原电接口_xi = value(测试锂电池模型.原电接口.x[i])
-        电接口_i = value(测试锂电池模型.电接口[i])
-        _total_decay_rate = value(测试锂电池模型.TotalStoragePowerOfDecay)
-        if 原电接口_xi >= 0:
-            assert (
-                abs(
-                    原电接口_xi * 测试锂电池模型.DischargeEfficiency
-                    - (_total_decay_rate - compensated_decay_rate)
-                    / 测试锂电池模型.ChargeEfficiency
-                    - 电接口_i
-                )
-                < EPS
-            )
-        else:
-            assert (
-                abs(
-                    (原电接口_xi - (_total_decay_rate - compensated_decay_rate))
-                    / 测试锂电池模型.ChargeEfficiency
-                    - 电接口_i
-                )
-                < EPS
-            )
+        assert abs(delta_capacity - value(测试锂电池模型.原电接口.x[i] * 测试锂电池模型.deltaT)) < EPS
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
     with SolverFactory("cplex") as solver:
