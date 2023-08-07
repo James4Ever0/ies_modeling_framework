@@ -1199,9 +1199,9 @@ class {{class_name}}模型(设备模型):
         {% for attrName in ["机组年启动次数","机组年运行时间"]%}
         self.{{attrName}} = ...
         {% endif%}
-        unt = math.ceil(self.MinInstallArea/self.Area)
-            assert self.MinDeviceCount>=0
-            assert self.MaxDeviceCount>=self.MinDeviceCount
+unt = math.ceil(self.MinInstallArea/self.Area)
+            assert {# self.MinDeviceCount>=0
+            assert self.MaxDeviceC #}ount>=self.MinDeviceCount
         {% elif class_name == "柴油发电" %}
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
