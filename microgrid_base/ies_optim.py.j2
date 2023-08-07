@@ -1480,7 +1480,7 @@ class {{class_name}}模型(设备模型):
             self.mw.Constraint((lambda x, y: x[self.计算参数.迭代步数 - 1] *self.计算参数.deltaT= (y[self.计算参数.迭代步数 - 1] * (1- self.计算参数.deltaT * self.sigma)  - y[0])) (self.原电接口.x,
             self.CurrentTotalCapacity))
         else:
-            
+            self.原电接口.x[self.计算参数.迭代步数 - 1].set_value(0)
         
 
         {% endif %}
