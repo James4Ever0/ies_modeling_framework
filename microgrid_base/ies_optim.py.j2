@@ -464,10 +464,13 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {% elif class_name in ['柴油发电']%}
     {# 机组年运行时间约束:bool (若选否，变量约束不创建，变量为自由变量，降低计算量)  #}
     {# unitAnnualOperatingTimeConstraint:bool #}
-    {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
+    {# {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量") #}
+    unitAnnualOperatingTimeConstraint:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
     机组年运行时间最高限值，单位：次。
-    {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
+    maximumAnnualOperatingTimeLimitOfTheUnit:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次")
+    {# {{cws("Maximum annual operating time limit of the unit")}}:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次") #}
     考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量)
+     considerUnitStartUpCosts:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次")
     机组单次启动费用，单位：元/次
     机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。
     平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空）
