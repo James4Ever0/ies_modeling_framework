@@ -125,7 +125,7 @@ from ies_optim import compute, ModelWrapperContext
 from copy import deepcopy
 
 
-def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
+def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
     # devClassMapping = {
@@ -167,7 +167,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
     with SolverFactory("cplex") as solver:
         # try:
         # io_options = dict() # disable unicode variables.
-        io_options = dict(symbolic_solver_labels=True)
+        # io_options = dict(symbolic_solver_labels=True)
+        # BUG: OOM
         solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
         solver.options["read fileencoding"] = "utf-8"
 

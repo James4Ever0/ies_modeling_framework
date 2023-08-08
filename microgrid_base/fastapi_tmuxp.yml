@@ -10,3 +10,4 @@ windows:
       - env PATH="$PATH${CPLEX_DIR}" conda run -n ${CONDA_ENV_NAME} --live-stream --no-capture-output python fastapi_celery_server.py
       - rabbitmq-server
       - redis-server --port 6380
+      - htop # monitor server
