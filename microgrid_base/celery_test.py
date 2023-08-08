@@ -5,6 +5,8 @@ os.environ['http_proxy'] = ""
 os.environ['https_proxy'] = ""
 os.environ['all_proxy'] = ""
 import json
+parsing = False
+# parsing = True
 
 with open("template_input.json", "r") as f:
     mDictList = json.load(f)
@@ -39,11 +41,15 @@ if test == "create_task":
     from fastapi_datamodel_template import EnergyFlowGraph
 
     # from ies_optim import 设备节点
-    data = EnergyFlowGraph(mDictList=mDictList)
+    if parsing:
+        data = EnergyFlowGraph(mDictList=mDictList).dict()
+    else:
+        data = dict(mDictList=mDictList)
     # mdata = mDictList[0]['nodes'][25] # 25-35
     # import rich
     # logger_print(mdata) # 设备
-    r = requests.post(url, json=data.dict())
+    # r = requests.post(url, json=data.dict())
+    r = requests.post(url, json=data)
     logger_print(r.json())
     logger_print(r.status_code)
 elif test == "check_result":
