@@ -200,6 +200,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.routing import APIRoute
 from typing import Callable
 from log_utils import terminal_column_size
+import json
 
 
 class ValidationErrorLoggingRoute(APIRoute):
@@ -214,6 +215,7 @@ class ValidationErrorLoggingRoute(APIRoute):
                 is_json = False
                 try:
                     body = await request.json()
+                    body = json.dumps(body, indent=4, ensure_ascii=False)
                     is_json = True
                 except:
                     body = await request.body()

@@ -327,24 +327,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -2480,7 +2480,7 @@ class 风力发电模型(设备模型):
 
         self.RangeConstraint(单台发电功率, self.电输出, lambda x, y: x * self.DeviceCount >= y)
 
-        if self.计算参数.计算步长 == "秒":
+        if self.计算参数.计算步长 == "秒" and self.设备信息.machineType != 风力发电类型.标幺值:
             总最大功率 = self.RatedPower * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
             self.CustomRangeConstraintMulti(
@@ -3221,13 +3221,6 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
@@ -3235,10 +3228,17 @@ class 变压器模型(设备模型):
         类型: 变压器输出
         """
 
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
+        """
+
         # 设备特有约束（变量）
 
         if self.计算参数.计算类型 == "设计规划":  # 在变压器和负荷的交换节点处做处理
-            self.最大允许的负载总功率 = self.DeviceCount * (self.RatedPower * self.Efficiency) * self.PowerParameter / self.LoadRedundancyParameter  # type: ignore
+            self.最大允许的负载总功率 = self.DeviceCount * (self.RatedPower * self.Efficiency) * self.PowerParameter / (1 if 0 == self.LoadRedundancyParameter else self.LoadRedundancyParameter)  # type: ignore
 
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
@@ -3390,18 +3390,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -4602,7 +4602,7 @@ class mDict(BaseModel):
             }
         ],
     )
-    links: conlist(Dict[Union[Literal["source", "target"]], int], min_items=4) = Field(
+    links: conlist(Dict[Literal["source", "target"], int], min_items=4) = Field(
         title="边",
         description="由能流图中节点互相连接的边组成的列表",
         example=[{"source": 0, "target": 1}, {"source": 1, "target": 31}],
@@ -4686,6 +4686,7 @@ def compute(
         for j in range(algoParam.迭代步数):
             seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
 
+            # TODO: 消纳率约束
             mw.Constraint(seqsum >= 0)
 
         if algoParam.计算类型 == "设计规划":
