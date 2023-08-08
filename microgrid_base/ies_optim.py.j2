@@ -1186,11 +1186,11 @@ class {{class_name}}模型(设备模型):
             {% endif%}
         {% endif%}
 
-        {% if class_name in ['变压器']%}
+        {% if class_name in ['变压器'] %}
         {{设计规划}}: # 在变压器和负荷的交换节点处做处理
-            self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/self.LoadRedundancyParameter # type: ignore
-        {% endif%}
-        {% if class_name in ['光伏发电']%}
+            self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/(1 if 0 == self.LoadRedundancyParameter else self.LoadRedundancyParameter) # type: ignore
+        {% endif %}
+        {% if class_name in ['光伏发电'] %}
         {{设计规划}}:
             # TODO：标准光照下出力
             self.MaxDeviceCount = math.floor(self.MaxInstallArea/self.Area)
@@ -1200,9 +1200,9 @@ class {{class_name}}模型(设备模型):
         {% elif class_name == "柴油发电" %}
         
         # TODO: define some variables with expression
-        {% for attrName in ["机组年启动次数","机组年运行时间"]%}
+        {% for attrName in ["机组年启动次数","机组年运行时间"] %}
         self.{{attrName}} = ...
-        {% endfor%}
+        {% endfor %}
         self.电功率中转 = self.变量列表_带指示变量("电功率中转")
         
         self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
