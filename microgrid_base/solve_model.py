@@ -1,5 +1,5 @@
 from log_utils import logger_print
-import pyomo_patch # type: ignore
+# import pyomo_patch # type: ignore
 import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
