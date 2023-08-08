@@ -6,6 +6,24 @@ User defines topology, in which devices such as loads, grids, energy sources and
 
 Inputs and outputs follow a standard format. Modeling language “IESLang” is used to describe the system.
 
+## "passwords.py"
+
+This file is ignored by default. Should you create this under `./passwords.py` and `./microgrid_server_release/server/passwords.py`.
+
+Example content:
+
+```python
+from log_utils import logger_print
+
+redis_password = ''
+```
+
+## "docker_launch.py"
+
+Just run this file by `python3 docker_launch.py` and service will be created under `http://localhost:9870`.
+
+Attach container by `docker container attach <container_id>`.
+
 ## Usage
 
 The easiest way for setting this up is by installing all dependencies and then invoke `make` under base directory.
