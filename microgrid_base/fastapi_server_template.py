@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # suggestion: use fastapi for self-documented server, use celery for task management.
 # celery reference: https://github.com/GregaVrbancic/fastapi-celery/blob/master/app/main.py
 
@@ -9,9 +11,9 @@ from log_utils import (
     fastapi_log_filename,
     stdout_handler,
     makeRotatingFileHandler,
-    logger_print,
-    Formatter
+    # Formatter
 )
+from log_utils import logger_print as lp
 
 fastapi_log_handler = makeRotatingFileHandler(fastapi_log_filename)
 logger = logging.getLogger("fastapi")
@@ -19,7 +21,11 @@ logger.setLevel("DEBUG")
 logger.addHandler(fastapi_log_handler)
 logger.addHandler(stdout_handler)
 # import celery
-from log_utils import logger_print
+
+
+def logger_print(*args):  # override this.
+    lp(*args, logger=logger)
+
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
@@ -44,26 +50,24 @@ from fastapi_datamodel_template import (
     RevokeResult,
     CalculationStateResult,
 )
-from fastapi.exceptions import RequestValidationError
-from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
 
 # from fastapi.utils import is_body_allowed_for_status_code
 # from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.responses import JSONResponse  # , Response
-from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+
+# from starlette.responses import JSONResponse  # , Response
+# from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 
 # define the input structure here.
-from pydantic import BaseModel
+# from pydantic import BaseModel
 from typing import List  # , Union , Literal, Dict
 
 # solved or not?
 
 import datetime
 from celery.result import AsyncResult
-from typing import Dict, Any, Union
+from typing import Dict, Any
 from fastapi_celery_server import app as celery_app
 
 # remember these things won't persist.
@@ -190,19 +194,56 @@ app = FastAPI(
     # default_response_class=ORJSONResponse,
     default_response_class=fastapi.responses.ORJSONResponse,
 )
+# let us use this instead.
+# ref; https://fastapi.tiangolo.com/advanced/custom-request-and-route/
+from fastapi import FastAPI, Request, Response
+from fastapi.routing import APIRoute
+from typing import Callable
+from log_utils import terminal_column_size
 
 
-@app.exception_handler(RequestValidationError)
-async def request_validation_exception_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
-    # TODO: log request body
-    # logger_print("request", await request.body(), logger=logger)
-    logger_print("exception", exc.raw_errors, exc.body, logger=logger)
-    return JSONResponse(
-        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": jsonable_encoder(exc.errors())},
-    )
+class ValidationErrorLoggingRoute(APIRoute):
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_handler()
+
+        async def custom_route_handler(request: Request) -> Response:
+            try:
+                return await original_route_handler(request)
+            # except RequestValidationError as exc:
+            except Exception as e:
+                is_json = False
+                try:
+                    body = await request.json()
+                    is_json = True
+                except:
+                    body = await request.body()
+                logger_print(
+                    "request{}".format("_json" if is_json else "")
+                    .upper()
+                    .center(terminal_column_size, "_"),
+                    body,
+                )
+                logger_print("exception".upper().center(terminal_column_size, "_"), e)
+                # detail = {"errors": exc.errors(), "body": body.decode()}
+                # raise HTTPException(status_code=422, detail=detail)
+                raise e
+
+        return custom_route_handler
+
+
+app.router.route_class = ValidationErrorLoggingRoute
+
+# @app.exception_handler(RequestValidationError)
+# async def request_validation_exception_handler(
+#     request: Request, exc: RequestValidationError
+# ) -> JSONResponse:
+#     # TODO: log request body
+#     # logger_print("request", await request.body(), logger=logger)
+#     logger_print("exception", exc.raw_errors, exc.body, logger=logger)
+#     return JSONResponse(
+#         status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+#         content={"detail": jsonable_encoder(exc.errors())},
+#     )
 
 
 @remove_stale_tasks_decorator

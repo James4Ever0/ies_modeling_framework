@@ -6,7 +6,6 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 
 # python version check
-from typing import Union
 
 import sys  # recommend: 3.11.2
 
@@ -54,6 +53,7 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
     # args = record.args # tuple. let's reset it.
     # breakpoint()
     msg = record.msg = record.msg % record.args
+    setattr(record, "short_msg", msg)
     args = record.args = ()
 
     if len(msg) < HUGE_MSG_THRESHOLD:
@@ -62,7 +62,7 @@ def messageLengthAndFrequencyFilter(record: logging.LogRecord):
             allow_logging = False
     else:
         if allow_huge_logging:
-            record.msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."]) # do not put stdout in front of file handler!
+            record.short_msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."]) # do not put stdout in front of file handler!
             accepted = True
             allow_huge_logging = False
     return accepted
@@ -101,8 +101,10 @@ FORMAT = (  # add timestamp.
     # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
     # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
 )
+
+SHORT_FORMAT =  "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(short_msg)s"
 class Formatter(logging.Formatter):
-    """override logging.Formatter to use an aware datetime object"""
+    """override default 'logging.Formatter' to use timezone-aware datetime object"""
 
     def converter(self, timestamp):
         # Create datetime in UTC
@@ -120,6 +122,8 @@ class Formatter(logging.Formatter):
             except TypeError:
                 s = dt.isoformat()
         return s
+myFormatter = Formatter(fmt=FORMAT)
+myShortFormatter = Formatter(fmt=SHORT_FORMAT)
 
 def makeRotatingFileHandler(log_filename: str, level=logging.DEBUG):
     myHandler = RotatingFileHandler(
@@ -134,14 +138,13 @@ myHandler = makeRotatingFileHandler(log_filename)
 
 # FORMAT = "<%(name)s:%(levelname)s> [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
 # myFormatter = logging.Formatter(fmt=FORMAT)
-myFormatter = Formatter(fmt=FORMAT)
-myHandler.setFormatter(myFormatter)
+# myHandler.setFormatter(myFormatter)
 
 stdout_handler = StreamHandler(sys.stdout)  # test with this!
 stdout_handler.setLevel(logging.DEBUG)
 # stdout_handler.addFilter(MessageLengthAndFrequencyFilter)
 stdout_handler.addFilter(messageLengthAndFrequencyFilter)  # method also works!
-stdout_handler.setFormatter(myFormatter)
+stdout_handler.setFormatter(myShortFormatter)
 # do not use default logger!
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("microgrid")
