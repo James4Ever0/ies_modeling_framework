@@ -209,6 +209,12 @@ def 测试柴油发电信息():
         设备名称="柴油发电",
         生产厂商="Any",
         设备型号="柴油发电1",
+        unitAnnualOperatingTimeConstraint=None,
+        maximumAnnualOperatingTimeLimitOfTheUnit=None,
+        considerUnitStartUpCosts=None,
+        unitSingleStartupCost=None,
+        unitPlanningAlgorithmSelection=None,
+        averageLoadRate=None,
         RatedPower=None,
         PowerDeltaLimit=None,
         PowerStartupLimit=None,
@@ -253,7 +259,6 @@ def 测试锂电池信息():
         设备名称="锂电池",
         生产厂商="Any",
         设备型号="锂电池1",
-        needStorageDecayCompensation=None,
         循环边界条件=None,
         RatedCapacity=None,
         BatteryDeltaLimit=None,
@@ -323,8 +328,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输入=14,
-        电输出=15,
+        电输出=14,
+        电输入=15,
     )
     return val
 
@@ -443,8 +448,8 @@ def 测试传输线信息():
 def 测试传输线ID():
     val = 传输线ID(
         ID=22,
-        电输入=23,
-        电输出=24,
+        电输出=23,
+        电输入=24,
     )
     return val
 
