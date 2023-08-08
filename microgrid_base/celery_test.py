@@ -5,8 +5,8 @@ os.environ['http_proxy'] = ""
 os.environ['https_proxy'] = ""
 os.environ['all_proxy'] = ""
 import json
-parsing = False
-# parsing = True
+# parsing = False
+parsing = True
 
 with open("template_input.json", "r") as f:
     mDictList = json.load(f)
