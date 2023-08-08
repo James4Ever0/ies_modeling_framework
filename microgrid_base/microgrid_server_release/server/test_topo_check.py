@@ -1,7 +1,8 @@
 from log_utils import logger_print
 
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
-
+import os
+os.environ['VAR_INIT_AS_ZERO'] = '1'
 import json
 from topo_check import *
 import rich
@@ -334,7 +335,7 @@ elif flag in ["-p", "--partial"]:
             )
         logger_print(f"dumped to: {saved_path}")
 
-elif flag != os.path.basename(__file__):
+elif os.path.basename(flag) != os.path.basename(__file__):
     raise Exception(f"Invalid command line arguments: {sys.argv}")
 
 # may you get infeasible constraints on some row.
