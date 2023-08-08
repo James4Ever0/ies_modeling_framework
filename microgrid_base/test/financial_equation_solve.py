@@ -1,7 +1,7 @@
 import sympy
 
 
-def solve_eq(a_arr: list, build_time: int, business_time: int):
+def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
     assert len(a_arr) == build_time + business_time
     i = sympy.symbols("i")
     expr = 0
@@ -11,9 +11,8 @@ def solve_eq(a_arr: list, build_time: int, business_time: int):
         arr_index = n + build_time
         expr += a_arr[arr_index] / ((1 + i) ** (arr_index + 1))
     sol = sympy.nsolve(
-        sympy.Eq(expr, 0), i, (0, 1), solver='bisect'
+        sympy.Eq(expr, 0), i, (0, 1), solver="bisect", verify=True
     )  # will raise exception if no solution exists.
-    # print(sol)
     return sol
 
 
@@ -36,4 +35,4 @@ build_time = 2
 business_time = 10
 
 sol = solve_eq(a_arr, build_time, business_time)
-print(sol)
+print(sol) # float
