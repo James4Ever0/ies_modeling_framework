@@ -2064,7 +2064,7 @@ class mDict(BaseModel):
                 "device_id": 2,
                 "id": 3
             }])
-    links:conlist(Dict[Union[Literal['source','target']], int], min_items=4) = Field(
+    links:conlist(Dict[Literal['source','target'], int], min_items=4) = Field(
         title="边",
         description="由能流图中节点互相连接的边组成的列表", example = [
             {
