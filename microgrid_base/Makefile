@@ -161,3 +161,6 @@ device_params_intermediate.json microgrid_device_params_intermediate.json: parse
 
 constraints.log: parse_optim_constraints.py ies_optim.py
 	${PYTHON} parse_optim_constraints.py > constraints.log
+
+passwords.py: passwords_template.py
+	cp passwords_template.py passwords.py

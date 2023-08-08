@@ -4,7 +4,7 @@ The main objective of this directory is to model an IES system and optimize its 
 
 User defines topology, in which devices such as loads, grids, energy sources and generators are.
 
-Inputs and outputs follow a standard format. Modeling language “IESLang” is used to describe the system.
+Inputs and outputs follow a standard format. Modeling language "IESLang" is used to describe the system.
 
 ## "passwords.py"
 
