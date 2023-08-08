@@ -24,6 +24,12 @@ Just run this file by `python3 docker_launch.py` and service will be created und
 
 Attach container by `docker container attach <container_id>`.
 
+## "openapi.json"
+
+This file describe public APIs of the algorithm server. You can load this file using Postman/Apifox.
+
+To acquire this file, run `curl -O <server_end_point>/openapi.json`.
+
 ## Usage
 
 The easiest way for setting this up is by installing all dependencies and then invoke `make` under base directory.
