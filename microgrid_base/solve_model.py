@@ -166,8 +166,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize):
     solved = False
     with SolverFactory("cplex") as solver:
         # try:
-        io_options = dict() # disable unicode variables.
-        # io_options = dict(symbolic_solver_labels=True)
+        # io_options = dict() # disable unicode variables.
+        io_options = dict(symbolic_solver_labels=True)
         solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
         solver.options["read fileencoding"] = "utf-8"
 
