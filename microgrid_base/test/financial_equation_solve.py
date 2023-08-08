@@ -8,4 +8,7 @@ def solve_eq(a_arr:list, build_time:int, business_time:int):
     for n in range(business_time):
         arr_index = n+build_time
         expr += a_arr[arr_index] /((i+i)**(arr_index+1))
-    sol = sympy.nsolve(sympy.Eq(expr,0), dict=True)
+    sol = sympy.nsolve(sympy.Eq(expr,0), (0,1))
+    print(sol)
+    return sol
+
