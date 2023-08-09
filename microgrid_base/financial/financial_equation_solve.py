@@ -6,7 +6,7 @@ def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
     i = sympy.symbols("i")
     expr = 0
     for n in range(build_time):
-        expr += a_arr[n] / ((1 + i) ** n)
+        expr += a_arr[n] / ((1 + i) ** (n+ (0 if else 1)))
     for n in range(business_time):
         arr_index = n + build_time
         expr += a_arr[arr_index] / ((1 + i) ** (arr_index + 1))

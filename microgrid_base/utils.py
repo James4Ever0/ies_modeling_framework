@@ -2,6 +2,7 @@ from log_utils import logger_print
 
 import pandas
 
+
 def fix_csv_and_return_dataframe(csv_path):
     lines = []
     line_sep_count_list = []
@@ -15,7 +16,9 @@ def fix_csv_and_return_dataframe(csv_path):
 
     line_sep_count_max = max(line_sep_count_list)
     for index, line_sep_count in enumerate(line_sep_count_list):
-        lines[index] = lines[index].strip() + "," * (line_sep_count_max - line_sep_count)
+        lines[index] = lines[index].strip() + "," * (
+            line_sep_count_max - line_sep_count
+        )
 
     with open(csv_path, "w+") as f:
         for line in lines:
