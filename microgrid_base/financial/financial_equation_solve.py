@@ -1,7 +1,7 @@
 import sympy
+import numpy as np
 
-
-def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
+def solve_eq(a_arr: list, build_time: int, business_time: int):
     assert len(a_arr) == build_time + business_time
     i = sympy.symbols("i")
     expr = 0
@@ -11,10 +11,10 @@ def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
         sol = sympy.nsolve(
             sympy.Eq(expr, 0), i, (0, 1), solver="bisect", verify=True
         )  # will raise exception if no solution exists.
+        return sol
     except:
-        ...
-    return sol
-
+        vals = [expr.eval for v in np.linspace(0, 1, 100)]
+        print(vals)
 
 # a_arr = [
 #     -6511.07,
