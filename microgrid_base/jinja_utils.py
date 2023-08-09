@@ -212,6 +212,7 @@ def load_template(template_path, extra_func_dict={}):
         s2cu=s2cu,
         zip=zip,
         cws=camelize_with_space,
+        lstrip = lstrip,
         # enumerate=enumerate,
         # eval=eval,
         #  join=myJoin
