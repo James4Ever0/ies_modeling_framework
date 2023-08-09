@@ -4,7 +4,7 @@ import numpy as np
 def solve_eq(a_arr: list, build_time: int, business_time: int):
     assert len(a_arr) == build_time + business_time
     i = sympy.symbols("i")
-    expr = 0
+    expr = sympy.Expr()
     for n in range(build_time):
         expr += a_arr[n] / ((1 + i) ** (n + (0 if n < build_time else 1)))
     try:
@@ -13,7 +13,7 @@ def solve_eq(a_arr: list, build_time: int, business_time: int):
         )  # will raise exception if no solution exists.
         return sol
     except:
-        vals = [expr.eval for v in np.linspace(0, 1, 100)]
+        vals = [expr.evalf({i:v}) for v in np.linspace(0, 1, 100)]
         print(vals)
 
 # a_arr = [
