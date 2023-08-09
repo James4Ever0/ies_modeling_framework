@@ -7,9 +7,12 @@ def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
     expr = 0
     for n in range(build_time):
         expr += a_arr[n] / ((1 + i) ** (n + (0 if n < build_time else 1)))
-    sol = sympy.nsolve(
-        sympy.Eq(expr, 0), i, (0, 1), solver="bisect", verify=True
-    )  # will raise exception if no solution exists.
+    try:
+        sol = sympy.nsolve(
+            sympy.Eq(expr, 0), i, (0, 1), solver="bisect", verify=True
+        )  # will raise exception if no solution exists.
+    except:
+        ...
     return sol
 
 
