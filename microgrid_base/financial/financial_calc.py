@@ -1,9 +1,13 @@
-def calc(i, a_arr: list, x):
+import sympy
+from typing import cast
+def calc(i0, a_arr: list, x):
+    i = sympy.symbols('i')
     f = lambda i, n, a: a / ((1 + i) ** n)
-    result = -x
+    result = cast(sympy.Expr, -x)
     for n, a in enumerate(a_arr):
         result += f(i, n + 1, a)
-    return result
+    print('[expr]', result)
+    return result.evalf(subs={i:i0})
 
 # a_arr = [
 #     -28197.28,

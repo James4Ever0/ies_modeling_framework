@@ -15,7 +15,7 @@ def solve_eq(a_arr: list, build_time: int, business_time: int):
         return sol
     except:
         vals = [expr.evalf(subs={i:v}) for v in np.linspace(0, 1, 100)]
-        print(vals)
+        print('possible vals:',vals)
 
 # a_arr = [
 #     -6511.07,
