@@ -1,10 +1,10 @@
 import sympy
 import numpy as np
-
+from typing import cast
 def solve_eq(a_arr: list, build_time: int, business_time: int):
     assert len(a_arr) == build_time + business_time
     i = sympy.symbols("i")
-    expr = sympy.Expr()
+    expr= cast(sympy.Expr,0)
     for n in range(build_time):
         expr += a_arr[n] / ((1 + i) ** (n + (0 if n < build_time else 1)))
     try:
@@ -13,7 +13,7 @@ def solve_eq(a_arr: list, build_time: int, business_time: int):
         )  # will raise exception if no solution exists.
         return sol
     except:
-        vals = [expr.evalf({i:v}) for v in np.linspace(0, 1, 100)]
+        vals = [expr.evalf(subs={i:v}) for v in np.linspace(0, 1, 100)]
         print(vals)
 
 # a_arr = [
@@ -50,4 +50,7 @@ build_time = 2
 business_time = 10
 
 sol = solve_eq(a_arr, build_time, business_time)
-print(sol)  # float
+if sol:
+    print(sol)  # float
+else:
+    print("no solution.")
