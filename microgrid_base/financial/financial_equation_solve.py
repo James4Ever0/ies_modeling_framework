@@ -6,10 +6,7 @@ def solve_eq(a_arr: list, build_time: int, business_time: int) -> float:
     i = sympy.symbols("i")
     expr = 0
     for n in range(build_time):
-        expr += a_arr[n] / ((1 + i) ** (n+ (0 if else 1)))
-    for n in range(business_time):
-        arr_index = n + build_time
-        expr += a_arr[arr_index] / ((1 + i) ** (arr_index + 1))
+        expr += a_arr[n] / ((1 + i) ** (n + (0 if n < build_time else 1)))
     sol = sympy.nsolve(
         sympy.Eq(expr, 0), i, (0, 1), solver="bisect", verify=True
     )  # will raise exception if no solution exists.
@@ -35,4 +32,4 @@ build_time = 2
 business_time = 10
 
 sol = solve_eq(a_arr, build_time, business_time)
-print(sol) # float
+print(sol)  # float
