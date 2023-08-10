@@ -60,7 +60,7 @@ EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py consta
 
 EXPORT_FORMAT_SCHEMA = export_format.json planning_export_format.json
 
-EXTRA_DATA_DEPS = frontend_sim_param_translation.json ${EXPORT_FORMAT_SCHEMA}
+EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock.json ${EXPORT_FORMAT_SCHEMA}
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
