@@ -178,6 +178,7 @@ def lstrip(string: str):
     for line in lines:
         result_lines.append(line.lstrip())
     result = "\n".join(result_lines)
+    return result
 
 
 def code_and_template_path(base_name):
