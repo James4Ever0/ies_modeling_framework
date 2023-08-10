@@ -239,6 +239,7 @@ def load_template(template_path, extra_func_dict={}):
         zip=zip,
         cws=camelize_with_space,
         lstrip=lstrip,
+        remove_typehint = remove_typehint,
         # enumerate=enumerate,
         # eval=eval,
         #  join=myJoin
