@@ -271,18 +271,22 @@ def calculate_async(
 ) -> CalculationAsyncSubmitResult:
     # use celery
     
-    submit_result = "failed"
-    calculation_id = None
-    try:
-        function_id = "fastapi_celery.calculate_energyflow_graph"
-        task = celery_app.send_task(function_id, args=(graph.dict(),))  # async result?
-        taskInfo[task.id] = datetime.datetime.now()
-        taskDict[task.id] = task
-        background_task.add_task(background_on_message, task)
-        calculation_id = task.id
-    except:
-        traceback.print_exc()
-    submit_result = "success"
+    if MOCK is None:
+        submit_result = "failed"
+        calculation_id = None
+        try:
+            function_id = "fastapi_celery.calculate_energyflow_graph"
+            task = celery_app.send_task(function_id, args=(graph.dict(),))  # async result?
+            taskInfo[task.id] = datetime.datetime.now()
+            taskDict[task.id] = task
+            background_task.add_task(background_on_message, task)
+            calculation_id = task.id
+            submit_result = "success"
+        except:
+            traceback.print_exc()
+    else:
+        submit_result = "success"
+        calculation_id = ...
     return CalculationAsyncSubmitResult(
         calculation_id=calculation_id, submit_result=submit_result
     )
