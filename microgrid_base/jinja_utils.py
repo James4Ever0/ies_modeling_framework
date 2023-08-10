@@ -14,12 +14,16 @@ import re
 
 import humps  # default to snake case!
 import ast
+from typing import List
 
-def remove_typehint(paramDef:str):
+def remove_typehint(paramDef:str) -> str:
     tree_def = ast.parse("def func({}): ...".format(paramDef)).body[0]
+    args = []
     for elem in ast.walk(tree_def):
         if isinstance(elem, ast.arg):
-            argName = elem.arg
+            argName = elem.arg # str
+            args.append(argName)
+    return ",".join([f"{argName}={argName}" for argName in args])
 
 def camelize_with_space(string):
     return humps.camelize(string.replace(" ", "-"))
