@@ -256,7 +256,7 @@ app.router.route_class = ValidationErrorLoggingRoute
 #         content={"detail": jsonable_encoder(exc.errors())},
 #     )
 
-
+import uuid
 @remove_stale_tasks_decorator
 @app.post(
     "/calculate_async",
@@ -286,7 +286,7 @@ def calculate_async(
             traceback.print_exc()
     else:
         submit_result = "success"
-        calculation_id = ...
+        calculation_id = uuid.uuid4().__str__()
     return CalculationAsyncSubmitResult(
         calculation_id=calculation_id, submit_result=submit_result
     )
@@ -311,6 +311,8 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     Returns:
         calculation_state (CalculationStateResult): 计算状态
     """
+    if MOCK:
+        return CalculationStateResult(calculation_state='SUCCESS')
     calculation_state = None
     task = taskDict.get(calculation_id, None)
     if task is not None:
