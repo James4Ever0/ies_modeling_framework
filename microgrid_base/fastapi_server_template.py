@@ -27,6 +27,13 @@ def logger_print(*args):  # override this.
     lp(*args, logger=logger)
 
 
+import os
+
+MOCK = os.environ.get("MOCK", None) # if this is mock test.
+
+with open("test_output_full_mock.json")
+    mock_output_data = 
+
 appName = "IES Optim Server Template"
 version = "0.0.1"
 tags_metadata = [
