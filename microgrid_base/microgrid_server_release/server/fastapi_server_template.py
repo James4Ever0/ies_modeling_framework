@@ -3,9 +3,19 @@ from log_utils import logger_print
 # suggestion: use fastapi for self-documented server, use celery for task management.
 # celery reference: https://github.com/GregaVrbancic/fastapi-celery/blob/master/app/main.py
 
+import traceback
+from fastapi import BackgroundTasks, FastAPI
+from fastapi_datamodel_template import (
+    CalculationAsyncResult,
+    CalculationAsyncSubmitResult,
+    CalculationResult,
+    EnergyFlowGraph,
+    RevokeResult,
+    CalculationStateResult,
+)
+
 port = 9870
 host = "0.0.0.0"
-import traceback
 import logging
 from log_utils import (
     fastapi_log_filename,
@@ -27,6 +37,15 @@ def logger_print(*args):  # override this.
     lp(*args, logger=logger)
 
 
+import os
+
+MOCK = os.environ.get("MOCK", None)  # if this is mock test.
+import json
+
+with open("test_output_full_mock.json", "r") as f:
+    mock_output_data = json.loads(f.read())
+    mock_calculation_result = CalculationResult.parse_obj(mock_output_data)
+
 appName = "IES Optim Server Template"
 version = "0.0.1"
 tags_metadata = [
@@ -40,16 +59,6 @@ OpenAPI描述文件(可导入Apifox): https://{host}:{port}/openapi.json
 API文档: https://{host}:{port}/docs
 """
 
-import traceback
-from fastapi import BackgroundTasks, FastAPI
-from fastapi_datamodel_template import (
-    CalculationAsyncResult,
-    CalculationAsyncSubmitResult,
-    CalculationResult,
-    EnergyFlowGraph,
-    RevokeResult,
-    CalculationStateResult,
-)
 
 # from fastapi.utils import is_body_allowed_for_status_code
 # from starlette.exceptions import HTTPException
@@ -68,7 +77,9 @@ from typing import List  # , Union , Literal, Dict
 import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any
-from fastapi_celery_server import app as celery_app
+
+if MOCK is None:
+    from fastapi_celery_server import app as celery_app
 
 # remember these things won't persist.
 # remove any task without any update for 24 hours.
@@ -247,6 +258,8 @@ app.router.route_class = ValidationErrorLoggingRoute
 #         content={"detail": jsonable_encoder(exc.errors())},
 #     )
 
+import uuid
+
 
 @remove_stale_tasks_decorator
 @app.post(
@@ -261,18 +274,25 @@ def calculate_async(
     graph: EnergyFlowGraph, background_task: BackgroundTasks
 ) -> CalculationAsyncSubmitResult:
     # use celery
-    submit_result = "failed"
-    calculation_id = None
-    try:
-        function_id = "fastapi_celery.calculate_energyflow_graph"
-        task = celery_app.send_task(function_id, args=(graph.dict(),))  # async result?
-        taskInfo[task.id] = datetime.datetime.now()
-        taskDict[task.id] = task
-        background_task.add_task(background_on_message, task)
-        calculation_id = task.id
-    except:
-        traceback.print_exc()
-    submit_result = "success"
+
+    if MOCK:
+        submit_result = "success"
+        calculation_id = uuid.uuid4().__str__()
+    else:
+        submit_result = "failed"
+        calculation_id = None
+        try:
+            function_id = "fastapi_celery.calculate_energyflow_graph"
+            task = celery_app.send_task(
+                function_id, args=(graph.dict(),)
+            )  # async result?
+            taskInfo[task.id] = datetime.datetime.now()
+            taskDict[task.id] = task
+            background_task.add_task(background_on_message, task)
+            calculation_id = task.id
+            submit_result = "success"
+        except:
+            traceback.print_exc()
     return CalculationAsyncSubmitResult(
         calculation_id=calculation_id, submit_result=submit_result
     )
@@ -297,13 +317,17 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     Returns:
         calculation_state (CalculationStateResult): 计算状态
     """
-    calculation_state = None
-    task = taskDict.get(calculation_id, None)
-    if task is not None:
-        calculation_state = task.state
-        return CalculationStateResult(calculation_state=calculation_state)
+    if MOCK:
+        calculation_state = "SUCCESS"
+        # return CalculationStateResult(calculation_state="SUCCESS")
     else:
-        return CalculationStateResult(calculation_state="NOT_CREATED")
+        # calculation_state = None
+        # task = taskDict.get(calculation_id, None)
+        if task := taskDict.get(calculation_id, None):
+            calculation_state = task.state
+        else:
+            calculation_state = "NOT_CREATED"
+    return CalculationStateResult(calculation_state=calculation_state)
 
 
 # from fastapi_datamodel_template import ParetoCurve
@@ -319,18 +343,24 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     response_model=CalculationAsyncResult,
 )
 def get_calculation_result_async(calculation_id: str):
-    calculation_result = taskResult.get(calculation_id, None)
-    calculation_state = get_calculation_state(calculation_id).calculation_state
-    if calculation_result is None:
-        if calculation_state == "FAILURE":
-            error_log = error_log_dict.get(calculation_id, None)
-            if error_log:
-                calculation_result = CalculationResult(
-                    resultList=[], success=False, error_log=error_log
-                ).dict()
-    calculation_result = (
-        CalculationResult.parse_obj(calculation_result) if calculation_result else None
-    )
+    if MOCK:
+        calculation_result = mock_calculation_result.copy()
+        calculation_state = "SUCCESS"
+    else:
+        calculation_result = taskResult.get(calculation_id, None)
+        calculation_state = get_calculation_state(calculation_id).calculation_state
+        if calculation_result is None:
+            if calculation_state == "FAILURE":
+                error_log = error_log_dict.get(calculation_id, None)
+                if error_log:
+                    calculation_result = CalculationResult(
+                        resultList=[], success=False, error_log=error_log
+                    ).dict()
+        calculation_result = (
+            CalculationResult.parse_obj(calculation_result)
+            if calculation_result
+            else None
+        )
 
     # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
 
@@ -363,16 +393,21 @@ def get_calculation_result_async(calculation_id: str):
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
-    revoke_result = "failed"
-    calculation_state = None
-    if calculation_id in taskDict.keys():
-        logger_print("TERMINATING TASK:", calculation_id)
-        taskDict[calculation_id].revoke(terminate=True)
+    if MOCK:
         revoke_result = "success"
-        calculation_state = get_calculation_state(calculation_id).calculation_state
+        calculation_state = "REVOKED"
     else:
-        logger_print("TASK DOES NOT EXIST:", calculation_id)
-        calculation_state = "NOT_CREATED"
+        revoke_result = "failed"
+        calculation_state = None
+        if calculation_id in taskDict.keys():
+            logger_print("TERMINATING TASK:", calculation_id)
+            taskDict[calculation_id].revoke(terminate=True)
+            revoke_result = "success"
+            calculation_state = get_calculation_state(calculation_id).calculation_state
+        else:
+            logger_print("TASK DOES NOT EXIST:", calculation_id)
+            calculation_state = "NOT_CREATED"
+
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
     )
@@ -390,7 +425,10 @@ from typing import List
     summary="查询任务ID",
 )
 def get_calculation_ids() -> List[str]:
-    calculation_ids = list(taskDict.keys())
+    if MOCK:
+        calculation_ids = []
+    else:
+        calculation_ids = list(taskDict.keys())
     return calculation_ids
 
 

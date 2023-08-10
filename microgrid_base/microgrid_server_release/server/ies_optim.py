@@ -1,6 +1,7 @@
 from log_utils import logger_print
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
+# TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
 
 VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
@@ -84,6 +85,7 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         price = self.Price
 
         # unit: [currency]/[time]
@@ -129,6 +131,7 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -168,6 +171,7 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每天小时数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_time = math.floor(time_in_day % 每天小时数)
 
         price = self.PriceList[current_time]
@@ -183,6 +187,7 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -207,6 +212,7 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -247,6 +253,7 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title=f"长度为{每天小时数}的阶梯电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
+
         current_time = math.floor(time_in_day % 每天小时数)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -349,13 +356,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -1622,7 +1629,6 @@ class ModelWrapper:
 
 # 风、光照
 
-
 # 需要明确单位
 class 计算参数(BaseModel):
     典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
@@ -1921,6 +1927,7 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
+
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1982,6 +1989,7 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
+
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -2437,6 +2445,7 @@ class 风力发电模型(设备模型):
         assert self.MaxWindSpeed >= self.RatedWindSpeed
 
         if self.设备信息.machineType in [风力发电类型.变桨, 风力发电类型.定桨]:
+
             发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
             # windspeed (m/s) -> current power per device (kW)
@@ -3552,18 +3561,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -4617,7 +4626,6 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
-
 
 # partial if typical day mode is on.
 def compute(

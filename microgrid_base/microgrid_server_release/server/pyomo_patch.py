@@ -12,6 +12,7 @@ assert (pyomo_version := pyomo.__version__) == (
     expected_pyomo_version := "6.5.0"
 ), f"Expected Pyomo version: {expected_pyomo_version}\nActual: {pyomo_version}"
 
+# monkey patching class method is easier than class inheritance & shadowing.
 def write(self, filename=None, format=None, solver_capability=None, io_options={}):
     """
     Write the model to a file, with a given format.
