@@ -317,9 +317,8 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     task = taskDict.get(calculation_id, None)
     if task is not None:
         calculation_state = task.state
-        return CalculationStateResult(calculation_state=calculation_state)
     else:
-        return CalculationStateResult(calculation_state="NOT_CREATED")
+        calculation_state="NOT_CREATED"
 
 
 # from fastapi_datamodel_template import ParetoCurve
@@ -337,6 +336,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 def get_calculation_result_async(calculation_id: str):
     if MOCK:
         calculation_result = CalculationResult.parse_obj(mock_output_data)
+        calculation_state = "STARTED"
     else:
         calculation_result = taskResult.get(calculation_id, None)
         calculation_state = get_calculation_state(calculation_id).calculation_state
@@ -414,7 +414,10 @@ from typing import List
     summary="查询任务ID",
 )
 def get_calculation_ids() -> List[str]:
-    calculation_ids = list(taskDict.keys())
+    if MOCK:
+        calculation_ids = []
+    else:
+        calculation_ids = list(taskDict.keys())
     return calculation_ids
 
 
