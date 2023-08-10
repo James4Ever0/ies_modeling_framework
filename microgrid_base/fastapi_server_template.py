@@ -3,9 +3,19 @@ from log_utils import logger_print
 # suggestion: use fastapi for self-documented server, use celery for task management.
 # celery reference: https://github.com/GregaVrbancic/fastapi-celery/blob/master/app/main.py
 
+import traceback
+from fastapi import BackgroundTasks, FastAPI
+from fastapi_datamodel_template import (
+    CalculationAsyncResult,
+    CalculationAsyncSubmitResult,
+    CalculationResult,
+    EnergyFlowGraph,
+    RevokeResult,
+    CalculationStateResult,
+)
+
 port = 9870
 host = "0.0.0.0"
-import traceback
 import logging
 from log_utils import (
     fastapi_log_filename,
@@ -34,6 +44,7 @@ import json
 
 with open("test_output_full_mock.json", "r") as f:
     mock_output_data = json.loads(f.read())
+    mock_calculation_result = CalculationResult.parse_obj(mock_output_data)
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
@@ -48,16 +59,6 @@ OpenAPI描述文件(可导入Apifox): https://{host}:{port}/openapi.json
 API文档: https://{host}:{port}/docs
 """
 
-import traceback
-from fastapi import BackgroundTasks, FastAPI
-from fastapi_datamodel_template import (
-    CalculationAsyncResult,
-    CalculationAsyncSubmitResult,
-    CalculationResult,
-    EnergyFlowGraph,
-    RevokeResult,
-    CalculationStateResult,
-)
 
 # from fastapi.utils import is_body_allowed_for_status_code
 # from starlette.exceptions import HTTPException
@@ -343,9 +344,8 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     if MOCK:
-        mock_calculation_result
-        calculation_result = mock_calculation_resultCalculationResult.parse_obj(mock_output_data)
-        calculation_state = "STARTED"
+        calculation_result = mock_calculation_result.copy()
+        calculation_state = "SUCCESS"
     else:
         calculation_result = taskResult.get(calculation_id, None)
         calculation_state = get_calculation_state(calculation_id).calculation_state
