@@ -14,6 +14,9 @@ import re
 
 import humps  # default to snake case!
 
+def remove_typehint(paramDef:str):
+    for param in paramDef.split(","):
+        param_base = param.split(":").strip()
 
 def camelize_with_space(string):
     return humps.camelize(string.replace(" ", "-"))
