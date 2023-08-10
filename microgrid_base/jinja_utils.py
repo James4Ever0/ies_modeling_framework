@@ -13,13 +13,11 @@ import re
 # live share's triple quote issue isn't fixed.
 
 import humps  # default to snake case!
+import ast
 
 def remove_typehint(paramDef:str):
-    params = []
-    for param in paramDef.split(","):
-        param_base = param.split(":")[0].strip()
-        params.append(param_base)
-    return ",".join(params)
+    tree_def = ast.parse("def func({}): ...".format(paramDef)).body[0]
+    
 
 def camelize_with_space(string):
     return humps.camelize(string.replace(" ", "-"))
