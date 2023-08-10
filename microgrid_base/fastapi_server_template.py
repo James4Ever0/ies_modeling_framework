@@ -383,7 +383,8 @@ def get_calculation_result_async(calculation_id: str):
 )
 def revoke_calculation(calculation_id: str):
     if MOCK:
-        revoke_result=revoke_result, calculation_state=calculation_state
+        revoke_result="success"
+        calculation_state="REVOKED"
     else:
         revoke_result = "failed"
         calculation_state = None
