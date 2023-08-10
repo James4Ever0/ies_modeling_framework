@@ -76,7 +76,8 @@ from typing import List  # , Union , Literal, Dict
 import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any
-from fastapi_celery_server import app as celery_app
+if MOCK is None:
+    from fastapi_celery_server import app as celery_app
 
 # remember these things won't persist.
 # remove any task without any update for 24 hours.
@@ -269,6 +270,7 @@ def calculate_async(
     graph: EnergyFlowGraph, background_task: BackgroundTasks
 ) -> CalculationAsyncSubmitResult:
     # use celery
+    
     submit_result = "failed"
     calculation_id = None
     try:
