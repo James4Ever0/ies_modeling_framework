@@ -336,7 +336,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     if MOCK:
-        calculation_result = CalculationResult.parse_obj()
+        calculation_result = CalculationResult.parse_obj(mock_output_data)
     else:
         calculation_result = taskResult.get(calculation_id, None)
         calculation_state = get_calculation_state(calculation_id).calculation_state
@@ -382,19 +382,23 @@ def get_calculation_result_async(calculation_id: str):
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
-    revoke_result = "failed"
-    calculation_state = None
-    if calculation_id in taskDict.keys():
-        logger_print("TERMINATING TASK:", calculation_id)
-        taskDict[calculation_id].revoke(terminate=True)
-        revoke_result = "success"
-        calculation_state = get_calculation_state(calculation_id).calculation_state
-    else:
-        logger_print("TASK DOES NOT EXIST:", calculation_id)
-        calculation_state = "NOT_CREATED"
-    return RevokeResult(
+    if MOCK:
         revoke_result=revoke_result, calculation_state=calculation_state
-    )
+    else:
+        revoke_result = "failed"
+        calculation_state = None
+        if calculation_id in taskDict.keys():
+            logger_print("TERMINATING TASK:", calculation_id)
+            taskDict[calculation_id].revoke(terminate=True)
+            revoke_result = "success"
+            calculation_state = get_calculation_state(calculation_id).calculation_state
+        else:
+            logger_print("TASK DOES NOT EXIST:", calculation_id)
+            calculation_state = "NOT_CREATED"
+
+    return  RevokeResult(
+            revoke_result=revoke_result, calculation_state=calculation_state
+        )
 
 
 from typing import List
