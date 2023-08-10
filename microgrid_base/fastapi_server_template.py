@@ -271,7 +271,10 @@ def calculate_async(
 ) -> CalculationAsyncSubmitResult:
     # use celery
     
-    if MOCK is None:
+    if MOCK:
+        submit_result = "success"
+        calculation_id = uuid.uuid4().__str__()
+    else:
         submit_result = "failed"
         calculation_id = None
         try:
@@ -284,9 +287,6 @@ def calculate_async(
             submit_result = "success"
         except:
             traceback.print_exc()
-    else:
-        submit_result = "success"
-        calculation_id = uuid.uuid4().__str__()
     return CalculationAsyncSubmitResult(
         calculation_id=calculation_id, submit_result=submit_result
     )
@@ -335,18 +335,21 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     response_model=CalculationAsyncResult,
 )
 def get_calculation_result_async(calculation_id: str):
-    calculation_result = taskResult.get(calculation_id, None)
-    calculation_state = get_calculation_state(calculation_id).calculation_state
-    if calculation_result is None:
-        if calculation_state == "FAILURE":
-            error_log = error_log_dict.get(calculation_id, None)
-            if error_log:
-                calculation_result = CalculationResult(
-                    resultList=[], success=False, error_log=error_log
-                ).dict()
-    calculation_result = (
-        CalculationResult.parse_obj(calculation_result) if calculation_result else None
-    )
+    if MOCK:
+        calculation_result = CalculationResult.parse_obj()
+    else:
+        calculation_result = taskResult.get(calculation_id, None)
+        calculation_state = get_calculation_state(calculation_id).calculation_state
+        if calculation_result is None:
+            if calculation_state == "FAILURE":
+                error_log = error_log_dict.get(calculation_id, None)
+                if error_log:
+                    calculation_result = CalculationResult(
+                        resultList=[], success=False, error_log=error_log
+                    ).dict()
+        calculation_result = (
+            CalculationResult.parse_obj(calculation_result) if calculation_result else None
+        )
 
     # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
 
