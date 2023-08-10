@@ -17,7 +17,9 @@ import ast
 
 def remove_typehint(paramDef:str):
     tree_def = ast.parse("def func({}): ...".format(paramDef)).body[0]
-    for ast.walk(tree_def)
+    for elem in ast.walk(tree_def):
+        if isinstance(elem, ast.arg):
+            argName = elem.arg.
 
 def camelize_with_space(string):
     return humps.camelize(string.replace(" ", "-"))
