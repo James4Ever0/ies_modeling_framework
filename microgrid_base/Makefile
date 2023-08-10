@@ -164,3 +164,6 @@ constraints.log: parse_optim_constraints.py ies_optim.py
 
 passwords.py: passwords_template.py
 	cp passwords_template.py passwords.py
+
+test_output_full_mock.json: test_output_full.json
+	cp test_output_full.json test_output_full_mock.json
