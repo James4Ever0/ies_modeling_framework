@@ -76,6 +76,7 @@ from typing import List  # , Union , Literal, Dict
 import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any
+
 if MOCK is None:
     from fastapi_celery_server import app as celery_app
 
@@ -257,6 +258,8 @@ app.router.route_class = ValidationErrorLoggingRoute
 #     )
 
 import uuid
+
+
 @remove_stale_tasks_decorator
 @app.post(
     "/calculate_async",
@@ -270,7 +273,7 @@ def calculate_async(
     graph: EnergyFlowGraph, background_task: BackgroundTasks
 ) -> CalculationAsyncSubmitResult:
     # use celery
-    
+
     if MOCK:
         submit_result = "success"
         calculation_id = uuid.uuid4().__str__()
@@ -279,7 +282,9 @@ def calculate_async(
         calculation_id = None
         try:
             function_id = "fastapi_celery.calculate_energyflow_graph"
-            task = celery_app.send_task(function_id, args=(graph.dict(),))  # async result?
+            task = celery_app.send_task(
+                function_id, args=(graph.dict(),)
+            )  # async result?
             taskInfo[task.id] = datetime.datetime.now()
             taskDict[task.id] = task
             background_task.add_task(background_on_message, task)
@@ -312,13 +317,16 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
         calculation_state (CalculationStateResult): 计算状态
     """
     if MOCK:
-        return CalculationStateResult(calculation_state='SUCCESS')
-    calculation_state = None
-    task = taskDict.get(calculation_id, None)
-    if task is not None:
-        calculation_state = task.state
+        calculation_state = "SUCCESS"
+        # return CalculationStateResult(calculation_state="SUCCESS")
     else:
-        calculation_state="NOT_CREATED"
+        # calculation_state = None
+        # task = taskDict.get(calculation_id, None)
+        if task := taskDict.get(calculation_id, None):
+            calculation_state = task.state
+        else:
+            calculation_state = "NOT_CREATED"
+    return CalculationStateResult(calculation_state=calculation_state)
 
 
 # from fastapi_datamodel_template import ParetoCurve
@@ -335,7 +343,8 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 )
 def get_calculation_result_async(calculation_id: str):
     if MOCK:
-        calculation_result = CalculationResult.parse_obj(mock_output_data)
+        mock_calculation_result
+        calculation_result = mock_calculation_resultCalculationResult.parse_obj(mock_output_data)
         calculation_state = "STARTED"
     else:
         calculation_result = taskResult.get(calculation_id, None)
@@ -348,7 +357,9 @@ def get_calculation_result_async(calculation_id: str):
                         resultList=[], success=False, error_log=error_log
                     ).dict()
         calculation_result = (
-            CalculationResult.parse_obj(calculation_result) if calculation_result else None
+            CalculationResult.parse_obj(calculation_result)
+            if calculation_result
+            else None
         )
 
     # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
@@ -383,8 +394,8 @@ def get_calculation_result_async(calculation_id: str):
 )
 def revoke_calculation(calculation_id: str):
     if MOCK:
-        revoke_result="success"
-        calculation_state="REVOKED"
+        revoke_result = "success"
+        calculation_state = "REVOKED"
     else:
         revoke_result = "failed"
         calculation_state = None
@@ -397,9 +408,9 @@ def revoke_calculation(calculation_id: str):
             logger_print("TASK DOES NOT EXIST:", calculation_id)
             calculation_state = "NOT_CREATED"
 
-    return  RevokeResult(
-            revoke_result=revoke_result, calculation_state=calculation_state
-        )
+    return RevokeResult(
+        revoke_result=revoke_result, calculation_state=calculation_state
+    )
 
 
 from typing import List
