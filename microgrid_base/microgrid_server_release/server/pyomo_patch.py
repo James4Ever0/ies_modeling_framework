@@ -12,6 +12,24 @@ assert (pyomo_version := pyomo.__version__) == (
     expected_pyomo_version := "6.5.0"
 ), f"Expected Pyomo version: {expected_pyomo_version}\nActual: {pyomo_version}"
 
+######## SUPPRESS STRICT INEQUALITY PATCH #########
+from pyomo.environ import *
+
+def strict_setter(self, val):
+    ...
+
+def strict_getter(self):
+    return False
+
+InEq = pyomo.core.expr.relational_expr.InequalityExpression
+setattr(InEq,"_strict_setter", strict_setter)
+setattr(InEq,"_strict_getter", strict_getter)
+
+InEq._strict = property(fget=InEq._strict_getter, fset=InEq._strict_setter)
+InEq.strict = InEq._strict
+
+######## SUPPRESS STRICT INEQUALITY PATCH #########
+
 # monkey patching class method is easier than class inheritance & shadowing.
 def write(self, filename=None, format=None, solver_capability=None, io_options={}):
     """

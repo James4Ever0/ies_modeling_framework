@@ -3,6 +3,9 @@ import pyomo_patch # type: ignore
 import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
+from debug_utils import *
+from exception_utils import exceptionManager
+
 from typing import cast
 from constants import * # pylance issue: unrecognized var names
 import pandas as pd
@@ -170,7 +173,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
         # io_options = dict(symbolic_solver_labels=True)
         # BUG: OOM
         solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
-        solver.options["read fileencoding"] = "utf-8"
+        # disable this option to prevent OOM.
+        # solver.options["read fileencoding"] = "utf-8"
 
         logger_print(">>>SOLVING<<<")
         # results = solver.solve(mw.model, tee=True, keepfiles= True)
@@ -202,21 +206,16 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
             # try:
 
             assert results, "no solver result."
-            TC = results.solver.termination_condition
-            SS = results.solver.status
-            normalSSs = [SolverStatus.ok, SolverStatus.warning]
-            normalTCs = [
-                TerminationCondition.globallyOptimal,
-                TerminationCondition.locallyOptimal,
-                TerminationCondition.feasible,
-                TerminationCondition.optimal,
-            ]
-            error_msg = []
+            checkResult = checkIfSolverHasSolvedModel(results)
+            status = checkResult['status']
+            TC = status['terminationCondition']
+            SS = status['solverStatus']
+            # TC = results.solver.termination_condition
+            # SS = results.solver.status
+
+            # error_msg = []
             # strip away other logging data.
-            if TC in [
-                TerminationCondition.infeasible,
-                TerminationCondition.infeasibleOrUnbounded,
-            ]:
+            if TC in IOUTerminationConditions:
                 ...
                 # mstream.truncate(0)
                 # just don't do this.
@@ -235,10 +234,11 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 #     error_msg.append("_" * 20)
                 #     error_msg.append("")
             if TC not in normalTCs:
-                error_msg.append(f"abnormal termination condition: {TC}")
+                exceptionManager.append(f"abnormal termination condition: {TC}")
             if SS not in normalSSs:
-                error_msg.append(f"abnormal solver status: {TC}")
-            if error_msg:
+                exceptionManager.append(f"abnormal solver status: {TC}")
+            # if error_msg:
+            if exceptionManager:
                 from log_utils import log_dir, timezone
                 import datetime
 
@@ -257,16 +257,42 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                     )
                 )
                 lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
-                mw.model.write(filename=lp_filepath, io_options=io_options)
+                _, model_smap_id = mw.model.write(filename=lp_filepath, io_options=io_options)
+
+                # use conda "docplex" environment to get the result.
+                refine_log = conflict_refiner(lp_filepath, cplex_conflict_output_path:=os.path.join(solver_log_dir_with_timestamp,"conflict.txt"), "cplex", timeout=7)
+                logger_print("cplex refine log:", refine_log)
+
                 import shutil
 
                 shutil.move(solver_log, solver_log_dir_with_timestamp)
 
-                error_msg.append("")
-                error_msg.append("Solver log saved to: " + solver_log)
-                error_msg.append("Model saved to: " + lp_filepath)
+                exceptionManager.append("")
+                exceptionManager.append("Solver log saved to: " + solver_log)
+                exceptionManager.append("Model saved to: " + lp_filepath)
 
-                raise Exception("\n".join(error_msg))
+                # begin to debug in detail.
+
+                export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
+                solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
+
+                translated_log_files = []
+
+                def translate_and_append(fpath, smap):
+                    translateFileUsingSymbolMap(fpath, smap)
+                    translated_log_files.append(fpath)
+
+                translate_and_append(lp_filepath, export_model_smap)
+
+                translate_and_append(cplex_conflict_output_path, export_model_smap)
+
+                translate_and_append(solver_log, solver_model_smap)
+
+                # after translation, begin experiments.
+                checkInfeasibleOrUnboundedModel()
+
+                # raise Exception("\n".join(error_msg))
+                exceptionManager.raise_if_any()
 
         logger_print("OBJ:", value(OBJ))
         # export value.

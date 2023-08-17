@@ -2,7 +2,8 @@ from log_utils import logger_print
 
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 import os
-os.environ['VAR_INIT_AS_ZERO'] = '1'
+
+os.environ["VAR_INIT_AS_ZERO"] = "1"
 import json
 from topo_check import *
 import rich

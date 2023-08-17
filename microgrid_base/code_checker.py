@@ -5,8 +5,16 @@ import os
 import astor
 import re
 from typing import Callable
-
+from exception_utils import exceptionManager
 # import traceback
+
+EXCEPTION_LIST = ['exceptional_print.py', 'conflict_utils.py']
+
+
+for exception in EXCEPTION_LIST:
+    if not os.path.exists(exception):
+        exceptionManager.append("exception filepath '%s' does not exist." % exception)
+exceptionManager.raise_if_any()
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
@@ -72,6 +80,9 @@ files = os.listdir(".")
 # ]  # files for test!
 for fpath in files:
     if fpath.endswith(".py"):
+        if fpath in EXCEPTION_LIST:
+            logger_print("skipping file %s" % fpath)
+            continue
         with_template = (template_path := f"{fpath}.j2") in files
 
         # with open(template_path, 'r') as f:
@@ -135,5 +146,13 @@ for fpath in files:
 if fixed:
     import sys
 
-    logger_print("Please rerun the `make` command for changes!")
-    sys.exit(1)
+    # logger_print("Please rerun the `make` command for changes!")
+    
+    cmdargs = " ".join(sys.argv)
+    spliter = '--'
+    if spliter in sys.argv:
+        logger_print("Rerunning `make` command for changes.")
+        make_cmd = cmdargs.split(spliter)[-1].strip()
+        logger_print("Command: %s" % make_cmd)
+        os.system(make_cmd)
+    # sys.exit(1)

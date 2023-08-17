@@ -4,6 +4,12 @@ from log_utils import logger_print
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
 
+{% macro applyMacroWithSingleParam(_macro, paramList)%}
+    {% for param in paramList%}
+{{_macro(param)}}
+
+    {% endfor%}
+{% endmacro%}
 VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
 
 import os
@@ -623,12 +629,52 @@ def examineSubExprDegree(expr):
             {# logger_print("Abnormal expression:", subexpr_pyomo_repr) #}
     logger_print()
 
+{% macro initSubmodelRelatedTranslationTable(attrName)%}
+        self._{{attrName}} = "default{{pascalize(attrName)}}"
+        self.varNameTo{{pascalize(attrName)}}: Dict[str, str] = {}
+        self.{{attrName}}ToVarName: Dict[str, List[str]] = {self._{{attrName}}: []}
+{% endmacro%}
+{% macro setupSubmodelRelatedProperty(attrName)%}
+    def set{{pascalize(attrName)}}(self, {{attrName}}:str):
+        assert isinstance({{attrName}}, str), f"{{attrName}} must be a string!\n{{attrName}}: {repr({{attrName}})}"
+        assert len({{attrName}})>=1, "zero length {{attrName}} submitted."
+        {{attrName}} = {{attrName}}.strip()
+        self._{{attrName}} = {{attrName}}
+        self.{{attrName}}ToVarName = self.{{attrName}}ToVarName.get({{attrName}}, [])
+    def get{{pascalize(attrName)}}(self):
+        return self._{{attrName}}
+    {{attrName}} = property(fset=set{{pascalize(attrName)}}, fget=get{{pascalize(attrName)}})
+{% endmacro%}
+{% macro modifySubmodelRelatedTranslationTable(attrName)%}
+        self.varNameTo{{pascalize(attrName)}}[name] = self.{{attrName}}
+        self.{{attrName}}ToVarName
+        self.{{attrName}}ToVarName[self.{{attrName}}].append(name)
+{% endmacro%}
+{% macro dynamicProperty(attrName)%}
+{% set getter=attrName+"Getter"%}
+{% set setter=attrName+"Setter"%}
+    def {{getter}}(self):
+        return self.{{attrName}}
+    def {{setter}}(self, val):
+        setattr(self, {{repr(attrName)}}, val)
+
+    {{attrName}} = property(fget = {{getter}}, fset = {{setter}})
+{% endmacro%}
+{% set submodelRelatedAttrs = ['submodelName', 'submodelClassName'] %}
+{% set objectiveRelatedAttrs = ['obj', 'obj_expr'] %}
 class ModelWrapper:
+    {# __slots__ = ['obj',"obj_expr"] #}
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+
+{{applyMacroWithSingleParam(dynamicProperty, objectiveRelatedAttrs)}}
+
+{{applyMacroWithSingleParam(initSubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
         # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
+
+{{applyMacroWithSingleParam(setupSubmodelRelatedProperty, submodelRelatedAttrs)}}
     def check_assumptions(self):
         # TODO: call this function after model solved.
         for assumption in self.assumptions:
@@ -684,7 +730,12 @@ class ModelWrapper:
         {% endif%}
         ret = {{k}}({{mv if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
         {# ret = {{k}}({{mv+", {}=_{}".format(init_argname, init_argname) if k == "Var" else "expr = expr, *args[1:], **kwargs"}}) #}
+        {% if k == 'Objective'%}
+        self.obj = ret
+        self.obj_expr = expr
+        {% endif%}
 {{double_check_setattr("self.model", "name", 'ret') | indent(2*4, true)}}
+{{applyMacroWithSingleParam(modifySubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
         {# self.model.__setattr__(name, ret) #}
         return ret
     {% endfor%}
@@ -831,7 +882,11 @@ class 可购买类(Protocol):
 
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
-        logger_print("Building Device Model:", self.__class__.__name__)
+        logger_print("Building Device Model:", submodelClassName:=self.__class__.__name__)
+        submodelName = f"{submodelClassName}_{ID}"
+{% for attrName in submodelRelatedAttrs %}
+        self.mw.{{attrName}} = {{attrName}}
+{% endfor%}
         self.mw = mw
         self.PD = PD
         self.计算参数 = 计算参数实例

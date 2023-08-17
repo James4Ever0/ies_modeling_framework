@@ -24,12 +24,14 @@ def build_image(image_tag, dockerfile_path, context_path):
         raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
 
 
+final_image_tag = "microgrid_docplex:latest"
 image_tag = "microgrid_server:latest"
 remote_image_tag = "agile4im/microgrid_server:latest"
 intermediate_image_tag = "microgrid_init"
 context_path = "../../"
 dockerfile_init_path = "Dockerfile_init"
 dockerfile_main_path = "Dockerfile_main"
+dockerfile_patch_path = "Dockerfile_patch"
 
 
 def docker_exec(cmd):
@@ -55,35 +57,39 @@ with open(image_storage_gitignore, "w+") as f:
 
 images = client.images.list()
 image_tags = [tag for image in images for tag in image.tags]
-if image_tag not in image_tags:
-    logger_print("image not found: %s" % image_tag)
-    if not os.path.exists(image_path):
-        if "-noremote" not in sys.argv:
-            # run remote pull command.
-            docker_exec(f"pull {remote_image_tag}")
-            docker_exec(f"tag {remote_image_tag} {image_tag}")
+if final_image_tag not in image_tags:
+    if image_tag not in image_tags:
+        logger_print("image not found: %s" % image_tag)
+        if not os.path.exists(image_path):
+            if "-noremote" not in sys.argv:
+                # run remote pull command.
+                docker_exec(f"pull {remote_image_tag}")
+                docker_exec(f"tag {remote_image_tag} {image_tag}")
+            else:
+                # first build the image, then export.
+                logger_print("building image...")
+                # client.images.build(
+                #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
+                # )
+                build_image(intermediate_image_tag, dockerfile_init_path, context_path)
+                build_image(image_tag, dockerfile_main_path, context_path)
+                image = client.images.get(image_tag)
+                # image.save()
+                logger_print("saving image...")
+                # not working via api.
+                # with open(image_path, "wb") as f:
+                #     for chunk in image.save():
+                #         f.write(chunk)
+                docker_exec(f"save -o {image_path} {image_tag}")
         else:
-            # first build the image, then export.
-            logger_print("building image...")
-            # client.images.build(
-            #     path=context_path, tag=image_tag, dockerfile=dockerfile_path, quiet=False
-            # )
-            build_image(intermediate_image_tag, dockerfile_init_path, context_path)
-            build_image(image_tag, dockerfile_main_path, context_path)
-            image = client.images.get(image_tag)
-            # image.save()
-            logger_print("saving image...")
-            # not working via api.
-            # with open(image_path, "wb") as f:
-            #     for chunk in image.save():
-            #         f.write(chunk)
-            docker_exec(f"save -o {image_path} {image_tag}")
-    else:
-        logger_print("loading image...")
-        docker_exec(f"load -i {image_path}")
-        # with open(image_path, "rb") as f:
-        #     data = f.read()
-        #     client.images.load(data)
+            logger_print("loading image...")
+            docker_exec(f"load -i {image_path}")
+            # with open(image_path, "rb") as f:
+            #     data = f.read()
+            #     client.images.load(data)
+
+    # now patch the image.
+    build_image(final_image_tag, dockerfile_patch_path,context_path)
 
     # load the exported image.
 # run the command to launch server within image from here.
@@ -108,7 +114,8 @@ client.containers.prune()
 logger_print("running container...")
 try:
     container = client.containers.run(
-        image_tag,
+        final_image_tag,
+        # image_tag,
         remove=True,
         # remove=False, # to get the image hash.
         # command="ls -lth microgrid",

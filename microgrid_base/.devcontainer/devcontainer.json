@@ -1,0 +1,6 @@
+{
+    "name": "microgrid_server_env",
+    "image": "microgrid_server:latest",
+    "appPort": 9870,
+    "postCreateCommand": "echo 'conda activate cplex' >> /root/.bashrc"
+}

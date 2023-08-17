@@ -176,7 +176,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         regex = re.compile(r"\w+")
         words = regex.findall(data)
         words = set(words)
-        mwords = []
+        # mwords = []
 
         codeLines = []
         # codeLines.append("import sympy")

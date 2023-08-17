@@ -85,7 +85,6 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         price = self.Price
 
         # unit: [currency]/[time]
@@ -131,7 +130,6 @@ class 分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -171,7 +169,6 @@ class 分时电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每天小时数}的价格数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 每天小时数)
 
         price = self.PriceList[current_time]
@@ -187,7 +184,6 @@ class 分时分月电价(BaseModel, 电价转换):
     ] = Field(title=f"长度为{每年月数}的分时电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_day_index = time_in_day // 每天小时数
         month_index = convertDaysToMonth(current_day_index)
 
@@ -212,7 +208,6 @@ class 阶梯电价(BaseModel):
         return v
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         for index, elem in enumerate(self.PriceStruct):
             if elem.LowerLimit <= power:
                 if (
@@ -253,7 +248,6 @@ class 分时阶梯电价(BaseModel):
     ] = Field(title=f"长度为{每天小时数}的阶梯电价数组", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-
         current_time = math.floor(time_in_day % 每天小时数)
         mPriceStruct = self.PriceStructList[current_time]
         result = mPriceStruct.getFee(power, time_in_day)
@@ -316,13 +310,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -334,13 +328,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -356,24 +350,24 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -1525,11 +1519,54 @@ def examineSubExprDegree(expr):
 
 
 class ModelWrapper:
+    __slots__ = ["obj", "obj_expr"]
+
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+
+        self._submodelName = "defaultSubmodelName"
+        self.varNameToSubmodelName: Dict[str, str] = {}
+        self.submodelNameToVarName: Dict[str, List[str]] = {self._submodelName: []}
+
+        self._submodelClassName = "defaultSubmodelClassName"
+        self.varNameToSubmodelClassName: Dict[str, str] = {}
+        self.submodelClassNameToVarName: Dict[str, List[str]] = {
+            self._submodelClassName: []
+        }
+
         # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
+
+    def setSubmodelName(self, submodelName: str):
+        assert isinstance(
+            submodelName, str
+        ), f"submodelName must be a string!\nsubmodelName: {repr(submodelName)}"
+        assert len(submodelName) >= 1, "zero length submodelName submitted."
+        submodelName = submodelName.strip()
+        self._submodelName = submodelName
+        self.submodelNameToVarName = self.submodelNameToVarName.get(submodelName, [])
+
+    def getSubmodelName(self):
+        return self._submodelName
+
+    submodelName = property(fset=setSubmodelName, fget=getSubmodelName)
+
+    def setSubmodelClassName(self, submodelClassName: str):
+        assert isinstance(
+            submodelClassName, str
+        ), f"submodelClassName must be a string!\nsubmodelClassName: {repr(submodelClassName)}"
+        assert len(submodelClassName) >= 1, "zero length submodelClassName submitted."
+        submodelClassName = submodelClassName.strip()
+        self._submodelClassName = submodelClassName
+        self.submodelClassNameToVarName = self.submodelClassNameToVarName.get(
+            submodelClassName, []
+        )
+
+    def getSubmodelClassName(self):
+        return self._submodelClassName
+
+    submodelClassName = property(fset=setSubmodelClassName, fget=getSubmodelClassName)
 
     def check_assumptions(self):
         # TODO: call this function after model solved.
@@ -1576,6 +1613,14 @@ class ModelWrapper:
         ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
 
+        self.varNameToSubmodelName[name] = self.submodelName
+        self.submodelNameToVarName
+        self.submodelNameToVarName[self.submodelName].append(name)
+
+        self.varNameToSubmodelClassName[name] = self.submodelClassName
+        self.submodelClassNameToVarName
+        self.submodelClassNameToVarName[self.submodelClassName].append(name)
+
         return ret
 
     def Var(self, name: str, *args, **kwargs):
@@ -1588,6 +1633,14 @@ class ModelWrapper:
             getattr(self.model, name, None) is None
         ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
+
+        self.varNameToSubmodelName[name] = self.submodelName
+        self.submodelNameToVarName
+        self.submodelNameToVarName[self.submodelName].append(name)
+
+        self.varNameToSubmodelClassName[name] = self.submodelClassName
+        self.submodelClassNameToVarName
+        self.submodelClassNameToVarName[self.submodelClassName].append(name)
 
         return ret
 
@@ -1614,10 +1667,20 @@ class ModelWrapper:
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
         ret = Objective(expr=expr, *args[1:], **kwargs)
+        self.obj = ret
+        self.obj_expr = expr
         assert (
             getattr(self.model, name, None) is None
         ), f"错误: 不能设置两次相同的变量名称\n重复变量: { name }"
         self.model.__setattr__(name, ret)
+
+        self.varNameToSubmodelName[name] = self.submodelName
+        self.submodelNameToVarName
+        self.submodelNameToVarName[self.submodelName].append(name)
+
+        self.varNameToSubmodelClassName[name] = self.submodelClassName
+        self.submodelClassNameToVarName
+        self.submodelClassNameToVarName[self.submodelClassName].append(name)
 
         return ret
 
@@ -1628,6 +1691,7 @@ class ModelWrapper:
 # shall you assign port with variables.
 
 # 风、光照
+
 
 # 需要明确单位
 class 计算参数(BaseModel):
@@ -1760,7 +1824,12 @@ class 可购买类(Protocol):
 
 class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
-        logger_print("Building Device Model:", self.__class__.__name__)
+        logger_print(
+            "Building Device Model:", submodelClassName := self.__class__.__name__
+        )
+        submodelName = f"{submodelClassName}_{ID}"
+        self.mw.submodelName = submodelName
+        self.mw.submodelClassName = submodelClassName
         self.mw = mw
         self.PD = PD
         self.计算参数 = 计算参数实例
@@ -1927,7 +1996,6 @@ class 设备模型:
         pw_constr_type="EQ",
         unbounded_domain_var=True,
     ):
-
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
 
         # BUG: x out of bound, resulting into unsolvable problem.
@@ -1989,7 +2057,6 @@ class 设备模型:
                 h_list.append(_h)
             return sum(h_list)
         else:
-
             if type(x_var) == tuple:
                 assert len(x_var) == 2, f"Invalid `x_var`: {x_var}"
                 # format: (factor, x_var)
@@ -2445,7 +2512,6 @@ class 风力发电模型(设备模型):
         assert self.MaxWindSpeed >= self.RatedWindSpeed
 
         if self.设备信息.machineType in [风力发电类型.变桨, 风力发电类型.定桨]:
-
             发电曲线参数 = self.RatedPower / ((self.RatedWindSpeed - self.MinWindSpeed) ** 3)
 
             # windspeed (m/s) -> current power per device (kW)
@@ -2650,18 +2716,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -3230,18 +3296,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3561,18 +3627,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3709,18 +3775,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -4626,6 +4692,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+
 
 # partial if typical day mode is on.
 def compute(

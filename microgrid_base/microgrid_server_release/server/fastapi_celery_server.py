@@ -6,6 +6,8 @@ from celery import Celery
 from passwords import redis_password
 from typing import Union
 
+# BUG: no log written into "celery.log"
+
 MAIN_NAME = "fastapi_celery"
 
 app = Celery(

@@ -35,3 +35,7 @@ schedule
 pyhumps # for case (naming) related conversion
 pygments
 strenum
+docplex
+cplex
+flashtext
+# func_timeout

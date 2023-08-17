@@ -56,11 +56,19 @@ EXPORT_FORMAT_CODE = export_format_validate.py export_format_units.py
 
 MODEL_CODE = topo_check.py ies_optim.py ${EXPORT_FORMAT_CODE}
 
-EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py log_utils.py pyomo_patch.py
+# use $(wildcard <pattern>) to precompute the pattern.
+
+FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
+
+# UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
+UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))
+
+EXTRA_CODE_DEPS = passwords.py solve_model.py constants.py pyomo_patch.py ${UTILS}
+# EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py log_utils.py pyomo_patch.py debug_utils.py conflict_utils.py json_utils.py exception_utils.py
 
 EXPORT_FORMAT_SCHEMA = export_format.json planning_export_format.json
 
-EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock.json ${EXPORT_FORMAT_SCHEMA}
+EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock_reduced.json ${EXPORT_FORMAT_SCHEMA}
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
@@ -97,7 +105,7 @@ serve: release
 # ref: https://www.gnu.org/software/make/manual/html_node/Variables_002fRecursion.html
 
 code_check: code_checker.py
-	${PYTHON} code_checker.py
+	${PYTHON} code_checker.py -- ${MAKE} ${MAKECMDGOALS}
 
 test: release
 	${MAKE} -e -C test
@@ -149,7 +157,7 @@ ${EXPORT_FORMAT_CODE} ${EXPORT_FORMAT_SCHEMA} sim_param_export.xlsx: export_form
 microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} parse_units_and_names.py
 
-${MICROGRID_TYPESYS_JSONS} ${TYPESYS_PLOTS}: type_system_v2.py utils.py
+${MICROGRID_TYPESYS_JSONS} ${TYPESYS_PLOTS}: type_system_v2.py csv_utils.py
 	${PYTHON} type_system_v2.py -p
 
 frontend_sim_param_translation.json: frontend_sim_param_translation.js parse_frontend_sim_param_translation.py
@@ -167,3 +175,15 @@ passwords.py: passwords_template.py
 
 test_output_full_mock.json: test_output_full.json
 	cp test_output_full.json test_output_full_mock.json
+
+test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_size.py json_utils.py
+	${PYTHON} reduce_demo_data_size.py
+
+# great.
+# test_make_args:
+# 	# echo ${MAKEFLAGS}
+# 	echo ${MAKECMDGOALS}
+
+# test_utils_wildcard:
+#	echo ${UTILS}
+#	echo ${FILTERED_UTILS}
