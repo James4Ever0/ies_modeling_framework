@@ -16,5 +16,6 @@ class ConflictRefinerParams(BaseModel):
     @validator("output")
     def validate_output(cls, val):
         dirname = os.path.dirname(val)
-        assert os.path.isdir(dirname), "output directory does not exist!\n"
-        assert not os.path.isdir(val)
+        assert os.path.isdir(dirname), f"output directory does not exist!\noutput path: {val}"
+        assert not os.path.isdir(val), f"output path shall not be an existing directory!\noutput path: {val}"
+        return val
