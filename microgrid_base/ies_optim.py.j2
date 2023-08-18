@@ -886,10 +886,10 @@ class 设备模型:
     def __init__(self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, ID: int):
         logger_print("Building Device Model:", submodelClassName:=self.__class__.__name__)
         submodelName = f"{submodelClassName}_{ID}"
+        self.mw = mw
 {% for attrName in submodelRelatedAttrs %}
         self.mw.{{attrName}} = {{attrName}}
 {% endfor%}
-        self.mw = mw
         self.PD = PD
         self.计算参数 = 计算参数实例
         self.ID = ID
