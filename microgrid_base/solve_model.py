@@ -261,28 +261,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                 _, model_smap_id = mw.model.write(
                     filename=lp_filepath, io_options=io_options
                 )
-
-                # use conda "docplex" environment to get the result.
-                crp = ConflictRefinerParams(
-                    model_path=lp_filepath,
-                    output=(
-                        cplex_conflict_output_path := os.path.join(
-                            solver_log_dir_with_timestamp, "cplex_conflict.txt"
-                        )
-                    ),
-                    timeout=7,
-                )
-                refine_log = conflict_refiner(crp)
-                logger_print("cplex refine log:", refine_log)
-
-                import shutil
-
-                shutil.move(solver_log, solver_log_dir_with_timestamp)
-
-                errorManager.append("")
-                errorManager.append("Solver log saved to: " + solver_log)
-                errorManager.append("Model saved to: " + lp_filepath)
-
+                
                 # begin to debug in detail.
 
                 export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
@@ -294,9 +273,34 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     translateFileUsingSymbolMap(fpath, smap)
                     translated_log_files.append(fpath)
 
-                translate_and_append(lp_filepath, export_model_smap)
 
-                translate_and_append(cplex_conflict_output_path, export_model_smap)
+                # use conda "docplex" environment to get the result.
+                crp = ConflictRefinerParams(
+                    model_path=lp_filepath,
+                    output=(
+                        cplex_conflict_output_path := os.path.join(
+                            solver_log_dir_with_timestamp, "cplex_conflict.txt"
+                        )
+                    ),
+                    timeout=7,
+                )
+                
+                refine_log = conflict_refiner(crp)
+                if refine_log:
+                    logger_print("cplex refine log:", refine_log)
+                    translate_and_append(cplex_conflict_output_path, export_model_smap)
+                else:
+                    errorManager
+
+                import shutil
+
+                shutil.move(solver_log, solver_log_dir_with_timestamp)
+
+                errorManager.append("")
+                errorManager.append("Solver log saved to: " + solver_log)
+                errorManager.append("Model saved to: " + lp_filepath)
+
+                translate_and_append(lp_filepath, export_model_smap)
 
                 translate_and_append(solver_log, solver_model_smap)
 

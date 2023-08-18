@@ -97,7 +97,10 @@ else:
 
 
     import pytz
-    timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
+    # with respect to our dearly Py3.6
+    timezone_str='Asia/Shanghai'
+    # timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
+    timezone = pytz.timezone(timezone_str)
     # import logging
     import datetime
 
