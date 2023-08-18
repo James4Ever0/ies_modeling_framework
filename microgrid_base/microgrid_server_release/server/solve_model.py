@@ -4,7 +4,7 @@ import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
 from debug_utils import *
-from exception_utils import exceptionManager
+from error_utils import errorManager
 
 from typing import cast
 from constants import * # pylance issue: unrecognized var names
@@ -234,11 +234,11 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 #     error_msg.append("_" * 20)
                 #     error_msg.append("")
             if TC not in normalTCs:
-                exceptionManager.append(f"abnormal termination condition: {TC}")
+                errorManager.append(f"abnormal termination condition: {TC}")
             if SS not in normalSSs:
-                exceptionManager.append(f"abnormal solver status: {TC}")
+                errorManager.append(f"abnormal solver status: {TC}")
             # if error_msg:
-            if exceptionManager:
+            if errorManager:
                 from log_utils import log_dir, timezone
                 import datetime
 
@@ -267,9 +267,9 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
 
                 shutil.move(solver_log, solver_log_dir_with_timestamp)
 
-                exceptionManager.append("")
-                exceptionManager.append("Solver log saved to: " + solver_log)
-                exceptionManager.append("Model saved to: " + lp_filepath)
+                errorManager.append("")
+                errorManager.append("Solver log saved to: " + solver_log)
+                errorManager.append("Model saved to: " + lp_filepath)
 
                 # begin to debug in detail.
 
@@ -289,10 +289,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 translate_and_append(solver_log, solver_model_smap)
 
                 # after translation, begin experiments.
-                checkInfeasibleOrUnboundedModel()
+                checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")
+                os.mkdir(checkIOUDirectory)
+                checkInfeasibleOrUnboundedModel(mw,solver, checkIOUDirectory)
 
                 # raise Exception("\n".join(error_msg))
-                exceptionManager.raise_if_any()
+                errorManager.raise_if_any()
 
         logger_print("OBJ:", value(OBJ))
         # export value.

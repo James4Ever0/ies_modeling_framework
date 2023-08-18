@@ -12,4 +12,10 @@
     "python.analysis.autoImportCompletions": false,
     "editor.wordWrap": "on",
     "python.analysis.typeCheckingMode": "basic",
+    "search.exclude": { // to ignore files to search.
+    "microgrid_base/microgrid_server_release/*": true,
+},
+"files.exclude": { // avoid accidentally jump to these files.
+    "microgrid_base/microgrid_server_release/*": true,
+},
 }

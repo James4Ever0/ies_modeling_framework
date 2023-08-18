@@ -8,5 +8,6 @@ bash init.sh
 cd ..
 cd server
 # mkdir logs
-mv /root/history_logs logs
+cp -R /root/history_logs logs
+rm -rf logs
 bash fastapi_tmuxp.sh windows

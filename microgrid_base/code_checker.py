@@ -5,7 +5,7 @@ import os
 import astor
 import re
 from typing import Callable
-from exception_utils import exceptionManager
+from error_utils import errorManager
 # import traceback
 
 EXCEPTION_LIST = ['exceptional_print.py', 'conflict_utils.py']
@@ -13,8 +13,8 @@ EXCEPTION_LIST = ['exceptional_print.py', 'conflict_utils.py']
 
 for exception in EXCEPTION_LIST:
     if not os.path.exists(exception):
-        exceptionManager.append("exception filepath '%s' does not exist." % exception)
-exceptionManager.raise_if_any()
+        errorManager.append("exception filepath '%s' does not exist." % exception)
+errorManager.raise_if_any()
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"

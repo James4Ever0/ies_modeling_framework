@@ -2,7 +2,7 @@ from log_utils import logger_print
 
 from beartype import beartype
 @beartype
-class ExceptionManager:
+class ErrorManager:
     def __init__(self):
         self.errors = []
     def __bool__(self):
@@ -42,4 +42,4 @@ class ExceptionManager:
         return iter(self.errors)
     
 
-exceptionManager = ExceptionManager()
+errorManager = ErrorManager()

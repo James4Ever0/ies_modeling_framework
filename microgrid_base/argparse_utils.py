@@ -1,10 +1,10 @@
-from log_utils import logger_print
+from log_utils import logger_print, pretty
 
 # from pydantic import BaseModel
 import argparse
 from typing import TypeVar, Generic, Callable, Any
 from beartype import beartype
-from exception_utils import ExceptionManager
+from error_utils import ErrorManager
 import subprocess
 
 pydantic_type_to_pytype = {
@@ -15,7 +15,11 @@ pydantic_type_to_pytype = {
 }
 
 prop_translation_as_is = ["default"]
-prop_translation_table = {"title": "help", **{e: e for e in prop_translation_as_is}}
+prop_translation_table = {
+    "enum": "choices",
+    "title": "help",
+    **{e: e for e in prop_translation_as_is},
+}
 
 T = TypeVar("T")
 
@@ -31,8 +35,8 @@ class ExternalFunctionManager(Generic[T]):
         self.fields = self.properties.keys()
         self.cli_arguments = {}
         self.required = self.schema["required"]
-        with ExceptionManager(
-            default_error=f"error on processing schema:\n{self.schema}\ndataModel: {repr(self.dataModel)}"
+        with ErrorManager(
+            default_error=f"error on processing schema:\n{pretty(self.schema)}\ndataModel: {repr(self.dataModel)}"
         ) as ex:
             for field, prop in self.properties.items():
                 args = {"required": field in self.required}

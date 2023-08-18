@@ -19,7 +19,6 @@ class ExceptionManager:
         Args:
             suppress_error:bool: If suppressed, don't treat manual appended error messages as exception
             suppress_exception:bool: If suppressed, don't suppress exception raised by program
-            default_error:str: The default error message to display when an error occurs during execution
 
         """
         self.errors = []
@@ -30,7 +29,7 @@ class ExceptionManager:
     def __bool__(self):
         return len(self.errors) > 0
 
-    def has_error(self):
+    def has_exception(self):
         return bool(self)
 
     def append(self, error: str):
@@ -43,7 +42,7 @@ class ExceptionManager:
     def format_error(self, clear=True, join: str = "\n"):
         error_msg = join.join(
             self.errors
-            + ([self.default_error] if (self and self.default_error) else [])
+            + ([] if (self and self.default_error) else [self.default_error])
         )
         if clear:
             self.clear()

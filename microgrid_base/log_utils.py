@@ -5,6 +5,10 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 # TODO: configure file handlers for celery logging
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 
+from rich.pretty import pretty_repr
+
+def pretty(obj):
+    return pretty_repr(obj)
 # python version check
 
 import sys  # recommend: 3.11.2
@@ -153,7 +157,6 @@ else:
     logger.addHandler(myHandler) # BUG: make sure long logs are unaffected in file.
     logger.addHandler(stdout_handler)
 
-    from rich.pretty import pretty_repr
 
 
     def logger_print(*args, logger = logger):
@@ -164,7 +167,7 @@ else:
                 format_string,
                 *[
                     # fallback for older versions:
-                    pretty_repr(arg)
+                    pretty(arg)
                     if not any(isinstance(arg, t) for t in [bytes, str])
                     else arg
                     # pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg
