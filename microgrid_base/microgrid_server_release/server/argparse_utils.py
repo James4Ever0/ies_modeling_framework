@@ -31,7 +31,7 @@ T = TypeVar("T")
 class ExternalFunctionManager(Generic[T]):
     def __init__(self, dataModel: T, cmd: str):
         self.dataModel = dataModel
-        self.cmd = cmd
+        self.cmd = cmd.strip()
         self.schema = self.dataModel.schema()
         self.properties = self.schema["properties"]
         self.fields = self.properties.keys()
@@ -81,10 +81,10 @@ class ExternalFunctionManager(Generic[T]):
             ), f"Invalid parameter: {param}\nShould be of type {self.dataModel}"
             arguments = []
             for argName, argVal in param.dict().items():
-                pytype = self.cli_arguments[argName]['type']
+                pytype = self.cli_arguments[argName]["type"]
                 arguments.extend([f"--{argName}", str(pytype(argVal))])
             proc_cmd = self.cmd.split() + arguments
-            logger_print('calling:', proc_cmd, " ".join(proc_cmd))
+            logger_print("calling:", proc_cmd, " ".join(proc_cmd))
             proc = subprocess.run(proc_cmd)
             logger_print("process output:", proc.stdout.decode())
             logger_print("process stderr:", proc.stderr.decode())

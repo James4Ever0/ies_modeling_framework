@@ -267,7 +267,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     model_path=lp_filepath,
                     output=(
                         cplex_conflict_output_path := os.path.join(
-                            solver_log_dir_with_timestamp
+                            solver_log_dir_with_timestamp, "cplex_conflict.txt"
                         )
                     ),
                     timeout=7,
