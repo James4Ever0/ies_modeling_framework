@@ -16,7 +16,7 @@ import sys  # recommend: 3.11.2
 MIN_PY_VERSION = (3, 8)
 if sys.version_info < MIN_PY_VERSION:
     logger_print = print
-    logger_print(f"Please use Python {'.'.join(MIN_PY_VERSION)} and above.")
+    logger_print(f"Please use Python {'.'.join([str(v) for v in MIN_PY_VERSION])} and above.")
 else:
     # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 

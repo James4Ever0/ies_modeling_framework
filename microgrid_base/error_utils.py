@@ -1,10 +1,10 @@
 from log_utils import logger_print
 
-from beartype import beartype
+# from beartype import beartype
 from typing import Union
 
 
-@beartype
+# @beartype
 class ErrorManager:
     """
     Manage exceptions and errors.
