@@ -26,11 +26,12 @@ else
 CONDA_ENV = cplex
 PYTHON = python ${PYTHON_ENV}
 GSUDO = gsudo
+$(shell gsudo cache on)
 endif
 
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 
-run_in_conda_env := conda run -n $(1) --live-stream --no-capture-output
+run_in_conda_env = conda run -n $(1) --live-stream --no-capture-output python
 
 
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
@@ -104,7 +105,7 @@ main: release
 
 requirements: ${PYTHON_REQUIREMENTS}
 	${GSUDO} ${PYTHON} -m pip install -r requirements.txt
-	${GSUDO} $(call run_in_conda_env, docplex) -m pip install -r requirements_docplex.txt
+	${GSUDO} $(call run_in_conda_env,docplex) -m pip install -r requirements_docplex.txt
 
 ${LOG_DIRS}:
 	mkdir -p $@
