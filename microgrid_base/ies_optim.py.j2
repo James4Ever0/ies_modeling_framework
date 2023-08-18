@@ -640,7 +640,7 @@ def examineSubExprDegree(expr):
         assert len({{attrName}})>=1, "zero length {{attrName}} submitted."
         {{attrName}} = {{attrName}}.strip()
         self._{{attrName}} = {{attrName}}
-        self.{{attrName}}ToVarName = self.{{attrName}}ToVarName.get({{attrName}}, [])
+        self.{{attrName}}ToVarName[{{attrName}}] = self.{{attrName}}ToVarName.get({{attrName}}, []) 
     def get{{pascalize(attrName)}}(self):
         return self._{{attrName}}
     {{attrName}} = property(fset=set{{pascalize(attrName)}}, fget=get{{pascalize(attrName)}})
