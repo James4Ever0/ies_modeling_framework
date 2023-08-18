@@ -218,7 +218,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                 if TC in IOUTerminationConditions:
                     ...
                     # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
-                    
+
                     # mstream.truncate(0)
                     # just don't do this.
                     # logger.info("logging infeasible constraints".center(70, "="))
@@ -298,11 +298,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     shutil.move(solver_log, solver_log_dir_with_timestamp)
 
                     em.append("")
-                    em.append("Solver log saved to: " + solver_log)
+                    em.append("Solver log saved to: " + solver_log_dir_with_timestamp)
                     em.append("Model saved to: " + lp_filepath)
 
                     translate_and_append(lp_filepath, export_model_smap)
 
+                    # BUG: solver_log not found (in temp)
                     translate_and_append(solver_log, solver_model_smap)
 
                     # after translation, begin experiments.

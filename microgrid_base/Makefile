@@ -103,9 +103,10 @@ endif
 main: release
 	${MAIN_EXEC}
 
-requirements: ${PYTHON_REQUIREMENTS}
+.requirements: ${PYTHON_REQUIREMENTS}
 	${GSUDO} ${PYTHON} -m pip install -r requirements.txt
 	${GSUDO} $(call run_in_conda_env,docplex) -m pip install -r requirements_docplex.txt
+	touch .requirements
 
 ${LOG_DIRS}:
 	mkdir -p $@
@@ -128,7 +129,7 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: code test_code ${LOG_DIRS} server code_check release_prepare requirements
+release: code test_code ${LOG_DIRS} server code_check release_prepare .requirements
 
 release_prepare:
 	rm -rf ${RELEASE_DIR}
