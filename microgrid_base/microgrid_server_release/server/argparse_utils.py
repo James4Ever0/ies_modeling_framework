@@ -81,7 +81,8 @@ class ExternalFunctionManager(Generic[T]):
             ), f"Invalid parameter: {param}\nShould be of type {self.dataModel}"
             arguments = []
             for argName, argVal in param.dict().items():
-                arguments.extend([f"--{argName}", str(argVal)])
+                pytype = self.cli_arguments[argName]['type']
+                arguments.extend([f"--{argName}", str(pytype(argVal))])
             proc_cmd = self.cmd.split() + arguments
             logger_print('calling:', proc_cmd, " ".join(proc_cmd))
             proc = subprocess.run(proc_cmd)
