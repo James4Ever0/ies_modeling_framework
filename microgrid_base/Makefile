@@ -27,6 +27,10 @@ PYTHON = python ${PYTHON_ENV}
 endif
 
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
+
+define run_in_conda_env
+	conda run -n ${CONDA_ENV} --live-stream --no-capture-output
+	
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
 
 export OS_TYPE PLATFORM PYTHON PYTHON_ENV CONDA_ENV
@@ -72,7 +76,9 @@ EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock_redu
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
-INIT_FILES = requirements.txt requirements_docplex.txt init.sh conda_init.sh
+PYTHON_REQUIREMENTS = requirements.txt requirements_docplex.txt
+
+INIT_FILES = ${PYTHON_REQUIREMENTS} init.sh conda_init.sh
 
 TEST_INPUT_FORMAT_FILES = template_input.json test_json_input_format.py
 
@@ -93,6 +99,10 @@ endif
 
 main: release
 	${MAIN_EXEC}
+
+requirements: ${PYTHON_REQUIREMENTS}
+	${PYTHON} -m pip install -r requirements.txt
+	
 
 ${LOG_DIRS}:
 	mkdir -p $@
@@ -186,4 +196,4 @@ test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_
 
 # test_utils_wildcard:
 #	echo ${UTILS}
-#	echo ${FILTERED_UTILS}
+#	echo ${FILTERED_UTIL

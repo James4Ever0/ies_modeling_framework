@@ -145,7 +145,7 @@ if error == "infeasible":
         if output_table is not None:
             output_table.to_csv("output_table.csv")
     else:
-        raise Exception("unknown api for error '%s': %s" % (error, api))
+        raise Exception("unknown api for model error '%s': %s" % (error, api))
 # elif error == "unbounded":
 #     if api == "cplex":
 #         c = mdl.cplex
