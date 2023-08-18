@@ -207,9 +207,9 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
 
             assert results, "no solver result."
             checkResult = checkIfSolverHasSolvedModel(results)
-            status = checkResult['status']
-            TC = status['terminationCondition']
-            SS = status['solverStatus']
+            status = checkResult.status
+            TC = status.terminationCondition
+            SS = status.solverStatus
             # TC = results.solver.termination_condition
             # SS = results.solver.status
 

@@ -654,9 +654,9 @@ def examineSubExprDegree(expr):
 {% set getter=attrName+"Getter"%}
 {% set setter=attrName+"Setter"%}
     def {{getter}}(self):
-        return self.{{attrName}}
+        return self._{{attrName}}
     def {{setter}}(self, val):
-        setattr(self, {{repr(attrName)}}, val)
+        self._{{attrName}} = val
 
     {{attrName}} = property(fget = {{getter}}, fset = {{setter}})
 {% endmacro%}
@@ -668,6 +668,9 @@ class ModelWrapper:
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+{% for objRelatedAttr in objectiveRelatedAttrs %}
+        self._{{objRelatedAttr}} = ...
+{% endfor %}
     {# still inside __init__ method #}
 {{applyMacroWithSingleParam(initSubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
         # TODO: put assumptions into here after any operation using BigM notation (like multiplication)

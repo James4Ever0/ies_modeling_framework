@@ -11,7 +11,8 @@ import flashtext
 import os
 from beartype import beartype
 # import subprocess
-from typing import TypedDict
+# from typing import TypedDict
+from pydantic import BaseModel
 # from typing import Literal, TypedDict
 
 normalSSs = [SolverStatus.ok, SolverStatus.warning]
@@ -27,12 +28,12 @@ IOUTerminationConditions = [
 ]
 
 
-class SolverReturnStatus(TypedDict):
+class SolverReturnStatus(BaseModel):
     terminationCondition: TerminationCondition
     solverStatus: SolverStatus
 
 
-class CheckSolverReturnValResult(TypedDict):
+class CheckSolverReturnValResult(BaseModel):
     success: bool
     status: SolverReturnStatus
 
@@ -43,7 +44,7 @@ def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
     solved = TC in normalTCs and SS in normalSSs
     return CheckSolverReturnValResult(
         success=solved,
-        solverStatus=SolverReturnStatus(terminationCondition=TC, solverStatus=SS),
+        status=SolverReturnStatus(terminationCondition=TC, solverStatus=SS),
     )
 
 # TODO: gluecode automation (maybe metaclass?)
@@ -173,7 +174,7 @@ def solve_with_translated_log_and_statistics(
     logger_print(f"{msg_label} termination condition:", termination_condition)
     logger_print(f"{msg_label} logfile: %s" % logfile)
     checkResult = checkIfSolverHasSolvedModel(ret)
-    solved = checkResult["success"]
+    solved = checkResult.success
     if not solved:
         logger_print("solver does not have solution.")
     # else:
