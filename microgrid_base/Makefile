@@ -21,16 +21,17 @@ PYTHON_ENV = -X utf8=1
 ifeq (${OS_TYPE}, macos)
 CONDA_ENV = rosetta
 PYTHON = /usr/bin/python3
+GSUDO = 
 else
 CONDA_ENV = cplex
 PYTHON = python ${PYTHON_ENV}
+GSUDO = gsudo
 endif
 
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 
-define run_in_conda_env
-	conda run -n ${0} --live-stream --no-capture-output
-endef
+run_in_conda_env := conda run -n $(1) --live-stream --no-capture-output
+
 
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
 
@@ -102,8 +103,8 @@ main: release
 	${MAIN_EXEC}
 
 requirements: ${PYTHON_REQUIREMENTS}
-	${PYTHON} -m pip install -r requirements.txt
-	$(run_in_conda_env docplex) -m pip install -r requirements_docplex.txt
+	${GSUDO} ${PYTHON} -m pip install -r requirements.txt
+	${GSUDO} $(call run_in_conda_env, docplex) -m pip install -r requirements_docplex.txt
 
 ${LOG_DIRS}:
 	mkdir -p $@
