@@ -29,8 +29,9 @@ endif
 CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
 
 define run_in_conda_env
-	conda run -n ${CONDA_ENV} --live-stream --no-capture-output
-	
+	conda run -n ${0} --live-stream --no-capture-output
+endef
+
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
 
 export OS_TYPE PLATFORM PYTHON PYTHON_ENV CONDA_ENV
@@ -102,7 +103,7 @@ main: release
 
 requirements: ${PYTHON_REQUIREMENTS}
 	${PYTHON} -m pip install -r requirements.txt
-	
+	$(run_in_conda_env docplex) -m pip install -r requirements_docplex.txt
 
 ${LOG_DIRS}:
 	mkdir -p $@
@@ -125,7 +126,7 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: code test_code ${LOG_DIRS} server code_check release_prepare
+release: code test_code ${LOG_DIRS} server code_check release_prepare requirements
 
 release_prepare:
 	rm -rf ${RELEASE_DIR}
@@ -196,4 +197,4 @@ test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_
 
 # test_utils_wildcard:
 #	echo ${UTILS}
-#	echo ${FILTERED_UTIL
+#	echo ${FILTERED_UTILS}

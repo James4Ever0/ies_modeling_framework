@@ -4,7 +4,7 @@ import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
 from debug_utils import *
-from error_utils import errorManager
+from error_utils import ErrorManager
 
 from typing import cast
 from constants import *  # pylance issue: unrecognized var names
@@ -214,101 +214,106 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
             # TC = results.solver.termination_condition
             # SS = results.solver.status
 
-            # error_msg = []
-            # strip away other logging data.
-            if TC in IOUTerminationConditions:
-                ...
-                # mstream.truncate(0)
-                # just don't do this.
-                # logger.info("logging infeasible constraints".center(70, "="))
-                # log_infeasible_constraints(
-                #     mw.model, log_expression=True, log_variables=True, logger=logger
-                # )
+            with ErrorManager() as em:
+                if TC in IOUTerminationConditions:
+                    ...
+                    # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
+                    
+                    # mstream.truncate(0)
+                    # just don't do this.
+                    # logger.info("logging infeasible constraints".center(70, "="))
+                    # log_infeasible_constraints(
+                    #     mw.model, log_expression=True, log_variables=True, logger=logger
+                    # )
 
-                # mstream.seek(0)
-                # infeasible_constraint_log = mstream.getvalue()
-                # mstream.truncate(0)
-                # if infeasible_constraint_log:
-                #     error_msg.append("")
-                #     error_msg.append(infeasible_constraint_log)
-                #     error_msg.append("")
-                #     error_msg.append("_" * 20)
-                #     error_msg.append("")
-            if TC not in normalTCs:
-                errorManager.append(f"abnormal termination condition: {TC}")
-            if SS not in normalSSs:
-                errorManager.append(f"abnormal solver status: {TC}")
-            # if error_msg:
-            if errorManager:
-                from log_utils import log_dir, timezone
-                import datetime
+                    # mstream.seek(0)
+                    # infeasible_constraint_log = mstream.getvalue()
+                    # mstream.truncate(0)
+                    # if infeasible_constraint_log:
+                    #     error_msg.append("")
+                    #     error_msg.append(infeasible_constraint_log)
+                    #     error_msg.append("")
+                    #     error_msg.append("_" * 20)
+                    #     error_msg.append("")
+                if TC not in normalTCs:
+                    em.append(f"abnormal termination condition: {TC}")
+                if SS not in normalSSs:
+                    em.append(f"abnormal solver status: {TC}")
+                # if error_msg:
+                if em:
+                    from log_utils import log_dir, timezone
+                    import datetime
 
-                # import pytz
-                # tz = pytz.timezone("US/Eastern")
-                timestamp = (
-                    str(datetime.datetime.now(timezone))
-                    .replace(" ", "_")
-                    .replace("-", "_")
-                    .replace(".", "_")
-                    .replace(":", "_")
-                )
-                os.mkdir(
-                    solver_log_dir_with_timestamp := os.path.join(
-                        log_dir, f"pyomo_{timestamp}"
+                    # import pytz
+                    # tz = pytz.timezone("US/Eastern")
+                    timestamp = (
+                        str(datetime.datetime.now(timezone))
+                        .replace(" ", "_")
+                        .replace("-", "_")
+                        .replace(".", "_")
+                        .replace(":", "_")
                     )
-                )
-                lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
-                _, model_smap_id = mw.model.write(
-                    filename=lp_filepath, io_options=io_options
-                )
-
-                # use conda "docplex" environment to get the result.
-                crp = ConflictRefinerParams(
-                    model_path=lp_filepath,
-                    output=(
-                        cplex_conflict_output_path := os.path.join(
-                            solver_log_dir_with_timestamp, "cplex_conflict.txt"
+                    os.mkdir(
+                        solver_log_dir_with_timestamp := os.path.join(
+                            log_dir, f"pyomo_{timestamp}"
                         )
-                    ),
-                    timeout=7,
-                )
-                refine_log = conflict_refiner(crp)
-                logger_print("cplex refine log:", refine_log)
+                    )
+                    lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
+                    _, model_smap_id = mw.model.write(
+                        filename=lp_filepath, io_options=io_options
+                    )
+                    
+                    # begin to debug in detail.
 
-                import shutil
+                    export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
+                    solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
 
-                shutil.move(solver_log, solver_log_dir_with_timestamp)
+                    translated_log_files = []
 
-                errorManager.append("")
-                errorManager.append("Solver log saved to: " + solver_log)
-                errorManager.append("Model saved to: " + lp_filepath)
+                    def translate_and_append(fpath, smap):
+                        translateFileUsingSymbolMap(fpath, smap)
+                        translated_log_files.append(fpath)
 
-                # begin to debug in detail.
 
-                export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
-                solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
+                    # use conda "docplex" environment to get the result.
+                    crp = ConflictRefinerParams(
+                        model_path=lp_filepath,
+                        output=(
+                            cplex_conflict_output_path := os.path.join(
+                                solver_log_dir_with_timestamp, "cplex_conflict.txt"
+                            )
+                        ),
+                        timeout=7,
+                    )
+                    
+                    refine_log = conflict_refiner(crp)
+                    if refine_log:
+                        logger_print("cplex refine log:", refine_log)
+                        translate_and_append(cplex_conflict_output_path, export_model_smap)
+                    else:
+                        em.append("No conflicts found by cplex.")
 
-                translated_log_files = []
+                    import shutil
 
-                def translate_and_append(fpath, smap):
-                    translateFileUsingSymbolMap(fpath, smap)
-                    translated_log_files.append(fpath)
+                    shutil.move(solver_log, solver_log_dir_with_timestamp)
 
-                translate_and_append(lp_filepath, export_model_smap)
+                    em.append("")
+                    em.append("Solver log saved to: " + solver_log)
+                    em.append("Model saved to: " + lp_filepath)
 
-                translate_and_append(cplex_conflict_output_path, export_model_smap)
+                    translate_and_append(lp_filepath, export_model_smap)
 
-                translate_and_append(solver_log, solver_model_smap)
+                    translate_and_append(solver_log, solver_model_smap)
 
-                # after translation, begin experiments.
-                checkIOUDirectory = os.path.join(
-                    solver_log_dir_with_timestamp, "checkIOU"
-                )
-                os.mkdir(checkIOUDirectory)
-                checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
+                    # after translation, begin experiments.
+                    checkIOUDirectory = os.path.join(
+                        solver_log_dir_with_timestamp, "checkIOU"
+                    )
+                    os.mkdir(checkIOUDirectory)
+                    checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
 
-                # raise Exception("\n".join(error_msg))
-                errorManager.raise_if_any()
+                    # raise Exception("\n".join(error_msg))
+                    # em.raise_if_any()
 
         logger_print("OBJ:", value(OBJ))
         # export value.

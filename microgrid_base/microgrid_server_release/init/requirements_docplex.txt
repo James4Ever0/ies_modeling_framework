@@ -1,0 +1,8 @@
+pandas
+# func_timeout
+docplex
+# wmi; sys_platform == 'win32'
+beartype
+# may require lower version of pydantic.
+pydantic
+rich

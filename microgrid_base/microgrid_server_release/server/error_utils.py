@@ -86,4 +86,3 @@ class ErrorManager:
         return iter(self.errors)
 
 
-errorManager = ErrorManager()
