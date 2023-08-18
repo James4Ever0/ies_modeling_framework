@@ -1,5 +1,5 @@
 from log_utils import logger_print
-import pyomo_patch # type: ignore
+import pyomo_patch  # type: ignore
 import json
 from typing import List, Dict, Any, Union, Tuple
 from beartype import beartype
@@ -7,9 +7,10 @@ from debug_utils import *
 from error_utils import errorManager
 
 from typing import cast
-from constants import * # pylance issue: unrecognized var names
+from constants import *  # pylance issue: unrecognized var names
 import pandas as pd
 import cmath
+
 # from ies_optim import 规划结果详情,规划方案概览
 
 try:
@@ -17,7 +18,7 @@ try:
 except:
     from typing_extensions import Literal
 from ies_optim import ModelWrapper
-from export_format_validate import * # pylance issue: multiple star import (false positive)
+from export_format_validate import *  # pylance issue: multiple star import (false positive)
 from pyomo.environ import *
 
 # from pyomo.util.infeasible import log_infeasible_constraints
@@ -128,7 +129,7 @@ from ies_optim import compute, ModelWrapperContext
 from copy import deepcopy
 
 
-def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict()):
+def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
     # devClassMapping = {
@@ -257,10 +258,20 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                     )
                 )
                 lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
-                _, model_smap_id = mw.model.write(filename=lp_filepath, io_options=io_options)
+                _, model_smap_id = mw.model.write(
+                    filename=lp_filepath, io_options=io_options
+                )
 
                 # use conda "docplex" environment to get the result.
-                crp = ConflictRefinerParams(model_path=lp_filepath,output=cplex_conflict_output_path:=os.path.join(solver_log_dir_with_timestamp),timeout=7)
+                crp = ConflictRefinerParams(
+                    model_path=lp_filepath,
+                    output=(
+                        cplex_conflict_output_path := os.path.join(
+                            solver_log_dir_with_timestamp
+                        )
+                    ),
+                    timeout=7,
+                )
                 refine_log = conflict_refiner(crp)
                 logger_print("cplex refine log:", refine_log)
 
@@ -290,10 +301,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 translate_and_append(solver_log, solver_model_smap)
 
                 # after translation, begin experiments.
-                checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")
+                checkIOUDirectory = os.path.join(
+                    solver_log_dir_with_timestamp, "checkIOU"
+                )
                 os.mkdir(checkIOUDirectory)
-                checkInfeasibleOrUnboundedModel(mw,solver, checkIOUDirectory)
-                
+                checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
+
                 # raise Exception("\n".join(error_msg))
                 errorManager.raise_if_any()
 
@@ -325,7 +338,7 @@ def targetTypeAsTargetName(targetType: str):
         raise Exception("Invalid targetType: {}".format(targetType))
 
 
-def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步长,计算类型):
+def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步长, 计算类型):
     calcParamList = deepcopy(mCalcParamList)
     # calcParamList = cast(tuple, deepcopy(mCalcParamList))
     calcTargetLUT = {
@@ -401,6 +414,7 @@ def 合并结果表(结果, 结果表: dict, 设备模型实例, 不可累加表
         结果表[设备模型实例] = {
             k: add_with_nan(v, 之前结果[k]) for k, v in 结果.dict().items() if k not in 不可累加表头
         }
+
 
 # TODO: unit test
 def fetchResult(solved: bool, ret: CalcStruct, 典型日):
@@ -636,7 +650,7 @@ def solve_model_and_fetch_result(
         abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
     )
     with ModelWrapperContext() as mw:
-        ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长,计算类型)
+        ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长, 计算类型)
         for expr_name, constraints in additional_constraints.items():
             expr = ret.calcTargetLUT[expr_name]
             min_const = constraints.get("min", None)
@@ -685,9 +699,8 @@ def solveModelFromCalcParamList(
     # 测试全年8760,没有典型日
 
     resultList = []
-    
-    commonParams = dict(典型日=典型日,
-                        计算步长=计算步长, 计算类型=计算类型)
+
+    commonParams = dict(典型日=典型日, 计算步长=计算步长, 计算类型=计算类型)
     # try:
     if 计算目标 in ["经济", "环保"]:
         solved, result, _ = solve_model_and_fetch_result(
@@ -704,7 +717,7 @@ def solveModelFromCalcParamList(
         # breakpoint()
         if rangeDict != {} and solved:
             solved, env_result, rangeDict = solve_model_and_fetch_result(
-                calcParamList, "环保", rangeDict=rangeDict,**commonParams
+                calcParamList, "环保", rangeDict=rangeDict, **commonParams
             )
             # breakpoint()
             if solved:
@@ -731,7 +744,8 @@ def solveModelFromCalcParamList(
                     solved, result, _ = solve_model_and_fetch_result(
                         calcParamList,
                         "经济",
-                        rangeDict=None,**commonParams,
+                        rangeDict=None,
+                        **commonParams,
                         additional_constraints=additional_constraints
                         # calcParamList, "环保", None, additional_constraints = additional_constraints
                     )
