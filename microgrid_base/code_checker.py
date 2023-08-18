@@ -12,9 +12,9 @@ EXCEPTION_LIST = ['exceptional_print.py', 'conflict_utils.py']
 
 
 with ErrorManager() as em:
-    for exception in EXCEPTION_LIST:
-        if not os.path.exists(exception):
-            em.append("exception filepath '%s' does not exist." % exception)
+    for exceptional_filepath in EXCEPTION_LIST:
+        if not os.path.exists(exceptional_filepath):
+            em.append("exceptional filepath '%s' does not exist." % exceptional_filepath)
 # errorManager.raise_if_any()
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
