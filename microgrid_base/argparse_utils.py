@@ -85,7 +85,9 @@ class ExternalFunctionManager(Generic[T]):
                 arguments.extend([f"--{argName}", str(pytype(argVal))])
             proc_cmd = self.cmd.split() + arguments
             logger_print("calling:", proc_cmd, " ".join(proc_cmd))
-            proc = subprocess.run(proc_cmd)
+            proc = subprocess.run(
+                proc_cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE
+            )
             logger_print("process output:", proc.stdout.decode())
             logger_print("process stderr:", proc.stderr.decode())
             if proc.returncode != 0:
