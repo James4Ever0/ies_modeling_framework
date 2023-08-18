@@ -260,7 +260,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 _, model_smap_id = mw.model.write(filename=lp_filepath, io_options=io_options)
 
                 # use conda "docplex" environment to get the result.
-                refine_log = conflict_refiner(lp_filepath, cplex_conflict_output_path:=os.path.join(solver_log_dir_with_timestamp,"conflict.txt"), "cplex", timeout=7)
+                crp = ConflictRefinerParams(model_path=lp_filepath,output=cplex_conflict_output_path:=os.path.join(solver_log_dir_with_timestamp),timeout=7)
+                refine_log = conflict_refiner(crp)
                 logger_print("cplex refine log:", refine_log)
 
                 import shutil

@@ -187,7 +187,7 @@ from pyomo.core.expr import current as EXPR
 from typing import Dict
 
 
-class DecomposedExpression(TypedDict):
+class DecomposedExpression(BaseModel):
     constant: float
     varNameToVarObject: Dict[str, str]
     varNameToVarCoefficient: Dict[str, float]
@@ -289,9 +289,9 @@ def decomposeAndAnalyzeObjectiveExpression(
         logger_print(decomposedResult)
         varNameToVarValue = {}
         varNameToTermValue = {}
-        for varName, varObj in decomposedResult["varNameToVarObject"].items():
+        for varName, varObj in decomposedResult.varNameToVarObject.items():
             varValue = value(varObj)
-            coef = decomposedResult["varNameToVarCoefficient"][
+            coef = decomposedResult.varNameToVarCoefficient[
                 varName
             ]  # seems to be no typeddict type checking in pyright
             termValue = coef * varValue
@@ -302,7 +302,7 @@ def decomposeAndAnalyzeObjectiveExpression(
         sortAndDisplayVarValuesAndTermValues(varNameToVarValue, varNameToTermValue)
 
         obj_val = value(obj_expr)
-        obj_const = decomposedResult["constant"]
+        obj_const = decomposedResult.constant
 
         # now we need to sort value by submodel name (grouping). don't count keywords here, because that is done in conflict report.
 
