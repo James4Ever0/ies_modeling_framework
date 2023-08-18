@@ -214,27 +214,27 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
             # TC = results.solver.termination_condition
             # SS = results.solver.status
 
-            # error_msg = []
-            # strip away other logging data.
-            if TC in IOUTerminationConditions:
-                ...
-                # mstream.truncate(0)
-                # just don't do this.
-                # logger.info("logging infeasible constraints".center(70, "="))
-                # log_infeasible_constraints(
-                #     mw.model, log_expression=True, log_variables=True, logger=logger
-                # )
-
-                # mstream.seek(0)
-                # infeasible_constraint_log = mstream.getvalue()
-                # mstream.truncate(0)
-                # if infeasible_constraint_log:
-                #     error_msg.append("")
-                #     error_msg.append(infeasible_constraint_log)
-                #     error_msg.append("")
-                #     error_msg.append("_" * 20)
-                #     error_msg.append("")
             with ErrorManager() as em:
+                if TC in IOUTerminationConditions:
+                    ...
+                    # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
+                    
+                    # mstream.truncate(0)
+                    # just don't do this.
+                    # logger.info("logging infeasible constraints".center(70, "="))
+                    # log_infeasible_constraints(
+                    #     mw.model, log_expression=True, log_variables=True, logger=logger
+                    # )
+
+                    # mstream.seek(0)
+                    # infeasible_constraint_log = mstream.getvalue()
+                    # mstream.truncate(0)
+                    # if infeasible_constraint_log:
+                    #     error_msg.append("")
+                    #     error_msg.append(infeasible_constraint_log)
+                    #     error_msg.append("")
+                    #     error_msg.append("_" * 20)
+                    #     error_msg.append("")
                 if TC not in normalTCs:
                     em.append(f"abnormal termination condition: {TC}")
                 if SS not in normalSSs:
