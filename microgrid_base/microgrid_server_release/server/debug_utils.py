@@ -1,3 +1,5 @@
+# TODO: assign debug/error id and separate logger/folder for error logging.
+
 from log_utils import logger_print
 
 # input: model, objective, etc.
@@ -8,8 +10,9 @@ from ies_optim import ModelWrapper
 import flashtext
 import os
 from beartype import beartype
-import subprocess
-from typing import Literal, TypedDict
+# import subprocess
+from typing import TypedDict
+# from typing import Literal, TypedDict
 
 normalSSs = [SolverStatus.ok, SolverStatus.warning]
 normalTCs = [
@@ -43,38 +46,47 @@ def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
         solverStatus=SolverReturnStatus(terminationCondition=TC, solverStatus=SS),
     )
 
+# TODO: gluecode automation (maybe metaclass?)
+# ref: https://github.com/gwenzek/func_argparse
+# ref: https://github.com/Acellera/func2argparse (py3.9+)
+# ref: https://github.com/pseeth/argbind
+# @beartype
+# def conflict_refiner(
+#     model_path: str,
+#     output: str,
+#     config: Literal["cplex", "docplex"],
+#     timeout: float = 5,
+# ):
+from shared_datamodels import ConflictRefinerParams
+from argparse_utils import conflictRefinerManager
 
-@beartype
-def conflict_refiner(
-    model_path: str,
-    output: str,
-    config: Literal["cplex", "docplex"],
-    timeout: float = 5,
-):
-    cmd = "conda run -n docplex --live-stream --no-capture-output python conflict_utils.py"
-    arguments = [
-        "--model_path",
-        model_path,
-        "--config",
-        config,
-        "--timeout",
-        timeout,
-        "--output",
-        output,
-    ]
-    proc = subprocess.run(cmd.split() + arguments)
-    logger_print("process output:", proc.stdout.decode())
-    logger_print("process stderr:", proc.stderr.decode())
-    # logger_print("process return code", proc.returncode)
-    if proc.returncode != 0:
-        logger_print("invalid process return code:", proc.returncode)
+@conflictRefinerManager.call
+def conflict_refiner(params: ConflictRefinerParams):
+# def conflict_refiner(param):
+    # cmd = "conda run -n docplex --live-stream --no-capture-output python conflict_utils.py"
+    # arguments = [
+    #     "--model_path",
+    #     model_path,
+    #     "--config",
+    #     config,
+    #     "--timeout",
+    #     timeout,
+    #     "--output",
+    #     output,
+    # ]
+    # proc = subprocess.run(cmd.split() + arguments)
+    # logger_print("process output:", proc.stdout.decode())
+    # logger_print("process stderr:", proc.stderr.decode())
+    # # logger_print("process return code", proc.returncode)
+    # if proc.returncode != 0:
+    #     logger_print("invalid process return code:", proc.returncode)
+    output = params.output
     if os.path.exists(output):
         with open(output, "r") as f:
             output_content = f.read()
         return output_content
     else:
         logger_print("output file not found:", output)
-
 
 from typing import Dict
 
@@ -252,6 +264,8 @@ def filterVarNameBySubModelVarNames(mDict, submodelVarNames):
 
 
 def groupBySubModelRelatedTranslationTable(
+    varNameToVarValue: Dict[str, float],
+    varNameToTermValue: Dict[str, float],
     translationTable: Dict[str, List[str]], label: str
 ):
     logger_print(f"grouping by submodel {label}:")
@@ -291,8 +305,8 @@ def decomposeAndAnalyzeObjectiveExpression(
 
         # now we need to sort value by submodel name (grouping). don't count keywords here, because that is done in conflict report.
 
-        groupBySubModelRelatedTranslationTable(submodelNameToVarNames, "name")
-        groupBySubModelRelatedTranslationTable(submodelClassNameToVarNames, "className")
+        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelNameToVarNames, "name")
+        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelClassNameToVarNames, "className")
 
         logger_print("(OBJ - OBJ_CONST)?", obj_val - obj_const)
         logger_print("OBJ?", obj_val)

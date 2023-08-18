@@ -292,7 +292,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options = dict())
                 checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")
                 os.mkdir(checkIOUDirectory)
                 checkInfeasibleOrUnboundedModel(mw,solver, checkIOUDirectory)
-
+                
                 # raise Exception("\n".join(error_msg))
                 errorManager.raise_if_any()
 

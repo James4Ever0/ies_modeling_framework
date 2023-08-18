@@ -2,7 +2,8 @@ import sys
 
 assert sys.version_info >= (3, 6) and sys.version_info < (3, 7),  f"Python version mismatch!\nExpected: >= 3.6, < 3.7\nActual: {sys.version.split()[0]}"
 
-import argparse
+# import argparse
+from argparse_utils import conflictRefinerManager
 # would you like not to modify print statements here?
 # cause we might not have anything to do with logging in "docplex" environment
 from docplex.mp.model import Model
@@ -68,9 +69,13 @@ def check_conflict(model, maxtime:float) -> bool:
         has_conflict = True
         output_table = None
     return has_conflict, output_table
+from shared_schemas import ConflictRefinerParams
 
-
-def conflict_refiner(model_path: str, output: str, config: str, timeout: float):
+# def conflict_refiner(model_path: str, output: str, config: str, timeout: float):
+@conflictRefinerManager.answer
+def conflict_refiner(params: ConflictRefinerParams):
+# def conflict_refiner(params):
+    model_path, output, config, timeout = params.model_path, params.output, params.config, params.timeout
     assert timeout > 0, f"invalid timeout: {timeout}"
     mdl: Model = ModelReader.read(model_path, model_name="InfeasibelLP")
     print("model loaded successfully from: %s" % model_path)
@@ -100,32 +105,33 @@ def conflict_refiner(model_path: str, output: str, config: str, timeout: float):
         raise Exception("unknown config: %s" % config)
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "-m", "--model_path", type=str, required=True, help="'.lp' model file path"
-    )
-    argparser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        required=True,
-        help="conflict analysis output file path",
-    )
-    argparser.add_argument(
-        "-c",
-        "--config",
-        type=str,
-        required=True,
-        help="conflict resolution method, can be one of ['cplex', 'docplex']",
-    )
-    argparser.add_argument(
-        "-t",
-        "--timeout",
-        type=float,
-        default=5,
-        help="timeout in seconds, default is 5 seconds",
-    )
-    arguments = argparser.parse_args()
-    conflict_refiner(
-        arguments.model_path, arguments.output, arguments.config, arguments.timeout
-    )
+    conflict_refiner()
+    # argparser = argparse.ArgumentParser()
+    # argparser.add_argument(
+    #     "-m", "--model_path", type=str, required=True, help="'.lp' model file path"
+    # )
+    # argparser.add_argument(
+    #     "-o",
+    #     "--output",
+    #     type=str,
+    #     required=True,
+    #     help="conflict analysis output file path",
+    # )
+    # argparser.add_argument(
+    #     "-c",
+    #     "--config",
+    #     type=str,
+    #     required=True,
+    #     help="conflict resolution method, can be one of ['cplex', 'docplex']",
+    # )
+    # argparser.add_argument(
+    #     "-t",
+    #     "--timeout",
+    #     type=float,
+    #     default=5,
+    #     help="timeout in seconds, default is 5 seconds",
+    # )
+    # arguments = argparser.parse_args()
+    # conflict_refiner(
+    #     arguments.model_path, arguments.output, arguments.config, arguments.timeout
+    # )

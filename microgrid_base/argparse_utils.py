@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from log_utils import logger_print, pretty
 
 # from pydantic import BaseModel

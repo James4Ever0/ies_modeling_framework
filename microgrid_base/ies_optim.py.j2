@@ -668,11 +668,13 @@ class ModelWrapper:
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+    {# still inside __init__ method #}
+{{applyMacroWithSingleParam(initSubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
+        # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
+    {# still inside __init__ method #}
 
 {{applyMacroWithSingleParam(dynamicProperty, objectiveRelatedAttrs)}}
 
-{{applyMacroWithSingleParam(initSubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
-        # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
 
 {{applyMacroWithSingleParam(setupSubmodelRelatedProperty, submodelRelatedAttrs)}}
     def check_assumptions(self):
