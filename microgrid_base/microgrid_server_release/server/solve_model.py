@@ -218,7 +218,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                 if TC in IOUTerminationConditions:
                     ...
                     # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
-                    
+
                     # mstream.truncate(0)
                     # just don't do this.
                     # logger.info("logging infeasible constraints".center(70, "="))
@@ -252,17 +252,20 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         .replace("-", "_")
                         .replace(".", "_")
                         .replace(":", "_")
+                        .split("+")[0]
                     )
                     os.mkdir(
                         solver_log_dir_with_timestamp := os.path.join(
                             log_dir, f"pyomo_{timestamp}"
                         )
                     )
-                    lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
+                    lp_filepath = os.path.join(
+                        solver_log_dir_with_timestamp, "model.lp"
+                    )
                     _, model_smap_id = mw.model.write(
                         filename=lp_filepath, io_options=io_options
                     )
-                    
+
                     # begin to debug in detail.
 
                     export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
@@ -274,7 +277,6 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         translateFileUsingSymbolMap(fpath, smap)
                         translated_log_files.append(fpath)
 
-
                     # use conda "docplex" environment to get the result.
                     crp = ConflictRefinerParams(
                         model_path=lp_filepath,
@@ -285,25 +287,32 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         ),
                         timeout=7,
                     )
-                    
+
                     refine_log = conflict_refiner(crp)
                     if refine_log:
                         logger_print("cplex refine log:", refine_log)
-                        translate_and_append(cplex_conflict_output_path, export_model_smap)
+                        translate_and_append(
+                            cplex_conflict_output_path, export_model_smap
+                        )
                     else:
                         em.append("No conflicts found by cplex.")
 
                     import shutil
 
+                    solver_log_new = os.path.join(
+                        solver_log_dir_with_timestamp, os.path.basename(solver_log)
+                    )
+
                     shutil.move(solver_log, solver_log_dir_with_timestamp)
 
                     em.append("")
-                    em.append("Solver log saved to: " + solver_log)
+                    em.append("Solver log saved to: " + solver_log_new)
                     em.append("Model saved to: " + lp_filepath)
 
                     translate_and_append(lp_filepath, export_model_smap)
 
-                    translate_and_append(solver_log, solver_model_smap)
+                    # BUG: solver_log not found (in temp)
+                    translate_and_append(solver_log_new, solver_model_smap)
 
                     # after translation, begin experiments.
                     checkIOUDirectory = os.path.join(
