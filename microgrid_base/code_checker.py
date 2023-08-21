@@ -21,6 +21,7 @@ IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 fixed = False
 
+SETUP_PYOMO_ENVIRON = "from pyomo_patch import *"
 
 def open_file_and_modify_content(
     fpath: str, func: Callable[[str], str], modify_msg: str
@@ -43,6 +44,8 @@ def fix_import_logger_in_content(fpath):
         fpath, lambda cnt: "\n\n".join([IMPORT_LOGGER_PRINT, cnt]), "logger import"
     )
     return fixed_cnt
+
+def fix_pyomo_environ_in_content(fpath):
 
 
 # TODO: use a single regex instead of two.
@@ -121,6 +124,8 @@ for fpath in files:
                         )
             elif isinstance(el, ast.ImportFrom):
                 # check if really imported.
+                if el.module == "pyomo.environ":
+                    lineno = el.lineno
                 if el.level == 0:  # root level.
                     el_source = stripped_source(el)
                     if el_source == IMPORT_LOGGER_PRINT:
