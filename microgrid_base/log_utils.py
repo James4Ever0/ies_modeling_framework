@@ -2,6 +2,7 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+# TODO: top-level exception hook
 # TODO: configure file handlers for celery logging
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 

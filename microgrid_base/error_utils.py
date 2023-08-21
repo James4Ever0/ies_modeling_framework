@@ -33,9 +33,11 @@ class ErrorManager:
 
     def __bool__(self):
         return len(self.errors) > 0
+
     @property
     def has_error(self):
         return bool(self)
+
     @property
     def has_exception(self):
         last_exc = sys.exc_info()
@@ -78,9 +80,9 @@ class ErrorManager:
         else:
             self.print_if_any()
         
-            if self.has_exception:
-                traceback_exc = traceback.format_exc()
-                logger_print(traceback_exc)
+        if self.has_exception:
+            traceback_exc = traceback.format_exc()
+            logger_print(traceback_exc)
         return True if self.suppress_exception else None
 
     def __str__(self):
