@@ -86,3 +86,9 @@ class ErrorManager:
         return iter(self.errors)
 
 
+if __name__ == "__main__":
+    # test this!
+    with ErrorManager() as em:
+        raise Exception("before append")
+        em.append()
+        raise Exception("after append")

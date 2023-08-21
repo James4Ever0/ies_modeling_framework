@@ -331,12 +331,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         sortAndDisplayVarValues(
                             varNameCountList, mw, banner="CONFLICT VAR COUNT"
                         )
-                        sortAndDisplayVarValues(
-                            varNameCountList,
-                            mw,
-                            banner="CONFLICT VAR COUNT REVERSE",
-                            reverse=True,
-                        )
+                        # sortAndDisplayVarValues(
+                        #     varNameCountList,
+                        #     mw,
+                        #     banner="CONFLICT VAR COUNT REVERSE",
+                        #     reverse=True,
+                        # )
 
                         selectiveSortVarNames(
                             mw.submodelNameToVarName,
