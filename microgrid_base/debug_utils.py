@@ -40,8 +40,18 @@ class CheckSolverReturnValResult(BaseModel):
 
 def buildWordCounterFromModelWrapper(mw: ModelWrapper):
 
+    keyword_processor = flashtext.KeywordProcessor()
+    for varName in mw.varNameToSubmodelName.keys():
+        keyword_processor.add_keyword(varName)
+
     def word_counter(text:str) -> Dict[str, int]:
-        return word_to_count
+        keywords_found = keyword_processor.extract_keywords(text)
+            
+        keyword_counts = {}
+        for keyword in keywords_found:
+            keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
+
+        return keyword_counts
     return word_counter
 
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
