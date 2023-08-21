@@ -4,6 +4,8 @@ import sys
 sys.path.append("../")
 # from ies_optim import *
 
+from pyomo_environ import *
+
 import typing
 
 if typing.TYPE_CHECKING:

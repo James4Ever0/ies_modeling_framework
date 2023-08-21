@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from pyomo_patch import *
+from pyomo_environ import *
 
 # from pyomo.environ import (
 #     Param,

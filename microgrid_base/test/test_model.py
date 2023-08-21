@@ -6,7 +6,7 @@ try:
     from typing import Protocol
 except:
     from typing_extensions import Protocol
-from pyomo.environ import *
+# from pyomo.environ import *
 
 # may you hook arith methods to check expression (poly degree) on the way.
 

@@ -13,7 +13,8 @@ assert (pyomo_version := pyomo.__version__) == (
 ), f"Expected Pyomo version: {expected_pyomo_version}\nActual: {pyomo_version}"
 
 ######## SUPPRESS STRICT INEQUALITY PATCH #########
-from pyomo.environ import *
+# from pyomo.environ import *
+from pyomo_environ import *
 # star-import this python file to avoid issues with direct imports.
 
 def strict_setter(self, val):

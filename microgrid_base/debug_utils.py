@@ -5,7 +5,7 @@ from log_utils import logger_print
 # input: model, objective, etc.
 # output: multiple diagnostics
 # from pyomo.environ import *
-from pyomo_patch import *
+from pyomo_environ import *
 from ies_optim import ModelWrapper
 
 import flashtext

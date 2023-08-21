@@ -21,7 +21,8 @@ IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
 IMPORT_LOGGER_PRINT_REGEX = r"^from[ ]+?log_utils[ ]+?import[ ]+?logger_print(?:| .+)$"
 fixed = False
 
-SETUP_PYOMO_ENVIRON = "from pyomo_patch import *"
+SETUP_PYOMO_ENVIRON = "from pyomo_environ import *"
+# SETUP_PYOMO_ENVIRON = "from pyomo_patch import *"
 
 def open_file_and_modify_content(
     fpath: str, func: Callable[[str], str], modify_msg: str
