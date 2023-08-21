@@ -338,8 +338,24 @@ def decomposeAndAnalyzeObjectiveExpression(
         logger_print("objective expression is non-linear.")
 
 def setBounds(varObject, bound):
-    assert bound>0
-    varObject
+    assert bound>0, f"bound must be positive.\npassed: {bound}"
+    varObject.setlb(-bound)
+    varObject.setub(bound)
+
+def solve_and_decompose(modelWrapper: ModelWrapper, solver, log_directory, banner,decompose=False):
+    model = modelWrapper.model
+    obj_expr = modelWrapper.obj_expr
+    solved = solve_with_translated_log_and_statistics(
+        model, solver, log_directory, banner
+    )
+    if solved:
+        decomposeAndAnalyzeObjectiveExpression(
+            obj_expr,
+            modelWrapper.submodelNameToVarNames,
+            modelWrapper.submodelClassNameToVarNames,
+            modelWrapper,
+        )
+
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
@@ -359,31 +375,33 @@ def checkInfeasibleOrUnboundedModel(
     obj.deactivate()
     model.debug_null_objective = Objective(expr=0, sense=minimize)
 
-    solve_with_translated_log_and_statistics(
-        model, solver, log_directory, "null_objective"
-    )  # we don't care about this solution. don't do analysis.
+    # solve_with_translated_log_and_statistics(
+    #     model, solver, log_directory, "null_objective"
+    # )  # we don't care about this solution. don't do analysis.
+    solve_and_decompose(modelWrapper, solver, log_directory, "null_objective")
 
     # phase 2: limit range of objective expression
     model.debug_obj_expr_bound = Var()
     model.debug_obj_expr_bound_constraint = Constraint(
         expr=model.debug_obj_expr_bound == obj_expr
     )
-    model.debug_obj_expr_bound.setlb(-max_bound)
-    model.debug_obj_expr_bound.setub(max_bound)
+    setBounds(model.debug_obj_expr_bound.setlb,max_bound)
 
     model.debug_null_objective.deactivate()
     obj.activate()
 
-    solved = solve_with_translated_log_and_statistics(
-        model, solver, log_directory, "bounded_objective"
-    )
-    if solved:
-        decomposeAndAnalyzeObjectiveExpression(
-            obj_expr,
-            modelWrapper.submodelNameToVarNames,
-            modelWrapper.submodelClassNameToVarNames,
-            modelWrapper,
-        )
+    solve_and_decompose(modelWrapper, solver, log_directory, "bounded_objective", decompose=True)
+
+    # solved = solve_with_translated_log_and_statistics(
+    #     model, solver, log_directory, "bounded_objective"
+    # )
+    # if solved:
+    #     decomposeAndAnalyzeObjectiveExpression(
+    #         obj_expr,
+    #         modelWrapper.submodelNameToVarNames,
+    #         modelWrapper.submodelClassNameToVarNames,
+    #         modelWrapper,
+    #     )
 
     # this is not a persistent solver.
     # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
@@ -392,7 +410,9 @@ def checkInfeasibleOrUnboundedModel(
 
     decomposed_obj_expr = decomposeExpression(obj_expr)
     for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
-        varObject.setlb()
-        varObject.setub()
+        setBounds(varObject, max_bound)
+    
+    solve_and_decompose(modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True)
+
 
 # we need to change solver options to early abort execution.
