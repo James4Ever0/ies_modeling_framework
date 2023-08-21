@@ -632,11 +632,10 @@ def examineSubExprDegree(expr):
 
 from collections import defaultdict
 
-
 {% macro initSubmodelRelatedTranslationTable(attrName)%}
         self._{{attrName}} = "default{{pascalize(attrName)}}"
-        self.varNameTo{{pascalize(attrName)}}= cast(Dict[str, str], defaultdict(lambda: "unknown{{pascalize(attrName)}}"))
-        self.{{attrName}}ToVarName= cast(Dict[str, List[str]], defaultdict(lambda: "unknown{{pascalize(attrName)}}"))
+        self.varNameTo{{pascalize(attrName)}} = cast(Dict[str, str], defaultdict(lambda: "unknown{{pascalize(attrName)}}"))
+        self.{{attrName}}ToVarName = cast(Dict[str, List[str]], defaultdict(lambda: []))
         self.{{attrName}}ToVarName.update({self._{{attrName}}: []})
         {# self.{{attrName}}ToVarName: Dict[str, List[str]] = {self._{{attrName}}: []} #}
 {% endmacro%}
