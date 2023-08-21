@@ -29,7 +29,9 @@ else:
     import logging
     import schedule
     import traceback
-    from exceptional_print import exprint as ep
+
+    # from exceptional_print import exprint as ep
+    import better_exceptions
 
     # ft = logging.Filter("myfilter") # default filter is just a string checker
     allow_logging = True
@@ -206,9 +208,11 @@ else:
     # )
 
     def logger_excepthook(exc_type, exc_value, tb):
-        formatted_exc = ["<TOPLEVEL EXCEPTION>", traceback.format_tb(tb)]
+        formatted = "".join(better_exceptions.format_exception(exc_type, exc_value, tb))
+        formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
         logger_print(*formatted_exc)
-        ep(*formatted_exc)
+        # ep(*formatted_exc)
+        better_exceptions.excepthook(exc_type, exc_value, tb)
 
     sys.excepthook = logger_excepthook
 
