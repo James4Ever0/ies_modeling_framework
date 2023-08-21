@@ -241,6 +241,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     em.append(f"abnormal solver status: {TC}")
                 # if error_msg:
                 if em:
+
+                    word_counter = buildWordCounterFromModelWrapper(mw)
                     from log_utils import log_dir, timezone
                     import datetime
 
@@ -295,8 +297,10 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                             cplex_conflict_output_path, export_model_smap
                         )
                         # then you sort it by model.
-                        varNameCountDict = {}
-                        for in :
+                        with open(cplex_conflict_output_path, 'r') as f:
+                            content = f.read()
+                            varNameCountDict = word_counter(content)
+                        for in mw.submodelNameToVarName:
                             submodelVarNameCountList = [(varName, count) for varName, count in varNameCountDict.items() if varName in submodelVarNames]
                             sortAndDisplayVarValues(submodelVarNameCountList, banner="")
                             sortAndDisplayVarValues(submodelVarNameCountList, banner="REVERSE", reverse=True)
