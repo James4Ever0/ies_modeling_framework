@@ -54,6 +54,8 @@ class ErrorManager:
 
     def raise_if_any(self):
         if self.errors:
+            traceback_exc = traceback.format_exc()
+            self.print_if_any()
             raise Exception(self.format_error())
 
     def print_if_any(self):
@@ -89,6 +91,6 @@ class ErrorManager:
 if __name__ == "__main__":
     # test this!
     with ErrorManager() as em:
-        raise Exception("before append")
-        em.append()
+        # raise Exception("before append")
+        em.append('abc')
         raise Exception("after append")
