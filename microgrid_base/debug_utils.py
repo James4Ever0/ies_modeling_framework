@@ -11,9 +11,11 @@ from ies_optim import ModelWrapper
 import flashtext
 import os
 from beartype import beartype
+
 # import subprocess
 # from typing import TypedDict
 from pydantic import BaseModel
+
 # from typing import Literal, TypedDict
 
 normalSSs = [SolverStatus.ok, SolverStatus.warning]
@@ -40,20 +42,21 @@ class CheckSolverReturnValResult(BaseModel):
 
 
 def buildWordCounterFromModelWrapper(mw: ModelWrapper):
-
     keyword_processor = flashtext.KeywordProcessor()
     for varName in mw.varNameToSubmodelName.keys():
         keyword_processor.add_keyword(varName)
 
-    def word_counter(text:str) -> Dict[str, int]:
+    def word_counter(text: str) -> Dict[str, int]:
         keywords_found = keyword_processor.extract_keywords(text)
-            
+
         keyword_counts = {}
         for keyword in keywords_found:
             keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
 
         return keyword_counts
+
     return word_counter
+
 
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
     TC = solver_result.solver.termination_condition
@@ -63,6 +66,7 @@ def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
         success=solved,
         status=SolverReturnStatus(terminationCondition=TC, solverStatus=SS),
     )
+
 
 # TODO: gluecode automation (maybe metaclass?)
 # ref: https://github.com/gwenzek/func_argparse
@@ -78,9 +82,10 @@ def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
 from shared_datamodels import ConflictRefinerParams
 from argparse_utils import conflictRefinerManager
 
+
 @conflictRefinerManager.call
 def conflict_refiner(params: ConflictRefinerParams):
-# def conflict_refiner(param):
+    # def conflict_refiner(param):
     # cmd = "conda run -n docplex --live-stream --no-capture-output python conflict_utils.py"
     # arguments = [
     #     "--model_path",
@@ -105,6 +110,7 @@ def conflict_refiner(params: ConflictRefinerParams):
         return output_content
     else:
         logger_print("output file not found:", output)
+
 
 from typing import Dict
 
@@ -242,7 +248,11 @@ def getValueListFromValueDict(valueDict: Dict[str, float]):
 
 
 def sortAndDisplayVarValues(
-    valueList: List[Tuple[str, float]], mw:ModelWrapper, banner: str, head_count=10, reverse=False
+    valueList: List[Tuple[str, float]],
+    mw: ModelWrapper,
+    banner: str,
+    head_count=10,
+    reverse=False,
 ):
     logger_print(f"SORT BY {banner}".center(70, "="))  # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
@@ -250,7 +260,15 @@ def sortAndDisplayVarValues(
     message = [f"reversed: {reverse}", ""]
     for i in range(head_count):
         varName, val = valueList[i]
-        message.append("%s\t%s\t%s<%s>" % (varName, val,mw.varNameToSubmodelName[varName], mw.varNameToSubmodelClassName[varName]) )
+        message.append(
+            "%s\t%s\t%s<%s>"
+            % (
+                varName,
+                val,
+                mw.varNameToSubmodelName[varName],
+                mw.varNameToSubmodelClassName[varName],
+            )
+        )
     output = "\n".join(message)
     logger_print(output)
 
@@ -269,11 +287,15 @@ def sortAndDisplayVarValuesAndTermValues(
     )
     valueListOfVarNameToVarValue = getValueListFromValueDict(varNameToVarValue)
     valueListOfVarNameToTermValue = getValueListFromValueDict(varNameToTermValue)
-    sortAndDisplayVarValues(valueListOfVarNameToVarValue, mw, BANNER_VARNAME_TO_VAR_VALUE)
+    sortAndDisplayVarValues(
+        valueListOfVarNameToVarValue, mw, BANNER_VARNAME_TO_VAR_VALUE
+    )
     sortAndDisplayVarValues(
         valueListOfVarNameToVarValue, mw, BANNER_VARNAME_TO_VAR_VALUE, reverse=True
     )
-    sortAndDisplayVarValues(valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE)
+    sortAndDisplayVarValues(
+        valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE
+    )
     sortAndDisplayVarValues(
         valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE, reverse=True
     )
@@ -287,8 +309,9 @@ def filterVarNameBySubModelVarNames(mDict, submodelVarNames):
 def groupBySubModelRelatedTranslationTable(
     varNameToVarValue: Dict[str, float],
     varNameToTermValue: Dict[str, float],
-    translationTable: Dict[str, List[str]], label: str,
-    mw: ModelWrapper
+    translationTable: Dict[str, List[str]],
+    label: str,
+    mw: ModelWrapper,
 ):
     logger_print(f"grouping by submodel {label}:")
 
@@ -304,7 +327,7 @@ def decomposeAndAnalyzeObjectiveExpression(
     obj_expr,
     submodelNameToVarNames: Dict[str, List[str]],
     submodelClassNameToVarNames: Dict[str, List[str]],
-    mw:ModelWrapper
+    mw: ModelWrapper,
 ):
     decomposedResult = decomposeExpression(obj_expr)
     if decomposedResult:
@@ -328,8 +351,16 @@ def decomposeAndAnalyzeObjectiveExpression(
 
         # now we need to sort value by submodel name (grouping). don't count keywords here, because that is done in conflict report.
 
-        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelNameToVarNames, "name", mw)
-        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelClassNameToVarNames, "className", mw)
+        groupBySubModelRelatedTranslationTable(
+            varNameToVarValue, varNameToTermValue, submodelNameToVarNames, "name", mw
+        )
+        groupBySubModelRelatedTranslationTable(
+            varNameToVarValue,
+            varNameToTermValue,
+            submodelClassNameToVarNames,
+            "className",
+            mw,
+        )
 
         logger_print("(OBJ - OBJ_CONST)?", obj_val - obj_const)
         logger_print("OBJ?", obj_val)
@@ -337,24 +368,29 @@ def decomposeAndAnalyzeObjectiveExpression(
     else:
         logger_print("objective expression is non-linear.")
 
+
 def setBounds(varObject, bound):
-    assert bound>0, f"bound must be positive.\npassed: {bound}"
+    assert bound > 0, f"bound must be positive.\npassed: {bound}"
     varObject.setlb(-bound)
     varObject.setub(bound)
 
-def solve_and_decompose(modelWrapper: ModelWrapper, solver, log_directory, banner,decompose=False):
+
+def solve_and_decompose(
+    modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
+):
     model = modelWrapper.model
     obj_expr = modelWrapper.obj_expr
     solved = solve_with_translated_log_and_statistics(
         model, solver, log_directory, banner
     )
-    if solved:
-        decomposeAndAnalyzeObjectiveExpression(
-            obj_expr,
-            modelWrapper.submodelNameToVarNames,
-            modelWrapper.submodelClassNameToVarNames,
-            modelWrapper,
-        )
+    if decompose:
+        if solved:
+            decomposeAndAnalyzeObjectiveExpression(
+                obj_expr,
+                modelWrapper.submodelNameToVarNames,
+                modelWrapper.submodelClassNameToVarNames,
+                modelWrapper,
+            )
 
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
@@ -385,12 +421,14 @@ def checkInfeasibleOrUnboundedModel(
     model.debug_obj_expr_bound_constraint = Constraint(
         expr=model.debug_obj_expr_bound == obj_expr
     )
-    setBounds(model.debug_obj_expr_bound.setlb,max_bound)
+    setBounds(model.debug_obj_expr_bound, max_bound)
 
     model.debug_null_objective.deactivate()
     obj.activate()
 
-    solve_and_decompose(modelWrapper, solver, log_directory, "bounded_objective", decompose=True)
+    solve_and_decompose(
+        modelWrapper, solver, log_directory, "bounded_objective", decompose=True
+    )
 
     # solved = solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "bounded_objective"
@@ -411,8 +449,10 @@ def checkInfeasibleOrUnboundedModel(
     decomposed_obj_expr = decomposeExpression(obj_expr)
     for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
         setBounds(varObject, max_bound)
-    
-    solve_and_decompose(modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True)
+
+    solve_and_decompose(
+        modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True
+    )
 
 
 # we need to change solver options to early abort execution.
