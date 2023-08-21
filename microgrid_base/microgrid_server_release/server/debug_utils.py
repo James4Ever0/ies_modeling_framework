@@ -227,7 +227,7 @@ def getValueListFromValueDict(valueDict: Dict[str, float]):
 def sortAndDisplayVarValues(
     valueList: List[Tuple[str, float]], banner: str, head_count=10, reverse=False
 ):
-    logger_print(banner.center(70, "="))  # to be commented out
+    logger_print(f"SORT BY {banner}".center(70, "="))  # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
     head_count = min(len(valueList), head_count)
     message = [f"reversed: {reverse}", ""]
@@ -325,7 +325,7 @@ def checkInfeasibleOrUnboundedModel(
     solver,
     log_directory: str,
     timelimit: float = 30,
-    max_bound: float = 1e10,
+    max_bound: float = 1e8,
 ):
     model = modelWrapper.model
     obj = modelWrapper.obj
@@ -359,3 +359,6 @@ def checkInfeasibleOrUnboundedModel(
             modelWrapper.submodelNameToVarNames,
             modelWrapper.submodelClassNameToVarNames,
         )
+
+
+# we need to change solver options to early abort execution.

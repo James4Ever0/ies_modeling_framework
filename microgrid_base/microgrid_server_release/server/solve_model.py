@@ -129,6 +129,19 @@ from ies_optim import compute, ModelWrapperContext
 from copy import deepcopy
 
 
+def selectiveSortVarNames(keyToSelectedVarNames, varNameCountDict, banner="SELECTIVE"):
+    for key, selectedVarNames in keyToSelectedVarNames.items():
+        submodelVarNameCountList = [
+            (varName, count)
+            for varName, count in varNameCountDict.items()
+            if varName in selectedVarNames
+        ]
+        sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}>")
+        sortAndDisplayVarValues(
+            submodelVarNameCountList, banner=f"{banner} <{key}> REVERSE", reverse=True
+        )
+
+
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
@@ -241,6 +254,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     em.append(f"abnormal solver status: {TC}")
                 # if error_msg:
                 if em:
+                    word_counter = buildWordCounterFromModelWrapper(mw)
                     from log_utils import log_dir, timezone
                     import datetime
 
@@ -293,6 +307,21 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         logger_print("cplex refine log:", refine_log)
                         translate_and_append(
                             cplex_conflict_output_path, export_model_smap
+                        )
+                        # then you sort it by model.
+                        with open(cplex_conflict_output_path, "r") as f:
+                            content = f.read()
+                            varNameCountDict = word_counter(content)
+
+                        selectiveSortVarNames(
+                            mw.submodelNameToVarName,
+                            varNameCountDict,
+                            banner="SUBMODEL NAME",
+                        )
+                        selectiveSortVarNames(
+                            mw.submodelClassNameToVarName,
+                            varNameCountDict,
+                            banner="SUBMODEL CLASS NAME",
                         )
                     else:
                         em.append("No conflicts found by cplex.")

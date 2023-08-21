@@ -38,6 +38,12 @@ class CheckSolverReturnValResult(BaseModel):
     status: SolverReturnStatus
 
 
+def buildWordCounterFromModelWrapper(mw: ModelWrapper):
+
+    def word_counter(text:str) -> Dict[str, int]:
+        return word_to_count
+    return word_counter
+
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
     TC = solver_result.solver.termination_condition
     SS = solver_result.solver.status
