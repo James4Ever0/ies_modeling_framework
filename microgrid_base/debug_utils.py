@@ -508,6 +508,7 @@ def checkInfeasibleOrUnboundedModel(
     timelimit: float = 30,
     max_bound: float = 1e8,
 ):
+    # TODO: Constant objective detected, replacing with a placeholder to prevent solver failure.
     model = modelWrapper.model
     obj = modelWrapper.obj
     obj_expr = modelWrapper.obj_expr

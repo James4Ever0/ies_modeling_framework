@@ -278,8 +278,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     # translated_log_files = []
 
                     # def translate_and_append(fpath, smap):
-                    # translateFileUsingSymbolMap(fpath, smap)
-                    # translated_log_files.append(fpath)
+                    #     translateFileUsingSymbolMap(fpath, smap)
+                    #     translated_log_files.append(fpath)
 
                     # use conda "docplex" environment to get the result.
 
@@ -356,10 +356,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     em.append("Solver log saved to: " + solver_log_new)
                     em.append("Model saved to: " + lp_filepath)
 
-                    translate_and_append(lp_filepath, export_model_smap)
+                    # translate_and_append(lp_filepath, export_model_smap)
+                    translateFileUsingSymbolMap(lp_filepath, export_model_smap)
 
                     # BUG: solver_log not found (in temp)
-                    translate_and_append(solver_log_new, solver_model_smap)
+                    # translate_and_append(solver_log_new, solver_model_smap)
+                    translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
 
                     # after translation, begin experiments.
                     checkIOUDirectory = os.path.join(
