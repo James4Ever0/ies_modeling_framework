@@ -152,6 +152,60 @@ def selectiveSortVarNames(
                 reverse=True,
             )
 
+def cplex_refine_model_and_display_info(mw:ModelWrapper, ):
+                    crp = ConflictRefinerParams(
+                        model_path=lp_filepath,
+                        output=(
+                            cplex_conflict_output_path := os.path.join(
+                                solver_log_dir_with_timestamp, "cplex_conflict.txt"
+                            )
+                        ),
+                        timeout=7,
+                    )
+
+                    refine_log = conflict_refiner(crp)
+                    if refine_log:
+                        logger_print("cplex refine log:", refine_log)
+                        # translate_and_append(
+                        #     cplex_conflict_output_path, export_model_smap
+                        # )
+                        translateFileUsingSymbolMap(cplex_conflict_output_path, export_model_smap)
+
+                        # then you sort it by model.
+                        with open(cplex_conflict_output_path, "r") as f:
+                            content = f.read()
+                            varNameCountDict = word_counter(content)
+                            varNameCountList = [
+                                (varName, count)
+                                for varName, count in varNameCountDict.items()
+                            ]
+
+                        sortAndDisplayVarValues(
+                            varNameCountList, mw, banner="CONFLICT VAR COUNT"
+                        )
+                        
+                        sortAndDisplayVarValues(
+                            varNameCountList,
+                            mw,
+                            banner="CONFLICT VAR COUNT REVERSE",
+                            reverse=True,
+                        )
+
+                        selectiveSortVarNames(
+                            mw.submodelNameToVarName,
+                            varNameCountDict,
+                            mw,
+                            banner="(CONFLICT) SUBMODEL NAME",
+                        )
+                        selectiveSortVarNames(
+                            mw.submodelClassNameToVarName,
+                            varNameCountDict,
+                            mw,
+                            banner="(CONFLICT) SUBMODEL CLASS NAME",
+                        )
+                    else:
+                        em.append("No conflicts found by cplex.")
+
 
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
@@ -296,11 +350,11 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
                     solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
 
-                    translated_log_files = []
+                    # translated_log_files = []
 
-                    def translate_and_append(fpath, smap):
-                        translateFileUsingSymbolMap(fpath, smap)
-                        translated_log_files.append(fpath)
+                    # def translate_and_append(fpath, smap):
+                        # translateFileUsingSymbolMap(fpath, smap)
+                        # translated_log_files.append(fpath)
 
                     # use conda "docplex" environment to get the result.
                     crp = ConflictRefinerParams(
@@ -316,9 +370,11 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     refine_log = conflict_refiner(crp)
                     if refine_log:
                         logger_print("cplex refine log:", refine_log)
-                        translate_and_append(
-                            cplex_conflict_output_path, export_model_smap
-                        )
+                        # translate_and_append(
+                        #     cplex_conflict_output_path, export_model_smap
+                        # )
+                        translateFileUsingSymbolMap(cplex_conflict_output_path, export_model_smap)
+
                         # then you sort it by model.
                         with open(cplex_conflict_output_path, "r") as f:
                             content = f.read()
