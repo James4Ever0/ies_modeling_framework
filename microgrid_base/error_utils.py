@@ -2,7 +2,8 @@ from log_utils import logger_print
 
 # from beartype import beartype
 from typing import Union
-
+import traceback
+import sys
 
 # @beartype
 class ErrorManager:
@@ -32,9 +33,13 @@ class ErrorManager:
 
     def __bool__(self):
         return len(self.errors) > 0
-
+    @property
     def has_error(self):
         return bool(self)
+    @property
+    def has_exception(self):
+        last_exc = sys.exc_info()
+        return last_exc[0] is not None
 
     def append(self, error: str):
         self.errors.append(error)
@@ -54,7 +59,6 @@ class ErrorManager:
 
     def raise_if_any(self):
         if self.errors:
-            traceback_exc = traceback.format_exc()
             self.print_if_any()
             raise Exception(self.format_error())
 
@@ -73,6 +77,10 @@ class ErrorManager:
             self.raise_if_any()
         else:
             self.print_if_any()
+        
+            if self.has_exception:
+                traceback_exc = traceback.format_exc()
+                logger_print(traceback_exc)
         return True if self.suppress_exception else None
 
     def __str__(self):
