@@ -328,9 +328,9 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                                 for varName, count in varNameCountDict.items()
                             ]
 
-                        # sortAndDisplayVarValues(
-                        #     varNameCountList, mw, banner="CONFLICT VAR COUNT"
-                        # )
+                        sortAndDisplayVarValues(
+                            varNameCountList, mw, banner="CONFLICT VAR COUNT"
+                        )
                         # sortAndDisplayVarValues(
                         #     varNameCountList,
                         #     mw,

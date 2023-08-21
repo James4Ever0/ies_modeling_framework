@@ -8,8 +8,11 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 
 from rich.pretty import pretty_repr
 
+
 def pretty(obj):
     return pretty_repr(obj)
+
+
 # python version check
 
 import sys  # recommend: 3.11.2
@@ -17,36 +20,34 @@ import sys  # recommend: 3.11.2
 MIN_PY_VERSION = (3, 8)
 if sys.version_info < MIN_PY_VERSION:
     logger_print = print
-    logger_print(f"Please use Python {'.'.join([str(v) for v in MIN_PY_VERSION])} and above.")
+    logger_print(
+        f"Please use Python {'.'.join([str(v) for v in MIN_PY_VERSION])} and above."
+    )
 else:
     # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 
     import logging
     import schedule
     import traceback
+    from exceptional_print import exprint as ep
 
     # ft = logging.Filter("myfilter") # default filter is just a string checker
     allow_logging = True
     allow_huge_logging = True
     HUGE_MSG_THRESHOLD = 100
 
-
     def refresh_logger_lock():
         global allow_logging
         allow_logging = True
-
 
     def refresh_huge_logger_lock():
         global allow_huge_logging
         allow_huge_logging = True
 
-
     schedule.every(0.3).seconds.do(refresh_logger_lock)
     schedule.every(1).seconds.do(refresh_huge_logger_lock)
 
-
     # class MessageLengthAndFrequencyFilter:
-
 
     #     @staticmethod
     def messageLengthAndFrequencyFilter(record: logging.LogRecord):
@@ -69,11 +70,12 @@ else:
                 allow_logging = False
         else:
             if allow_huge_logging:
-                record.short_msg = " ".join([msg[:HUGE_MSG_THRESHOLD], "..."]) # do not put stdout in front of file handler!
+                record.short_msg = " ".join(
+                    [msg[:HUGE_MSG_THRESHOLD], "..."]
+                )  # do not put stdout in front of file handler!
                 accepted = True
                 allow_huge_logging = False
         return accepted
-
 
     from logging import StreamHandler
     import sys
@@ -95,12 +97,10 @@ else:
 
     from logging.handlers import RotatingFileHandler
 
-
-
-
     import pytz
+
     # with respect to our dearly Py3.6
-    timezone_str='Asia/Shanghai'
+    timezone_str = "Asia/Shanghai"
     # timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
     timezone = pytz.timezone(timezone_str)
     # import logging
@@ -112,7 +112,8 @@ else:
         # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
     )
 
-    SHORT_FORMAT =  "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(short_msg)s"
+    SHORT_FORMAT = "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(short_msg)s"
+
     class Formatter(logging.Formatter):
         """override default 'logging.Formatter' to use timezone-aware datetime object"""
 
@@ -128,10 +129,11 @@ else:
                 s = dt.strftime(datefmt)
             else:
                 try:
-                    s = dt.isoformat(timespec='milliseconds')
+                    s = dt.isoformat(timespec="milliseconds")
                 except TypeError:
                     s = dt.isoformat()
             return s
+
     myFormatter = Formatter(fmt=FORMAT)
     myShortFormatter = Formatter(fmt=SHORT_FORMAT)
 
@@ -159,12 +161,10 @@ else:
     # logger = logging.getLogger(__name__)
     logger = logging.getLogger("microgrid")
     logger.setLevel("DEBUG")
-    logger.addHandler(myHandler) # BUG: make sure long logs are unaffected in file.
+    logger.addHandler(myHandler)  # BUG: make sure long logs are unaffected in file.
     logger.addHandler(stdout_handler)
 
-
-
-    def logger_print(*args, logger = logger):
+    def logger_print(*args, logger=logger):
         if len(args) != 0:
             format_string = "\n\n".join(["%s"] * len(args))
             # python 3.8+ required!
@@ -184,11 +184,10 @@ else:
             #     "\n\n".join([pretty_repr(arg) if not isinstance(arg, Union[bytes, str]) else arg for arg in args]), stacklevel=2
             # )  # it is been called elsewhere.
 
-
     import datetime
 
     try:
-        terminal_column_size  = os.get_terminal_size().columns
+        terminal_column_size = os.get_terminal_size().columns
     except:
         terminal_column_size = 30
     logger_print(
@@ -207,7 +206,9 @@ else:
     # )
 
     def logger_excepthook(exc_type, exc_value, tb):
-        logger_print(traceback.format_exc())
+        formatted_exc = ["<TOPLEVEL EXCEPTION>", traceback.format_tb(tb)]
+        logger_print(*formatted_exc)
+        # ep(*formatted_exc)
 
     sys.excepthook = logger_excepthook
 
