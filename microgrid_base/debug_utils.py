@@ -337,6 +337,9 @@ def decomposeAndAnalyzeObjectiveExpression(
     else:
         logger_print("objective expression is non-linear.")
 
+def setBounds(varObject, bound):
+    assert bound>0
+    varObject
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
@@ -382,10 +385,14 @@ def checkInfeasibleOrUnboundedModel(
             modelWrapper,
         )
 
-    # this is not persistent solver.
+    # this is not a persistent solver.
     # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
     del model.debug_obj_expr_bound_constraint
     del model.debug_obj_expr_bound
 
+    decomposed_obj_expr = decomposeExpression(obj_expr)
+    for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
+        varObject.setlb()
+        varObject.setub()
 
 # we need to change solver options to early abort execution.
