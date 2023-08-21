@@ -167,6 +167,7 @@ def solve_with_translated_log_and_statistics(
         tee=True,
         logfile=(logfile := os.path.join(log_directory, f"{label}.log")),
     )
+    breakpoint()
     smap = model.solutions.symbol_map[solver._smap_id]
 
     translateFileUsingSymbolMap(logfile, smap)
