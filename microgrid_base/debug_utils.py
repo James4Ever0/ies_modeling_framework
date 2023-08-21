@@ -255,7 +255,8 @@ def sortAndDisplayVarValues(
     head_count=10,
     reverse=False,
 ):
-    logger_print(f"SORT BY {banner}".center(70, "="))  # to be commented out
+    output = []
+    output.append(f"SORT BY {banner}".center(70, "=")) # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
     head_count = min(len(valueList), head_count)
     message = [f"reversed: {reverse}", ""]
@@ -270,8 +271,9 @@ def sortAndDisplayVarValues(
                 mw.varNameToSubmodelClassName[varName],
             )
         )
-    output = "\n".join(message)
-    logger_print(output)
+    output.append("\n".join(message))
+    logger_print(*output)
+    return output
 
 
 def sortAndDisplayVarValuesAndTermValues(
