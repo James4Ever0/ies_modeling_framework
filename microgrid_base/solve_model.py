@@ -164,10 +164,11 @@ def cplex_refine_model_and_display_info(
     lp_filepath,
     log_dir,
     smap,
-    word_counter,
+    # word_counter,
     output_filename="cplex_conflict.txt",
     statistics_filename="cplex_conflict_statistics.txt",
 ):
+    word_counter = mw.word_counter
     crp = ConflictRefinerParams(
         model_path=lp_filepath,
         output=(cplex_conflict_output_path := os.path.join(log_dir, output_filename)),
@@ -434,7 +435,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         lp_filepath,
                         solver_log_dir_with_timestamp,
                         export_model_smap,
-                        word_counter,
+                        # word_counter,
                     ):
                         em.append("No conflicts found by cplex.")
 
