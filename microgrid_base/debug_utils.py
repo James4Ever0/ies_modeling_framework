@@ -40,6 +40,7 @@ class CheckSolverReturnValResult(BaseModel):
     success: bool
     status: SolverReturnStatus
 
+
 # deprecated.
 # def buildWordCounterFromModelWrapper(mw: ModelWrapper):
 #     keyword_processor = flashtext.KeywordProcessor()
@@ -256,7 +257,7 @@ def sortAndDisplayVarValues(
     reverse=False,
 ):
     output = []
-    output.append(f"SORT BY {banner}".center(70, "=")) # to be commented out
+    output.append(f"SORT BY {banner}".center(70, "="))  # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
     head_count = min(len(valueList), head_count)
     message = [f"reversed: {reverse}", ""]
@@ -303,7 +304,6 @@ def sortAndDisplayVarValuesAndTermValues(
         valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE, reverse=True
     )
     logger_print()
-
 
 
 def selectiveSortVarNames(
@@ -401,8 +401,6 @@ def cplex_refine_model_and_display_info(
         return True
 
 
-
-
 def filterVarNameBySubModelVarNames(mDict, submodelVarNames):
     return {k: v for k, v in mDict.items() if k in submodelVarNames}
 
@@ -481,7 +479,10 @@ def solve_and_decompose(
 ):
     cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
     os.mkdir(cplex_log_dir)
-    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, ,smap )
+    lp_filepath = os.path.join(log_directory, "model.lp")
+    _, smap_id = modelWrapper.model.write(lp_filepath)
+    smap = modelWrapper.model.solutions.symbol_map[smap_id]
+    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
     model = modelWrapper.model
     obj_expr = modelWrapper.obj_expr
     solved = solve_with_translated_log_and_statistics(
