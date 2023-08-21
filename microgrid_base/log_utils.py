@@ -2,7 +2,7 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
-# TODO: top-level exception hook
+# TODO: top-level exception hook (sys.excepthook)
 # TODO: configure file handlers for celery logging
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 
@@ -23,6 +23,7 @@ else:
 
     import logging
     import schedule
+    import traceback
 
     # ft = logging.Filter("myfilter") # default filter is just a string checker
     allow_logging = True
@@ -204,6 +205,11 @@ else:
     #     force=True, # overridding root logger, which is deprecated.
     #     handlers=[stdout_handler],
     # )
+
+    def logger_excepthook(exc_type, exc_value, tb):
+        logger_print(traceback.format_exc())
+
+    sys.excepthook = logger_excepthook
 
     if __name__ == "__main__":  # just a test.
         import time
