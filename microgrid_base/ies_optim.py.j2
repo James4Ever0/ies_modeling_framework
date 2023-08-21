@@ -695,7 +695,7 @@ class ModelWrapper:
         for assumption in self.assumptions:
             assumption()
         self.assumptions = [] # clear assumptions
-    def word_counter(text: str) -> Dict[str, int]:
+    def word_counter(self, text: str) -> Dict[str, int]:
         keywords_found = self.keyword_processor.extract_keywords(text)
 
         keyword_counts = {}

@@ -1,5 +1,6 @@
 from log_utils import logger_print
 from pyomo_environ import *
+from typing import cast
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
@@ -362,13 +363,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -1518,22 +1519,35 @@ def examineSubExprDegree(expr):
     logger_print()
 
 
+from collections import defaultdict
+
+
+import flashtext
+
+
 class ModelWrapper:
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+        self.keyword_processor = flashtext.KeywordProcessor()
         self._obj = ...
         self._obj_expr = ...
         self._submodelName = "defaultSubmodelName"
-        self.varNameToSubmodelName: Dict[str, str] = {}
-        self.submodelNameToVarName: Dict[str, List[str]] = {self._submodelName: []}
+        self.varNameToSubmodelName = cast(
+            Dict[str, str], defaultdict(lambda: "unknownSubmodelName")
+        )
+        self.submodelNameToVarName = cast(Dict[str, List[str]], defaultdict(lambda: []))
+        self.submodelNameToVarName.update({self._submodelName: []})
 
         self._submodelClassName = "defaultSubmodelClassName"
-        self.varNameToSubmodelClassName: Dict[str, str] = {}
-        self.submodelClassNameToVarName: Dict[str, List[str]] = {
-            self._submodelClassName: []
-        }
+        self.varNameToSubmodelClassName = cast(
+            Dict[str, str], defaultdict(lambda: "unknownSubmodelClassName")
+        )
+        self.submodelClassNameToVarName = cast(
+            Dict[str, List[str]], defaultdict(lambda: [])
+        )
+        self.submodelClassNameToVarName.update({self._submodelClassName: []})
 
         # TODO: put assumptions into here after any operation using BigM notation (like multiplication)
 
@@ -1591,6 +1605,15 @@ class ModelWrapper:
             assumption()
         self.assumptions = []  # clear assumptions
 
+    def word_counter(self, text: str) -> Dict[str, int]:
+        keywords_found = self.keyword_processor.extract_keywords(text)
+
+        keyword_counts = {}
+        for keyword in keywords_found:
+            keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
+
+        return keyword_counts
+
     def __del__(self):
         del self.model
         del self.clock
@@ -1633,10 +1656,12 @@ class ModelWrapper:
         self.varNameToSubmodelName[name] = self.submodelName
         self.submodelNameToVarName
         self.submodelNameToVarName[self.submodelName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         self.varNameToSubmodelClassName[name] = self.submodelClassName
         self.submodelClassNameToVarName
         self.submodelClassNameToVarName[self.submodelClassName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         return ret
 
@@ -1654,10 +1679,12 @@ class ModelWrapper:
         self.varNameToSubmodelName[name] = self.submodelName
         self.submodelNameToVarName
         self.submodelNameToVarName[self.submodelName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         self.varNameToSubmodelClassName[name] = self.submodelClassName
         self.submodelClassNameToVarName
         self.submodelClassNameToVarName[self.submodelClassName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         return ret
 
@@ -1694,10 +1721,12 @@ class ModelWrapper:
         self.varNameToSubmodelName[name] = self.submodelName
         self.submodelNameToVarName
         self.submodelNameToVarName[self.submodelName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         self.varNameToSubmodelClassName[name] = self.submodelClassName
         self.submodelClassNameToVarName
         self.submodelClassNameToVarName[self.submodelClassName].append(name)
+        self.keyword_processor.add_keyword(name)
 
         return ret
 
@@ -3792,18 +3821,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）

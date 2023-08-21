@@ -322,12 +322,12 @@
                 "type": "设备",
                 "subtype": "变压器",
                 "ports": {
-                    "电输入": {
-                        "subtype": "电母线输入",
-                        "id": 13
-                    },
                     "电输出": {
                         "subtype": "变压器输出",
+                        "id": 13
+                    },
+                    "电输入": {
+                        "subtype": "电母线输入",
                         "id": 14
                     }
                 },
@@ -353,15 +353,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "电母线输入",
+                "port_name": "电输出",
+                "subtype": "变压器输出",
                 "device_id": 12,
                 "id": 13
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
-                "subtype": "变压器输出",
+                "port_name": "电输入",
+                "subtype": "电母线输入",
                 "device_id": 12,
                 "id": 14
             },
@@ -657,11 +657,11 @@
             },
             {
                 "source": 13,
-                "target": 29
+                "target": 30
             },
             {
                 "source": 14,
-                "target": 30
+                "target": 29
             },
             {
                 "source": 15,
