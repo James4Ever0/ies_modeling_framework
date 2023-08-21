@@ -208,10 +208,12 @@ else:
     # )
 
     def logger_excepthook(exc_type, exc_value, tb):
+        better_exceptions.SUPPORTS_COLOR = False
         formatted = "".join(better_exceptions.format_exception(exc_type, exc_value, tb))
         formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
         logger_print(*formatted_exc)
         # ep(*formatted_exc)
+        better_exceptions.SUPPORTS_COLOR = True
         better_exceptions.excepthook(exc_type, exc_value, tb)
 
     sys.excepthook = logger_excepthook
