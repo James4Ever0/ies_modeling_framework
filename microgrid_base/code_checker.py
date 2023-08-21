@@ -45,7 +45,12 @@ def fix_import_logger_in_content(fpath):
     )
     return fixed_cnt
 
-def fix_pyomo_environ_in_content(fpath):
+def fix_pyomo_environ_in_content(fpath, linenos = []):
+    def fix_pyomo_environ(cnt:str):
+        for line
+
+    fixed_cnt = open_file_and_modify_content(fpath, fix_pyomo_environ, "pyomo environ")
+    return fixed_cnt
 
 
 # TODO: use a single regex instead of two.
@@ -94,6 +99,10 @@ for fpath in files:
 
         found_import_log_utils = False if fpath != "log_utils.py" else True
 
+        found_setup_pyomo_environ = False
+
+        pyomo_environ_to_be_fixed_linenos = []
+
         # read and fix this file.
         content = fix_print_statement_in_content(fpath)
         # with open(fpath, "r") as f:
@@ -126,10 +135,16 @@ for fpath in files:
                 # check if really imported.
                 if el.module == "pyomo.environ":
                     lineno = el.lineno
+                    pyomo_environ_to_be_fixed_linenos.append(lineno)
                 if el.level == 0:  # root level.
                     el_source = stripped_source(el)
                     if el_source == IMPORT_LOGGER_PRINT:
                         found_import_log_utils = True
+                    elif el_source == SETUP_PYOMO_ENVIRON:
+                        found_setup_pyomo_environ = True
+        if fpath != "pyomo_patch.py":
+            fix_pyomo_environ_in_content(fpath, pyomo_environ_to_be_fixed_linenos, found_setup_pyomo_environ)
+        
         if not found_import_log_utils:  # just import, do not change the print logic.
             # if no template was found, fix just one. if template found, fix both.
 
@@ -137,6 +152,7 @@ for fpath in files:
             fix_import_logger_in_content(fpath)
             # with open(fpath, 'w+') as f:
             #     f.write(fix_import_logger_in_content(content))
+
         if with_template:
             template_content = fix_print_statement_in_content(template_path)
 
