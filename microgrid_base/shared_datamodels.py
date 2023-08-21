@@ -1,7 +1,10 @@
 from log_utils import logger_print
 
 from pydantic import Field, BaseModel, validator
-from typing import Literal
+try:
+    from typing import Literal
+except:
+    from typing_extensions import Literal
 import os
 
 class ConflictRefinerParams(BaseModel):

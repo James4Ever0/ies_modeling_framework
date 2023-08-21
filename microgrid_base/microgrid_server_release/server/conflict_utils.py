@@ -69,7 +69,7 @@ def check_conflict(model, maxtime:float) -> bool:
         has_conflict = True
         output_table = None
     return has_conflict, output_table
-from shared_schemas import ConflictRefinerParams
+from shared_datamodels import ConflictRefinerParams
 
 # def conflict_refiner(model_path: str, output: str, config: str, timeout: float):
 @conflictRefinerManager.answer

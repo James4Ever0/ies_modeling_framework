@@ -5,7 +5,7 @@ from log_utils import logger_print, pretty
 # from pydantic import BaseModel
 import argparse
 from typing import TypeVar, Generic, Callable, Any
-from beartype import beartype
+# from beartype import beartype
 from error_utils import ErrorManager
 import subprocess
 
@@ -26,7 +26,7 @@ prop_translation_table = {
 T = TypeVar("T")
 
 
-@beartype
+# @beartype
 # class ExternalFunctionManager:
 class ExternalFunctionManager(Generic[T]):
     def __init__(self, dataModel: T, cmd: str):
