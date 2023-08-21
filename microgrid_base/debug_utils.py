@@ -41,21 +41,21 @@ class CheckSolverReturnValResult(BaseModel):
     status: SolverReturnStatus
 
 # deprecated.
-def buildWordCounterFromModelWrapper(mw: ModelWrapper):
-    keyword_processor = flashtext.KeywordProcessor()
-    for varName in mw.varNameToSubmodelName.keys():
-        keyword_processor.add_keyword(varName)
+# def buildWordCounterFromModelWrapper(mw: ModelWrapper):
+#     keyword_processor = flashtext.KeywordProcessor()
+#     for varName in mw.varNameToSubmodelName.keys():
+#         keyword_processor.add_keyword(varName)
 
-    def word_counter(text: str) -> Dict[str, int]:
-        keywords_found = keyword_processor.extract_keywords(text)
+#     def word_counter(text: str) -> Dict[str, int]:
+#         keywords_found = keyword_processor.extract_keywords(text)
 
-        keyword_counts = {}
-        for keyword in keywords_found:
-            keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
+#         keyword_counts = {}
+#         for keyword in keywords_found:
+#             keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
 
-        return keyword_counts
+#         return keyword_counts
 
-    return word_counter
+#     return word_counter
 
 
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
@@ -303,6 +303,104 @@ def sortAndDisplayVarValuesAndTermValues(
         valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE, reverse=True
     )
     logger_print()
+
+
+
+def selectiveSortVarNames(
+    keyToSelectedVarNames, varNameCountDict, mw, banner="SELECTIVE"
+):
+    output = []
+    for key, selectedVarNames in keyToSelectedVarNames.items():
+        if selectedVarNames != []:  # skip empty
+            submodelVarNameCountList = [
+                (varName, count)
+                for varName, count in varNameCountDict.items()
+                if varName in selectedVarNames
+            ]
+            output.extend(
+                sortAndDisplayVarValues(
+                    submodelVarNameCountList, mw, banner=f"{banner} <{key}>"
+                )
+            )
+            output.extend(
+                sortAndDisplayVarValues(
+                    submodelVarNameCountList,
+                    mw,
+                    banner=f"{banner} <{key}> REVERSE",
+                    reverse=True,
+                )
+            )
+    return output
+
+
+def cplex_refine_model_and_display_info(
+    mw: ModelWrapper,
+    lp_filepath,
+    log_dir,
+    smap,
+    # word_counter,
+    output_filename="cplex_conflict.txt",
+    statistics_filename="cplex_conflict_statistics.txt",
+):
+    word_counter = mw.word_counter
+    crp = ConflictRefinerParams(
+        model_path=lp_filepath,
+        output=(cplex_conflict_output_path := os.path.join(log_dir, output_filename)),
+        timeout=7,
+    )
+
+    refine_log = conflict_refiner(crp)
+    if refine_log:
+        logger_print("cplex refine log:", refine_log)
+        # translate_and_append(
+        #     cplex_conflict_output_path, export_model_smap
+        # )
+        translateFileUsingSymbolMap(cplex_conflict_output_path, smap)
+
+        # then you sort it by model.
+        with open(cplex_conflict_output_path, "r") as f:
+            content = f.read()
+            varNameCountDict = word_counter(content)
+            varNameCountList = [
+                (varName, count) for varName, count in varNameCountDict.items()
+            ]
+        output = []
+
+        output.extend(
+            sortAndDisplayVarValues(varNameCountList, mw, banner="CONFLICT VAR COUNT")
+        )
+
+        output.extend(
+            sortAndDisplayVarValues(
+                varNameCountList,
+                mw,
+                banner="CONFLICT VAR COUNT REVERSE",
+                reverse=True,
+            )
+        )
+
+        output.extend(
+            selectiveSortVarNames(
+                mw.submodelNameToVarName,
+                varNameCountDict,
+                mw,
+                banner="(CONFLICT) SUBMODEL NAME",
+            )
+        )
+        output.extend(
+            selectiveSortVarNames(
+                mw.submodelClassNameToVarName,
+                varNameCountDict,
+                mw,
+                banner="(CONFLICT) SUBMODEL CLASS NAME",
+            )
+        )
+
+        with open(os.path.join(log_dir, statistics_filename), "w+") as f:
+            f.write("\n".join(output))
+        return True
+
+
 
 
 def filterVarNameBySubModelVarNames(mDict, submodelVarNames):

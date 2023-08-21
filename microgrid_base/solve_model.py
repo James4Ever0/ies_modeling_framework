@@ -132,101 +132,6 @@ from ies_optim import compute, ModelWrapperContext
 from copy import deepcopy
 
 
-def selectiveSortVarNames(
-    keyToSelectedVarNames, varNameCountDict, mw, banner="SELECTIVE"
-):
-    output = []
-    for key, selectedVarNames in keyToSelectedVarNames.items():
-        if selectedVarNames != []:  # skip empty
-            submodelVarNameCountList = [
-                (varName, count)
-                for varName, count in varNameCountDict.items()
-                if varName in selectedVarNames
-            ]
-            output.extend(
-                sortAndDisplayVarValues(
-                    submodelVarNameCountList, mw, banner=f"{banner} <{key}>"
-                )
-            )
-            output.extend(
-                sortAndDisplayVarValues(
-                    submodelVarNameCountList,
-                    mw,
-                    banner=f"{banner} <{key}> REVERSE",
-                    reverse=True,
-                )
-            )
-    return output
-
-
-def cplex_refine_model_and_display_info(
-    mw: ModelWrapper,
-    lp_filepath,
-    log_dir,
-    smap,
-    # word_counter,
-    output_filename="cplex_conflict.txt",
-    statistics_filename="cplex_conflict_statistics.txt",
-):
-    word_counter = mw.word_counter
-    crp = ConflictRefinerParams(
-        model_path=lp_filepath,
-        output=(cplex_conflict_output_path := os.path.join(log_dir, output_filename)),
-        timeout=7,
-    )
-
-    refine_log = conflict_refiner(crp)
-    if refine_log:
-        logger_print("cplex refine log:", refine_log)
-        # translate_and_append(
-        #     cplex_conflict_output_path, export_model_smap
-        # )
-        translateFileUsingSymbolMap(cplex_conflict_output_path, smap)
-
-        # then you sort it by model.
-        with open(cplex_conflict_output_path, "r") as f:
-            content = f.read()
-            varNameCountDict = word_counter(content)
-            varNameCountList = [
-                (varName, count) for varName, count in varNameCountDict.items()
-            ]
-        output = []
-
-        output.extend(
-            sortAndDisplayVarValues(varNameCountList, mw, banner="CONFLICT VAR COUNT")
-        )
-
-        output.extend(
-            sortAndDisplayVarValues(
-                varNameCountList,
-                mw,
-                banner="CONFLICT VAR COUNT REVERSE",
-                reverse=True,
-            )
-        )
-
-        output.extend(
-            selectiveSortVarNames(
-                mw.submodelNameToVarName,
-                varNameCountDict,
-                mw,
-                banner="(CONFLICT) SUBMODEL NAME",
-            )
-        )
-        output.extend(
-            selectiveSortVarNames(
-                mw.submodelClassNameToVarName,
-                varNameCountDict,
-                mw,
-                banner="(CONFLICT) SUBMODEL CLASS NAME",
-            )
-        )
-
-        with open(os.path.join(log_dir, statistics_filename), "w+") as f:
-            f.write("\n".join(output))
-        return True
-
-
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
@@ -339,7 +244,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     em.append(f"abnormal solver status: {TC}")
                 # if error_msg:
                 if em:
-                    word_counter = buildWordCounterFromModelWrapper(mw)
+                    # word_counter = buildWordCounterFromModelWrapper(mw)
                     from log_utils import log_dir, timezone
                     import datetime
 
