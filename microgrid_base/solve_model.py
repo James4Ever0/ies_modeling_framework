@@ -300,10 +300,12 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         with open(cplex_conflict_output_path, 'r') as f:
                             content = f.read()
                             varNameCountDict = word_counter(content)
-                        for in mw.submodelNameToVarName:
-                            submodelVarNameCountList = [(varName, count) for varName, count in varNameCountDict.items() if varName in submodelVarNames]
-                            sortAndDisplayVarValues(submodelVarNameCountList, banner="")
-                            sortAndDisplayVarValues(submodelVarNameCountList, banner="REVERSE", reverse=True)
+                        mw.submodelNameToVarName, banner= "SUBMODEL NAME"
+                        mw.submodelClassNameToVarName, banner= "SUBMODEL CLASS NAME"
+                        for key, selectedVarNames in stringToListOfString.items():
+                            submodelVarNameCountList = [(varName, count) for varName, count in varNameCountDict.items() if varName in selectedVarNames]
+                            sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}>")
+                            sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}> REVERSE", reverse=True)
                     else:
                         em.append("No conflicts found by cplex.")
 

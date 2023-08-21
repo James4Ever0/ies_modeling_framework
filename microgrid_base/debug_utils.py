@@ -227,7 +227,7 @@ def getValueListFromValueDict(valueDict: Dict[str, float]):
 def sortAndDisplayVarValues(
     valueList: List[Tuple[str, float]], banner: str, head_count=10, reverse=False
 ):
-    logger_print(banner.center(70, "="))  # to be commented out
+    logger_print(f"SORT BY {banner}".center(70, "="))  # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
     head_count = min(len(valueList), head_count)
     message = [f"reversed: {reverse}", ""]
