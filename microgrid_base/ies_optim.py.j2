@@ -1,5 +1,6 @@
 from log_utils import logger_print
 from pyomo_environ import *
+from typing import cast
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
@@ -553,7 +554,6 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
 {# from pyomo.environ import * #}
 
 {# from pyomo.core.expr.sympy_tools import sympyify_expression, sympy2pyomo_expression #}
-{# from typing import cast #}
 from sympy.polys.polytools import Poly
 import re
 from sympy import sympify
@@ -630,9 +630,12 @@ def examineSubExprDegree(expr):
             {# logger_print("Abnormal expression:", subexpr_pyomo_repr) #}
     logger_print()
 
+from collections import defaultdict
+
+
 {% macro initSubmodelRelatedTranslationTable(attrName)%}
         self._{{attrName}} = "default{{pascalize(attrName)}}"
-        self.varNameTo{{pascalize(attrName)}}: Dict[str, str] = {}
+        self.varNameTo{{pascalize(attrName)}}: Dict[str, str] = defaultdict(lambda: "unknown{{pascalize(attrName)}}")
         self.{{attrName}}ToVarName: Dict[str, List[str]] = {self._{{attrName}}: []}
 {% endmacro%}
 {% macro setupSubmodelRelatedProperty(attrName)%}
