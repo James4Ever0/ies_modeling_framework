@@ -143,25 +143,34 @@ def selectiveSortVarNames(
                 for varName, count in varNameCountDict.items()
                 if varName in selectedVarNames
             ]
-            output.extend(sortAndDisplayVarValues(
-                submodelVarNameCountList, mw, banner=f"{banner} <{key}>"
-            ))
-            output.extend(sortAndDisplayVarValues(
-                submodelVarNameCountList,
-                mw,
-                banner=f"{banner} <{key}> REVERSE",
-                reverse=True,
-            ))
+            output.extend(
+                sortAndDisplayVarValues(
+                    submodelVarNameCountList, mw, banner=f"{banner} <{key}>"
+                )
+            )
+            output.extend(
+                sortAndDisplayVarValues(
+                    submodelVarNameCountList,
+                    mw,
+                    banner=f"{banner} <{key}> REVERSE",
+                    reverse=True,
+                )
+            )
     return output
 
-def cplex_refine_model_and_display_info(mw:ModelWrapper, lp_filepath, log_dir,smap, word_counter, output_filename ="cplex_conflict.txt", statistics_filename = "cplex_conflict_statistics.txt" ):
+
+def cplex_refine_model_and_display_info(
+    mw: ModelWrapper,
+    lp_filepath,
+    log_dir,
+    smap,
+    word_counter,
+    output_filename="cplex_conflict.txt",
+    statistics_filename="cplex_conflict_statistics.txt",
+):
     crp = ConflictRefinerParams(
         model_path=lp_filepath,
-        output=(
-            cplex_conflict_output_path := os.path.join(
-                log_dir, output_filename
-            )
-        ),
+        output=(cplex_conflict_output_path := os.path.join(log_dir, output_filename)),
         timeout=7,
     )
 
@@ -178,35 +187,44 @@ def cplex_refine_model_and_display_info(mw:ModelWrapper, lp_filepath, log_dir,sm
             content = f.read()
             varNameCountDict = word_counter(content)
             varNameCountList = [
-                (varName, count)
-                for varName, count in varNameCountDict.items()
+                (varName, count) for varName, count in varNameCountDict.items()
             ]
         output = []
 
-        sortAndDisplayVarValues(
-            varNameCountList, mw, banner="CONFLICT VAR COUNT"
-        )
-        
-        sortAndDisplayVarValues(
-            varNameCountList,
-            mw,
-            banner="CONFLICT VAR COUNT REVERSE",
-            reverse=True,
+        output.extend(
+            sortAndDisplayVarValues(varNameCountList, mw, banner="CONFLICT VAR COUNT")
         )
 
-        selectiveSortVarNames(
-            mw.submodelNameToVarName,
-            varNameCountDict,
-            mw,
-            banner="(CONFLICT) SUBMODEL NAME",
+        output.extend(
+            sortAndDisplayVarValues(
+                varNameCountList,
+                mw,
+                banner="CONFLICT VAR COUNT REVERSE",
+                reverse=True,
+            )
         )
-        selectiveSortVarNames(
-            mw.submodelClassNameToVarName,
-            varNameCountDict,
-            mw,
-            banner="(CONFLICT) SUBMODEL CLASS NAME",
+
+        output.extend(
+            selectiveSortVarNames(
+                mw.submodelNameToVarName,
+                varNameCountDict,
+                mw,
+                banner="(CONFLICT) SUBMODEL NAME",
+            )
         )
+        output.extend(
+            selectiveSortVarNames(
+                mw.submodelClassNameToVarName,
+                varNameCountDict,
+                mw,
+                banner="(CONFLICT) SUBMODEL CLASS NAME",
+            )
+        )
+
+        with open(os.path.join(log_dir, statistics_filename), "w+") as f:
+            f.write("\n".join(output))
         return True
+
 
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
@@ -354,61 +372,70 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                     # translated_log_files = []
 
                     # def translate_and_append(fpath, smap):
-                        # translateFileUsingSymbolMap(fpath, smap)
-                        # translated_log_files.append(fpath)
+                    # translateFileUsingSymbolMap(fpath, smap)
+                    # translated_log_files.append(fpath)
 
                     # use conda "docplex" environment to get the result.
-                    crp = ConflictRefinerParams(
-                        model_path=lp_filepath,
-                        output=(
-                            cplex_conflict_output_path := os.path.join(
-                                solver_log_dir_with_timestamp, "cplex_conflict.txt"
-                            )
-                        ),
-                        timeout=7,
-                    )
 
-                    refine_log = conflict_refiner(crp)
-                    if refine_log:
-                        logger_print("cplex refine log:", refine_log)
-                        # translate_and_append(
-                        #     cplex_conflict_output_path, export_model_smap
-                        # )
-                        translateFileUsingSymbolMap(cplex_conflict_output_path, export_model_smap)
+                    # crp = ConflictRefinerParams(
+                    #     model_path=lp_filepath,
+                    #     output=(
+                    #         cplex_conflict_output_path := os.path.join(
+                    #             solver_log_dir_with_timestamp, "cplex_conflict.txt"
+                    #         )
+                    #     ),
+                    #     timeout=7,
+                    # )
 
-                        # then you sort it by model.
-                        with open(cplex_conflict_output_path, "r") as f:
-                            content = f.read()
-                            varNameCountDict = word_counter(content)
-                            varNameCountList = [
-                                (varName, count)
-                                for varName, count in varNameCountDict.items()
-                            ]
+                    # refine_log = conflict_refiner(crp)
+                    # if refine_log:
+                    #     logger_print("cplex refine log:", refine_log)
+                    #     # translate_and_append(
+                    #     #     cplex_conflict_output_path, export_model_smap
+                    #     # )
+                    #     translateFileUsingSymbolMap(
+                    #         cplex_conflict_output_path, export_model_smap
+                    #     )
 
-                        sortAndDisplayVarValues(
-                            varNameCountList, mw, banner="CONFLICT VAR COUNT"
-                        )
-                        
-                        sortAndDisplayVarValues(
-                            varNameCountList,
-                            mw,
-                            banner="CONFLICT VAR COUNT REVERSE",
-                            reverse=True,
-                        )
+                    #     # then you sort it by model.
+                    #     with open(cplex_conflict_output_path, "r") as f:
+                    #         content = f.read()
+                    #         varNameCountDict = word_counter(content)
+                    #         varNameCountList = [
+                    #             (varName, count)
+                    #             for varName, count in varNameCountDict.items()
+                    #         ]
 
-                        selectiveSortVarNames(
-                            mw.submodelNameToVarName,
-                            varNameCountDict,
-                            mw,
-                            banner="(CONFLICT) SUBMODEL NAME",
-                        )
-                        selectiveSortVarNames(
-                            mw.submodelClassNameToVarName,
-                            varNameCountDict,
-                            mw,
-                            banner="(CONFLICT) SUBMODEL CLASS NAME",
-                        )
-                    else:
+                    #     sortAndDisplayVarValues(
+                    #         varNameCountList, mw, banner="CONFLICT VAR COUNT"
+                    #     )
+
+                    #     sortAndDisplayVarValues(
+                    #         varNameCountList,
+                    #         mw,
+                    #         banner="CONFLICT VAR COUNT REVERSE",
+                    #         reverse=True,
+                    #     )
+
+                    #     selectiveSortVarNames(
+                    #         mw.submodelNameToVarName,
+                    #         varNameCountDict,
+                    #         mw,
+                    #         banner="(CONFLICT) SUBMODEL NAME",
+                    #     )
+                    #     selectiveSortVarNames(
+                    #         mw.submodelClassNameToVarName,
+                    #         varNameCountDict,
+                    #         mw,
+                    #         banner="(CONFLICT) SUBMODEL CLASS NAME",
+                    #     )
+                    if not cplex_refine_model_and_display_info(
+                        mw,
+                        lp_filepath,
+                        solver_log_dir_with_timestamp,
+                        export_model_smap,
+                        word_counter,
+                    ):
                         em.append("No conflicts found by cplex.")
 
                     import shutil

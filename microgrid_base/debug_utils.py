@@ -40,7 +40,7 @@ class CheckSolverReturnValResult(BaseModel):
     success: bool
     status: SolverReturnStatus
 
-
+# deprecated.
 def buildWordCounterFromModelWrapper(mw: ModelWrapper):
     keyword_processor = flashtext.KeywordProcessor()
     for varName in mw.varNameToSubmodelName.keys():

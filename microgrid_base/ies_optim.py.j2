@@ -663,12 +663,16 @@ def examineSubExprDegree(expr):
 {% endmacro%}
 {% set submodelRelatedAttrs = ['submodelName', 'submodelClassName'] %}
 {% set objectiveRelatedAttrs = ['obj', 'obj_expr'] %}
+
+import flashtext
+
 class ModelWrapper:
     {# __slots__ = ['obj',"obj_expr"] #}
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
+        self.
 {% for objRelatedAttr in objectiveRelatedAttrs %}
         self._{{objRelatedAttr}} = ...
 {% endfor %}
