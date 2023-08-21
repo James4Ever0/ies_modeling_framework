@@ -47,9 +47,11 @@ def fix_import_logger_in_content(fpath):
     return fixed_cnt
 
 def fix_pyomo_environ_in_content(fpath, linenos, has_toplevel_import_fix):
-    print(fpath, linenos, has_toplevel_import_fix)
-    breakpoint()
+    # print(fpath, linenos, has_toplevel_import_fix)
+    # breakpoint()
     def fix_pyomo_environ(cnt:str):
+        if linenos == []:
+            return cnt
         output = []
         if not has_toplevel_import_fix:
             output.append(SETUP_PYOMO_ENVIRON)
