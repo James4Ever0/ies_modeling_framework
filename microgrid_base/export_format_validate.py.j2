@@ -15,7 +15,8 @@ from typing import List
 from constants import *
 {# import numpy as np #}
 
-from pyomo.environ import value
+from pyomo_patch import *
+{# from pyomo.environ import value #}
 from pydantic import BaseModel, validator
 
 {# if unit is one, use "int" as type, else "float"#}

@@ -1,4 +1,5 @@
 from log_utils import logger_print
+from pyomo_patch import *
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
@@ -549,7 +550,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
 # model definition #
 ####################
 
-from pyomo.environ import *
+{# from pyomo.environ import * #}
 
 {# from pyomo.core.expr.sympy_tools import sympyify_expression, sympy2pyomo_expression #}
 {# from typing import cast #}

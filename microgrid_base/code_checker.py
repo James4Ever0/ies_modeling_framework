@@ -45,9 +45,16 @@ def fix_import_logger_in_content(fpath):
     )
     return fixed_cnt
 
-def fix_pyomo_environ_in_content(fpath, linenos = []):
+def fix_pyomo_environ_in_content(fpath, linenos, has_toplevel_import_fix):
     def fix_pyomo_environ(cnt:str):
-        for line
+        output = []
+        if not has_toplevel_import_fix:
+            output.append(SETUP_PYOMO_ENVIRON)
+        for lineno, line in cnt.split("\n"):
+            if lineno in linenos:
+                line = f"# {line}"
+            output.append(line)
+        return "\n".join(line)
 
     fixed_cnt = open_file_and_modify_content(fpath, fix_pyomo_environ, "pyomo environ")
     return fixed_cnt

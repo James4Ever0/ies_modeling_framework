@@ -1,6 +1,7 @@
 from log_utils import logger_print
 
-from pyomo.environ import *
+from pyomo_patch import *
+# from pyomo.environ import *
 
 model = ConcreteModel()
 

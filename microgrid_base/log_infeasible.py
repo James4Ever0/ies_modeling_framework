@@ -1,14 +1,16 @@
 from log_utils import logger_print
 
-from pyomo.environ import (
-    Param,
-    ConcreteModel,
-    Var,
-    Objective,
-    ConstraintList,
-    value,
-    minimize,
-)
+from pyomo_patch import *
+
+# from pyomo.environ import (
+#     Param,
+#     ConcreteModel,
+#     Var,
+#     Objective,
+#     ConstraintList,
+#     value,
+#     minimize,
+# )
 from pyomo.opt import SolverFactory
 from pyomo.util.infeasible import log_infeasible_constraints
 

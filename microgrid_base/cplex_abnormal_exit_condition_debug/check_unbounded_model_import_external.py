@@ -1,7 +1,9 @@
 import sys
 
-from pyomo.environ import * # do not do this afterwards, otherwise model.solutions.symbol_map will be always empty.
+# from pyomo.environ import * # do not do this afterwards, otherwise model.solutions.symbol_map will be always empty.
 sys.path.append("../")
+
+from pyomo_patch import *
 
 from ies_optim import ModelWrapper
 
