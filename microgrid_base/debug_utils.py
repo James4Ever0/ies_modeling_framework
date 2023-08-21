@@ -479,6 +479,9 @@ def setBounds(varObject, bound):
 def solve_and_decompose(
     modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
 ):
+    cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
+    os.mkdir(cplex_log_dir)
+    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, ,smap )
     model = modelWrapper.model
     obj_expr = modelWrapper.obj_expr
     solved = solve_with_translated_log_and_statistics(
