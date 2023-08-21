@@ -294,6 +294,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         translate_and_append(
                             cplex_conflict_output_path, export_model_smap
                         )
+                        # then you sort it by model.
                     else:
                         em.append("No conflicts found by cplex.")
 
