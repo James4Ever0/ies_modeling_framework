@@ -4,7 +4,7 @@ from log_utils import logger_print
 from typing import List
 from constants import *
 
-from pyomo.environ import value
+from pyomo_environ import *
 from pydantic import BaseModel, validator
 
 from ies_optim import *

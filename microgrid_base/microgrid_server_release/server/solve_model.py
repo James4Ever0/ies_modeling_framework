@@ -19,7 +19,9 @@ except:
     from typing_extensions import Literal
 from ies_optim import ModelWrapper
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
-from pyomo.environ import *
+# from pyomo.environ import *
+from pyomo_environ import *
+
 
 # from pyomo.util.infeasible import log_infeasible_constraints
 

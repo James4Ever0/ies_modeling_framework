@@ -133,15 +133,16 @@ from copy import deepcopy
 
 def selectiveSortVarNames(keyToSelectedVarNames, varNameCountDict, banner="SELECTIVE"):
     for key, selectedVarNames in keyToSelectedVarNames.items():
-        submodelVarNameCountList = [
-            (varName, count)
-            for varName, count in varNameCountDict.items()
-            if varName in selectedVarNames
-        ]
-        sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}>")
-        sortAndDisplayVarValues(
-            submodelVarNameCountList, banner=f"{banner} <{key}> REVERSE", reverse=True
-        )
+        if selectedVarNames != []: # skip empty
+            submodelVarNameCountList = [
+                (varName, count)
+                for varName, count in varNameCountDict.items()
+                if varName in selectedVarNames
+            ]
+            sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}>")
+            sortAndDisplayVarValues(
+                submodelVarNameCountList, banner=f"{banner} <{key}> REVERSE", reverse=True
+            )
 
 
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
