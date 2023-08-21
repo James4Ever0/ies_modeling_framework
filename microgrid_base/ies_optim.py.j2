@@ -635,8 +635,10 @@ from collections import defaultdict
 
 {% macro initSubmodelRelatedTranslationTable(attrName)%}
         self._{{attrName}} = "default{{pascalize(attrName)}}"
-        self.varNameTo{{pascalize(attrName)}}: Dict[str, str] = defaultdict(lambda: "unknown{{pascalize(attrName)}}")
-        self.{{attrName}}ToVarName: Dict[str, List[str]] = {self._{{attrName}}: []}
+        self.varNameTo{{pascalize(attrName)}}= cast(Dict[str, str], defaultdict(lambda: "unknown{{pascalize(attrName)}}"))
+        self.{{attrName}}ToVarName= cast(Dict[str, List[str]], defaultdict(lambda: "unknown{{pascalize(attrName)}}"))
+        self.{{attrName}}ToVarName.update({self._{{attrName}}: []})
+        {# self.{{attrName}}ToVarName: Dict[str, List[str]] = {self._{{attrName}}: []} #}
 {% endmacro%}
 {% macro setupSubmodelRelatedProperty(attrName)%}
     def set{{pascalize(attrName)}}(self, {{attrName}}:str):
