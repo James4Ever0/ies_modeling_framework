@@ -167,6 +167,7 @@ def solve_with_translated_log_and_statistics(
         tee=True,
         logfile=(logfile := os.path.join(log_directory, f"{label}.log")),
     )
+    # breakpoint()
     smap = model.solutions.symbol_map[solver._smap_id]
 
     translateFileUsingSymbolMap(logfile, smap)
@@ -324,7 +325,7 @@ def checkInfeasibleOrUnboundedModel(
     solver,
     log_directory: str,
     timelimit: float = 30,
-    max_bound: float = 1e8,
+    max_bound: float = 1e10,
 ):
     model = modelWrapper.model
     obj = modelWrapper.obj

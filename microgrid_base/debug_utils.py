@@ -325,7 +325,7 @@ def checkInfeasibleOrUnboundedModel(
     solver,
     log_directory: str,
     timelimit: float = 30,
-    max_bound: float = 1e8,
+    max_bound: float = 1e10,
 ):
     model = modelWrapper.model
     obj = modelWrapper.obj

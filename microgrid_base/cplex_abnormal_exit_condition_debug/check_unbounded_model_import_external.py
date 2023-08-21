@@ -1,12 +1,13 @@
 import sys
 
+from pyomo.environ import * # do not do this afterwards, otherwise model.solutions.symbol_map will be always empty.
 sys.path.append("../")
 
 from ies_optim import ModelWrapper
 
 from debug_utils import checkInfeasibleOrUnboundedModel
-from pyomo.environ import *
-
+# @@@@@@@@@@@!!!!!DO NOT DO THIS!!!!!@@@@@@@@@@@
+# from pyomo.environ import *
 import os
 
 log_dir = "logs"
