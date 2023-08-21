@@ -250,7 +250,7 @@ def sortAndDisplayVarValues(
     message = [f"reversed: {reverse}", ""]
     for i in range(head_count):
         varName, val = valueList[i]
-        message.append("%s\t%s\t%s\t%s" % (varName, val,mw.varNameToSubmodelName, mw.varNameToSubmodelClassName) )
+        message.append("%s\t%s\t%s<%s>" % (varName, val,mw.varNameToSubmodelName[varName], mw.varNameToSubmodelClassName[varName]) )
     output = "\n".join(message)
     logger_print(output)
 
@@ -379,6 +379,7 @@ def checkInfeasibleOrUnboundedModel(
             obj_expr,
             modelWrapper.submodelNameToVarNames,
             modelWrapper.submodelClassNameToVarNames,
+            modelWrapper,
         )
 
 

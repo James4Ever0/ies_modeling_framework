@@ -242,14 +242,15 @@ def getValueListFromValueDict(valueDict: Dict[str, float]):
 
 
 def sortAndDisplayVarValues(
-    valueList: List[Tuple[str, float]], banner: str, head_count=10, reverse=False
+    valueList: List[Tuple[str, float]], mw:ModelWrapper, banner: str, head_count=10, reverse=False
 ):
     logger_print(f"SORT BY {banner}".center(70, "="))  # to be commented out
     valueList.sort(key=lambda x: x[1], reverse=reverse)
     head_count = min(len(valueList), head_count)
     message = [f"reversed: {reverse}", ""]
     for i in range(head_count):
-        message.append("%s\t%s" % valueList[i])
+        varName, val = valueList[i]
+        message.append("%s\t%s\t%s<%s>" % (varName, val,mw.varNameToSubmodelName[varName], mw.varNameToSubmodelClassName[varName]) )
     output = "\n".join(message)
     logger_print(output)
 
@@ -257,6 +258,7 @@ def sortAndDisplayVarValues(
 def sortAndDisplayVarValuesAndTermValues(
     varNameToVarValue: Dict[str, float],
     varNameToTermValue: Dict[str, float],
+    mw: ModelWrapper,
     submodelName: str = "",
 ):
     BANNER_VARNAME_TO_VAR_VALUE = (
@@ -267,13 +269,13 @@ def sortAndDisplayVarValuesAndTermValues(
     )
     valueListOfVarNameToVarValue = getValueListFromValueDict(varNameToVarValue)
     valueListOfVarNameToTermValue = getValueListFromValueDict(varNameToTermValue)
-    sortAndDisplayVarValues(valueListOfVarNameToVarValue, BANNER_VARNAME_TO_VAR_VALUE)
+    sortAndDisplayVarValues(valueListOfVarNameToVarValue, mw, BANNER_VARNAME_TO_VAR_VALUE)
     sortAndDisplayVarValues(
-        valueListOfVarNameToVarValue, BANNER_VARNAME_TO_VAR_VALUE, reverse=True
+        valueListOfVarNameToVarValue, mw, BANNER_VARNAME_TO_VAR_VALUE, reverse=True
     )
-    sortAndDisplayVarValues(valueListOfVarNameToTermValue, BANNER_VARNAME_TO_TERM_VALUE)
+    sortAndDisplayVarValues(valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE)
     sortAndDisplayVarValues(
-        valueListOfVarNameToTermValue, BANNER_VARNAME_TO_TERM_VALUE, reverse=True
+        valueListOfVarNameToTermValue, mw, BANNER_VARNAME_TO_TERM_VALUE, reverse=True
     )
     logger_print()
 
@@ -285,7 +287,8 @@ def filterVarNameBySubModelVarNames(mDict, submodelVarNames):
 def groupBySubModelRelatedTranslationTable(
     varNameToVarValue: Dict[str, float],
     varNameToTermValue: Dict[str, float],
-    translationTable: Dict[str, List[str]], label: str
+    translationTable: Dict[str, List[str]], label: str,
+    mw: ModelWrapper
 ):
     logger_print(f"grouping by submodel {label}:")
 
@@ -293,7 +296,7 @@ def groupBySubModelRelatedTranslationTable(
         submodel_vn2v = filterVarNameBySubModelVarNames(varNameToVarValue, varNames)
         submodel_vn2t = filterVarNameBySubModelVarNames(varNameToTermValue, varNames)
         sortAndDisplayVarValuesAndTermValues(
-            submodel_vn2v, submodel_vn2t, submodelName=submodelNameOrClassName
+            submodel_vn2v, submodel_vn2t, mw, submodelName=submodelNameOrClassName
         )
 
 
@@ -301,6 +304,7 @@ def decomposeAndAnalyzeObjectiveExpression(
     obj_expr,
     submodelNameToVarNames: Dict[str, List[str]],
     submodelClassNameToVarNames: Dict[str, List[str]],
+    mw:ModelWrapper
 ):
     decomposedResult = decomposeExpression(obj_expr)
     if decomposedResult:
@@ -317,15 +321,15 @@ def decomposeAndAnalyzeObjectiveExpression(
             varNameToTermValue[varName] = termValue
 
         # sort and display
-        sortAndDisplayVarValuesAndTermValues(varNameToVarValue, varNameToTermValue)
+        sortAndDisplayVarValuesAndTermValues(varNameToVarValue, varNameToTermValue, mw)
 
         obj_val = value(obj_expr)
         obj_const = decomposedResult.constant
 
         # now we need to sort value by submodel name (grouping). don't count keywords here, because that is done in conflict report.
 
-        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelNameToVarNames, "name")
-        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelClassNameToVarNames, "className")
+        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelNameToVarNames, "name", mw)
+        groupBySubModelRelatedTranslationTable(varNameToVarValue, varNameToTermValue,submodelClassNameToVarNames, "className", mw)
 
         logger_print("(OBJ - OBJ_CONST)?", obj_val - obj_const)
         logger_print("OBJ?", obj_val)
@@ -375,6 +379,7 @@ def checkInfeasibleOrUnboundedModel(
             obj_expr,
             modelWrapper.submodelNameToVarNames,
             modelWrapper.submodelClassNameToVarNames,
+            modelWrapper,
         )
 
 

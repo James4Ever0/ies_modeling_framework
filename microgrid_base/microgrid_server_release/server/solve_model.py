@@ -19,6 +19,7 @@ except:
     from typing_extensions import Literal
 from ies_optim import ModelWrapper
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
+
 # from pyomo.environ import *
 from pyomo_environ import *
 
@@ -131,17 +132,25 @@ from ies_optim import compute, ModelWrapperContext
 from copy import deepcopy
 
 
-def selectiveSortVarNames(keyToSelectedVarNames, varNameCountDict, banner="SELECTIVE"):
+def selectiveSortVarNames(
+    keyToSelectedVarNames, varNameCountDict, mw, banner="SELECTIVE"
+):
     for key, selectedVarNames in keyToSelectedVarNames.items():
-        submodelVarNameCountList = [
-            (varName, count)
-            for varName, count in varNameCountDict.items()
-            if varName in selectedVarNames
-        ]
-        sortAndDisplayVarValues(submodelVarNameCountList, banner=f"{banner} <{key}>")
-        sortAndDisplayVarValues(
-            submodelVarNameCountList, banner=f"{banner} <{key}> REVERSE", reverse=True
-        )
+        if selectedVarNames != []:  # skip empty
+            submodelVarNameCountList = [
+                (varName, count)
+                for varName, count in varNameCountDict.items()
+                if varName in selectedVarNames
+            ]
+            sortAndDisplayVarValues(
+                submodelVarNameCountList, mw, banner=f"{banner} <{key}>"
+            )
+            sortAndDisplayVarValues(
+                submodelVarNameCountList,
+                mw,
+                banner=f"{banner} <{key}> REVERSE",
+                reverse=True,
+            )
 
 
 def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
@@ -314,16 +323,32 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         with open(cplex_conflict_output_path, "r") as f:
                             content = f.read()
                             varNameCountDict = word_counter(content)
+                            varNameCountList = [
+                                (varName, count)
+                                for varName, count in varNameCountDict.items()
+                            ]
+
+                        sortAndDisplayVarValues(
+                            varNameCountList, mw, banner="CONFLICT VAR COUNT"
+                        )
+                        sortAndDisplayVarValues(
+                            varNameCountList,
+                            mw,
+                            banner="CONFLICT VAR COUNT REVERSE",
+                            reverse=True,
+                        )
 
                         selectiveSortVarNames(
                             mw.submodelNameToVarName,
                             varNameCountDict,
-                            banner="SUBMODEL NAME",
+                            mw,
+                            banner="(CONFLICT) SUBMODEL NAME",
                         )
                         selectiveSortVarNames(
                             mw.submodelClassNameToVarName,
                             varNameCountDict,
-                            banner="SUBMODEL CLASS NAME",
+                            mw,
+                            banner="(CONFLICT) SUBMODEL CLASS NAME",
                         )
                     else:
                         em.append("No conflicts found by cplex.")
