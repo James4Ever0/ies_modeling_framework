@@ -382,5 +382,10 @@ def checkInfeasibleOrUnboundedModel(
             modelWrapper,
         )
 
+    # this is not persistent solver.
+    # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
+    del model.debug_obj_expr_bound_constraint
+    del model.debug_obj_expr_bound
+
 
 # we need to change solver options to early abort execution.
