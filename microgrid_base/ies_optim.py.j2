@@ -650,6 +650,7 @@ def examineSubExprDegree(expr):
         self.varNameTo{{pascalize(attrName)}}[name] = self.{{attrName}}
         self.{{attrName}}ToVarName
         self.{{attrName}}ToVarName[self.{{attrName}}].append(name)
+        self.keyword_processor.add_keyword(name)
 {% endmacro%}
 {% macro dynamicProperty(attrName)%}
 {% set getter=attrName+"Getter"%}
@@ -672,7 +673,7 @@ class ModelWrapper:
         self.model = ConcreteModel()
         self.clock = {}
         self.assumptions: List[Callable] = []
-        self.
+        self.keyword_processor = flashtext.KeywordProcessor()
 {% for objRelatedAttr in objectiveRelatedAttrs %}
         self._{{objRelatedAttr}} = ...
 {% endfor %}
@@ -690,6 +691,14 @@ class ModelWrapper:
         for assumption in self.assumptions:
             assumption()
         self.assumptions = [] # clear assumptions
+    def word_counter(text: str) -> Dict[str, int]:
+        keywords_found = self.keyword_processor.extract_keywords(text)
+
+        keyword_counts = {}
+        for keyword in keywords_found:
+            keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
+
+        return keyword_counts
     def __del__(self):
         del self.model
         del self.clock
