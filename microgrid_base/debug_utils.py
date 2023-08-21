@@ -208,12 +208,12 @@ def solve_with_translated_log_and_statistics(
 
 from pyomo.core.expr import current as EXPR
 
-from typing import Dict
+from typing import Dict, Any
 
 
 class DecomposedExpression(BaseModel):
     constant: float
-    varNameToVarObject: Dict[str, str]
+    varNameToVarObject: Dict[str, Any]
     varNameToVarCoefficient: Dict[str, float]
 
 
@@ -232,6 +232,7 @@ def decomposeExpression(expr):
                 varNameToVarCoefficient[varName] = (
                     varNameToVarCoefficient.get(varName, 0) + coef
                 )
+        # breakpoint()
         return DecomposedExpression(
             constant=const,
             varNameToVarObject=varNameToVarObject,
