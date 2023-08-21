@@ -325,7 +325,7 @@ def checkInfeasibleOrUnboundedModel(
     solver,
     log_directory: str,
     timelimit: float = 30,
-    max_bound: float = 1e10,
+    max_bound: float = 1e8,
 ):
     model = modelWrapper.model
     obj = modelWrapper.obj
@@ -359,3 +359,6 @@ def checkInfeasibleOrUnboundedModel(
             modelWrapper.submodelNameToVarNames,
             modelWrapper.submodelClassNameToVarNames,
         )
+
+
+# we need to change solver options to early abort execution.
