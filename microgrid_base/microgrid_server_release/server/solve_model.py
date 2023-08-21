@@ -252,7 +252,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         .replace("-", "_")
                         .replace(".", "_")
                         .replace(":", "_")
-                        .split("+")[0]
+                        .replace("+", "_")
                     )
                     os.mkdir(
                         solver_log_dir_with_timestamp := os.path.join(
