@@ -11,6 +11,17 @@ from easyprocess import EasyProcess
 def emit_message_and_raise_exception(exc_info:str):
     raise Exception(exc_info)
 
+repodirs = []
+
+for path, dirpath, filepath in os.walk("."):
+    if ".git" in dirpath:
+        repodirs.append(path)
+
+try:
+    assert "." in repodirs
+except:
+    emit_message_and_raise_exception("current directory is not a git repo root dir!\nLocation: {os.curdir}")
+
 CHECK_GPTCOMMIT_KEYS="gptcommit config keys"
 
 check_if_exist_keylist = ['openai.apibase', 'openai.api_key']
@@ -18,7 +29,7 @@ check_if_exist_keylist = ['openai.apibase', 'openai.api_key']
 proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
 
 if proc.return_code !=0:
-    emit_message_and_raise_exception("gptcommit is not in your PATH. please install.")
+    emit_message_and_raise_exception("gptcommit is not in your PATH.\nplease install by running `cargo install --locked gptcommit`.")
 
 if os.name == "nt":
     COMMIT_SCRIPT = "cmd /C commit.cmd"
