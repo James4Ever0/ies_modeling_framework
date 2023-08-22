@@ -19,25 +19,28 @@ def raise_exception(msg):
     raise Exception(msg)
 
 
-def check_proc_exit_status_base(proc, action, printer):
+def check_proc_exit_status_base(proc: EasyProcess, action:str, printer):
     if proc.return_code != 0:
         printer(
             f"Abnormal exit code {proc.return_code} during {action}.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}"
         )
 
 
-def run_and_check_proc(cmd, action, printer=raise_exception):
+def run_and_check_proc_base(cmd, action, printer=raise_exception):
     proc = EasyProcess(cmd)
     check_proc_exit_status_base(proc, action, printer)
 
 
-def check_if_executable_in_path(executable: str, raise_exception: bool = True):
+def check_if_executable_in_path(executable: str, extra_info = "", raise_exception: bool = True):
     lookup_result = shutil.which(executable)
     if lookup_result:
         print("executable {} found in path: {}".format(executable, lookup_result))
         return True
     elif raise_exception:
-        raise Exception("executable {} found in path".format(executable))
+        base_exc = "executable {} not found in path.".format(executable)
+        if extra_info:
+            base_exc = "\n".join([base_exc, extra_info])
+        raise Exception(base_exc)
     return False
 
 
@@ -55,7 +58,7 @@ elif os_name == "darwin":
 
     def show_toast(msg):
         cmd = [notifier_exec, "-title", toast_title, "-message", msg]
-        run_and_check_proc(cmd, "sending macos toast")
+        run_and_check_proc_base(cmd, "sending macos toast")
 
 elif os_name == "linux":
     notifier_exec = "notify-send"
@@ -63,7 +66,7 @@ elif os_name == "linux":
 
     def show_toast(msg):
         cmd = [notifier_exec, toast_title, msg]
-        run_and_check_proc(cmd, "sending linux toast")
+        run_and_check_proc_base(cmd, "sending linux toast")
 
 else:
     raise Exception(f"\nunable to show toast message due to unknown os: {os_name}")
@@ -102,6 +105,8 @@ check_if_exist_keylist = ["openai.apibase", "openai.api_key"]
 def check_proc_exit_status(proc, action):
     check_proc_exit_status_base(proc, action, emit_message_and_raise_exception)
 
+def run_and_check_proc(cmd, action):
+    run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
 
 if os.name == "nt":
     setup_file = "setup_gptcommit.cmd"
@@ -113,14 +118,13 @@ else:
 repo_absdirs = [os.path.abspath(p) for p in repodirs]
 repo_basedir = os.path.abspath(".")
 
+check_if_executable_in_path("gptcommit", "please install by running `cargo install --locked gptcommit`."
+        )
+)
+
 for repo_absdir in repo_absdirs:
     os.chdir(repo_absdir)
-    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
-
-    if proc.return_code != 0:
-        emit_message_and_raise_exception(
-            "gptcommit is not in your PATH.\nplease install by running `cargo install --locked gptcommit`."
-        )
+    run_and_check_proc(CHECK_GPTCOMMIT_KEYS)
 
     repo_name_and_location = (
         f"repo {os.path.basename(os.curdir)}\nLocation: {os.curdir}"
