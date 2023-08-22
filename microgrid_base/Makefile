@@ -12,6 +12,9 @@ endif
 
 ifeq (${PLATFORM}, nt)
 OS_TYPE = windows
+# get our solvers in path
+$(shell mklink )
+export PATH := $(shell pwd)/bin:$(PATH)
 else
 OS_TYPE = macos
 endif
