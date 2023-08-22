@@ -10,4 +10,9 @@ import subprocess
 
 CHECK_GPTCOMMIT_KEYS="gptcommit config keys"
 
+if os.name == 'nt':
+    SETUP_GPTCOMMIT="cmd /C setup_gptcommit.cmd"
+else:
+    SETUP_GPTCOMMIT="bash setup_gptcommit.sh"
+
 # setup timezone as Shanghai
