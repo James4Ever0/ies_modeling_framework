@@ -268,6 +268,7 @@ def commit():
 
             with open(last_commit_time_filepath, "r") as f:
                 time_now = get_time_now()
+                print(f"successfully commited at: {time_now}\nLocation: {os.curdir}")
                 content = time_now.isoformat()
                 f.write(content)
 
