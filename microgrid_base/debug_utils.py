@@ -467,9 +467,11 @@ def decomposeAndAnalyzeObjectiveExpression(
     else:
         logger_print("objective expression is non-linear.")
 
-
-def setBounds(varObject, bound):
+import uuid
+def setBounds(varObject, bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
+    setattr(model, bound_names[0], ...)
+    setattr(model, bound_names[1], ...)
     varObject.setlb(-bound)
     varObject.setub(bound)
 
@@ -519,7 +521,8 @@ def checkInfeasibleOrUnboundedModel(
     modelWrapper.submodelName = model_name
     modelWrapper.submodelClassName = model_name
 
-    model.debug_null_objective = Objective()
+    # model.debug_null_objective = Objective()
+    model.debug_null_objective = Objective(expr=0)
     # model.debug_null_objective = Objective(expr=0, sense=minimize)
 
     # solve_with_translated_log_and_statistics(
@@ -528,11 +531,13 @@ def checkInfeasibleOrUnboundedModel(
     solve_and_decompose(modelWrapper, solver, log_directory, model_name)
 
     # phase 2: limit range of objective expression
-    model.debug_obj_expr_bound = Var()
-    model.debug_obj_expr_bound_constraint = Constraint(
-        expr=model.debug_obj_expr_bound == obj_expr
-    )
-    setBounds(model.debug_obj_expr_bound, max_bound)
+    # model.debug_obj_expr_bound = Var()
+    # model.debug_obj_expr_bound_constraint = Constraint(
+    #     expr=model.debug_obj_expr_bound == obj_expr
+    # )
+    # setBounds(model.debug_obj_expr_bound, max_bound)
+    model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -max_bound)
+    model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= max_bound)
 
     model.debug_null_objective.deactivate()
     obj.activate()
@@ -554,8 +559,10 @@ def checkInfeasibleOrUnboundedModel(
 
     # this is not a persistent solver.
     # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
-    del model.debug_obj_expr_bound_constraint
-    del model.debug_obj_expr_bound
+    # del model.debug_obj_expr_bound_constraint
+    # del model.debug_obj_expr_bound
+    del model.debug_obj_ub_constraint
+    del model.debug_obj_lb_constraint
 
     decomposed_obj_expr = decomposeExpression(obj_expr)
     for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():

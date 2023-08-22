@@ -519,7 +519,8 @@ def checkInfeasibleOrUnboundedModel(
     modelWrapper.submodelName = model_name
     modelWrapper.submodelClassName = model_name
 
-    model.debug_null_objective = Objective()
+    # model.debug_null_objective = Objective()
+    model.debug_null_objective = Objective(expr=0)
     # model.debug_null_objective = Objective(expr=0, sense=minimize)
 
     # solve_with_translated_log_and_statistics(

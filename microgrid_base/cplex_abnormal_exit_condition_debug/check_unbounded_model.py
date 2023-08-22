@@ -30,7 +30,7 @@ model.write(filename="no_bound.lp")
 # warning: shall not be NaN
 # from cmath import nan
 # no_obj = model.no_obj = Objective(expr=nan, sense=minimize) # treated as 0
-no_obj = model.no_obj = Objective(expr=0, sense=minimize)
+no_obj = model.no_obj = Objective(expr=0)
 
 # write_iis(model, "no_bound.ilp", "cplex")
 # no conflict! how comes? it is unbounded.
@@ -67,10 +67,15 @@ print()
 print("=" * 70)
 
 # no need to create new objective. just limit the objective expression to bounds.
-mobjVar = model.mobjVar = Var()
-mobjVar.setub(MAX_BOUND)
-mobjVar.setlb(-MAX_BOUND)
-model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
+
+model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -MAX_BOUND)
+model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= MAX_BOUND)
+
+# mobjVar = model.mobjVar = Var()
+# mobjVar.setub(MAX_BOUND)
+# mobjVar.setlb(-MAX_BOUND)
+# model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
+
 # bound_obj = model.bound_obj = Objective(expr=mobjVar, sense=minimize)
 
 # model.obj.deactivate()
@@ -201,5 +206,5 @@ if decomposedResult:
 else:
     print("objective expression is non-linear.")
 
-print("solver smap ids:", smap_ids) # three unique ids.
+print("solver smap ids:", smap_ids)  # three unique ids.
 # pick up the most recent one to translate the log and exported model (lp format).

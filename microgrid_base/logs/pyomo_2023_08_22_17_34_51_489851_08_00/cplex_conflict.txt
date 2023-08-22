@@ -1,5 +1,5 @@
 \ENCODING=ISO-8859-1
-\Problem name: E:\works\jubilant-adventure2\microgrid_base\logs\pyomo_2023_08_22_17_25_15_122832_08_00\model.lp_conflict
+\Problem name: E:\works\jubilant-adventure2\microgrid_base\logs\pyomo_2023_08_22_17_34_51_489851_08_00\model.lp_conflict
 
 Minimize
  obj: 0 ONE_VAR_CONSTANT
@@ -4686,6 +4686,7 @@ Subject To
              + 1337037.03703704 SP_48_PW.MC_bin_y[7] + 1871851.85185185 SP_48_PW.MC_bin_y[8]
              + 2495802.4691358 SP_48_PW.MC_bin_y[9] + 3208888.88888889 SP_48_PW.MC_bin_y[10] - 3610000 SP_48_PW.MC_bin_y[11]
               = 0
+ SP_48_PW.MC_constraint3[1]: - SP_48_PW.MC_poly_x[1] - 1000 SP_48_PW.MC_bin_y[1] <= 0
  SP_48_PW.MC_constraint3[2]: SP_48_PW.MC_poly_x[2] >= 0
  SP_48_PW.MC_constraint3[3]: - SP_48_PW.MC_poly_x[3] + 211.111111111111 SP_48_PW.MC_bin_y[3] <= 0
  SP_48_PW.MC_constraint3[4]: - SP_48_PW.MC_poly_x[4] + 422.222222222222 SP_48_PW.MC_bin_y[4] <= 0
@@ -7162,6 +7163,7 @@ Bounds
  0 <= SP_48_PW.MC_bin_y[9] <= 1
  0 <= SP_48_PW.MC_bin_y[10] <= 1
  0 <= SP_48_PW.MC_bin_y[11] <= 1
+ 0 <= SP_48_PW.MC_bin_y[1] <= 1
 Binaries
  TD_0_DI_6_VN_SP_129_POSNEG_是否购买[0]  TD_0_DI_9_VN_SP_0_POSNEG_是否购买[0]  TD_0_DI_12_VN_SP_0_POSNEG_是否购买[0]  TD_0_DI_17_VN_SP_5_POSNEG_是否购买[0]  TD_0_DI_22_VN_SP_10_POSNEG_是否购买[0]  TD_0_DI_0_VN_SP_0_POSNEG_是否购买[0]  TD_0_DI_2_VN_SP_0_POSNEG_是否购买[0]  TD_0_DI_0_VN_SP_2_POSNEG_是否购买[0]  TD_0_DI_2_VN_SP_2_POSNEG_是否购买[0]  TD_0_DI_6_VN_SP_0_电功率中转[0]  TD_0_DI_6_VN_SP_0_电功率中转[1]  TD_0_DI_6_VN_SP_0_电功率中转[2]  TD_0_DI_6_VN_SP_0_电功率中转[3] 
  TD_0_DI_6_VN_SP_0_电功率中转[4]  TD_0_DI_6_VN_SP_0_电功率中转[5]  TD_0_DI_6_VN_SP_0_电功率中转[6]  TD_0_DI_6_VN_SP_0_电功率中转[7]  TD_0_DI_6_VN_SP_0_电功率中转[8]  TD_0_DI_6_VN_SP_0_电功率中转[9]  TD_0_DI_6_VN_SP_0_电功率中转[10]  TD_0_DI_6_VN_SP_0_电功率中转[11]  TD_0_DI_6_VN_SP_0_电功率中转[12]  TD_0_DI_6_VN_SP_0_电功率中转[13]  TD_0_DI_6_VN_SP_0_电功率中转[14]  TD_0_DI_6_VN_SP_0_电功率中转[15]  TD_0_DI_6_VN_SP_0_电功率中转[16] 
@@ -7225,7 +7227,7 @@ Binaries
  SP_45_PW.MC_bin_y[6]  SP_45_PW.MC_bin_y[7]  SP_45_PW.MC_bin_y[8]  SP_45_PW.MC_bin_y[9]  SP_45_PW.MC_bin_y[10]  SP_45_PW.MC_bin_y[11]  SP_45_PW.MC_bin_y[1]  SP_45_PW.MC_bin_y[2]  SP_46_PW.MC_bin_y[3]  SP_46_PW.MC_bin_y[4]  SP_46_PW.MC_bin_y[5] 
  SP_46_PW.MC_bin_y[6]  SP_46_PW.MC_bin_y[7]  SP_46_PW.MC_bin_y[8]  SP_46_PW.MC_bin_y[9]  SP_46_PW.MC_bin_y[10]  SP_46_PW.MC_bin_y[11]  SP_46_PW.MC_bin_y[1]  SP_46_PW.MC_bin_y[2]  SP_47_PW.MC_bin_y[3]  SP_47_PW.MC_bin_y[4]  SP_47_PW.MC_bin_y[5] 
  SP_47_PW.MC_bin_y[6]  SP_47_PW.MC_bin_y[7]  SP_47_PW.MC_bin_y[8]  SP_47_PW.MC_bin_y[9]  SP_47_PW.MC_bin_y[10]  SP_47_PW.MC_bin_y[11]  SP_47_PW.MC_bin_y[1]  SP_47_PW.MC_bin_y[2]  SP_48_PW.MC_bin_y[3]  SP_48_PW.MC_bin_y[4]  SP_48_PW.MC_bin_y[5] 
- SP_48_PW.MC_bin_y[6]  SP_48_PW.MC_bin_y[7]  SP_48_PW.MC_bin_y[8]  SP_48_PW.MC_bin_y[9]  SP_48_PW.MC_bin_y[10]  SP_48_PW.MC_bin_y[11] 
+ SP_48_PW.MC_bin_y[6]  SP_48_PW.MC_bin_y[7]  SP_48_PW.MC_bin_y[8]  SP_48_PW.MC_bin_y[9]  SP_48_PW.MC_bin_y[10]  SP_48_PW.MC_bin_y[11]  SP_48_PW.MC_bin_y[1] 
 Generals
  TD_0_DI_0_VN_DeviceCount  TD_0_DI_2_VN_DeviceCount  TD_0_DI_6_VN_DeviceCount  TD_0_DI_9_VN_DeviceCount  TD_0_DI_12_VN_DeviceCount  TD_0_DI_17_VN_DeviceCount  TD_0_DI_22_VN_DeviceCount 
 End

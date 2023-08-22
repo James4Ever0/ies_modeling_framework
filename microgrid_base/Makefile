@@ -197,17 +197,16 @@ test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_
 	${PYTHON} reduce_demo_data_size.py
 
 # great.
-# test_make_args:
-# 	# echo ${MAKEFLAGS}
-# 	echo ${MAKECMDGOALS}
+test_make_args:
+	# echo ${MAKEFLAGS}
+	echo ${MAKECMDGOALS}
 
-# test_utils_wildcard:
-#	echo ${UTILS}
-#	echo ${FILTERED_UTILS}
+test_utils_wildcard:
+	echo ${UTILS}
+	echo ${FILTERED_UTILS}
 
 # working!
-# test_path:
-# 	ipopt
-# 	scip
-# 	cbc
-# 	echo $(PATH)
+test_alternative_solver:
+	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip ${PYTHON} alternative_solver.py
+	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc ${PYTHON} alternative_solver.py
+	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=ipopt ${PYTHON} alternative_solver.py
