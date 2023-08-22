@@ -13,8 +13,7 @@ endif
 ifeq (${PLATFORM}, nt)
 OS_TYPE = windows
 # get our solvers in path
-$(shell mklink )
-export PATH := $(shell pwd)/bin:$(PATH)
+export PATH := $(shell python -c "import os;curdir=os.path.abspath(os.curdir);workdir=os.path.dirname(os.path.dirname(curdir))")\bin:$(PATH)
 else
 OS_TYPE = macos
 endif
@@ -204,3 +203,6 @@ test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_
 # test_utils_wildcard:
 #	echo ${UTILS}
 #	echo ${FILTERED_UTILS}
+
+# test_path:
+# 	echo $(PATH)
