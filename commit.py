@@ -2,27 +2,41 @@
 import pytz
 import datetime
 import os
+import shutil
 # import tkinter
 from easyprocess import EasyProcess
 
 # on windows nt, alert us (using tkinter or native api?) if commit has failed.
 # on other platforms, please improvise.
 
-
+base_repo = os.path.basename(os.curdir)
 os_name = os.name
+toast_title = f"commit error at '{base_repo}'"
+
+def check_if_executable_in_path(executable: str):
+    shutil.which(executable)
+
 if os_name == "nt":
     from win10toast import ToastNotifier
+
     toaster = ToastNotifier()
+
     def show_toast(msg):
-        toaster.show_toast(title="auto commit error", msg=msg)
+        toaster.show_toast(title=toast_title, msg=msg)
+
 elif os_name == "darwin":
+
     def show_toast(msg):
-        os.system()
+        os.system('terminal-notifier ')
+
 elif os_name == "linux":
+
     def show_toast(msg):
         ...
+
 else:
-    exc_info += f"\nunable to emit error message due to unknown os: {os_name}"
+    raise Exception(f"\nunable to show toast message due to unknown os: {os_name}")
+
 
 def emit_message_and_raise_exception(exc_info: str):
     show_toast(exc_info)
@@ -47,7 +61,7 @@ except:
         "current directory is not a git repo root dir!\nLocation: {os.curdir}"
     )
 
-base_repo_name_and_location = f"repo {os.basename(os.curdir)}\nLocation: {os.curdir}"
+base_repo_name_and_location = f"repo {base_repo}\nLocation: {os.curdir}"
 
 CHECK_GPTCOMMIT_KEYS = "gptcommit config keys"
 
