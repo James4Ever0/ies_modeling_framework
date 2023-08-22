@@ -205,5 +205,9 @@ test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_
 #	echo ${UTILS}
 #	echo ${FILTERED_UTILS}
 
+# working!
 # test_path:
+# 	ipopt
+# 	scip
+# 	cbc
 # 	echo $(PATH)
