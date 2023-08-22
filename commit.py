@@ -248,6 +248,7 @@ def check_if_commitable():
     commitable = False
     await_interval = last_commit_time + commit_min_interval - time_now
     if await_interval.total_seconds() < 0:
+        print("able to commit.")
         commitable = True
     else:
         print(
@@ -259,11 +260,16 @@ def check_if_commitable():
 def commit():
     if check_if_commitable():
         with filelock.FileLock(".commit_lock", timeout=1):
-            ...
-            # proc = EasyProcess(COMMIT_EXEC).call()
-            # check_proc_exit_status(
-            #     proc, f"commit changes at {base_repo_name_and_location}"
-            # )
+            exit_code = os.system(COMMIT_EXEC)
+            if exit_code != 0:
+                emit_message_and_raise_exception(
+                    f"commit changes at {base_repo_name_and_location}"
+                )
+
+            with open(last_commit_time_filepath, "r") as f:
+                time_now = get_time_now()
+                content = time_now.isoformat()
+                f.write(content)
 
 
 if __name__ == "__main__":
