@@ -6,6 +6,7 @@
 @REM git add .
 @REM git commit -m 'update'
 @REM git push
+@REM install gptcommit: cargo install --locked gptcommit
 echo %USERNAME% executed commit script at %DATE% %TIME%
 git config --global --add safe.directory E:/works/jubilant-adventure2
 git pull origin_devops main
