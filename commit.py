@@ -4,8 +4,9 @@ import datetime
 import os
 import shutil
 
-# import tkinter
 from easyprocess import EasyProcess
+import traceback
+import filelock
 
 # on windows nt, alert us (using tkinter or native api?) if commit has failed.
 # on other platforms, please improvise.
@@ -85,22 +86,25 @@ for path, dirpath, filepath in os.walk("."):
     if ".git" in dirpath:
         repodirs.append(path)
 
-def get_script_path_and_exec_cmd(script_name):
-    
-if os.name == "nt":
-    script_path = f"{script_name}.cmd"
-    exec_prefix = 
-    SETUP_GPTCOMMIT = f"cmd /C {setup_file}"
-else:
-    setup_file = "setup_gptcommit.sh"
-    SETUP_GPTCOMMIT = f"bash {setup_file}"
-cmd = 
+
+def get_script_path_and_exec_cmd(script_prefix):
+    if os.name == "nt":
+        script_suffix = "cmd"
+        exec_prefix = "cmd /C"
+    else:
+        script_suffix = "sh"
+        exec_prefix = "bash"
+    script_path = f"{script_prefix}.{script_suffix}"
+    cmd = f"{exec_prefix} {script_path}"
+    try:
+        assert os.path.exists(script_path)
+    except:
+        msg = "script {} not found in path.".format(script_path)
+        
+    return script_path, cmd
 
 
-if os.name == "nt":
-    COMMIT_SCRIPT = "cmd /C commit.cmd"
-else:
-    COMMIT_SCRIPT = "bash commit.sh"
+_, COMMIT_EXEC = get_script_path_and_exec_cmd("commit")
 
 try:
     assert "." in repodirs
@@ -124,12 +128,7 @@ def run_and_check_proc(cmd, action):
     run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
 
 
-if os.name == "nt":
-    setup_file = "setup_gptcommit.cmd"
-    SETUP_GPTCOMMIT = f"cmd /C {setup_file}"
-else:
-    setup_file = "setup_gptcommit.sh"
-    SETUP_GPTCOMMIT = f"bash {setup_file}"
+setup_file, SETUP_GPTCOMMIT = get_script_path_and_exec_cmd("setup_gptcommit")
 
 repo_absdirs = [os.path.abspath(p) for p in repodirs]
 repo_basedir = os.path.abspath(".")
@@ -175,8 +174,6 @@ def get_time_now():
 commit_min_interval = datetime.timedelta(minutes=30)
 last_commit_time_filepath = ".last_commit_time"
 
-import traceback
-
 
 def get_last_commit_time():
     read_from_file = False
@@ -211,13 +208,15 @@ def check_if_commitable():
     return commitable
 
 
-import filelock
-
 
 def commit():
     if check_if_commitable():
         with filelock.FileLock(".commit_lock", timeout=1) as lock:
-            proc = EasyProcess(COMMIT_SCRIPT).call()
+            proc = EasyProcess(COMMIT_EXEC).call()
             check_proc_exit_status(
                 proc, f"commit changes at {base_repo_name_and_location}"
             )
+
+
+if __name__ == "__main__":
+    commit()
