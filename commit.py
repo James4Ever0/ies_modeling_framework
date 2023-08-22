@@ -47,7 +47,10 @@ def get_time_now():
 commit_min_interval = datetime.timedelta(minutes=30)
 last_commit_time_filepath = ".last_commit_time"
 
+import traceback
+
 def get_last_commit_time():
+    read_from_file = False
     last_commit_time = datetime.datetime.fromtimestamp(0)
     if os.path.exists(last_commit_time_filepath):
         with open(last_commit_time_filepath,'r') as f:
@@ -55,6 +58,21 @@ def get_last_commit_time():
         try:
             last_commit_time = datetime.datetime.fromisoformat(content)
             print('last commit time:', last_commit_time)
+            read_from_file = True
+        except:
+            traceback.print_exc()
         
+    if not read_from_file:
+        print('using default last commit time:', last_commit_time)
+
+    return last_commit_time 
 
 def check_if_commitable():
+    last_commit_time = get_last_commit_time()
+    time_now = get_time_now()
+    commitable = False
+    await_interval = last_commit_time + commit_min_interval - time_now
+    if await_interval < 0: 
+        commitable = True
+    else:
+        print(f"need to wait for {await_interval.total_seconds() // 60} minutes till next commit.")
