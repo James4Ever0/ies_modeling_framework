@@ -8,6 +8,8 @@ from easyprocess import EasyProcess
 import traceback
 import filelock
 
+EasyProcess.start = start
+
 # on windows nt, alert us (using tkinter or native api?) if commit has failed.
 # on other platforms, please improvise.
 
@@ -79,7 +81,7 @@ def emit_message_and_raise_exception(exc_info: str):
     show_toast(exc_info)
     raise Exception(exc_info)
 
-# currently only enable gitcommit support for each (sub)repo. no recursive commit support (yet).
+# currently only enable gitcommit support for each (sub)repo. no recursive commit support yet.
 repodirs = []
 
 for path, dirpath, filepath in os.walk("."):
