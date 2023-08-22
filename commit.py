@@ -25,6 +25,12 @@ if os.name == "nt":
 else:
     COMMIT_SCRIPT = "bash commit.sh"
 
+def check_proc_exit_status(proc, action):
+    if proc.return_code!=0:
+        emit_message_and_raise_exception(f"Abnormal exit code {proc.return_code} during {action}.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}")
+
+repo_name_and_location=f"repo {os.basename(os.curdir)}\nLocation: {os.curdir}"
+
 if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
     print("setting up gptcommmit locally...")
     if os.name == 'nt':
@@ -34,10 +40,9 @@ if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
         setup_file = "setup_gptcommit.sh"
         SETUP_GPTCOMMIT=f"bash {setup_file}"
     if not os.path.exist(setup_file):
-        emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist in '{os.curdir}'")
+        emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist in {repo_name_and_location}")
     proc = EasyProcess(SETUP_GPTCOMMIT)
-    if proc.return_code!=0:
-        emit_message_and_raise_exception(f"Abnormal exit code {proc.return_code} during setting up gptcommit.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}")
+    check_proc_exit_status(proc, "setting up gptcommit")
 
 # setup timezone as Shanghai
 
@@ -89,3 +94,4 @@ def commit():
     if check_if_commitable():
         with filelock.FileLock(".commit_lock", timeout = 1) as lock:
            proc = EasyProcess(COMMIT_SCRIPT).call() 
+           check_proc_exit_status(proc, f"commit changes at {repo_name_and_location}")
