@@ -6,15 +6,19 @@ import astor
 import re
 from typing import Callable
 from error_utils import ErrorManager
+
 # import traceback
 
-EXCEPTION_LIST = ['exceptional_print.py', 'conflict_utils.py']
+EXCEPTION_LIST = ["exceptional_print.py", "conflict_utils.py"]
 
+PYOMO_ENVIRON_SCRIPT = "pyomo_environ.py"
 
 with ErrorManager() as em:
     for exceptional_filepath in EXCEPTION_LIST:
         if not os.path.exists(exceptional_filepath):
-            em.append("exceptional filepath '%s' does not exist." % exceptional_filepath)
+            em.append(
+                "exceptional filepath '%s' does not exist." % exceptional_filepath
+            )
 # errorManager.raise_if_any()
 
 IMPORT_LOGGER_PRINT = "from log_utils import logger_print"
@@ -23,6 +27,7 @@ fixed = False
 
 SETUP_PYOMO_ENVIRON = "from pyomo_environ import *"
 # SETUP_PYOMO_ENVIRON = "from pyomo_patch import *"
+
 
 def open_file_and_modify_content(
     fpath: str, func: Callable[[str], str], modify_msg: str
@@ -46,10 +51,11 @@ def fix_import_logger_in_content(fpath):
     )
     return fixed_cnt
 
+
 def fix_pyomo_environ_in_content(fpath, linenos, has_toplevel_import_fix):
     # logger_print(fpath, linenos, has_toplevel_import_fix)
     # breakpoint()
-    def fix_pyomo_environ(cnt:str):
+    def fix_pyomo_environ(cnt: str):
         if linenos == []:
             return cnt
         output = []
@@ -155,10 +161,14 @@ for fpath in files:
                         found_import_log_utils = True
                     elif el_source == SETUP_PYOMO_ENVIRON:
                         found_setup_pyomo_environ = True
-        if fpath != "pyomo_patch.py":
-            fix_pyomo_environ_in_content(fpath, pyomo_environ_to_be_fixed_linenos, found_setup_pyomo_environ)
-        
-        if not found_import_log_utils:  # just import, do not change the print logic.
+        if fpath != PYOMO_ENVIRON_SCRIPT:
+            fix_pyomo_environ_in_content(
+                fpath, pyomo_environ_to_be_fixed_linenos, found_setup_pyomo_environ
+            )
+
+        if (
+            not found_import_log_utils and fpath != PYOMO_ENVIRON_SCRIPT
+        ):  # just import, do not change the print logic.
             # if no template was found, fix just one. if template found, fix both.
 
             # logger_print(f"fixing logging issue in file: {fpath}")
@@ -182,9 +192,9 @@ if fixed:
     import sys
 
     # logger_print("Please rerun the `make` command for changes!")
-    
+
     cmdargs = " ".join(sys.argv)
-    spliter = '--'
+    spliter = "--"
     if spliter in sys.argv:
         logger_print("Rerunning `make` command for changes.")
         make_cmd = cmdargs.split(spliter)[-1].strip()
