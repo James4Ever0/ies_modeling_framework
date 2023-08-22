@@ -59,6 +59,7 @@ import filelock
 # on other platforms, please improvise.
 
 base_repo = os.path.basename(os.curdir)
+repo_basedir = os.path.abspath(".")
 os_name = os.name
 toast_title = f"commit error at '{base_repo}'"
 
@@ -69,9 +70,7 @@ def raise_exception(msg):
 
 def check_proc_exit_status_base(proc: EasyProcess, action: str, printer):
     if proc.return_code != 0:
-        printer(
-            f"Abnormal exit code {proc.return_code} during {action}."
-        )
+        printer(f"Abnormal exit code {proc.return_code} during {action}.")
 
 
 def run_and_check_proc_base(cmd, action, printer=raise_exception):
@@ -128,6 +127,23 @@ def emit_message_and_raise_exception(exc_info: str):
     raise Exception(exc_info)
 
 
+import sys
+import better_exceptions
+
+
+def excepthook(exc_type, exc_value, tb):
+    better_exceptions.SUPPORTS_COLOR = False
+    formatted = "".join(better_exceptions.format_exception(exc_type, exc_value, tb))
+    formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
+    msg = "\n".join(formatted_exc)
+    with open(os.path.join(repo_basedir, ".last_failed_commit"), "w+") as f:
+        f.write(msg)
+    better_exceptions.SUPPORTS_COLOR = True
+    better_exceptions.excepthook(exc_type, exc_value, tb)
+
+
+sys.excepthook = excepthook
+
 # currently only enable gitcommit support for each (sub)repo. no recursive commit support yet.
 repodirs = []
 
@@ -160,10 +176,10 @@ try:
     assert "." in repodirs
 except:
     emit_message_and_raise_exception(
-        "current directory is not a git repo root dir!\nLocation: {os.curdir}"
+        f"current directory is not a git repo root dir!\nLocation: {repo_basedir}"
     )
 
-base_repo_name_and_location = f"repo {base_repo}\nLocation: {os.curdir}"
+base_repo_name_and_location = f"repo {base_repo}\nLocation: {repo_basedir}"
 
 # CHECK_GPTCOMMIT_KEYS = "gptcommit config keys"
 
@@ -178,9 +194,7 @@ def run_and_check_proc(cmd, action):
     run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
 
 
-
 repo_absdirs = [os.path.abspath(p) for p in repodirs]
-repo_basedir = os.path.abspath(".")
 
 check_if_executable_in_path(
     "gptcommit", "please install by running `cargo install --locked gptcommit`."
@@ -193,9 +207,7 @@ for repo_absdir in repo_absdirs:
     # proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
     # check_proc_exit_status(proc, "checking gptcommit config keys")
 
-    repo_name_and_location = (
-        f"repo {os.path.basename(os.curdir)}\nLocation: {os.curdir}"
-    )
+    repo_name_and_location = f"repo {repo_reldir}\nLocation: {repo_absdir}"
 
     # if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
     print(
@@ -271,9 +283,9 @@ def commit():
                     f"commit changes at {base_repo_name_and_location}"
                 )
 
-            with open(last_commit_time_filepath, "r") as f:
+            with open(last_commit_time_filepath, "w+") as f:
                 time_now = get_time_now()
-                print(f"successfully commited at: {time_now}\nLocation: {os.curdir}")
+                print(f"successfully commited at: {time_now}\nLocation: {repo_basedir}")
                 content = time_now.isoformat()
                 f.write(content)
 

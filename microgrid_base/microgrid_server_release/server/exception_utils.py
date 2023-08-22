@@ -1,10 +1,11 @@
 from log_utils import logger_print
 
-from beartype import beartype
+# from beartype import beartype
 from typing import Union
 
 
-@beartype
+# @beartype
+# TODO: support custom exception/error handlers/formatters
 class ExceptionManager:
     def __init__(
         self,

@@ -514,12 +514,18 @@ def checkInfeasibleOrUnboundedModel(
     solver.options["timelimit"] = timelimit
     # phase 1: check if infeasible.
     obj.deactivate()
-    model.debug_null_objective = Objective(expr=0, sense=minimize)
+    # TODO: Constant objective detected, replacing with a placeholder to prevent solver failure.
+    model_name = "null_objective"
+    modelWrapper.submodelName = model_name
+    modelWrapper.submodelClassName = model_name
+
+    model.debug_null_objective = Objective()
+    # model.debug_null_objective = Objective(expr=0, sense=minimize)
 
     # solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "null_objective"
     # )  # we don't care about this solution. don't do analysis.
-    solve_and_decompose(modelWrapper, solver, log_directory, "null_objective")
+    solve_and_decompose(modelWrapper, solver, log_directory, model_name)
 
     # phase 2: limit range of objective expression
     model.debug_obj_expr_bound = Var()

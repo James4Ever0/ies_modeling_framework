@@ -19,6 +19,7 @@ git push origin main
 
 
 cd microgrid_base/dsl_parser
+git config --global --add safe.directory E:/works/jubilant-adventure2/microgrid_base/dsl_parser
 git pull origin_devops main
 git add .
 @REM git commit -m 'update'

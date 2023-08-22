@@ -132,8 +132,10 @@ from ies_optim import compute, ModelWrapperContext
 # obj_expr = 0
 from copy import deepcopy
 
-
-def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
+# disable io_options.
+def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, 
+                # io_options=dict()
+                ):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
     # devClassMapping = {
@@ -190,7 +192,9 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
         with tempfile.TemporaryDirectory() as solver_log_dir:
             solver_log = os.path.join(solver_log_dir, "solver.log")
             results = solver.solve(
-                mw.model, tee=True, io_options=io_options, logfile=solver_log
+                mw.model, tee=True, 
+                # io_options=io_options, 
+                logfile=solver_log
             )
 
             logger_print("SOLVER RESULTS?")
@@ -268,7 +272,8 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, io_options=dict()):
                         solver_log_dir_with_timestamp, "model.lp"
                     )
                     _, model_smap_id = mw.model.write(
-                        filename=lp_filepath, io_options=io_options
+                        filename=lp_filepath, 
+                        # io_options=io_options
                     )
 
                     # begin to debug in detail.
