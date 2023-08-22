@@ -19,7 +19,7 @@ def raise_exception(msg):
     raise Exception(msg)
 
 
-def check_proc_exit_status_base(proc: EasyProcess, action:str, printer):
+def check_proc_exit_status_base(proc: EasyProcess, action: str, printer):
     if proc.return_code != 0:
         printer(
             f"Abnormal exit code {proc.return_code} during {action}.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}"
@@ -31,7 +31,9 @@ def run_and_check_proc_base(cmd, action, printer=raise_exception):
     check_proc_exit_status_base(proc, action, printer)
 
 
-def check_if_executable_in_path(executable: str, extra_info = "", raise_exception: bool = True):
+def check_if_executable_in_path(
+    executable: str, extra_info="", raise_exception: bool = True
+):
     lookup_result = shutil.which(executable)
     if lookup_result:
         print("executable {} found in path: {}".format(executable, lookup_result))
@@ -83,6 +85,18 @@ for path, dirpath, filepath in os.walk("."):
     if ".git" in dirpath:
         repodirs.append(path)
 
+def get_script_path_and_exec_cmd(script_name):
+    
+if os.name == "nt":
+    script_path = f"{script_name}.cmd"
+    exec_prefix = 
+    SETUP_GPTCOMMIT = f"cmd /C {setup_file}"
+else:
+    setup_file = "setup_gptcommit.sh"
+    SETUP_GPTCOMMIT = f"bash {setup_file}"
+cmd = 
+
+
 if os.name == "nt":
     COMMIT_SCRIPT = "cmd /C commit.cmd"
 else:
@@ -105,8 +119,10 @@ check_if_exist_keylist = ["openai.apibase", "openai.api_key"]
 def check_proc_exit_status(proc, action):
     check_proc_exit_status_base(proc, action, emit_message_and_raise_exception)
 
+
 def run_and_check_proc(cmd, action):
     run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
+
 
 if os.name == "nt":
     setup_file = "setup_gptcommit.cmd"
@@ -118,26 +134,29 @@ else:
 repo_absdirs = [os.path.abspath(p) for p in repodirs]
 repo_basedir = os.path.abspath(".")
 
-check_if_executable_in_path("gptcommit", "please install by running `cargo install --locked gptcommit`."
-        )
+check_if_executable_in_path(
+    "gptcommit", "please install by running `cargo install --locked gptcommit`."
 )
 
 for repo_absdir in repo_absdirs:
     os.chdir(repo_absdir)
-    run_and_check_proc(CHECK_GPTCOMMIT_KEYS)
+    repo_reldir = os.path.basename(repo_absdir)
+    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS)
+    check_proc_exit_status(proc, "checking gptcommit config keys")
 
     repo_name_and_location = (
         f"repo {os.path.basename(os.curdir)}\nLocation: {os.curdir}"
     )
 
     if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
-        print("setting up gptcommmit locally...")
+        print(
+            f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
+        )
         if not os.path.exist(setup_file):
             emit_message_and_raise_exception(
                 f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
             )
-        proc = EasyProcess(SETUP_GPTCOMMIT)
-        check_proc_exit_status(proc, "setting up gptcommit")
+        run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
 
 os.chdir(repo_basedir)
 
