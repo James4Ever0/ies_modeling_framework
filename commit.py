@@ -20,6 +20,11 @@ proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
 if proc.return_code !=0:
     emit_message_and_raise_exception("gptcommit is not in your PATH. please install.")
 
+if os.name == "nt":
+    COMMIT_SCRIPT = "cmd /C commit.cmd"
+else:
+    COMMIT_SCRIPT = "bash commit.sh"
+
 if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
     print("setting up gptcommmit locally...")
     if os.name == 'nt':
@@ -82,4 +87,5 @@ import filelock
 
 def commit():
     if check_if_commitable():
-
+        with filelock.FileLock(".commit_lock", timeout = 1) as lock:
+           proc = EasyProcess(COMMIT_SCRIPT).call() 
