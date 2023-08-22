@@ -3,6 +3,7 @@ import pytz
 import datetime
 import os
 import shutil
+
 # import tkinter
 from easyprocess import EasyProcess
 
@@ -13,8 +14,16 @@ base_repo = os.path.basename(os.curdir)
 os_name = os.name
 toast_title = f"commit error at '{base_repo}'"
 
-def check_if_executable_in_path(executable: str):
-    shutil.which(executable)
+
+def check_if_executable_in_path(executable: str, raise_exception: bool = True):
+    lookup_result = shutil.which(executable)
+    if lookup_result:
+        print("executable {} found in path: {}".format(executable, lookup_result))
+        return True
+    elif raise_exception:
+        raise Exception("executable {} found in path".format(executable))
+    return False
+
 
 if os_name == "nt":
     from win10toast import ToastNotifier
@@ -25,14 +34,18 @@ if os_name == "nt":
         toaster.show_toast(title=toast_title, msg=msg)
 
 elif os_name == "darwin":
+    notifier_exec = "terminal-notifier"
+    check_if_executable_in_path(notifier_exec)
 
     def show_toast(msg):
-        os.system('terminal-notifier ')
+        os.system(f"{notifier_exec} -title '{}' -message '{}'".format(notifier_exec,)
 
 elif os_name == "linux":
+    notifier_exec = "notify-send"
+    check_if_executable_in_path(notifier_exec)
 
     def show_toast(msg):
-        ...
+        os.system(f"{notifier_exec} ")
 
 else:
     raise Exception(f"\nunable to show toast message due to unknown os: {os_name}")
