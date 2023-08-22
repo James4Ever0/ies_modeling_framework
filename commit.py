@@ -9,6 +9,15 @@ from easyprocess import EasyProcess
 # on other platforms, please improvise.
 
 def emit_message_and_raise_exception(exc_info:str):
+    os_name = os.name
+    if os_name == "nt":
+        ...
+    elif os_name == "darwin":
+        ...
+    elif os_name == "linux":
+        ...
+    else:
+        exc_info +=f"\nunable to emit error message due to unknown os: {os_name}"
     raise Exception(exc_info)
 
 repodirs = []
@@ -17,43 +26,53 @@ for path, dirpath, filepath in os.walk("."):
     if ".git" in dirpath:
         repodirs.append(path)
 
-try:
-    assert "." in repodirs
-except:
-    emit_message_and_raise_exception("current directory is not a git repo root dir!\nLocation: {os.curdir}")
-
-CHECK_GPTCOMMIT_KEYS="gptcommit config keys"
-
-check_if_exist_keylist = ['openai.apibase', 'openai.api_key']
-
-proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
-
-if proc.return_code !=0:
-    emit_message_and_raise_exception("gptcommit is not in your PATH.\nplease install by running `cargo install --locked gptcommit`.")
-
 if os.name == "nt":
     COMMIT_SCRIPT = "cmd /C commit.cmd"
 else:
     COMMIT_SCRIPT = "bash commit.sh"
 
+try:
+    assert "." in repodirs
+except:
+    emit_message_and_raise_exception("current directory is not a git repo root dir!\nLocation: {os.curdir}")
+
+base_repo_name_and_location=f"repo {os.basename(os.curdir)}\nLocation: {os.curdir}"
+
+CHECK_GPTCOMMIT_KEYS="gptcommit config keys"
+
+check_if_exist_keylist = ['openai.apibase', 'openai.api_key']
+
 def check_proc_exit_status(proc, action):
     if proc.return_code!=0:
         emit_message_and_raise_exception(f"Abnormal exit code {proc.return_code} during {action}.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}")
 
-repo_name_and_location=f"repo {os.basename(os.curdir)}\nLocation: {os.curdir}"
+if os.name == 'nt':
+    setup_file = "setup_gptcommit.cmd"
+    SETUP_GPTCOMMIT=f"cmd /C {setup_file}" 
+else:
+    setup_file = "setup_gptcommit.sh"
+    SETUP_GPTCOMMIT=f"bash {setup_file}"
 
-if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
-    print("setting up gptcommmit locally...")
-    if os.name == 'nt':
-        setup_file = "setup_gptcommit.cmd"
-        SETUP_GPTCOMMIT=f"cmd /C {setup_file}" 
-    else:
-        setup_file = "setup_gptcommit.sh"
-        SETUP_GPTCOMMIT=f"bash {setup_file}"
-    if not os.path.exist(setup_file):
-        emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist in {repo_name_and_location}")
-    proc = EasyProcess(SETUP_GPTCOMMIT)
-    check_proc_exit_status(proc, "setting up gptcommit")
+repo_absdirs = [os.path.abspath(p) for p in repodirs]
+repo_basedir = os.path.abspath(".")
+
+for repo_absdir in repo_absdirs:
+    os.chdir(repo_absdir)
+    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
+
+    if proc.return_code !=0:
+        emit_message_and_raise_exception("gptcommit is not in your PATH.\nplease install by running `cargo install --locked gptcommit`.")
+
+    repo_name_and_location=f"repo {os.path.basename(os.curdir)}\nLocation: {os.curdir}"
+
+    if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
+        print("setting up gptcommmit locally...")
+        if not os.path.exist(setup_file):
+            emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist in {repo_name_and_location}")
+        proc = EasyProcess(SETUP_GPTCOMMIT)
+        check_proc_exit_status(proc, "setting up gptcommit")
+
+os.chdir(repo_basedir)
 
 # setup timezone as Shanghai
 
@@ -105,4 +124,4 @@ def commit():
     if check_if_commitable():
         with filelock.FileLock(".commit_lock", timeout = 1) as lock:
            proc = EasyProcess(COMMIT_SCRIPT).call() 
-           check_proc_exit_status(proc, f"commit changes at {repo_name_and_location}")
+           check_proc_exit_status(proc, f"commit changes at {base_repo_name_and_location}")
