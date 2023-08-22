@@ -13,7 +13,8 @@ endif
 ifeq (${PLATFORM}, nt)
 OS_TYPE = windows
 # get our solvers in path
-export PATH := $(shell python -c "import os;curdir=os.path.abspath(os.curdir);workdir=os.path.dirname(os.path.dirname(curdir))")\bin:$(PATH)
+WINDOWS_SOLVERS_DIRS=$(shell python -c "import os;curdir=os.path.abspath(os.curdir);workfolder=os.path.dirname(os.path.dirname(curdir));solverdir=os.path.join(workfolder,'windows_solvers');pathaddons=';'.join([os.path.join(solverdir,os.path.join(e,'bin')) for e in ['scip','cbc','ipopt']]);print(pathaddons)")
+export PATH := ${WINDOWS_SOLVERS_DIRS};$(PATH)
 else
 OS_TYPE = macos
 endif
