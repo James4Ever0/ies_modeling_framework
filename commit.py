@@ -4,55 +4,56 @@ import datetime
 import os
 import shutil
 
-from easyprocess import EasyProcess, EasyProcessError, log
-from typing import Any
+from easyprocess import EasyProcess
 import traceback
 import filelock
-import tempfile
-import subprocess
+
+# from easyprocess import EasyProcessError, log
+# from typing import Any
+# import tempfile
+# import subprocess
+
+# def start(self) -> "EasyProcess":
+#     """start command in background and does not wait for it.
+
+#     :rtype: self
+
+#     """
+#     if self.is_started:
+#         raise EasyProcessError(self, "process was started twice!")
+
+#     stdout: Any = None
+#     stderr: Any = None
+#     if self.use_temp_files:
+#         self._stdout_file = tempfile.TemporaryFile(prefix="stdout_")
+#         self._stderr_file = tempfile.TemporaryFile(prefix="stderr_")
+#         stdout = self._stdout_file
+#         stderr = self._stderr_file
+
+#     else:
+#         stdout = subprocess.PIPE
+#         stderr = subprocess.PIPE
+#     # cmd = list(map(uniencode, self.cmd))
+
+#     try:
+#         self.popen = subprocess.Popen(
+#             self.cmd,
+#             stdout=stdout,
+#             stderr=stderr,
+#             cwd=self.cwd,
+#             env=self.env,
+#             shell=True,  # override shell support.
+#         )
+#     except OSError as oserror:
+#         log.debug("OSError exception: %s", oserror)
+#         self.oserror = oserror
+#         raise EasyProcessError(self, "start error")
+#     self.is_started = True
+#     log.debug("process was started (pid=%s)", self.pid)
+#     return self
 
 
-def start(self) -> "EasyProcess":
-    """start command in background and does not wait for it.
-
-    :rtype: self
-
-    """
-    if self.is_started:
-        raise EasyProcessError(self, "process was started twice!")
-
-    stdout: Any = None
-    stderr: Any = None
-    if self.use_temp_files:
-        self._stdout_file = tempfile.TemporaryFile(prefix="stdout_")
-        self._stderr_file = tempfile.TemporaryFile(prefix="stderr_")
-        stdout = self._stdout_file
-        stderr = self._stderr_file
-
-    else:
-        stdout = subprocess.PIPE
-        stderr = subprocess.PIPE
-    # cmd = list(map(uniencode, self.cmd))
-
-    try:
-        self.popen = subprocess.Popen(
-            self.cmd,
-            stdout=stdout,
-            stderr=stderr,
-            cwd=self.cwd,
-            env=self.env,
-            shell=True,  # override shell support.
-        )
-    except OSError as oserror:
-        log.debug("OSError exception: %s", oserror)
-        self.oserror = oserror
-        raise EasyProcessError(self, "start error")
-    self.is_started = True
-    log.debug("process was started (pid=%s)", self.pid)
-    return self
-
-
-EasyProcess.start = start
+# EasyProcess.start = start
 
 # on windows nt, alert us (using tkinter or native api?) if commit has failed.
 # on other platforms, please improvise.
@@ -69,12 +70,13 @@ def raise_exception(msg):
 def check_proc_exit_status_base(proc: EasyProcess, action: str, printer):
     if proc.return_code != 0:
         printer(
-            f"Abnormal exit code {proc.return_code} during {action}.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}"
+            f"Abnormal exit code {proc.return_code} during {action}."
         )
 
 
 def run_and_check_proc_base(cmd, action, printer=raise_exception):
     proc = EasyProcess(cmd).call()
+    print(f"Stdout:\n{proc.stdout}\nStderr:\n{proc.stderr}")
     check_proc_exit_status_base(proc, action, printer)
 
 
@@ -163,9 +165,9 @@ except:
 
 base_repo_name_and_location = f"repo {base_repo}\nLocation: {os.curdir}"
 
-CHECK_GPTCOMMIT_KEYS = "gptcommit config keys"
+# CHECK_GPTCOMMIT_KEYS = "gptcommit config keys"
 
-check_if_exist_keylist = ["openai.apibase", "openai.api_key"]
+# check_if_exist_keylist = ["openai.apibase", "openai.api_key"]
 
 
 def check_proc_exit_status(proc, action):
@@ -176,7 +178,6 @@ def run_and_check_proc(cmd, action):
     run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
 
 
-setup_file, SETUP_GPTCOMMIT = get_script_path_and_exec_cmd("setup_gptcommit")
 
 repo_absdirs = [os.path.abspath(p) for p in repodirs]
 repo_basedir = os.path.abspath(".")
@@ -187,24 +188,28 @@ check_if_executable_in_path(
 
 for repo_absdir in repo_absdirs:
     os.chdir(repo_absdir)
+    print("Location:", repo_absdir)
     repo_reldir = os.path.basename(repo_absdir)
-    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
-    check_proc_exit_status(proc, "checking gptcommit config keys")
+    # proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
+    # check_proc_exit_status(proc, "checking gptcommit config keys")
 
     repo_name_and_location = (
         f"repo {os.path.basename(os.curdir)}\nLocation: {os.curdir}"
     )
 
-    if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
-        print(
-            f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
-        )
-        if not os.path.exists(setup_file):
-            emit_message_and_raise_exception(
-                f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
-            )
-        run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
+    # if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
+    print(
+        f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
+    )
+    setup_file, SETUP_GPTCOMMIT = get_script_path_and_exec_cmd("setup_gptcommit")
 
+    if not os.path.exists(setup_file):
+        emit_message_and_raise_exception(
+            f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
+        )
+    run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
+
+# exit()
 os.chdir(repo_basedir)
 
 # setup timezone as Shanghai

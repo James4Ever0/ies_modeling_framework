@@ -1,4 +1,4 @@
-gptcommit config set --local openai.apt_base "https://api.chatanywhere.com.cn/v1"
+gptcommit config set --local openai.api_base "https://api.chatanywhere.com.cn/v1"
 gptcommit config set --local openai.api_key "sk-CXMgNasrAvxNDYDTVE1LZtJvTWEF5scC6OvHhbTe1i016urg"
 gptcommit config set --local openai.model "gpt-3.5-turbo"
 gptcommit install
