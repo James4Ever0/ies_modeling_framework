@@ -79,7 +79,7 @@ def emit_message_and_raise_exception(exc_info: str):
     show_toast(exc_info)
     raise Exception(exc_info)
 
-
+# currently only enable gitcommit support for each (sub)repo. no recursive commit support (yet).
 repodirs = []
 
 for path, dirpath, filepath in os.walk("."):
@@ -98,10 +98,11 @@ def get_script_path_and_exec_cmd(script_prefix):
     cmd = f"{exec_prefix} {script_path}"
     try:
         assert os.path.exists(script_path)
+        return script_path, cmd
     except:
-        msg = "script {} not found in path.".format(script_path)
-        
-    return script_path, cmd
+        emit_message_and_raise_exception(
+            "script {} not found in path.".format(script_path)
+        )
 
 
 _, COMMIT_EXEC = get_script_path_and_exec_cmd("commit")
@@ -206,7 +207,6 @@ def check_if_commitable():
             f"need to wait for {await_interval.total_seconds() // 60} minutes till next commit."
         )
     return commitable
-
 
 
 def commit():
