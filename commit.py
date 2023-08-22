@@ -39,10 +39,22 @@ if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
 timezone_str = "Asia/Shanghai"
 timezone = pytz.timezone(timezone_str)
 
+print('using timezone:', timezone)
+
 def get_time_now():
     return datetime.datetime.now(tz=timezone)
 
 commit_min_interval = datetime.timedelta(minutes=30)
 last_commit_time_filepath = ".last_commit_time"
+
+def get_last_commit_time():
+    last_commit_time = datetime.datetime.fromtimestamp(0)
+    if os.path.exists(last_commit_time_filepath):
+        with open(last_commit_time_filepath,'r') as f:
+            content = f.read()
+        try:
+            last_commit_time = datetime.datetime.fromisoformat(content)
+            print('last commit time:', last_commit_time)
+        
 
 def check_if_commitable():
