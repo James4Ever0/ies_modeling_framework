@@ -29,7 +29,7 @@ if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
         setup_file = "setup_gptcommit.sh"
         SETUP_GPTCOMMIT=f"bash {setup_file}"
     if not os.path.exist(setup_file):
-        emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist.")
+        emit_message_and_raise_exception(f"setup file '{setup_file}' does not exist in '{os.curdir}'")
     proc = EasyProcess(SETUP_GPTCOMMIT)
     if proc.return_code!=0:
         emit_message_and_raise_exception(f"Abnormal exit code {proc.return_code} during setting up gptcommit.\nStdout:\n{proc.stdout}\nStderr:\n{proc.stderr}")
@@ -76,3 +76,10 @@ def check_if_commitable():
         commitable = True
     else:
         print(f"need to wait for {await_interval.total_seconds() // 60} minutes till next commit.")
+    return commitable
+
+import filelock
+
+def commit():
+    if check_if_commitable():
+
