@@ -4,9 +4,53 @@ import datetime
 import os
 import shutil
 
-from easyprocess import EasyProcess
+from easyprocess import EasyProcess, EasyProcessError, log
+from typing import Any
 import traceback
 import filelock
+import tempfile
+import subprocess
+
+
+def start(self) -> "EasyProcess":
+    """start command in background and does not wait for it.
+
+    :rtype: self
+
+    """
+    if self.is_started:
+        raise EasyProcessError(self, "process was started twice!")
+
+    stdout: Any = None
+    stderr: Any = None
+    if self.use_temp_files:
+        self._stdout_file = tempfile.TemporaryFile(prefix="stdout_")
+        self._stderr_file = tempfile.TemporaryFile(prefix="stderr_")
+        stdout = self._stdout_file
+        stderr = self._stderr_file
+
+    else:
+        stdout = subprocess.PIPE
+        stderr = subprocess.PIPE
+    # cmd = list(map(uniencode, self.cmd))
+
+    try:
+        self.popen = subprocess.Popen(
+            self.cmd,
+            stdout=stdout,
+            stderr=stderr,
+            cwd=self.cwd,
+            env=self.env,
+            shell=True,  # override shell support.
+        )
+    except OSError as oserror:
+        log.debug("OSError exception: %s", oserror)
+        self.oserror = oserror
+        raise EasyProcessError(self, "start error")
+    self.is_started = True
+    log.debug("process was started (pid=%s)", self.pid)
+    return self
+
 
 EasyProcess.start = start
 
@@ -30,7 +74,7 @@ def check_proc_exit_status_base(proc: EasyProcess, action: str, printer):
 
 
 def run_and_check_proc_base(cmd, action, printer=raise_exception):
-    proc = EasyProcess(cmd)
+    proc = EasyProcess(cmd).call()
     check_proc_exit_status_base(proc, action, printer)
 
 
@@ -80,6 +124,7 @@ else:
 def emit_message_and_raise_exception(exc_info: str):
     show_toast(exc_info)
     raise Exception(exc_info)
+
 
 # currently only enable gitcommit support for each (sub)repo. no recursive commit support yet.
 repodirs = []
@@ -143,7 +188,7 @@ check_if_executable_in_path(
 for repo_absdir in repo_absdirs:
     os.chdir(repo_absdir)
     repo_reldir = os.path.basename(repo_absdir)
-    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS)
+    proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
     check_proc_exit_status(proc, "checking gptcommit config keys")
 
     repo_name_and_location = (
@@ -154,7 +199,7 @@ for repo_absdir in repo_absdirs:
         print(
             f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
         )
-        if not os.path.exist(setup_file):
+        if not os.path.exists(setup_file):
             emit_message_and_raise_exception(
                 f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
             )
@@ -180,7 +225,7 @@ last_commit_time_filepath = ".last_commit_time"
 
 def get_last_commit_time():
     read_from_file = False
-    last_commit_time = datetime.datetime.fromtimestamp(0)
+    last_commit_time = datetime.datetime.fromtimestamp(0, tz=timezone)
     if os.path.exists(last_commit_time_filepath):
         with open(last_commit_time_filepath, "r") as f:
             content = f.read()
@@ -202,7 +247,7 @@ def check_if_commitable():
     time_now = get_time_now()
     commitable = False
     await_interval = last_commit_time + commit_min_interval - time_now
-    if await_interval < 0:
+    if await_interval.total_seconds() < 0:
         commitable = True
     else:
         print(
@@ -213,11 +258,12 @@ def check_if_commitable():
 
 def commit():
     if check_if_commitable():
-        with filelock.FileLock(".commit_lock", timeout=1) as lock:
-            proc = EasyProcess(COMMIT_EXEC).call()
-            check_proc_exit_status(
-                proc, f"commit changes at {base_repo_name_and_location}"
-            )
+        with filelock.FileLock(".commit_lock", timeout=1):
+            ...
+            # proc = EasyProcess(COMMIT_EXEC).call()
+            # check_proc_exit_status(
+            #     proc, f"commit changes at {base_repo_name_and_location}"
+            # )
 
 
 if __name__ == "__main__":
