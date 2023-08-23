@@ -467,13 +467,22 @@ def decomposeAndAnalyzeObjectiveExpression(
     else:
         logger_print("objective expression is non-linear.")
 
+
 import uuid
+
+
 def setBounds(varObject, bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
-    setattr(model, bound_names[0], ...)
-    setattr(model, bound_names[1], ...)
-    varObject.setlb(-bound)
-    varObject.setub(bound)
+    bound_names = []
+    while len(bound_names) != 2:
+        name = str(uuid.uuid4()).replace("-", "_")
+        if getattr(model, name, None) is None:
+            bound_names.append(f"{name}")
+    setattr(model, bound_names[0], Constraint(expr=varObject >= -bound))
+    setattr(model, bound_names[1], Constraint(expr=varObject <= bound))
+    # varObject.setlb(-bound)
+    # varObject.setub(bound)
+    return bound_names # kinda like weakref?
 
 
 def solve_and_decompose(
