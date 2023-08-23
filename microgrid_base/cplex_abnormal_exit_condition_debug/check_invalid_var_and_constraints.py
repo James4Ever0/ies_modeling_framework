@@ -22,46 +22,118 @@ model.pw = Piecewise(
 )
 
 # you might need to sort it out. check how much further it goes.
-from pyomo.util.infeasible import log_infeasible_constraints, log_infeasible_bounds
+# from pyomo.util.infeasible import log_infeasible_constraints,
+
 from pydantic import BaseModel
 from typing import Union, Literal, List
+
+
+def get_var_bounds(var: Var):
+    if var.has_lb():
+        lb = value(var.lower, exception=False)
+    if var.has_ub():
+        ub = value(var.lower, exception=False)
+    return lb, ub
 
 
 class VarViolation(BaseModel):
     bound_violation: float
     vartype_violation: float
 
+    @property
+    def has_violation(self):
+        return any([self.bound_violation, self.vartype_violation])
+
 
 # import math
 
-def moderate_violation(violation,tol):
+
+def moderate_violation(violation, tol):
     violation = abs(violation)
     if violation <= tol:
         violation = 0
     return violation
 
-def get_bounds_violation(val, 
+
+def get_bounds_violation(
+    val: float,
     lower_bound: Union[float, None],
-    upper_bound: Union[float, None], tol):
+    upper_bound: Union[float, None],
+    tol: float,
+):
     if all([bound is not None for bound in [lower_bound, upper_bound]]):
-        assert lower_bound <= upper_bound, "invalid bound ({lower_bound}, {upper_bound})"
+        assert (
+            lower_bound <= upper_bound
+        ), "invalid bound ({lower_bound}, {upper_bound})"
     violation = 0
-    if lower_bound:
-        if val<
-    violation = moderate_violation(violation)
+    if lower_bound is not None:
+        if val < lower_bound:
+            violation = abs(val - lower_bound)
+    if violation == 0:
+        if upper_bound is not None:
+            if val > upper_bound:
+                violation = abs(val - upper_bound)
+    return moderate_violation(violation, tol)
 
 
-def get_boolean_or_integer_violation(val, tol):
+def get_boolean_or_integer_violation(val: float, tol: float):
     violation = val % 1
     if violation != 0:
         violation = min([violation, 1 - violation])
 
+    return moderate_violation(violation, tol)
+
+
+def constructChecker(domainName: str, domainBounds):
+    def checker(var: Var, tol: float):
+        val = value(var)
+        var_bounds = get_var_bounds(var)
+        bounds_violation = get_bounds_violation(val, *var_bounds, tol)
+
+        vartype_violation = get_bounds_violation(val, *domainBounds, tol)
+        if vartype_violation == 0:
+            if "Integers" in domainName or domainName in ["Boolean", "Binary"]:
+                vartype_violation = get_boolean_or_integer_violation(val, tol)
+        varViolation = VarViolation(
+            bound_violation=bounds_violation, vartype_violation=vartype_violation
+        )
+        return varViolation
+
+    return checker
+
+
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def getCheckers():
+    varDomainObjs = [
+        Reals,
+        PositiveReals,
+        NonPositiveReals,
+        NegativeReals,
+        NonNegativeReals,
+        Integers,
+        PositiveIntegers,
+        NonPositiveIntegers,
+        NegativeIntegers,
+        NonNegativeIntegers,
+        Boolean,
+        Binary,
+    ]
+    checkers = {}
+    for varDomainObj in varDomainObjs:
+        domainName = varDomainObj.name
+        domainBounds = varDomainObj.bounds()
+        checker = constructChecker(domainName, domainBounds)
+        checkers[domainName] = checker
+    return checkers
 
 
 class VarInfo(BaseModel):
     varName: str
     val: float
-    varDomain: Literal[  # usually, just need to check if it is boolean/binary/integer.
+    domainName: Literal[  # usually, just need to check if it is boolean/binary/integer.
         "Reals",
         "PositiveReals",
         "NonPositiveReals",
@@ -85,31 +157,47 @@ class ConstraintInfo(BaseModel):
     violation: float
     representation: str
 
+    @property
+    def has_violation(self):
+        # TODO: consider overall violation among variables inside constraint
+        return self.violation > 0
+
 
 def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
-    ...
+    results = []
+    return results
 
 
 def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    ...
+    results = []
+    return results
 
 
 def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    checkers = {}
+    checkers = getCheckers()
     results = []
     for var in model.component_data_objects(ctype=Var, descend_into=True):
-        varDomain = ...
+        domainName = var.domain._name
         varName = var.name
         val = value(var)
-        if varDomain in checkers.keys():
-            checker = checkers[varDomain]
-            violation = checker(
-                val, tol
+        if domainName in checkers.keys():
+            checker = checkers[domainName]
+            varViolation, lower_bound, upper_bound = checker(
+                var, tol
             )  # violation shall be positive when actual violation is greater than tolerance, otherwise zero.
-            if violation:
-                results.append()
+            if varViolation.has_violation:
+                varInfo = VarInfo(
+                    varName=varName,
+                    val=val,
+                    domainName=domainName,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    violation=varViolation,
+                )
+                results.append(varInfo)
         else:
-            raise Exception("unknown vartype: %s" % varDomain)
+            raise Exception("unknown domain name: %s" % domainName)
+    return results
 
 
-log_infeasible_constraints(model)
+# log_infeasible_constraints(model)
