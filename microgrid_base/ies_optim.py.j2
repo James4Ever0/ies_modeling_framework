@@ -671,8 +671,26 @@ from collections import defaultdict
 
 import flashtext
 
+class SharedParams(BaseModel):
+    典型日: bool
+    计算步长: Literal["小时", '秒']
+    计算类型: Literal['仿真模拟', '设计规划']
+    计算目标: Literal['经济','环保','经济_环保']
+
+class InputParams(SharedParams):
+{# class InputParams(BaseModel): #}
+    calcParamList: List
+    {# calcTarget: str #}
+    {# 典型日
+    计算步长
+    计算类型 #}
+    rangeDict: Union[None, dict] 
+    needResult: bool 
+    additional_constraints: dict
+
 class ModelWrapper:
     {# __slots__ = ['obj',"obj_expr"] #}
+    inputParam: InputParams
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
@@ -772,10 +790,11 @@ class ModelWrapper:
 # 风、光照
 
 # 需要明确单位
-class 计算参数(BaseModel):
+{# class 计算参数(BaseModel): #}
+class 计算参数(SharedParams):
     典型日ID: Union[{{non_neg_int}}, None] = None # increse by external loop
-    计算步长: Literal["小时", '秒']
-    典型日: bool
+    {# 计算步长: Literal["小时", '秒'] #}
+    {# 典型日: bool #}
 
     分时计价开始时间点: float = Field(default=0, title = '秒级仿真时 开始时间在一天中的哪个小时', description=f"取值范围: 0-{每天小时数}", ge=0, le=每天小时数)
 
@@ -801,8 +820,8 @@ class 计算参数(BaseModel):
             assert len(v) >0
             assert len(v) <=365
         return v
-    计算类型: Literal['仿真模拟', '设计规划']
-    计算目标: Literal['经济','环保','经济_环保']
+    {# 计算类型: Literal['仿真模拟', '设计规划'] #}
+    {# 计算目标: Literal['经济','环保','经济_环保'] #}
     风速: List[{{non_neg_float}}]
     """
     单位: m/s
@@ -1841,10 +1860,13 @@ class {{class_name}}模型(设备模型):
 {% endfor %}
 {% endfor %}
 
+from copy import deepcopy
+
 class ModelWrapperContext:
-    def __init__(self):
+    def __init__(self, inputParams:InputParams):
         mw = ModelWrapper()
         self.mw = mw
+        self.mw.inputParams = deepcopy(inputParams)
 
     def __enter__(self):
         logger_print("ENTER MODEL WRAPPER CONTEXT")

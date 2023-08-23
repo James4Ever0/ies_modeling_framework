@@ -6,7 +6,7 @@ Task.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls) # type: i
 
 def func():
     def func2():
-        with ModelWrapperContext() as m:
+        with ModelWrapperContext(...) as m:
             raise Exception("error")
     func2()
 

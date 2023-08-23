@@ -1,4 +1,5 @@
 from log_utils import logger_print
+
 # import pyomo_patch  # type: ignore
 from pyomo_environ import *
 import json
@@ -18,7 +19,7 @@ try:
     from typing import Literal
 except:
     from typing_extensions import Literal
-from ies_optim import ModelWrapper
+from ies_optim import ModelWrapper, InputParams
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
 
 # from pyomo.environ import *
@@ -132,10 +133,14 @@ from ies_optim import compute, ModelWrapperContext
 # obj_expr = 0
 from copy import deepcopy
 
+
 # disable io_options.
-def solve_model(mw: ModelWrapper, obj_expr, sense=minimize, 
-                # io_options=dict()
-                ):
+def solve_model(
+    mw: ModelWrapper,
+    obj_expr,
+    sense=minimize,
+    # io_options=dict()
+):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
     # devClassMapping = {
@@ -192,9 +197,10 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize,
         with tempfile.TemporaryDirectory() as solver_log_dir:
             solver_log = os.path.join(solver_log_dir, "solver.log")
             results = solver.solve(
-                mw.model, tee=True, 
-                # io_options=io_options, 
-                logfile=solver_log
+                mw.model,
+                tee=True,
+                # io_options=io_options,
+                logfile=solver_log,
             )
 
             logger_print("SOLVER RESULTS?")
@@ -271,8 +277,19 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize,
                     lp_filepath = os.path.join(
                         solver_log_dir_with_timestamp, "model.lp"
                     )
+                    # TODO: export input parameters.
+
+                    input_params_filepath = os.path.join(
+                        solver_log_dir_with_timestamp, "input_params.json"
+                    )
+                    with open(input_params_filepath, "w+") as f:
+                        content = json.dumps(
+                            mw.inputParams.dict(), ensure_ascii=False, indent=4
+                        )
+                        f.write(content)
+                    
                     _, model_smap_id = mw.model.write(
-                        filename=lp_filepath, 
+                        filename=lp_filepath,
                         # io_options=io_options
                     )
 
@@ -361,6 +378,7 @@ def solve_model(mw: ModelWrapper, obj_expr, sense=minimize,
                     em.append("")
                     em.append("Solver log saved to: " + solver_log_new)
                     em.append("Model saved to: " + lp_filepath)
+                    em.append("Input params saved to: " + input_params_filepath)
 
                     # translate_and_append(lp_filepath, export_model_smap)
                     translateFileUsingSymbolMap(lp_filepath, export_model_smap)
@@ -718,7 +736,17 @@ def solve_model_and_fetch_result(
     targetNameMappings = dict(
         abbr=dict(经济="fin", 环保="env"), full=dict(经济="finance", 环保="env")
     )
-    with ModelWrapperContext() as mw:
+    inputParams = InputParams(
+        calcParamList=calcParamList,
+        计算目标=calcTarget,
+        典型日=典型日,
+        计算步长=计算步长,
+        计算类型=计算类型,
+        rangeDict=rangeDict,
+        needResult=needResult,
+        additional_constraints=additional_constraints,
+    )
+    with ModelWrapperContext(inputParams) as mw:
         ret = getCalcStruct(mw, calcParamList, 典型日, 计算步长, 计算类型)
         for expr_name, constraints in additional_constraints.items():
             expr = ret.calcTargetLUT[expr_name]

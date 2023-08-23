@@ -473,6 +473,21 @@ import uuid
 from contextlib import contextmanager
 
 @contextmanager
+def solverOptionsContext(solver):
+    optionNames = []
+    optionNameToOldOptionValue = {}
+    def setSolverOption(optionName, optionValue):
+        if solver.options
+        solver.options[optionName] = optionValue
+    try:
+        yield setSolverOption
+    finally:
+        for optionName in optionNames:
+
+
+
+
+@contextmanager
 def setBoundsContext(bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
     all_bound_names = []
