@@ -1,5 +1,8 @@
 # TODO: assign debug/error id and separate logger/folder for error logging.
 
+# sensitivity analysis cannot be done before solution
+# ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=tutorial-performing-sensitivity-analysis
+
 from log_utils import logger_print
 
 # input: model, objective, etc.
@@ -551,7 +554,7 @@ def checkInfeasibleOrUnboundedModel(
     # obj_expr,
     solver,
     log_directory: str,
-    timelimit: float = 30,
+    timelimit: float = 10,
     max_bound: float = 1e8,
 ):
     # TODO: set param input (deepcopy) as attribute of modelWrapper
@@ -562,7 +565,15 @@ def checkInfeasibleOrUnboundedModel(
     # phase 1: check if infeasible.
 
     with solverOptionsContext(solver) as setSolverOption:
-        setSolverOption("", ...)
+        setSolverOption("mip limits strongit", 1)
+        setSolverOption("mip limits nodes", 200)
+        setSolverOption("mip tolerances mipgap", 1e8)
+        setSolverOption("mip tolerances absmipgap", 1e8)
+        # setSolverOption("timelimit", 10)
+        setSolverOption("dettimelimit", 10000)
+        setSolverOption("mip limits treememory", 1e3)  # 300MB
+        setSolverOption("mip limits solutions", 1)
+        setSolverOption("mip limits populate", 2)
 
         solve_and_decompose(
             modelWrapper,
@@ -644,5 +655,6 @@ def checkInfeasibleOrUnboundedModel(
         )
     # for var_bound_weakref in var_bound_weakrefs:
     #     del var_bound_weakref()
+
 
 # we need to change solver options to early abort execution.
