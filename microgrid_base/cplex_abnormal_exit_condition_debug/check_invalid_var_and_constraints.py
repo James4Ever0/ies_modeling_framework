@@ -18,3 +18,6 @@ model.con3 = Constraint(expr=model.a + model.b <= model.c)
 model.pw = Piecewise(
     model.c, model.e, pw_pts=[-100, 0, 100], pw_repn="MC", f_rule=[100, 0, -100]
 )
+
+from pyomo.util.infeasible import log_infeasible_constraints
+log_infeasible_constraints(model)
