@@ -28,7 +28,7 @@ from pydantic import BaseModel
 from typing import Union, Literal, List
 
 
-def get_var_bounds(var: Var):
+def get_var_or_constraint_bounds(var: Var):
     if var.has_lb():
         lb = value(var.lower, exception=False)
     if var.has_ub():
@@ -42,7 +42,7 @@ class VarViolation(BaseModel):
 
     @property
     def has_violation(self):
-        return any([self.bound_violation, self.vartype_violation])
+        return any([v > 0 for v in [self.bound_violation, self.vartype_violation]])
 
 
 # import math
@@ -84,10 +84,10 @@ def get_boolean_or_integer_violation(val: float, tol: float):
     return moderate_violation(violation, tol)
 
 
-def constructChecker(domainName: str, domainBounds):
+def constructVarChecker(domainName: str, domainBounds):
     def checker(var: Var, tol: float):
         val = value(var)
-        var_bounds = get_var_bounds(var)
+        var_bounds = get_var_or_constraint_bounds(var)
         bounds_violation = get_bounds_violation(val, *var_bounds, tol)
 
         vartype_violation = get_bounds_violation(val, *domainBounds, tol)
@@ -106,7 +106,7 @@ from functools import lru_cache
 
 
 @lru_cache(maxsize=1)
-def getCheckers():
+def getVarCheckers():
     varDomainObjs = [
         Reals,
         PositiveReals,
@@ -125,7 +125,7 @@ def getCheckers():
     for varDomainObj in varDomainObjs:
         domainName = varDomainObj.name
         domainBounds = varDomainObj.bounds()
-        checker = constructChecker(domainName, domainBounds)
+        checker = constructVarChecker(domainName, domainBounds)
         checkers[domainName] = checker
     return checkers
 
@@ -163,18 +163,40 @@ class ConstraintInfo(BaseModel):
         return self.violation > 0
 
 
+from pyomo.core.expr import current as EXPR
+
 def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
     results = []
+    # you can deactivate some constraints.
+    # model.constraint.activate()
+    # model.constraint.deactivate()
+    for constr in model.component_data_objects(
+        ctype=Constraint, active=True, descend_into=True
+    ):
+        body_value = value(constr.body, exception=False)
+        constraint_bounds = get_var_or_constraint_bounds(constr)
+        if body_value:
+            varInfoDict = {}
+
+            is_linear, terms = EXPR.decompose_term(constr.body)
+            if is_linear:
+                for coef, var in terms:
+                    if var is None:
+                        const += coef
+                    else:
+                        varName = str(var)
+                        if varName not in varInfoDict.keys():
+                            varInfoDict[varName] =
+            varInfoList = list(varInfoDict.values())
+            constraintInfo = ConstraintInfo(variables = varInfoList, violation = violation, representation = representation)
+            if constraintInfo.has_violation:
+                results.append(constraintInfo)
     return results
 
+def get_violation_of_infeasible_bounds_and_vartype_of_
 
 def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    results = []
-    return results
-
-
-def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    checkers = getCheckers()
+    checkers = getVarCheckers()
     results = []
     for var in model.component_data_objects(ctype=Var, descend_into=True):
         domainName = var.domain._name
