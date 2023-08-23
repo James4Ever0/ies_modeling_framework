@@ -199,9 +199,24 @@ repo_absdirs = [os.path.abspath(p) for p in repodirs]
 check_if_executable_in_path(
     "gptcommit", "please install by running `cargo install --locked gptcommit`."
 )
+last_commit_time_filepath = ".last_commit_time"
 
-for repo_absdir in repo_absdirs:
+
+total_modification = 0
+repo_absdir_to_modification = {}
+for repo_absdir in repo_absdirs:  # is there anything needed to commit?
     os.chdir(repo_absdir)
+    proc = EasyProcess("git status -s").call()
+    check_proc_exit_status(proc, "checking git status at %s" % repo_absdir)
+    git_status_lines = proc.stdout.split("\n")
+    modification = 0
+    for line in git_status_lines:
+        line = line.strip()
+        if last_commit_time_filepath == line.split(" ")[-1].strip():
+            continue
+        else:
+            modification += 1
+
     print("Location:", repo_absdir)
     repo_reldir = os.path.basename(repo_absdir)
     # proc = EasyProcess(CHECK_GPTCOMMIT_KEYS).call()
@@ -220,6 +235,12 @@ for repo_absdir in repo_absdirs:
             f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
         )
     run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
+    repo_absdir_to_modification[repo_absdir] = modification
+    total_modification += modification
+
+if total_modification == 0:
+    print("no modification, no need to commit")
+    exit(0)
 
 # exit()
 os.chdir(repo_basedir)
@@ -237,7 +258,6 @@ def get_time_now():
 
 
 commit_min_interval = datetime.timedelta(minutes=30)
-last_commit_time_filepath = ".last_commit_time"
 
 
 def get_last_commit_time():
