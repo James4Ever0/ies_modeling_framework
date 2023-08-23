@@ -469,41 +469,48 @@ def decomposeAndAnalyzeObjectiveExpression(
 
 
 import uuid
+
 # import weakref
 from contextlib import contextmanager
+
 
 @contextmanager
 def solverOptionsContext(solver):
     optionNames = []
     optionNameToOldOptionValue = {}
+
     def setSolverOption(optionName, optionValue):
-        if solver.options
+        if oldOptionValue := solver.options.get(optionName, None) is not None:
+            optionNameToOldOptionValue[optionName] = oldOptionValue
         solver.options[optionName] = optionValue
+
     try:
         yield setSolverOption
     finally:
         for optionName in optionNames:
-
-
+            if optionName in optionNameToOldOptionValue.keys():
+                solver.options[optionName] = optionNameToOldOptionValue[optionName]
+            else:
+                del solver.options[optionName]
 
 
 @contextmanager
 def setBoundsContext(bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
     all_bound_names = []
+
     def setBounds(varObject):
         bound_names = []
         while len(bound_names) != 2:
             name = str(uuid.uuid4()).replace("-", "_")
             if getattr(model, name, None) is None:
                 bound_names.append(f"{name}")
-        setattr(
-            model, bound_names[0], Constraint(expr=varObject >= -bound)
-        )
+        setattr(model, bound_names[0], Constraint(expr=varObject >= -bound))
         setattr(model, bound_names[1], Constraint(expr=varObject <= bound))
-    # varObject.setlb(-bound)
-    # varObject.setub(bound)
-        all_bound_names.extend(bound_names) # kinda like weakref?
+        # varObject.setlb(-bound)
+        # varObject.setub(bound)
+        all_bound_names.extend(bound_names)  # kinda like weakref?
+
     # return (weakref.ref(c) for c in [lb_constraint, ub_constraint])
     try:
         yield setBounds
@@ -553,6 +560,18 @@ def checkInfeasibleOrUnboundedModel(
     obj_expr = modelWrapper.obj_expr
     solver.options["timelimit"] = timelimit
     # phase 1: check if infeasible.
+
+    with solverOptionsContext(solver) as setSolverOption:
+        setSolverOption("", ...)
+
+        solve_and_decompose(
+            modelWrapper,
+            solver,
+            log_directory,
+            "limit_iteration",
+            decompose=True,
+        )
+
     obj.deactivate()
     # TODO: Constant objective detected, replacing with a placeholder to prevent solver failure.
     model_name = "null_objective"
@@ -576,13 +595,13 @@ def checkInfeasibleOrUnboundedModel(
     # setBounds(model.debug_obj_expr_bound, max_bound)
     # model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -max_bound)
     # model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= max_bound)
-    
+
     model.debug_null_objective.deactivate()
     obj.activate()
 
     with setBoundsContext(max_bound, model) as setBounds:
         setBounds(obj_expr)
-    # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
+        # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
         solve_and_decompose(
             modelWrapper, solver, log_directory, "bounded_objective", decompose=True
         )
@@ -617,10 +636,13 @@ def checkInfeasibleOrUnboundedModel(
         # var_bound_weakrefs.extend([var_lb_weakref, var_ub_weakref])
 
         solve_and_decompose(
-            modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True
+            modelWrapper,
+            solver,
+            log_directory,
+            "bounded_objective_vars",
+            decompose=True,
         )
     # for var_bound_weakref in var_bound_weakrefs:
     #     del var_bound_weakref()
-
 
 # we need to change solver options to early abort execution.
