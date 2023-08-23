@@ -469,20 +469,33 @@ def decomposeAndAnalyzeObjectiveExpression(
 
 
 import uuid
+# import weakref
+from contextlib import contextmanager
 
-
-def setBounds(varObject, bound, model):
+@contextmanager
+def setBoundsContext(bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
-    bound_names = []
-    while len(bound_names) != 2:
-        name = str(uuid.uuid4()).replace("-", "_")
-        if getattr(model, name, None) is None:
-            bound_names.append(f"{name}")
-    setattr(model, bound_names[0], Constraint(expr=varObject >= -bound))
-    setattr(model, bound_names[1], Constraint(expr=varObject <= bound))
+    all_bound_names = []
+    def setBounds(varObject):
+        bound_names = []
+        while len(bound_names) != 2:
+            name = str(uuid.uuid4()).replace("-", "_")
+            if getattr(model, name, None) is None:
+                bound_names.append(f"{name}")
+        setattr(
+            model, bound_names[0], Constraint(expr=varObject >= -bound)
+        )
+        setattr(model, bound_names[1], Constraint(expr=varObject <= bound))
     # varObject.setlb(-bound)
     # varObject.setub(bound)
-    return bound_names # kinda like weakref?
+        all_bound_names.extend(bound_names) # kinda like weakref?
+    # return (weakref.ref(c) for c in [lb_constraint, ub_constraint])
+    try:
+        yield setBounds
+    finally:
+        for bound_name in all_bound_names:
+            if getattr(model, bound_name, None) is not None:
+                delattr(model, bound_name)
 
 
 def solve_and_decompose(
@@ -519,6 +532,7 @@ def checkInfeasibleOrUnboundedModel(
     timelimit: float = 30,
     max_bound: float = 1e8,
 ):
+    # TODO: set param input (deepcopy) as attribute of modelWrapper
     model = modelWrapper.model
     obj = modelWrapper.obj
     obj_expr = modelWrapper.obj_expr
@@ -545,15 +559,18 @@ def checkInfeasibleOrUnboundedModel(
     #     expr=model.debug_obj_expr_bound == obj_expr
     # )
     # setBounds(model.debug_obj_expr_bound, max_bound)
-    model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -max_bound)
-    model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= max_bound)
-
+    # model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -max_bound)
+    # model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= max_bound)
+    
     model.debug_null_objective.deactivate()
     obj.activate()
 
-    solve_and_decompose(
-        modelWrapper, solver, log_directory, "bounded_objective", decompose=True
-    )
+    with setBoundsContext(max_bound, model) as setBounds:
+        setBounds(obj_expr)
+    # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
+        solve_and_decompose(
+            modelWrapper, solver, log_directory, "bounded_objective", decompose=True
+        )
 
     # solved = solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "bounded_objective"
@@ -570,16 +587,25 @@ def checkInfeasibleOrUnboundedModel(
     # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
     # del model.debug_obj_expr_bound_constraint
     # del model.debug_obj_expr_bound
-    del model.debug_obj_ub_constraint
-    del model.debug_obj_lb_constraint
+    # del debug_obj_ub_constraint_weakref()
+    # del debug_obj_lb_constraint_weakref()
+    # for attrName in debug_bound_attrs:
+    #     delattr(model, attrName)
 
     decomposed_obj_expr = decomposeExpression(obj_expr)
-    for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
-        setBounds(varObject, max_bound)
 
-    solve_and_decompose(
-        modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True
-    )
+    # var_bound_weakrefs = []
+    with setBoundsContext(max_bound, model) as setBounds:
+        for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
+            setBounds(varObject)
+        # var_lb_weakref, var_ub_weakref = setBounds(varObject, max_bound)
+        # var_bound_weakrefs.extend([var_lb_weakref, var_ub_weakref])
+
+        solve_and_decompose(
+            modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True
+        )
+    # for var_bound_weakref in var_bound_weakrefs:
+    #     del var_bound_weakref()
 
 
 # we need to change solver options to early abort execution.
