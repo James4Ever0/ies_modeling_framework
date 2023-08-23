@@ -478,17 +478,23 @@ from contextlib import contextmanager
 
 
 @contextmanager
-def solverOptionsContext(solver):
+def solverOptionsContext(solver, _options: List[Tuple[str, float]] = []):
     optionNames = []
     optionNameToOldOptionValue = {}
 
-    def setSolverOption(optionName, optionValue):
+    def setSolverOption(optionName: str, optionValue):
+        optionName = optionName.strip()
         if oldOptionValue := solver.options.get(optionName, None) is not None:
             optionNameToOldOptionValue[optionName] = oldOptionValue
         solver.options[optionName] = optionValue
 
+    def setSolverOptions(options: List[Tuple[str, float]]):
+        for optionName, optionValue in options:
+            setSolverOption(optionName, optionValue)
+
     try:
-        yield setSolverOption
+        setSolverOptions(_options)
+        yield setSolverOptions
     finally:
         for optionName in optionNames:
             if optionName in optionNameToOldOptionValue.keys():
@@ -547,6 +553,9 @@ def solve_and_decompose(
             )
 
 
+import random
+
+
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
     modelWrapper: ModelWrapper,
@@ -562,32 +571,60 @@ def checkInfeasibleOrUnboundedModel(
     obj = modelWrapper.obj
     obj_expr = modelWrapper.obj_expr
     solver.options["timelimit"] = timelimit
-    # phase 1: check if infeasible.
 
-    with solverOptionsContext(solver) as setSolverOption:
-        setSolverOption("mip limits strongit", 1)
-        setSolverOption("mip limits nodes", 200)
-        setSolverOption("mip tolerances mipgap", 1e8)
-        setSolverOption("mip tolerances absmipgap", 1e8)
-        # setSolverOption("timelimit", 10)
-        setSolverOption("dettimelimit", 10000)
-        setSolverOption("mip limits treememory", 1e3)  # 300MB
-        setSolverOption("mip limits solutions", 1)
-        setSolverOption("mip limits populate", 2)
+    def default_solve_and_decompose(banner, decompose=False):
+        return solve_and_decompose(
+            modelWrapper, solver, log_directory, banner, decompose=decompose
+        )
 
-        solve_and_decompose(
-            modelWrapper,
-            solver,
-            log_directory,
+    # phase 0: limit iteration and get premature solutions
+    options: List[Tuple[str, float]] = [
+        ("mip limits strongit", 1),
+        ("mip limits nodes", 2e2),
+        ("mip tolerances mipgap", 1e8),
+        ("mip tolerances absmipgap", 1e8),
+        ("dettimelimit", 1e4),
+        ("mip limits treememory", 1e3),  # 300MB
+        ("mip limits solutions", 1),
+        ("mip limits populate", 2),
+        ("mip strategy fpheur", -1),
+        ("sifting iterations", 1e3),
+        ("mip pool intensity", 1),
+        ("mip limits probetime", 1e1),
+        ("simplex limits iterations", 1e4),
+        ("mip limits repairtries", 1e3),
+        ("preprocessing relax", 0),
+        ("preprocessing reduce", 0),
+        ("randomseed", random.randint(0, 1e10)),
+        ("mip strategy presolvenode", -1),
+        ("preprocessing presolve", 0),
+        ("mip polishafter solutions", 1),
+        ("mip polishafter time", 5),
+        ("barrier limits iteration", 1e3),
+        ("barrier limits growth", 1e5),
+        ("network iterations", 1e3),
+    ]
+
+    with solverOptionsContext(solver, options):
+        default_solve_and_decompose(
             "limit_iteration",
             decompose=True,
         )
+        # solve_and_decompose(
+        #     modelWrapper,
+        #     solver,
+        #     log_directory,
+        #     "limit_iteration",
+        #     decompose=True,
+        # )
+
+    # phase 1: check if infeasible.
 
     obj.deactivate()
     # TODO: Constant objective detected, replacing with a placeholder to prevent solver failure.
-    model_name = "null_objective"
-    modelWrapper.submodelName = model_name
-    modelWrapper.submodelClassName = model_name
+    # model_name = "null_objective"
+    # modelWrapper.submodelName = model_name
+    # modelWrapper.submodelClassName = model_name
 
     # model.debug_null_objective = Objective()
     model.debug_null_objective = Objective(expr=0)
@@ -596,8 +633,8 @@ def checkInfeasibleOrUnboundedModel(
     # solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "null_objective"
     # )  # we don't care about this solution. don't do analysis.
-    solve_and_decompose(modelWrapper, solver, log_directory, model_name)
-
+    # solve_and_decompose(modelWrapper, solver, log_directory, model_name)
+    default_solve_and_decompose("null_objective")
     # phase 2: limit range of objective expression
     # model.debug_obj_expr_bound = Var()
     # model.debug_obj_expr_bound_constraint = Constraint(
@@ -613,9 +650,10 @@ def checkInfeasibleOrUnboundedModel(
     with setBoundsContext(max_bound, model) as setBounds:
         setBounds(obj_expr)
         # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
-        solve_and_decompose(
-            modelWrapper, solver, log_directory, "bounded_objective", decompose=True
-        )
+        default_solve_and_decompose("bounded_objective", decompose=True)
+        # solve_and_decompose(
+        #     modelWrapper, solver, log_directory, "bounded_objective", decompose=True
+        # )
 
     # solved = solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "bounded_objective"
@@ -646,13 +684,17 @@ def checkInfeasibleOrUnboundedModel(
         # var_lb_weakref, var_ub_weakref = setBounds(varObject, max_bound)
         # var_bound_weakrefs.extend([var_lb_weakref, var_ub_weakref])
 
-        solve_and_decompose(
-            modelWrapper,
-            solver,
-            log_directory,
+        default_solve_and_decompose(
             "bounded_objective_vars",
             decompose=True,
         )
+        # solve_and_decompose(
+        #     modelWrapper,
+        #     solver,
+        #     log_directory,
+        #     "bounded_objective_vars",
+        #     decompose=True,
+        # )
     # for var_bound_weakref in var_bound_weakrefs:
     #     del var_bound_weakref()
 

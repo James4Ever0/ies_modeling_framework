@@ -185,6 +185,10 @@ def solve_model(
         # io_options = dict(symbolic_solver_labels=True)
         # BUG: OOM
         solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
+        solver.options['tune display'] = 3
+        solver.options['sifting display'] = 2
+        solver.options['mip display'] = 5
+        solver.options['barrier display']=2
         # disable this option to prevent OOM.
         # solver.options["read fileencoding"] = "utf-8"
 
