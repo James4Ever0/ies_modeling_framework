@@ -156,6 +156,7 @@ class ConstraintInfo(BaseModel):
     variables: List[VarInfo]
     violation: float
     representation: str
+    is_linear: bool
 
     @property
     def has_violation(self):
@@ -189,23 +190,62 @@ def get_violation_of_infeasible_bounds_and_vartype_of_single_var(var: Var, tol=1
     else:
         raise Exception("unknown domain name: %s" % domainName)
 
-def decompose_constraint_and_get_variable_info(constr: Constraint):                varInfoDict = {}
-varInfoList = []
-    
-                is_linear, terms = EXPR.decompose_term(constr.body)
-                if is_linear:
-                    for coef, var in terms:
-                        if var is None:
-                            const += coef
-                        else:
-                            varName = str(var)
-                            if varName not in varInfoDict.keys():
-                                varInfoDict[
-                                    varName
-                                ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
-                                    var
-                                )
-                    varInfoList = list(varInfoDict.values())
+
+from typing import Dict
+
+
+def getVarInfoListFromVarInfoDict(varInfoDict: Dict[str, VarInfo]):
+    varInfoList = list(varInfoDict.values())
+    return varInfoList
+
+
+def decompose_linear_constraint_from_terms_and_get_variable_info(terms):
+    varInfoDict = {}
+    for coef, var in terms:
+        if var is not None:
+            varName = str(var)
+            if varName not in varInfoDict.keys():
+                varInfoDict[
+                    varName
+                ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(var)
+    return varInfoDict
+
+
+from pyomo.core.base.var import *
+
+VarType = Union[Var, _VarData, _GeneralVarData, VarList, SimpleVar, ScalarVar]
+
+
+def walk_expression(expr: Expression):
+    if args := getattr(expr, "args", None) is not None:
+        for arg in args:
+            if isinstance(arg, VarType):
+                yield arg
+            else:
+                yield from walk_expression(arg)
+
+
+def decompose_nonlinear_constraint_and_get_variable_info_dict(constr: Constraint):
+    varInfoDict = {}
+    for term in walk_expression(constr.body):
+        ...
+    return varInfoDict
+
+
+def decompose_constraint_and_get_variable_info(constr: Constraint):
+    is_linear, terms = EXPR.decompose_term(constr.body)
+
+    # decompose non-linear constraints.
+    if is_linear:
+        varInfoDict = decompose_linear_constraint_from_terms_and_get_variable_info(
+            terms
+        )
+    else:
+        varInfoDict = decompose_nonlinear_constraint_and_get_variable_info_dict(constr)
+    varInfoList = getVarInfoListFromVarInfoDict(varInfoDict)
+    return is_linear, varInfoList
+
+
 def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
     results = []
     # you can deactivate some constraints.
@@ -220,14 +260,16 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
             violation = get_bounds_violation(body_value, constraint_bounds, tol)
             if violation != 0:
                 representation = str(constr.expr)
-
-
-                    constraintInfo = ConstraintInfo(
-                        variables=varInfoList,
-                        violation=violation,
-                        representation=representation,
-                    )
-                    results.append(constraintInfo)
+                is_linear, varInfoList = decompose_constraint_and_get_variable_info(
+                    constr
+                )
+                constraintInfo = ConstraintInfo(
+                    is_linear=is_linear,
+                    variables=varInfoList,
+                    violation=violation,
+                    representation=representation,
+                )
+                results.append(constraintInfo)
     return results
 
 
