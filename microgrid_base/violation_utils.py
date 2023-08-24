@@ -368,10 +368,10 @@ class ModelInfo:
         self.piecewises: List[PiecewiseInfo] = MagicList()
 
     def clear(self):
-        self.constraints.clear()
-        self.variables.clear()
-        self.piecewises.clear()
+        for obj in self.__dict__.values():
+            obj.clear()
 
+from rich.pretty import pretty_repr
 
 class ModelScanner:
     def __init__(self, model: ConcreteModel, tol=1e-6, violation_only=True):
@@ -458,8 +458,14 @@ class ModelScanner:
         return self.modelInfo
     
     def report(self):
-        modelInfo = self.all()
+        self.all()
+        report_lines = []
 
+        for key, obj in self.modelInfo.__dict__:
+            report.append(key.center(70, "="))
+            report.append(pretty_repr(obj))
+
+        report = "\n".join(report_lines)
         return report
 
 

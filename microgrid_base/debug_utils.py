@@ -530,7 +530,7 @@ def setBoundsContext(bound, model):
 
 from violation_utils import modelScannerContext
 
-def solve_and_decompose(
+def solve_decompose_and_scan(
     modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
 ):
     cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
@@ -577,8 +577,8 @@ def checkInfeasibleOrUnboundedModel(
     obj_expr = modelWrapper.obj_expr
     solver.options["timelimit"] = timelimit
 
-    def default_solve_and_decompose(banner, decompose=False):
-        return solve_and_decompose(
+    def default_solve_decompose_and_scan(banner, decompose=False):
+        return solve_decompose_and_scan(
             modelWrapper, solver, log_directory, banner, decompose=decompose
         )
 
@@ -618,11 +618,11 @@ def checkInfeasibleOrUnboundedModel(
     ]
 
     with solverOptionsContext(solver, options):
-        default_solve_and_decompose(
+        default_solve_decompose_and_scan(
             "limit_iteration",
             decompose=True,
         )
-        # solve_and_decompose(
+        # solve_decompose_and_scan(
         #     modelWrapper,
         #     solver,
         #     log_directory,
@@ -645,8 +645,8 @@ def checkInfeasibleOrUnboundedModel(
     # solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "null_objective"
     # )  # we don't care about this solution. don't do analysis.
-    # solve_and_decompose(modelWrapper, solver, log_directory, model_name)
-    default_solve_and_decompose("null_objective")
+    # solve_decompose_and_scan(modelWrapper, solver, log_directory, model_name)
+    default_solve_decompose_and_scan("null_objective")
     # phase 2: limit range of objective expression
     # model.debug_obj_expr_bound = Var()
     # model.debug_obj_expr_bound_constraint = Constraint(
@@ -662,8 +662,8 @@ def checkInfeasibleOrUnboundedModel(
     with setBoundsContext(max_bound, model) as setBounds:
         setBounds(obj_expr)
         # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
-        default_solve_and_decompose("bounded_objective", decompose=True)
-        # solve_and_decompose(
+        default_solve_decompose_and_scan("bounded_objective", decompose=True)
+        # solve_decompose_and_scan(
         #     modelWrapper, solver, log_directory, "bounded_objective", decompose=True
         # )
 
@@ -696,11 +696,11 @@ def checkInfeasibleOrUnboundedModel(
         # var_lb_weakref, var_ub_weakref = setBounds(varObject, max_bound)
         # var_bound_weakrefs.extend([var_lb_weakref, var_ub_weakref])
 
-        default_solve_and_decompose(
+        default_solve_decompose_and_scan(
             "bounded_objective_vars",
             decompose=True,
         )
-        # solve_and_decompose(
+        # solve_decompose_and_scan(
         #     modelWrapper,
         #     solver,
         #     log_directory,
