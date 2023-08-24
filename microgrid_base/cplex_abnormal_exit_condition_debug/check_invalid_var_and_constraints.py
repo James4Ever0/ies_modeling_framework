@@ -202,16 +202,17 @@ def get_violation_of_infeasible_bounds_and_vartype_of_single_var(
         varViolation, lower_bound, upper_bound = checker(
             var, tol
         )  # violation shall be positive when actual violation is greater than tolerance, otherwise zero.
-        if not violation_only or varViolation.has_violation:
-            varInfo = VarInfo(
-                varName=varName,
-                val=val,
-                domainName=domainName,
-                lower_bound=lower_bound,
-                upper_bound=upper_bound,
-                violation=varViolation,
-            )
-            return varInfo
+        if violation_only and not varViolation.has_violation:
+            return
+        varInfo = VarInfo(
+            varName=varName,
+            val=val,
+            domainName=domainName,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            violation=varViolation,
+        )
+        return varInfo
     else:
         raise Exception("unknown domain name: %s" % domainName)
 
@@ -227,23 +228,29 @@ def getVarInfoListFromVarInfoDict(varInfoDict: Dict[str, VarInfo]):
 from contextlib import contextmanager
 from copy import deepcopy
 
+class SkipSettingNoneDict(dict):
+    def __setattr__(self, name, value):
+        if value is not None:
+            super().__setattr__(name, value)
 
 @contextmanager
 def varInfoDictContext():
     class VarInfoDictUpdator:
         def __init__(self, violation_only: bool = False):
-            self._varInfoDict = {}
+            self._varInfoDict = SkipSettingNoneDict()
             self.violation_only = violation_only
 
         def update(self, var):
             if var is not None:
                 varName = str(var)
                 if varName not in self._varInfoDict.keys():
-                    self._varInfoDict[
-                        varName
-                    ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
-                        var, violation_only=self.violation_only
+                    varInfo = (
+                        get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                            var, violation_only=self.violation_only
+                        )
                     )
+                    if varInfo:
+                        self._varInfoDict[varName] = varInfo
 
         @property
         def varInfoDict(self):
@@ -304,22 +311,48 @@ def decompose_constraint_and_get_variable_info(constr: Constraint):
     return is_linear, varInfoList
 
 
-def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
-    results = []
-    # you can deactivate some constraints.
-    # model.constraint.activate()
-    # model.constraint.deactivate()
-    for constr in model.component_data_objects(
-        ctype=Constraint, active=True, descend_into=True
-    ):
-        body_value = value(constr.body, exception=False)
-        constraint_bounds = get_var_or_constraint_bounds(constr)
-        constraintName = constr.name
-        if body_value is not None:
-            violation = get_bounds_violation(body_value, *constraint_bounds, tol)
-            # print(violation)
-            # breakpoint()
-            if violation != 0:
+class PiecewiseInfo(BaseModel):
+    piecewiseName: str
+    violation: float
+    variables: ...
+    out_of_bound: bool
+
+
+import rich
+
+
+class ModelInfo:
+    def __init__(self):
+        self.constraints: List[ConstraintInfo] = []
+        self.variables: List[VarInfo] = []
+        self.piecewises: List[PiecewiseInfo] = []
+
+
+class ModelScanner:
+    def __init__(self, model: ConcreteModel, tol=1e-6, violation_only=True):
+        self.tol = tol
+        self.model = model
+        self.modelInfo = ModelInfo()
+        self.violation_only = violation_only
+
+    def constraint(self):
+        # you can deactivate some constraints.
+        # model.constraint.activate()
+        # model.constraint.deactivate()
+        for constr in model.component_data_objects(
+            ctype=Constraint, active=True, descend_into=True
+        ):
+            body_value = value(constr.body, exception=False)
+            constraint_bounds = get_var_or_constraint_bounds(constr)
+            constraintName = constr.name
+            if body_value is not None:
+                violation = get_bounds_violation(
+                    body_value, *constraint_bounds, self.tol
+                )
+                # print(violation)
+                # breakpoint()
+                if self.violation_only and violation == 0:
+                    continue
                 representation = str(constr.expr)
                 is_linear, varInfoList = decompose_constraint_and_get_variable_info(
                     constr
@@ -331,37 +364,34 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
                     violation=violation,
                     representation=representation,
                 )
-                results.append(constraintInfo)
-    return results
+                self.modelInfo.constraints.append(constraintInfo)
+        return self.modelInfo.constraints
 
+    def var(self):
+        results = []
+        for var in model.component_data_objects(ctype=Var, descend_into=True):
+            varInfo = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                var, self.tol, violation_only=self.violation_only
+            )
+            if varInfo:
+                results.append(varInfo)
 
-def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    results = []
-    for var in model.component_data_objects(ctype=Var, descend_into=True):
-        varInfo = get_violation_of_infeasible_bounds_and_vartype_of_single_var(var, tol)
-        results.append(varInfo)
+        return results
 
-    return results
+    def piecewise(self):
+        results = []
+        for pw in model.component_data_objects(
+            ctype=Piecewise, active=True, descend_into=True
+        ):
+            rich.print(pw.__dict__)
+            piecewiseName = pw.name
+            if ...:
+                piecewiseInfo = PiecewiseInfo(
+                    piecewiseName=piecewiseName, violation=...
+                )
+                results.append(piecewiseInfo)
+        return results
 
-class PiecewiseInfo(BaseModel):
-    piecewiseName:str
-    violation:float
-    variables:...
-    out_of_bound:bool
-
-import rich
-
-def get_violation_of_infeasible_piecewise_expressions(model: ConcreteModel, tol=1e-6):
-    results = []
-    for pw in model.component_data_objects(
-        ctype=Piecewise, active=True, descend_into=True
-    ):
-        rich.print(pw.__dict__)
-        piecewiseName = pw.name
-        if ...:
-            piecewiseInfo = PiecewiseInfo(piecewiseName=piecewiseName, violation=...)
-            results.append(piecewiseInfo)
-    return results
 
 # log_infeasible_constraints(model)
 for constrInfo in get_violation_of_infeasible_constraints(model):

@@ -578,10 +578,12 @@ def checkInfeasibleOrUnboundedModel(
         )
 
     # phase 0: limit iteration and get premature solutions
+    # advanced start might be used along with other solvers.
+    # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=mip-starting-from-solution-starts
     options: List[Tuple[str, float]] = [
         ("mip limits strongit", 1),
         ("mip limits nodes", 2e2),
-        ("mip tolerances mipgap", 1e8),
+        ("mip tolerances mipgap", 1),  # mipgap
         ("mip tolerances absmipgap", 1e8),
         ("dettimelimit", 1e4),
         ("mip limits treememory", 1e3),  # 300MB
@@ -603,6 +605,11 @@ def checkInfeasibleOrUnboundedModel(
         ("barrier limits iteration", 1e3),
         ("barrier limits growth", 1e5),
         ("network iterations", 1e3),
+        ("mip strategy probe", 3),
+        ("emphasis mip", 4),  # feasibility first
+        ("mip strategy search", 1)  # disable dynamic search
+        # callbacks can be used in static search
+        # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=callbacks-where-query-are-called
     ]
 
     with solverOptionsContext(solver, options):
