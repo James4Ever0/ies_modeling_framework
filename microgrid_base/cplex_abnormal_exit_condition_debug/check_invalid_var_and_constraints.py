@@ -38,6 +38,11 @@ model.pw = Piecewise(
     warn_domain_coverage=False,
 )
 
+model.pw.MC_poly_x[1] = 1
+model.pw.MC_poly_x[2] = 1
+model.pw.MC_bin_y[1] = 1
+model.pw.MC_bin_y[2] = 1
+
 # you might need to sort it out. check how much further it goes.
 # from pyomo.util.infeasible import log_infeasible_constraints,
 
@@ -61,9 +66,6 @@ class VarViolation(BaseModel):
     @property
     def has_violation(self):
         return any([v > 0 for v in [self.bound_violation, self.vartype_violation]])
-
-
-# import math
 
 
 def moderate_violation(violation, tol):
@@ -228,10 +230,12 @@ def getVarInfoListFromVarInfoDict(varInfoDict: Dict[str, VarInfo]):
 from contextlib import contextmanager
 from copy import deepcopy
 
+
 class SkipSettingNoneDict(dict):
-    def __setattr__(self, name, value):
+    def __setitem__(self, name, value):
         if value is not None:
-            super().__setattr__(name, value)
+            super().__setitem__(name, value)
+
 
 @contextmanager
 def varInfoDictContext():
@@ -244,13 +248,11 @@ def varInfoDictContext():
             if var is not None:
                 varName = str(var)
                 if varName not in self._varInfoDict.keys():
-                    varInfo = (
-                        get_violation_of_infeasible_bounds_and_vartype_of_single_var(
-                            var, violation_only=self.violation_only
-                        )
+                    self._varInfoDict[
+                        varName
+                    ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                        var, violation_only=self.violation_only
                     )
-                    if varInfo:
-                        self._varInfoDict[varName] = varInfo
 
         @property
         def varInfoDict(self):
@@ -314,18 +316,36 @@ def decompose_constraint_and_get_variable_info(constr: Constraint):
 class PiecewiseInfo(BaseModel):
     piecewiseName: str
     violation: float
-    variables: ...
+    variables: List[VarInfo]
     out_of_bound: bool
 
 
 import rich
 
 
+class MagicList(list):
+    def append(self, value):
+        if value is not None:
+            super().append(value)
+
+    def sort_by_attr(self, attr: str, reverse=False):
+        super().sort(key=lambda e: getattr(e, attr), reverse=reverse)
+        return self
+
+    def filter_by_attr(self, attr: str, negate=False):
+        if negate:
+            ret = filter(lambda e: not getattr(e, attr), self)
+        else:
+            ret = filter(lambda e: getattr(e, attr), self)
+
+        return MagicList(ret)
+
+
 class ModelInfo:
     def __init__(self):
-        self.constraints: List[ConstraintInfo] = []
-        self.variables: List[VarInfo] = []
-        self.piecewises: List[PiecewiseInfo] = []
+        self.constraints: List[ConstraintInfo] = MagicList()
+        self.variables: List[VarInfo] = MagicList()
+        self.piecewises: List[PiecewiseInfo] = MagicList()
 
 
 class ModelScanner:
@@ -339,7 +359,7 @@ class ModelScanner:
         # you can deactivate some constraints.
         # model.constraint.activate()
         # model.constraint.deactivate()
-        for constr in model.component_data_objects(
+        for constr in self.model.component_data_objects(
             ctype=Constraint, active=True, descend_into=True
         ):
             body_value = value(constr.body, exception=False)
@@ -349,8 +369,6 @@ class ModelScanner:
                 violation = get_bounds_violation(
                     body_value, *constraint_bounds, self.tol
                 )
-                # print(violation)
-                # breakpoint()
                 if self.violation_only and violation == 0:
                     continue
                 representation = str(constr.expr)
@@ -367,37 +385,40 @@ class ModelScanner:
                 self.modelInfo.constraints.append(constraintInfo)
         return self.modelInfo.constraints
 
-    def var(self):
-        results = []
-        for var in model.component_data_objects(ctype=Var, descend_into=True):
-            varInfo = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
-                var, self.tol, violation_only=self.violation_only
+    def variable(self):
+        for var in self.model.component_data_objects(ctype=Var, descend_into=True):
+            self.modelInfo.variables.append(
+                get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                    var, self.tol, violation_only=self.violation_only
+                )
             )
-            if varInfo:
-                results.append(varInfo)
-
-        return results
+        return self.modelInfo.variables
 
     def piecewise(self):
-        results = []
-        for pw in model.component_data_objects(
+        for pw in self.model.component_data_objects(
             ctype=Piecewise, active=True, descend_into=True
         ):
             rich.print(pw.__dict__)
             piecewiseName = pw.name
+            breakpoint()
             if ...:
                 piecewiseInfo = PiecewiseInfo(
                     piecewiseName=piecewiseName, violation=...
                 )
-                results.append(piecewiseInfo)
-        return results
+                self.modelInfo.piecewises.append(piecewiseInfo)
+        return self.modelInfo.piecewises
 
 
-# log_infeasible_constraints(model)
-for constrInfo in get_violation_of_infeasible_constraints(model):
+modelScanner = ModelScanner(model)
+for constrInfo in modelScanner.constraint():
     rich.print(constrInfo)
 
-# print("=" * 70)
+print("=" * 70)
 
-# for varInfo in get_violation_of_infeasible_bounds_and_vartype(model):
-#     rich.print(varInfo)
+for varInfo in modelScanner.variable():
+    rich.print(varInfo)
+
+print("=" * 70)
+
+for piecewiseInfo in modelScanner.piecewise():
+    rich.print(piecewiseInfo)
