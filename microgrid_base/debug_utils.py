@@ -560,7 +560,6 @@ def solve_decompose_and_scan(
 
 import random
 
-
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
     modelWrapper: ModelWrapper,

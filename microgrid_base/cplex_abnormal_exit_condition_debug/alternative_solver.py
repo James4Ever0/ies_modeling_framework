@@ -11,7 +11,8 @@ from pyomo.environ import *
 import os
 
 
-solver_name = os.environ['SOLVER_NAME']
+solver_name = os.environ["SOLVER_NAME"]
+warm_start = os.environ.get("WARM_START", None) is not None
 
 # that is during presolve, not during solve.
 # from pyomo.contrib.iis import write_iis
@@ -19,6 +20,9 @@ solver_name = os.environ['SOLVER_NAME']
 model = ConcreteModel()
 x = model.变量x = Var()
 y = model.变量y = Var()
+if warm_start:
+    x.set_value(0.5)
+    y.set_value(0.5)
 model.constraint_x_y = Constraint(expr=x + y >= 10)
 z = model.z = Var([0, 1])
 
@@ -40,7 +44,8 @@ no_obj = model.no_obj = Objective(expr=0)
 # no conflict! how comes? it is unbounded.
 
 solver = SolverFactory(solver_name)
-
+if warm_start:
+    solver_name += "_warmstart"
 # switch lp algorithm
 # ref: https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-algorithm-continuous-linear-problems"
 # working?
@@ -55,7 +60,18 @@ solver = SolverFactory(solver_name)
 # solver.options['simplex tolerances optimality'] = 1e-1
 smap_ids = []
 model.obj.deactivate()
-result_no_obj = solver.solve(model, tee=True, logfile=f"no_obj_solver_{solver_name}.log")
+
+
+def solver_solve(*args, **kwargs):
+    solver.solve(*args, **kwargs, **(dict(warmstart=True) if warm_start else {}))
+
+
+try:
+    result_no_obj = solver_solve(
+        model, tee=True, logfile=f"no_obj_solver_{solver_name}.log"
+    )
+except:
+    raise Exception(f"solver {solver_name.split('_')[0]} does not support warmstart")
 smap_ids.append(solver._smap_id)
 print(f"X={value(x)}, Y={value(y)}")
 print()
@@ -64,7 +80,10 @@ print("=" * 70)
 model.no_obj.deactivate()
 model.obj.activate()
 # model.bound_obj.deactivate()
-result_unbound = solver.solve(model, tee=True, logfile=f"unbound_solver_{solver_name}.log")
+result_unbound = solver_solve(
+    model, tee=True, logfile=f"unbound_solver_{solver_name}.log"
+)
+
 smap_ids.append(solver._smap_id)
 
 print()
@@ -79,7 +98,7 @@ model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
 
 # model.obj.deactivate()
 # model.bound_obj.activate()
-result_bound = solver.solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
+result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
 
 # you still need to set time limit options over this.
@@ -205,5 +224,5 @@ if decomposedResult:
 else:
     print("objective expression is non-linear.")
 
-print("solver smap ids:", smap_ids) # three unique ids.
+print("solver smap ids:", smap_ids)  # three unique ids.
 # pick up the most recent one to translate the log and exported model (lp format).

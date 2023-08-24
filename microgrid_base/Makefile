@@ -206,7 +206,13 @@ test_utils_wildcard:
 	echo ${FILTERED_UTILS}
 
 # working!
+# only cbc & cplex support warmstart
 test_alternative_solver:
 	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip ${PYTHON} alternative_solver.py
 	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc ${PYTHON} alternative_solver.py
 	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=ipopt ${PYTHON} alternative_solver.py
+	
+	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip WARM_START=1 ${PYTHON} alternative_solver.py
+	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc WARM_START=1 ${PYTHON} alternative_solver.py
+	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=ipopt WARM_START=1 ${PYTHON} alternative_solver.py
+	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cplex WARM_START=1 ${PYTHON} alternative_solver.py

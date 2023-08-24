@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # assign invalid values to var and constraints.
 # see if the system can detect bounds/constraint violations
 
@@ -523,14 +525,14 @@ if __name__ == "__main__":
 
     modelScanner = ModelScanner(model)
     for constrInfo in modelScanner.constraint():
-        rich.print(constrInfo)
+        logger_print(constrInfo)
 
-    print("=" * 70)
+    logger_print("=" * 70)
 
     for varInfo in modelScanner.variable():
-        rich.print(varInfo)
+        logger_print(varInfo)
 
-    print("=" * 70)
+    logger_print("=" * 70)
 
     for piecewiseInfo in modelScanner.piecewise():
-        rich.print(piecewiseInfo)
+        logger_print(piecewiseInfo)
