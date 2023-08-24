@@ -22,17 +22,21 @@ model.e.set_value(-50.5)
 model.con1 = Constraint(expr=model.d >= model.c)
 model.con2 = Constraint(expr=model.b >= model.c)
 model.con3 = Constraint(expr=model.a + model.b <= -model.c)
+model.con4 = Constraint(expr=model.b * model.b >= model.c)
 
-# model.pw = Piecewise(
-#     model.c,
-#     model.e,
-#     pw_pts=[-100, 0, 100],
-#     pw_repn="MC",
-#     f_rule=[100, 0, -100],
-#     pw_constr_type="EQ",
-#     unbounded_domain_var=True,
-#     warn_domain_coverage=False,
-# )
+# piecewise is not constraint, though.
+
+model.pw = Piecewise(
+    model.c,
+    model.e,
+    pw_pts=[-100, 0, 100],
+    pw_repn="MC",
+    # pw_repn="SOS2",
+    f_rule=[100, 0, -100],
+    pw_constr_type="EQ",
+    unbounded_domain_var=True,
+    warn_domain_coverage=False,
+)
 
 # you might need to sort it out. check how much further it goes.
 # from pyomo.util.infeasible import log_infeasible_constraints,
@@ -171,6 +175,7 @@ class VarInfo(BaseModel):
 
 
 class ConstraintInfo(BaseModel):
+    constraintName: str
     variables: List[VarInfo]
     violation: float
     representation: str
@@ -185,7 +190,9 @@ class ConstraintInfo(BaseModel):
 from pyomo.core.expr import current as EXPR
 
 
-def get_violation_of_infeasible_bounds_and_vartype_of_single_var(var: Var, tol=1e-6):
+def get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+    var: Var, tol=1e-6, violation_only: bool = True
+):
     checkers = getVarCheckers()
     domainName = var.domain._name
     varName = var.name
@@ -195,7 +202,7 @@ def get_violation_of_infeasible_bounds_and_vartype_of_single_var(var: Var, tol=1
         varViolation, lower_bound, upper_bound = checker(
             var, tol
         )  # violation shall be positive when actual violation is greater than tolerance, otherwise zero.
-        if varViolation.has_violation:
+        if not violation_only or varViolation.has_violation:
             varInfo = VarInfo(
                 varName=varName,
                 val=val,
@@ -224,8 +231,9 @@ from copy import deepcopy
 @contextmanager
 def varInfoDictContext():
     class VarInfoDictUpdator:
-        def __init__(self):
+        def __init__(self, violation_only: bool = False):
             self._varInfoDict = {}
+            self.violation_only = violation_only
 
         def update(self, var):
             if var is not None:
@@ -234,7 +242,7 @@ def varInfoDictContext():
                     self._varInfoDict[
                         varName
                     ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
-                        var
+                        var, violation_only=self.violation_only
                     )
 
         @property
@@ -262,14 +270,17 @@ from pyomo.core.base.var import *
 
 VarType = Union[Var, _VarData, _GeneralVarData, VarList, SimpleVar, ScalarVar]
 
+from typing import Iterable
+
 
 def walk_expression(expr: Expression):
-    if args := getattr(expr, "args", None) is not None:
-        for arg in args:
-            if isinstance(arg, VarType):
-                yield arg
-            else:
-                yield from walk_expression(arg)
+    if (args := getattr(expr, "args", None)) is not None:
+        if isinstance(args, Iterable):
+            for arg in args:
+                if isinstance(arg, VarType):
+                    yield arg
+                else:
+                    yield from walk_expression(arg)
 
 
 def decompose_nonlinear_constraint_and_get_variable_info_dict(constr: Constraint):
@@ -303,6 +314,7 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
     ):
         body_value = value(constr.body, exception=False)
         constraint_bounds = get_var_or_constraint_bounds(constr)
+        constraintName = constr.name
         if body_value is not None:
             violation = get_bounds_violation(body_value, *constraint_bounds, tol)
             # print(violation)
@@ -313,6 +325,7 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
                     constr
                 )
                 constraintInfo = ConstraintInfo(
+                    constraintName=constraintName,
                     is_linear=is_linear,
                     variables=varInfoList,
                     violation=violation,
@@ -330,8 +343,25 @@ def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-
 
     return results
 
+class PiecewiseInfo(BaseModel):
+    piecewiseName:str
+    violation:float
+    variables:...
+    out_of_bound:bool
 
 import rich
+
+def get_violation_of_infeasible_piecewise_expressions(model: ConcreteModel, tol=1e-6):
+    results = []
+    for pw in model.component_data_objects(
+        ctype=Piecewise, active=True, descend_into=True
+    ):
+        rich.print(pw.__dict__)
+        piecewiseName = pw.name
+        if ...:
+            piecewiseInfo = PiecewiseInfo(piecewiseName=piecewiseName, violation=...)
+            results.append(piecewiseInfo)
+    return results
 
 # log_infeasible_constraints(model)
 for constrInfo in get_violation_of_infeasible_constraints(model):
