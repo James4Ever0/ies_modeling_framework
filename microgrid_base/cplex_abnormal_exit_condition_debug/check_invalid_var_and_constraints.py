@@ -165,6 +165,47 @@ class ConstraintInfo(BaseModel):
 
 from pyomo.core.expr import current as EXPR
 
+
+def get_violation_of_infeasible_bounds_and_vartype_of_single_var(var: Var, tol=1e-6):
+    checkers = getVarCheckers()
+    domainName = var.domain._name
+    varName = var.name
+    val = value(var)
+    if domainName in checkers.keys():
+        checker = checkers[domainName]
+        varViolation, lower_bound, upper_bound = checker(
+            var, tol
+        )  # violation shall be positive when actual violation is greater than tolerance, otherwise zero.
+        if varViolation.has_violation:
+            varInfo = VarInfo(
+                varName=varName,
+                val=val,
+                domainName=domainName,
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+                violation=varViolation,
+            )
+            return varInfo
+    else:
+        raise Exception("unknown domain name: %s" % domainName)
+
+def decompose_constraint_and_get_variable_info(constr: Constraint):                varInfoDict = {}
+varInfoList = []
+    
+                is_linear, terms = EXPR.decompose_term(constr.body)
+                if is_linear:
+                    for coef, var in terms:
+                        if var is None:
+                            const += coef
+                        else:
+                            varName = str(var)
+                            if varName not in varInfoDict.keys():
+                                varInfoDict[
+                                    varName
+                                ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                                    var
+                                )
+                    varInfoList = list(varInfoDict.values())
 def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
     results = []
     # you can deactivate some constraints.
@@ -175,50 +216,27 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
     ):
         body_value = value(constr.body, exception=False)
         constraint_bounds = get_var_or_constraint_bounds(constr)
-        if body_value:
-            varInfoDict = {}
+        if body_value is not None:
+            violation = get_bounds_violation(body_value, constraint_bounds, tol)
+            if violation != 0:
+                representation = str(constr.expr)
 
-            is_linear, terms = EXPR.decompose_term(constr.body)
-            if is_linear:
-                for coef, var in terms:
-                    if var is None:
-                        const += coef
-                    else:
-                        varName = str(var)
-                        if varName not in varInfoDict.keys():
-                            varInfoDict[varName] =
-            varInfoList = list(varInfoDict.values())
-            constraintInfo = ConstraintInfo(variables = varInfoList, violation = violation, representation = representation)
-            if constraintInfo.has_violation:
-                results.append(constraintInfo)
+
+                    constraintInfo = ConstraintInfo(
+                        variables=varInfoList,
+                        violation=violation,
+                        representation=representation,
+                    )
+                    results.append(constraintInfo)
     return results
 
-def get_violation_of_infeasible_bounds_and_vartype_of_
 
 def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-6):
-    checkers = getVarCheckers()
     results = []
     for var in model.component_data_objects(ctype=Var, descend_into=True):
-        domainName = var.domain._name
-        varName = var.name
-        val = value(var)
-        if domainName in checkers.keys():
-            checker = checkers[domainName]
-            varViolation, lower_bound, upper_bound = checker(
-                var, tol
-            )  # violation shall be positive when actual violation is greater than tolerance, otherwise zero.
-            if varViolation.has_violation:
-                varInfo = VarInfo(
-                    varName=varName,
-                    val=val,
-                    domainName=domainName,
-                    lower_bound=lower_bound,
-                    upper_bound=upper_bound,
-                    violation=varViolation,
-                )
-                results.append(varInfo)
-        else:
-            raise Exception("unknown domain name: %s" % domainName)
+        varInfo = get_violation_of_infeasible_bounds_and_vartype_of_single_var(var, tol)
+        results.append(varInfo)
+
     return results
 
 
