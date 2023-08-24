@@ -1,47 +1,7 @@
 # assign invalid values to var and constraints.
 # see if the system can detect bounds/constraint violations
 
-from pyomo.environ import *
-
-# advanced logical expression linearization using pyomo.GDP
-# ref: https://pyomo.readthedocs.io/en/latest/modeling_extensions/gdp/modeling.html
-model = ConcreteModel()
-
-model.a = Var(within=Binary)
-model.b = Var(within=NonNegativeReals)
-model.c = Var(within=NonNegativeIntegers)
-model.d = Var(bounds=(-10, 10))
-model.e = Var()
-
-model.a.set_value(1.5)
-model.b.set_value(-0.5)
-model.c.set_value(100.5)
-model.d.set_value(-11)
-model.e.set_value(-50.5)
-
-model.con1 = Constraint(expr=model.d >= model.c)
-model.con2 = Constraint(expr=model.b >= model.c)
-model.con3 = Constraint(expr=model.a + model.b <= -model.c)
-model.con4 = Constraint(expr=model.b * model.b >= model.c)
-
-# piecewise is not constraint, though.
-
-model.pw = Piecewise(
-    model.c,  # y_var
-    model.e,  # x_var
-    pw_pts=[-100, 0, 100],
-    pw_repn="MC",
-    # pw_repn="SOS2",
-    f_rule=[100, 0, -100],
-    pw_constr_type="EQ",
-    unbounded_domain_var=True,
-    warn_domain_coverage=False,
-)
-
-model.pw.MC_poly_x[1] = 1
-model.pw.MC_poly_x[2] = 1
-model.pw.MC_bin_y[1] = 1
-model.pw.MC_bin_y[2] = 1
+from pyomo_environ import *
 
 # you might need to sort it out. check how much further it goes.
 # from pyomo.util.infeasible import log_infeasible_constraints,
@@ -404,6 +364,11 @@ class ModelInfo:
         self.variables: List[VarInfo] = MagicList()
         self.piecewises: List[PiecewiseInfo] = MagicList()
 
+    def clear(self):
+        self.constraints.clear()
+        self.variables.clear()
+        self.piecewises.clear()
+
 
 class ModelScanner:
     def __init__(self, model: ConcreteModel, tol=1e-6, violation_only=True):
@@ -413,6 +378,7 @@ class ModelScanner:
         self.violation_only = violation_only
 
     def constraint(self):
+        self.modelInfo.constraints.clear()
         # you can deactivate some constraints.
         # model.constraint.activate()
         # model.constraint.deactivate()
@@ -443,6 +409,7 @@ class ModelScanner:
         return self.modelInfo.constraints
 
     def variable(self):
+        self.modelInfo.variables.clear()
         for var in self.model.component_data_objects(ctype=Var, descend_into=True):
             self.modelInfo.variables.append(
                 get_violation_of_infeasible_bounds_and_vartype_of_single_var(
@@ -452,6 +419,7 @@ class ModelScanner:
         return self.modelInfo.variables
 
     def piecewise(self):
+        self.modelInfo.piecewises.clear()
         for pw in self.model.block_data_objects(active=True, descend_into=True):
             if isinstance(pw, PiecewiseType):
                 piecewiseName = pw.name
@@ -487,16 +455,57 @@ class ModelScanner:
         return self.modelInfo
 
 
-modelScanner = ModelScanner(model)
-for constrInfo in modelScanner.constraint():
-    rich.print(constrInfo)
+if __name__ == "__main__":
+    # advanced logical expression linearization using pyomo.GDP
+    # ref: https://pyomo.readthedocs.io/en/latest/modeling_extensions/gdp/modeling.html
+    model = ConcreteModel()
 
-print("=" * 70)
+    model.a = Var(within=Binary)
+    model.b = Var(within=NonNegativeReals)
+    model.c = Var(within=NonNegativeIntegers)
+    model.d = Var(bounds=(-10, 10))
+    model.e = Var()
 
-for varInfo in modelScanner.variable():
-    rich.print(varInfo)
+    model.a.set_value(1.5)
+    model.b.set_value(-0.5)
+    model.c.set_value(100.5)
+    model.d.set_value(-11)
+    model.e.set_value(-50.5)
 
-print("=" * 70)
+    model.con1 = Constraint(expr=model.d >= model.c)
+    model.con2 = Constraint(expr=model.b >= model.c)
+    model.con3 = Constraint(expr=model.a + model.b <= -model.c)
+    model.con4 = Constraint(expr=model.b * model.b >= model.c)
 
-for piecewiseInfo in modelScanner.piecewise():
-    rich.print(piecewiseInfo)
+    # piecewise is not constraint, though.
+
+    model.pw = Piecewise(
+        model.c,  # y_var
+        model.e,  # x_var
+        pw_pts=[-100, 0, 100],
+        pw_repn="MC",
+        # pw_repn="SOS2",
+        f_rule=[100, 0, -100],
+        pw_constr_type="EQ",
+        unbounded_domain_var=True,
+        warn_domain_coverage=False,
+    )
+
+    model.pw.MC_poly_x[1] = 1
+    model.pw.MC_poly_x[2] = 1
+    model.pw.MC_bin_y[1] = 1
+    model.pw.MC_bin_y[2] = 1
+
+    modelScanner = ModelScanner(model)
+    for constrInfo in modelScanner.constraint():
+        rich.print(constrInfo)
+
+    print("=" * 70)
+
+    for varInfo in modelScanner.variable():
+        rich.print(varInfo)
+
+    print("=" * 70)
+
+    for piecewiseInfo in modelScanner.piecewise():
+        rich.print(piecewiseInfo)
