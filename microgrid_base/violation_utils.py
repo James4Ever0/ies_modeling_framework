@@ -136,6 +136,9 @@ class VarInfo(BaseModel):
     upper_bound: Union[float, None]
     violation: VarViolation
 
+    @property
+    def has_violation(self):
+        return self.violation.has_violation()
 
 class ConstraintInfo(BaseModel):
     constraintName: str
@@ -453,6 +456,22 @@ class ModelScanner:
         self.variable()
         self.piecewise()
         return self.modelInfo
+    
+    def report(self):
+        modelInfo = self.all()
+
+        return report
+
+
+@contextmanager
+def modelScannerContext(
+    model: ConcreteModel, tol: float = 1e-6, violation_only: bool = True
+):
+    modelScanner = ModelScanner(model, tol=tol, violation_only=violation_only)
+    try:
+        yield modelScanner
+    finally:
+        del modelScanner
 
 
 if __name__ == "__main__":

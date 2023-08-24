@@ -528,6 +528,7 @@ def setBoundsContext(bound, model):
             if getattr(model, bound_name, None) is not None:
                 delattr(model, bound_name)
 
+from violation_utils import modelScannerContext
 
 def solve_and_decompose(
     modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
@@ -551,7 +552,11 @@ def solve_and_decompose(
                 modelWrapper.submodelClassNameToVarNames,
                 modelWrapper,
             )
-
+            with modelScannerContext(model) as modelScanner:
+                report = modelScanner.report()
+                report_fpath = os.path.join(log_directory,"report.txt")
+                with open(report_fpath, 'w+') as f:
+                    f.write(report)
 
 import random
 
