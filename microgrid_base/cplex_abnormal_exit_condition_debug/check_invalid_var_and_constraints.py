@@ -314,12 +314,39 @@ def decompose_constraint_and_get_variable_info(constr: Constraint):
 
 
 # TODO: iterate over piecewise constraints.
+import numpy as np
 
-# class PiecewiseInfo(BaseModel):
-#     piecewiseName: str
-#     violation: float
-#     variables: List[VarInfo]
-#     out_of_bound: bool
+from pyomo.core.base.piecewise import SimplePiecewise, IndexedPiecewise
+
+PiecewiseType = Union[Piecewise, SimplePiecewise, IndexedPiecewise]
+
+from typing import Tuple
+from pydantic import validator
+
+
+class PiecewiseInfo(BaseModel):
+    piecewiseName: str
+    piecewiseTypeName: Literal["Piecewise", "SimplePiecewise", "IndexedPiecewise"]
+    violation: Union[None, float]
+    inputVarInfo: VarInfo
+    outputVarInfo: VarInfo
+    input_out_of_bound: bool
+    input_var_domain: Tuple[float, float]
+    input_points: List[float]
+    output_points: List[float]
+
+    @validator("input_var_domain")
+    def validate_input_var_domain(cls, v):
+        if v[0] > v[1]:
+            raise ValueError("input_var_domain[0] > input_var_domain[1]")
+        return v
+
+    def evaluate(self, input_point: float):
+        input_bound_violation = get_bounds_violation(
+            input_point, *self.input_var_domain, tol=0
+        )
+        if input_bound_violation == 0:
+            return np.interp(input_point, self.input_points, self.output_point)
 
 
 import rich
@@ -347,7 +374,7 @@ class ModelInfo:
     def __init__(self):
         self.constraints: List[ConstraintInfo] = MagicList()
         self.variables: List[VarInfo] = MagicList()
-        # self.piecewises: List[PiecewiseInfo] = MagicList()
+        self.piecewises: List[PiecewiseInfo] = MagicList()
 
 
 class ModelScanner:
@@ -396,19 +423,34 @@ class ModelScanner:
             )
         return self.modelInfo.variables
 
-    # def piecewise(self):
-    #     for pw in self.model.component_data_objects(
-    #         ctype=Piecewise, active=True
-    #     ):
-    #         rich.print(pw.__dict__)
-    #         piecewiseName = pw.name
-    #         breakpoint()
-    #         if ...:
-    #             piecewiseInfo = PiecewiseInfo(
-    #                 piecewiseName=piecewiseName, violation=...
-    #             )
-    #             self.modelInfo.piecewises.append(piecewiseInfo)
-    #     return self.modelInfo.piecewises
+    def piecewise(self):
+        for pw in self.model.block_data_objects(active=True, descend_into=True):
+            if isinstance(pw, PiecewiseType):
+                piecewiseName = pw.name
+                piecewiseInfo = PiecewiseInfo(
+                    piecewiseName=piecewiseName,
+                    violation=None,
+                    piecewiseTypeName=...,
+                    inputVarInfo=...,
+                    outputVarInfo=...,
+                    input_out_of_bound=True,
+                    input_var_domain=...,
+                    input_points=...,
+                    output_points=...,
+                )
+                expected_output = piecewiseInfo.evaluate(
+                    value(piecewiseInfo.inputVarInfo.val)
+                )
+                if expected_output is not None:
+                    piecewiseInfo.input_out_of_bound = False
+                    violation = abs(piecewiseInfo.outputVarInfo.val - expected_output)
+                    piecewiseInfo.violation = moderate_violation(violation, self.tol)
+                if self.violation_only and (
+                    piecewiseInfo.violation == 0 or piecewiseInfo.input_out_of_bound
+                ):
+                    continue
+                self.modelInfo.piecewises.append(piecewiseInfo)
+        return self.modelInfo.piecewises
 
 
 modelScanner = ModelScanner(model)
@@ -420,7 +462,7 @@ print("=" * 70)
 for varInfo in modelScanner.variable():
     rich.print(varInfo)
 
-# print("=" * 70)
+print("=" * 70)
 
-# for piecewiseInfo in modelScanner.piecewise():
-#     rich.print(piecewiseInfo)
+for piecewiseInfo in modelScanner.piecewise():
+    rich.print(piecewiseInfo)
