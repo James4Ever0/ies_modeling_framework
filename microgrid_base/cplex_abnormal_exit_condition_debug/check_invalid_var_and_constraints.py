@@ -313,11 +313,13 @@ def decompose_constraint_and_get_variable_info(constr: Constraint):
     return is_linear, varInfoList
 
 
-class PiecewiseInfo(BaseModel):
-    piecewiseName: str
-    violation: float
-    variables: List[VarInfo]
-    out_of_bound: bool
+# TODO: iterate over piecewise constraints.
+
+# class PiecewiseInfo(BaseModel):
+#     piecewiseName: str
+#     violation: float
+#     variables: List[VarInfo]
+#     out_of_bound: bool
 
 
 import rich
@@ -345,7 +347,7 @@ class ModelInfo:
     def __init__(self):
         self.constraints: List[ConstraintInfo] = MagicList()
         self.variables: List[VarInfo] = MagicList()
-        self.piecewises: List[PiecewiseInfo] = MagicList()
+        # self.piecewises: List[PiecewiseInfo] = MagicList()
 
 
 class ModelScanner:
@@ -394,19 +396,19 @@ class ModelScanner:
             )
         return self.modelInfo.variables
 
-    def piecewise(self):
-        for pw in self.model.component_data_objects(
-            ctype=Piecewise, active=True, descend_into=True
-        ):
-            rich.print(pw.__dict__)
-            piecewiseName = pw.name
-            breakpoint()
-            if ...:
-                piecewiseInfo = PiecewiseInfo(
-                    piecewiseName=piecewiseName, violation=...
-                )
-                self.modelInfo.piecewises.append(piecewiseInfo)
-        return self.modelInfo.piecewises
+    # def piecewise(self):
+    #     for pw in self.model.component_data_objects(
+    #         ctype=Piecewise, active=True
+    #     ):
+    #         rich.print(pw.__dict__)
+    #         piecewiseName = pw.name
+    #         breakpoint()
+    #         if ...:
+    #             piecewiseInfo = PiecewiseInfo(
+    #                 piecewiseName=piecewiseName, violation=...
+    #             )
+    #             self.modelInfo.piecewises.append(piecewiseInfo)
+    #     return self.modelInfo.piecewises
 
 
 modelScanner = ModelScanner(model)
@@ -418,7 +420,7 @@ print("=" * 70)
 for varInfo in modelScanner.variable():
     rich.print(varInfo)
 
-print("=" * 70)
+# print("=" * 70)
 
-for piecewiseInfo in modelScanner.piecewise():
-    rich.print(piecewiseInfo)
+# for piecewiseInfo in modelScanner.piecewise():
+#     rich.print(piecewiseInfo)
