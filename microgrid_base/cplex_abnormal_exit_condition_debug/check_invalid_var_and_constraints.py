@@ -13,13 +13,26 @@ model.c = Var(within=NonNegativeIntegers)
 model.d = Var(bounds=(-10, 10))
 model.e = Var()
 
+model.a.set_value(1.5)
+model.b.set_value(-0.5)
+model.c.set_value(100.5)
+model.d.set_value(-11)
+model.e.set_value(-50.5)
+
 model.con1 = Constraint(expr=model.d >= model.c)
 model.con2 = Constraint(expr=model.b >= model.c)
-model.con3 = Constraint(expr=model.a + model.b <= model.c)
+model.con3 = Constraint(expr=model.a + model.b <= -model.c)
 
-model.pw = Piecewise(
-    model.c, model.e, pw_pts=[-100, 0, 100], pw_repn="MC", f_rule=[100, 0, -100]
-)
+# model.pw = Piecewise(
+#     model.c,
+#     model.e,
+#     pw_pts=[-100, 0, 100],
+#     pw_repn="MC",
+#     f_rule=[100, 0, -100],
+#     pw_constr_type="EQ",
+#     unbounded_domain_var=True,
+#     warn_domain_coverage=False,
+# )
 
 # you might need to sort it out. check how much further it goes.
 # from pyomo.util.infeasible import log_infeasible_constraints,
@@ -29,10 +42,11 @@ from typing import Union, Literal, List
 
 
 def get_var_or_constraint_bounds(var: Var):
+    lb, ub = None, None
     if var.has_lb():
         lb = value(var.lower, exception=False)
     if var.has_ub():
-        ub = value(var.lower, exception=False)
+        ub = value(var.upper, exception=False)
     return lb, ub
 
 
@@ -55,6 +69,15 @@ def moderate_violation(violation, tol):
     return violation
 
 
+def get_lower_bound_violation(val: float, lower_bound: Union[float, None], tol: float):
+    violation = 0
+    if any([v is None for v in [val, lower_bound]]):
+        return violation
+    if val < lower_bound:
+        violation = moderate_violation(lower_bound - val, tol)
+    return violation
+
+
 def get_bounds_violation(
     val: float,
     lower_bound: Union[float, None],
@@ -64,16 +87,11 @@ def get_bounds_violation(
     if all([bound is not None for bound in [lower_bound, upper_bound]]):
         assert (
             lower_bound <= upper_bound
-        ), "invalid bound ({lower_bound}, {upper_bound})"
-    violation = 0
-    if lower_bound is not None:
-        if val < lower_bound:
-            violation = abs(val - lower_bound)
+        ), "invalid bound ({lower_bound}, {upper_bound})\nlower bound shall not be greater than upper bound."
+    violation = get_lower_bound_violation(val, lower_bound, tol)
     if violation == 0:
-        if upper_bound is not None:
-            if val > upper_bound:
-                violation = abs(val - upper_bound)
-    return moderate_violation(violation, tol)
+        violation = get_lower_bound_violation(upper_bound, val, tol)
+    return violation
 
 
 def get_boolean_or_integer_violation(val: float, tol: float):
@@ -97,7 +115,7 @@ def constructVarChecker(domainName: str, domainBounds):
         varViolation = VarViolation(
             bound_violation=bounds_violation, vartype_violation=vartype_violation
         )
-        return varViolation
+        return (varViolation, *var_bounds)
 
     return checker
 
@@ -199,16 +217,45 @@ def getVarInfoListFromVarInfoDict(varInfoDict: Dict[str, VarInfo]):
     return varInfoList
 
 
+from contextlib import contextmanager
+from copy import deepcopy
+
+
+@contextmanager
+def varInfoDictContext():
+    class VarInfoDictUpdator:
+        def __init__(self):
+            self._varInfoDict = {}
+
+        def update(self, var):
+            if var is not None:
+                varName = str(var)
+                if varName not in self._varInfoDict.keys():
+                    self._varInfoDict[
+                        varName
+                    ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(
+                        var
+                    )
+
+        @property
+        def varInfoDict(self):
+            return deepcopy(self._varInfoDict)
+
+        def __del__(self):
+            del self._varInfoDict
+
+    varInfoDictUpdator = VarInfoDictUpdator()
+    try:
+        yield varInfoDictUpdator
+    finally:
+        del varInfoDictUpdator
+
+
 def decompose_linear_constraint_from_terms_and_get_variable_info(terms):
-    varInfoDict = {}
-    for coef, var in terms:
-        if var is not None:
-            varName = str(var)
-            if varName not in varInfoDict.keys():
-                varInfoDict[
-                    varName
-                ] = get_violation_of_infeasible_bounds_and_vartype_of_single_var(var)
-    return varInfoDict
+    with varInfoDictContext() as varInfoDictUpdator:
+        for coef, var in terms:
+            varInfoDictUpdator.update(var)
+            return varInfoDictUpdator.varInfoDict
 
 
 from pyomo.core.base.var import *
@@ -226,10 +273,10 @@ def walk_expression(expr: Expression):
 
 
 def decompose_nonlinear_constraint_and_get_variable_info_dict(constr: Constraint):
-    varInfoDict = {}
-    for term in walk_expression(constr.body):
-        ...
-    return varInfoDict
+    with varInfoDictContext() as varInfoDictUpdator:
+        for var in walk_expression(constr.body):
+            varInfoDictUpdator.update(var)
+        return varInfoDictUpdator.varInfoDict
 
 
 def decompose_constraint_and_get_variable_info(constr: Constraint):
@@ -257,7 +304,9 @@ def get_violation_of_infeasible_constraints(model: ConcreteModel, tol=1e-6):
         body_value = value(constr.body, exception=False)
         constraint_bounds = get_var_or_constraint_bounds(constr)
         if body_value is not None:
-            violation = get_bounds_violation(body_value, constraint_bounds, tol)
+            violation = get_bounds_violation(body_value, *constraint_bounds, tol)
+            # print(violation)
+            # breakpoint()
             if violation != 0:
                 representation = str(constr.expr)
                 is_linear, varInfoList = decompose_constraint_and_get_variable_info(
@@ -282,4 +331,13 @@ def get_violation_of_infeasible_bounds_and_vartype(model: ConcreteModel, tol=1e-
     return results
 
 
+import rich
+
 # log_infeasible_constraints(model)
+for constrInfo in get_violation_of_infeasible_constraints(model):
+    rich.print(constrInfo)
+
+# print("=" * 70)
+
+# for varInfo in get_violation_of_infeasible_bounds_and_vartype(model):
+#     rich.print(varInfo)
