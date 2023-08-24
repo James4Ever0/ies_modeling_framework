@@ -61,16 +61,34 @@ if warm_start:
 smap_ids = []
 model.obj.deactivate()
 
+solver_name_base = solver_name.split("_")[0]
+# pass interactive options instead of commandline option.
+# solver.options["warm_start_init_point"] = True
+
 
 def solver_solve(*args, **kwargs):
-    solver.solve(*args, **kwargs, **(dict(warmstart=True) if warm_start else {}))
+    return solver.solve(
+        *args,
+        **kwargs,
+        **(
+            dict(warmstart=True)
+            if warm_start
+            # if warm_start and solver_name_base not in ["ipopt"]
+            else {}
+        ),
+    )
 
+
+import traceback
 
 try:
     result_no_obj = solver_solve(
-        model, tee=True, logfile=f"no_obj_solver_{solver_name}.log"
+        model,
+        tee=True,
+        logfile=f"no_obj_solver_{solver_name}.log",
     )
 except:
+    traceback.print_exc()
     raise Exception(f"solver {solver_name.split('_')[0]} does not support warmstart")
 smap_ids.append(solver._smap_id)
 print(f"X={value(x)}, Y={value(y)}")

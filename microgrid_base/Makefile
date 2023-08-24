@@ -206,7 +206,9 @@ test_utils_wildcard:
 	echo ${FILTERED_UTILS}
 
 # working!
-# only cbc & cplex support warmstart
+# cplex & cbc support warmstart
+# scip: randseed
+# ipopt: warm_start_init_point
 test_alternative_solver:
 	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip ${PYTHON} alternative_solver.py
 	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc ${PYTHON} alternative_solver.py
