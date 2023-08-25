@@ -11,7 +11,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpnaoqzpbp.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp08ufnvnx.pyomo.nl>
 ============
 
 original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
@@ -49,7 +49,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp9aftmzhw.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp15eq9g3c.pyomo.nl>
 ============
 
 original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
@@ -95,7 +95,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp1fub0qru.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp1muixwbf.pyomo.nl>
 ============
 
 original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
@@ -122,11 +122,39 @@ Solving Nodes      : 0
 Primal Bound       : -1.00000000000000e+08 (1 solutions)
 Dual Bound         : -1.00000000000000e+08
 Gap                : 0.00 %
-> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(141)<module>()
--> print("UNBOUND TERMINATION CONDITION:", result_unbound.solver.termination_condition)
-(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 0, 'Number of variables': 4, 'Sense': 'unknown'}], 'Solver': [{'Status': 'warning', 'Message': 'unbounded', 'Termination condition': 'unbounded', 'Id': 300, 'Error rc': 0, 'Time': 0.0, 'Gap': 0.0, 'Primal bound': -1e+20, 'Dual bound': -1e+20}]}
-(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': -100000000.0, 'Number of objectives': 1, 'Number of constraints': 0, 'Number of variables': 5, 'Sense': 'unknown'}], 'Solver': [{'Status': 'ok', 'Message': 'optimal solution found', 'Termination condition': 'optimal', 'Id': 0, 'Error rc': 0, 'Time': 0.0, 'Gap': 0.0, 'Primal bound': -100000000.0, 'Dual bound': -100000000.0}], 'Solution': [OrderedDict([('number of solutions', 0), ('number of solutions displayed', 0)])]}
-(Pdb) <pyomo.core.base.PyomoModel.ModelSolutions object at 0x000001D6D0A34150>
-(Pdb) ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_instance', 'add_solution', 'add_symbol_map', 'clear', 'delete_symbol_map', 'index', 'load_from', 'select', 'solutions', 'store_to', 'symbol_map']
-(Pdb) [<pyomo.core.base.PyomoModel.ModelSolution object at 0x000001D6CFF12290>]
-(Pdb) 
+UNBOUND TERMINATION CONDITION: unbounded
+BOUND TERMINATION CONDITION: optimal
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000021EC0750750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000021EC07504D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000021EC0760350>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000021EC07603C0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+========================VAR NAME TO VAR VALUE=========================
+reversed: False
+
+z[0]	-25000006.25
+变量y	0.0
+z[1]	0.0
+变量x	10.0
+========================VAR NAME TO VAR VALUE=========================
+reversed: True
+
+变量x	10.0
+变量y	0.0
+z[1]	0.0
+z[0]	-25000006.25
+========================VAR NAME TO TERM VALUE========================
+reversed: False
+
+z[0]	-100000025.0
+变量y	0.0
+z[1]	0.0
+变量x	20.0
+========================VAR NAME TO TERM VALUE========================
+reversed: True
+
+变量x	20.0
+变量y	0.0
+z[1]	0.0
+z[0]	-100000025.0
+
+(OBJ - OBJ_CONST)? -100000005.0
+OBJ? -100000000.0
+OBJ_CONST? 5
+solver smap ids: [2331096832528, 2331096758288, 2331100349904]

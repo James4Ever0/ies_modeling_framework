@@ -134,7 +134,8 @@ model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
 result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
 
-breakpoint()
+if solver_name_base == 'ipopt':
+    breakpoint()
 
 # you still need to set time limit options over this.
 

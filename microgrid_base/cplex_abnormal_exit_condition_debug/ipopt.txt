@@ -135,7 +135,7 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.045
+Total seconds in IPOPT                               = 0.049
 
 EXIT: Iterates diverging; problem might be unbounded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -211,42 +211,12 @@ Number of inequality constraint evaluations          = 19
 Number of equality constraint Jacobian evaluations   = 19
 Number of inequality constraint Jacobian evaluations = 19
 Number of Lagrangian Hessian evaluations             = 18
-Total seconds in IPOPT                               = 0.026
+Total seconds in IPOPT                               = 0.033
 
 EXIT: Optimal Solution Found.
-UNBOUND TERMINATION CONDITION: unbounded
-BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002493CCF0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002493CCF04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002493CD04350>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002493CD043C0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
-========================VAR NAME TO VAR VALUE=========================
-reversed: False
-
-z[0]	-23531951.477102254
-z[1]	-5882390.263707208
-变量x	0.3579839061235792
-变量y	2547.614012101566
-========================VAR NAME TO VAR VALUE=========================
-reversed: True
-
-变量y	2547.614012101566
-变量x	0.3579839061235792
-z[1]	-5882390.263707208
-z[0]	-23531951.477102254
-========================VAR NAME TO TERM VALUE========================
-reversed: False
-
-z[0]	-94127805.90840901
-z[1]	-5882390.263707208
-变量x	0.7159678122471584
-变量y	10190.456048406264
-========================VAR NAME TO TERM VALUE========================
-reversed: True
-
-变量y	10190.456048406264
-变量x	0.7159678122471584
-z[1]	-5882390.263707208
-z[0]	-94127805.90840901
-
-(OBJ - OBJ_CONST)? -100000005.0001
-OBJ? -100000000.0001
-OBJ_CONST? 5
-solver smap ids: [2513017458832, 2513576211792, 2513576235536]
+> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(142)<module>()
+-> print("UNBOUND TERMINATION CONDITION:", result_unbound.solver.termination_condition)
+(Pdb) [<pyomo.core.base.PyomoModel.ModelSolution object at 0x000001709A18F950>]
+(Pdb) *** AttributeError: 'list' object has no attribute '__dict__'
+(Pdb) {'_metadata': {'status': <SolutionStatus.optimal: 'optimal'>, 'message': 'Ipopt 3.14.12\\x3a Optimal Solution Found', 'gap': None}, '_entry': {'objective': {}, 'variable': {1583138080592: (<weakref at 0x000001709A44E2F0; to 'ScalarVar' at 0x000001709A620750>, {'Value': 0.3579839061235792}), 1583138079952: (<weakref at 0x000001709A2058F0; to 'ScalarVar' at 0x000001709A6204D0>, {'Value': 2547.614012101566}), 1583138145104: (<weakref at 0x000001709A1699E0; to '_GeneralVarData' at 0x000001709A630350>, {'Value': -23531951.477102254}), 1583138145216: (<weakref at 0x000001709A169940; to '_GeneralVarData' at 0x000001709A6303C0>, {'Value': -5882390.263707208}), 1583137535056: (<weakref at 0x000001709A1693A0; to 'ScalarVar' at 0x000001709A59B450>, {'Value': -100000000.0001})}, 'constraint': {}, 'problem': {}}}
+(Pdb) 
