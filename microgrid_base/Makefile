@@ -14,6 +14,7 @@ endif
 
 ifeq (${PLATFORM}, nt)
 OS_TYPE = windows
+CONDA_EXEC = conda.bat
 # get our solvers in path
 WINDOWS_SOLVERS_DIRS=$(shell python -c "import os;curdir=os.path.abspath(os.curdir);workfolder=os.path.dirname(os.path.dirname(curdir));solverdir=os.path.join(workfolder,'windows_solvers');pathaddons=';'.join([os.path.join(solverdir,os.path.join(e,'bin')) for e in ['scip','cbc','ipopt']]);print(pathaddons)")
 export PATH := ${WINDOWS_SOLVERS_DIRS};$(PATH)
@@ -35,6 +36,13 @@ PYTHON = python ${PYTHON_ENV}
 GSUDO = gsudo
 NO_GSUDO = gsudo -k
 $(shell gsudo cache on)
+endif
+
+
+PLATFORM_NAME:=$(shell python -c "import platform;print(platform.system())")
+
+ifeq (${PLATFORM_NAME}, Linux)
+CONDA_ENV=cplex
 endif
 
 CONDA = ${CONDA_EXEC} run -n ${CONDA_ENV} --live-stream --no-capture-output

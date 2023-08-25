@@ -31,6 +31,10 @@ NULL_SOLUTIONS = [None, {}]
 
 is_null_solution = lambda sol: sol in NULL_SOLUTIONS
 
+def model_write(model:ConcreteModel, name):
+    # for fmt in 'lp', 'nl':
+    for fmt in ['lp', 'nl']:
+        model.write(filename=f"{name}.{fmt}")
 
 def checkIfSolved(sol_before, sol_after):
     if is_null_solution(sol_after):
@@ -122,7 +126,7 @@ obj_expr = 2 * x - 5 + y + z[0] + z[1] + 3 * (z[0] + y) + 10
 
 
 obj = model.obj = Objective(expr=obj_expr, sense=minimize)
-model.write(filename="no_bound.lp")
+model_write(model, "no_bound")
 
 # warning: shall not be NaN
 # from cmath import nan
