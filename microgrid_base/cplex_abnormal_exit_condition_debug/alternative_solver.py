@@ -11,8 +11,61 @@ from pyomo.environ import *
 import os
 
 
-def checkIfSolved(result):
-    return bool(result.get("Solution", None))
+from contextlib import contextmanager
+import weakref
+
+
+def getModelSolution(model: ConcreteModel):
+    solution = {}
+    for v in model.component_data_objects(ctype=Var, active=True, descend_into=True):
+        try:
+            varName = v.name
+            val = value(v)
+            solution[varName] = val
+        except:
+            return None
+    return solution
+
+NO_SOLUTION = [None, {}]
+def checkIfSolved(sol_before, sol_after):
+
+    if all([s not in  for s in [sol_before, sol_after]]):
+        return sol_before == sol_after
+    return False
+
+from copy import deepcopy
+
+@contextmanager
+def modelSolutionContext(model):
+    class ModelSolutionChecker:
+        def __init__(self, model_wr):
+            self.model_wr = model_wr
+            self.previous_solution = None
+            self.update()
+
+        @property
+        def model(self):
+            return self.model_wr()
+
+        @property
+        def solution(self):
+            return getModelSolution(self.model)
+
+        def update(self):
+            self.previous_solution = deepcopy(self.solution)
+
+        def check(self, update=False):
+            ret = checkIfSolved(self.previous_solution, self.solution)
+            if update:
+                self.update()
+            return ret
+
+    modelSolutionChecker = ModelSolutionChecker(weakref.ref(model))
+    try:
+        yield modelSolutionChecker
+    finally:
+        del modelSolutionChecker
+
 
 
 def clearModelVariableValues(model: ConcreteModel):
@@ -103,17 +156,20 @@ if solver_name_base == "ipopt":
     # solver.options['inf_pr_output'] = 'internal'
 
 
-def solver_solve(*args, **kwargs):
-    return solver.solve(
-        *args,
-        **kwargs,
-        **(
-            dict(warmstart=True)
-            if warm_start
-            # if warm_start and solver_name_base not in ["ipopt"]
-            else {}
-        ),
-    )
+def solver_solve(model:ConcreteModel,  **kwargs):
+    with modelSolutionContext(model) as modelSolutionChecker:
+        ret = solver.solve(model,
+            **kwargs,
+            **(
+                dict(warmstart=True)
+                if warm_start
+                # if warm_start and solver_name_base not in ["ipopt"]
+                else {}
+            ),
+        )
+        solved = modelSolutionChecker.check()
+        ret['solved'] = solved
+        return ret
 
 
 import traceback
@@ -185,14 +241,14 @@ clearModelVariableValues(model)
 result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
 
-if solver_name_base == "ipopt":
-    breakpoint()
+# if solver_name_base == "ipopt":
+#     breakpoint()
 
 # you still need to set time limit options over this.
 
 solverResultDiagosticInfo = (
     lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
-    % (banner, solverResult.solver.termination_condition, checkIfSolved(solverResult))
+    % (banner, solverResult.solver.termination_condition, solverResult['solved'])
 )
 printSolverResultDiagosticInfo = lambda banner, solverResult: print(
     solverResultDiagosticInfo(banner, solverResult)

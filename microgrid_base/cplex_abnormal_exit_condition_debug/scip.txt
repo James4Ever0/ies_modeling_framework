@@ -1,7 +1,10 @@
-Now is 2023-08-25T14:14:50.772849+08:00
+Now is 2023-08-25T14:57:04.111896+08:00
 running solver scip
 warm start? False
 ============================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
 Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
 
@@ -15,7 +18,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpe67jav8i.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpbdn54tpn.pyomo.nl>
 ============
 
 original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
@@ -37,9 +40,17 @@ Solving Nodes      : 0
 Primal Bound       : +0.00000000000000e+00 (1 solutions)
 Dual Bound         : +0.00000000000000e+00
 Gap                : 0.00 %
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 X=10.0, Y=100000.00000000001
 
 ======================================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
 Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
 
@@ -53,7 +64,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp85lodqdv.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmps5e3oqmb.pyomo.nl>
 ============
 
 original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
@@ -84,8 +95,16 @@ WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: unbounded
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 
 ======================================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
 Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
 
@@ -99,7 +118,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpy1vj_rzy.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmppsf6k7we.pyomo.nl>
 ============
 
 original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
@@ -123,9 +142,11 @@ Solving Nodes      : 0
 Primal Bound       : -1.00000000000000e+08 (1 solutions)
 Dual Bound         : -1.00000000000000e+08
 Gap                : 0.00 %
+sol_0: None
+sol_1: {'变量x': 10.0, '变量y': 0.0, 'z[0]': -25000006.25, 'z[1]': 0.0, 'mobjVar': -100000000.0}
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: False
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001F53AB12350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001F53AB12550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001F53AB25000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001F53AB25070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002B0C8152450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002B0C8152650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002B0C8169380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002B0C81693F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -158,4 +179,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [2152763670480, 2152763681936, 2152763678736]
+solver smap ids: [2958294712016, 2958294725008, 2958294700688]

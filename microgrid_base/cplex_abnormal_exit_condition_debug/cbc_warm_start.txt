@@ -1,7 +1,10 @@
-Now is 2023-08-25T14:14:13.710838+08:00
+Now is 2023-08-25T14:57:07.265129+08:00
 running solver cbc
 warm start? True
 ============================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 WARNING: warmstart_file points to a file on a drive different from the current
     working directory.  CBC is likely to (silently) ignore the warmstart.
 WARNING: Constant objective detected, replacing with a placeholder to prevent
@@ -10,15 +13,15 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpvhuflso1.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpokgph3vb.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpvhuflso1.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpjby3gyh_.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpkud9gvty.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpjby3gyh_.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpokgph3vb.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpkud9gvty.cbc.soln.
 Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 356 singletons with no objective 
+There are 543519841 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -36,18 +39,26 @@ After Postsolve, objective 0, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective 0 - 0 iterations time 0.002, Presolve 0.00
 Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 X=10.0, Y=0.0
 
 ======================================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 WARNING: warmstart_file points to a file on a drive different from the current
     working directory.  CBC is likely to (silently) ignore the warmstart.
 Welcome to the CBC MILP Solver 
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpt98wf9ik.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpilarbzyq.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpt98wf9ik.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpcr1bew9f.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpy5u918b0.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpcr1bew9f.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpilarbzyq.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpy5u918b0.cbc.soln.
 Presolve thinks problem is unbounded
 Presolved model looks infeasible - will use unpresolved
 
@@ -88,22 +99,31 @@ WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: <undefined>
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 
 ======================================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 WARNING: warmstart_file points to a file on a drive different from the current
     working directory.  CBC is likely to (silently) ignore the warmstart.
 Welcome to the CBC MILP Solver 
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpmyi2__nm.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmptfka9iem.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpmyi2__nm.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpylp654hx.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpjjhz0mwx.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpylp654hx.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmptfka9iem.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpjjhz0mwx.cbc.soln.
 Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
+There are -66666666 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -121,9 +141,11 @@ After Postsolve, objective -1e+08, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective -100000000 - 0 iterations time 0.002, Presolve 0.00
 Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
+sol_0: None
+sol_1: {'变量x': 10.0, '变量y': -0.0, 'z[0]': -25000006.0, 'z[1]': 0.0, 'mobjVar': -100000000.0}
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: False
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000200E7682350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000200E7682550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000200E7695000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000200E7695070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001A945912450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001A945912650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001A945929380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001A9459293F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -156,4 +178,4 @@ z[0]	-100000024.0
 (OBJ - OBJ_CONST)? -100000004.0
 OBJ? -99999999.0
 OBJ_CONST? 5
-solver smap ids: [2202905980368, 2202905986448, 2202905989712]
+solver smap ids: [1826528625296, 1826528625872, 1826528630352]

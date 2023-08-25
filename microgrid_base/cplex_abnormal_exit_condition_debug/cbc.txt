@@ -1,21 +1,24 @@
-Now is 2023-08-25T14:14:51.809120+08:00
+Now is 2023-08-25T14:57:05.339199+08:00
 running solver cbc
 warm start? False
 ============================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 WARNING: Constant objective detected, replacing with a placeholder to prevent
     solver failure.
 Welcome to the CBC MILP Solver 
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpxcz9kqn2.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpxcz9kqn2.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp8gikq1z4.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp8gikq1z4.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 1936269421 singletons with no objective 
+There are 543520100 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -33,14 +36,22 @@ After Postsolve, objective 0, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective 0 - 0 iterations time 0.002, Presolve 0.00
 Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 X=10.0, Y=0.0
 
 ======================================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 Welcome to the CBC MILP Solver 
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp4ecwuyk2.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp4ecwuyk2.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmprf0pjxv1.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmprf0pjxv1.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve thinks problem is unbounded
 Presolved model looks infeasible - will use unpresolved
@@ -82,20 +93,28 @@ WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: <undefined>
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 
 ======================================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 Welcome to the CBC MILP Solver 
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmparjs6st7.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmparjs6st7.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpkup_x700.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpkup_x700.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are -66666666 singletons with no objective 
+There are 1936269421 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -113,9 +132,11 @@ After Postsolve, objective -1e+08, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective -100000000 - 0 iterations time 0.002, Presolve 0.00
 Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
+sol_0: None
+sol_1: {'变量x': 10.0, '变量y': -0.0, 'z[0]': -25000006.0, 'z[1]': 0.0, 'mobjVar': -100000000.0}
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: False
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000020904922350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000020904922550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000020904935000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000020904935070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001D7FAFD2450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001D7FAFD2650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001D7FAFE9380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001D7FAFE93F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -148,4 +169,4 @@ z[0]	-100000024.0
 (OBJ - OBJ_CONST)? -100000004.0
 OBJ? -99999999.0
 OBJ_CONST? 5
-solver smap ids: [2237755012432, 2237755017296, 2237755022864]
+solver smap ids: [2027140873744, 2027140879504, 2027140886096]

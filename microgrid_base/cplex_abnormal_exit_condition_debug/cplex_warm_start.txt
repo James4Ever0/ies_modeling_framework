@@ -1,7 +1,10 @@
-Now is 2023-08-25T14:14:14.623244+08:00
+Now is 2023-08-25T14:57:08.129055+08:00
 running solver cplex
 warm start? True
 ============================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 WARNING: Constant objective detected, replacing with a placeholder to prevent
     solver failure.
 
@@ -16,11 +19,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpx2s55o4g.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpyux9riq5.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpx2s55o4g.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpyux9riq5.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
@@ -39,13 +42,21 @@ All rows and columns eliminated.
 Presolve time = 0.00 sec. (0.00 ticks)
 
 Dual simplex - Optimal:  Objective =  0.0000000000e+00
-Solution time =    0.00 sec.  Iterations = 0 (0)
-Deterministic time = 0.00 ticks  (1.40 ticks/sec)
+Solution time =    0.02 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.09 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp9q76w2a0.cplex.sol'.
-CPLEX> X=10.0, Y=0.0
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp7v397ll2.cplex.sol'.
+CPLEX> ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
+X=10.0, Y=0.0
 
 ======================================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 
 Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 12.8.0.0
   with Simplex, Mixed Integer & Barrier Optimizers
@@ -58,11 +69,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpaec1350p.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpgtz6bkt8.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpaec1350p.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpgtz6bkt8.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
@@ -82,8 +93,16 @@ Solution time =    0.00 sec.
 Deterministic time = 0.00 ticks  (0.34 ticks/sec)
 CPLEX> CPLEX Error  1217: No solution exists.
 No file written.
-CPLEX> 
+CPLEX> ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
+
 ======================================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 
 Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 12.8.0.0
   with Simplex, Mixed Integer & Barrier Optimizers
@@ -96,11 +115,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp_2tuji1d.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmphzmjyiro.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp_2tuji1d.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmphzmjyiro.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
@@ -122,10 +141,12 @@ Dual simplex - Optimal:  Objective = -1.0000000000e+08
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (2.64 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpqy86tpg9.cplex.sol'.
-CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpiyk1wrnp.cplex.sol'.
+CPLEX> sol_0: None
+sol_1: {'变量x': 10.0, '变量y': 0.0, 'z[0]': -25000006.25, 'z[1]': 0.0, 'mobjVar': -100000000.0}
+UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: False
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001C5FB2F2350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001C5FB2F2550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001C5FB305000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001C5FB305070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002CAD86D2450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002CAD86D2650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002CAD86E9380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002CAD86E93F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -158,4 +179,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [1949834719120, 1949833428112, 1949834726992]
+solver smap ids: [3070238065232, 3070238072016, 3070238076496]

@@ -1,7 +1,10 @@
-Now is 2023-08-25T14:14:52.738567+08:00
+Now is 2023-08-25T14:57:06.179106+08:00
 running solver ipopt
 warm start? False
 ============================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 Ipopt 3.14.12: max_iter=3000
 
 
@@ -56,9 +59,17 @@ Number of Lagrangian Hessian evaluations             = 5
 Total seconds in IPOPT                               = 0.010
 
 EXIT: Optimal Solution Found.
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 X=9.450397207148868e-16, Y=584.6311979842062
 
 ======================================================================
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 Ipopt 3.14.12: max_iter=3000
 
 
@@ -141,7 +152,7 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.047
+Total seconds in IPOPT                               = 0.040
 
 EXIT: Iterates diverging; problem might be unbounded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -149,7 +160,15 @@ WARNING: Loading a SolverResults object with a warning status into
       - termination condition: unbounded
       - message from solver: Ipopt 3.14.12\x3a Iterates diverging; problem
         might be unbounded.
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
+sol_0: None
+sol_1: None
 ITERATION:  33
+ERROR: evaluating object as numeric value: z[0]
+        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
+    No value for uninitialized NumericValue object z[0]
 Ipopt 3.14.12: max_iter=32
 
 
@@ -231,7 +250,7 @@ Number of inequality constraint evaluations          = 33
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 33
 Number of Lagrangian Hessian evaluations             = 32
-Total seconds in IPOPT                               = 0.034
+Total seconds in IPOPT                               = 0.036
 
 EXIT: Maximum Number of Iterations Exceeded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -239,8 +258,13 @@ WARNING: Loading a SolverResults object with a warning status into
       - termination condition: maxIterations
       - message from solver: Ipopt 3.14.12\x3a Maximum Number of Iterations
         Exceeded.
+sol_0: None
+sol_1: {'变量x': 9.950125099217509, '变量y': 0.07487479453249282, 'z[0]': -3.706040377703673e+19, 'z[1]': -9.265100944259183e+18}
 
 ======================================================================
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
 Ipopt 3.14.12: max_iter=32
 
 
@@ -303,32 +327,45 @@ Number of inequality constraint evaluations          = 13
 Number of equality constraint Jacobian evaluations   = 13
 Number of inequality constraint Jacobian evaluations = 13
 Number of Lagrangian Hessian evaluations             = 12
-Total seconds in IPOPT                               = 0.016
+Total seconds in IPOPT                               = 0.019
 
 EXIT: Optimal Solution Found.
-> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(194)<module>()
--> lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
-(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 1, 'Number of variables': 4, 'Sense': 'unknown'}], 'Solver': [{'Status': 'warning', 'Message': 'Ipopt 3.14.12\\x3a Iterates diverging; problem might be unbounded.', 'Termination condition': 'unbounded', 'Id': 300, 'Error rc': 0, 'Time': 0.08019328117370605}]}
-(Pdb) <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>
-(Pdb) *** NameError: name 'result_unvound' is not defined
-(Pdb) ['__call__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_active', '_cls', '_list', '_option', '_repn_', '_required', 'add', 'clear', 'delete', 'insert', 'load', 'pprint']
-(Pdb) *** NameError: name 'result_unvound' is not defined
-(Pdb) {'_cls': <class 'pyomo.opt.results.solution.Solution'>, '_list': [], '_active': False, '_required': False, '_option': Bunch(ignore_defaults = False, ignore_time = False, num_solutions = None, schema = False, sparse = True)}
-(Pdb) {'_cls': <class 'pyomo.opt.results.solution.Solution'>, '_list': [], '_active': True, '_required': False, '_option': Bunch(ignore_defaults = False, ignore_time = False, num_solutions = None, schema = False, sparse = True)}
-(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 2, 'Number of variables': 5, 'Sense': 'unknown'}], 'Solver': [{'Status': 'ok', 'Message': 'Ipopt 3.14.12\\x3a Optimal Solution Found', 'Termination condition': 'optimal', 'Id': 0, 'Error rc': 0, 'Time': 0.04921698570251465}], 'Solution': [OrderedDict([('number of solutions', 0), ('number of solutions displayed', 0)])]}
-(Pdb) <class 'pyomo.opt.results.results_.SolverResults'>
-(Pdb) ['__class__', '__class_getitem__', '__contains__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__getnewargs__', '__getnewargs_ex__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__ior__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__or__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__ror__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_active', '_convert', '_descriptions', '_option', '_order', '_ordered', '_repn_', '_required', '_sections', '_set_value', '_smap', '_smap_id', 'add', 'clear', 'copy', 'declare', 'default_print_options', 'fromkeys', 'get', 'items', 'json_repn', 'keys', 'load', 'pop', 'popitem', 'pprint', 'read', 'setdefault', 'undefined', 'update', 'values', 'write', 'write_json', 'write_yaml']
-(Pdb) {'Problem': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB3889D0>, 'Solver': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB38B910>, 'Solution': <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38EB10>}
-(Pdb) {'Problem': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB370B90>, 'Solver': <pyomo.opt.results.container.ListContainer object at 0x000001EAEAE74310>, 'Solution': <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>}
-(Pdb) <pyomo.opt.results.container.ListContainer object at 0x000001EAEAE74310>
-(Pdb) *** AttributeError: Unknown attribute `_repr_' for object with type <class 'pyomo.opt.results.solver.SolverInformation'>
-(Pdb) <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>
-(Pdb) <bound method SolutionSet._repn_ of <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>>
-(Pdb) *** TypeError: SolutionSet._repn_() missing 1 required positional argument: 'option'
-(Pdb) *** AttributeError: Unknown attribute `_repn' for object with type <class 'pyomo.opt.results.solution.Solution'>
-(Pdb) [OrderedDict([('number of solutions', 1), ('number of solutions displayed', 1)]), {'Status': 'unknown', 'Problem': {}, 'Objective': {}, 'Variable': {}, 'Constraint': {}}]
-(Pdb) [OrderedDict([('number of solutions', 0), ('number of solutions displayed', 0)])]
-(Pdb) <class 'pyomo.opt.results.solution.SolutionSet'>
-(Pdb) *** NameError: name 'pprint' is not defined
-(Pdb) [{'Status': 'unknown', 'Problem': {}, 'Objective': {}, 'Variable': {}, 'Constraint': {}}]
-(Pdb) 
+sol_0: None
+sol_1: {'变量x': 5.040127407697712, '变量y': 30.419254162368283, 'z[0]': -24999329.682417985, 'z[1]': -2818.027699524099, 'mobjVar': -100000000.0001}
+UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
+UNBOUND RERUN TERMINATION CONDITION: maxIterations; SOLVED: False
+BOUND TERMINATION CONDITION: optimal; SOLVED: False
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000022D62952450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000022D62952650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000022D62969380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000022D629693F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+========================VAR NAME TO VAR VALUE=========================
+reversed: False
+
+z[0]	-24999329.682417985
+z[1]	-2818.027699524099
+变量x	5.040127407697712
+变量y	30.419254162368283
+========================VAR NAME TO VAR VALUE=========================
+reversed: True
+
+变量y	30.419254162368283
+变量x	5.040127407697712
+z[1]	-2818.027699524099
+z[0]	-24999329.682417985
+========================VAR NAME TO TERM VALUE========================
+reversed: False
+
+z[0]	-99997318.72967194
+z[1]	-2818.027699524099
+变量x	10.080254815395424
+变量y	121.67701664947313
+========================VAR NAME TO TERM VALUE========================
+reversed: True
+
+变量y	121.67701664947313
+变量x	10.080254815395424
+z[1]	-2818.027699524099
+z[0]	-99997318.72967194
+
+(OBJ - OBJ_CONST)? -100000005.0001
+OBJ? -100000000.0001
+OBJ_CONST? 5
+solver smap ids: [2393951104336, 2393951120784, 2393949898448, 2393951109520]
