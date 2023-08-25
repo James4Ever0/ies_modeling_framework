@@ -1,0 +1,18 @@
+invalid parameter <python>
+invalid parameter <-X>
+invalid parameter <utf8=1>
+invalid parameter <alternative_solver.py>
+
+syntax: E:\works\windows_solvers\scip\bin\scip.exe [-l <logfile>] [-q] [-s <settings>] [-r <randseed>] [-f <problem>] [-b <batchfile>] [-c "command"]
+  -v, --version : print version and build options
+  -l <logfile>  : copy output into log file
+  -q            : suppress screen messages
+  -s <settings> : load parameter settings (.set) file
+  -f <problem>  : load and solve problem file
+  -o <primref> <dualref> : pass primal and dual objective reference values for validation at the end of the solve
+  -b <batchfile>: load and execute dialog command batch file (can be used multiple times)
+  -r <randseed> : nonnegative integer to be used as random seed. Has priority over random seed specified through parameter settings (.set) file
+  -c "command"  : execute single line of dialog commands (can be used multiple times)
+
+as AMPL solver: E:\works\windows_solvers\scip\bin\scip.exe <.nl-file without the .nl> -AMPL
+

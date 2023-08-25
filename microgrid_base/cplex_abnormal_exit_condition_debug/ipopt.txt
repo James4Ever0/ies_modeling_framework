@@ -48,7 +48,7 @@ Number of inequality constraint evaluations          = 6
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 6
 Number of Lagrangian Hessian evaluations             = 5
-Total seconds in IPOPT                               = 0.011
+Total seconds in IPOPT                               = 0.053
 
 EXIT: Optimal Solution Found.
 X=9.450397207148868e-16, Y=584.6311979842062
@@ -135,7 +135,7 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.044
+Total seconds in IPOPT                               = 0.046
 
 EXIT: Iterates diverging; problem might be unbounded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -211,12 +211,12 @@ Number of inequality constraint evaluations          = 19
 Number of equality constraint Jacobian evaluations   = 19
 Number of inequality constraint Jacobian evaluations = 19
 Number of Lagrangian Hessian evaluations             = 18
-Total seconds in IPOPT                               = 0.042
+Total seconds in IPOPT                               = 0.030
 
 EXIT: Optimal Solution Found.
 UNBOUND TERMINATION CONDITION: unbounded
 BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002317B050750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002317B0504D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002317B0642E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002317B064350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000200E4860750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000200E48604D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000200E48702E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000200E4870350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -249,4 +249,4 @@ z[0]	-94127805.90840901
 (OBJ - OBJ_CONST)? -100000005.0001
 OBJ? -100000000.0001
 OBJ_CONST? 5
-solver smap ids: [2411532825936, 2411540712464, 2411540761744]
+solver smap ids: [2202857331856, 2202851953488, 2202857402704]

@@ -210,25 +210,29 @@ test_utils_wildcard:
 # scip: randseed
 # ipopt: warm_start_init_point
 define run_alternative_solver
-	ifne ($2,)
-		warm_start="WARM_START=1"
-		logfile_name=$1_warm_start
-	else
-		warm_start=
-		logfile_name=$1
-	endif
-	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=$1 ${warm_start} ${PYTHON} alternative_solver.py | tee ${logfile_name}.txt
+	if [ '${2}' = '1' ] ; then \
+		warm_start=WARM_START=1; \
+		logfile_name=$${solver}_warm_start; \
+	else \
+		warm_start=; \
+		logfile_name=$${solver}; \
+	fi; \
+	env SOLVER_NAME=$1 $${warm_start} $${PYTHON} alternative_solver.py | tee $${logfile_name}.txt 
+endef
+
+oss_solvers=scip cbc ipopt
+warmstart_solvers=cbc cplex
+
+define run_test_alternative_solver
+
+	cd cplex_abnormal_exit_condition_debug && for solver in $(oss_solvers); do \
+		$(call run_alternative_solver,$${solver},0); \
+	done
+
+	cd cplex_abnormal_exit_condition_debug && for solver in $(warmstart_solvers); do \
+		$(call run_alternative_solver,$${solver},1); \
+	done
 endef
 
 test_alternative_solver:
-	for solver in 
-	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip ${PYTHON} alternative_solver.py | tee scip.txt
-
-	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc ${PYTHON} alternative_solver.py | tee cbc.txt
-
-	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=ipopt ${PYTHON} alternative_solver.py | tee ipopt.txt
-	
-	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=scip WARM_START=1 ${PYTHON} alternative_solver.py
-	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cbc WARM_START=1 ${PYTHON} alternative_solver.py | tee cbc_warm_start.txt
-	# cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=ipopt WARM_START=1 ${PYTHON} alternative_solver.py
-	cd cplex_abnormal_exit_condition_debug && env SOLVER_NAME=cplex WARM_START=1 ${PYTHON} alternative_solver.py | tee cplex_warm_start.txt
+	$(call run_test_alternative_solver)

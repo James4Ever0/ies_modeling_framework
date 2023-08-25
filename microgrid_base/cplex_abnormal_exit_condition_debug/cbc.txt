@@ -4,13 +4,14 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp8lq7gz3k.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp8lq7gz3k.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpspvxw3xu.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpspvxw3xu.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
+There are 1950435585 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -26,7 +27,7 @@ Empty problem - 0 rows, 0 columns and 0 elements
 Optimal - objective value 0
 After Postsolve, objective 0, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective 0 - 0 iterations time 0.002, Presolve 0.00
-Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
+Total time (CPU seconds):       0.02   (Wallclock seconds):       0.02
 
 X=10.0, Y=0.0
 
@@ -35,7 +36,7 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpyk8r8g8_.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpyk8r8g8_.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp6rsfevzh.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp6rsfevzh.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve thinks problem is unbounded
 Presolved model looks infeasible - will use unpresolved
@@ -68,10 +69,10 @@ Result - Linear relaxation unbounded
 
 Enumerated nodes:           0
 Total iterations:           0
-Time (CPU seconds):         0.00
-Time (Wallclock Seconds):   0.00
+Time (CPU seconds):         0.01
+Time (Wallclock Seconds):   0.01
 
-Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
+Total time (CPU seconds):       0.01   (Wallclock seconds):       0.01
 
 WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
@@ -83,14 +84,14 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpa6y1ai6v.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpa6y1ai6v.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp_ou0m_fc.pyomo.lp -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp_ou0m_fc.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
 Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 543519841 singletons with no objective 
+There are 1869771365 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -106,11 +107,11 @@ Empty problem - 0 rows, 0 columns and 0 elements
 Optimal - objective value -1e+08
 After Postsolve, objective -1e+08, infeasibilities - dual 0 (0), primal 0 (0)
 Optimal objective -100000000 - 0 iterations time 0.002, Presolve 0.00
-Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
+Total time (CPU seconds):       0.01   (Wallclock seconds):       0.01
 
 UNBOUND TERMINATION CONDITION: unbounded
 BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002914B860750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002914B8604D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002914B8702E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002914B870350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002B870AB0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002B870AB04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002B870AC42E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002B870AC4350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -143,4 +144,4 @@ z[0]	-100000024.0
 (OBJ - OBJ_CONST)? -100000004.0
 OBJ? -99999999.0
 OBJ_CONST? 5
-solver smap ids: [2823060719376, 2823060721360, 2823060722064]
+solver smap ids: [2991187608464, 2991187613264, 2991187615952]
