@@ -277,6 +277,12 @@ if solver_name_base == "ipopt":
 
 printSolverResultDiagosticInfo("BOUND", result_bound)
 
+import rich
+
+for it in model.solutions.symbol_map.values():
+    rich.print(it.bySymbol)
+
+
 # now analyze what variable is doing havoc to the model.
 
 from pyomo.core.expr import current as EXPR

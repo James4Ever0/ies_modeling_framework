@@ -258,4 +258,5 @@ test_alternative_solver:
 
 test_persistent_solver:
 	# ${NO_GSUDO}
+	# may get solution by input .nl model file.
 	${CD_TEST_DEBUG_DIR} ${CONDA} python scip_persistent.py

@@ -1,4 +1,4 @@
-Current time: 2023-08-25T16:43:55.572767+08:00
+Current time: 2023-08-25T17:18:38.103989+08:00
 ============================================================
 running solver scip
 warm start? False
@@ -16,7 +16,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp08feesdx.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpr6qafjky.pyomo.nl>
 ============
 
 original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
@@ -54,7 +54,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp562un4bt.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpwm552i9v.pyomo.nl>
 ============
 
 original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
@@ -100,7 +100,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmp2_hp5ye1.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpe7q0wvj0.pyomo.nl>
 ============
 
 original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
@@ -126,7 +126,49 @@ Dual Bound         : -1.00000000000000e+08
 Gap                : 0.00 %
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: True
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001A40B2123D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001A40B212650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001A40B229460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001A40B2294D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{
+    'x1': <weakref at 0x00000142BF57C770; to 'ScalarVar' at 
+0x00000142BFA423D0>,
+    'x2': <weakref at 0x00000142BF53F5B0; to 'ScalarVar' at 
+0x00000142BFA42650>,
+    'x3': <weakref at 0x00000142BF53E390; to '_GeneralVarData' at 
+0x00000142BFA59460>,
+    'x4': <weakref at 0x00000142BF53E2F0; to '_GeneralVarData' at 
+0x00000142BFA594D0>,
+    'x5': <weakref at 0x00000142BF53E3E0; to 'ScalarObjective' at 
+0x00000142BFA84230>,
+    'x6': <weakref at 0x00000142BFA976F0; to 'ScalarConstraint' at 
+0x00000142BFA59320>
+}
+{
+    'v0': <weakref at 0x00000142BF57C770; to 'ScalarVar' at 
+0x00000142BFA423D0>,
+    'v1': <weakref at 0x00000142BF53F5B0; to 'ScalarVar' at 
+0x00000142BFA42650>,
+    'v2': <weakref at 0x00000142BF53E390; to '_GeneralVarData' at 
+0x00000142BFA59460>,
+    'v3': <weakref at 0x00000142BF53E2F0; to '_GeneralVarData' at 
+0x00000142BFA594D0>,
+    'c0': <weakref at 0x00000142BFA976F0; to 'ScalarConstraint' at 
+0x00000142BFA59320>,
+    'o0': <weakref at 0x00000142BF53E3E0; to 'ScalarObjective' at 
+0x00000142BFA84230>
+}
+{
+    'v0': <weakref at 0x00000142BF57C770; to 'ScalarVar' at 
+0x00000142BFA423D0>,
+    'v1': <weakref at 0x00000142BF53F5B0; to 'ScalarVar' at 
+0x00000142BFA42650>,
+    'v2': <weakref at 0x00000142BF53E390; to '_GeneralVarData' at 
+0x00000142BFA59460>,
+    'v3': <weakref at 0x00000142BF53E2F0; to '_GeneralVarData' at 
+0x00000142BFA594D0>,
+    'c0': <weakref at 0x00000142BFA976F0; to 'ScalarConstraint' at 
+0x00000142BFA59320>,
+    'o0': <weakref at 0x00000142BF53E3E0; to 'ScalarObjective' at 
+0x00000142BFA84230>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000142BFA423D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000142BFA42650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000142BFA59460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000142BFA594D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -159,4 +201,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [1804073365072, 1806029588496, 1804072165968]
+solver smap ids: [1386193733264, 1386193848592, 1386193854800]

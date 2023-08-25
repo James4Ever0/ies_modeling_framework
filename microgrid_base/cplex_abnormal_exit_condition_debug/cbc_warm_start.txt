@@ -1,4 +1,4 @@
-Current time: 2023-08-25T16:43:58.558405+08:00
+Current time: 2023-08-25T17:18:43.265732+08:00
 ============================================================
 running solver cbc
 warm start? True
@@ -11,15 +11,15 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpkvfstbf4.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpc59rkwjs.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpkvfstbf4.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpgm3n7f_p.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpayyxsn27.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpgm3n7f_p.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpc59rkwjs.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpayyxsn27.cbc.soln.
 Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 544175136 singletons with no objective 
+There are 1852402720 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -46,9 +46,9 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp_y8gyhik.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpj4le2uv1.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp_y8gyhik.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpcjuroxiv.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpgpb2ybg9.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpcjuroxiv.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpj4le2uv1.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpgpb2ybg9.cbc.soln.
 Presolve thinks problem is unbounded
 Presolved model looks infeasible - will use unpresolved
 
@@ -97,15 +97,15 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp2o94epax.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpdez8jl8j.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp2o94epax.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpeukmcp9s.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmp6u1tgmo_.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpeukmcp9s.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpdez8jl8j.cbc.soln.
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmp6u1tgmo_.cbc.soln.
 Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
 Statistics for presolved model
 
 
 Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 1329939712 singletons with no objective 
+There are 544175136 singletons with no objective 
 Column breakdown:
 0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
 0 of type lo->up, 0 of type free, 0 of type fixed, 
@@ -125,7 +125,49 @@ Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: True
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000025B231523D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000025B23152650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000025B23169460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000025B231694D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{
+    'x1': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
+0x000001C12AF023D0>,
+    'x2': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
+0x000001C12AF02650>,
+    'x3': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
+0x000001C12AF19460>,
+    'x4': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
+0x000001C12AF194D0>,
+    'x5': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
+0x000001C12AF44230>,
+    'x6': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
+0x000001C12AF19320>
+}
+{
+    'v0': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
+0x000001C12AF023D0>,
+    'v1': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
+0x000001C12AF02650>,
+    'v2': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
+0x000001C12AF19460>,
+    'v3': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
+0x000001C12AF194D0>,
+    'c0': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
+0x000001C12AF19320>,
+    'o0': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
+0x000001C12AF44230>
+}
+{
+    'x1': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
+0x000001C12AF023D0>,
+    'x2': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
+0x000001C12AF02650>,
+    'x3': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
+0x000001C12AF19460>,
+    'x4': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
+0x000001C12AF194D0>,
+    'x5': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
+0x000001C12AF44230>,
+    'x6': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
+0x000001C12AF19320>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001C12AF023D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001C12AF02650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001C12AF19460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001C12AF194D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -158,4 +200,4 @@ z[0]	-100000024.0
 (OBJ - OBJ_CONST)? -100000004.0
 OBJ? -99999999.0
 OBJ_CONST? 5
-solver smap ids: [2590454247248, 2590454263440, 2590454266448]
+solver smap ids: [1929161076304, 1929161086480, 1929161094608]

@@ -1,4 +1,4 @@
-Current time: 2023-08-25T16:43:57.470541+08:00
+Current time: 2023-08-25T17:18:41.580289+08:00
 ============================================================
 running solver ipopt
 warm start? False
@@ -54,7 +54,7 @@ Number of inequality constraint evaluations          = 6
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 6
 Number of Lagrangian Hessian evaluations             = 5
-Total seconds in IPOPT                               = 0.011
+Total seconds in IPOPT                               = 0.024
 
 EXIT: Optimal Solution Found.
 X=9.450397207148868e-16, Y=584.6311979842062
@@ -142,7 +142,7 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.030
+Total seconds in IPOPT                               = 0.121
 
 EXIT: Iterates diverging; problem might be unbounded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -232,7 +232,7 @@ Number of inequality constraint evaluations          = 33
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 33
 Number of Lagrangian Hessian evaluations             = 32
-Total seconds in IPOPT                               = 0.056
+Total seconds in IPOPT                               = 0.057
 
 EXIT: Maximum Number of Iterations Exceeded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -310,7 +310,49 @@ EXIT: Optimal Solution Found.
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 UNBOUND RERUN TERMINATION CONDITION: maxIterations; SOLVED: True
 BOUND TERMINATION CONDITION: optimal; SOLVED: True
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000287C4F823D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000287C4F82650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000287C4F99460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000287C4F994D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{
+    'x1': <weakref at 0x00000186AFC3C770; to 'ScalarVar' at 
+0x00000186B01023D0>,
+    'x2': <weakref at 0x00000186AFBFF5B0; to 'ScalarVar' at 
+0x00000186B0102650>,
+    'x3': <weakref at 0x00000186AFF2A250; to '_GeneralVarData' at 
+0x00000186B0119460>,
+    'x4': <weakref at 0x00000186AF9B5710; to '_GeneralVarData' at 
+0x00000186B01194D0>,
+    'x5': <weakref at 0x00000186AF9B57B0; to 'ScalarObjective' at 
+0x00000186B0144230>,
+    'x6': <weakref at 0x00000186B01577E0; to 'ScalarConstraint' at 
+0x00000186B0119320>
+}
+{
+    'v0': <weakref at 0x00000186AFC3C770; to 'ScalarVar' at 
+0x00000186B01023D0>,
+    'v1': <weakref at 0x00000186AFBFF5B0; to 'ScalarVar' at 
+0x00000186B0102650>,
+    'v2': <weakref at 0x00000186AFF2A250; to '_GeneralVarData' at 
+0x00000186B0119460>,
+    'v3': <weakref at 0x00000186AF9B5710; to '_GeneralVarData' at 
+0x00000186B01194D0>,
+    'c0': <weakref at 0x00000186B01577E0; to 'ScalarConstraint' at 
+0x00000186B0119320>,
+    'o0': <weakref at 0x00000186AF9B57B0; to 'ScalarObjective' at 
+0x00000186B0144230>
+}
+{
+    'v0': <weakref at 0x00000186AFC3C770; to 'ScalarVar' at 
+0x00000186B01023D0>,
+    'v1': <weakref at 0x00000186AFBFF5B0; to 'ScalarVar' at 
+0x00000186B0102650>,
+    'v2': <weakref at 0x00000186AFF2A250; to '_GeneralVarData' at 
+0x00000186B0119460>,
+    'v3': <weakref at 0x00000186AF9B5710; to '_GeneralVarData' at 
+0x00000186B01194D0>,
+    'c0': <weakref at 0x00000186B01577E0; to 'ScalarConstraint' at 
+0x00000186B0119320>,
+    'o0': <weakref at 0x00000186AF9B57B0; to 'ScalarObjective' at 
+0x00000186B0144230>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000186B01023D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000186B0102650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000186B0119460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000186B01194D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -343,4 +385,4 @@ z[0]	-99997318.72967194
 (OBJ - OBJ_CONST)? -100000005.0001
 OBJ? -100000000.0001
 OBJ_CONST? 5
-solver smap ids: [2782147618000, 2782148837264, 2782148830864, 2782148830864]
+solver smap ids: [1677990273360, 1677991493328, 1677991516688, 1677991520912]

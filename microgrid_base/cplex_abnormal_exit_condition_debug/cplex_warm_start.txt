@@ -1,4 +1,4 @@
-Current time: 2023-08-25T16:43:59.350200+08:00
+Current time: 2023-08-25T17:18:44.235496+08:00
 ============================================================
 running solver cplex
 warm start? True
@@ -17,11 +17,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmptifsuav4.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpyn4jj7vt.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmptifsuav4.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpyn4jj7vt.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
@@ -43,7 +43,7 @@ Dual simplex - Optimal:  Objective =  0.0000000000e+00
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (1.40 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp0p58xov4.cplex.sol'.
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp79ihc20p.cplex.sol'.
 CPLEX> X=10.0, Y=0.0
 
 ======================================================================
@@ -59,11 +59,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp5p04tjem.pyomo.lp' read.
-Read time = 0.00 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpr0ey9bzf.pyomo.lp' read.
+Read time = 0.02 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp5p04tjem.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpr0ey9bzf.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
@@ -97,11 +97,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpc9h7ol5s.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpfd08li0l.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpc9h7ol5s.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpfd08li0l.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
@@ -123,10 +123,52 @@ Dual simplex - Optimal:  Objective = -1.0000000000e+08
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (2.64 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpwbisq74f.cplex.sol'.
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpphmvrvdu.cplex.sol'.
 CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
 BOUND TERMINATION CONDITION: optimal; SOLVED: True
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001D20C5723D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001D20C572650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001D20C589460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001D20C5894D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{
+    'x1': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
+0x0000027B3B3623D0>,
+    'x2': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
+0x0000027B3B362650>,
+    'x3': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
+0x0000027B3B379460>,
+    'x4': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
+0x0000027B3B3794D0>,
+    'x5': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
+0x0000027B3B3A0230>,
+    'x6': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
+0x0000027B3B379320>
+}
+{
+    'v0': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
+0x0000027B3B3623D0>,
+    'v1': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
+0x0000027B3B362650>,
+    'v2': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
+0x0000027B3B379460>,
+    'v3': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
+0x0000027B3B3794D0>,
+    'c0': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
+0x0000027B3B379320>,
+    'o0': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
+0x0000027B3B3A0230>
+}
+{
+    'x1': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
+0x0000027B3B3623D0>,
+    'x2': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
+0x0000027B3B362650>,
+    'x3': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
+0x0000027B3B379460>,
+    'x4': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
+0x0000027B3B3794D0>,
+    'x5': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
+0x0000027B3B3A0230>,
+    'x6': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
+0x0000027B3B379320>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000027B3B3623D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000027B3B362650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000027B3B379460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000027B3B3794D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -159,4 +201,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [2001662186192, 2001662190480, 2001662195088]
+solver smap ids: [2728298012944, 2728298028304, 2728298028240]
