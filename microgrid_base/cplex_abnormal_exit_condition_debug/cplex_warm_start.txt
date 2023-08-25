@@ -1,4 +1,4 @@
-Current time: 2023-08-25T17:18:44.235496+08:00
+Current time: 2023-08-25T17:54:38.897909+08:00
 ============================================================
 running solver cplex
 warm start? True
@@ -17,34 +17,31 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpyn4jj7vt.pyomo.lp' read.
-Read time = 0.00 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpjb5xml4b.pyomo.lp' read.
+Read time = 0.02 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpyn4jj7vt.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpjb5xml4b.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
-Linear constraints   :       2  [Greater: 1,  Equal: 1]
-  Nonzeros           :       3
-  RHS nonzeros       :       2
+Linear constraints   :       3  [Less: 1,  Greater: 1,  Equal: 1]
+  Nonzeros           :       5
+  RHS nonzeros       :       3
 
 Variables            : Min LB: -10.00000        Max UB: 10.00000       
 Objective nonzeros   : Min   : all zero         Max   : all zero       
 Linear constraints   :
   Nonzeros           : Min   : 1.000000         Max   : 1.000000       
   RHS nonzeros       : Min   : 1.000000         Max   : 10.00000       
-CPLEX> Tried aggregator 1 time.
-LP Presolve eliminated 2 rows and 3 columns.
-All rows and columns eliminated.
+CPLEX> Constraints 'c_l_x6_' and 'c_u_x7_' are inconsistent.
 Presolve time = 0.00 sec. (0.00 ticks)
-
-Dual simplex - Optimal:  Objective =  0.0000000000e+00
-Solution time =    0.00 sec.  Iterations = 0 (0)
-Deterministic time = 0.00 ticks  (1.40 ticks/sec)
-
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp79ihc20p.cplex.sol'.
-CPLEX> X=10.0, Y=0.0
+Presolve - Infeasible.
+Solution time =    0.00 sec.
+Deterministic time = 0.00 ticks  (0.69 ticks/sec)
+CPLEX> CPLEX Error  1217: No solution exists.
+No file written.
+CPLEX> X=0.5, Y=0.5
 
 ======================================================================
 
@@ -59,17 +56,17 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpr0ey9bzf.pyomo.lp' read.
-Read time = 0.02 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpgpsg6osb.pyomo.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpr0ey9bzf.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpgpsg6osb.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
-Linear constraints   :       2  [Greater: 1,  Equal: 1]
-  Nonzeros           :       3
-  RHS nonzeros       :       2
+Linear constraints   :       3  [Less: 1,  Greater: 1,  Equal: 1]
+  Nonzeros           :       5
+  RHS nonzeros       :       3
 
 Variables            : Min LB: -10.00000        Max UB: 10.00000       
 Objective nonzeros   : Min   : 1.000000         Max   : 5.000000       
@@ -80,7 +77,7 @@ CPLEX> Dual infeasible due to empty column 'x3'.
 Presolve time = 0.00 sec. (0.00 ticks)
 Presolve - Unbounded or infeasible.
 Solution time =    0.00 sec.
-Deterministic time = 0.00 ticks  (0.34 ticks/sec)
+Deterministic time = 0.00 ticks  (0.41 ticks/sec)
 CPLEX> CPLEX Error  1217: No solution exists.
 No file written.
 CPLEX> 
@@ -97,108 +94,120 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpfd08li0l.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp0_w05dgb.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpfd08li0l.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp0_w05dgb.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
-Linear constraints   :       3  [Greater: 1,  Equal: 2]
-  Nonzeros           :       8
-  RHS nonzeros       :       3
+Linear constraints   :       4  [Less: 1,  Greater: 1,  Equal: 2]
+  Nonzeros           :      10
+  RHS nonzeros       :       4
 
 Variables            : Min LB: -1.000000e+08    Max UB: 1.000000e+08   
 Objective nonzeros   : Min   : 1.000000         Max   : 5.000000       
 Linear constraints   :
   Nonzeros           : Min   : 1.000000         Max   : 4.000000       
   RHS nonzeros       : Min   : 1.000000         Max   : 10.00000       
-CPLEX> Tried aggregator 1 time.
-LP Presolve eliminated 3 rows and 6 columns.
-All rows and columns eliminated.
+CPLEX> Constraints 'c_l_x7_' and 'c_u_x8_' are inconsistent.
 Presolve time = 0.00 sec. (0.00 ticks)
-
-Dual simplex - Optimal:  Objective = -1.0000000000e+08
-Solution time =    0.00 sec.  Iterations = 0 (0)
-Deterministic time = 0.00 ticks  (2.64 ticks/sec)
-
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpphmvrvdu.cplex.sol'.
+Presolve - Infeasible.
+Solution time =    0.00 sec.
+Deterministic time = 0.00 ticks  (1.19 ticks/sec)
+CPLEX> CPLEX Error  1217: No solution exists.
+No file written.
 CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
-BOUND TERMINATION CONDITION: optimal; SOLVED: True
+BOUND TERMINATION CONDITION: infeasible; SOLVED: False
 {
-    'x1': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
-0x0000027B3B3623D0>,
-    'x2': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
-0x0000027B3B362650>,
-    'x3': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
-0x0000027B3B379460>,
-    'x4': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
-0x0000027B3B3794D0>,
-    'x5': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
-0x0000027B3B3A0230>,
-    'x6': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
-0x0000027B3B379320>
+    'x1': <weakref at 0x00000160DBE94FE0; to 'ScalarVar' at 
+0x00000160DC2B23D0>,
+    'x2': <weakref at 0x00000160DC307880; to 'ScalarVar' at 
+0x00000160DC2B2650>,
+    'x3': <weakref at 0x00000160DBB78360; to '_GeneralVarData' at 
+0x00000160DC2C9460>,
+    'x4': <weakref at 0x00000160DBB782C0; to '_GeneralVarData' at 
+0x00000160DC2C94D0>,
+    'x5': <weakref at 0x00000160DBE80F90; to 'ScalarObjective' at 
+0x00000160DC2F4230>,
+    'x6': <weakref at 0x00000160DC3078D0; to 'ScalarConstraint' at 
+0x00000160DC2C9320>,
+    'x7': <weakref at 0x00000160DC307920; to 'ScalarConstraint' at 
+0x00000160DC2C9390>
 }
 {
-    'v0': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
-0x0000027B3B3623D0>,
-    'v1': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
-0x0000027B3B362650>,
-    'v2': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
-0x0000027B3B379460>,
-    'v3': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
-0x0000027B3B3794D0>,
-    'c0': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
-0x0000027B3B379320>,
-    'o0': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
-0x0000027B3B3A0230>
+    'v0': <weakref at 0x00000160DBE94FE0; to 'ScalarVar' at 
+0x00000160DC2B23D0>,
+    'v1': <weakref at 0x00000160DC307880; to 'ScalarVar' at 
+0x00000160DC2B2650>,
+    'v2': <weakref at 0x00000160DBB78360; to '_GeneralVarData' at 
+0x00000160DC2C9460>,
+    'v3': <weakref at 0x00000160DBB782C0; to '_GeneralVarData' at 
+0x00000160DC2C94D0>,
+    'c0': <weakref at 0x00000160DC3078D0; to 'ScalarConstraint' at 
+0x00000160DC2C9320>,
+    'c1': <weakref at 0x00000160DC307920; to 'ScalarConstraint' at 
+0x00000160DC2C9390>,
+    'o0': <weakref at 0x00000160DBE80F90; to 'ScalarObjective' at 
+0x00000160DC2F4230>
 }
 {
-    'x1': <weakref at 0x0000027B3AF44FE0; to 'ScalarVar' at 
-0x0000027B3B3623D0>,
-    'x2': <weakref at 0x0000027B3B1886D0; to 'ScalarVar' at 
-0x0000027B3B362650>,
-    'x3': <weakref at 0x0000027B3AC153A0; to '_GeneralVarData' at 
-0x0000027B3B379460>,
-    'x4': <weakref at 0x0000027B3AC15260; to '_GeneralVarData' at 
-0x0000027B3B3794D0>,
-    'x5': <weakref at 0x0000027B3AC152B0; to 'ScalarObjective' at 
-0x0000027B3B3A0230>,
-    'x6': <weakref at 0x0000027B3B3B76F0; to 'ScalarConstraint' at 
-0x0000027B3B379320>
+    'x1': <weakref at 0x00000160DBE94FE0; to 'ScalarVar' at 
+0x00000160DC2B23D0>,
+    'x2': <weakref at 0x00000160DC307880; to 'ScalarVar' at 
+0x00000160DC2B2650>,
+    'x5': <weakref at 0x00000160DBB780E0; to 'ScalarObjective' at 
+0x00000160DC2F4470>,
+    'x6': <weakref at 0x00000160DC3078D0; to 'ScalarConstraint' at 
+0x00000160DC2C9320>,
+    'x7': <weakref at 0x00000160DC307920; to 'ScalarConstraint' at 
+0x00000160DC2C9390>
 }
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000027B3B3623D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000027B3B362650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000027B3B379460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000027B3B3794D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
-========================VAR NAME TO VAR VALUE=========================
-reversed: False
-
-z[0]	-25000006.25
-变量y	0.0
-z[1]	0.0
-变量x	10.0
-========================VAR NAME TO VAR VALUE=========================
-reversed: True
-
-变量x	10.0
-变量y	0.0
-z[1]	0.0
-z[0]	-25000006.25
-========================VAR NAME TO TERM VALUE========================
-reversed: False
-
-z[0]	-100000025.0
-变量y	0.0
-z[1]	0.0
-变量x	20.0
-========================VAR NAME TO TERM VALUE========================
-reversed: True
-
-变量x	20.0
-变量y	0.0
-z[1]	0.0
-z[0]	-100000025.0
-
-(OBJ - OBJ_CONST)? -100000005.0
-OBJ? -100000000.0
-OBJ_CONST? 5
-solver smap ids: [2728298012944, 2728298028304, 2728298028240]
+{
+    'x1': <weakref at 0x00000160DBE94FE0; to 'ScalarVar' at 
+0x00000160DC2B23D0>,
+    'x2': <weakref at 0x00000160DC307880; to 'ScalarVar' at 
+0x00000160DC2B2650>,
+    'x3': <weakref at 0x00000160DBB78360; to '_GeneralVarData' at 
+0x00000160DC2C9460>,
+    'x4': <weakref at 0x00000160DBB782C0; to '_GeneralVarData' at 
+0x00000160DC2C94D0>,
+    'x5': <weakref at 0x00000160DBE80F90; to 'ScalarObjective' at 
+0x00000160DC2F4230>,
+    'x6': <weakref at 0x00000160DC3078D0; to 'ScalarConstraint' at 
+0x00000160DC2C9320>,
+    'x7': <weakref at 0x00000160DC307920; to 'ScalarConstraint' at 
+0x00000160DC2C9390>
+}
+{
+    'x1': <weakref at 0x00000160DBE94FE0; to 'ScalarVar' at 
+0x00000160DC2B23D0>,
+    'x2': <weakref at 0x00000160DC307880; to 'ScalarVar' at 
+0x00000160DC2B2650>,
+    'x3': <weakref at 0x00000160DBB78360; to '_GeneralVarData' at 
+0x00000160DC2C9460>,
+    'x4': <weakref at 0x00000160DBB782C0; to '_GeneralVarData' at 
+0x00000160DC2C94D0>,
+    'x5': <weakref at 0x00000160DBB64EA0; to 'ScalarVar' at 
+0x00000160DC2B24D0>,
+    'x6': <weakref at 0x00000160DBE80F90; to 'ScalarObjective' at 
+0x00000160DC2F4230>,
+    'x7': <weakref at 0x00000160DC3078D0; to 'ScalarConstraint' at 
+0x00000160DC2C9320>,
+    'x8': <weakref at 0x00000160DC307920; to 'ScalarConstraint' at 
+0x00000160DC2C9390>,
+    'x9': <weakref at 0x00000160DBB67A60; to 'ScalarConstraint' at 
+0x00000160DC2C99B0>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x00000160DC2B23D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x00000160DC2B2650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x00000160DC2C9460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x00000160DC2C94D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
+Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 377, in <module>
+    varValue = value(varObj)
+               ^^^^^^^^^^^^^
+  File "pyomo\core\expr\numvalue.pyx", line 153, in pyomo.core.expr.numvalue.value
+  File "pyomo\core\expr\numvalue.pyx", line 140, in pyomo.core.expr.numvalue.value
+ValueError: No value for uninitialized NumericValue object 变量x

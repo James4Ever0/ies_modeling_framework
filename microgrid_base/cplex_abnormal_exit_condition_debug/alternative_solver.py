@@ -116,7 +116,7 @@ if warm_start:
     y.set_value(0.5)
 model.constraint_x_y = Constraint(expr=x + y >= 10)
 model.constraint_x_y_inv = Constraint(expr=x + y <= 9)
-model.constraint_x_y_inv.deactivate()
+# model.constraint_x_y_inv.deactivate()
 z = model.z = Var([0, 1])
 
 x.setlb(-10)
@@ -184,6 +184,9 @@ def solver_solve(model: ConcreteModel, **kwargs):
         )
         solved = modelSolutionChecker.check()
         ret["solved"] = solved
+        # scip can find feasible solution.
+        # if solver_name_base == "scip":
+        #     breakpoint()
         return ret
 
 

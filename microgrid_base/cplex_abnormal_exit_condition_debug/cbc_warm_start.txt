@@ -1,4 +1,4 @@
-Current time: 2023-08-25T17:18:43.265732+08:00
+Current time: 2023-08-25T17:54:37.762786+08:00
 ============================================================
 running solver cbc
 warm start? True
@@ -11,72 +11,33 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpgm3n7f_p.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpayyxsn27.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpgm3n7f_p.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpm68wbs_t.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmp3t4d1tvi.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpm68wbs_t.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpayyxsn27.cbc.soln.
-Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
-Statistics for presolved model
-
-
-Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 1852402720 singletons with no objective 
-Column breakdown:
-0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
-0 of type lo->up, 0 of type free, 0 of type fixed, 
-0 of type -inf->0.0, 0 of type -inf->up, 0 of type 0.0->1.0 
-Row breakdown:
-0 of type E 0.0, 0 of type E 1.0, 0 of type E -1.0, 
-0 of type E other, 0 of type G 0.0, 0 of type G 1.0, 
-0 of type G other, 0 of type L 0.0, 0 of type L 1.0, 
-0 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
-0 of type Free 
-Presolve 0 (-2) rows, 0 (-3) columns and 0 (-3) elements
-Empty problem - 0 rows, 0 columns and 0 elements
-Optimal - objective value 0
-After Postsolve, objective 0, infeasibilities - dual 0 (0), primal 0 (0)
-Optimal objective 0 - 0 iterations time 0.002, Presolve 0.00
-Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
-
-X=10.0, Y=0.0
-
-======================================================================
-WARNING: warmstart_file points to a file on a drive different from the current
-    working directory.  CBC is likely to (silently) ignore the warmstart.
-Welcome to the CBC MILP Solver 
-Version: 2.10.10 
-Build Date: Apr 18 2023 
-
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpcjuroxiv.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmpgpb2ybg9.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpcjuroxiv.pyomo.soln (default strategy 1)
-Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmpgpb2ybg9.cbc.soln.
-Presolve thinks problem is unbounded
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmp3t4d1tvi.cbc.soln.
+Presolve determined that the problem was infeasible with tolerance of 1e-08
 Presolved model looks infeasible - will use unpresolved
 
 
-Problem has 2 rows, 5 columns (5 with objective) and 3 elements
-There are 3 singletons with objective ** 2 columns have no entries
+Problem has 3 rows, 3 columns (0 with objective) and 5 elements
+There are 1 singletons with no objective 
 Column breakdown:
 1 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
-1 of type lo->up, 3 of type free, 0 of type fixed, 
+1 of type lo->up, 1 of type free, 0 of type fixed, 
 0 of type -inf->0.0, 0 of type -inf->up, 0 of type 0.0->1.0 
 Row breakdown:
 0 of type E 0.0, 1 of type E 1.0, 0 of type E -1.0, 
 0 of type E other, 0 of type G 0.0, 0 of type G 1.0, 
 1 of type G other, 0 of type L 0.0, 0 of type L 1.0, 
-0 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
+1 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
 0 of type Free 
-Presolve thinks problem is unbounded
+Presolve determined that the problem was infeasible with tolerance of 1e-08
 Analysis indicates model infeasible or unbounded
-0  Obj -20 Primal inf 21 (2) Dual inf 0.0899997 (3) w.o. free dual inf (0)
-2  Obj 25 Dual inf 0.0499998 (2) w.o. free dual inf (0)
-2  Obj 25 Dual inf 0.0499998 (2) w.o. free dual inf (0)
-End of values pass after 2 iterations
-2  Obj 25 Dual inf 0.0499998 (2) w.o. free dual inf (0)
-2  Obj 25 Dual inf 0.0499998 (2) w.o. free dual inf (0)
-Dual infeasible - objective value 25
-DualInfeasible objective 25 - 2 iterations time 0.002
+0  Obj 0 Primal inf 21 (2) Dual inf 2.0099997 (3) w.o. free dual inf (2)
+2  Obj 0 Primal inf 0.9999999 (1)
+Primal infeasible - objective value 0
+PrimalInfeasible objective 0 - 2 iterations time 0.002
 
-Result - Linear relaxation unbounded
+Result - Linear relaxation infeasible
 
 Enumerated nodes:           0
 Total iterations:           0
@@ -87,7 +48,58 @@ Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
 
 WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
-      - termination condition: unbounded
+      - termination condition: infeasible
+      - message from solver: <undefined>
+X=0.5, Y=0.5
+
+======================================================================
+WARNING: warmstart_file points to a file on a drive different from the current
+    working directory.  CBC is likely to (silently) ignore the warmstart.
+Welcome to the CBC MILP Solver 
+Version: 2.10.10 
+Build Date: Apr 18 2023 
+
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmp7ev6m3w4.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmp9hbdqt8v.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmp7ev6m3w4.pyomo.soln (default strategy 1)
+Option for printingOptions changed from normal to all
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmp9hbdqt8v.cbc.soln.
+Presolve determined that the problem was infeasible with tolerance of 1e-08
+Presolved model looks infeasible - will use unpresolved
+
+
+Problem has 3 rows, 5 columns (5 with objective) and 5 elements
+There are 1 singletons with objective ** 2 columns have no entries
+Column breakdown:
+1 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
+1 of type lo->up, 3 of type free, 0 of type fixed, 
+0 of type -inf->0.0, 0 of type -inf->up, 0 of type 0.0->1.0 
+Row breakdown:
+0 of type E 0.0, 1 of type E 1.0, 0 of type E -1.0, 
+0 of type E other, 0 of type G 0.0, 0 of type G 1.0, 
+1 of type G other, 0 of type L 0.0, 0 of type L 1.0, 
+1 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
+0 of type Free 
+Presolve determined that the problem was infeasible with tolerance of 1e-08
+Analysis indicates model infeasible or unbounded
+0  Obj -20 Primal inf 21 (2) Dual inf 0.0899997 (3) w.o. free dual inf (0)
+2  Obj 25 Primal inf 0.9999999 (1) Dual inf 0.0499998 (2) w.o. free dual inf (0)
+2  Obj 0 Primal inf 0.9999999 (1)
+End of values pass after 2 iterations
+2  Obj 0 Primal inf 0.9999999 (1)
+Primal infeasible - objective value 0
+PrimalInfeasible objective 0 - 2 iterations time 0.002
+
+Result - Linear relaxation infeasible
+
+Enumerated nodes:           0
+Total iterations:           0
+Time (CPU seconds):         0.01
+Time (Wallclock Seconds):   0.01
+
+Total time (CPU seconds):       0.01   (Wallclock seconds):       0.01
+
+WARNING: Loading a SolverResults object with a warning status into
+    model.name="unknown";
+      - termination condition: infeasible
       - message from solver: <undefined>
 
 ======================================================================
@@ -97,107 +109,136 @@ Welcome to the CBC MILP Solver
 Version: 2.10.10 
 Build Date: Apr 18 2023 
 
-command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpeukmcp9s.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmp6u1tgmo_.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpeukmcp9s.pyomo.soln (default strategy 1)
+command line - E:\works\windows_solvers\cbc\bin\cbc.exe -printingOptions all -import C:\Users\z98hu\AppData\Local\Temp\tmpal7v2zdq.pyomo.lp -mipstart C:\Users\z98hu\AppData\Local\Temp\tmp6yv2ud0k.cbc.soln -stat=1 -solve -solu C:\Users\z98hu\AppData\Local\Temp\tmpal7v2zdq.pyomo.soln (default strategy 1)
 Option for printingOptions changed from normal to all
-opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmp6u1tgmo_.cbc.soln.
-Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
-Statistics for presolved model
+opening mipstart file .\C:\Users\z98hu\AppData\Local\Temp\tmp6yv2ud0k.cbc.soln.
+Presolve determined that the problem was infeasible with tolerance of 1e-08
+Presolved model looks infeasible - will use unpresolved
 
 
-Problem has 0 rows, 0 columns (0 with objective) and 0 elements
-There are 544175136 singletons with no objective 
+Problem has 4 rows, 6 columns (5 with objective) and 10 elements
+There are 3 singletons with objective 1 singletons with no objective 
 Column breakdown:
-0 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
-0 of type lo->up, 0 of type free, 0 of type fixed, 
+1 of type 0.0->inf, 0 of type 0.0->up, 0 of type lo->inf, 
+2 of type lo->up, 3 of type free, 0 of type fixed, 
 0 of type -inf->0.0, 0 of type -inf->up, 0 of type 0.0->1.0 
 Row breakdown:
-0 of type E 0.0, 0 of type E 1.0, 0 of type E -1.0, 
-0 of type E other, 0 of type G 0.0, 0 of type G 1.0, 
-0 of type G other, 0 of type L 0.0, 0 of type L 1.0, 
-0 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
+0 of type E 0.0, 1 of type E 1.0, 0 of type E -1.0, 
+1 of type E other, 0 of type G 0.0, 0 of type G 1.0, 
+1 of type G other, 0 of type L 0.0, 0 of type L 1.0, 
+1 of type L other, 0 of type Range 0.0->1.0, 0 of type Range other, 
 0 of type Free 
-Presolve 0 (-3) rows, 0 (-6) columns and 0 (-8) elements
-Empty problem - 0 rows, 0 columns and 0 elements
-Optimal - objective value -1e+08
-After Postsolve, objective -1e+08, infeasibilities - dual 0 (0), primal 0 (0)
-Optimal objective -100000000 - 0 iterations time 0.002, Presolve 0.00
-Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
+Presolve determined that the problem was infeasible with tolerance of 1e-08
+Analysis indicates model infeasible or unbounded
+0  Obj -20 Primal inf 25000017 (3) Dual inf 0.1199997 (3) w.o. free dual inf (0)
+3  Obj -1e+08 Primal inf 0.9999999 (1)
+3  Obj -1e+08 Primal inf 0.9999999 (1)
+Primal infeasible - objective value -1e+08
+PrimalInfeasible objective -100000000 - 3 iterations time 0.002
 
-UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
-BOUND TERMINATION CONDITION: optimal; SOLVED: True
+Result - Linear relaxation infeasible
+
+Enumerated nodes:           0
+Total iterations:           0
+Time (CPU seconds):         0.01
+Time (Wallclock Seconds):   0.01
+
+Total time (CPU seconds):       0.01   (Wallclock seconds):       0.01
+
+WARNING: Loading a SolverResults object with a warning status into
+    model.name="unknown";
+      - termination condition: infeasible
+      - message from solver: <undefined>
+UNBOUND TERMINATION CONDITION: infeasible; SOLVED: False
+BOUND TERMINATION CONDITION: infeasible; SOLVED: False
 {
-    'x1': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
-0x000001C12AF023D0>,
-    'x2': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
-0x000001C12AF02650>,
-    'x3': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
-0x000001C12AF19460>,
-    'x4': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
-0x000001C12AF194D0>,
-    'x5': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
-0x000001C12AF44230>,
-    'x6': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
-0x000001C12AF19320>
+    'x1': <weakref at 0x000001F45D3E4FE0; to 'ScalarVar' at 
+0x000001F45D8023D0>,
+    'x2': <weakref at 0x000001F45D857880; to 'ScalarVar' at 
+0x000001F45D802650>,
+    'x3': <weakref at 0x000001F45D0B55D0; to '_GeneralVarData' at 
+0x000001F45D819460>,
+    'x4': <weakref at 0x000001F45D0B5530; to '_GeneralVarData' at 
+0x000001F45D8194D0>,
+    'x5': <weakref at 0x000001F45D3D0F90; to 'ScalarObjective' at 
+0x000001F45D844230>,
+    'x6': <weakref at 0x000001F45D8578D0; to 'ScalarConstraint' at 
+0x000001F45D819320>,
+    'x7': <weakref at 0x000001F45D857920; to 'ScalarConstraint' at 
+0x000001F45D819390>
 }
 {
-    'v0': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
-0x000001C12AF023D0>,
-    'v1': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
-0x000001C12AF02650>,
-    'v2': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
-0x000001C12AF19460>,
-    'v3': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
-0x000001C12AF194D0>,
-    'c0': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
-0x000001C12AF19320>,
-    'o0': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
-0x000001C12AF44230>
+    'v0': <weakref at 0x000001F45D3E4FE0; to 'ScalarVar' at 
+0x000001F45D8023D0>,
+    'v1': <weakref at 0x000001F45D857880; to 'ScalarVar' at 
+0x000001F45D802650>,
+    'v2': <weakref at 0x000001F45D0B55D0; to '_GeneralVarData' at 
+0x000001F45D819460>,
+    'v3': <weakref at 0x000001F45D0B5530; to '_GeneralVarData' at 
+0x000001F45D8194D0>,
+    'c0': <weakref at 0x000001F45D8578D0; to 'ScalarConstraint' at 
+0x000001F45D819320>,
+    'c1': <weakref at 0x000001F45D857920; to 'ScalarConstraint' at 
+0x000001F45D819390>,
+    'o0': <weakref at 0x000001F45D3D0F90; to 'ScalarObjective' at 
+0x000001F45D844230>
 }
 {
-    'x1': <weakref at 0x000001C12AF57650; to 'ScalarVar' at 
-0x000001C12AF023D0>,
-    'x2': <weakref at 0x000001C12AD286D0; to 'ScalarVar' at 
-0x000001C12AF02650>,
-    'x3': <weakref at 0x000001C12AABA070; to '_GeneralVarData' at 
-0x000001C12AF19460>,
-    'x4': <weakref at 0x000001C12A7C8220; to '_GeneralVarData' at 
-0x000001C12AF194D0>,
-    'x5': <weakref at 0x000001C12A7C8310; to 'ScalarObjective' at 
-0x000001C12AF44230>,
-    'x6': <weakref at 0x000001C12AF576A0; to 'ScalarConstraint' at 
-0x000001C12AF19320>
+    'x1': <weakref at 0x000001F45D3E4FE0; to 'ScalarVar' at 
+0x000001F45D8023D0>,
+    'x2': <weakref at 0x000001F45D857880; to 'ScalarVar' at 
+0x000001F45D802650>,
+    'x5': <weakref at 0x000001F45CCEDE40; to 'ScalarObjective' at 
+0x000001F45D844470>,
+    'x6': <weakref at 0x000001F45D8578D0; to 'ScalarConstraint' at 
+0x000001F45D819320>,
+    'x7': <weakref at 0x000001F45D857920; to 'ScalarConstraint' at 
+0x000001F45D819390>
 }
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001C12AF023D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001C12AF02650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001C12AF19460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001C12AF194D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
-========================VAR NAME TO VAR VALUE=========================
-reversed: False
-
-z[0]	-25000006.0
-变量y	-0.0
-z[1]	0.0
-变量x	10.0
-========================VAR NAME TO VAR VALUE=========================
-reversed: True
-
-变量x	10.0
-变量y	-0.0
-z[1]	0.0
-z[0]	-25000006.0
-========================VAR NAME TO TERM VALUE========================
-reversed: False
-
-z[0]	-100000024.0
-变量y	-0.0
-z[1]	0.0
-变量x	20.0
-========================VAR NAME TO TERM VALUE========================
-reversed: True
-
-变量x	20.0
-变量y	-0.0
-z[1]	0.0
-z[0]	-100000024.0
-
-(OBJ - OBJ_CONST)? -100000004.0
-OBJ? -99999999.0
-OBJ_CONST? 5
-solver smap ids: [1929161076304, 1929161086480, 1929161094608]
+{
+    'x1': <weakref at 0x000001F45D3E4FE0; to 'ScalarVar' at 
+0x000001F45D8023D0>,
+    'x2': <weakref at 0x000001F45D857880; to 'ScalarVar' at 
+0x000001F45D802650>,
+    'x3': <weakref at 0x000001F45D0B55D0; to '_GeneralVarData' at 
+0x000001F45D819460>,
+    'x4': <weakref at 0x000001F45D0B5530; to '_GeneralVarData' at 
+0x000001F45D8194D0>,
+    'x5': <weakref at 0x000001F45D3D0F90; to 'ScalarObjective' at 
+0x000001F45D844230>,
+    'x6': <weakref at 0x000001F45D8578D0; to 'ScalarConstraint' at 
+0x000001F45D819320>,
+    'x7': <weakref at 0x000001F45D857920; to 'ScalarConstraint' at 
+0x000001F45D819390>
+}
+{
+    'x1': <weakref at 0x000001F45D3E4FE0; to 'ScalarVar' at 
+0x000001F45D8023D0>,
+    'x2': <weakref at 0x000001F45D857880; to 'ScalarVar' at 
+0x000001F45D802650>,
+    'x3': <weakref at 0x000001F45D0B55D0; to '_GeneralVarData' at 
+0x000001F45D819460>,
+    'x4': <weakref at 0x000001F45D0B5530; to '_GeneralVarData' at 
+0x000001F45D8194D0>,
+    'x5': <weakref at 0x000001F45D2FE020; to 'ScalarVar' at 
+0x000001F45D77EAD0>,
+    'x6': <weakref at 0x000001F45D3D0F90; to 'ScalarObjective' at 
+0x000001F45D844230>,
+    'x7': <weakref at 0x000001F45D8578D0; to 'ScalarConstraint' at 
+0x000001F45D819320>,
+    'x8': <weakref at 0x000001F45D857920; to 'ScalarConstraint' at 
+0x000001F45D819390>,
+    'x9': <weakref at 0x000001F45D2FE070; to 'ScalarConstraint' at 
+0x000001F45D8198D0>
+}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001F45D8023D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001F45D802650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001F45D819460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001F45D8194D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+ERROR: evaluating object as numeric value: 变量x
+        (object: <class 'pyomo.core.base.var.ScalarVar'>)
+    No value for uninitialized NumericValue object 变量x
+Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 377, in <module>
+    varValue = value(varObj)
+               ^^^^^^^^^^^^^
+  File "pyomo\core\expr\numvalue.pyx", line 153, in pyomo.core.expr.numvalue.value
+  File "pyomo\core\expr\numvalue.pyx", line 140, in pyomo.core.expr.numvalue.value
+ValueError: No value for uninitialized NumericValue object 变量x
