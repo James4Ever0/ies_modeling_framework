@@ -1,0 +1,157 @@
+WARNING: Constant objective detected, replacing with a placeholder to prevent
+    solver failure.
+
+Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 12.8.0.0
+  with Simplex, Mixed Integer & Barrier Optimizers
+5725-A06 5725-A29 5724-Y48 5724-Y49 5724-Y54 5724-Y55 5655-Y21
+Copyright IBM Corp. 1988, 2017.  All Rights Reserved.
+
+Type 'help' for a list of available commands.
+Type 'help' followed by a command name for more
+information on commands.
+
+CPLEX> Logfile 'cplex.log' closed.
+Logfile 'no_obj_solver_cplex_warmstart.log' open.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmppatskeoy.pyomo.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+CPLEX> Not a mixed integer problem.
+No file read.
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmppatskeoy.pyomo.lp
+Objective sense      : Minimize
+Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
+Objective nonzeros   :       0
+Linear constraints   :       2  [Greater: 1,  Equal: 1]
+  Nonzeros           :       3
+  RHS nonzeros       :       2
+
+Variables            : Min LB: -10.00000        Max UB: 10.00000       
+Objective nonzeros   : Min   : all zero         Max   : all zero       
+Linear constraints   :
+  Nonzeros           : Min   : 1.000000         Max   : 1.000000       
+  RHS nonzeros       : Min   : 1.000000         Max   : 10.00000       
+CPLEX> Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 3 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (1.40 ticks/sec)
+
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp3g9cwcov.cplex.sol'.
+CPLEX> X=10.0, Y=0.0
+
+======================================================================
+
+Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 12.8.0.0
+  with Simplex, Mixed Integer & Barrier Optimizers
+5725-A06 5725-A29 5724-Y48 5724-Y49 5724-Y54 5724-Y55 5655-Y21
+Copyright IBM Corp. 1988, 2017.  All Rights Reserved.
+
+Type 'help' for a list of available commands.
+Type 'help' followed by a command name for more
+information on commands.
+
+CPLEX> Logfile 'cplex.log' closed.
+Logfile 'unbound_solver_cplex_warmstart.log' open.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpka06d58l.pyomo.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+CPLEX> Not a mixed integer problem.
+No file read.
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpka06d58l.pyomo.lp
+Objective sense      : Minimize
+Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
+Objective nonzeros   :       5
+Linear constraints   :       2  [Greater: 1,  Equal: 1]
+  Nonzeros           :       3
+  RHS nonzeros       :       2
+
+Variables            : Min LB: -10.00000        Max UB: 10.00000       
+Objective nonzeros   : Min   : 1.000000         Max   : 5.000000       
+Linear constraints   :
+  Nonzeros           : Min   : 1.000000         Max   : 1.000000       
+  RHS nonzeros       : Min   : 1.000000         Max   : 10.00000       
+CPLEX> Dual infeasible due to empty column 'x3'.
+Presolve time = 0.00 sec. (0.00 ticks)
+Presolve - Unbounded or infeasible.
+Solution time =    0.00 sec.
+Deterministic time = 0.00 ticks  (0.34 ticks/sec)
+CPLEX> CPLEX Error  1217: No solution exists.
+No file written.
+CPLEX> 
+======================================================================
+
+Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 12.8.0.0
+  with Simplex, Mixed Integer & Barrier Optimizers
+5725-A06 5725-A29 5724-Y48 5724-Y49 5724-Y54 5724-Y55 5655-Y21
+Copyright IBM Corp. 1988, 2017.  All Rights Reserved.
+
+Type 'help' for a list of available commands.
+Type 'help' followed by a command name for more
+information on commands.
+
+CPLEX> Logfile 'cplex.log' closed.
+Logfile 'bound_solver_cplex_warmstart.log' open.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpww17f5l0.pyomo.lp' read.
+Read time = 0.02 sec. (0.00 ticks)
+CPLEX> Not a mixed integer problem.
+No file read.
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpww17f5l0.pyomo.lp
+Objective sense      : Minimize
+Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
+Objective nonzeros   :       5
+Linear constraints   :       3  [Greater: 1,  Equal: 2]
+  Nonzeros           :       8
+  RHS nonzeros       :       3
+
+Variables            : Min LB: -1.000000e+08    Max UB: 1.000000e+08   
+Objective nonzeros   : Min   : 1.000000         Max   : 5.000000       
+Linear constraints   :
+  Nonzeros           : Min   : 1.000000         Max   : 4.000000       
+  RHS nonzeros       : Min   : 1.000000         Max   : 10.00000       
+CPLEX> Tried aggregator 1 time.
+LP Presolve eliminated 3 rows and 6 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective = -1.0000000000e+08
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (2.64 ticks/sec)
+
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpu6f7pe43.cplex.sol'.
+CPLEX> UNBOUND TERMINATION CONDITION: unbounded
+BOUND TERMINATION CONDITION: optimal
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000021110C20750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000021110C204D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000021110C342E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000021110C34350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+========================VAR NAME TO VAR VALUE=========================
+reversed: False
+
+z[0]	-25000006.25
+变量y	0.0
+z[1]	0.0
+变量x	10.0
+========================VAR NAME TO VAR VALUE=========================
+reversed: True
+
+变量x	10.0
+变量y	0.0
+z[1]	0.0
+z[0]	-25000006.25
+========================VAR NAME TO TERM VALUE========================
+reversed: False
+
+z[0]	-100000025.0
+变量y	0.0
+z[1]	0.0
+变量x	20.0
+========================VAR NAME TO TERM VALUE========================
+reversed: True
+
+变量x	20.0
+变量y	0.0
+z[1]	0.0
+z[0]	-100000025.0
+
+(OBJ - OBJ_CONST)? -100000005.0
+OBJ? -100000000.0
+OBJ_CONST? 5
+solver smap ids: [2272318982928, 2272318985936, 2272318991824]

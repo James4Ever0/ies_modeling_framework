@@ -1,0 +1,160 @@
+SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
+Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
+
+External libraries: 
+  Soplex 6.0.4         Linear Programming Solver developed at Zuse Institute Berlin (soplex.zib.de) [GitHash: 950b1658]
+  CppAD 20180000.0     Algorithmic Differentiation of C++ algorithms developed by B. Bell (github.com/coin-or/CppAD)
+  ZLIB 1.2.13          General purpose compression library by J. Gailly and M. Adler (zlib.net)
+  AMPL/MP 4e2d45c4     AMPL .nl file reader library (github.com/ampl/mp)
+  PaPILO 2.1.3         parallel presolve for integer and linear optimization (github.com/scipopt/papilo) [GitHash: e15d7b2]
+  bliss 0.77           Computing Graph Automorphism Groups by T. Junttila and P. Kaski (www.tcs.hut.fi/Software/bliss/)
+  Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
+
+user parameter file <scip.set> not found - using default parameters
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp21ufzq6g.pyomo.nl>
+============
+
+original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
+
+solve problem
+=============
+
+feasible solution found by trivial heuristic after 0.0 seconds, objective value 0.000000e+00
+presolving:
+presolving (1 rounds: 1 fast, 0 medium, 0 exhaustive):
+ 1 deleted vars, 0 deleted constraints, 0 added constraints, 0 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
+ 0 implications, 0 cliques
+transformed 1/1 original solutions to the transformed problem space
+Presolving Time: 0.00
+
+SCIP Status        : problem is solved [optimal solution found]
+Solving Time (sec) : 0.00
+Solving Nodes      : 0
+Primal Bound       : +0.00000000000000e+00 (1 solutions)
+Dual Bound         : +0.00000000000000e+00
+Gap                : 0.00 %
+X=10.0, Y=100000.00000000001
+
+======================================================================
+SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
+Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
+
+External libraries: 
+  Soplex 6.0.4         Linear Programming Solver developed at Zuse Institute Berlin (soplex.zib.de) [GitHash: 950b1658]
+  CppAD 20180000.0     Algorithmic Differentiation of C++ algorithms developed by B. Bell (github.com/coin-or/CppAD)
+  ZLIB 1.2.13          General purpose compression library by J. Gailly and M. Adler (zlib.net)
+  AMPL/MP 4e2d45c4     AMPL .nl file reader library (github.com/ampl/mp)
+  PaPILO 2.1.3         parallel presolve for integer and linear optimization (github.com/scipopt/papilo) [GitHash: e15d7b2]
+  bliss 0.77           Computing Graph Automorphism Groups by T. Junttila and P. Kaski (www.tcs.hut.fi/Software/bliss/)
+  Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
+
+user parameter file <scip.set> not found - using default parameters
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpfobf5er6.pyomo.nl>
+============
+
+original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
+
+solve problem
+=============
+
+solution violates original bounds of variable <objconstant> [5,5] solution value <0>
+all 1 solutions given by solution candidate storage are infeasible
+
+feasible solution found by trivial heuristic after 0.0 seconds, objective value 4.000250e+05
+presolving:
+problem infeasible or unbounded: variable <t_x3> with objective 1 can be made infinitely small
+presolving (1 rounds: 1 fast, 0 medium, 0 exhaustive):
+ 1 deleted vars, 0 deleted constraints, 0 added constraints, 0 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
+ 0 implications, 0 cliques
+transformed 2/2 original solutions to the transformed problem space
+presolving detected unboundedness
+Presolving Time: 0.00
+
+SCIP Status        : problem is solved [unbounded]
+Solving Time (sec) : 0.00
+Solving Nodes      : 0
+Primal Bound       : -1.00000000000000e+20 (2 solutions)
+Dual Bound         : -1.00000000000000e+20
+Gap                : 0.00 %
+WARNING: Loading a SolverResults object with a warning status into
+    model.name="unknown";
+      - termination condition: unbounded
+      - message from solver: unbounded
+
+======================================================================
+SCIP version 8.0.4 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: Soplex 6.0.4] [GitHash: a8e51afd1e]
+Copyright (c) 2002-2023 Zuse Institute Berlin (ZIB)
+
+External libraries: 
+  Soplex 6.0.4         Linear Programming Solver developed at Zuse Institute Berlin (soplex.zib.de) [GitHash: 950b1658]
+  CppAD 20180000.0     Algorithmic Differentiation of C++ algorithms developed by B. Bell (github.com/coin-or/CppAD)
+  ZLIB 1.2.13          General purpose compression library by J. Gailly and M. Adler (zlib.net)
+  AMPL/MP 4e2d45c4     AMPL .nl file reader library (github.com/ampl/mp)
+  PaPILO 2.1.3         parallel presolve for integer and linear optimization (github.com/scipopt/papilo) [GitHash: e15d7b2]
+  bliss 0.77           Computing Graph Automorphism Groups by T. Junttila and P. Kaski (www.tcs.hut.fi/Software/bliss/)
+  Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
+
+user parameter file <scip.set> not found - using default parameters
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpyjhln7yx.pyomo.nl>
+============
+
+original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
+
+solve problem
+=============
+
+solution violates original bounds of variable <objconstant> [5,5] solution value <0>
+all 1 solutions given by solution candidate storage are infeasible
+
+presolving:
+(round 1, fast)       1 del vars, 0 del conss, 0 add conss, 1 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
+   (0.0s) running MILP presolver
+   (0.0s) MILP presolver (3 rounds): 1 aggregations, 4 fixings, 0 bound changes
+presolving (2 rounds: 2 fast, 1 medium, 1 exhaustive):
+ 6 deleted vars, 2 deleted constraints, 0 added constraints, 1 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
+ 0 implications, 0 cliques
+transformed 1/1 original solutions to the transformed problem space
+Presolving Time: 0.00
+
+SCIP Status        : problem is solved [optimal solution found]
+Solving Time (sec) : 0.00
+Solving Nodes      : 0
+Primal Bound       : -1.00000000000000e+08 (1 solutions)
+Dual Bound         : -1.00000000000000e+08
+Gap                : 0.00 %
+UNBOUND TERMINATION CONDITION: unbounded
+BOUND TERMINATION CONDITION: optimal
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002233AC10750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002233AC104D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002233AC202E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002233AC20350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+========================VAR NAME TO VAR VALUE=========================
+reversed: False
+
+z[0]	-25000006.25
+变量y	0.0
+z[1]	0.0
+变量x	10.0
+========================VAR NAME TO VAR VALUE=========================
+reversed: True
+
+变量x	10.0
+变量y	0.0
+z[1]	0.0
+z[0]	-25000006.25
+========================VAR NAME TO TERM VALUE========================
+reversed: False
+
+z[0]	-100000025.0
+变量y	0.0
+z[1]	0.0
+变量x	20.0
+========================VAR NAME TO TERM VALUE========================
+reversed: True
+
+变量x	20.0
+变量y	0.0
+z[1]	0.0
+z[0]	-100000025.0
+
+(OBJ - OBJ_CONST)? -100000005.0
+OBJ? -100000000.0
+OBJ_CONST? 5
+solver smap ids: [2350331952144, 2350332981968, 2350332982160]
