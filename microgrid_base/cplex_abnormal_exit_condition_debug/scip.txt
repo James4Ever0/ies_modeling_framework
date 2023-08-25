@@ -40,4 +40,55 @@ Gap                : 0.00 %
 <class 'pyomo.opt.results.results_.SolverResults'>
 > c:\python311\lib\site-packages\pyomo\core\base\pyomomodel.py(208)load_from()
 -> if (results.solver.status == SolverStatus.warning):
-(Pdb) 
+(Pdb) Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 187, in <module>
+    try:
+         
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 169, in solver_solve
+    with modelSolutionContext(model) as modelSolutionChecker:
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python311\Lib\site-packages\pyomo\opt\base\solvers.py", line 627, in solve
+    _model.solutions.load_from(
+  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 208, in load_from
+    if (results.solver.status == SolverStatus.warning):
+        ^^^^^^^
+  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 208, in load_from
+    if (results.solver.status == SolverStatus.warning):
+        ^^^^^^^
+  File "C:\Python311\Lib\bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python311\Lib\bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+                      ^^^^^^^^^^^^^
+bdb.BdbQuit
+Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 187, in <module>
+    try:
+        
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 169, in solver_solve
+    with modelSolutionContext(model) as modelSolutionChecker:
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python311\Lib\site-packages\pyomo\opt\base\solvers.py", line 627, in solve
+    _model.solutions.load_from(
+  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 208, in load_from
+    if (results.solver.status == SolverStatus.warning):
+        ^^^^^^^
+  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 208, in load_from
+    if (results.solver.status == SolverStatus.warning):
+        ^^^^^^^
+  File "C:\Python311\Lib\bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python311\Lib\bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+                      ^^^^^^^^^^^^^
+bdb.BdbQuit
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 194, in <module>
+    traceback.print_exc()
+    ^^^^^^^^^^^^^^^^^^^^^^
+Exception: solver scip does not support warmstart

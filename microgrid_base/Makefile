@@ -18,6 +18,7 @@ OS_TYPE = windows
 WINDOWS_SOLVERS_DIRS=$(shell python -c "import os;curdir=os.path.abspath(os.curdir);workfolder=os.path.dirname(os.path.dirname(curdir));solverdir=os.path.join(workfolder,'windows_solvers');pathaddons=';'.join([os.path.join(solverdir,os.path.join(e,'bin')) for e in ['scip','cbc','ipopt']]);print(pathaddons)")
 export PATH := ${WINDOWS_SOLVERS_DIRS};$(PATH)
 else
+CONDA_EXEC = conda
 OS_TYPE = macos
 endif
 
@@ -27,14 +28,16 @@ ifeq (${OS_TYPE}, macos)
 CONDA_ENV = rosetta
 PYTHON = /usr/bin/python3
 GSUDO = 
+NO_GSUDO = 
 else
 CONDA_ENV = cplex
 PYTHON = python ${PYTHON_ENV}
 GSUDO = gsudo
+NO_GSUDO = gsudo -k
 $(shell gsudo cache on)
 endif
 
-CONDA = conda run -n ${CONDA_ENV} --live-stream --no-capture-output
+CONDA = ${CONDA_EXEC} run -n ${CONDA_ENV} --live-stream --no-capture-output
 
 run_in_conda_env = conda run -n $(1) --live-stream --no-capture-output python
 
@@ -229,16 +232,22 @@ warmstart_solvers=cbc cplex
 # it will cause trouble if previous problematic solution is still there.
 # maybe it is also true for scip.
 
+CD_TEST_DEBUG_DIR=cd cplex_abnormal_exit_condition_debug &&
+
 define run_test_alternative_solver
 
-	cd cplex_abnormal_exit_condition_debug && for solver in $(oss_solvers); do \
+	${CD_TEST_DEBUG_DIR} for solver in $(oss_solvers); do \
 		$(call run_alternative_solver,$${solver},0); \
 	done
 
-	cd cplex_abnormal_exit_condition_debug && for solver in $(warmstart_solvers); do \
+	${CD_TEST_DEBUG_DIR} for solver in $(warmstart_solvers); do \
 		$(call run_alternative_solver,$${solver},1); \
 	done
 endef
 
 test_alternative_solver:
 	$(call run_test_alternative_solver)
+
+test_persistent_solver:
+	# ${NO_GSUDO}
+	${CD_TEST_DEBUG_DIR} ${CONDA} python scip_persistent.py

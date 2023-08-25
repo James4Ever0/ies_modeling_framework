@@ -155,6 +155,7 @@ solver_name_base = solver_name.split("_")[0]
 # solver.options["warm_start_init_point"] = True
 
 # scan for "Number of Iterations" in output. get the number and set it here. (n-1)
+# ref: https://coin-or.github.io/Ipopt/OPTIONS.html#OPT_Termination
 if solver_name_base == "ipopt":
     # solver.options['acceptable_iter'] = 10
     # solver.options['max_iter'] = 10
