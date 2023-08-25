@@ -1,5 +1,4 @@
-Ipopt 3.14.12: acceptable_iter=10
-
+Ipopt 3.14.12: 
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -52,11 +51,10 @@ Number of Lagrangian Hessian evaluations             = 5
 Total seconds in IPOPT                               = 0.009
 
 EXIT: Optimal Solution Found.
-X=9.450397207148868e-16, Y=584.6311979842062
+X=9.450397207148868e-16, Y=584.6311979842062
 
 ======================================================================
-Ipopt 3.14.12: acceptable_iter=10
-
+Ipopt 3.14.12: 
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -137,32 +135,118 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.041
+Total seconds in IPOPT                               = 0.045
 
 EXIT: Iterates diverging; problem might be unbounded.
-WARNING: Loading a SolverResults object with a warning status into
+WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: Ipopt 3.14.12\x3a Iterates diverging; problem
         might be unbounded.
-> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(111)<module>()
--> smap_ids.append(solver._smap_id)
-(Pdb) *** NameError: name 'result_unbounded' is not defined
-(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 1, 'Number of variables': 4, 'Sense': 'unknown'}], 'Solver': [{'Status': 'warning', 'Message': 'Ipopt 3.14.12\\x3a Iterates diverging; problem might be unbounded.', 'Termination condition': 'unbounded', 'Id': 300, 'Error rc': 0, 'Time': 0.07832670211791992}]}
-(Pdb) <built-in function value>
-(Pdb) *** AttributeError: 'ConcreteModel' object has no attribute 'x'
-(Pdb) 9.450397207148868e-16
-(Pdb) 584.6311979842062
-(Pdb) ERROR: evaluating object as numeric value: z
-        (object: <class 'pyomo.core.base.var.IndexedVar'>)
-    'IndexedVar' object is not callable
-*** TypeError: 'IndexedVar' object is not callable
-(Pdb) ERROR: evaluating object as numeric value: z[0]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[0]
-*** ValueError: No value for uninitialized NumericValue object z[0]
-(Pdb) ERROR: evaluating object as numeric value: z[1]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[1]
-*** ValueError: No value for uninitialized NumericValue object z[1]
-(Pdb) 
+
+======================================================================
+Ipopt 3.14.12: 
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+This is Ipopt version 3.14.12, running with linear solver MUMPS 5.5.1.
+
+Number of nonzeros in equality constraint Jacobian...:        5
+Number of nonzeros in inequality constraint Jacobian.:        2
+Number of nonzeros in Lagrangian Hessian.............:        0
+
+Total number of variables............................:        5
+                     variables with only lower bounds:        0
+                variables with lower and upper bounds:        2
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:        1
+Total number of inequality constraints...............:        1
+        inequality constraints with only lower bounds:        1
+   inequality constraints with lower and upper bounds:        0
+        inequality constraints with only upper bounds:        0
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  2.3435248e+03 2.34e+03 8.85e-01  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1 -9.3425566e+03 0.00e+00 9.34e-01  -1.0 9.34e+03  -4.0 9.44e-01 1.00e+00f  1
+   2 -3.7743347e+04 6.55e-11 9.47e-01  -1.0 2.84e+04  -4.5 9.90e-01 1.00e+00f  1
+   3 -1.1294231e+05 0.00e+00 9.45e-01  -1.0 8.50e+04  -5.0 9.89e-01 8.84e-01f  1
+   4 -3.6794250e+05 0.00e+00 9.44e-01  -1.0 2.55e+05  -5.4 9.88e-01 1.00e+00f  1
+   5 -1.1329425e+06 0.00e+00 9.44e-01  -1.0 7.65e+05  -5.9 1.00e+00 1.00e+00f  1
+   6 -3.4279427e+06 0.00e+00 9.44e-01  -1.7 2.30e+06  -6.4 1.00e+00 1.00e+00f  1
+   7 -1.0312943e+07 1.86e-09 9.44e-01  -1.7 6.89e+06  -6.9 1.00e+00 1.00e+00f  1
+   8 -3.0967943e+07 0.00e+00 9.44e-01  -1.7 2.07e+07  -7.3 1.00e+00 1.00e+00f  1
+   9 -9.2932943e+07 0.00e+00 9.44e-01  -1.7 6.20e+07  -7.8 1.00e+00 1.00e+00f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10 -9.9929329e+07 0.00e+00 9.44e-01  -1.7 1.86e+08  -8.3 1.00e+00 3.76e-02f  1
+  11 -9.9999293e+07 0.00e+00 9.44e-01  -1.7 5.58e+08  -8.8 1.00e+00 1.25e-04f  1
+  12 -9.9999993e+07 1.49e-08 2.22e-01  -1.7 5.26e+06  -9.2 9.93e-01 1.33e-04f  1
+  13 -1.0000000e+08 0.00e+00 3.80e-03  -1.7 1.83e+01  -9.7 9.90e-01 9.83e-01f  1
+  14 -1.0000000e+08 0.00e+00 4.95e-08  -2.5 1.27e+02 -10.2 1.00e+00 1.00e+00f  1
+  15 -1.0000000e+08 0.00e+00 1.50e-09  -3.8 2.39e+03    -  1.00e+00 1.00e+00f  1
+  16 -1.0000000e+08 2.98e-08 2.58e-10  -5.7 1.15e+01 -10.7 1.00e+00 1.00e+00f  1
+In iteration 16, 1 Slack too small, adjusting variable bound
+  17 -1.0000000e+08 1.49e-08 3.45e-13  -8.6 4.67e-02 -11.2 1.00e+00 1.00e+00h  1
+In iteration 17, 1 Slack too small, adjusting variable bound
+  18 -1.0000000e+08 0.00e+00 4.15e-13  -9.0 1.79e-01 -11.6 1.00e+00 1.00e+00h  1
+
+Number of Iterations....: 18
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -1.0000000000010000e+08   -1.0000000000010000e+08
+Dual infeasibility......:   4.1548065804772796e-13    4.1548065804772796e-13
+Constraint violation....:   0.0000000000000000e+00    0.0000000000000000e+00
+Variable bound violation:   1.0000169277191162e-04    1.0000169277191162e-04
+Complementarity.........:   9.3768004721381378e-10    9.3768004721381378e-10
+Overall NLP error.......:   9.3768004721381378e-10    9.3768004721381378e-10
+
+
+Number of objective function evaluations             = 19
+Number of objective gradient evaluations             = 19
+Number of equality constraint evaluations            = 19
+Number of inequality constraint evaluations          = 19
+Number of equality constraint Jacobian evaluations   = 19
+Number of inequality constraint Jacobian evaluations = 19
+Number of Lagrangian Hessian evaluations             = 18
+Total seconds in IPOPT                               = 0.026
+
+EXIT: Optimal Solution Found.
+UNBOUND TERMINATION CONDITION: unbounded
+BOUND TERMINATION CONDITION: optimal
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002493CCF0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002493CCF04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002493CD04350>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002493CD043C0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+========================VAR NAME TO VAR VALUE=========================
+reversed: False
+
+z[0]	-23531951.477102254
+z[1]	-5882390.263707208
+变量x	0.3579839061235792
+变量y	2547.614012101566
+========================VAR NAME TO VAR VALUE=========================
+reversed: True
+
+变量y	2547.614012101566
+变量x	0.3579839061235792
+z[1]	-5882390.263707208
+z[0]	-23531951.477102254
+========================VAR NAME TO TERM VALUE========================
+reversed: False
+
+z[0]	-94127805.90840901
+z[1]	-5882390.263707208
+变量x	0.7159678122471584
+变量y	10190.456048406264
+========================VAR NAME TO TERM VALUE========================
+reversed: True
+
+变量y	10190.456048406264
+变量x	0.7159678122471584
+z[1]	-5882390.263707208
+z[0]	-94127805.90840901
+
+(OBJ - OBJ_CONST)? -100000005.0001
+OBJ? -100000000.0001
+OBJ_CONST? 5
+solver smap ids: [2513017458832, 2513576211792, 2513576235536]

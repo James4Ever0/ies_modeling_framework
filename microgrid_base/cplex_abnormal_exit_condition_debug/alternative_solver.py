@@ -24,6 +24,8 @@ if warm_start:
     x.set_value(0.5)
     y.set_value(0.5)
 model.constraint_x_y = Constraint(expr=x + y >= 10)
+model.constraint_x_y_inv = Constraint(expr=x + y <=9)
+model.constraint_x_y_inv.deactivate()
 z = model.z = Var([0, 1])
 
 x.setlb(-10)
@@ -65,9 +67,16 @@ solver_name_base = solver_name.split("_")[0]
 # pass interactive options instead of commandline option.
 # solver.options["warm_start_init_point"] = True
 
+# scan for "Number of Iterations" in output. get the number and set it here. (n-1)
 if solver_name_base == 'ipopt':
-    solver.options['acceptable_iter'] = 10
+    ...
+    # solver.options['acceptable_iter'] = 10
     # solver.options['max_iter'] = 10
+    # solver.options['max_iter'] = 15
+    # solver.options['max_iter'] = 33-1
+    # solver.options['diverging_iterates_tol'] = 1e10
+    # solver.options['tol'] = 1e30
+    # solver.options['inf_pr_output'] = 'internal'
 
 def solver_solve(*args, **kwargs):
     return solver.solve(
@@ -105,8 +114,8 @@ result_unbound = solver_solve(
     model, tee=True, logfile=f"unbound_solver_{solver_name}.log"
 )
 
-if solver_name_base == "ipopt":
-    breakpoint()
+# if solver_name_base == "ipopt":
+#     breakpoint()
 
 smap_ids.append(solver._smap_id)
 
@@ -124,6 +133,8 @@ model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
 # model.bound_obj.activate()
 result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
+
+breakpoint()
 
 # you still need to set time limit options over this.
 
