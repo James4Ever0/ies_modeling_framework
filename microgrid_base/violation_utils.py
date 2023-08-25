@@ -290,8 +290,13 @@ from typing import Tuple
 
 # do not use this. we need the data.
 # from pydantic import PrivateAttr
-from functools import cached_property
-from pydantic import 
+
+# from functools import cached_property
+
+# not avaliable on pydantic v1
+# ref: https://docs.pydantic.dev/latest/usage/computed_fields
+# from pydantic import computed_field
+
 
 class PiecewiseInfo(BaseModel):
     piecewiseName: str

@@ -69,7 +69,6 @@ with open("frontend_sim_param_translation.json", "r") as f:
 from pandas import DataFrame
 from topo_check import 拓扑图
 
-
 ###
 def 导出结果表_格式化(
     结果表: DataFrame, 字符串表头: List[str], 翻译表: Dict[str, str], columns: List[str]
