@@ -11,9 +11,29 @@ from pyomo.environ import *
 import os
 
 
+def clearModelVariableValues(model:ConcreteModel):
+    for v in model.component_data_objects(ctype=Var, active=True, descend_into=True):
+        v: Var
+        v.clear() # clear value.
+
+import pytz
+
+# with respect to our dearly Py3.6
+timezone_str = "Asia/Shanghai"
+# timezone = pytz.timezone(timezone_str:='Asia/Shanghai')
+timezone = pytz.timezone(timezone_str)
+# import logging
+import datetime
+
+now = datetime.datetime.now(tz=timezone)
+print("Now is " + now.isoformat())
+
 solver_name = os.environ["SOLVER_NAME"]
 warm_start = os.environ.get("WARM_START", None) is not None
 
+print("running solver " + solver_name)
+print(f"warm start? {repr(warm_start)}")
+print("="*60)
 # that is during presolve, not during solve.
 # from pyomo.contrib.iis import write_iis
 
@@ -24,7 +44,7 @@ if warm_start:
     x.set_value(0.5)
     y.set_value(0.5)
 model.constraint_x_y = Constraint(expr=x + y >= 10)
-model.constraint_x_y_inv = Constraint(expr=x + y <=9)
+model.constraint_x_y_inv = Constraint(expr=x + y <= 9)
 model.constraint_x_y_inv.deactivate()
 z = model.z = Var([0, 1])
 
@@ -68,15 +88,15 @@ solver_name_base = solver_name.split("_")[0]
 # solver.options["warm_start_init_point"] = True
 
 # scan for "Number of Iterations" in output. get the number and set it here. (n-1)
-if solver_name_base == 'ipopt':
-    ...
+if solver_name_base == "ipopt":
     # solver.options['acceptable_iter'] = 10
     # solver.options['max_iter'] = 10
-    # solver.options['max_iter'] = 15
+    solver.options["max_iter"] = 3000
     # solver.options['max_iter'] = 33-1
     # solver.options['diverging_iterates_tol'] = 1e10
     # solver.options['tol'] = 1e30
     # solver.options['inf_pr_output'] = 'internal'
+
 
 def solver_solve(*args, **kwargs):
     return solver.solve(
@@ -111,13 +131,38 @@ model.no_obj.deactivate()
 model.obj.activate()
 # model.bound_obj.deactivate()
 result_unbound = solver_solve(
-    model, tee=True, logfile=f"unbound_solver_{solver_name}.log"
+    model, tee=True, logfile=(unbound_logfile := f"unbound_solver_{solver_name}.log")
 )
-
-# if solver_name_base == "ipopt":
-#     breakpoint()
+import re
 
 smap_ids.append(solver._smap_id)
+
+ITERATION_KW = "Number of Iterations"
+if solver_name_base == "ipopt":
+    # these are forced exits. could get results nevertheless.
+    if result_unbound.solver.termination_condition not in [
+        TerminationCondition.maxIterations,
+        TerminationCondition.maxTimeLimit,
+        TerminationCondition.maxEvaluations,  # what is this?
+    ]:
+        with open(unbound_logfile, "r") as f:
+            content = f.read()
+            content_lines = content.split("\n")
+            for line in content_lines:
+                if ITERATION_KW in line:
+                    iteration = re.search(r"\d+", line).group()
+                    print("ITERATION: ", iteration)
+                    solver.options["max_iter"] = int(iteration) - 1
+                    result_unbound_rerun = solver_solve(
+                        model,
+                        tee=True,
+                        logfile=(
+                            unbound_logfile := f"unbound_solver_{solver_name}_rerun.log"
+                        ),
+                    )
+                    smap_ids.append(solver._smap_id)
+                    break
+
 
 print()
 print("=" * 70)
@@ -134,12 +179,20 @@ model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
 result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
 
-if solver_name_base == 'ipopt':
+if solver_name_base == "ipopt":
     breakpoint()
 
 # you still need to set time limit options over this.
 
 print("UNBOUND TERMINATION CONDITION:", result_unbound.solver.termination_condition)
+
+if solver_name_base == "ipopt":
+    if "result_unbound_rerun" in globals().keys():
+        print(
+            "UNBOUND RERUN TERMINATION CONDITION:",
+            result_unbound_rerun.solver.termination_condition,
+        )
+
 print("BOUND TERMINATION CONDITION:", result_bound.solver.termination_condition)
 
 # now analyze what variable is doing havoc to the model.

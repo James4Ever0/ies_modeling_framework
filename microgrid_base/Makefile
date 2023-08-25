@@ -219,11 +219,15 @@ define run_alternative_solver
 		warm_start=; \
 		logfile_name=$${solver}; \
 	fi; \
-	env SOLVER_NAME=$1 $${warm_start} $${PYTHON} alternative_solver.py | tee $${logfile_name}.txt 
+	env SOLVER_NAME=$1 $${warm_start} $${PYTHON} alternative_solver.py 2>&1 | tee $${logfile_name}.txt 
 endef
 
 oss_solvers=scip cbc ipopt
 warmstart_solvers=cbc cplex
+
+# ipopt supports warmstart by default. just pass values to variable 'initialize' parameter
+# it will cause trouble if previous problematic solution is still there.
+# maybe it is also true for scip.
 
 define run_test_alternative_solver
 

@@ -1,4 +1,9 @@
-Ipopt 3.14.12: 
+Now is 2023-08-25T13:39:03.928792+08:00
+running solver ipopt
+warm start? False
+============================================================
+Ipopt 3.14.12: max_iter=3000
+
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -48,13 +53,14 @@ Number of inequality constraint evaluations          = 6
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 6
 Number of Lagrangian Hessian evaluations             = 5
-Total seconds in IPOPT                               = 0.009
+Total seconds in IPOPT                               = 0.017
 
 EXIT: Optimal Solution Found.
-X=9.450397207148868e-16, Y=584.6311979842062
+X=9.450397207148868e-16, Y=584.6311979842062
 
 ======================================================================
-Ipopt 3.14.12: 
+Ipopt 3.14.12: max_iter=3000
+
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -135,17 +141,108 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.049
+Total seconds in IPOPT                               = 0.072
 
 EXIT: Iterates diverging; problem might be unbounded.
-WARNING: Loading a SolverResults object with a warning status into
+WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: Ipopt 3.14.12\x3a Iterates diverging; problem
         might be unbounded.
+ITERATION:  33
+Ipopt 3.14.12: max_iter=32
+
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+This is Ipopt version 3.14.12, running with linear solver MUMPS 5.5.1.
+
+Number of nonzeros in equality constraint Jacobian...:        0
+Number of nonzeros in inequality constraint Jacobian.:        2
+Number of nonzeros in Lagrangian Hessian.............:        0
+
+Total number of variables............................:        4
+                     variables with only lower bounds:        0
+                variables with lower and upper bounds:        1
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:        0
+Total number of inequality constraints...............:        1
+        inequality constraints with only lower bounds:        1
+   inequality constraints with lower and upper bounds:        0
+        inequality constraints with only upper bounds:        0
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  2.3435248e+03 0.00e+00 4.00e+00  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1 -4.6860024e+04 0.00e+00 4.00e+00  -1.0 4.00e+04  -4.0 5.25e-01 2.76e-01f  1
+   2 -2.8922167e+05 0.00e+00 4.00e+00  -1.0 1.20e+05  -4.5 6.80e-01 4.75e-01f  1
+   3 -1.6343495e+06 0.00e+00 4.00e+00  -1.0 3.60e+05  -5.0 1.00e+00 8.79e-01f  1
+   4 -6.2243495e+06 0.00e+00 4.00e+00  -1.0 1.08e+06  -5.4 1.00e+00 1.00e+00f  1
+   5 -1.9994349e+07 0.00e+00 4.00e+00  -1.0 3.24e+06  -5.9 1.00e+00 1.00e+00f  1
+   6 -6.1304349e+07 0.00e+00 4.00e+00  -1.0 9.72e+06  -6.4 1.00e+00 1.00e+00f  1
+   7 -1.8523435e+08 0.00e+00 4.00e+00  -1.0 2.92e+07  -6.9 1.00e+00 1.00e+00f  1
+   8 -5.5702435e+08 0.00e+00 4.00e+00  -1.0 8.75e+07  -7.3 1.00e+00 1.00e+00f  1
+   9 -1.6723943e+09 0.00e+00 4.00e+00  -1.0 2.62e+08  -7.8 1.00e+00 1.00e+00f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10 -5.0185043e+09 0.00e+00 4.00e+00  -1.0 7.87e+08  -8.3 1.00e+00 1.00e+00f  1
+  11 -1.5056834e+10 0.00e+00 4.00e+00  -1.0 2.36e+09  -8.8 1.00e+00 1.00e+00f  1
+  12 -4.5171824e+10 0.00e+00 4.00e+00  -1.0 7.09e+09  -9.2 1.00e+00 1.00e+00f  1
+  13 -1.3551679e+11 0.00e+00 4.00e+00  -1.0 2.13e+10  -9.7 1.00e+00 1.00e+00f  1
+  14 -4.0655170e+11 0.00e+00 4.00e+00  -1.0 6.38e+10 -10.2 1.00e+00 1.00e+00f  1
+  15 -1.2196564e+12 0.00e+00 4.00e+00  -1.0 1.91e+11 -10.7 1.00e+00 1.00e+00f  1
+  16 -3.6589706e+12 0.00e+00 4.00e+00  -1.0 5.74e+11 -11.2 1.00e+00 1.00e+00f  1
+  17 -1.0976913e+13 0.00e+00 4.00e+00  -1.0 1.72e+12 -11.6 1.00e+00 1.00e+00f  1
+  18 -3.2930741e+13 0.00e+00 4.00e+00  -1.0 5.17e+12 -12.1 1.00e+00 1.00e+00f  1
+  19 -9.8792224e+13 0.00e+00 4.00e+00  -1.0 1.55e+13 -12.6 1.00e+00 1.00e+00f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  20 -2.9637667e+14 0.00e+00 4.00e+00  -1.0 4.65e+13 -13.1 1.00e+00 1.00e+00f  1
+  21 -8.8913002e+14 0.00e+00 4.00e+00  -1.0 1.39e+14 -13.5 1.00e+00 1.00e+00f  1
+  22 -2.6673901e+15 0.00e+00 4.00e+00  -1.0 4.18e+14 -14.0 1.00e+00 1.00e+00f  1
+  23 -8.0021702e+15 0.00e+00 4.00e+00  -1.0 1.26e+15 -14.5 1.00e+00 1.00e+00f  1
+  24 -2.4006511e+16 0.00e+00 4.00e+00  -1.0 3.77e+15 -15.0 1.00e+00 1.00e+00f  1
+  25 -7.2019532e+16 0.00e+00 4.00e+00  -1.0 1.13e+16 -15.5 1.00e+00 1.00e+00f  1
+  26 -2.1605860e+17 0.00e+00 4.00e+00  -1.0 3.39e+16 -15.9 1.00e+00 1.00e+00f  1
+  27 -6.4817579e+17 0.00e+00 4.00e+00  -1.0 1.02e+17 -16.4 1.00e+00 1.00e+00f  1
+  28 -1.9445274e+18 0.00e+00 4.00e+00  -1.0 3.05e+17 -16.9 1.00e+00 1.00e+00f  1
+  29 -5.8335821e+18 0.00e+00 4.00e+00  -1.0 9.15e+17 -17.4 1.00e+00 1.00e+00f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  30 -1.7500746e+19 0.00e+00 4.00e+00  -1.0 2.75e+18 -17.8 1.00e+00 1.00e+00f  1
+  31 -5.2502239e+19 0.00e+00 4.00e+00  -1.0 8.24e+18 -18.3 1.00e+00 1.00e+00f  1
+  32 -1.5750672e+20 0.00e+00 4.00e+00  -1.0 2.47e+19 -18.8 1.00e+00 1.00e+00f  1
+
+Number of Iterations....: 32
+
+                                   (scaled)                 (unscaled)
+Objective...............:  -1.5750671605240611e+20   -1.5750671605240611e+20
+Dual infeasibility......:   4.0000000000000000e+00    4.0000000000000000e+00
+Constraint violation....:   0.0000000000000000e+00    0.0000000000000000e+00
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0000000000000085e-01    1.0000000000000085e-01
+Overall NLP error.......:   4.0000000000000000e+00    4.0000000000000000e+00
+
+
+Number of objective function evaluations             = 33
+Number of objective gradient evaluations             = 33
+Number of equality constraint evaluations            = 0
+Number of inequality constraint evaluations          = 33
+Number of equality constraint Jacobian evaluations   = 0
+Number of inequality constraint Jacobian evaluations = 33
+Number of Lagrangian Hessian evaluations             = 32
+Total seconds in IPOPT                               = 0.066
+
+EXIT: Maximum Number of Iterations Exceeded.
+WARNING: Loading a SolverResults object with a warning status into
+    model.name="unknown";
+      - termination condition: maxIterations
+      - message from solver: Ipopt 3.14.12\x3a Maximum Number of Iterations
+        Exceeded.
 
 ======================================================================
-Ipopt 3.14.12: 
+Ipopt 3.14.12: max_iter=32
+
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -170,53 +267,40 @@ Total number of inequality constraints...............:        1
         inequality constraints with only upper bounds:        0
 
 iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
-   0  2.3435248e+03 2.34e+03 8.85e-01  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
-   1 -9.3425566e+03 0.00e+00 9.34e-01  -1.0 9.34e+03  -4.0 9.44e-01 1.00e+00f  1
-   2 -3.7743347e+04 6.55e-11 9.47e-01  -1.0 2.84e+04  -4.5 9.90e-01 1.00e+00f  1
-   3 -1.1294231e+05 0.00e+00 9.45e-01  -1.0 8.50e+04  -5.0 9.89e-01 8.84e-01f  1
-   4 -3.6794250e+05 0.00e+00 9.44e-01  -1.0 2.55e+05  -5.4 9.88e-01 1.00e+00f  1
-   5 -1.1329425e+06 0.00e+00 9.44e-01  -1.0 7.65e+05  -5.9 1.00e+00 1.00e+00f  1
-   6 -3.4279427e+06 0.00e+00 9.44e-01  -1.7 2.30e+06  -6.4 1.00e+00 1.00e+00f  1
-   7 -1.0312943e+07 1.86e-09 9.44e-01  -1.7 6.89e+06  -6.9 1.00e+00 1.00e+00f  1
-   8 -3.0967943e+07 0.00e+00 9.44e-01  -1.7 2.07e+07  -7.3 1.00e+00 1.00e+00f  1
-   9 -9.2932943e+07 0.00e+00 9.44e-01  -1.7 6.20e+07  -7.8 1.00e+00 1.00e+00f  1
-iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
-  10 -9.9929329e+07 0.00e+00 9.44e-01  -1.7 1.86e+08  -8.3 1.00e+00 3.76e-02f  1
-  11 -9.9999293e+07 0.00e+00 9.44e-01  -1.7 5.58e+08  -8.8 1.00e+00 1.25e-04f  1
-  12 -9.9999993e+07 1.49e-08 2.22e-01  -1.7 5.26e+06  -9.2 9.93e-01 1.33e-04f  1
-  13 -1.0000000e+08 0.00e+00 3.80e-03  -1.7 1.83e+01  -9.7 9.90e-01 9.83e-01f  1
-  14 -1.0000000e+08 0.00e+00 4.95e-08  -2.5 1.27e+02 -10.2 1.00e+00 1.00e+00f  1
-  15 -1.0000000e+08 0.00e+00 1.50e-09  -3.8 2.39e+03    -  1.00e+00 1.00e+00f  1
-  16 -1.0000000e+08 2.98e-08 2.58e-10  -5.7 1.15e+01 -10.7 1.00e+00 1.00e+00f  1
-In iteration 16, 1 Slack too small, adjusting variable bound
-  17 -1.0000000e+08 1.49e-08 3.45e-13  -8.6 4.67e-02 -11.2 1.00e+00 1.00e+00h  1
-In iteration 17, 1 Slack too small, adjusting variable bound
-  18 -1.0000000e+08 0.00e+00 4.15e-13  -9.0 1.79e-01 -11.6 1.00e+00 1.00e+00h  1
+   0 -1.5750672e+20 1.58e+20 8.85e-01  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1r-1.5750672e+20 1.58e+20 9.99e+02  20.2 0.00e+00  -4.0 0.00e+00 5.66e-14R  2
+Restoration phase failed with unexpected solverreturn status 9
 
-Number of Iterations....: 18
+Number of Iterations....: 1
 
                                    (scaled)                 (unscaled)
-Objective...............:  -1.0000000000010000e+08   -1.0000000000010000e+08
-Dual infeasibility......:   4.1548065804772796e-13    4.1548065804772796e-13
-Constraint violation....:   0.0000000000000000e+00    0.0000000000000000e+00
-Variable bound violation:   1.0000169277191162e-04    1.0000169277191162e-04
-Complementarity.........:   9.3768004721381378e-10    9.3768004721381378e-10
-Overall NLP error.......:   9.3768004721381378e-10    9.3768004721381378e-10
+Objective...............:  -1.5750671605240611e+20   -1.5750671605240611e+20
+Dual infeasibility......:   4.0000000000000000e+00    4.0000000000000000e+00
+Constraint violation....:   1.5750671605240611e+20    1.5750671605240611e+20
+Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
+Complementarity.........:   1.0000000000010000e+08    1.0000000000010000e+08
+Overall NLP error.......:   1.5750671605240611e+20    1.5750671605240611e+20
 
 
-Number of objective function evaluations             = 19
-Number of objective gradient evaluations             = 19
-Number of equality constraint evaluations            = 19
-Number of inequality constraint evaluations          = 19
-Number of equality constraint Jacobian evaluations   = 19
-Number of inequality constraint Jacobian evaluations = 19
-Number of Lagrangian Hessian evaluations             = 18
-Total seconds in IPOPT                               = 0.033
+Number of objective function evaluations             = 4
+Number of objective gradient evaluations             = 3
+Number of equality constraint evaluations            = 4
+Number of inequality constraint evaluations          = 4
+Number of equality constraint Jacobian evaluations   = 3
+Number of inequality constraint Jacobian evaluations = 3
+Number of Lagrangian Hessian evaluations             = 1
+Total seconds in IPOPT                               = 0.009
 
-EXIT: Optimal Solution Found.
-> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(142)<module>()
--> print("UNBOUND TERMINATION CONDITION:", result_unbound.solver.termination_condition)
-(Pdb) [<pyomo.core.base.PyomoModel.ModelSolution object at 0x000001709A18F950>]
-(Pdb) *** AttributeError: 'list' object has no attribute '__dict__'
-(Pdb) {'_metadata': {'status': <SolutionStatus.optimal: 'optimal'>, 'message': 'Ipopt 3.14.12\\x3a Optimal Solution Found', 'gap': None}, '_entry': {'objective': {}, 'variable': {1583138080592: (<weakref at 0x000001709A44E2F0; to 'ScalarVar' at 0x000001709A620750>, {'Value': 0.3579839061235792}), 1583138079952: (<weakref at 0x000001709A2058F0; to 'ScalarVar' at 0x000001709A6204D0>, {'Value': 2547.614012101566}), 1583138145104: (<weakref at 0x000001709A1699E0; to '_GeneralVarData' at 0x000001709A630350>, {'Value': -23531951.477102254}), 1583138145216: (<weakref at 0x000001709A169940; to '_GeneralVarData' at 0x000001709A6303C0>, {'Value': -5882390.263707208}), 1583137535056: (<weakref at 0x000001709A1693A0; to 'ScalarVar' at 0x000001709A59B450>, {'Value': -100000000.0001})}, 'constraint': {}, 'problem': {}}}
-(Pdb) 
+EXIT: Restoration Failed!
+Traceback (most recent call last):
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 174, in <module>
+    result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 97, in solver_solve
+    return solver.solve(
+           ^^^^^^^^^^^^^
+  File "C:\Python311\Lib\site-packages\pyomo\opt\base\solvers.py", line 627, in solve
+    _model.solutions.load_from(
+  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 226, in load_from
+    raise ValueError("Cannot load a SolverResults object "
+ValueError: Cannot load a SolverResults object with bad status: error
