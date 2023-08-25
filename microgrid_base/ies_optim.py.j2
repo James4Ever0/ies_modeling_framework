@@ -2178,6 +2178,8 @@ class mDict(BaseModel):
                 "target": 31
             }])
 
+# TODO: 增加单典型日判断类型或者字段
+
 class EnergyFlowGraph(BaseModel):
     mDictList: List[mDict]
     residualEquipmentLife: confloat(ge=0) = Field(
