@@ -18,22 +18,31 @@ import weakref
 def getModelSolution(model: ConcreteModel):
     solution = {}
     for v in model.component_data_objects(ctype=Var, active=True, descend_into=True):
-        try:
-            varName = v.name
-            val = value(v)
+        varName = v.name
+        val = value(v, exception=None)
+        if val is not None:
             solution[varName] = val
-        except:
+        else:
             return None
     return solution
 
-NO_SOLUTION = [None, {}]
-def checkIfSolved(sol_before, sol_after):
 
-    if all([s not in  for s in [sol_before, sol_after]]):
-        return sol_before == sol_after
-    return False
+NULL_SOLUTIONS = [None, {}]
+
+is_null_solution = lambda sol: sol in NULL_SOLUTIONS
+
+
+def checkIfSolved(sol_before, sol_after):
+    if is_null_solution(sol_after):
+        return False
+    elif is_null_solution(sol_before):
+        return True
+    else:
+        return sol_before != sol_after
+
 
 from copy import deepcopy
+
 
 @contextmanager
 def modelSolutionContext(model):
@@ -67,7 +76,6 @@ def modelSolutionContext(model):
         del modelSolutionChecker
 
 
-
 def clearModelVariableValues(model: ConcreteModel):
     for v in model.component_data_objects(ctype=Var, active=True, descend_into=True):
         v: Var
@@ -84,7 +92,8 @@ timezone = pytz.timezone(timezone_str)
 import datetime
 
 now = datetime.datetime.now(tz=timezone)
-print("Now is " + now.isoformat())
+print("Current time: " + now.isoformat())
+print("=" * 60)
 
 solver_name = os.environ["SOLVER_NAME"]
 warm_start = os.environ.get("WARM_START", None) is not None
@@ -156,9 +165,10 @@ if solver_name_base == "ipopt":
     # solver.options['inf_pr_output'] = 'internal'
 
 
-def solver_solve(model:ConcreteModel,  **kwargs):
+def solver_solve(model: ConcreteModel, **kwargs):
     with modelSolutionContext(model) as modelSolutionChecker:
-        ret = solver.solve(model,
+        ret = solver.solve(
+            model,
             **kwargs,
             **(
                 dict(warmstart=True)
@@ -168,7 +178,7 @@ def solver_solve(model:ConcreteModel,  **kwargs):
             ),
         )
         solved = modelSolutionChecker.check()
-        ret['solved'] = solved
+        ret["solved"] = solved
         return ret
 
 
@@ -248,7 +258,7 @@ smap_ids.append(solver._smap_id)
 
 solverResultDiagosticInfo = (
     lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
-    % (banner, solverResult.solver.termination_condition, solverResult['solved'])
+    % (banner, solverResult.solver.termination_condition, solverResult["solved"])
 )
 printSolverResultDiagosticInfo = lambda banner, solverResult: print(
     solverResultDiagosticInfo(banner, solverResult)

@@ -1,10 +1,7 @@
-Now is 2023-08-25T14:57:06.179106+08:00
+Now is 2023-08-25T15:13:35.207380+08:00
 running solver ipopt
 warm start? False
 ============================================================
-ERROR: evaluating object as numeric value: 变量x
-        (object: <class 'pyomo.core.base.var.ScalarVar'>)
-    No value for uninitialized NumericValue object 变量x
 Ipopt 3.14.12: max_iter=3000
 
 
@@ -59,17 +56,9 @@ Number of Lagrangian Hessian evaluations             = 5
 Total seconds in IPOPT                               = 0.010
 
 EXIT: Optimal Solution Found.
-ERROR: evaluating object as numeric value: z[0]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[0]
-sol_0: None
-sol_1: None
 X=9.450397207148868e-16, Y=584.6311979842062
 
 ======================================================================
-ERROR: evaluating object as numeric value: z[0]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[0]
 Ipopt 3.14.12: max_iter=3000
 
 
@@ -152,23 +141,18 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.040
+Total seconds in IPOPT                               = 0.076
 
 EXIT: Iterates diverging; problem might be unbounded.
-WARNING: Loading a SolverResults object with a warning status into
+> c:\python311\lib\site-packages\pyomo\core\base\pyomomodel.py(208)load_from()
+-> tc = getattr(results.solver, 'termination_condition', None)
+(Pdb) 0
+(Pdb) WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: unbounded
       - message from solver: Ipopt 3.14.12\x3a Iterates diverging; problem
         might be unbounded.
-ERROR: evaluating object as numeric value: z[0]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[0]
-sol_0: None
-sol_1: None
 ITERATION:  33
-ERROR: evaluating object as numeric value: z[0]
-        (object: <class 'pyomo.core.base.var._GeneralVarData'>)
-    No value for uninitialized NumericValue object z[0]
 Ipopt 3.14.12: max_iter=32
 
 
@@ -250,21 +234,19 @@ Number of inequality constraint evaluations          = 33
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 33
 Number of Lagrangian Hessian evaluations             = 32
-Total seconds in IPOPT                               = 0.036
+Total seconds in IPOPT                               = 0.051
 
 EXIT: Maximum Number of Iterations Exceeded.
-WARNING: Loading a SolverResults object with a warning status into
+> c:\python311\lib\site-packages\pyomo\core\base\pyomomodel.py(208)load_from()
+-> tc = getattr(results.solver, 'termination_condition', None)
+(Pdb) 1
+(Pdb) WARNING: Loading a SolverResults object with a warning status into
     model.name="unknown";
       - termination condition: maxIterations
       - message from solver: Ipopt 3.14.12\x3a Maximum Number of Iterations
         Exceeded.
-sol_0: None
-sol_1: {'变量x': 9.950125099217509, '变量y': 0.07487479453249282, 'z[0]': -3.706040377703673e+19, 'z[1]': -9.265100944259183e+18}
 
 ======================================================================
-ERROR: evaluating object as numeric value: 变量x
-        (object: <class 'pyomo.core.base.var.ScalarVar'>)
-    No value for uninitialized NumericValue object 变量x
 Ipopt 3.14.12: max_iter=32
 
 
@@ -327,15 +309,13 @@ Number of inequality constraint evaluations          = 13
 Number of equality constraint Jacobian evaluations   = 13
 Number of inequality constraint Jacobian evaluations = 13
 Number of Lagrangian Hessian evaluations             = 12
-Total seconds in IPOPT                               = 0.019
+Total seconds in IPOPT                               = 0.021
 
 EXIT: Optimal Solution Found.
-sol_0: None
-sol_1: {'变量x': 5.040127407697712, '变量y': 30.419254162368283, 'z[0]': -24999329.682417985, 'z[1]': -2818.027699524099, 'mobjVar': -100000000.0001}
 UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
-UNBOUND RERUN TERMINATION CONDITION: maxIterations; SOLVED: False
-BOUND TERMINATION CONDITION: optimal; SOLVED: False
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000022D62952450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000022D62952650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000022D62969380>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000022D629693F0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+UNBOUND RERUN TERMINATION CONDITION: maxIterations; SOLVED: True
+BOUND TERMINATION CONDITION: optimal; SOLVED: True
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x0000021C4D7323D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x0000021C4D7325D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x0000021C4D7493F0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x0000021C4D749460>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -368,4 +348,4 @@ z[0]	-99997318.72967194
 (OBJ - OBJ_CONST)? -100000005.0001
 OBJ? -100000000.0001
 OBJ_CONST? 5
-solver smap ids: [2393951104336, 2393951120784, 2393949898448, 2393951109520]
+solver smap ids: [2320582117904, 2320582126480, 2320582117968, 2320582423120]
