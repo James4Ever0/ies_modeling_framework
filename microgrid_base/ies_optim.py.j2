@@ -1832,6 +1832,7 @@ class {{class_name}}模型(设备模型):
         {% else %}
             {% error("未知负荷类型:",class_name) %}
         {% endif %}
+        # TODO: 典型日的分时分月电价取每天同一小时的平均，在电价模型内实现
         getTimeInDay = lambda index: index {{小时}} else self.计算参数.分时计价开始时间点 + 每天小时数*convertMonthToDays(self.计算参数.分时计价开始月份) + (index/每小时秒数)
 
         self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # positive?

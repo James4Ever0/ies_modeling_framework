@@ -1,6 +1,8 @@
 # https://www.gnu.org/software/make/manual/html_node/Parallel-Output.html
 # gmake -Oline
 
+# makefile launches subshell every individual line.
+
 .PHONY: test
 
 ################ ENVIRONMENT VARIABLES ################
