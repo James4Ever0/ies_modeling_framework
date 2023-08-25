@@ -12,11 +12,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp5a213eft.pyomo.lp' read.
-Read time = 0.01 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpxaahjgv1.pyomo.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp5a213eft.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpxaahjgv1.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
@@ -35,10 +35,10 @@ All rows and columns eliminated.
 Presolve time = 0.00 sec. (0.00 ticks)
 
 Dual simplex - Optimal:  Objective =  0.0000000000e+00
-Solution time =    0.02 sec.  Iterations = 0 (0)
-Deterministic time = 0.00 ticks  (0.09 ticks/sec)
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (1.40 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpa_gatrzx.cplex.sol'.
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp7iql3cve.cplex.sol'.
 CPLEX> X=10.0, Y=0.0
 
 ======================================================================
@@ -54,11 +54,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp70f5zo1p.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpb3j7yggq.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp70f5zo1p.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpb3j7yggq.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
@@ -92,11 +92,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmphdylfc3h.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpun1st_0g.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmphdylfc3h.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpun1st_0g.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
@@ -118,10 +118,10 @@ Dual simplex - Optimal:  Objective = -1.0000000000e+08
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (2.64 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmp8ysdgezj.cplex.sol'.
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpou842y34.cplex.sol'.
 CPLEX> UNBOUND TERMINATION CONDITION: unbounded
 BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001FFA3DE0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001FFA3DE04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001FFA3DF02E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001FFA3DF0350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001D7661E0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001D7661E04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001D7661F42E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001D7661F4350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -154,4 +154,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [2197477672528, 2197477678480, 2197477682832]
+solver smap ids: [2024642958352, 2024642960656, 2024642968208]

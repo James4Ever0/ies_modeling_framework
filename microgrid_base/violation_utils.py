@@ -290,9 +290,10 @@ from typing import Tuple
 
 # do not use this. we need the data.
 # from pydantic import PrivateAttr
+from functools import cached_property
+from pydantic import 
 
-
-class PiecewiseBaseInfo(BaseModel):
+class PiecewiseInfo(BaseModel):
     piecewiseName: str
     piecewiseTypeName: Literal["Piecewise", "SimplePiecewise", "IndexedPiecewise"]
     inputVarInfo: VarInfo

@@ -65,6 +65,9 @@ solver_name_base = solver_name.split("_")[0]
 # pass interactive options instead of commandline option.
 # solver.options["warm_start_init_point"] = True
 
+if solver_name_base == 'ipopt':
+    solver.options['acceptable_iter'] = 10
+    # solver.options['max_iter'] = 10
 
 def solver_solve(*args, **kwargs):
     return solver.solve(
@@ -101,6 +104,9 @@ model.obj.activate()
 result_unbound = solver_solve(
     model, tee=True, logfile=f"unbound_solver_{solver_name}.log"
 )
+
+if solver_name_base == "ipopt":
+    breakpoint()
 
 smap_ids.append(solver._smap_id)
 

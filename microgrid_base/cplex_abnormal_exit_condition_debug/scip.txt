@@ -11,7 +11,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpz857tdub.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpjhmxyoo5.pyomo.nl>
 ============
 
 original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
@@ -49,7 +49,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpitn9bnow.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpam1f0z57.pyomo.nl>
 ============
 
 original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
@@ -95,7 +95,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmprkqyp5jm.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp33tgii5x.pyomo.nl>
 ============
 
 original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
@@ -124,7 +124,7 @@ Dual Bound         : -1.00000000000000e+08
 Gap                : 0.00 %
 UNBOUND TERMINATION CONDITION: unbounded
 BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002437DB20750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002437DB204D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002437DB342E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002437DB34350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002C6AB9A0750>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002C6AB9A04D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002C6AB9B42E0>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002C6AB9B4350>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -157,4 +157,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [2488893990352, 2488895007888, 2488895064016]
+solver smap ids: [3052305848016, 3052305902736, 3052284970896]
