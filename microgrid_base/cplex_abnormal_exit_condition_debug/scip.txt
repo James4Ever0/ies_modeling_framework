@@ -1,4 +1,4 @@
-Now is 2023-08-25T13:39:00.437732+08:00
+Now is 2023-08-25T14:14:50.772849+08:00
 running solver scip
 warm start? False
 ============================================================
@@ -15,7 +15,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpnq21195d.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpe67jav8i.pyomo.nl>
 ============
 
 original problem has 2 variables (0 bin, 0 int, 0 impl, 2 cont) and 1 constraints
@@ -53,7 +53,7 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpf6fu4l66.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmp85lodqdv.pyomo.nl>
 ============
 
 original problem has 5 variables (0 bin, 0 int, 0 impl, 5 cont) and 1 constraints
@@ -99,16 +99,13 @@ External libraries:
   Ipopt 3.14.12        Interior Point Optimizer developed by A. Waechter et.al. (github.com/coin-or/Ipopt)
 
 user parameter file <scip.set> not found - using default parameters
-read problem <C:\Users\z98hu\AppData\Local\Temp\tmpo0usmf5v.pyomo.nl>
+read problem <C:\Users\z98hu\AppData\Local\Temp\tmpy1vj_rzy.pyomo.nl>
 ============
 
 original problem has 6 variables (0 bin, 0 int, 0 impl, 6 cont) and 2 constraints
 
 solve problem
 =============
-
-solution violates original bounds of variable <objconstant> [5,5] solution value <0>
-all 1 solutions given by solution candidate storage are infeasible
 
 presolving:
 (round 1, fast)       1 del vars, 0 del conss, 0 add conss, 1 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -126,9 +123,9 @@ Solving Nodes      : 0
 Primal Bound       : -1.00000000000000e+08 (1 solutions)
 Dual Bound         : -1.00000000000000e+08
 Gap                : 0.00 %
-UNBOUND TERMINATION CONDITION: unbounded
-BOUND TERMINATION CONDITION: optimal
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001A7DC192350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001A7DC192550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001A7DC1A5000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001A7DC1A5070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
+BOUND TERMINATION CONDITION: optimal; SOLVED: False
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001F53AB12350>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001F53AB12550>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001F53AB25000>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001F53AB25070>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -161,4 +158,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [1820464116688, 1820463782544, 1820464180368]
+solver smap ids: [2152763670480, 2152763681936, 2152763678736]

@@ -11,10 +11,15 @@ from pyomo.environ import *
 import os
 
 
-def clearModelVariableValues(model:ConcreteModel):
+def checkIfSolved(result):
+    return bool(result.get("Solution", None))
+
+
+def clearModelVariableValues(model: ConcreteModel):
     for v in model.component_data_objects(ctype=Var, active=True, descend_into=True):
         v: Var
-        v.clear() # clear value.
+        v.clear()  # clear value.
+
 
 import pytz
 
@@ -33,7 +38,7 @@ warm_start = os.environ.get("WARM_START", None) is not None
 
 print("running solver " + solver_name)
 print(f"warm start? {repr(warm_start)}")
-print("="*60)
+print("=" * 60)
 # that is during presolve, not during solve.
 # from pyomo.contrib.iis import write_iis
 
@@ -176,6 +181,7 @@ model.constraint_bound_obj = Constraint(expr=mobjVar == obj_expr)
 
 # model.obj.deactivate()
 # model.bound_obj.activate()
+clearModelVariableValues(model)
 result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
 smap_ids.append(solver._smap_id)
 
@@ -184,16 +190,21 @@ if solver_name_base == "ipopt":
 
 # you still need to set time limit options over this.
 
-print("UNBOUND TERMINATION CONDITION:", result_unbound.solver.termination_condition)
+solverResultDiagosticInfo = (
+    lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
+    % (banner, solverResult.solver.termination_condition, checkIfSolved(solverResult))
+)
+printSolverResultDiagosticInfo = lambda banner, solverResult: print(
+    solverResultDiagosticInfo(banner, solverResult)
+)
+
+printSolverResultDiagosticInfo("UNBOUND", result_unbound)
 
 if solver_name_base == "ipopt":
     if "result_unbound_rerun" in globals().keys():
-        print(
-            "UNBOUND RERUN TERMINATION CONDITION:",
-            result_unbound_rerun.solver.termination_condition,
-        )
+        printSolverResultDiagosticInfo("UNBOUND RERUN", result_unbound_rerun)
 
-print("BOUND TERMINATION CONDITION:", result_bound.solver.termination_condition)
+printSolverResultDiagosticInfo("BOUND", result_bound)
 
 # now analyze what variable is doing havoc to the model.
 

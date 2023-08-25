@@ -1,4 +1,4 @@
-Now is 2023-08-25T13:39:03.928792+08:00
+Now is 2023-08-25T14:14:52.738567+08:00
 running solver ipopt
 warm start? False
 ============================================================
@@ -53,7 +53,7 @@ Number of inequality constraint evaluations          = 6
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 6
 Number of Lagrangian Hessian evaluations             = 5
-Total seconds in IPOPT                               = 0.017
+Total seconds in IPOPT                               = 0.010
 
 EXIT: Optimal Solution Found.
 X=9.450397207148868e-16, Y=584.6311979842062
@@ -141,7 +141,7 @@ Number of inequality constraint evaluations          = 34
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 34
 Number of Lagrangian Hessian evaluations             = 33
-Total seconds in IPOPT                               = 0.072
+Total seconds in IPOPT                               = 0.047
 
 EXIT: Iterates diverging; problem might be unbounded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -231,7 +231,7 @@ Number of inequality constraint evaluations          = 33
 Number of equality constraint Jacobian evaluations   = 0
 Number of inequality constraint Jacobian evaluations = 33
 Number of Lagrangian Hessian evaluations             = 32
-Total seconds in IPOPT                               = 0.066
+Total seconds in IPOPT                               = 0.034
 
 EXIT: Maximum Number of Iterations Exceeded.
 WARNING: Loading a SolverResults object with a warning status into
@@ -267,40 +267,68 @@ Total number of inequality constraints...............:        1
         inequality constraints with only upper bounds:        0
 
 iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
-   0 -1.5750672e+20 1.58e+20 8.85e-01  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
-   1r-1.5750672e+20 1.58e+20 9.99e+02  20.2 0.00e+00  -4.0 0.00e+00 5.66e-14R  2
-Restoration phase failed with unexpected solverreturn status 9
+   0  5.0000000e+00 1.00e+01 8.85e-01  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1 -9.4401843e+03 0.00e+00 9.44e-01  -1.0 9.44e+03  -4.0 9.46e-01 1.00e+00f  1
+   2 -3.7773519e+04 7.28e-12 9.44e-01  -1.0 2.83e+04  -4.5 9.90e-01 1.00e+00f  1
+   3 -9.9000378e+07 1.49e-08 9.43e-01  -1.0 9.05e+10    -  1.09e-03 1.09e-03f  1
+   4 -9.9990004e+07 0.00e+00 7.62e-01  -1.0 8.84e+08    -  1.82e-01 1.12e-03f  1
+   5 -9.9999900e+07 0.00e+00 3.46e-01  -1.0 3.33e+04  -5.0 9.99e-01 2.97e-01f  1
+   6 -9.9999999e+07 0.00e+00 7.21e-02  -1.0 1.64e+02  -5.4 9.92e-01 6.03e-01f  1
+   7 -1.0000000e+08 1.49e-08 3.11e-05  -1.7 2.52e+01  -5.9 1.00e+00 1.00e+00f  1
+   8 -1.0000000e+08 0.00e+00 5.43e-07  -3.8 1.32e+00  -6.4 1.00e+00 1.00e+00f  1
+   9 -1.0000000e+08 1.49e-08 2.54e-08  -5.7 1.85e-01  -6.9 1.00e+00 1.00e+00f  1
+In iteration 9, 1 Slack too small, adjusting variable bound
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10 -1.0000000e+08 1.49e-08 1.08e-10  -8.6 2.36e-03  -7.3 1.00e+00 1.00e+00h  1
+In iteration 10, 1 Slack too small, adjusting variable bound
+  11 -1.0000000e+08 1.49e-08 7.02e-11  -9.0 4.61e-03  -7.8 1.00e+00 1.00e+00h  1
+In iteration 11, 1 Slack too small, adjusting variable bound
+  12 -1.0000000e+08 0.00e+00 7.00e-11  -9.0 1.38e-02  -8.3 1.00e+00 1.00e+00h  1
 
-Number of Iterations....: 1
+Number of Iterations....: 12
 
                                    (scaled)                 (unscaled)
-Objective...............:  -1.5750671605240611e+20   -1.5750671605240611e+20
-Dual infeasibility......:   4.0000000000000000e+00    4.0000000000000000e+00
-Constraint violation....:   1.5750671605240611e+20    1.5750671605240611e+20
-Variable bound violation:   0.0000000000000000e+00    0.0000000000000000e+00
-Complementarity.........:   1.0000000000010000e+08    1.0000000000010000e+08
-Overall NLP error.......:   1.5750671605240611e+20    1.5750671605240611e+20
+Objective...............:  -1.0000000000010000e+08   -1.0000000000010000e+08
+Dual infeasibility......:   6.9996905233849795e-11    6.9996905233849795e-11
+Constraint violation....:   0.0000000000000000e+00    0.0000000000000000e+00
+Variable bound violation:   1.0000169277191162e-04    1.0000169277191162e-04
+Complementarity.........:   9.0909090909090910e-10    9.0909090909090910e-10
+Overall NLP error.......:   9.0909090909090910e-10    9.0909090909090910e-10
 
 
-Number of objective function evaluations             = 4
-Number of objective gradient evaluations             = 3
-Number of equality constraint evaluations            = 4
-Number of inequality constraint evaluations          = 4
-Number of equality constraint Jacobian evaluations   = 3
-Number of inequality constraint Jacobian evaluations = 3
-Number of Lagrangian Hessian evaluations             = 1
-Total seconds in IPOPT                               = 0.009
+Number of objective function evaluations             = 13
+Number of objective gradient evaluations             = 13
+Number of equality constraint evaluations            = 13
+Number of inequality constraint evaluations          = 13
+Number of equality constraint Jacobian evaluations   = 13
+Number of inequality constraint Jacobian evaluations = 13
+Number of Lagrangian Hessian evaluations             = 12
+Total seconds in IPOPT                               = 0.016
 
-EXIT: Restoration Failed!
-Traceback (most recent call last):
-  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 174, in <module>
-    result_bound = solver_solve(model, tee=True, logfile=f"bound_solver_{solver_name}.log")
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "E:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py", line 97, in solver_solve
-    return solver.solve(
-           ^^^^^^^^^^^^^
-  File "C:\Python311\Lib\site-packages\pyomo\opt\base\solvers.py", line 627, in solve
-    _model.solutions.load_from(
-  File "C:\Python311\Lib\site-packages\pyomo\core\base\PyomoModel.py", line 226, in load_from
-    raise ValueError("Cannot load a SolverResults object "
-ValueError: Cannot load a SolverResults object with bad status: error
+EXIT: Optimal Solution Found.
+> e:\works\jubilant-adventure2\microgrid_base\cplex_abnormal_exit_condition_debug\alternative_solver.py(194)<module>()
+-> lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
+(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 1, 'Number of variables': 4, 'Sense': 'unknown'}], 'Solver': [{'Status': 'warning', 'Message': 'Ipopt 3.14.12\\x3a Iterates diverging; problem might be unbounded.', 'Termination condition': 'unbounded', 'Id': 300, 'Error rc': 0, 'Time': 0.08019328117370605}]}
+(Pdb) <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>
+(Pdb) *** NameError: name 'result_unvound' is not defined
+(Pdb) ['__call__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_active', '_cls', '_list', '_option', '_repn_', '_required', 'add', 'clear', 'delete', 'insert', 'load', 'pprint']
+(Pdb) *** NameError: name 'result_unvound' is not defined
+(Pdb) {'_cls': <class 'pyomo.opt.results.solution.Solution'>, '_list': [], '_active': False, '_required': False, '_option': Bunch(ignore_defaults = False, ignore_time = False, num_solutions = None, schema = False, sparse = True)}
+(Pdb) {'_cls': <class 'pyomo.opt.results.solution.Solution'>, '_list': [], '_active': True, '_required': False, '_option': Bunch(ignore_defaults = False, ignore_time = False, num_solutions = None, schema = False, sparse = True)}
+(Pdb) {'Problem': [{'Lower bound': -inf, 'Upper bound': inf, 'Number of objectives': 1, 'Number of constraints': 2, 'Number of variables': 5, 'Sense': 'unknown'}], 'Solver': [{'Status': 'ok', 'Message': 'Ipopt 3.14.12\\x3a Optimal Solution Found', 'Termination condition': 'optimal', 'Id': 0, 'Error rc': 0, 'Time': 0.04921698570251465}], 'Solution': [OrderedDict([('number of solutions', 0), ('number of solutions displayed', 0)])]}
+(Pdb) <class 'pyomo.opt.results.results_.SolverResults'>
+(Pdb) ['__class__', '__class_getitem__', '__contains__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__getnewargs__', '__getnewargs_ex__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__ior__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__or__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__ror__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_active', '_convert', '_descriptions', '_option', '_order', '_ordered', '_repn_', '_required', '_sections', '_set_value', '_smap', '_smap_id', 'add', 'clear', 'copy', 'declare', 'default_print_options', 'fromkeys', 'get', 'items', 'json_repn', 'keys', 'load', 'pop', 'popitem', 'pprint', 'read', 'setdefault', 'undefined', 'update', 'values', 'write', 'write_json', 'write_yaml']
+(Pdb) {'Problem': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB3889D0>, 'Solver': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB38B910>, 'Solution': <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38EB10>}
+(Pdb) {'Problem': <pyomo.opt.results.container.ListContainer object at 0x000001EAEB370B90>, 'Solver': <pyomo.opt.results.container.ListContainer object at 0x000001EAEAE74310>, 'Solution': <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>}
+(Pdb) <pyomo.opt.results.container.ListContainer object at 0x000001EAEAE74310>
+(Pdb) *** AttributeError: Unknown attribute `_repr_' for object with type <class 'pyomo.opt.results.solver.SolverInformation'>
+(Pdb) <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>
+(Pdb) <bound method SolutionSet._repn_ of <pyomo.opt.results.solution.SolutionSet object at 0x000001EAEB38A390>>
+(Pdb) *** TypeError: SolutionSet._repn_() missing 1 required positional argument: 'option'
+(Pdb) *** AttributeError: Unknown attribute `_repn' for object with type <class 'pyomo.opt.results.solution.Solution'>
+(Pdb) [OrderedDict([('number of solutions', 1), ('number of solutions displayed', 1)]), {'Status': 'unknown', 'Problem': {}, 'Objective': {}, 'Variable': {}, 'Constraint': {}}]
+(Pdb) [OrderedDict([('number of solutions', 0), ('number of solutions displayed', 0)])]
+(Pdb) <class 'pyomo.opt.results.solution.SolutionSet'>
+(Pdb) *** NameError: name 'pprint' is not defined
+(Pdb) [{'Status': 'unknown', 'Problem': {}, 'Objective': {}, 'Variable': {}, 'Constraint': {}}]
+(Pdb) 
