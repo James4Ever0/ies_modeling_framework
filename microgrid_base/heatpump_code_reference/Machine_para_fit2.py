@@ -21,8 +21,16 @@ class Set_Para_Fit(object):
             self.Tin.append(para[i][1])
             self.parr.append(para[i][2])
             self.pwarr.append(para[i][3])
-            self.X_train.append([1, self.Tout[i], self.Tout[i] * self.Tout[i], self.Tin[i], self.Tin[i] * self.Tin[i],
-                                 self.Tout[i] * self.Tin[i]])
+            self.X_train.append(
+                [
+                    1,
+                    self.Tout[i],
+                    self.Tout[i] * self.Tout[i],
+                    self.Tin[i],
+                    self.Tin[i] * self.Tin[i],
+                    self.Tout[i] * self.Tin[i],
+                ]
+            )
         self.pk_regression = LinearRegression(fit_intercept=False)
         self.pwk_regression = LinearRegression(fit_intercept=False)
         self.pwk_regression_without_rate = LinearRegression(fit_intercept=False)
@@ -38,10 +46,8 @@ class Set_Para_Fit(object):
         return self.pk_coeff
 
     def get_pk(self, tout, tin):
-
-        xtest = np.array([1, tout, tout * tout, tin,tin*tin,tout*tin])
+        xtest = np.array([1, tout, tout * tout, tin, tin * tin, tout * tin])
         return self.pk_regression.predict(xtest.reshape(1, -1))[0]
-
 
     ####################################3
 
@@ -53,10 +59,8 @@ class Set_Para_Fit(object):
         return self.pwk_coeff_without_rate
 
     def get_pwk_without_rate(self, tout, tin):
-
-        xtest = np.array([1, tout, tout * tout,  tin,tin*tin,tout*tin])
+        xtest = np.array([1, tout, tout * tout, tin, tin * tin, tout * tin])
         return self.pwk_regression_without_rate.predict(xtest.reshape(1, -1))[0]
-
 
     ###################################33
 
@@ -68,20 +72,29 @@ class Set_Para_Fit(object):
 
         for i in range(self.row):
             for j in range(row_rate):
-                '''
+                """
                 xwtrain.append([1, load_rate_arr[j][0] * self.parr[i],
                                 (load_rate_arr[j][0] * self.parr[i]) * (load_rate_arr[j][0] * self.parr[i]),
                                 self.Tout[i], self.Tin[i], self.Tout[i] * self.Tin[i],
                                 self.Tout[i] * (load_rate_arr[j][0] * self.parr[i]),
                                 self.Tin[i] * (load_rate_arr[j][0] * self.parr[i])])
-                '''
-                xwtrain.append([1, load_rate_arr[j][0],
-                                (load_rate_arr[j][0]) * (load_rate_arr[j][0]),
-                                self.Tout[i], self.Tin[i], self.Tout[i] * self.Tin[i],
-                                self.Tout[i] * (load_rate_arr[j][0]),
-                                self.Tin[i] * (load_rate_arr[j][0])])
+                """
+                xwtrain.append(
+                    [
+                        1,
+                        load_rate_arr[j][0],
+                        (load_rate_arr[j][0]) * (load_rate_arr[j][0]),
+                        self.Tout[i],
+                        self.Tin[i],
+                        self.Tout[i] * self.Tin[i],
+                        self.Tout[i] * (load_rate_arr[j][0]),
+                        self.Tin[i] * (load_rate_arr[j][0]),
+                    ]
+                )
 
-                ywtrain.append(self.pwarr[i] * load_rate_arr[j][0] / load_rate_arr[j][1])
+                ywtrain.append(
+                    self.pwarr[i] * load_rate_arr[j][0] / load_rate_arr[j][1]
+                )
 
         self.pwk_regression.fit(xwtrain, ywtrain)
         self.pwk_coeff = self.pwk_regression.coef_
@@ -91,7 +104,17 @@ class Set_Para_Fit(object):
 
     def get_pwk(self, tout, tin, load_rate):
         xtest = np.array(
-            [1, load_rate, load_rate * load_rate, tout, tin, tout * tin, tout * load_rate, tin * load_rate])
+            [
+                1,
+                load_rate,
+                load_rate * load_rate,
+                tout,
+                tin,
+                tout * tin,
+                tout * load_rate,
+                tin * load_rate,
+            ]
+        )
         res = self.pwk_regression.predict(xtest.reshape(1, -1))
 
         return res[0]
@@ -102,7 +125,9 @@ class Set_Para_Fit(object):
         xwtrain = []
         ywtrain = []
         for j in range(row_rate):
-            xwtrain.append([1, load_rate_arr[j][0], load_rate_arr[j][0] * load_rate_arr[j][0]])
+            xwtrain.append(
+                [1, load_rate_arr[j][0], load_rate_arr[j][0] * load_rate_arr[j][0]]
+            )
             ywtrain.append(load_rate_arr[j][0] / load_rate_arr[j][1])
         self.pwk_rate_regression.fit(xwtrain, ywtrain)
         self.pwk_rate_coeff = self.pwk_rate_regression.coef_

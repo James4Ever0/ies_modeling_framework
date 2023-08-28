@@ -85,7 +85,7 @@ class ForthGK(IGES):
     def __init__(
         self,
         num_h,
-        mdl,
+        mdl: Model,
         cool_max,
         cool_min,
         heat_max,
@@ -212,7 +212,7 @@ class ForthGK(IGES):
 
     # 四工况机组
 
-    def cons_register(self, mdl):
+    def cons_register(self, mdl:Model):
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.nset * self.p_rated_heat >= self.heat_min)
         mdl.add_constraint(self.nset * self.p_rated_cool >= self.cool_min)
@@ -256,10 +256,11 @@ class ForthGK(IGES):
         bigM = 1e8
 
 
+# 热泵
 class nRB(IGES):
     index = 0
 
-    def __init__(self, num_h, mdl, father, set_name="singleRB"):
+    def __init__(self, num_h, mdl: Model, father, set_name="singleRB"):
         IGES(set_name)
         nRB.index += 1
         bigM = 1e8
