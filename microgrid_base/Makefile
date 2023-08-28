@@ -230,7 +230,14 @@ define run_alternative_solver
 		warm_start=; \
 		logfile_name=$${solver}; \
 	fi; \
-	env SOLVER_NAME=$1 $${warm_start} $${PYTHON} alternative_solver.py 2>&1 | tee $${logfile_name}.txt 
+	if [ '${3}' = '1' ] ; then \
+		infeasible=INFEASIBLE=1; \
+		logfile_name=$${logfile}_infeaible; \
+	else \
+		infeasible=; \
+		logfile_name=$${logfile}; \
+	fi; \
+	env SOLVER_NAME=$1 $${warm_start} $${infeasible} $${PYTHON} alternative_solver.py 2>&1 | tee $${logfile_name}.txt 
 endef
 
 oss_solvers=scip cbc ipopt
@@ -245,11 +252,19 @@ CD_TEST_DEBUG_DIR=cd cplex_abnormal_exit_condition_debug &&
 define run_test_alternative_solver
 
 	${CD_TEST_DEBUG_DIR} for solver in $(oss_solvers); do \
-		$(call run_alternative_solver,$${solver},0); \
+		$(call run_alternative_solver,$${solver},0,0); \
+	done
+	
+	${CD_TEST_DEBUG_DIR} for solver in $(oss_solvers); do \
+		$(call run_alternative_solver,$${solver},0,1); \
 	done
 
 	${CD_TEST_DEBUG_DIR} for solver in $(warmstart_solvers); do \
-		$(call run_alternative_solver,$${solver},1); \
+		$(call run_alternative_solver,$${solver},1,0); \
+	done
+	
+	${CD_TEST_DEBUG_DIR} for solver in $(warmstart_solvers); do \
+		$(call run_alternative_solver,$${solver},1,1); \
 	done
 endef
 

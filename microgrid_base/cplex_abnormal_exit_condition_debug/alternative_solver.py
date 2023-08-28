@@ -100,6 +100,7 @@ print("Current time: " + now.isoformat())
 print("=" * 60)
 
 solver_name = os.environ["SOLVER_NAME"]
+infeasible = os.environ.get("INFEASIBLE", None) is not None
 warm_start = os.environ.get("WARM_START", None) is not None
 
 print("running solver " + solver_name)
@@ -116,7 +117,8 @@ if warm_start:
     y.set_value(0.5)
 model.constraint_x_y = Constraint(expr=x + y >= 10)
 model.constraint_x_y_inv = Constraint(expr=x + y <= 9)
-# model.constraint_x_y_inv.deactivate()
+if not infeasible:
+    model.constraint_x_y_inv.deactivate()
 z = model.z = Var([0, 1])
 
 x.setlb(-10)
@@ -139,6 +141,9 @@ no_obj = model.no_obj = Objective(expr=0)
 solver = SolverFactory(solver_name)
 if warm_start:
     solver_name += "_warmstart"
+
+if infeasible:
+    solver_name += "_infeasible"
 # switch lp algorithm
 # ref: https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-algorithm-continuous-linear-problems"
 # working?
@@ -184,7 +189,7 @@ def solver_solve(model: ConcreteModel, **kwargs):
         )
         solved = modelSolutionChecker.check()
         ret["solved"] = solved
-        # scip can find feasible solution.
+        # scip can find feasible solution, but only if no conflict is found
         # if solver_name_base == "scip":
         #     breakpoint()
         return ret
@@ -367,6 +372,9 @@ def sortAndDisplayVarValues(
     output = "\n".join(message)
     print(output)
 
+if is_null_solution(getModelSolution(model)):
+    print("model not solved.")
+    exit()
 
 decomposedResult = decomposeExpression(obj_expr)
 if decomposedResult:
