@@ -54,6 +54,7 @@ if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
             if x[i, j].solution_value() > 0.5:
                 print(f"Worker {i} assigned to task {j}." + f" Cost: {costs[i][j]}")
 else:
+    print("STATUS?", status)
     print("No solution found.")
 
 print("ITERATIONS?", solver.iterations())

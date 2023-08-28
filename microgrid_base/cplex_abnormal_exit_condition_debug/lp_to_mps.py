@@ -23,6 +23,6 @@ elif method =="pyomo":
     # print(dir(model))
     model.x = Var(bounds=(-1,1))
     model.obj = Objective(expr=model.x, sense=minimize)
-    model.write("exported.mps", 'mps')
+    model.write("exported.mps", 'mps') # working!
 else:
     raise Exception("Unknown mps export method: %s" % method)
