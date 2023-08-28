@@ -2,6 +2,10 @@ from log_utils import logger_print
 
 # TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
+# TODO: invoke conflict refiner everytime each submodel is built, once conflict is found.
+# TODO: deactivate one to all objective functions
+# TODO: cache function input/output to redis for faster response
+# TODO: profile code performance
 from pyomo_environ import *
 import json
 from typing import List, Dict, Any, Union, Tuple
