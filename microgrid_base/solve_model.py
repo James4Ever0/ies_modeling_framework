@@ -1,5 +1,6 @@
 from log_utils import logger_print
 
+# TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
 from pyomo_environ import *
 import json
@@ -68,6 +69,7 @@ with open("frontend_sim_param_translation.json", "r") as f:
 
 from pandas import DataFrame
 from topo_check import 拓扑图
+
 
 ###
 def 导出结果表_格式化(
@@ -184,10 +186,10 @@ def solve_model(
         # io_options = dict(symbolic_solver_labels=True)
         # BUG: OOM
         solver.options["timelimit"] = 60 * 24  # solver timeout: 24 minutes.
-        solver.options['tune display'] = 3
-        solver.options['sifting display'] = 2
-        solver.options['mip display'] = 5
-        solver.options['barrier display']=2
+        solver.options["tune display"] = 3
+        solver.options["sifting display"] = 2
+        solver.options["mip display"] = 5
+        solver.options["barrier display"] = 2
         # disable this option to prevent OOM.
         # solver.options["read fileencoding"] = "utf-8"
 
@@ -290,15 +292,19 @@ def solve_model(
                             mw.inputParams.dict(), ensure_ascii=False, indent=4
                         )
                         f.write(content)
-                    
-                    _, model_smap_id = mw.model.write(
-                        filename=lp_filepath,
-                        # io_options=io_options
-                    )
+
+                    # _, model_smap_id = mw.model.write(
+                    #     filename=lp_filepath,
+                    #     # io_options=io_options
+                    # )
 
                     # begin to debug in detail.
 
-                    export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
+                    # export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
+
+                    exported_model = ExportedModel(mw.model, lp_filepath)
+                    export_model_smap = exported_model.smap
+
                     solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
 
                     # translated_log_files = []

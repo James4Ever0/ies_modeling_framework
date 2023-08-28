@@ -138,6 +138,20 @@ def convertSymbolMapToTranslationTable(symbol_map: SymbolMap):
     return translationTable
 
 
+class ExportedModel:
+    def __init__(self, model: ConcreteModel, filepath: str):
+        self._model = model
+        self._filepath = filepath
+
+        fmt = filepath.split(".")[-1]
+        if fmt not in ["mps", "lp"]:
+            raise Exception(f"Cannot export unknown format: {fmt}")
+        _, smap_id = model.write(filepath, format=fmt)
+
+        self.smap: SymbolMap = model.solutions.symbol_map[smap_id]
+        self.translation_table = convertSymbolMapToTranslationTable(self.smap)
+
+
 from contextlib import contextmanager
 
 
@@ -528,7 +542,9 @@ def setBoundsContext(bound, model):
             if getattr(model, bound_name, None) is not None:
                 delattr(model, bound_name)
 
+
 from violation_utils import modelScannerContext
+
 
 def solve_decompose_and_scan(
     modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
@@ -536,9 +552,12 @@ def solve_decompose_and_scan(
     cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
     os.mkdir(cplex_log_dir)
     lp_filepath = os.path.join(log_directory, "model.lp")
-    _, smap_id = modelWrapper.model.write(lp_filepath)
-    smap = modelWrapper.model.solutions.symbol_map[smap_id]
-    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
+    # _, smap_id = modelWrapper.model.write(lp_filepath)
+    # smap = modelWrapper.model.solutions.symbol_map[smap_id]
+    lp_exported = ExportedModel(modelWrapper.model, lp_filepath)
+    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, lp_exported.smap)
+    # cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
+    # TODO: add translate method to export model wrapper class
     model = modelWrapper.model
     obj_expr = modelWrapper.obj_expr
     solved = solve_with_translated_log_and_statistics(
@@ -554,11 +573,13 @@ def solve_decompose_and_scan(
             )
             with modelScannerContext(model) as modelScanner:
                 report = modelScanner.report()
-                report_fpath = os.path.join(log_directory,"report.txt")
-                with open(report_fpath, 'w+') as f:
+                report_fpath = os.path.join(log_directory, "report.txt")
+                with open(report_fpath, "w+") as f:
                     f.write(report)
 
+
 import random
+
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
