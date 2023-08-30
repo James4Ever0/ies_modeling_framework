@@ -223,11 +223,7 @@ class ForthGK(IGES):
         mdl.add_constraint(self.nset * self.p_rated_heat <= self.heat_max)
         mdl.add_constraint(self.nset * self.p_rated_cool <= self.cool_max)
 
-        sigRB = [] # submodels
-        for n in range(self.Nmax):
-            sigRB.append(
-                singleRB(self.num_h, mdl, self, set_name="singleRB{0}".format(n))
-            )
+        sigRB = self.build_submodels(mdl)
         if self.nsetopt == 1:
             # exclude nonexistent subdevices
             self.nset = mdl.sum([sigRB[n].exist for n in range(self.Nmax)])
@@ -307,6 +303,15 @@ class ForthGK(IGES):
                 == self.Nmax * self.p_rated_cool * self.set_price / 15
                 + self.ele_cost * 8760 / self.num_h
             )
+
+    def build_submodels(self, mdl):
+        sigRB = [] # submodels
+        for n in range(self.Nmax):
+            sigRB.append(
+                singleRB(self.num_h, mdl, self, set_name="singleRB{0}".format(n))
+            )
+            
+        return sigRB
 
 
 bigM = 1e8

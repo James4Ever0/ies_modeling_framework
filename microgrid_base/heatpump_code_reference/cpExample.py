@@ -34,9 +34,11 @@ ha = np.ones(num_h0)
 
 class IGES(object):
     set_count = 0
+    simulationT = simulationT
 
     def __init__(self, set_name):
         self.set_name = set_name
+
         IGES.set_count += 1
         print("Define a set named:", set_name, ",set num is:", IGES.set_count)
 

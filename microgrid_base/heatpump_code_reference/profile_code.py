@@ -43,14 +43,15 @@ def profile():
     print("after run")
 
 
-tout = 20
-print("timeout in %d seconds..." % tout)
-try:
-    func_timeout.func_timeout(tout, profile)
-except func_timeout.FunctionTimedOut:
-    pass
-except Exception as e:
-    raise e
+profile() # run this indefinitely
+# tout = 20
+# print("timeout in %d seconds..." % tout)
+# try:
+#     func_timeout.func_timeout(tout, profile)
+# except func_timeout.FunctionTimedOut:
+#     pass
+# except Exception as e:
+#     raise e
 
 import pstats
 # from contextlib import redirect_stderr

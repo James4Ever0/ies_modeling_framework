@@ -20,6 +20,7 @@ class SelfContainedCallerTracer(object):
 
     def call(self):
         called_by = inspect.currentframe()
+        # you can trace more info like the instance attributes of the caller
         called_by = trace_frame_till_condition(called_by, self.cond)
         # print(dir(called_by))
         # print(called_by)
