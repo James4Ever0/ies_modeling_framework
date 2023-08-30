@@ -1080,6 +1080,7 @@ class 设备模型:
             warn_domain_coverage=False, # to suppress warning
         )
 {{double_check_setattr("self.mw.model", "piecewise_name", "PW") | indent(3*4, true)}}
+
             {# assert getattr(self.mw.model,piecewise_name, None) is None, f"错误: 不能设置两次相同的变量名称\n重复变量: {piecewise_name}"
             self.mw.model.__setattr__(piecewise_name, PW)
             PWL.append(PW) #}

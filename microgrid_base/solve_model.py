@@ -6,6 +6,7 @@ from log_utils import logger_print
 # TODO: deactivate one to all objective functions
 # TODO: cache function input/output to redis for faster response
 # TODO: profile code performance
+# TODO: partial deletion/elastic filter
 from pyomo_environ import *
 import json
 from typing import List, Dict, Any, Union, Tuple

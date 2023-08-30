@@ -99,6 +99,8 @@ class SoilSource(IGES):
         self.D = 0.0064
         self.lh = 3000
 
+        # shall be the translation of the formula
+
         self.Rb = 0.5 * (
             1
             / (2 * self.pi * self.lamdab)
@@ -125,6 +127,7 @@ class SoilSource(IGES):
         mdl.add_constraint(self.nset * 4 >= self.heat_min)
         mdl.add_constraint(self.nset * 6 <= self.cool_max)
         mdl.add_constraint(self.nset * 6 >= self.cool_min)
+        # force the balance inbetween heating and cooling mode, ensure this is doeable every year
         if loop_flag == 1:
             pcool_sum = mdl.sum(self.pcool_out)
             pheat_sum = mdl.sum(self.pheat_out)
@@ -149,11 +152,13 @@ class SoilSource(IGES):
         mdl.add_constraints(
             self.zcool[h] + self.zheat[h] <= 1 for h in range(self.num_h)
         )
-
+        # 30 for device lifetime (year), 120 for depth (meter) per subdevice
         mdl.add_constraint(self.nianhua == self.length * self.set_price / 30)
         mdl.add_constraint(self.length == self.nset * 120)
 
     def Do_simulation(self, sol_run, periodh, consideer_history):
+        # calculate the temperature change
+        # this is not building model. this is calculating temperature change after optimization.
         # q 正值为对外制冷。负值为对外值热。
         rrp = []
         length = sol_run.get_value(self.length)

@@ -4,6 +4,17 @@ from sklearn.linear_model import LinearRegression
 
 class Set_Para_Fit(object):
     def __init__(self, para):
+        """
+        Initializes a new instance of the Set_Para_Fit class.
+
+        Args:
+            para (list[list[float]]): A list of parameter values for the instance. Each element is a list of four float
+            values representing the output temperature (Tout), input temperature (Tin), rated heat/cooling power output correlation coefficient (parr), and
+            rated electricity input correlation coefficient (PWarr).
+
+        Returns:
+            None
+        """
         # para=[[Tout,Tin,parr,PWarr],[],[]]
         self.X_train = []
         y_train = []
@@ -46,6 +57,16 @@ class Set_Para_Fit(object):
         return self.pk_coeff
 
     def get_pk(self, tout, tin):
+        """
+        Calculates the current cooling/heating power correction coefficient.
+
+        Args:
+            tout (float): Output temperature value.
+            tin (float): Input temperature value.
+
+        Returns:
+            float: The cooling/heating power correction coefficient.
+        """
         xtest = np.array([1, tout, tout * tout, tin, tin * tin, tout * tin])
         return self.pk_regression.predict(xtest.reshape(1, -1))[0]
 
@@ -59,11 +80,19 @@ class Set_Para_Fit(object):
         return self.pwk_coeff_without_rate
 
     def get_pwk_without_rate(self, tout, tin):
+        """
+        Parameters:
+            tout: output temperature
+            tin: input temperature
+        Returns:
+            rated electricity input correlation coefficient at given temperature
+        """
         xtest = np.array([1, tout, tout * tout, tin, tin * tin, tout * tin])
         return self.pwk_regression_without_rate.predict(xtest.reshape(1, -1))[0]
 
     ###################################33
 
+    # deprecated
     def fit_pwkcoeff(self, load_rate_arr):
         # load_rate_arr=[[0.25,1.2],[0.5,1.3],[0.75,1.5],[1,1]
         row_rate = np.shape(load_rate_arr)[0]
@@ -120,19 +149,25 @@ class Set_Para_Fit(object):
         return res[0]
 
     def fit_pwk_rate_coeff(self, load_rate_arr):
+        """
+        Fit parameters for: f(1, load_rate, load_rate^2) = load_rate/normalized_cop (actual cop/cop at max load rate)
+        """
         # load_rate_arr=[[0.25,1.2],[0.5,1.3],[0.75,1.5],[1,1]
         row_rate = np.shape(load_rate_arr)[0]
         xwtrain = []
         ywtrain = []
         for j in range(row_rate):
-            xwtrain.append(
+            xwtrain.append( # 1 is probably for bias
                 [1, load_rate_arr[j][0], load_rate_arr[j][0] * load_rate_arr[j][0]]
             )
-            ywtrain.append(load_rate_arr[j][0] / load_rate_arr[j][1])
+            ywtrain.append(load_rate_arr[j][0] / load_rate_arr[j][1]) # f(1, load_rate, load_rate^2) = load_rate/normalized_cop
         self.pwk_rate_regression.fit(xwtrain, ywtrain)
         self.pwk_rate_coeff = self.pwk_rate_regression.coef_
 
     def get_pwk_rate_coeff(self):
+        """
+        Get parameters for: f(1, load_rate, load_rate^2) = load_rate/normalized_cop
+        """
         return self.pwk_rate_coeff
 
     def get_pwk_rate(self, rate):

@@ -15,7 +15,7 @@ from matplotlib import style
 from result_processlib import Value
 from plot_arr import IGESPlot
 from cpExample import IGES
-from SoilSource import RRSqure
+from SoilSource_new import RRSqure
 from Machine_para_fit2 import Set_Para_Fit
 
 heat_para = [
@@ -260,7 +260,7 @@ class ForthGK(IGES):
 class nRB(IGES):
     index = 0
 
-    def __init__(self, num_h, mdl: Model, father, set_name="singleRB"):
+    def __init__(self, num_h, mdl: Model, father:FourthGK, set_name="singleRB"):
         IGES(set_name)
         nRB.index += 1
         bigM = 1e8

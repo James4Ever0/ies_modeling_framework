@@ -65,8 +65,9 @@ load_rate_cop_cool = [[0.25, 3], [0.5, 5], [0.75, 8], [1, 6]]
 load_rate_cop_heat = [[0.25, 3], [0.5, 5], [0.75, 8], [1, 6]]
 load_rate_arr_cool = np.zeros([4, 2], dtype=float)
 load_rate_arr_heat = np.zeros([4, 2], dtype=float)
+# normalized cop 是每个负载率的cop除以负载率为1时的cop
 for i in range(4):
-    load_rate_arr_cool[i][1] = load_rate_cop_cool[i][1] / load_rate_cop_cool[3][1]
+    load_rate_arr_cool[i][1] = load_rate_cop_cool[i][1] / load_rate_cop_cool[3][1] # normalized cop
     load_rate_arr_cool[i][0] = load_rate_cop_cool[i][0]
 
     load_rate_arr_heat[i][1] = load_rate_cop_heat[i][1] / load_rate_cop_heat[3][1]
@@ -78,7 +79,13 @@ set_cool_fit.fit_pwk_rate_coeff(load_rate_arr_cool)
 set_heat_fit.fit_pwk_rate_coeff(load_rate_arr_heat)
 
 bcool = set_cool_fit.get_pwk_rate_coeff()
+"""
+Parameters for f(1, load_rate, load_rate^2) = load_rate/normalized_cop
+"""
 bheat = set_heat_fit.get_pwk_rate_coeff()
+"""
+Parameters for f(1, load_rate, load_rate^2) = load_rate/normalized_cop
+"""
 
 
 class ForthGK(IGES):
@@ -110,12 +117,17 @@ class ForthGK(IGES):
 
         self.p_rated_cool = 150
         self.p_rated_heat = 160
+        # 'w' is for electricity input
         self.pw_rated_cool = 30
         self.pw_rated_heat = 30
+        # constant
+        # output temperatures
         self.Tcool_out = 7
         self.Txcool_out = 5
         self.Theat_out = 7
         self.Txheat_out = 5
+
+        # total power of output arrays
 
         self.tpcool = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)], name="tpcool{0}".format(ForthGK.index)
@@ -171,13 +183,19 @@ class ForthGK(IGES):
         self.pinheat = mdl.continuous_var_list(
             [i for i in range(0, self.num_h)], name="pinheat{0}".format(ForthGK.index)
         )
+        # this shall be input, not 'builtin' static parameters.
         self.Tin = np.ones(num_h) * 12
         # mdl.continuous_var_list([i for i in range(0, self.num_h)],
         #                                  name='Tin{0}'.format(ForthGK.index))
         self.Nmax = round(self.heat_max / self.p_rated_heat)
+
+        # if this is 1, then allow buying less subdevices, otherwise all subdevices shall be bought (deviceCount == maxDeviceCount)
         self.nsetopt = 1
 
         hrange = range(num_h)
+
+        # constants
+        # get heat/cooling power at given time, if running in corrsponding mode
 
         self.pset_cool = [
             set_cool_fit.get_pk(self.Tcool_out, self.Tin[h]) * self.p_rated_cool
@@ -198,20 +216,20 @@ class ForthGK(IGES):
 
     # 四工况机组
 
-    def cons_register(self, mdl:Model):
+    def cons_register(self, mdl:Model): # taking eternal
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.nset * self.p_rated_heat >= self.heat_min)
         mdl.add_constraint(self.nset * self.p_rated_cool >= self.cool_min)
         mdl.add_constraint(self.nset * self.p_rated_heat <= self.heat_max)
         mdl.add_constraint(self.nset * self.p_rated_cool <= self.cool_max)
 
-        sigRB = []
+        sigRB = [] # submodels
         for n in range(self.Nmax):
             sigRB.append(
                 singleRB(self.num_h, mdl, self, set_name="singleRB{0}".format(n))
             )
-
         if self.nsetopt == 1:
+            # exclude nonexistent subdevices
             self.nset = mdl.sum([sigRB[n].exist for n in range(self.Nmax)])
         else:
             mdl.add_constraints(sigRB[n].exist == 1 for n in range(self.Nmax))
@@ -254,6 +272,7 @@ class ForthGK(IGES):
                 self.Nrun[h] == mdl.sum([sigRB[n].zrun[h] for n in range(self.Nmax)])
             )
 
+        # 'z' is for states. these are mutually exclusive states.
         mdl.add_constraints(
             self.tzcool[h] + self.tzxcool[h] + self.tzheat[h] + self.tzxheat[h] <= 1
             for h in hrange
@@ -275,6 +294,7 @@ class ForthGK(IGES):
             self.tpw[h] / 3600 * self.simulationT * self.ele_price[h] for h in hrange
         )
         # 年化
+        # 15 is for device lifetime in years
         if self.nsetopt == 1:
             mdl.add_constraint(
                 self.nianhua
@@ -295,7 +315,7 @@ bigM = 1e8
 class singleRB(IGES):
     index = 0
 
-    def __init__(self, num_h, mdl: Model, father, set_name="singleRB"):
+    def __init__(self, num_h, mdl: Model, father:ForthGK, set_name="singleRB"): # also taking eternal
         IGES(set_name)
         singleRB.index += 1
         self.num_h = num_h
@@ -391,6 +411,8 @@ class singleRB(IGES):
             [i for i in range(0, self.num_h)],
             name="singleRB-zpw_cool{0}".format(singleRB.index),
         )
+        # this shall be the mininum heat/cooling power output of the entire device, relative to the rated output of a single subdevice
+        # PWM-free subdevice models are in other files
         lamda0 = 0.25
 
         # (1)
@@ -401,7 +423,9 @@ class singleRB(IGES):
         mdl.add_constraints(
             self.pcool[h] <= father.pset_cool[h] * self.zcool[h] for h in range(num_h)
         )
+        # subdevice cooling mode will never be turned on if not exists
         mdl.add_constraints(self.zcool[h] <= self.exist for h in range(num_h))
+        # subdevice cooling mode will not be turned on if the device is not in the state
         mdl.add_constraints(self.zcool[h] <= father.tzcool[h] for h in range(num_h))
 
         # (2)
@@ -450,6 +474,10 @@ class singleRB(IGES):
         pxcool_squre1 = []
         pheat_squre1 = []
         pxheat_squre1 = []
+        # these might slow things down
+        # use pyomo piecewise!
+        # be it like: 
+        # model.const = Piecewise(index_1,...,index_n,yvar,xvar,**Keywords)
         for h in range(num_h):
             pcool_squre1.append(
                 RRSqure(mdl, self.pcool[h], 5000, 12).getxx()
@@ -507,6 +535,7 @@ class singleRB(IGES):
             * set_heat_fit.get_pwk_without_rate(father.Theat_out, father.Tin[h])
             for h in range(num_h)
         )
+        # actual electricity input = rated electricity input * (load_rate / normalized_cop (electricity input load rate correlation coefficient)) * electricity input temperature correlation coefficient
 
         mdl.add_constraints(
             self.pw_xheat[h]
