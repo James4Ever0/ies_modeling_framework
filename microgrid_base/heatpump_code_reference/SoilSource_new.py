@@ -121,8 +121,8 @@ class SoilSource(IGES):
         ####simple
 
         bigM = 1e8
-        mdl.add_constraint(self.nset >= 0)
-        mdl.add_constraint(self.nset <= 1000)
+        # mdl.add_constraint(self.nset >= 0)
+        # mdl.add_constraint(self.nset <= 1000)
         mdl.add_constraint(self.nset * 4 <= self.heat_max)
         mdl.add_constraint(self.nset * 4 >= self.heat_min)
         mdl.add_constraint(self.nset * 6 <= self.cool_max)

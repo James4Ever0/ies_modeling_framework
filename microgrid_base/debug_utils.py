@@ -1,5 +1,8 @@
 # TODO: assign debug/error id and separate logger/folder for error logging.
 
+# TODO: use miplib (problem dataset) to test our debugging tools
+# ref: https://miplib.zib.de/
+
 # sensitivity analysis cannot be done before solution
 # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=tutorial-performing-sensitivity-analysis
 
