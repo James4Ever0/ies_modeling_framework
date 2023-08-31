@@ -1,3 +1,6 @@
+# to run code faster:
+# conda create -n pypy -c conda-forge pypy
+
 import cProfile
 
 # import re
