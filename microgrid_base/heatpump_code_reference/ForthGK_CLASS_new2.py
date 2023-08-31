@@ -67,7 +67,9 @@ load_rate_arr_cool = np.zeros([4, 2], dtype=float)
 load_rate_arr_heat = np.zeros([4, 2], dtype=float)
 # normalized cop 是每个负载率的cop除以负载率为1时的cop
 for i in range(4):
-    load_rate_arr_cool[i][1] = load_rate_cop_cool[i][1] / load_rate_cop_cool[3][1] # normalized cop
+    load_rate_arr_cool[i][1] = (
+        load_rate_cop_cool[i][1] / load_rate_cop_cool[3][1]
+    )  # normalized cop
     load_rate_arr_cool[i][0] = load_rate_cop_cool[i][0]
 
     load_rate_arr_heat[i][1] = load_rate_cop_heat[i][1] / load_rate_cop_heat[3][1]
@@ -216,7 +218,7 @@ class ForthGK(IGES):
 
     # 四工况机组
 
-    def cons_register(self, mdl:Model): # taking eternal
+    def cons_register(self, mdl: Model):  # taking eternal
         hrange = range(0, self.num_h)
         mdl.add_constraint(self.nset * self.p_rated_heat >= self.heat_min)
         mdl.add_constraint(self.nset * self.p_rated_cool >= self.cool_min)
@@ -305,12 +307,12 @@ class ForthGK(IGES):
             )
 
     def build_submodels(self, mdl):
-        sigRB = [] # submodels
+        sigRB = []  # submodels
         for n in range(self.Nmax):
             sigRB.append(
                 singleRB(self.num_h, mdl, self, set_name="singleRB{0}".format(n))
             )
-            
+
         return sigRB
 
 
@@ -320,7 +322,9 @@ bigM = 1e8
 class singleRB(IGES):
     index = 0
 
-    def __init__(self, num_h, mdl: Model, father:ForthGK, set_name="singleRB"): # also taking eternal
+    def __init__(
+        self, num_h, mdl: Model, father: ForthGK, set_name="singleRB"
+    ):  # also taking eternal
         IGES(set_name)
         singleRB.index += 1
         self.num_h = num_h
@@ -481,28 +485,30 @@ class singleRB(IGES):
         pxheat_squre1 = []
         # these might slow things down
         # use pyomo piecewise!
-        # be it like: 
+        # be it like:
         # model.const = Piecewise(index_1,...,index_n,yvar,xvar,**Keywords)
+        res = 5  # original: 11
+        upper_bound = 2 # original: 5000
         for h in range(num_h):
             pcool_squre1.append(
-                RRSqure(mdl, self.pcool[h], 5000, 12).getxx()
-                / father.pset_cool[h]
-                / father.pset_cool[h]
+                RRSqure(mdl, self.pcool[h] / father.pset_cool[h], upper_bound, res).getxx()
+                # / father.pset_cool[h]
+                # / father.pset_cool[h]
             )
             pxcool_squre1.append(
-                RRSqure(mdl, self.pxcool[h], 5000, 12).getxx()
-                / father.pset_xcool[h]
-                / father.pset_xcool[h]
+                RRSqure(mdl, self.pxcool[h] / father.pset_xcool[h], upper_bound, res).getxx()
+                # / father.pset_xcool[h]
+                # / father.pset_xcool[h]
             )
             pheat_squre1.append(
-                RRSqure(mdl, self.pheat[h], 5000, 12).getxx()
-                / father.pset_heat[h]
-                / father.pset_heat[h]
+                RRSqure(mdl, self.pheat[h] / father.pset_heat[h], upper_bound, res).getxx()
+                # / father.pset_heat[h]
+                # / father.pset_heat[h]
             )
             pxheat_squre1.append(
-                RRSqure(mdl, self.pxheat[h], 5000, 12).getxx()
-                / father.pset_xheat[h]
-                / father.pset_xheat[h]
+                RRSqure(mdl, self.pxheat[h] / father.pset_xheat[h], upper_bound, res).getxx()
+                # / father.pset_xheat[h]
+                # / father.pset_xheat[h]
             )
 
         mdl.add_constraints(

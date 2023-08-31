@@ -20,7 +20,7 @@ class RRproduct(object):
             y: continuous variable
             y_min: min value for y
             y_max: max value for y
-            K: piecewise resolution
+            K: piecewise resolution parameter, which determines the real resolution step count (2**K)
         """
         RRproduct.index += 1
         z = mdl.binary_var_list(
@@ -73,7 +73,7 @@ class RRSqure(object):
             mdl: Model
             x: continuous variable
             x_max: max value for x
-            K: piecewise resolution
+            K: piecewise resolution parameter, which determines the real resolution step count (2**K)
         """
         # let's override the K.
         # print("OVERRIDING K")
