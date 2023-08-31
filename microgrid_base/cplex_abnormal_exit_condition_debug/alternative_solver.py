@@ -31,18 +31,21 @@ NULL_SOLUTIONS = [None, {}]
 
 is_null_solution = lambda sol: sol in NULL_SOLUTIONS
 
-def model_write(model:ConcreteModel, name):
+
+def model_write(model: ConcreteModel, name):
     # for fmt in 'lp', 'nl':
-    for fmt in ['lp', 'nl']:
+    for fmt in ["lp", "nl"]:
         model.write(filename=f"{name}.{fmt}")
 
+
 def checkIfSolved(sol_before, sol_after):
+    
     if is_null_solution(sol_after):
-        return False
-    elif is_null_solution(sol_before):
-        return True
+        has_solution = False
     else:
-        return sol_before != sol_after
+        has_solution = True
+    has_difference = sol_before != sol_after
+    return has_solution, has_difference
 
 
 from copy import deepcopy
@@ -68,10 +71,14 @@ def modelSolutionContext(model):
             self.previous_solution = deepcopy(self.solution)
 
         def check(self, update=False):
-            ret = checkIfSolved(self.previous_solution, self.solution)
+            has_solution, has_difference = checkIfSolved(self.previous_solution, self.solution)
             if update:
                 self.update()
-            return ret
+            return has_solution, has_difference
+    
+        def has_new_solution(self, update=False):
+            has_solution, has_difference = self.check(update=update)
+            return has_solution and has_difference
 
     modelSolutionChecker = ModelSolutionChecker(weakref.ref(model))
     try:
@@ -187,8 +194,10 @@ def solver_solve(model: ConcreteModel, **kwargs):
                 else {}
             ),
         )
-        solved = modelSolutionChecker.check()
-        ret["solved"] = solved
+        # has_solution, _ = modelSolutionChecker.check()  # check if we have new solution
+        has_new_solution = modelSolutionChecker.check()
+        # ret["solved"] = has_solution
+        ret['has_new_solution'] = has_new_solution
         # scip can find feasible solution, but only if no conflict is found
         # if solver_name_base == "scip":
         #     breakpoint()
@@ -271,7 +280,7 @@ smap_ids.append(solver._smap_id)
 
 solverResultDiagosticInfo = (
     lambda banner, solverResult: "%s TERMINATION CONDITION: %s; SOLVED: %s"
-    % (banner, solverResult.solver.termination_condition, solverResult["solved"])
+    % (banner, solverResult.solver.termination_condition, solverResult["has_new_solution"])
 )
 printSolverResultDiagosticInfo = lambda banner, solverResult: print(
     solverResultDiagosticInfo(banner, solverResult)
@@ -371,6 +380,7 @@ def sortAndDisplayVarValues(
         message.append("%s\t%s" % valueList[i])
     output = "\n".join(message)
     print(output)
+
 
 if is_null_solution(getModelSolution(model)):
     print("model not solved.")

@@ -1,5 +1,5 @@
 import inspect
-
+# TODO: iterate components like piecewise functions, iterative constraints, indexed variables and bound each component to the line of code which creates them
 
 def trace_frame_till_condition(frame, cond):
     if not cond(frame):
