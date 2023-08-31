@@ -31,6 +31,9 @@ class SoilSource(IGES):
         heat_max,
         heat_min,
         set_price,
+        Tmin,
+        Tmax,
+        Length,
         set_name="SoilSource",
     ):
         self.num_h = num_h
@@ -117,16 +120,28 @@ class SoilSource(IGES):
             + 1 / (self.pi * self.di * self.lh)
         )
 
-    def cons_register(self, mdl, loop_flag):
+        # 增加以下代码
+        self.Tmin = Tmin  # 流体最低控制温度，从拓扑参数读入
+        self.Tmax = Tmax  # 流体最高控制温度，，从拓扑参数读入
+        # self.Length = 120  # 从基础参数读入
+        self.Length = Length
+        self.q_ex_heat = (self.Tff - self.Tmin) / self.Rb
+        self.q_ex_cool = (self.Tmax - self.Tff) / self.Rb
+
+    def cons_register(self, mdl:Model, loop_flag):
         ####simple
 
         bigM = 1e8
         # mdl.add_constraint(self.nset >= 0)
         # mdl.add_constraint(self.nset <= 1000)
-        mdl.add_constraint(self.nset * 4 <= self.heat_max)
-        mdl.add_constraint(self.nset * 4 >= self.heat_min)
-        mdl.add_constraint(self.nset * 6 <= self.cool_max)
-        mdl.add_constraint(self.nset * 6 >= self.cool_min)
+        mdl.add_constraint(self.nset * self.q_ex_heat <= self.heat_max)
+        mdl.add_constraint(self.nset * self.q_ex_heat >= self.heat_min)
+        mdl.add_constraint(self.nset * self.q_ex_cool <= self.cool_max)
+        mdl.add_constraint(self.nset * self.q_ex_cool >= self.cool_min)
+        # mdl.add_constraint(self.nset * 4 <= self.heat_max)
+        # mdl.add_constraint(self.nset * 4 >= self.heat_min)
+        # mdl.add_constraint(self.nset * 6 <= self.cool_max)
+        # mdl.add_constraint(self.nset * 6 >= self.cool_min)
         # force the balance inbetween heating and cooling mode, ensure this is doeable every year
         if loop_flag == 1:
             pcool_sum = mdl.sum(self.pcool_out)
