@@ -1,5 +1,8 @@
 from log_utils import logger_print
 
+# finding every integer feasible solution
+# ref: https://www.ibm.com/support/pages/obtaining-solution-values-each-time-cplex-finds-integer-solution
+
 # TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
 # TODO: invoke conflict refiner everytime each submodel is built, once conflict is found.

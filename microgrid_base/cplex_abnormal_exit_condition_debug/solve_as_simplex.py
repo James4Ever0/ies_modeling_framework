@@ -16,6 +16,7 @@ def getModelSolution(model: ConcreteModel):
 
 
 domainDelegationTable = {
+    "Integers": Reals,
     "NonNegativeIntegers": NonNegativeReals,
     "NonPositiveIntegers": NonPositiveReals,
     "Boolean": Reals,
@@ -44,7 +45,7 @@ def simplexDelegationContext(model: ConcreteModel):
                 "lb": v.lb,
                 "ub": v.ub,
             }
-            v.domain = domainDelegationBoundsTable[domainName]
+            v.domain = domainDelegationTable[domainName]
             if domainName in domainDelegationBoundsTable.keys():
                 domain_lb, domain_ub = domainDelegationBoundsTable[domainName]
                 if lb is None:
@@ -80,13 +81,16 @@ model = ConcreteModel()
 model.a = Var(domain=Integers, bounds=(-0.5, 5.5))
 model.b = Var(domain=Boolean, bounds=(0.3, 1.1))  # feasible, if value(model.b) == 1
 
-model.o = Objective(expr=model.a + model.b, sense=minimize)
+model.o = Objective(expr=model.a + model.b, sense=maximize)
+# model.o = Objective(expr=model.a + model.b, sense=minimize)
 
+model.c = Constraint(expr=model.a >= model.b)
 
 ret = solver_solve(model)
 
 model_clone = model.clone()
 
+# this works identically to our context manager.
 TransformationFactory("core.relax_integrality").apply_to(model_clone)
 # working
 ret_clone = solver_solve(model_clone)
@@ -95,8 +99,14 @@ with simplexDelegationContext(model):
     # not working
     ret_delegated = solver_solve(model)
 
+ret_after = solver_solve(model)
 
-results = {"ret": ret, "ret_clone": ret_clone, "ret_delegated": ret_delegated}
+results = {
+    "ret": ret,
+    "ret_clone": ret_clone,
+    "ret_delegated": ret_delegated,
+    "ret_after": ret_after,
+}
 
 import rich
 
