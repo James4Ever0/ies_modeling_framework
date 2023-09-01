@@ -4,8 +4,12 @@ solver = SolverFactory("coptampl")
 
 model = ConcreteModel()
 model.a = Var(bounds=(-1, 1))
+model.b = Var(bounds=(-1, 1))
 
-model.obj = Objective(expr=model.a, sense=minimize)
+model.obj = Objective(expr=model.a+model.b, sense=minimize)
+
+# print(dir(model.obj.expr))
+# breakpoint()
 
 ret = solver.solve(model, tee=True)
 
