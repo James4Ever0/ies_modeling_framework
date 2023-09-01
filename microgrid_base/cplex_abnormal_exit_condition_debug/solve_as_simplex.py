@@ -48,7 +48,9 @@ def simplexDelegationContext(model: ConcreteModel):
         for v in model.component_data_objects(Var, active=True):
             varName = v.name
             if varName in delegationRestoreTable.keys():
-                ...
+                v.setlb()
+                v.setub()
+                v.domain = ...
         
 
 
@@ -57,9 +59,24 @@ model.a = Var(domain=Integers, bounds=(-0.5, 5.5))
 model.b = Var(domain=Boolean, bounds=(0.3, 1.1))  # feasible, if value(model.b) == 1
 
 
-breakpoint()
+# breakpoint()
 model.o = Objective(expr=model.a + model.b, sense=minimize)
 
 solver = SolverFactory("cplex")
 
 ret = solver.solve(model, tee=True)
+
+model_clone = model.clone()
+
+TransformationFactory('core.relax_integrality').apply_to(model_clone)
+
+ret_clone = solver.solve(model_clone, tee=True)
+
+with simplexDelegationContext(model):
+    ret_delegated = solver.solve(model, tee=True)
+
+
+results = {"ret": ret, "ret_clone": ret_clone, "ret_delegated": ret_delegated}
+
+for res_name, res in results.items():
+    ...
