@@ -10,4 +10,6 @@
 # # mkdir logs
 # mv /root/history_logs logs
 # env MOCK='1' bash fastapi_tmuxp.sh windows
-env MOCK='1' bash reload.sh
+# env MOCK='1' bash reload.sh
+# switch to config.py
+env MOCK_TEST='1' bash reload.sh

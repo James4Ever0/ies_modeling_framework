@@ -36,10 +36,10 @@ logger.addHandler(stdout_handler)
 def logger_print(*args):  # override this.
     lp(*args, logger=logger)
 
-
+from config import *
 import os
 # changed to MOCK_TEST in config.py
-MOCK = os.environ.get("MOCK", None)  # if this is mock test.
+# MOCK = os.environ.get("MOCK", None)  # if this is mock test.
 import json
 
 with open("test_output_full_mock_reduced.json", "r") as f:

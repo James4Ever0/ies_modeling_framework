@@ -1,6 +1,7 @@
 from config_utils import *
 from pydantic import confloat
-from log_utils import logger_print
+# from log_utils import logger_print
+
 
 class IESEnv(EnvBaseModel):
     VAR_INIT_AS_ZERO: bool = False
@@ -8,12 +9,13 @@ class IESEnv(EnvBaseModel):
     PERCENT_WARNING_THRESHOLD: confloat(gt=0) = 1
     MOCK_TEST: Union[None, str] = None
 
-
 IESEnvConfig = getEnvConfigClass(IESEnv)
+ies_env: IESEnv = IESEnvConfig.load()
+__all__ = ["ies_env"]
 
-if __name__ == "__main__":
-    # let's test
-    # import rich
+# if __name__ == "__main__":
+#     # let's test
+#     # import rich
 
-    dat: IESEnv = IESEnvConfig.load()
-    logger_print(dat)
+#     dat: IESEnv = IESEnvConfig.load()
+#     logger_print(dat)
