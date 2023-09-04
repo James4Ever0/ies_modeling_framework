@@ -61,7 +61,9 @@ devParam = dict(生产厂商="Any", 设备型号="Any", 设备名称="Any")
 P1 = 光伏发电信息(
     **devParam,
     Area=10,
-    PowerConversionEfficiency=0.9,
+    # too low for percentage
+    PowerConversionEfficiency=90,
+    # PowerConversionEfficiency=0.9,
     MaxPower=9,
     PowerDeltaLimit=1,
     CostPerKilowatt=100,

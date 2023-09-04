@@ -71,9 +71,16 @@ error = "infeasible"
 # cplex没有提供直接读取string的接口，不得不进行个文件暂存操作
 # temp_input_file_name = "no_bound.lp"
 # temp_input_file_name = "temp.lp" # later we will give it our unbounded model
-temp_input_file_name = "E:\\works\\jubilant-adventure2\\microgrid_base\\logs\\pyomo_2023_08_08_17_15_44_141633+08_00\\model.lp"
+temp_input_file_name = "exported.mps" # feasible?
+# temp_input_file_name = "E:\\works\\jubilant-adventure2\\microgrid_base\\logs\\pyomo_2023_08_08_17_15_44_141633+08_00\\model.lp"
 mdl: Model = ModelReader.read(temp_input_file_name, model_name="InfeasibelLP")
 print("model loaded successfully from: %s" % temp_input_file_name)
+
+import sys
+mdl.cplex.set_error_stream(sys.stderr)
+mdl.cplex.set_log_stream(sys.stderr)
+mdl.cplex.set_results_stream(sys.stderr)
+mdl.cplex.set_warning_stream(sys.stderr)
 # 清除临时文件
 # if os.path.exists(temp_input_file_name):
 #     os.remove(temp_input_file_name)
