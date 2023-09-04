@@ -83,6 +83,7 @@ class EnvConfig:
     """
 
     suspicous_threshold = 3
+    # for names in between environ attribute name definitions, this would be suspicious_threshold*2
     min_envname_length_threshold = 6
 
     def __init__(self, cls):
