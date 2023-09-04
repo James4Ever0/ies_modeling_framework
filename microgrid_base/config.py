@@ -4,6 +4,11 @@ from pydantic import BaseModel, confloat
 from exception_utils import ExceptionManager
 from typing import Union
 
+suspicous_threshold = 3
+# for names in between environ attribute name definitions, this would be suspicious_threshold*2
+# raise exception for any shell env var that is suspicious to be predefined env var
+# raise exception for any config env var that is not present in the predefined vars, with hints of suspected predefined var name.
+min_envname_length_threshold = 6
 
 class EnvBaseModel(BaseModel):
     def __new__(cls):
@@ -18,17 +23,33 @@ class EnvBaseModel(BaseModel):
                         "Duplicate property %s in definition of %s"
                         % (upper_prop_keys, cls.__name__)
                     )
+                elif (keylen := len(key)) < min_envname_length_threshold:
+                    exc_manager.append(
+                        "Key %s (length: %d) is too short.\nMinimum length: %d"
+                        % (key, keylen, min_envname_length_threshold)
+                    )
+                else:
+                    for uk in upper_prop_keys:
+                        edit_distance = Levenshtein.distance(uk, upper_key)
+                        if edit_distance < (
+                            min_upper_prop_key_st := suspicous_threshold * 2
+                        ):
+                            exc_manager.append(
+                                "Key %s has too little distance to another key %s.\nMinimum distance: %d"
+                                % (upper_key, uk, min_upper_prop_key_st)
+                            )
+                    upper_prop_keys.add(upper_key)
         return super().__new__(cls)
 
 
-class ShellEnv:
+class ShellEnv(BaseModel):
     DOTENV: Union[str, None] = None
 
 
 from dotenv import dotenv_values
 
 
-class DotEnv:
+class DotEnv(BaseModel):
     IMPORT: str = ""
 
     @property
@@ -57,7 +78,15 @@ class DotEnv:
     @classmethod
     def load(cls, fpath: str):
         vals = dotenv_values(fpath)
-        return cls()
+        envs = {}
+        for k,v in vals.items():
+            uk = k.upper()
+            if uk != "IMPORT":
+                ...
+            else:
+                imp = 
+        for fpath in resolve_import
+        return cls(**envs)
 
 
 class IESEnv(EnvBaseModel):
@@ -81,10 +110,6 @@ class EnvConfig:
 
     Property names are case-insensitive.
     """
-
-    suspicous_threshold = 3
-    # for names in between environ attribute name definitions, this would be suspicious_threshold*2
-    min_envname_length_threshold = 6
 
     def __init__(self, cls):
         if issubclass(cls, EnvBaseModel):
