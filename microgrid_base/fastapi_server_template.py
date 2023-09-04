@@ -38,7 +38,7 @@ def logger_print(*args):  # override this.
 
 
 import os
-
+# changed to MOCK_TEST in config.py
 MOCK = os.environ.get("MOCK", None)  # if this is mock test.
 import json
 

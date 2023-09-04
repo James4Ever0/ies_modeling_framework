@@ -4,9 +4,8 @@ from pydantic import BaseModel, confloat
 from exception_utils import ExceptionManager
 from typing import Union
 
+
 class EnvBaseModel(BaseModel):
-
-
     def __new__(cls):
         sch = cls.schema()
         upper_prop_keys = set()
@@ -22,23 +21,59 @@ class EnvBaseModel(BaseModel):
         return super().__new__(cls)
 
 
-class IESEnv(EnvBaseModel):
-    VAR_INIT_AS_ZERO: bool = True
-    UNIT_WARNING_AS_ERROR: bool = True
-    PERCENT_WARNING_THRESHOLD: confloat(gt=0) = 1
+class ShellEnv:
+    DOTENV: Union[str, None] = None
 
-class IESShellEnv(IESEnv):
-    IES_DOTENV: Union[str, None] = None
 
-class IESDotEnv(IESEnv):
+from dotenv import dotenv_values
+
+
+class DotEnv:
     IMPORT: str = ""
+
     @property
     def import_fpaths(self):
         imp_fpaths = self.IMPORT.strip().split()
         imp_fpaths = [(new_fp := fp.strip()) for fp in imp_fpaths if len(new_fp) > 0]
         return imp_fpaths
 
-from dotenv import load_dotenv
+    def resolve_import_graph(self):
+        import_fpaths = self.import_fpaths
+        resolv = []
+        for fpath in import_fpaths:
+            assert os.path.isfile(fpath), "File %s does not exist" % fpath
+            subdot = self.load(fpath)
+            resolv.append(fpath)
+            subresolv = subdot.resolve_import_graph()
+            resolv.extend(subresolv)
+        resolv.reverse()
+        ret = []
+        for res in resolv:
+            if res not in ret:
+                ret.append(res)
+        ret.reverse()
+        return ret
+
+    @classmethod
+    def load(cls, fpath: str):
+        vals = dotenv_values(fpath)
+        return cls()
+
+
+class IESEnv(EnvBaseModel):
+    VAR_INIT_AS_ZERO: bool = True
+    UNIT_WARNING_AS_ERROR: bool = True
+    PERCENT_WARNING_THRESHOLD: confloat(gt=0) = 1
+    MOCK_TEST: Union[None, str] = None
+
+
+class IESShellEnv(ShellEnv, IESEnv):
+    ...
+
+
+class IESDotEnv(DotEnv, IESEnv):
+    ...
+
 
 class EnvConfig:
     """
@@ -55,14 +90,14 @@ class EnvConfig:
             ...
         else:
             raise Exception(f"{cls} is not a valid EnvBaseModel")
-    
+
     def load(self):
         """
         Load environment variables.
 
         Load sequence:
             Environment variables from os
-
+            Dotenv file and subsequent imported files
         """
 
     # VAR_INIT_AS_ZERO = False
@@ -71,6 +106,7 @@ class EnvConfig:
     #     0  # percent value less or equal than this value shall be warned
     # )
 
+
 # VAR_INIT_AS_ZERO = True
 # UNIT_WARNING_AS_ERROR = True
 # PERCENT_WARNING_THRESHOLD = (
@@ -78,4 +114,3 @@ class EnvConfig:
 # )
 
 # MOCK = os.environ.get("MOCK", None)  # if this is mock test.
-
