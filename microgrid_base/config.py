@@ -10,6 +10,7 @@ suspicous_threshold = 3
 # raise exception for any config env var that is not present in the predefined vars, with hints of suspected predefined var name.
 min_envname_length_threshold = 6
 
+
 class EnvBaseModel(BaseModel):
     def __new__(cls):
         sch = cls.schema()
@@ -18,7 +19,9 @@ class EnvBaseModel(BaseModel):
         with ExceptionManager() as exc_manager:
             for key in sch["properties"].keys():
                 upper_key = key.upper()
-                if upper_key in upper_prop_keys:
+                if upper_key != key:
+                    exc_manager.append("Key %s is not upper case." % key)
+                elif upper_key in upper_prop_keys:
                     exc_manager.append(
                         "Duplicate property %s in definition of %s"
                         % (upper_prop_keys, cls.__name__)
@@ -48,7 +51,6 @@ class ShellEnv(BaseModel):
 
 from dotenv import dotenv_values
 
-
 class DotEnv(BaseModel):
     IMPORT: str = ""
 
@@ -61,31 +63,57 @@ class DotEnv(BaseModel):
     def resolve_import_graph(self):
         import_fpaths = self.import_fpaths
         resolv = []
+        envs = {}
+
         for fpath in import_fpaths:
             assert os.path.isfile(fpath), "File %s does not exist" % fpath
-            subdot = self.load(fpath)
+            subdot = self.preload(fpath, envs=envs, _cls=DotEnv)
             resolv.append(fpath)
             subresolv = subdot.resolve_import_graph()
             resolv.extend(subresolv)
+
         resolv.reverse()
         ret = []
         for res in resolv:
             if res not in ret:
                 ret.append(res)
         ret.reverse()
+
         return ret
 
     @classmethod
-    def load(cls, fpath: str):
+    def preload(cls, fpath: str, envs={}, _cls=None):
+        if _cls is None:
+            _cls = cls
         vals = dotenv_values(fpath)
+        prop_keys = list(cls.schema()["properties"].keys())
+        with ExceptionManager() as exc_manager:
+            for k, v in vals.items():
+                uk = k.upper()
+                if uk not in prop_keys:
+                    exc_manager.append(
+                        "No matching property '%s' in schema %s" % (uk, prop_keys)
+                    )
+                    for pk in prop_keys:
+                        if Levenshtein.distance(uk, pk) <= suspicous_threshold:
+                            exc_manager.append(f"'{uk}' could be: '{pk}'")
+                else:
+                    prop_keys.pop(uk)
+                    envs[uk] = v
+        return _cls(**envs)
+
+    @classmethod
+    def presolve_import_graph(cls, fpath: str):
+        pre_inst = cls.preload(fpath, envs={}, _cls=DotEnv)
+        imp_graph = pre_inst.resolve_import_graph()
+        return imp_graph
+
+    @classmethod
+    def load(cls, fpath: str):
         envs = {}
-        for k,v in vals.items():
-            uk = k.upper()
-            if uk != "IMPORT":
-                ...
-            else:
-                imp = 
-        for fpath in resolve_import
+        envs = cls.preload(fpath, envs=envs).dict()
+        for imp_fpath in cls.resolve_import_graph(fpath):
+            envs = cls.preload(imp_fpath, envs).dict()
         return cls(**envs)
 
 
