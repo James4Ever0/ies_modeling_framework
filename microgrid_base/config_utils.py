@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 """
 Reserved shell env keyword:
     DOTENV
@@ -77,7 +79,7 @@ class ShellEnv(EnvBaseModel):
                 fpk = pks[0]
                 if fpk == uk:
                     envs[fpk] = v
-                    pks.pop(fpk)
+                    pks.remove(fpk)
                 elif (ed := Levenshtein.distance(fpk, uk)) < suspicous_threshold:
                     exc_manager.append(
                         f"Suspicious shell env var found.\n'{k}' (upper case: '{uk}') is similar to '{fpk}' (edit distance: {ed})"
@@ -140,7 +142,7 @@ class DotEnv(EnvBaseModel):
                         if Levenshtein.distance(uk, pk) <= suspicous_threshold:
                             exc_manager.append(f"'{uk}' could be: '{pk}'")
                 else:
-                    prop_keys.pop(uk)
+                    prop_keys.remove(uk)
                     envs[uk] = v
         return _cls(**envs)
 
@@ -152,9 +154,9 @@ class DotEnv(EnvBaseModel):
 
     @classmethod
     def load(cls, fpath: str):
-        envs = {}
-        envs = cls.preload(fpath, envs=envs).dict()
-        for imp_fpath in cls.resolve_import_graph(fpath):
+        inst = cls.preload(fpath, envs={})
+        envs = inst.dict()
+        for imp_fpath in inst.resolve_import_graph():
             envs = cls.preload(imp_fpath, envs).dict()
         return cls(**envs)
 
@@ -216,7 +218,7 @@ def getDotEnvClass(env_class: EnvBaseModel):
 def getEnvManagerClass(env_class: EnvBaseModel):
     class env_manager_class(EnvManager):
         shellEnv = getShellEnvClass(env_class)
-        dotEnv = getShellEnvClass(env_class)
+        dotEnv = getDotEnvClass(env_class)
 
     return env_manager_class
 
