@@ -6,18 +6,21 @@ from typing import Union
 
 suspicous_threshold = 3
 # for names in between environ attribute name definitions, this would be suspicious_threshold*2
-# raise exception for any shell env var that is suspicious to be predefined env var
-# raise exception for any config env var that is not present in the predefined vars, with hints of suspected predefined var name.
+# raise exception for any shell env var that is not present but similar to predefined vars, with hints of suspected predefined var name.
+# raise exception for any shell/file config env var that is not present in the predefined vars, with hints of suspected predefined var name.
 min_envname_length_threshold = 6
+
+
+def getBaseModelPropertyKeys(bm: BaseModel):
+    return list(bm.schema()["properties"].keys())
 
 
 class EnvBaseModel(BaseModel):
     def __new__(cls):
-        sch = cls.schema()
         upper_prop_keys = set()
 
         with ExceptionManager() as exc_manager:
-            for key in sch["properties"].keys():
+            for key in getBaseModelPropertyKeys(cls):
                 upper_key = key.upper()
                 if upper_key != key:
                     exc_manager.append("Key %s is not upper case." % key)
@@ -45,13 +48,37 @@ class EnvBaseModel(BaseModel):
         return super().__new__(cls)
 
 
-class ShellEnv(BaseModel):
+class ShellEnv(EnvBaseModel):
     DOTENV: Union[str, None] = None
+
+    @classmethod
+    def load(cls):
+        pks = getBaseModelPropertyKeys(cls)
+        shellenvs = os.environ
+        envs = {}
+        with ExceptionManager() as exc_manager:
+            for k, v in shellenvs.items():
+                if len(pks) == 0:
+                    break
+                uk = k.upper()
+                pks.sort(key=lambda pk: Levenshtein.distance(pk, uk))
+                fpk = pks[0]
+                if fpk == uk:
+                    envs[fpk] = v
+                    pks.pop(fpk)
+                elif (ed := Levenshtein.distance(fpk, uk)) < suspicous_threshold:
+                    exc_manager.append(
+                        f"Suspicious shell env var found.\n'{k}' (upper case: '{uk}') is similar to '{fpk}' (edit distance: {ed})"
+                    )
+                else:
+                    continue  # do nothing. just ignore excessive shell environment vars.
+        return cls(**envs)
 
 
 from dotenv import dotenv_values
 
-class DotEnv(BaseModel):
+
+class DotEnv(EnvBaseModel):
     IMPORT: str = ""
 
     @property
@@ -63,11 +90,9 @@ class DotEnv(BaseModel):
     def resolve_import_graph(self):
         import_fpaths = self.import_fpaths
         resolv = []
-        envs = {}
 
         for fpath in import_fpaths:
-            assert os.path.isfile(fpath), "File %s does not exist" % fpath
-            subdot = self.preload(fpath, envs=envs, _cls=DotEnv)
+            subdot = self.preload(fpath, envs={}, _cls=DotEnv)
             resolv.append(fpath)
             subresolv = subdot.resolve_import_graph()
             resolv.extend(subresolv)
@@ -83,12 +108,17 @@ class DotEnv(BaseModel):
 
     @classmethod
     def preload(cls, fpath: str, envs={}, _cls=None):
+        assert os.path.isfile(fpath), "File %s does not exist" % fpath
+
         if _cls is None:
             _cls = cls
+
         vals = dotenv_values(fpath)
-        prop_keys = list(cls.schema()["properties"].keys())
+        prop_keys = getBaseModelPropertyKeys(cls)
         with ExceptionManager() as exc_manager:
             for k, v in vals.items():
+                if len(prop_keys) == 0:
+                    break
                 uk = k.upper()
                 if uk not in prop_keys:
                     exc_manager.append(
@@ -117,6 +147,22 @@ class DotEnv(BaseModel):
         return cls(**envs)
 
 
+class EnvManager:
+    shellEnv: ShellEnv
+    dotEnv: DotEnv
+
+    @classmethod
+    def load(cls):
+        cls.shellEnv: ShellEnv
+        cls.dotEnv: DotEnv
+        shellEnvInst = cls.shellEnv.load()
+        params = shellEnvInst.dict()
+        if (_dotenv := shellEnvInst.DOTENV) is not None:
+            dotEnvInst = cls.dotEnv.load(_dotenv)
+            params.update(dotEnvInst.dict())
+        return params
+
+
 class IESEnv(EnvBaseModel):
     VAR_INIT_AS_ZERO: bool = True
     UNIT_WARNING_AS_ERROR: bool = True
@@ -132,6 +178,11 @@ class IESDotEnv(DotEnv, IESEnv):
     ...
 
 
+class IESEnvManager(EnvManager):
+    shellEnv = IESShellEnv
+    dotEnv = IESDotEnv
+
+
 class EnvConfig:
     """
     This class is used to parse and store the environment variables from file or environment variables.
@@ -139,13 +190,10 @@ class EnvConfig:
     Property names are case-insensitive.
     """
 
-    def __init__(self, cls):
-        if issubclass(cls, EnvBaseModel):
-            ...
-        else:
-            raise Exception(f"{cls} is not a valid EnvBaseModel")
+    manager_cls: EnvManager
+    data_cls: EnvBaseModel
 
-    def load(self):
+    def load(cls):
         """
         Load environment variables.
 
@@ -153,18 +201,10 @@ class EnvConfig:
             Environment variables from os
             Dotenv file and subsequent imported files
         """
+        params = cls.manager_cls.load()
+        data_inst = cls.data_cls(**params)
+        return data_inst
 
-    # VAR_INIT_AS_ZERO = False
-    # UNIT_WARNING_AS_ERROR = False
-    # PERCENT_WARNING_THRESHOLD = (
-    #     0  # percent value less or equal than this value shall be warned
-    # )
-
-
-# VAR_INIT_AS_ZERO = True
-# UNIT_WARNING_AS_ERROR = True
-# PERCENT_WARNING_THRESHOLD = (
-#     1  # percent value less or equal than this value shall be warned
-# )
-
-# MOCK = os.environ.get("MOCK", None)  # if this is mock test.
+class IESEnvConfig(EnvConfig):
+    manager_cls = IESEnvManager
+    
