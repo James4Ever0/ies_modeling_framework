@@ -1147,6 +1147,7 @@ class 变压器信息(设备信息):
     单位: 万元
     """
 
+    # TODO: remove this line
     PowerParameter: confloat(ge=0) = Field(
         title="功率因数", description="名称: 功率因数\n单位: one"
     )

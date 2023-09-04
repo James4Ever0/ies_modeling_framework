@@ -36,8 +36,11 @@ logger.addHandler(stdout_handler)
 def logger_print(*args):  # override this.
     lp(*args, logger=logger)
 
+
 from config import *
-import os
+# import os
+
+MOCK = ies_env.MOCK_TEST
 # changed to MOCK_TEST in config.py
 # MOCK = os.environ.get("MOCK", None)  # if this is mock test.
 import json

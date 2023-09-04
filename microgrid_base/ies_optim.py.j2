@@ -1,6 +1,7 @@
 from log_utils import logger_print
 from pyomo_environ import *
 from typing import cast
+from config import *
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
@@ -12,7 +13,7 @@ from typing import cast
 
     {% endfor%}
 {% endmacro%}
-VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
+{# VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO" #}
 
 import os
 # TODO: 典型日 最终输出结果需要展开为8760
@@ -766,9 +767,10 @@ class ModelWrapper:
         if {{qstr(init_argname)}} in kwargs.keys():
             del kwargs[{{qstr(init_argname)}}]
         {% if k == 'Var'%}
-        if VAR_INIT_AS_ZERO in os.environ.keys(): # test override.
+        {# if VAR_INIT_AS_ZERO in os.environ.keys(): # test override. #}
+        if ies_env.VAR_INIT_AS_ZERO is not None:
             kwargs[{{qstr(init_argname)}}] = 0
-        {% endif%}
+        {% endif %}
         ret = {{k}}({{mv if k == "Var" else "expr = expr, *args[1:], **kwargs"}})
         {# ret = {{k}}({{mv+", {}=_{}".format(init_argname, init_argname) if k == "Var" else "expr = expr, *args[1:], **kwargs"}}) #}
         {% if k == 'Objective'%}
