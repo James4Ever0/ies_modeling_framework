@@ -1,5 +1,6 @@
 from log_utils import logger_print
 
+THRESHOLD = 0.001
 
 def decreaseByOneThousand(number, threshold=10):
     assert number >= 0, f"invalid number: {repr(number)}"
@@ -27,7 +28,7 @@ def modifyValueIfNumber(location, val):
             if val != 0:
                 positive = val > 0
                 val_abs = abs(val)
-                val_abs_modified = decreaseByOneThousand(val_abs)
+                val_abs_modified = decreaseByOneThousand(val_abs , threshold=THRESHOLD)
                 val_modified = (1 if positive else -1) * val_abs_modified
                 return val_modified
     return val

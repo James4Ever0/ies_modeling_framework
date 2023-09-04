@@ -39,3 +39,4 @@ docplex
 cplex
 flashtext
 # func_timeout\
+levenshtein
