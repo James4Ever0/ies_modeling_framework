@@ -177,6 +177,9 @@ class EnvManager:
         return params
 
 
+import time
+
+
 class EnvConfig:
     """
     This class is used to parse and store the environment variables from file or environment variables.
@@ -188,16 +191,21 @@ class EnvConfig:
     data_cls: EnvBaseModel
 
     @classmethod
-    def load(cls):
+    def load(cls, display_duration: int = 1):
         """
         Load environment variables.
 
         Load sequence:
-            Environment variables from os
+            Environment variables from shell
             Dotenv file and subsequent imported files
         """
         params = cls.manager_cls.load()
         data_inst = cls.data_cls(**params)
+        logger_print(
+            "Loaded environment variables:",
+            *[f"{k}:\t{v}" for k, v in data_inst.items()],
+        )
+        time.sleep(display_duration)
         return data_inst
 
 

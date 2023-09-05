@@ -58,8 +58,8 @@ def plotMultipleTopology(data: dict, output_dir: str):
         plotSingleTopology(data, output_path, i)
 
 
-def plotTopologyFromFile(input_path: str, output_dir: str):
-    logger_print(f"plotting topology from file '{input_path}'")
+def plotMultipleTopologyFromFile(input_path: str, output_dir: str):
+    logger_print(f"plotting topologies from file '{input_path}'")
     with open(input_path, "r") as f:
         data = load(f.read())
     plotMultipleTopology(data, output_dir)
