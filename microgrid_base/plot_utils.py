@@ -52,14 +52,14 @@ def plotSingleTopology(data: dict, output_path: str, index=0):
 import os
 
 
-def plotMultipleTopology(data: dict, output_dir: str):
+def plotMultipleTopologies(data: dict, output_dir: str):
     for i in range(len(data[extract_data_key])):
         output_path = os.path.join(output_dir, "plot_{i}.html")
         plotSingleTopology(data, output_path, i)
 
 
-def plotMultipleTopologyFromFile(input_path: str, output_dir: str):
+def plotMultipleTopologiesFromFile(input_path: str, output_dir: str):
     logger_print(f"plotting topologies from file '{input_path}'")
     with open(input_path, "r") as f:
         data = load(f.read())
-    plotMultipleTopology(data, output_dir)
+    plotMultipleTopologies(data, output_dir)
