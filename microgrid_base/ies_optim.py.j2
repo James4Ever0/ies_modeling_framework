@@ -508,7 +508,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
 
         {% endif%} 
-        {% set percent_fields = []%}
+        {# {% set percent_fields = []%} #}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
@@ -523,7 +523,20 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     单位: {{ mdigit[2] }}
     """
             {% if mdigit[2] == 'percent'%}
-                {% do percent_fields.append(mdigit[1])%}
+                {# {% do percent_fields.append(mdigit[1])%} #}
+    @validator({{repr(mdigit[1])}})
+    {# @validator({{validate_params}}) #}
+    def validate_{{mdigit[1]}}_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = {{repr(mdigit[1])}}
+        if value <= ies_config.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_config.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_config.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
             {%endif%}
 
         {% endfor %}
@@ -549,15 +562,23 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
             {% endif %}
 
         {% endfor %}
-        {% if percent_fields != []%}
+        {# {% if percent_fields != []%}
             {% set validate_params = ""%}
             {% for field_name in percent_fields%}
                 {% set validate_params = validate_params + repr(field_name)+ ","%}
-            {%endfor%}
-        @validator({{validate_params}})
+            {%endfor%} #}
+        {# @validator({{validate_params}})
         def validate_percent_fields(cls, value):
-            ...
-        {% endif %}
+            warning_msg = None
+            if value <= ies_config.PERCENT_WARNING_THRESHOLD:
+                warning_msg = f"value '{value}' at field '{field_name}' passed to class '{cls.__name__}'"
+            if warning_msg is not None:
+                if ies_config.UNIT_WARNING_AS_ERROR:
+                    raise Exception(warning_msg)
+                else:
+                    logger_print(warning_msg)
+            return value #}
+        {# {% endif %} #}
     {% endif %}
 {% endfor %}
 
