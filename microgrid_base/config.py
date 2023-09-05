@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 from config_utils import *
 from pydantic import confloat
 # from log_utils import logger_print

@@ -341,13 +341,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -363,13 +363,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
     """
 
 
@@ -772,6 +772,16 @@ class 风力发电信息(设备信息):
     单位: 台
     """
 
+    @validator("RatedPower")
+    def checkRatedPower(cls, v, values):
+        breakpoint()
+        CutoutPower = values.get("CutoutPower", None)
+        if CutoutPower is None:
+            raise Exception("风力发电没有传入切出功率")
+        else:
+            assert CutoutPower <= v, f"切出功率({CutoutPower})必须小于额定功率({v})"
+        return v
+
 
 class 柴油发电信息(设备信息):
     def toStandard(self, attr: str):
@@ -1147,25 +1157,6 @@ class 锂电池信息(设备信息):
     单位: kWh
     """
 
-    InitSOC: confloat(ge=0) = Field(title="初始SOC", description="名称: 初始SOC\n单位: percent")
-    """
-    名称: 初始SOC
-    单位: percent
-    """
-
-    @validator("InitSOC")
-    def validate_InitSOC_for_percent_warning(cls, value):
-        warning_msg = None
-        field_name = "InitSOC"
-        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
-            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
-        if warning_msg is not None:
-            if ies_env.UNIT_WARNING_AS_ERROR:
-                raise Exception(warning_msg)
-            else:
-                logger_print(warning_msg)
-        return value
-
     TotalCapacity: confloat(ge=0) = Field(title="设备容量", description="名称: 设备容量\n单位: kWh")
     """
     名称: 设备容量
@@ -1294,14 +1285,6 @@ class 变压器信息(设备信息):
     """
     名称: 最小安装台数
     单位: 台
-    """
-
-    PowerParameter: confloat(ge=0) = Field(
-        title="功率因数", description="名称: 功率因数\n单位: one"
-    )
-    """
-    名称: 功率因数
-    单位: one
     """
 
     DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
@@ -1603,12 +1586,6 @@ class 传输线信息(设备信息):
     """
     名称: 建设费用基数
     单位: 万元
-    """
-
-    Length: confloat(ge=0) = Field(title="长度", description="名称: 长度\n单位: km")
-    """
-    名称: 长度
-    单位: km
     """
 
     Length: confloat(ge=0) = Field(title="长度", description="名称: 长度\n单位: km")
@@ -3666,18 +3643,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3976,18 +3953,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）

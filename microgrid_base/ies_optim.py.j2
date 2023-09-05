@@ -508,27 +508,33 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
 
         {% endif%} 
-        {# {% set percent_fields = []%} #}
+        {% set visited_fields = []%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
+                {% if mstr not in visited_fields%}
+                    {% do visited_fields.append(mstr)%}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
-            {% endif%}
+                {% endif%}
 
+            {% endif%}
         {% endfor %}
     
         {% for psc, mdigit in mdigits %}
-    {{ mdigit[0] }}: {{non_neg_float}} = Field(title = "{{mdigit[1]}}", description =   "名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}")
+            {% set mstr = mdigit[0]%}
+            {% if mstr not in visited_fields%}
+                {% do visited_fields.append(mstr)%}
+    {{ mstr }}: {{non_neg_float}} = Field(title = "{{mdigit[1]}}", description =   "名称: {{ mdigit[1] }}\n单位: {{ mdigit[2] }}")
     """
     名称: {{ mdigit[1] }}
     单位: {{ mdigit[2] }}
     """
-            {% if mdigit[2] == 'percent'%}
+                {% if mdigit[2] == 'percent'%}
                 {# {% do percent_fields.append(mdigit[1])%} #}
-    @validator({{repr(mdigit[0])}})
+    @validator({{repr(mstr)}})
     {# @validator({{validate_params}}) #}
-    def validate_{{mdigit[0]}}_for_percent_warning(cls, value):
+    def validate_{{mstr}}_for_percent_warning(cls, value):
         warning_msg = None
-        field_name = {{repr(mdigit[0])}}
+        field_name = {{repr(mstr)}}
         if value <= ies_env.PERCENT_WARNING_THRESHOLD:
             warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
         if warning_msg is not None:
@@ -537,13 +543,17 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
             else:
                 logger_print(warning_msg)
         return value
-            {%endif%}
+                {%endif%}
 
+            {% endif%}
         {% endfor %}
 
         {% for psc, main, sub in mtables %}
             {% set mtable=(main, sub)%}
-    {{ mtable[0][0]}}_{{ mtable[1][0]}} : List[Tuple[{{pos_float}},{{non_neg_float}}]] = Field(title = "{{ mtable[0][1]}}_{{ mtable[1][1]}}", description=   "{{ mtable[0][0]}}: {{ mtable[0][1]}}\n单位: {{ mtable[0][2]}}\n{{ mtable[1][0]}}: {{ mtable[1][1]}}\n单位: {{ mtable[1][2]}}")
+            {% set mstr = mtable[0][0]+"_"+mtable[1][0] %}
+            {% if mstr not in visited_fields%}
+                {% do visited_fields.append(mstr)%}
+    {{ mstr}} : List[Tuple[{{pos_float}},{{non_neg_float}}]] = Field(title = "{{ mtable[0][1]}}_{{ mtable[1][1]}}", description=   "{{ mtable[0][0]}}: {{ mtable[0][1]}}\n单位: {{ mtable[0][2]}}\n{{ mtable[1][0]}}: {{ mtable[1][1]}}\n单位: {{ mtable[1][2]}}")
     """
     {{ mtable[0][0]}}: {{ mtable[0][1]}}
     单位: {{ mtable[0][2]}}
@@ -552,16 +562,21 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     单位: {{ mtable[1][2]}}
     """
 
+            {%endif%}
+        {% endfor %}
+
     {# validators #}
-            {%if class_name in ['风力发电']%}
+        {%if class_name in ['风力发电']%}
     @validator("RatedPower")
     def checkRatedPower(cls, v, values):
-        CutoutPower = values['CutoutPower'] 
-        assert CutoutPower <= v, f"切出功率({CutoutPower})必须小于额定功率({v})" 
+        CutoutPower = values.get('CutoutPower', None)
+        if CutoutPower is None:
+            raise Exception("风力发电没有传入切出功率")
+        else:
+            assert CutoutPower <= v, f"切出功率({CutoutPower})必须小于额定功率({v})" 
         return v
-            {% endif %}
+        {% endif %}
 
-        {% endfor %}
         {# {% if percent_fields != []%}
             {% set validate_params = ""%}
             {% for field_name in percent_fields%}

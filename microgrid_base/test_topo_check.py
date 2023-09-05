@@ -3,9 +3,9 @@ from log_utils import logger_print
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 import os
 os.environ["VAR_INIT_AS_ZERO"] = "1"
+os.environ["UNIT_WARNING_AS_ERROR"] = "1"
 from config import *
 # ies_env.VAR_INIT_AS_ZERO = "1"
-# os.environ["UNIT_WARNING_AS_ERROR"] = "1"
 # os.environ[
 #     "PERCENT_WARNING_THRESHOLD"
 # ] = "1"  # percent value less or equal than this value shal be warned
@@ -101,7 +101,7 @@ DS = 柴油发电(
         **devParam,
         RatedPower=2000,
         PowerDeltaLimit=100,
-        PowerStartupLimit=1,
+        PowerStartupLimit=2,
         CostPerMachine=1,
         CostPerYearPerMachine=1,
         VariationalCostPerWork=1,
@@ -124,7 +124,7 @@ DEL1 = 变流器(
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
         Life=20,
-        Efficiency=0.9,
+        Efficiency=90,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
         DeviceCount=1000,
@@ -143,7 +143,7 @@ DEL2 = 变压器(
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
         Life=20,
-        Efficiency=0.9,
+        Efficiency=90,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
         DeviceCount=1000,
@@ -173,8 +173,8 @@ BAT = 锂电池(
         VariationalCostPerWork=100,
         Life=200000,
         BatteryDeltaLimit=0.1,
-        ChargeEfficiency=0.9,
-        DischargeEfficiency=0.9,
+        ChargeEfficiency=90,
+        DischargeEfficiency=90,
         BuildCostPerCapacity=10,
         BuildBaseCost=10,
         InitSOC=1.5,
@@ -183,7 +183,7 @@ BAT = 锂电池(
         LifetimeCycleCount=100000000,
         # TotalDischargeCapacity=1000,
         MaxSOC=99,
-        MinSOC=1,
+        MinSOC=3,
         MaxTotalCapacity=2000,
         MinTotalCapacity=1000,
     ).dict(),
@@ -198,7 +198,7 @@ BC = 双向变流器(
     param=双向变流器信息(
         **devParam,
         RatedPower=10000,
-        Efficiency=0.9,
+        Efficiency=90,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
