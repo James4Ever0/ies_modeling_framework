@@ -14,9 +14,9 @@ IESEnvConfig = getEnvConfigClass(IESEnv)
 ies_env: IESEnv = IESEnvConfig.load()
 __all__ = ["ies_env"]
 
-if __name__ == "__main__":
-    # let's test
-    # import rich
+# if __name__ == "__main__":
+#     # let's test
+#     # import rich
 
-    dat: IESEnv = IESEnvConfig.load()
-    # logger_print(dat)
+#     dat: IESEnv = IESEnvConfig.load()
+#     logger_print(dat)

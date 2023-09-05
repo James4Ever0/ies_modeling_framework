@@ -262,14 +262,14 @@ class 分时阶梯电价(BaseModel):
 {# functools.reduce(sequence={{seq}}, function = lambda x,y: x+y) #}
 {% endmacro%}
 
-{% macro init_super_class(class_name)%}
+{% macro init_super_class(class_name) %}
     def __init__(self, PD:dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: {{ class_name }}ID, 设备信息: {{ class_name }}信息):
         super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID = 设备ID.ID)
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 {% endmacro %}
 
-{%macro port_variable_define(class_name)%}
+{% macro port_variable_define(class_name) %}
         ##### PORT VARIABLE DEFINITION ####
 
         self.ports = {}
@@ -507,7 +507,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
     averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
 
-        {% endif%}
+        {% endif%} 
+        {% set percent_fields = []%}
         {% for psc, mstr in mstrs %}
             {%if mstr not in deviceIdentifiers%}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
@@ -521,6 +522,9 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     名称: {{ mdigit[1] }}
     单位: {{ mdigit[2] }}
     """
+            {% if mdigit[2] == 'percent'%}
+                {% do percent_fields.append(mdigit[1])%}
+            {%endif%}
 
         {% endfor %}
 
@@ -536,15 +540,24 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     """
 
     {# validators #}
-        {%if class_name in ['风力发电']%}
+            {%if class_name in ['风力发电']%}
     @validator("RatedPower")
     def checkRatedPower(cls, v, values):
         CutoutPower = values['CutoutPower'] 
         assert CutoutPower <= v, f"切出功率({CutoutPower})必须小于额定功率({v})" 
         return v
-        {% endif %}
+            {% endif %}
 
         {% endfor %}
+        {% if percent_fields != []%}
+            {% set validate_params = ""%}
+            {% for field_name in percent_fields%}
+                {% set validate_params = validate_params + repr(field_name)+ ","%}
+            {%endfor%}
+        @validator({{validate_params}})
+        def validate_percent_fields(cls, value):
+            ...
+        {% endif %}
     {% endif %}
 {% endfor %}
 
