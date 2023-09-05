@@ -3,9 +3,17 @@ from pyomo_environ import *
 from typing import cast
 from config import *
 from pydantic import ValidationError
+import cmath
+
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
+
+def getattr_with_ellipsis_fallback(obj, attrName, default=cmath.nan):
+    val = getattr(obj, attrName, default)
+    if val is ...:
+        val = default
+    return val
 
 {% macro applyMacroWithSingleParam(_macro, paramList)%}
     {% for param in paramList%}
@@ -30,7 +38,6 @@ import os
 from typing import Dict, List, Tuple, Union, Callable
 from pydantic import conlist, conint, confloat, constr
 from constants import *
-import cmath
 {# consider to type check all variable operations #}
 {# cast such type to all variables, to forbid 'var * var' #}
 import pyomo.core.base
@@ -2133,15 +2140,16 @@ class {{planningResultExportClassName}}(BaseModel):
     {# def export(deviceModel: 设备模型协议, deviceSimulationResult: 仿真结果, timeParam:float): #}
         params = {}
         params['元件名称'] = deviceModel.设备信息.设备名称
-        params['设备型号'] = getattr(deviceModel.设备信息, '设备型号', '')
-        params['数量'] = getattr(deviceModel.设备信息,'equiCounts', 0) # 不要累加数量！
-        params['平均效率_平均COP'] = getattr(deviceSimulationResult, 'averageEfficiency', cmath.nan)
+        params['型号'] = getattr(deviceModel.设备信息, '设备型号', '')
+        {# params['设备型号'] = getattr(deviceModel.设备信息, '设备型号', '') #}
+        params['数量'] = getattr_with_ellipsis_fallback(deviceModel.设备信息,'equiCounts', 0) # 不要累加数量！
+        params['平均效率_平均COP'] = getattr_with_ellipsis_fallback(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
 
         {% for k in ["机组年启动次数","机组年运行时间"] %}
-        params[{{repr(k)}}] = value(getattr(deviceModel,{{repr(k)}}, cmath.nan))
+        params[{{repr(k)}}] = value(getattr_with_ellipsis_fallback(deviceModel,{{repr(k)}}, cmath.nan))
         {% endfor %}
-        params['设备年维护费'] = getattr(deviceSimulationResult, "设备维护费用", cmath.nan) # 乘过时间参数就不用乘了
+        params['设备年维护费'] = getattr_with_ellipsis_fallback(deviceSimulationResult, "设备维护费用", cmath.nan) # 乘过时间参数就不用乘了
         {# params['设备年维护费'] = deviceSimulationResult.equipmentMaintenanceCosts # 乘过时间参数就不用乘了 #}
         for attrName in ['年碳排放', '年NOX排放','年SO2排放']:
             gasType = attrName.strip('年').strip('排放') if '碳' not in attrName else 'CO2'

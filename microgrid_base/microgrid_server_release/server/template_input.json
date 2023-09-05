@@ -232,7 +232,7 @@
                     "averageLoadRate": null,
                     "RatedPower": 21500.0,
                     "PowerDeltaLimit": 100.0,
-                    "PowerStartupLimit": 2.0,
+                    "PowerStartupLimit": 3.5,
                     "CostPerMachine": 1.0,
                     "CostPerYearPerMachine": 1.0,
                     "VariationalCostPerWork": 1.0,
@@ -277,12 +277,12 @@
                 "type": "设备",
                 "subtype": "变流器",
                 "ports": {
-                    "电输出": {
-                        "subtype": "电母线输出",
-                        "id": 10
-                    },
                     "电输入": {
                         "subtype": "变流器输入",
+                        "id": 10
+                    },
+                    "电输出": {
+                        "subtype": "电母线输出",
                         "id": 11
                     }
                 },
@@ -306,15 +306,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
-                "subtype": "电母线输出",
+                "port_name": "电输入",
+                "subtype": "变流器输入",
                 "device_id": 9,
                 "id": 10
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "变流器输入",
+                "port_name": "电输出",
+                "subtype": "电母线输出",
                 "device_id": 9,
                 "id": 11
             },
@@ -322,12 +322,12 @@
                 "type": "设备",
                 "subtype": "变压器",
                 "ports": {
-                    "电输入": {
-                        "subtype": "电母线输入",
-                        "id": 13
-                    },
                     "电输出": {
                         "subtype": "变压器输出",
+                        "id": 13
+                    },
+                    "电输入": {
+                        "subtype": "电母线输入",
                         "id": 14
                     }
                 },
@@ -353,15 +353,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "电母线输入",
+                "port_name": "电输出",
+                "subtype": "变压器输出",
                 "device_id": 12,
                 "id": 13
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
-                "subtype": "变压器输出",
+                "port_name": "电输入",
+                "subtype": "电母线输入",
                 "device_id": 12,
                 "id": 14
             },
@@ -435,7 +435,7 @@
                     "ChargeEfficiency": 90.0,
                     "DischargeEfficiency": 90.0,
                     "MaxSOC": 99.0,
-                    "MinSOC": 3.0,
+                    "MinSOC": 4.0,
                     "BatteryStorageDecay": 10.0,
                     "LifetimeCycleCount": 100000000.0,
                     "BatteryLife": 9000.0,
@@ -445,7 +445,7 @@
                     "Life": 200000.0,
                     "BuildCostPerCapacity": 10.0,
                     "BuildBaseCost": 10.0,
-                    "InitSOC": 1.5,
+                    "InitSOC": 4.0,
                     "MaxTotalCapacity": 2000.0,
                     "MinTotalCapacity": 1000.0,
                     "TotalCapacity": 2000.0
@@ -641,11 +641,11 @@
             },
             {
                 "source": 10,
-                "target": 28
+                "target": 34
             },
             {
                 "source": 11,
-                "target": 34
+                "target": 28
             },
             {
                 "source": 12,
@@ -657,11 +657,11 @@
             },
             {
                 "source": 13,
-                "target": 29
+                "target": 30
             },
             {
                 "source": 14,
-                "target": 30
+                "target": 29
             },
             {
                 "source": 15,
