@@ -27,11 +27,12 @@ import rich
 for it in model.solutions.symbol_map.values():
     for k, v in it.bySymbol.items():
         print(k, v().name)
-for c in [model.b, model.pw]:
-# for c in [model.a, model.b,model.pw, model.cons]:
-    print("_" * 60)
-    print(dir(c))
+# for c in [model.b, model.pw]:
+# # for c in [model.a, model.b,model.pw, model.cons]:
+#     print("_" * 60)
+#     print(dir(c))
     # breakpoint()
-    for obj in c.parent_component().component_data_objects():
-        print(obj.name)
+    # for obj in c.parent_component().component_data_objects():
+    #     print(obj.name)
     #     print(k,v)
+print(dir(model.b))
