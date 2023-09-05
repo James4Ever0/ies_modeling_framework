@@ -540,8 +540,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
             warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
         if warning_msg is not None:
             if ies_env.UNIT_WARNING_AS_ERROR:
-                raise ValidationError(warning_msg)
-                {# raise Exception(warning_msg) #}
+                {# raise ValidationError(warning_msg) #}
+                raise Exception(warning_msg)
             else:
                 logger_print(warning_msg)
         return value
@@ -872,10 +872,12 @@ class 计算参数(SharedParams):
     def validate_typical_day(cls, v, values):
         if values['典型日']:
             len_v = len(v)
-            if len_v <= 0:
+            assert len_v >0
+            assert len_v <= 365
+            {# if len_v <= 0:
                 raise ValidationError(f"典型日代表日期不应小于等于0\n实际长度：{len_v}")
             if len_v  >365:
-                raise ValidationError(f"典型日代表日期不应大于365\n实际长度：{len_v}")
+                raise ValidationError(f"典型日代表日期不应大于365\n实际长度：{len_v}") #}
         return v
     {# 计算类型: Literal['仿真模拟', '设计规划'] #}
     {# 计算目标: Literal['经济','环保','经济_环保'] #}

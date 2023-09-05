@@ -3,8 +3,7 @@ from log_utils import logger_print
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 import os
 
-os.environ["VAR_INIT_AS_ZERO"] = "1"
-os.environ["UNIT_WARNING_AS_ERROR"] = "1"
+os.environ["DOTENV"] = ".test_topo_env"
 from config import *
 
 # ies_env.VAR_INIT_AS_ZERO = "1"
@@ -102,7 +101,7 @@ p1 = 柴油发电信息(
     **devParam,
     RatedPower=21500,
     PowerDeltaLimit=100,
-    PowerStartupLimit=2,
+    PowerStartupLimit=3.5,
     CostPerMachine=1,
     CostPerYearPerMachine=1,
     VariationalCostPerWork=1,
@@ -183,13 +182,13 @@ BAT = 锂电池(
         DischargeEfficiency=90,
         BuildCostPerCapacity=10,
         BuildBaseCost=10,
-        InitSOC=1.5,
+        InitSOC=4,
         BatteryStorageDecay=10,
         BatteryLife=9000,
         LifetimeCycleCount=100000000,
         # TotalDischargeCapacity=1000,
         MaxSOC=99,
-        MinSOC=3,
+        MinSOC=4,
         MaxTotalCapacity=2000,
         MinTotalCapacity=1000,
     ).dict(),
@@ -296,7 +295,7 @@ from fastapi_datamodel_template import EnergyFlowGraph
 from copy import deepcopy
 import os
 
-breakpoint() # error while reloading params
+# breakpoint()  # error while reloading params
 EFG = EnergyFlowGraph(
     mDictList=deepcopy(mdictList), residualEquipmentLife=2
 )  # override default.
