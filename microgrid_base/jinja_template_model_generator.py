@@ -36,9 +36,6 @@ if __name__ == "__main__":
         banner="TOPO CHECK CODE",
     )
 
-    # run test code.
-    test(["test_topo_check.py"])
-
     planningExportFormatList = list(planningExportFormat.items())
     planningExportFormatList.sort(key=lambda x: 0 if x[0] == '方案详情' else 1)
 
@@ -58,6 +55,9 @@ if __name__ == "__main__":
     )
 
     # test(["test_topo_check.py", "-f"])
+    
+    # run test code.
+    test(["test_topo_check.py"])
 
     # tpl = load_template(ies_optim_code_output_path)
     # result = tpl.render(type_sys=type_sys, dparam=dparam)

@@ -1,12 +1,12 @@
 from log_utils import logger_print
 from pyomo_environ import *
 from typing import cast
+from config import *
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
 
-VAR_INIT_AS_ZERO = "VAR_INIT_AS_ZERO"
 
 import os
 
@@ -312,13 +312,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
-    """
-    类型: 柴油输入
-    """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
     """
     类型: 供电端输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    """
+    类型: 柴油输入
     """
 
 
@@ -330,46 +330,46 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
+    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
     """
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
-    """
-    类型: 电母线输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
     """
     类型: 变流器输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    """
+    类型: 电母线输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
     """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
+    """
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -538,6 +538,19 @@ class 光伏发电信息(设备信息):
     名称: 电电转换效率
     单位: percent
     """
+
+    @validator("PowerConversionEfficiency")
+    def validate_PowerConversionEfficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "PowerConversionEfficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     MaxPower: confloat(ge=0) = Field(title="最大发电功率", description="名称: 最大发电功率\n单位: kWp")
     """
@@ -821,6 +834,19 @@ class 柴油发电信息(设备信息):
     单位: percent
     """
 
+    @validator("PowerStartupLimit")
+    def validate_PowerStartupLimit_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "PowerStartupLimit"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
     CostPerMachine: confloat(ge=0) = Field(
         title="采购成本", description="名称: 采购成本\n单位: 万元/台"
     )
@@ -946,6 +972,19 @@ class 锂电池信息(设备信息):
     单位: percent
     """
 
+    @validator("ChargeEfficiency")
+    def validate_ChargeEfficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "ChargeEfficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
     DischargeEfficiency: confloat(ge=0) = Field(
         title="放能效率", description="名称: 放能效率\n单位: percent"
     )
@@ -954,17 +993,56 @@ class 锂电池信息(设备信息):
     单位: percent
     """
 
+    @validator("DischargeEfficiency")
+    def validate_DischargeEfficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "DischargeEfficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
     MaxSOC: confloat(ge=0) = Field(title="最大SOC", description="名称: 最大SOC\n单位: percent")
     """
     名称: 最大SOC
     单位: percent
     """
 
+    @validator("MaxSOC")
+    def validate_MaxSOC_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "MaxSOC"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
     MinSOC: confloat(ge=0) = Field(title="最小SOC", description="名称: 最小SOC\n单位: percent")
     """
     名称: 最小SOC
     单位: percent
     """
+
+    @validator("MinSOC")
+    def validate_MinSOC_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "MinSOC"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     BatteryStorageDecay: confloat(ge=0) = Field(
         title="存储衰减", description="名称: 存储衰减\n单位: percent/hour"
@@ -1040,6 +1118,19 @@ class 锂电池信息(设备信息):
     单位: percent
     """
 
+    @validator("InitSOC")
+    def validate_InitSOC_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "InitSOC"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
     MaxTotalCapacity: confloat(ge=0) = Field(
         title="最大设备容量", description="名称: 最大设备容量\n单位: kWh"
     )
@@ -1061,6 +1152,19 @@ class 锂电池信息(设备信息):
     名称: 初始SOC
     单位: percent
     """
+
+    @validator("InitSOC")
+    def validate_InitSOC_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "InitSOC"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     TotalCapacity: confloat(ge=0) = Field(title="设备容量", description="名称: 设备容量\n单位: kWh")
     """
@@ -1094,6 +1198,19 @@ class 变压器信息(设备信息):
     名称: 效率
     单位: percent
     """
+
+    @validator("Efficiency")
+    def validate_Efficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "Efficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     RatedPower: confloat(ge=0) = Field(title="变压器容量", description="名称: 变压器容量\n单位: kW")
     """
@@ -1147,7 +1264,6 @@ class 变压器信息(设备信息):
     单位: 万元
     """
 
-    # TODO: remove this line
     PowerParameter: confloat(ge=0) = Field(
         title="功率因数", description="名称: 功率因数\n单位: one"
     )
@@ -1226,6 +1342,19 @@ class 变流器信息(设备信息):
     名称: 效率
     单位: percent
     """
+
+    @validator("Efficiency")
+    def validate_Efficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "Efficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     CostPerKilowatt: confloat(ge=0) = Field(
         title="采购成本", description="名称: 采购成本\n单位: 万元/kW"
@@ -1327,6 +1456,19 @@ class 双向变流器信息(设备信息):
     名称: 效率
     单位: percent
     """
+
+    @validator("Efficiency")
+    def validate_Efficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "Efficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
 
     CostPerKilowatt: confloat(ge=0) = Field(
         title="采购成本", description="名称: 采购成本\n单位: 万元/kW"
@@ -1526,7 +1668,23 @@ from collections import defaultdict
 import flashtext
 
 
+class SharedParams(BaseModel):
+    典型日: bool
+    计算步长: Literal["小时", "秒"]
+    计算类型: Literal["仿真模拟", "设计规划"]
+    计算目标: Literal["经济", "环保", "经济_环保"]
+
+
+class InputParams(SharedParams):
+    calcParamList: List
+    rangeDict: Union[None, dict]
+    needResult: bool
+    additional_constraints: dict
+
+
 class ModelWrapper:
+    inputParam: InputParams
+
     def __init__(self):
         self.model = ConcreteModel()
         self.clock = {}
@@ -1669,7 +1827,7 @@ class ModelWrapper:
     def Var(self, name: str, *args, **kwargs):
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
-        if VAR_INIT_AS_ZERO in os.environ.keys():  # test override.
+        if ies_env.VAR_INIT_AS_ZERO is not None:
             kwargs["initialize"] = 0
         ret = Var(*args, **kwargs)
         assert (
@@ -1741,10 +1899,8 @@ class ModelWrapper:
 
 
 # 需要明确单位
-class 计算参数(BaseModel):
+class 计算参数(SharedParams):
     典型日ID: Union[conint(ge=0), None] = None  # increse by external loop
-    计算步长: Literal["小时", "秒"]
-    典型日: bool
 
     分时计价开始时间点: float = Field(
         default=0,
@@ -1769,8 +1925,6 @@ class 计算参数(BaseModel):
             assert len(v) <= 365
         return v
 
-    计算类型: Literal["仿真模拟", "设计规划"]
-    计算目标: Literal["经济", "环保", "经济_环保"]
     风速: List[confloat(ge=0)]
     """
     单位: m/s
@@ -2763,18 +2917,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
-            "燃料接口", within=NonPositiveReals
-        )
-        """
-        类型: 柴油输入
-        """
-
         self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
             "电接口", within=NonNegativeReals
         )
         """
         类型: 供电端输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 柴油输入
         """
 
         # 设备特有约束（变量）
@@ -3343,18 +3497,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3512,18 +3666,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 电母线输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 变流器输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 电母线输出
         """
 
         # 设备特有约束（变量）
@@ -3674,18 +3828,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -3822,18 +3976,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -3901,6 +4055,7 @@ class 电负荷模型(设备模型):
 
     def constraints_register(self):
         super().constraints_register()
+        # TODO: 典型日的分时分月电价取每天同一小时的平均，在电价模型内实现
         getTimeInDay = (
             lambda index: index
             if self.计算参数.计算步长 == "小时"
@@ -4096,10 +4251,14 @@ class 柴油模型(设备模型):
         return 年化费用
 
 
+from copy import deepcopy
+
+
 class ModelWrapperContext:
-    def __init__(self):
+    def __init__(self, inputParams: InputParams):
         mw = ModelWrapper()
         self.mw = mw
+        self.mw.inputParams = deepcopy(inputParams)
 
     def __enter__(self):
         logger_print("ENTER MODEL WRAPPER CONTEXT")
@@ -4729,6 +4888,9 @@ class mDict(BaseModel):
         description="由能流图中节点互相连接的边组成的列表",
         example=[{"source": 0, "target": 1}, {"source": 1, "target": 31}],
     )
+
+
+# TODO: 增加单典型日判断类型或者字段
 
 
 class EnergyFlowGraph(BaseModel):
