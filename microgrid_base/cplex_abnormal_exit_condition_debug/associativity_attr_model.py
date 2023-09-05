@@ -30,8 +30,8 @@ for it in model.solutions.symbol_map.values():
 for c in [model.b, model.pw]:
 # for c in [model.a, model.b,model.pw, model.cons]:
     print("_" * 60)
+    print(dir(c))
     # breakpoint()
-    # for k,v in c.items():
-    #     print(k,v)
-    for obj in c.root_block.component_data_objects():
+    for obj in c.parent_component().component_data_objects():
         print(obj.name)
+    #     print(k,v)
