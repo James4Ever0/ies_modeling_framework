@@ -2,15 +2,18 @@ from log_utils import logger_print
 
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 import os
+
 os.environ["VAR_INIT_AS_ZERO"] = "1"
 os.environ["UNIT_WARNING_AS_ERROR"] = "1"
 from config import *
+
 # ies_env.VAR_INIT_AS_ZERO = "1"
 # os.environ[
 #     "PERCENT_WARNING_THRESHOLD"
 # ] = "1"  # percent value less or equal than this value shal be warned
 import json
 from topo_check import *
+
 # import rich
 
 
@@ -95,26 +98,29 @@ DSS = 柴油(
     ).dict(),
     # param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
 )
+p1 = 柴油发电信息(
+    **devParam,
+    RatedPower=21500,
+    PowerDeltaLimit=100,
+    PowerStartupLimit=2,
+    CostPerMachine=1,
+    CostPerYearPerMachine=1,
+    VariationalCostPerWork=1,
+    Life=20,
+    BuildCostPerMachine=10,
+    BuildBaseCost=10,
+    DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
+    DeviceCount=100,
+    MaxDeviceCount=200,
+    MinDeviceCount=100,
+).dict()
+# breakpoint()
+
 DS = 柴油发电(
     topo,
-    param=柴油发电信息(
-        **devParam,
-        RatedPower=2000,
-        PowerDeltaLimit=100,
-        PowerStartupLimit=2,
-        CostPerMachine=1,
-        CostPerYearPerMachine=1,
-        VariationalCostPerWork=1,
-        Life=20,
-        BuildCostPerMachine=10,
-        BuildBaseCost=10,
-        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=100,
-        MaxDeviceCount=200,
-        MinDeviceCount=100,
-    ).dict(),
+    param=p1,
 )
-
+# breakpoint()
 DEL1 = 变流器(
     topo,
     param=变流器信息(
@@ -290,6 +296,7 @@ from fastapi_datamodel_template import EnergyFlowGraph
 from copy import deepcopy
 import os
 
+breakpoint() # error while reloading params
 EFG = EnergyFlowGraph(
     mDictList=deepcopy(mdictList), residualEquipmentLife=2
 )  # override default.

@@ -1,5 +1,11 @@
 # TODO: assign debug/error id and separate logger/folder for error logging.
 
+# TODO: use miplib (problem dataset) to test our debugging tools
+# ref: https://miplib.zib.de/
+
+# sensitivity analysis cannot be done before solution
+# ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=tutorial-performing-sensitivity-analysis
+
 from log_utils import logger_print
 
 # input: model, objective, etc.
@@ -133,6 +139,20 @@ def convertSymbolMapToTranslationTable(symbol_map: SymbolMap):
                 f"Numeric symbol name '{numeric_name}' does not have reference to model."
             )
     return translationTable
+
+
+class ExportedModel:
+    def __init__(self, model: ConcreteModel, filepath: str):
+        self._model = model
+        self._filepath = filepath
+
+        fmt = filepath.split(".")[-1]
+        if fmt not in ["mps", "lp"]:
+            raise Exception(f"Cannot export unknown format: {fmt}")
+        _, smap_id = model.write(filepath, format=fmt)
+
+        self.smap: SymbolMap = model.solutions.symbol_map[smap_id]
+        self.translation_table = convertSymbolMapToTranslationTable(self.smap)
 
 
 from contextlib import contextmanager
@@ -468,21 +488,79 @@ def decomposeAndAnalyzeObjectiveExpression(
         logger_print("objective expression is non-linear.")
 
 
-def setBounds(varObject, bound):
+import uuid
+
+# import weakref
+from contextlib import contextmanager
+
+
+@contextmanager
+def solverOptionsContext(solver, _options: List[Tuple[str, float]] = []):
+    optionNames = []
+    optionNameToOldOptionValue = {}
+
+    def setSolverOption(optionName: str, optionValue):
+        optionName = optionName.strip()
+        if oldOptionValue := solver.options.get(optionName, None) is not None:
+            optionNameToOldOptionValue[optionName] = oldOptionValue
+        solver.options[optionName] = optionValue
+
+    def setSolverOptions(options: List[Tuple[str, float]]):
+        for optionName, optionValue in options:
+            setSolverOption(optionName, optionValue)
+
+    try:
+        setSolverOptions(_options)
+        yield setSolverOptions
+    finally:
+        for optionName in optionNames:
+            if optionName in optionNameToOldOptionValue.keys():
+                solver.options[optionName] = optionNameToOldOptionValue[optionName]
+            else:
+                del solver.options[optionName]
+
+
+@contextmanager
+def setBoundsContext(bound, model):
     assert bound > 0, f"bound must be positive.\npassed: {bound}"
-    varObject.setlb(-bound)
-    varObject.setub(bound)
+    all_bound_names = []
+
+    def setBounds(varObject):
+        bound_names = []
+        while len(bound_names) != 2:
+            name = str(uuid.uuid4()).replace("-", "_")
+            if getattr(model, name, None) is None:
+                bound_names.append(f"{name}")
+        setattr(model, bound_names[0], Constraint(expr=varObject >= -bound))
+        setattr(model, bound_names[1], Constraint(expr=varObject <= bound))
+        # varObject.setlb(-bound)
+        # varObject.setub(bound)
+        all_bound_names.extend(bound_names)  # kinda like weakref?
+
+    # return (weakref.ref(c) for c in [lb_constraint, ub_constraint])
+    try:
+        yield setBounds
+    finally:
+        for bound_name in all_bound_names:
+            if getattr(model, bound_name, None) is not None:
+                delattr(model, bound_name)
 
 
-def solve_and_decompose(
+from violation_utils import modelScannerContext
+
+
+def solve_decompose_and_scan(
     modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
 ):
     cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
     os.mkdir(cplex_log_dir)
     lp_filepath = os.path.join(log_directory, "model.lp")
-    _, smap_id = modelWrapper.model.write(lp_filepath)
-    smap = modelWrapper.model.solutions.symbol_map[smap_id]
-    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
+    # _, smap_id = modelWrapper.model.write(lp_filepath)
+    # smap = modelWrapper.model.solutions.symbol_map[smap_id]
+    lp_exported = ExportedModel(modelWrapper.model, lp_filepath)
+    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, lp_exported.smap)
+    # cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
+    # TODO: add translate method to export model wrapper class
     model = modelWrapper.model
     obj_expr = modelWrapper.obj_expr
     solved = solve_with_translated_log_and_statistics(
@@ -496,6 +574,14 @@ def solve_and_decompose(
                 modelWrapper.submodelClassNameToVarNames,
                 modelWrapper,
             )
+            with modelScannerContext(model) as modelScanner:
+                report = modelScanner.report()
+                report_fpath = os.path.join(log_directory, "report.txt")
+                with open(report_fpath, "w+") as f:
+                    f.write(report)
+
+
+import random
 
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
@@ -505,19 +591,75 @@ def checkInfeasibleOrUnboundedModel(
     # obj_expr,
     solver,
     log_directory: str,
-    timelimit: float = 30,
+    timelimit: float = 10,
     max_bound: float = 1e8,
 ):
+    # TODO: set param input (deepcopy) as attribute of modelWrapper
     model = modelWrapper.model
     obj = modelWrapper.obj
     obj_expr = modelWrapper.obj_expr
     solver.options["timelimit"] = timelimit
+
+    def default_solve_decompose_and_scan(banner, decompose=False):
+        return solve_decompose_and_scan(
+            modelWrapper, solver, log_directory, banner, decompose=decompose
+        )
+
+    # phase 0: limit iteration and get premature solutions
+    # advanced start might be used along with other solvers.
+    # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=mip-starting-from-solution-starts
+    options: List[Tuple[str, float]] = [
+        ("mip limits strongit", 1),
+        ("mip limits nodes", 2e2),
+        ("mip tolerances mipgap", 1),  # mipgap
+        ("mip tolerances absmipgap", 1e8),
+        ("dettimelimit", 1e4),
+        ("mip limits treememory", 1e3),  # 300MB
+        ("mip limits solutions", 1),
+        ("mip limits populate", 2),
+        ("mip strategy fpheur", -1),
+        ("sifting iterations", 1e3),
+        ("mip pool intensity", 1),
+        ("mip limits probetime", 1e1),
+        ("simplex limits iterations", 1e4),
+        ("mip limits repairtries", 1e3),
+        ("preprocessing relax", 0),
+        ("preprocessing reduce", 0),
+        ("randomseed", random.randint(0, 1e10)),
+        ("mip strategy presolvenode", -1),
+        ("preprocessing presolve", 0),
+        ("mip polishafter solutions", 1),
+        ("mip polishafter time", 5),
+        ("barrier limits iteration", 1e3),
+        ("barrier limits growth", 1e5),
+        ("network iterations", 1e3),
+        ("mip strategy probe", 3),
+        ("emphasis mip", 4),  # feasibility first
+        ("mip strategy search", 1)  # disable dynamic search
+        # callbacks can be used in static search
+        # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=callbacks-where-query-are-called
+    ]
+
+    with solverOptionsContext(solver, options):
+        default_solve_decompose_and_scan(
+            "limit_iteration",
+            decompose=True,
+        )
+        # solve_decompose_and_scan(
+        #     modelWrapper,
+        #     solver,
+        #     log_directory,
+        #     "limit_iteration",
+        #     decompose=True,
+        # )
+
     # phase 1: check if infeasible.
+
     obj.deactivate()
     # TODO: Constant objective detected, replacing with a placeholder to prevent solver failure.
-    model_name = "null_objective"
-    modelWrapper.submodelName = model_name
-    modelWrapper.submodelClassName = model_name
+    # model_name = "null_objective"
+    # modelWrapper.submodelName = model_name
+    # modelWrapper.submodelClassName = model_name
 
     # model.debug_null_objective = Objective()
     model.debug_null_objective = Objective(expr=0)
@@ -526,21 +668,27 @@ def checkInfeasibleOrUnboundedModel(
     # solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "null_objective"
     # )  # we don't care about this solution. don't do analysis.
-    solve_and_decompose(modelWrapper, solver, log_directory, model_name)
-
+    # solve_decompose_and_scan(modelWrapper, solver, log_directory, model_name)
+    default_solve_decompose_and_scan("null_objective")
     # phase 2: limit range of objective expression
-    model.debug_obj_expr_bound = Var()
-    model.debug_obj_expr_bound_constraint = Constraint(
-        expr=model.debug_obj_expr_bound == obj_expr
-    )
-    setBounds(model.debug_obj_expr_bound, max_bound)
+    # model.debug_obj_expr_bound = Var()
+    # model.debug_obj_expr_bound_constraint = Constraint(
+    #     expr=model.debug_obj_expr_bound == obj_expr
+    # )
+    # setBounds(model.debug_obj_expr_bound, max_bound)
+    # model.debug_obj_lb_constraint = Constraint(expr=obj_expr >= -max_bound)
+    # model.debug_obj_ub_constraint = Constraint(expr=obj_expr <= max_bound)
 
     model.debug_null_objective.deactivate()
     obj.activate()
 
-    solve_and_decompose(
-        modelWrapper, solver, log_directory, "bounded_objective", decompose=True
-    )
+    with setBoundsContext(max_bound, model) as setBounds:
+        setBounds(obj_expr)
+        # debug_bound_attrs = setBounds(obj_expr, max_bound, model)
+        default_solve_decompose_and_scan("bounded_objective", decompose=True)
+        # solve_decompose_and_scan(
+        #     modelWrapper, solver, log_directory, "bounded_objective", decompose=True
+        # )
 
     # solved = solve_with_translated_log_and_statistics(
     #     model, solver, log_directory, "bounded_objective"
@@ -555,16 +703,35 @@ def checkInfeasibleOrUnboundedModel(
 
     # this is not a persistent solver.
     # ref: https://pyomo.readthedocs.io/en/stable/advanced_topics/persistent_solvers.html
-    del model.debug_obj_expr_bound_constraint
-    del model.debug_obj_expr_bound
+    # del model.debug_obj_expr_bound_constraint
+    # del model.debug_obj_expr_bound
+    # del debug_obj_ub_constraint_weakref()
+    # del debug_obj_lb_constraint_weakref()
+    # for attrName in debug_bound_attrs:
+    #     delattr(model, attrName)
 
     decomposed_obj_expr = decomposeExpression(obj_expr)
-    for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
-        setBounds(varObject, max_bound)
 
-    solve_and_decompose(
-        modelWrapper, solver, log_directory, "bounded_objective_vars", decompose=True
-    )
+    # var_bound_weakrefs = []
+    with setBoundsContext(max_bound, model) as setBounds:
+        for varName, varObject in decomposed_obj_expr.varNameToVarObject.items():
+            setBounds(varObject)
+        # var_lb_weakref, var_ub_weakref = setBounds(varObject, max_bound)
+        # var_bound_weakrefs.extend([var_lb_weakref, var_ub_weakref])
+
+        default_solve_decompose_and_scan(
+            "bounded_objective_vars",
+            decompose=True,
+        )
+        # solve_decompose_and_scan(
+        #     modelWrapper,
+        #     solver,
+        #     log_directory,
+        #     "bounded_objective_vars",
+        #     decompose=True,
+        # )
+    # for var_bound_weakref in var_bound_weakrefs:
+    #     del var_bound_weakref()
 
 
 # we need to change solver options to early abort execution.

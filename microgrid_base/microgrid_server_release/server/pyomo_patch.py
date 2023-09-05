@@ -1,7 +1,9 @@
 from log_utils import logger_print
 
+# from log_utils import logger_print
+
 import pyomo
-import pyomo.core.base.block as block
+# import pyomo.core.base.block as block
 
 # block._BlockData2 = block._BlockData
 # del block._BlockData
@@ -14,7 +16,7 @@ assert (pyomo_version := pyomo.__version__) == (
 
 ######## SUPPRESS STRICT INEQUALITY PATCH #########
 # from pyomo.environ import *
-from pyomo_environ import *
+# from pyomo_environ import *
 
 # star-import this python file to avoid issues with direct imports.
 
@@ -26,6 +28,7 @@ def strict_setter(self, val):
 def strict_getter(self):
     return False
 
+import pyomo.core.expr.relational_expr
 
 InEq = pyomo.core.expr.relational_expr.InequalityExpression
 setattr(InEq, "_strict_setter", strict_setter)

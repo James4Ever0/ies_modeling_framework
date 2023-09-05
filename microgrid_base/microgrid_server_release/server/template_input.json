@@ -3,16 +3,16 @@
         "directed": false,
         "multigraph": false,
         "graph": {
-            "典型日ID": null,
-            "计算步长": "小时",
             "典型日": true,
+            "计算步长": "小时",
+            "计算类型": "设计规划",
+            "计算目标": "经济",
+            "典型日ID": null,
             "分时计价开始时间点": 0,
             "分时计价开始月份": 0,
             "典型日代表的日期": [
                 1
             ],
-            "计算类型": "设计规划",
-            "计算目标": "经济",
             "风速": [
                 100.0,
                 100.0,
@@ -108,7 +108,7 @@
                     "生产厂商": "Any",
                     "设备型号": "Any",
                     "Area": 10.0,
-                    "PowerConversionEfficiency": 0.9,
+                    "PowerConversionEfficiency": 90.0,
                     "MaxPower": 9.0,
                     "PowerDeltaLimit": 1.0,
                     "CostPerKilowatt": 100.0,
@@ -144,7 +144,7 @@
                     "生产厂商": "Any",
                     "设备型号": "Any",
                     "Area": 10.0,
-                    "PowerConversionEfficiency": 0.9,
+                    "PowerConversionEfficiency": 90.0,
                     "MaxPower": 9.0,
                     "PowerDeltaLimit": 1.0,
                     "CostPerKilowatt": 100.0,
@@ -230,9 +230,9 @@
                     "unitSingleStartupCost": null,
                     "unitPlanningAlgorithmSelection": "平均",
                     "averageLoadRate": null,
-                    "RatedPower": 2000.0,
+                    "RatedPower": 21500.0,
                     "PowerDeltaLimit": 100.0,
-                    "PowerStartupLimit": 1.0,
+                    "PowerStartupLimit": 2.0,
                     "CostPerMachine": 1.0,
                     "CostPerYearPerMachine": 1.0,
                     "VariationalCostPerWork": 1.0,
@@ -291,7 +291,7 @@
                     "生产厂商": "Any",
                     "设备型号": "Any",
                     "RatedPower": 20000.0,
-                    "Efficiency": 0.9,
+                    "Efficiency": 90.0,
                     "CostPerKilowatt": 100.0,
                     "CostPerYearPerKilowatt": 100.0,
                     "VariationalCostPerWork": 100.0,
@@ -322,12 +322,12 @@
                 "type": "设备",
                 "subtype": "变压器",
                 "ports": {
-                    "电输出": {
-                        "subtype": "变压器输出",
-                        "id": 13
-                    },
                     "电输入": {
                         "subtype": "电母线输入",
+                        "id": 13
+                    },
+                    "电输出": {
+                        "subtype": "变压器输出",
                         "id": 14
                     }
                 },
@@ -335,7 +335,7 @@
                     "设备名称": "Any",
                     "生产厂商": "Any",
                     "设备型号": "Any",
-                    "Efficiency": 0.9,
+                    "Efficiency": 90.0,
                     "RatedPower": 20000.0,
                     "CostPerKilowatt": 100.0,
                     "CostPerYearPerKilowatt": 100.0,
@@ -353,15 +353,15 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输出",
-                "subtype": "变压器输出",
+                "port_name": "电输入",
+                "subtype": "电母线输入",
                 "device_id": 12,
                 "id": 13
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "电母线输入",
+                "port_name": "电输出",
+                "subtype": "变压器输出",
                 "device_id": 12,
                 "id": 14
             },
@@ -432,10 +432,10 @@
                     "循环边界条件": "日间连接",
                     "RatedCapacity": 200.0,
                     "BatteryDeltaLimit": 0.1,
-                    "ChargeEfficiency": 0.9,
-                    "DischargeEfficiency": 0.9,
+                    "ChargeEfficiency": 90.0,
+                    "DischargeEfficiency": 90.0,
                     "MaxSOC": 99.0,
-                    "MinSOC": 1.0,
+                    "MinSOC": 3.0,
                     "BatteryStorageDecay": 10.0,
                     "LifetimeCycleCount": 100000000.0,
                     "BatteryLife": 9000.0,
@@ -507,7 +507,7 @@
                     "生产厂商": "Any",
                     "设备型号": "Any",
                     "RatedPower": 10000.0,
-                    "Efficiency": 0.9,
+                    "Efficiency": 90.0,
                     "CostPerKilowatt": 100.0,
                     "CostPerYearPerKilowatt": 100.0,
                     "VariationalCostPerWork": 100.0,
@@ -657,11 +657,11 @@
             },
             {
                 "source": 13,
-                "target": 30
+                "target": 29
             },
             {
                 "source": 14,
-                "target": 29
+                "target": 30
             },
             {
                 "source": 15,

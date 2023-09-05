@@ -34,6 +34,8 @@ class ExceptionManager:
         return bool(self)
 
     def append(self, error: str):
+        if not isinstance(error, str):
+            raise Exception("Expected error to be a string.\nPassed: " + error)
         self.errors.append(error)
 
     def clear(self):
@@ -41,10 +43,10 @@ class ExceptionManager:
         self.default_error = None
 
     def format_error(self, clear=True, join: str = "\n"):
-        error_msg = join.join(
-            self.errors
-            + ([] if (self and self.default_error) else [self.default_error])
+        msgs = self.errors + (
+            [self.default_error] if (self and (self.default_error is not None)) else []
         )
+        error_msg = join.join(msgs)
         if clear:
             self.clear()
         return error_msg

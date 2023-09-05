@@ -4,9 +4,17 @@ MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
 import os
 
 os.environ["VAR_INIT_AS_ZERO"] = "1"
+os.environ["UNIT_WARNING_AS_ERROR"] = "1"
+from config import *
+
+# ies_env.VAR_INIT_AS_ZERO = "1"
+# os.environ[
+#     "PERCENT_WARNING_THRESHOLD"
+# ] = "1"  # percent value less or equal than this value shal be warned
 import json
 from topo_check import *
-import rich
+
+# import rich
 
 
 datalen = 24
@@ -61,7 +69,9 @@ devParam = dict(生产厂商="Any", 设备型号="Any", 设备名称="Any")
 P1 = 光伏发电信息(
     **devParam,
     Area=10,
-    PowerConversionEfficiency=0.9,
+    # too low for percentage
+    PowerConversionEfficiency=90,
+    # PowerConversionEfficiency=0.9,
     MaxPower=9,
     PowerDeltaLimit=1,
     CostPerKilowatt=100,
@@ -88,24 +98,26 @@ DSS = 柴油(
     ).dict(),
     # param=柴油信息(设备名称="Any", Price=(10, "L/元"), 热值=(10, "MJ/L"), CO2=(10, "kg/L")).dict(),
 )
+p1 = 柴油发电信息(
+    **devParam,
+    RatedPower=21500,
+    PowerDeltaLimit=100,
+    PowerStartupLimit=2,
+    CostPerMachine=1,
+    CostPerYearPerMachine=1,
+    VariationalCostPerWork=1,
+    Life=20,
+    BuildCostPerMachine=10,
+    BuildBaseCost=10,
+    DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
+    DeviceCount=100,
+    MaxDeviceCount=200,
+    MinDeviceCount=100,
+).dict()
+breakpoint()
 DS = 柴油发电(
     topo,
-    param=柴油发电信息(
-        **devParam,
-        RatedPower=2000,
-        PowerDeltaLimit=100,
-        PowerStartupLimit=1,
-        CostPerMachine=1,
-        CostPerYearPerMachine=1,
-        VariationalCostPerWork=1,
-        Life=20,
-        BuildCostPerMachine=10,
-        BuildBaseCost=10,
-        DieselToPower_Load=[[2, 10], [3, 50], [1, 100]],
-        DeviceCount=100,
-        MaxDeviceCount=200,
-        MinDeviceCount=100,
-    ).dict(),
+    param=p1,
 )
 
 DEL1 = 变流器(
@@ -117,7 +129,7 @@ DEL1 = 变流器(
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
         Life=20,
-        Efficiency=0.9,
+        Efficiency=90,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
         DeviceCount=1000,
@@ -136,7 +148,7 @@ DEL2 = 变压器(
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
         Life=20,
-        Efficiency=0.9,
+        Efficiency=90,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
         DeviceCount=1000,
@@ -166,8 +178,8 @@ BAT = 锂电池(
         VariationalCostPerWork=100,
         Life=200000,
         BatteryDeltaLimit=0.1,
-        ChargeEfficiency=0.9,
-        DischargeEfficiency=0.9,
+        ChargeEfficiency=90,
+        DischargeEfficiency=90,
         BuildCostPerCapacity=10,
         BuildBaseCost=10,
         InitSOC=1.5,
@@ -176,7 +188,7 @@ BAT = 锂电池(
         LifetimeCycleCount=100000000,
         # TotalDischargeCapacity=1000,
         MaxSOC=99,
-        MinSOC=1,
+        MinSOC=3,
         MaxTotalCapacity=2000,
         MinTotalCapacity=1000,
     ).dict(),
@@ -191,7 +203,7 @@ BC = 双向变流器(
     param=双向变流器信息(
         **devParam,
         RatedPower=10000,
-        Efficiency=0.9,
+        Efficiency=90,
         CostPerKilowatt=100,
         CostPerYearPerKilowatt=100,
         VariationalCostPerWork=100,
