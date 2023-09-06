@@ -86,7 +86,11 @@ FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
 # UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
 UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))
 
-EXTRA_CODE_DEPS = passwords.py solve_model.py constants.py pyomo_patch.py config.py ${UTILS}
+DOCKERFILEs = Dockerfile_*
+
+DOCKER_DEPS = docker_launch.py ${DOCKERFILES}
+
+EXTRA_CODE_DEPS = passwords.py solve_model.py constants.py pyomo_patch.py config.py ${DOCKER_DEPS} ${UTILS}
 # EXTRA_CODE_DEPS = unit_utils.py passwords.py solve_model.py expr_utils.py constants.py log_utils.py pyomo_patch.py debug_utils.py conflict_utils.py json_utils.py error_utils.py
 
 EXPORT_FORMAT_SCHEMA = export_format.json planning_export_format.json

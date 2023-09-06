@@ -42,3 +42,4 @@ flashtext
 levenshtein
 python-dotenv
 pyecharts
+docker

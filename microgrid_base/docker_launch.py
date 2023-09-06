@@ -12,6 +12,12 @@ import os
 
 client = docker.from_env()
 
+abs_curdir = os.path.abspath(".")
+
+
+if (rel_curdir := abs_curdir[-1]) != "microgrid_base":
+    os.system(f"sed -i 's/jubilant-adventure2\\/microgrid_base//g' Dockerfile_*")
+
 
 # client = docker.DockerClient(
 #     base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
@@ -89,7 +95,7 @@ if final_image_tag not in image_tags:
             #     client.images.load(data)
 
     # now patch the image.
-    build_image(final_image_tag, dockerfile_patch_path,context_path)
+    build_image(final_image_tag, dockerfile_patch_path, context_path)
 
     # load the exported image.
 # run the command to launch server within image from here.
