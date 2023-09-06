@@ -125,14 +125,21 @@ def solve_eq(a_arr: list, build_time: int, business_time: int):
 #     2140935528.653,
 # ]
 
-a_arr = [-68.291, -68.291, 796.343, 687.631, 695.514, 687.392, 705.167]
+# a_arr = [-68.291, -68.291, 796.343, 687.631, 695.514, 687.392, 705.167]
+a_arrs = [
+    [-609.991, -609.991, 585.69, 478.69, 488.69, 478.69, 555.616],
+    [-609.991, -609.991, 529.815, 426.215, 434.215, 426.215, 501.141],
+    [ -426.994, -426.994, 449.726, 340.43, 347.699, 338.932, 408.052],
+]
 
 build_time = 2
 business_time = 5
 # business_time = 10
 
-sol = solve_eq(a_arr, build_time, business_time)
-if sol:
-    print("[sol]", sol)  # float
-else:
-    print("no solution.")
+for i, a_arr in enumerate(a_arrs):
+    print(f"SOLVING ARR #{i}".center(70, "="))
+    sol = solve_eq(a_arr, build_time, business_time)
+    if sol:
+        print("[sol]", sol)  # float
+    else:
+        print("no solution.")

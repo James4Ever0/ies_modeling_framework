@@ -2,7 +2,7 @@ from docplex.mp.model import Model
 from docplex.mp.model_reader import ModelReader
 # import cplex
 model_fpath = "converted.mps"
-
+import cplex
 mdl: Model = ModelReader.read(model_fpath, model_name="InfeasibelLP")
 print("model loaded successfully from: %s" % model_fpath)
 
