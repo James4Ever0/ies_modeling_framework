@@ -1,0 +1,1 @@
+python -m huey.bin.huey_consumer -k process task_queue.huey
