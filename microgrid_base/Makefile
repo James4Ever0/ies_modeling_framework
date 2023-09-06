@@ -86,7 +86,8 @@ FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
 # UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
 UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))
 
-DOCKERFILEs = Dockerfile_*
+DOCKERFILEs = Dockerfile_patch
+# DOCKERFILEs = Dockerfile_*
 
 DOCKER_DEPS = docker_launch.py ${DOCKERFILES}
 

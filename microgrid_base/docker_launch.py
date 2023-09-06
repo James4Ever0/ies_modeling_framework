@@ -10,13 +10,26 @@ you may use Dockerfile.
 import docker
 import os
 
+
+def recursive_split_path(path):
+    leftover, ret = os.path.split(path)
+    if ret != "":
+        yield ret
+    if leftover != "":
+        yield from recursive_split_path(leftover)
+
+
 client = docker.from_env()
 
 abs_curdir = os.path.abspath(".")
-
-
-if (rel_curdir := abs_curdir[-1]) != "microgrid_base":
-    os.system(f"sed -i 's/jubilant-adventure2\\/microgrid_base//g' Dockerfile_*")
+path_components_generator = recursive_split_path(abs_curdir)
+rel_curdir = next(path_components_generator)
+rel_pardir = next(path_components_generator)
+# breakpoint()
+if rel_curdir != "microgrid_base":
+    os.system(
+        f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
+    )
 
 
 # client = docker.DockerClient(
