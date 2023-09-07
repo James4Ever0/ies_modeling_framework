@@ -1,4 +1,5 @@
 from log_utils import logger_print
+import sys
 
 """
 create or import docker environment with scripts.
@@ -25,7 +26,10 @@ abs_curdir = os.path.abspath(".")
 path_components_generator = recursive_split_path(abs_curdir)
 rel_curdir = next(path_components_generator)
 rel_pardir = next(path_components_generator)
-# breakpoint()
+
+if sys.maxsize < 2**32:
+    raise Exception("Your system is 32bit or lower, which Docker does not support.")
+
 if rel_curdir != "microgrid_base":
     os.system(
         f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
@@ -60,8 +64,6 @@ def docker_exec(cmd):
 
 image_storage_dir = "images"
 image_path = os.path.join(image_storage_dir, f"{image_tag.replace(':','_')}.tar")
-import os
-import sys
 
 image_storage_gitignore = os.path.join(image_storage_dir, ".gitignore")
 
@@ -135,6 +137,7 @@ try:
     container = client.containers.run(
         final_image_tag,
         # image_tag,
+        environment=dict(os.environ),  # may override normal environment variables?
         remove=True,
         # remove=False, # to get the image hash.
         # command="ls -lth microgrid",

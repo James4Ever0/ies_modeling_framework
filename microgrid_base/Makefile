@@ -100,7 +100,7 @@ EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock_redu
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
-PYTHON_REQUIREMENTS = requirements.txt requirements_docplex.txt
+PYTHON_REQUIREMENTS = requirements*
 
 INIT_FILES = ${PYTHON_REQUIREMENTS} init.sh conda_init.sh
 
