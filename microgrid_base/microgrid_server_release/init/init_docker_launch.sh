@@ -6,5 +6,5 @@ else
     echo "Docker already installed."
 fi
 
-pip3 uninstall progressbar
+pip3 uninstall -y progressbar progressbar2
 pip3 install -r requirements_docker_launch.txt

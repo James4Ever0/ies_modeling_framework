@@ -86,8 +86,8 @@ FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
 # UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
 UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))
 
-DOCKERFILEs = Dockerfile_patch
-# DOCKERFILEs = Dockerfile_*
+DOCKERFILES = Dockerfile_patch
+# DOCKERFILES = Dockerfile_*
 
 DOCKER_DEPS = docker_launch.py ${DOCKERFILES}
 
@@ -153,7 +153,7 @@ dsl:
 
 release: code test_code ${LOG_DIRS} server code_check release_prepare .requirements
 
-release_prepare:
+release_prepare: ${INIT_FILES} ${UNIT_DEFINITIONS} ${MODEL_CODE} ${EXTRA_CODE_DEPS} ${EXTRA_DATA_DEPS} ${SERVER_CODE} ${SERVER_SCRIPT} ${TEST_CODE}
 	rm -rf ${RELEASE_DIR}
 	rm -rf ${RELEASE_ARCHIVE}
 	mkdir -p ${SERVER_RELEASE_DIR}

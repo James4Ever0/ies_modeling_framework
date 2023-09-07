@@ -151,7 +151,8 @@ try:
         command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
-        detach=True,
+        # detach=True,
+        # we need to monitor this.
         tty=True,
         ports={f"{(server_port:=9870)}/tcp": server_port},
         volumes={

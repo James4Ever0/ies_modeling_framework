@@ -30,8 +30,8 @@ cd init
 bash init_docker_launch.sh
 cd ..
 cd server
-python3 docker_launch.py
 # mkdir logs
 cp -R /root/history_logs logs
 rm -rf logs
-bash fastapi_tmuxp.sh windows
+# bash fastapi_tmuxp.sh windows
+python3 docker_launch.py
