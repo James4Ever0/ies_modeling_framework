@@ -6,3 +6,5 @@ rich
 schedule
 better_exceptions
 pytz
+easyprocess
+func_timeout

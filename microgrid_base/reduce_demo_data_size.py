@@ -21,9 +21,10 @@ def modifyIfIsDeviceCount(location, val):
         return random.randint(1, 10)
     return val
 
-
 def modifyValueIfNumber(location, val):
-    if isinstance(val, Union[float, int]):
+    # bool is subclass of int
+    # if isinstance(val, Union[float, int]):
+    if type(val) in [float, int]:
         if not pandas.isnull(val):
             if val != 0:
                 positive = val > 0

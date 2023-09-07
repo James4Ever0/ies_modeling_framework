@@ -127,14 +127,36 @@ if os.name == "nt":
     disk_symbol, pathspec = host_mount_path.split(":")
     pathspec = pathspec.replace("\\", "/")
     host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
-all_containers = client.containers.list(all=True)
-logger_print("stopping running containers...")
+
+# DEPRECATED: this may hang forever
+# all_containers = client.containers.list(all=True)
+# logger_print("stopping running containers...")
 import progressbar
 
-for container in progressbar.progressbar(all_containers):
-    container.stop()
-logger_print("pruning stopped containers...")
-client.containers.prune()
+# for container in progressbar.progressbar(all_containers):
+#     container.stop()
+# logger_print("pruning stopped containers...")
+# client.containers.prune()
+import easyprocess, func_timeout
+
+def killAndPruneAllContainers():
+    proc = easyprocess.EasyProcess("docker container ls").call()
+    # proc = easyprocess.EasyProcess("docker container ls -a").call()
+    if proc.stdout:
+        lines = proc.stdout.split("\n")[1:]
+        container_ids = [line.split(" ")[0] for line in lines]
+        for cid in progressbar.progressbar(container_ids):
+            cmd = f"docker container kill {cid}"
+            try:
+                func_timeout.func_timeout(2, os.system, args=(cmd,))
+            except func_timeout.FunctionTimedOut:
+                logger_print(
+                    f'timeout while killing container "{cid}".\nmaybe the container is not running.'
+                )
+            # os.system(f"docker container kill -s SIGKILL {cid}")
+        os.system("docker container prune -f")
+
+killAndPruneAllContainers()
 
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
@@ -151,7 +173,7 @@ try:
         command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
-        # detach=True,
+        detach=True,
         # we need to monitor this.
         tty=True,
         ports={f"{(server_port:=9870)}/tcp": server_port},
@@ -161,6 +183,10 @@ try:
         # volumes={"<HOST_PATH>": {"bind": "<CONTAINER_PATH>", "mode": "rw"}},
         # working_dir=os.path.join(mount_path, "server"),
     )
+
+    short_id = container.short_id
+    logger_print("attaching to: %s" % short_id)
+    os.system(f"docker attach {short_id}")
 except:
     import traceback
 
