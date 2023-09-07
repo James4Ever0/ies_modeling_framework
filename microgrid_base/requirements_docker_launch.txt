@@ -1,6 +1,7 @@
 # pydantic
 docker
-progressbar
+# not "progressbar", which is not compatible
+progressbar2
 rich
 schedule
 better_exceptions

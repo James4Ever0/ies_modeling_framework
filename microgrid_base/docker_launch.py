@@ -34,7 +34,8 @@ RELEASE_ENV = False
 if rel_curdir != "microgrid_base":
     RELEASE_ENV = True
     os.system(
-        f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
+        f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_patch"
+        # f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
     )
 
 

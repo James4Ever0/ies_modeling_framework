@@ -1,6 +1,14 @@
-if [ "$(find ~/.apt_updated -mtime +7)" ]; then
+APT_UPDATED=~/.apt_updated
+# you can use makefile instead.
+if test -f "$APT_UPDATED"; then
+    echo "$APT_UPDATED exists."
+else
+    echo "$APT_UPDATED does not exist."
+    apt update && touch $APT_UPDATED
+fi
+if [ "$(find $APT_UPDATED -mtime +7)" ]; then
     echo "Haven't update apt for at least 7 days"
-    rm ~/.apt_updated && apt update && touch ~/.apt_updated
+    rm $APT_UPDATED && apt update && touch $APT_UPDATED
 else
     echo "Apt is updated"
 fi
@@ -20,7 +28,7 @@ cd init
 # pip3 install -r requirements_docker_launch.txt
 # bash init.sh
 bash init_docker_launch.sh
-# cd ..
+cd ..
 cd server
 python3 docker_launch.py
 # mkdir logs
