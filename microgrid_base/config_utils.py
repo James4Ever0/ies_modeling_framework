@@ -17,6 +17,7 @@ import Levenshtein  # to detect suspicious mistypings
 from pydantic import BaseModel
 from exception_utils import ExceptionManager
 from typing import Union
+from argparse_utils import ArgumentTransformer
 
 suspicous_threshold = 3
 # for names in between environ attribute name definitions, this would be suspicious_threshold*2
@@ -63,9 +64,12 @@ class EnvBaseModel(BaseModel):
                     upper_prop_keys.add(upper_key)
         return super().__new__(cls)
 
+    DOTENV: Union[str, None] = None
+
+class ArgumentEnv(EnvBaseModel):
+    ...
 
 class ShellEnv(EnvBaseModel):
-    DOTENV: Union[str, None] = None
 
     @classmethod
     def load(cls):
