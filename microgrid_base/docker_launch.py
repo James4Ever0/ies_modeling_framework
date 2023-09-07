@@ -16,13 +16,13 @@ from pydantic import BaseModel, Field
 
 
 class DockerLauncherConfig(BaseModel):
-    NO_REMOTE: bool = Field(
+    NO_HALFDONE: bool = Field(
         default=False,
-        title="Disable pulling half-done images from Dockerhub and build locally.",
+        title="Disable pulling half-done images from Dockerhub and build from ubuntu base image.",
     )
     FORCE_UPDATE: bool = Field(
         default=False,
-        title="Force updating final docker image even if up-to-date (not older than 7 days).",
+        title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
     )
     UPDATE_INTERVAL_IN_DAYS: int = Field(
         default=7, title="Update/rebuild image interval in days"
@@ -113,7 +113,7 @@ if final_image_tag not in image_tags:
     if image_tag not in image_tags:
         logger_print("image not found: %s" % image_tag)
         if not os.path.exists(image_path):
-            if config.NO_REMOTE:
+            if config.NO_HALFDONE:
                 # run remote pull command.
                 docker_exec(f"pull {remote_image_tag}")
                 docker_exec(f"tag {remote_image_tag} {image_tag}")
@@ -161,30 +161,8 @@ def need_update_image():
             f"last update time: {last_update_td.days} days ago >= update interval: {update_interval.days} days"
         )
         logger_print("need to update image.")
-        # remove old image first, then build new imagereturn True
         return True
     return False
-
-
-if need_update_image():
-    if build_image(update_image_tag, dockerfile_update_path, context_path) is True:
-        os.remove(update_image_file_path)
-        pathlib.Path(update_image_file_path).touch()
-    else:
-        raise Exception("Image update failed.")
-
-    # load the exported image.
-# run the command to launch server within image from here.
-host_path = "./microgrid_server_release"
-
-if RELEASE_ENV:
-    host_path = "../." + host_path
-host_mount_path = os.path.abspath(host_path)
-# don't need this workaround when using docker-py.
-if os.name == "nt":
-    disk_symbol, pathspec = host_mount_path.split(":")
-    pathspec = pathspec.replace("\\", "/")
-    host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
 
 # DEPRECATED: this may hang forever
 # all_containers = client.containers.list(all=True)
@@ -216,6 +194,31 @@ def killAndPruneAllContainers():
         os.system("docker container prune -f")
 
 
+if need_update_image():
+    # remove old image first, then build new image
+    # how does docker build work anyway? does it cache based on file hash?
+    killAndPruneAllContainers()
+    docker_exec(f"image rm {dockerfile_update_path}")
+    if build_image(update_image_tag, dockerfile_update_path, context_path) is True:
+        os.remove(update_image_file_path)
+        pathlib.Path(update_image_file_path).touch()
+    else:
+        raise Exception("Image update failed.")
+
+    # load the exported image.
+# run the command to launch server within image from here.
+host_path = "./microgrid_server_release"
+
+if RELEASE_ENV:
+    host_path = "../." + host_path
+host_mount_path = os.path.abspath(host_path)
+# don't need this workaround when using docker-py.
+if os.name == "nt":
+    disk_symbol, pathspec = host_mount_path.split(":")
+    pathspec = pathspec.replace("\\", "/")
+    host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
+
+
 killAndPruneAllContainers()
 
 # BUG: error while creating mount source path
@@ -231,8 +234,8 @@ try:
         # remove=False, # to get the image hash.
         # command="ls -lth microgrid",
         # command="bash fastapi_tmuxp.sh",
-        # command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
-        command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+        command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
+        # command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
