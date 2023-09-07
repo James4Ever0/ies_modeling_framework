@@ -11,7 +11,7 @@ you may use Dockerfile.
 
 import docker
 import os
-from config_utils import getEnvConfigClass
+from config_utils import getConfig
 from pydantic import BaseModel, Field
 
 
@@ -24,10 +24,13 @@ class DockerLauncherConfig(BaseModel):
         default=False,
         title="Force updating final docker image even if up-to-date (not older than 7 days).",
     )
+    UPDATE_INTERVAL_IN_DAYS: int = Field(
+        default=7, title="Update/rebuild image interval in days"
+    )
 
 
-configClass = getEnvConfigClass(DockerLauncherConfig)
-config: DockerLauncherConfig = configClass.load()
+config = getConfig(DockerLauncherConfig)
+
 
 def recursive_split_path(path):
     leftover, ret = os.path.split(path)
@@ -65,7 +68,14 @@ def build_image(image_tag, dockerfile_path, context_path):
     exit_code = os.system(command)
     if exit_code:
         raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
+    return True
 
+
+import datetime
+
+update_image_tag = "microgrid_update:latest"
+update_interval = datetime.timedelta(days=config.UPDATE_INTERVAL_IN_DAYS)
+update_image_file_path = os.path.join(os.path.expanduser("~"), ".microgrid_update")
 
 final_image_tag = "microgrid_docplex:latest"
 image_tag = "microgrid_server:latest"
@@ -75,6 +85,7 @@ context_path = "../../"
 dockerfile_init_path = "Dockerfile_init"
 dockerfile_main_path = "Dockerfile_main"
 dockerfile_patch_path = "Dockerfile_patch"
+dockerfile_update_path = "Dockerfile_update"
 
 
 def docker_exec(cmd):
@@ -132,6 +143,17 @@ if final_image_tag not in image_tags:
     # now patch the image.
     build_image(final_image_tag, dockerfile_patch_path, context_path)
 
+import pathlib
+ti_c = os.path.getctime(update_image_file_path)
+import time
+time_now= time.time()
+td = datetime.timedelta(seconds = time_now - ti_c)
+if td > update_interval:
+    print("need to update image")
+if build_image(update_image_tag, dockerfile_update_path, context_path):
+    os.remove(update_image_file_path)
+    pathlib.Path(update_image_file_path).touch()
+
     # load the exported image.
 # run the command to launch server within image from here.
 host_path = "./microgrid_server_release"
@@ -182,7 +204,8 @@ killAndPruneAllContainers()
 logger_print("running container...")
 try:
     container = client.containers.run(
-        final_image_tag,
+        # final_image_tag,
+        update_image_tag,
         # image_tag,
         environment=dict(os.environ),  # may override normal environment variables?
         remove=True,

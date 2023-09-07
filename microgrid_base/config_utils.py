@@ -271,3 +271,13 @@ def getEnvConfigClass(env_class: EnvBaseModel):
         data_cls = env_class
 
     return env_config_class
+
+
+from typing import TypeVar
+
+T = TypeVar("T")
+
+def getConfig(data_cls: T) -> T:
+    envConfigClass = getEnvConfigClass(data_cls)
+    config: T = envConfigClass.load()
+    return config
