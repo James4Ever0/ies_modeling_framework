@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from config_utils import *
+from config_utils import getConfig, Union, EnvBaseModel
 from pydantic import confloat
 
 class IESEnv(EnvBaseModel):
@@ -10,10 +10,9 @@ class IESEnv(EnvBaseModel):
     PERCENT_WARNING_THRESHOLD: confloat(gt=0) = 1
     MOCK_TEST: Union[None, str] = None
 
-IESEnvConfig = getEnvConfigClass(IESEnv)
-ies_env: IESEnv = IESEnvConfig.load()
+ 
+ies_env = getConfig(IESEnv)
 __all__ = ["ies_env"]
-
 # if __name__ == "__main__":
 #     # let's test
 #     # import rich

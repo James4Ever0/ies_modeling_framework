@@ -1,0 +1,1 @@
+conda run -n docplex --live-stream --no-capture-output pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements_docplex.txt

@@ -91,7 +91,8 @@ else:
                 f"Non-directory object taking place of log directory `{log_dir}`."
             )
     else:
-        os.mkdir(log_dir)
+        os.system(f'mkdir -p {log_dir}')
+        # os.mkdir(log_dir)
 
     log_filename = os.path.join(log_dir, "debug.log")
     celery_log_filename = os.path.join(log_dir, "celery.log")

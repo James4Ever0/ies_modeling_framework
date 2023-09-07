@@ -3,6 +3,7 @@ import sys
 
 """
 create or import docker environment with scripts.
+
 you may use Dockerfile.
 """
 # TODO: replace with docker compose
@@ -10,6 +11,26 @@ you may use Dockerfile.
 
 import docker
 import os
+from config_utils import getConfig
+from pydantic import BaseModel, Field
+from config import ies_env
+
+
+class DockerLauncherConfig(BaseModel):
+    NO_HALFDONE: bool = Field(
+        default=False,
+        title="Disable pulling half-done images from Dockerhub and build from ubuntu base image.",
+    )
+    # FORCE_UPDATE: bool = Field(
+    #     default=False,
+    #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
+    # )
+    # UPDATE_INTERVAL_IN_DAYS: int = Field(
+    #     default=7, title="Update/rebuild image interval in days"
+    # )
+
+
+config = getConfig(DockerLauncherConfig)
 
 
 def recursive_split_path(path):
@@ -30,12 +51,17 @@ rel_pardir = next(path_components_generator)
 if sys.maxsize < 2**32:
     raise Exception("Your system is 32bit or lower, which Docker does not support.")
 
+
+dockerfile_init_path = "Dockerfile_init"
+dockerfile_main_path = "Dockerfile_main"
+dockerfile_patch_path = "Dockerfile_patch"
+dockerfile_update_path = "Dockerfile_update"
+
 RELEASE_ENV = False
 if rel_curdir != "microgrid_base":
     RELEASE_ENV = True
     os.system(
-        f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_patch"
-        # f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
+        f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' {dockerfile_patch_path} {dockerfile_update_path}",
     )
 
 
@@ -48,16 +74,20 @@ def build_image(image_tag, dockerfile_path, context_path):
     exit_code = os.system(command)
     if exit_code:
         raise Exception(f"Abnormal exit code {exit_code} for command:\n{' '*4+command}")
+    return True
 
+
+# import datetime
+
+update_image_tag = "microgrid_update:latest"
+# update_interval = datetime.timedelta(days=config.UPDATE_INTERVAL_IN_DAYS)
+# update_image_file_path = os.path.join(os.path.expanduser("~"), ".microgrid_update")
 
 final_image_tag = "microgrid_docplex:latest"
 image_tag = "microgrid_server:latest"
 remote_image_tag = "agile4im/microgrid_server:latest"
 intermediate_image_tag = "microgrid_init"
 context_path = "../../"
-dockerfile_init_path = "Dockerfile_init"
-dockerfile_main_path = "Dockerfile_main"
-dockerfile_patch_path = "Dockerfile_patch"
 
 
 def docker_exec(cmd):
@@ -85,7 +115,7 @@ if final_image_tag not in image_tags:
     if image_tag not in image_tags:
         logger_print("image not found: %s" % image_tag)
         if not os.path.exists(image_path):
-            if "-noremote" not in sys.argv:
+            if config.NO_HALFDONE:
                 # run remote pull command.
                 docker_exec(f"pull {remote_image_tag}")
                 docker_exec(f"tag {remote_image_tag} {image_tag}")
@@ -115,18 +145,27 @@ if final_image_tag not in image_tags:
     # now patch the image.
     build_image(final_image_tag, dockerfile_patch_path, context_path)
 
-    # load the exported image.
-# run the command to launch server within image from here.
-host_path = "./microgrid_server_release"
+# DEPRECATED: may not need to use scheduled update here.
+# import pathlib
+# import time
 
-if RELEASE_ENV:
-    host_path = "../." + host_path
-host_mount_path = os.path.abspath(host_path)
-# don't need this workaround when using docker-py.
-if os.name == "nt":
-    disk_symbol, pathspec = host_mount_path.split(":")
-    pathspec = pathspec.replace("\\", "/")
-    host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
+
+# def need_update_image():
+#     if config.FORCE_UPDATE:
+#         logger_print(f"user forced to update image.")
+#         return True
+
+#     ti_c = os.path.getctime(update_image_file_path)
+
+#     time_now = time.time()
+#     last_update_td = datetime.timedelta(seconds=time_now - ti_c)
+#     if last_update_td > update_interval:
+#         logger_print(
+#             f"last update time: {last_update_td.days} days ago >= update interval: {update_interval.days} days"
+#         )
+#         logger_print("need to update image.")
+#         return True
+#     return False
 
 # DEPRECATED: this may hang forever
 # all_containers = client.containers.list(all=True)
@@ -138,6 +177,7 @@ import progressbar
 # logger_print("pruning stopped containers...")
 # client.containers.prune()
 import easyprocess, func_timeout
+
 
 def killAndPruneAllContainers():
     proc = easyprocess.EasyProcess("docker container ls").call()
@@ -156,24 +196,56 @@ def killAndPruneAllContainers():
             # os.system(f"docker container kill -s SIGKILL {cid}")
         os.system("docker container prune -f")
 
+
+# if need_update_image():
+#     # remove old image first, then build new image
+#     # how does docker build work anyway? does it cache based on file hash?
+#     killAndPruneAllContainers()
+#     docker_exec(f"image rm {dockerfile_update_path}")
+#     if build_image(update_image_tag, dockerfile_update_path, context_path) is True:
+#         os.remove(update_image_file_path)
+#         pathlib.Path(update_image_file_path).touch()
+#     else:
+#         raise Exception("Image update failed.")
+
+# load the exported image.
+# run the command to launch server within image from here.
+host_path = "./microgrid_server_release"
+
+if RELEASE_ENV:
+    host_path = "../." + host_path
+host_mount_path = os.path.abspath(host_path)
+# don't need this workaround when using docker-py.
+if os.name == "nt":
+    disk_symbol, pathspec = host_mount_path.split(":")
+    pathspec = pathspec.replace("\\", "/")
+    host_mount_path = f"//{disk_symbol.lower()}{pathspec}"
+
+
 killAndPruneAllContainers()
+
+build_image(update_image_tag, dockerfile_update_path, context_path)
 
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
 logger_print("running container...")
 try:
     container = client.containers.run(
-        final_image_tag,
+        # final_image_tag,
+        update_image_tag,
         # image_tag,
-        environment=dict(os.environ),  # may override normal environment variables?
-        remove=True,
-        # remove=False, # to get the image hash.
+        environment=ies_env.dict(),
+        # environment=dict(os.environ),  # may override normal environment variables?
+        # remove=True,
+        remove=False,  # to get the image hash.
         # command="ls -lth microgrid",
         # command="bash fastapi_tmuxp.sh",
-        command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
+        # command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
+        command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
+        # detach=False,
         # we need to monitor this.
         tty=True,
         ports={f"{(server_port:=9870)}/tcp": server_port},

@@ -13,6 +13,7 @@ import docker
 import os
 from config_utils import getConfig
 from pydantic import BaseModel, Field
+from config import ies_env
 
 
 class DockerLauncherConfig(BaseModel):
@@ -88,6 +89,7 @@ remote_image_tag = "agile4im/microgrid_server:latest"
 intermediate_image_tag = "microgrid_init"
 context_path = "../../"
 
+
 def docker_exec(cmd):
     logger_print("executing docker command: {}".format(cmd))
     os.system(f"docker {cmd}")
@@ -143,6 +145,7 @@ if final_image_tag not in image_tags:
     # now patch the image.
     build_image(final_image_tag, dockerfile_patch_path, context_path)
 
+# DEPRECATED: may not need to use scheduled update here.
 # import pathlib
 # import time
 
@@ -205,7 +208,7 @@ def killAndPruneAllContainers():
 #     else:
 #         raise Exception("Image update failed.")
 
-    # load the exported image.
+# load the exported image.
 # run the command to launch server within image from here.
 host_path = "./microgrid_server_release"
 
@@ -231,16 +234,18 @@ try:
         # final_image_tag,
         update_image_tag,
         # image_tag,
-        environment=dict(os.environ),  # may override normal environment variables?
+        environment=ies_env.dict(),
+        # environment=dict(os.environ),  # may override normal environment variables?
         # remove=True,
-        remove=False, # to get the image hash.
+        remove=False,  # to get the image hash.
         # command="ls -lth microgrid",
         # command="bash fastapi_tmuxp.sh",
-        command="bash -c 'cd ../server && bash fastapi_tmuxp.sh windows'",
-        # command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+        # command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
+        command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
+        # detach=False,
         # we need to monitor this.
         tty=True,
         ports={f"{(server_port:=9870)}/tcp": server_port},

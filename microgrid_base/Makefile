@@ -153,7 +153,9 @@ dsl:
 
 # packup all necessary files for the test.
 
-release: code test_code ${LOG_DIRS} server code_check release_prepare .requirements
+release: code test_code ${LOG_DIRS} server code_check .requirements release_prepare
+	echo "Release file ready at ${RELEASE_ARCHIVE}"
+	echo "You may run 'upload_to_server' scripts"
 
 release_prepare: ${INIT_FILES} ${UNIT_DEFINITIONS} ${MODEL_CODE} ${EXTRA_CODE_DEPS} ${EXTRA_DATA_DEPS} ${SERVER_CODE} ${SERVER_SCRIPT} ${TEST_CODE}
 	rm -rf ${RELEASE_DIR}
