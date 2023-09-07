@@ -2,8 +2,6 @@ from log_utils import logger_print
 
 from config_utils import *
 from pydantic import confloat
-# from log_utils import logger_print
-
 
 class IESEnv(EnvBaseModel):
     VAR_INIT_AS_ZERO:Union[None, str] = None

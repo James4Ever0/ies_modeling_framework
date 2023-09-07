@@ -1,0 +1,7 @@
+# pydantic
+docker
+progressbar
+rich
+schedule
+better_exceptions
+pytz

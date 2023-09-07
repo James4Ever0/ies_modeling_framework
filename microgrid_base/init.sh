@@ -7,6 +7,6 @@ conda run -n docplex --live-stream --no-capture-output pip install -i https://py
 # ipopt is a library-only package.
 # cannot install cylp on windows.
 # install 'coincbc' instead? nope.
-conda install -n cplex -c conda-forge -y coin-or-cbc scip pyscipopt cyipopt
-# conda install -n cplex -c conda-forge -y coin-or-cbc scip ipopt
+# conda install -n cplex -c conda-forge -y coin-or-cbc scip pyscipopt cyipopt
+conda install -n cplex -c conda-forge -y coin-or-cbc scip ipopt
 # you can still use executables outside conda environments, but you may need to pass some environment variables to differentiate.

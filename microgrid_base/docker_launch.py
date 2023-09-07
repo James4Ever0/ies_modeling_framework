@@ -30,7 +30,9 @@ rel_pardir = next(path_components_generator)
 if sys.maxsize < 2**32:
     raise Exception("Your system is 32bit or lower, which Docker does not support.")
 
+RELEASE_ENV = False
 if rel_curdir != "microgrid_base":
+    RELEASE_ENV = True
     os.system(
         f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' Dockerfile_*"
     )
@@ -115,6 +117,9 @@ if final_image_tag not in image_tags:
     # load the exported image.
 # run the command to launch server within image from here.
 host_path = "./microgrid_server_release"
+
+if RELEASE_ENV:
+    host_path = "../." + host_path
 host_mount_path = os.path.abspath(host_path)
 # don't need this workaround when using docker-py.
 if os.name == "nt":
@@ -142,7 +147,7 @@ try:
         # remove=False, # to get the image hash.
         # command="ls -lth microgrid",
         # command="bash fastapi_tmuxp.sh",
-        command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
+        command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
