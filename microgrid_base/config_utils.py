@@ -33,6 +33,18 @@ def getBaseModelPropertyKeys(bm: BaseModel):
 
 
 class EnvBaseModel(BaseModel):
+    def reduce(self):
+        """
+        Returns self as if parsed by first parent datamodel
+        """
+        bases = self.__class__.__bases__
+        for base in bases:
+            if isinstance(base, BaseModel):
+                return base.parse_obj(self)
+        raise Exception(
+            "Cannot reduce model: %s\nBases: %s" % (self.__class__.__name__, bases)
+        )
+
     def diff(self):
         """
         Returns a dictionary which contains all properties with non-default values
@@ -70,9 +82,9 @@ class EnvBaseModel(BaseModel):
                     upper_prop_keys.add(upper_key)
         return super().__new__(cls)
 
-
+from pydantic import Field
 class DotEnvBaseModel(EnvBaseModel):
-    DOTENV: Union[str, None] = None
+    DOTENV: Union[str, None] = Field(default=None, title="DotEnv file path")
 
 
 class ArgumentEnv(DotEnvBaseModel):
@@ -112,7 +124,7 @@ from dotenv import dotenv_values
 
 
 class DotEnv(EnvBaseModel):
-    IMPORT: str = ""
+    IMPORT: str = Field(default="", title="DotEnv import file path list which shall be separated by space")
 
     @property
     def import_fpaths(self):
@@ -276,6 +288,7 @@ def getEnvConfigClass(env_class: EnvBaseModel):
 from typing import TypeVar
 
 T = TypeVar("T")
+
 
 def getConfig(data_cls: T) -> T:
     envConfigClass = getEnvConfigClass(data_cls)

@@ -1,4 +1,5 @@
 from log_utils import logger_print
+import progressbar
 import sys
 
 """
@@ -8,31 +9,44 @@ you may use Dockerfile.
 """
 # TODO: replace with docker compose
 # TODO: put this into release archive
+# TODO: show both cli argument help
 
 import docker
 import os
 from config_utils import getConfig
-from pydantic import BaseModel, Field
-from config import ies_env
+
+import easyprocess, func_timeout
 
 
-class DockerLauncherConfig(BaseModel):
-    NO_HALFDONE: bool = Field(
-        default=False,
-        title="Disable pulling half-done images from Dockerhub and build from ubuntu base image.",
-    )
-    # FORCE_UPDATE: bool = Field(
-    #     default=False,
-    #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
-    # )
-    # UPDATE_INTERVAL_IN_DAYS: int = Field(
-    #     default=7, title="Update/rebuild image interval in days"
-    # )
+def killAndPruneAllContainers():
+    proc = easyprocess.EasyProcess("docker container ls").call()
+    # proc = easyprocess.EasyProcess("docker container ls -a").call()
+    if proc.stdout:
+        lines = proc.stdout.split("\n")[1:]
+        container_ids = [line.split(" ")[0] for line in lines]
+        for cid in progressbar.progressbar(container_ids):
+            cmd = f"docker container kill {cid}"
+            try:
+                func_timeout.func_timeout(2, os.system, args=(cmd,))
+            except func_timeout.FunctionTimedOut:
+                logger_print(
+                    f'timeout while killing container "{cid}".\nmaybe the container is not running.'
+                )
+            # os.system(f"docker container kill -s SIGKILL {cid}")
+        os.system("docker container prune -f")
 
+# from config import IESEnv
+from config_dataclasses import IESEnv, DockerLauncherConfig
 
 config = getConfig(DockerLauncherConfig)
+# breakpoint()
+# print(config.reduce())
+# breakpoint()
 
-
+if config.TERMINATE_ONLY:
+    killAndPruneAllContainers()
+    logger_print("TERMINATE_ONLY is set. Exiting.")
+    exit(0)
 def recursive_split_path(path):
     leftover, ret = os.path.split(path)
     if ret != "":
@@ -170,32 +184,11 @@ if final_image_tag not in image_tags:
 # DEPRECATED: this may hang forever
 # all_containers = client.containers.list(all=True)
 # logger_print("stopping running containers...")
-import progressbar
 
 # for container in progressbar.progressbar(all_containers):
 #     container.stop()
 # logger_print("pruning stopped containers...")
 # client.containers.prune()
-import easyprocess, func_timeout
-
-
-def killAndPruneAllContainers():
-    proc = easyprocess.EasyProcess("docker container ls").call()
-    # proc = easyprocess.EasyProcess("docker container ls -a").call()
-    if proc.stdout:
-        lines = proc.stdout.split("\n")[1:]
-        container_ids = [line.split(" ")[0] for line in lines]
-        for cid in progressbar.progressbar(container_ids):
-            cmd = f"docker container kill {cid}"
-            try:
-                func_timeout.func_timeout(2, os.system, args=(cmd,))
-            except func_timeout.FunctionTimedOut:
-                logger_print(
-                    f'timeout while killing container "{cid}".\nmaybe the container is not running.'
-                )
-            # os.system(f"docker container kill -s SIGKILL {cid}")
-        os.system("docker container prune -f")
-
 
 # if need_update_image():
 #     # remove old image first, then build new image
@@ -234,7 +227,7 @@ try:
         # final_image_tag,
         update_image_tag,
         # image_tag,
-        environment=ies_env.dict(),
+        environment=config.reduce().dict(),
         # environment=dict(os.environ),  # may override normal environment variables?
         # remove=True,
         remove=False,  # to get the image hash.

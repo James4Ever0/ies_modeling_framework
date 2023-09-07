@@ -49,6 +49,9 @@ class ArgumentTransformer(Generic[T]):
                 annotated_type = self.dataModel.__annotations__.get(field)
 
                 for prop_name, prop_value in prop.items():
+                    if prop_name == "default":
+                        
+                        args["help"] = f'(default: {prop_value}) {args.get("help","")}'
                     translated_prop_name = prop_translation_table.get(prop_name, None)
                     if translated_prop_name:
                         args[translated_prop_name] = prop_value
