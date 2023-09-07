@@ -10,6 +10,29 @@ you may use Dockerfile.
 
 import docker
 import os
+from config_utils import ...
+from pydantic import BaseModel
+# import argparse
+
+# parser = argparse.ArgumentParser()
+
+# i think you can combine argument parser with configuration mechanism.
+# parser.add_argument(
+#     "-n",
+#     "--no_remote",
+#     action="store_true",
+#     default=False,
+#     help="Disable pulling half-done images from Dockerhub and build locally.",
+# )
+# parser.add_argument(
+#     "-f",
+#     "--force_update",
+#     action="store_true",
+#     default=False,
+#     help="Force updating final docker image even if up-to-date (not older than 7 days).",
+# )
+
+# args = parser.parse_args()
 
 
 def recursive_split_path(path):
@@ -139,6 +162,7 @@ import progressbar
 # client.containers.prune()
 import easyprocess, func_timeout
 
+
 def killAndPruneAllContainers():
     proc = easyprocess.EasyProcess("docker container ls").call()
     # proc = easyprocess.EasyProcess("docker container ls -a").call()
@@ -155,6 +179,7 @@ def killAndPruneAllContainers():
                 )
             # os.system(f"docker container kill -s SIGKILL {cid}")
         os.system("docker container prune -f")
+
 
 killAndPruneAllContainers()
 

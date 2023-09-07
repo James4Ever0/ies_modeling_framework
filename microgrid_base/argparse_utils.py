@@ -14,6 +14,7 @@ pydantic_type_to_pytype = {
     "number": float,
     "string": str,
     "boolean": bool,
+    # fallback type: string
 }
 
 prop_translation_as_is = ["default"]

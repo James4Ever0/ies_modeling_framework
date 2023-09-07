@@ -3,6 +3,8 @@ from log_utils import logger_print
 """
 Reserved shell env keyword:
     DOTENV
+Reserved commandline argument:
+    --dotenv
 Reserved config file env keyword:
     IMPORT
 
