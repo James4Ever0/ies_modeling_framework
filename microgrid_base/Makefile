@@ -101,9 +101,11 @@ EXTRA_DATA_DEPS = frontend_sim_param_translation.json test_output_full_mock_redu
 
 UNIT_DEFINITIONS = ../merged_units.txt ../constants_en.txt
 
-PYTHON_REQUIREMENTS = requirements*
+PYTHON_REQUIREMENTS = requirements*.txt
 
-INIT_FILES = ${PYTHON_REQUIREMENTS} init.sh conda_init.sh init_docker_launch.sh
+INIT_SCRIPTS = init*.sh conda_init.sh
+
+INIT_FILES = ${PYTHON_REQUIREMENTS} ${INIT_SCRIPTS}
 
 TEST_INPUT_FORMAT_FILES = template_input.json test_json_input_format.py
 

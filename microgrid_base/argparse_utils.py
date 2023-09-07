@@ -36,7 +36,7 @@ class ArgumentTransformer(Generic[T]):
         self.properties = self.schema["properties"]
         self.fields = self.properties.keys()
         self.cli_arguments = {}
-        self.required = self.schema["required"]
+        self.required = self.schema.get("required",[])
         
         with ErrorManager(
             default_error=f"error on processing schema:\n{pretty(self.schema)}\ndataModel: {repr(self.dataModel)}"
@@ -76,7 +76,7 @@ class ArgumentTransformer(Generic[T]):
         arguments = argparser.parse_args()
         arguments_serialized = {}
         for field in self.fields:
-            arguments_serialized[field] = getattr(arguments, field)
+            arguments_serialized[field] = getattr(arguments, field.lower())
         param = self.dataModel(**arguments_serialized)
         return param
 

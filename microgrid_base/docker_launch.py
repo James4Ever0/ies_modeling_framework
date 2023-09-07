@@ -20,13 +20,13 @@ class DockerLauncherConfig(BaseModel):
         default=False,
         title="Disable pulling half-done images from Dockerhub and build from ubuntu base image.",
     )
-    FORCE_UPDATE: bool = Field(
-        default=False,
-        title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
-    )
-    UPDATE_INTERVAL_IN_DAYS: int = Field(
-        default=7, title="Update/rebuild image interval in days"
-    )
+    # FORCE_UPDATE: bool = Field(
+    #     default=False,
+    #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
+    # )
+    # UPDATE_INTERVAL_IN_DAYS: int = Field(
+    #     default=7, title="Update/rebuild image interval in days"
+    # )
 
 
 config = getConfig(DockerLauncherConfig)
@@ -76,11 +76,11 @@ def build_image(image_tag, dockerfile_path, context_path):
     return True
 
 
-import datetime
+# import datetime
 
 update_image_tag = "microgrid_update:latest"
-update_interval = datetime.timedelta(days=config.UPDATE_INTERVAL_IN_DAYS)
-update_image_file_path = os.path.join(os.path.expanduser("~"), ".microgrid_update")
+# update_interval = datetime.timedelta(days=config.UPDATE_INTERVAL_IN_DAYS)
+# update_image_file_path = os.path.join(os.path.expanduser("~"), ".microgrid_update")
 
 final_image_tag = "microgrid_docplex:latest"
 image_tag = "microgrid_server:latest"
@@ -143,26 +143,26 @@ if final_image_tag not in image_tags:
     # now patch the image.
     build_image(final_image_tag, dockerfile_patch_path, context_path)
 
-import pathlib
-import time
+# import pathlib
+# import time
 
 
-def need_update_image():
-    if config.FORCE_UPDATE:
-        logger_print(f"user forced to update image.")
-        return True
+# def need_update_image():
+#     if config.FORCE_UPDATE:
+#         logger_print(f"user forced to update image.")
+#         return True
 
-    ti_c = os.path.getctime(update_image_file_path)
+#     ti_c = os.path.getctime(update_image_file_path)
 
-    time_now = time.time()
-    last_update_td = datetime.timedelta(seconds=time_now - ti_c)
-    if last_update_td > update_interval:
-        logger_print(
-            f"last update time: {last_update_td.days} days ago >= update interval: {update_interval.days} days"
-        )
-        logger_print("need to update image.")
-        return True
-    return False
+#     time_now = time.time()
+#     last_update_td = datetime.timedelta(seconds=time_now - ti_c)
+#     if last_update_td > update_interval:
+#         logger_print(
+#             f"last update time: {last_update_td.days} days ago >= update interval: {update_interval.days} days"
+#         )
+#         logger_print("need to update image.")
+#         return True
+#     return False
 
 # DEPRECATED: this may hang forever
 # all_containers = client.containers.list(all=True)
@@ -194,16 +194,16 @@ def killAndPruneAllContainers():
         os.system("docker container prune -f")
 
 
-if need_update_image():
-    # remove old image first, then build new image
-    # how does docker build work anyway? does it cache based on file hash?
-    killAndPruneAllContainers()
-    docker_exec(f"image rm {dockerfile_update_path}")
-    if build_image(update_image_tag, dockerfile_update_path, context_path) is True:
-        os.remove(update_image_file_path)
-        pathlib.Path(update_image_file_path).touch()
-    else:
-        raise Exception("Image update failed.")
+# if need_update_image():
+#     # remove old image first, then build new image
+#     # how does docker build work anyway? does it cache based on file hash?
+#     killAndPruneAllContainers()
+#     docker_exec(f"image rm {dockerfile_update_path}")
+#     if build_image(update_image_tag, dockerfile_update_path, context_path) is True:
+#         os.remove(update_image_file_path)
+#         pathlib.Path(update_image_file_path).touch()
+#     else:
+#         raise Exception("Image update failed.")
 
     # load the exported image.
 # run the command to launch server within image from here.
@@ -221,6 +221,8 @@ if os.name == "nt":
 
 killAndPruneAllContainers()
 
+build_image(update_image_tag, dockerfile_update_path, context_path)
+
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
 logger_print("running container...")
@@ -230,11 +232,11 @@ try:
         update_image_tag,
         # image_tag,
         environment=dict(os.environ),  # may override normal environment variables?
-        remove=True,
-        # remove=False, # to get the image hash.
+        # remove=True,
+        remove=False, # to get the image hash.
         # command="ls -lth microgrid",
         # command="bash fastapi_tmuxp.sh",
-        command="bash -c 'cd microgrid/init && bash init.sh && cd ../server && bash fastapi_tmuxp.sh windows'",
+        command="bash -c 'cd ../server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && bash fastapi_tmuxp.sh windows'",
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",

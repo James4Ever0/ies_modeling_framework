@@ -1,0 +1,1 @@
+conda install -n cplex -c conda-forge -y coin-or-cbc scip ipopt
