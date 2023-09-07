@@ -3,6 +3,7 @@ import sys
 
 """
 create or import docker environment with scripts.
+
 you may use Dockerfile.
 """
 # TODO: replace with docker compose
@@ -10,30 +11,23 @@ you may use Dockerfile.
 
 import docker
 import os
-from config_utils import ...
-from pydantic import BaseModel
-# import argparse
+from config_utils import getEnvConfigClass
+from pydantic import BaseModel, Field
 
-# parser = argparse.ArgumentParser()
 
-# i think you can combine argument parser with configuration mechanism.
-# parser.add_argument(
-#     "-n",
-#     "--no_remote",
-#     action="store_true",
-#     default=False,
-#     help="Disable pulling half-done images from Dockerhub and build locally.",
-# )
-# parser.add_argument(
-#     "-f",
-#     "--force_update",
-#     action="store_true",
-#     default=False,
-#     help="Force updating final docker image even if up-to-date (not older than 7 days).",
-# )
+class DockerLauncherConfig(BaseModel):
+    NO_REMOTE: bool = Field(
+        default=False,
+        title="Disable pulling half-done images from Dockerhub and build locally.",
+    )
+    FORCE_UPDATE: bool = Field(
+        default=False,
+        title="Force updating final docker image even if up-to-date (not older than 7 days).",
+    )
 
-# args = parser.parse_args()
 
+configClass = getEnvConfigClass(DockerLauncherConfig)
+config: DockerLauncherConfig = configClass.load()
 
 def recursive_split_path(path):
     leftover, ret = os.path.split(path)
@@ -108,7 +102,7 @@ if final_image_tag not in image_tags:
     if image_tag not in image_tags:
         logger_print("image not found: %s" % image_tag)
         if not os.path.exists(image_path):
-            if "-noremote" not in sys.argv:
+            if config.NO_REMOTE:
                 # run remote pull command.
                 docker_exec(f"pull {remote_image_tag}")
                 docker_exec(f"tag {remote_image_tag} {image_tag}")

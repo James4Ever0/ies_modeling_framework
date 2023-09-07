@@ -33,6 +33,12 @@ def getBaseModelPropertyKeys(bm: BaseModel):
 
 
 class EnvBaseModel(BaseModel):
+    def diff(self):
+        """
+        Returns a dictionary which contains all properties with non-default values
+        """
+        return {k: v for k, v in self.dict().items() if v != self.__fields__[k].default}
+
     def __new__(cls, *args, **kwargs):
         upper_prop_keys = set()
 
@@ -64,13 +70,20 @@ class EnvBaseModel(BaseModel):
                     upper_prop_keys.add(upper_key)
         return super().__new__(cls)
 
+
+class DotEnvBaseModel(EnvBaseModel):
     DOTENV: Union[str, None] = None
 
-class ArgumentEnv(EnvBaseModel):
-    ...
 
-class ShellEnv(EnvBaseModel):
+class ArgumentEnv(DotEnvBaseModel):
+    @classmethod
+    def load(cls):
+        trans = ArgumentTransformer(cls)
+        param = trans.parse()
+        return param
 
+
+class ShellEnv(DotEnvBaseModel):
     @classmethod
     def load(cls):
         pks = getBaseModelPropertyKeys(cls)
@@ -127,8 +140,9 @@ class DotEnv(EnvBaseModel):
         return ret
 
     @classmethod
-    def preload(cls, fpath: str, envs={}, _cls=None):
+    def preload(cls, fpath: str, _cls=None):
         assert os.path.isfile(fpath), "File %s does not exist" % fpath
+        envs = {}
 
         if _cls is None:
             _cls = cls
@@ -154,32 +168,41 @@ class DotEnv(EnvBaseModel):
 
     @classmethod
     def presolve_import_graph(cls, fpath: str):
-        pre_inst = cls.preload(fpath, envs={}, _cls=DotEnv)
+        pre_inst = cls.preload(fpath, _cls=DotEnv)
         imp_graph = pre_inst.resolve_import_graph()
         return imp_graph
 
     @classmethod
     def load(cls, fpath: str):
-        inst = cls.preload(fpath, envs={})
-        envs = inst.dict()
+        inst = cls.preload(fpath)
+        inst_envs = inst.diff()
+        envs = {}
         for imp_fpath in inst.resolve_import_graph():
-            envs = cls.preload(imp_fpath, envs).dict()
+            envs.update(cls.preload(imp_fpath).diff())
+        envs.update(inst_envs)
         return cls(**envs)
 
 
 class EnvManager:
     shellEnv: ShellEnv
     dotEnv: DotEnv
+    argumentEnv: ArgumentEnv
 
     @classmethod
     def load(cls):
         cls.shellEnv: ShellEnv
         cls.dotEnv: DotEnv
+        cls.argumentEnv: ArgumentEnv
+
         shellEnvInst = cls.shellEnv.load()
         params = shellEnvInst.dict()
+
+        argumentEnvInst = cls.argumentEnv.load()
+        params.update(argumentEnvInst.diff())
+
         if (_dotenv := shellEnvInst.DOTENV) is not None:
             dotEnvInst = cls.dotEnv.load(_dotenv)
-            params.update(dotEnvInst.dict())
+            params.update(dotEnvInst.diff())
         return params
 
 
@@ -199,7 +222,8 @@ class EnvConfig:
         Load environment variables.
 
         Load sequence:
-            Environment variables from shell
+            Environment variables from shell\n
+            Commandline arguments\n
             Dotenv file and subsequent imported files
         """
         params = cls.manager_cls.load()
@@ -225,10 +249,18 @@ def getDotEnvClass(env_class: EnvBaseModel):
     return dot_env_class
 
 
+def getArgumentEnvClass(env_class: EnvBaseModel):
+    class argument_env_class(ArgumentEnv, env_class):
+        ...
+
+    return argument_env_class
+
+
 def getEnvManagerClass(env_class: EnvBaseModel):
     class env_manager_class(EnvManager):
         shellEnv = getShellEnvClass(env_class)
         dotEnv = getDotEnvClass(env_class)
+        argumentEnv = getArgumentEnvClass(env_class)
 
     return env_manager_class
 
