@@ -31,25 +31,31 @@ feasopt = mdl.cplex.feasopt
 # quadratic & indicator shall never be used.
 # if detected, please show us what names they have.
 # all constraints shall be linear.
+# feasopt.all_constraints()
 from typing import Literal, List, Dict, Callable
 
 group_mode = Literal["linear", "upper_bound", "lower_bound"]
-transfunc_map: Dict[group_mode, Callable] = {}
+# transfunc_map: Dict[group_mode, Callable] = {}
 
 
 def group_items(namelist: List[str], mode: group_mode):
-    transfunc = transfunc_map[mode]
-
-    for name in namelist:
-        ...
+    return getattr(feasopt, "")(namelist)
 
 
 constraint_type_constant_map = feasopt.constraint_type._get_constant_map()
 # first count our constraints stat.
 constraint_instance_count_map = {}
+# mdl.iter_indicator_constraints()
+# mdl.iter_quadratic_constraints()
+for it in mdl.iter_linear_constraints():
+    print(it)
+    breakpoint()
+
 for ctype, type_const in constraint_type_constant_map.items():
     constraint_instance_count_map[ctype] = feasopt._getnum(type_const)
     transfunc_map[ctype] = feasopt._getconvfunc(type_const)
+
+
 feasopt(feasopt.all_constraints())
 # cplex._internal._aux_functions._group
 # feasopt._make_group
