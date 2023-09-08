@@ -32,26 +32,37 @@ T = TypeVar("T")
 class ArgumentTransformer(Generic[T]):
     def __init__(self, dataModel: T):
         self.dataModel = dataModel
+        self.description = dataModel.__doc__
         self.schema = self.dataModel.schema()
         self.properties = self.schema["properties"]
         self.fields = self.properties.keys()
         self.cli_arguments = {}
-        self.required = self.schema.get("required",[])
-        
+        self.required = self.schema.get("required", [])
+
         with ErrorManager(
             default_error=f"error on processing schema:\n{pretty(self.schema)}\ndataModel: {repr(self.dataModel)}"
         ) as ex:
             for field, prop in self.properties.items():
+                help_info = []
                 field_lower = field.lower()
                 args = {"required": field in self.required}
                 pydantic_type = prop.pop("type")
                 pytype = pydantic_type_to_pytype.get(pydantic_type, None)
-                annotated_type = self.dataModel.__annotations__.get(field)
+                annotated_type = self.dataModel.__annotations__.get(field)  # .__name__?
+                # BUG: type: None
+                if annotated_type is None:
+                    logger_print(
+                        f"Possible malformed annotation in field '{field}' of dataclass '{self.dataModel.__name__}'",
+                        f"Schema: {self.schema}",
+                    )
+                    # breakpoint()
+                help_info.append(
+                    f"[type]\t{getattr(annotated_type, '__name__', repr(annotated_type))}"
+                )
 
                 for prop_name, prop_value in prop.items():
                     if prop_name == "default":
-                        
-                        args["help"] = f'(default: {prop_value}) {args.get("help","")}'
+                        help_info.append(f"[default]\t{prop_value}")
                     translated_prop_name = prop_translation_table.get(prop_name, None)
                     if translated_prop_name:
                         args[translated_prop_name] = prop_value
@@ -63,17 +74,26 @@ class ArgumentTransformer(Generic[T]):
                     args["type"] = pytype
                 else:
                     msg = f"pydantic type '{pydantic_type}' does not have corresponding python type. falling back to str"
-                    args["help"] = f'(actual type: {annotated_type}) {args.get("help","")}'
                     logger_print(msg)
                     # ex.append(msg)
                     args["type"] = str
                 if field_lower in self.cli_arguments.keys():
-                    ex.append(f"Field '{field}' is possibly duplicated in the sense of lower case '{field_lower}' within existing fields")
+                    ex.append(
+                        f"Field '{field}' is possibly duplicated in the sense of lower case '{field_lower}' within existing fields"
+                    )
                     continue
+                # if len(help_info) > 0:
+                #     help_info += [""]
+                # ref: https://www.knowledge-repo.com/post/python/adding_newlines_to_argparse_help_text_in_python.kp
+                args["help"] = "\n".join([*help_info, f'{args.get("help","")}\n'])
+                # args["help"] = '\n'.join([f'({", ".join(help_info)})',f'{args.get("help","")}'])
+
                 self.cli_arguments[field_lower] = args
 
     def parse(self):
-        argparser = argparse.ArgumentParser()
+        argparser = argparse.ArgumentParser(description=self.description)
+        argparser.formatter_class = argparse.RawTextHelpFormatter
+
         for argName, cli_arg in self.cli_arguments.items():
             argparser.add_argument(f"--{argName}", **cli_arg)
         arguments = argparser.parse_args()

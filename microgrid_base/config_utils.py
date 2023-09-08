@@ -57,6 +57,7 @@ class EnvBaseModel(BaseModel):
         with ExceptionManager() as exc_manager:
             for key in getBaseModelPropertyKeys(cls):
                 upper_key = key.upper()
+                keylen = len(key)
                 if upper_key != key:
                     exc_manager.append("Key %s is not upper case." % key)
                 elif upper_key in upper_prop_keys:
@@ -64,7 +65,7 @@ class EnvBaseModel(BaseModel):
                         "Duplicate property %s in definition of %s"
                         % (upper_prop_keys, cls.__name__)
                     )
-                elif (keylen := len(key)) < min_envname_length_threshold:
+                elif keylen < min_envname_length_threshold:
                     exc_manager.append(
                         "Key %s (length: %d) is too short.\nMinimum length: %d"
                         % (key, keylen, min_envname_length_threshold)
@@ -72,9 +73,8 @@ class EnvBaseModel(BaseModel):
                 else:
                     for uk in upper_prop_keys:
                         edit_distance = Levenshtein.distance(uk, upper_key)
-                        if edit_distance < (
-                            min_upper_prop_key_st := suspicous_threshold * 2
-                        ):
+                        min_upper_prop_key_st = suspicous_threshold * 2
+                        if edit_distance < min_upper_prop_key_st:
                             exc_manager.append(
                                 "Key %s has too little distance to another key %s.\nMinimum distance: %d"
                                 % (upper_key, uk, min_upper_prop_key_st)
@@ -82,9 +82,12 @@ class EnvBaseModel(BaseModel):
                     upper_prop_keys.add(upper_key)
         return super().__new__(cls)
 
+
 from pydantic import Field
+
+
 class DotEnvBaseModel(EnvBaseModel):
-    DOTENV: Union[str, None] = Field(default=None, title="DotEnv file path")
+    DOTENV: Union[str, None] = Field(default=None, title="A single DotEnv file path")
 
 
 class ArgumentEnv(DotEnvBaseModel):
@@ -111,12 +114,14 @@ class ShellEnv(DotEnvBaseModel):
                 if fpk == uk:
                     envs[fpk] = v
                     pks.remove(fpk)
-                elif (ed := Levenshtein.distance(fpk, uk)) < suspicous_threshold:
-                    exc_manager.append(
-                        f"Suspicious shell env var found.\n'{k}' (upper case: '{uk}') is similar to '{fpk}' (edit distance: {ed})"
-                    )
                 else:
-                    continue  # do nothing. just ignore excessive shell environment vars.
+                    ed = Levenshtein.distance(fpk, uk)
+                    if ed < suspicous_threshold:
+                        exc_manager.append(
+                            f"Suspicious shell env var found.\n'{k}' (upper case: '{uk}') is similar to '{fpk}' (edit distance: {ed})"
+                        )
+                    else:
+                        continue  # do nothing. just ignore excessive shell environment vars.
         return cls(**envs)
 
 
@@ -124,12 +129,16 @@ from dotenv import dotenv_values
 
 
 class DotEnv(EnvBaseModel):
-    IMPORT: str = Field(default="", title="DotEnv import file path list which shall be separated by space")
+    IMPORT: str = Field(
+        default="",
+        title="DotEnv import file path list which shall be separated by space",
+    )
 
     @property
     def import_fpaths(self):
         imp_fpaths = self.IMPORT.strip().split()
-        imp_fpaths = [(new_fp := fp.strip()) for fp in imp_fpaths if len(new_fp) > 0]
+        imp_fpaths = [fp.strip() for fp in imp_fpaths]
+        imp_fpaths = [fp for fp in imp_fpaths if len(fp) > 0]
         return imp_fpaths
 
     def resolve_import_graph(self):
@@ -211,8 +220,8 @@ class EnvManager:
 
         argumentEnvInst = cls.argumentEnv.load()
         params.update(argumentEnvInst.diff())
-
-        if (_dotenv := shellEnvInst.DOTENV) is not None:
+        _dotenv = shellEnvInst.DOTENV
+        if _dotenv is not None:
             dotEnvInst = cls.dotEnv.load(_dotenv)
             params.update(dotEnvInst.diff())
         return params
@@ -242,37 +251,71 @@ class EnvConfig:
         data_inst = cls.data_cls(**params)
         logger_print(
             "Loaded environment variables:",
-            *[f"{k}:\t{v}" for k, v in data_inst.dict().items()],
+            *[f"{k}:\t{repr(v)}" for k, v in data_inst.dict().items()],
         )
         return data_inst
 
 
-def getShellEnvClass(env_class: EnvBaseModel):
-    class shell_env_class(ShellEnv, env_class):
+def getFieldsSetByAnnotation(dataclass: EnvBaseModel):
+    anno = dataclass.__annotations__
+    fields = anno.keys()
+    return set(fields)
+
+
+def checkReservedKeywordNameClash(
+    reserved_dataclass: EnvBaseModel, env_class: EnvBaseModel
+):
+    reserved = getFieldsSetByAnnotation(reserved_dataclass)
+    env = getFieldsSetByAnnotation(env_class)
+    isect = reserved.intersection(env)
+    if isect != set():
+        with ExceptionManager(
+            default_error=f"Dataclass '{env_class.__name__}' has name clash on reserved dataclass '{reserved_dataclass.__name__}'"
+        ) as em:
+            for field in isect:
+                em.append(f"Field '{field}' clashed.")
+
+
+def extendEnvClass(
+    reserved_dataclass: Union[ShellEnv, ArgumentEnv, DotEnv], env_class: EnvBaseModel
+):
+    # do not change the annotations in the class definition.
+    checkReservedKeywordNameClash(reserved_dataclass, env_class)
+
+    class extended_env_class(reserved_dataclass, env_class):
         ...
 
-    return shell_env_class
+    extended_env_class.__annotations__ = {
+        **reserved_dataclass.__annotations__,
+        **env_class.__annotations__,
+    }
+    extended_env_class.__doc__ = env_class.__doc__
+    return extended_env_class
 
 
-def getDotEnvClass(env_class: EnvBaseModel):
-    class dot_env_class(DotEnv, env_class):
-        ...
-
-    return dot_env_class
+# def getShellEnvClass(env_class: EnvBaseModel):
+#     shell_env_class = extendEnvClass(ShellEnv, env_class)
+#     return shell_env_class
 
 
-def getArgumentEnvClass(env_class: EnvBaseModel):
-    class argument_env_class(ArgumentEnv, env_class):
-        ...
+# def getDotEnvClass(env_class: EnvBaseModel):
+#     dot_env_class = extendEnvClass(DotEnv, env_class)
+#     return dot_env_class
 
-    return argument_env_class
+
+# def getArgumentEnvClass(env_class: EnvBaseModel):
+#     argument_env_class = extendEnvClass(ArgumentEnv, env_class)
+#     return argument_env_class
 
 
 def getEnvManagerClass(env_class: EnvBaseModel):
     class env_manager_class(EnvManager):
-        shellEnv = getShellEnvClass(env_class)
-        dotEnv = getDotEnvClass(env_class)
-        argumentEnv = getArgumentEnvClass(env_class)
+        shellEnv = extendEnvClass(ShellEnv, env_class)
+        dotEnv = extendEnvClass(DotEnv, env_class)
+        argumentEnv = extendEnvClass(ArgumentEnv, env_class)
+        # shellEnv = getShellEnvClass(env_class)
+        # dotEnv = getDotEnvClass(env_class)
+        # argumentEnv = getArgumentEnvClass(env_class)
 
     return env_manager_class
 
