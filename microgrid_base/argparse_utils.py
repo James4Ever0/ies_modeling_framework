@@ -51,6 +51,7 @@ class ArgumentTransformer(Generic[T]):
                 annotated_type = self.dataModel.__annotations__.get(field)  # .__name__?
                 # BUG: type: None
                 if annotated_type is None:
+                    breakpoint()
                     logger_print(
                         f"Possible malformed annotation in field '{field}' of dataclass '{self.dataModel.__name__}'",
                         f"Schema: {self.schema}",
