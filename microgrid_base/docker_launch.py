@@ -238,6 +238,8 @@ try:
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
+        detach_keys=...,
+        # ref: https://www.howtogeek.com/devops/how-to-detach-from-a-docker-container-without-stopping-it/
         # detach=False,
         # we need to monitor this.
         tty=True,
