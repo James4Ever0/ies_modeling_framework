@@ -44,7 +44,7 @@ if sys.version_info < MIN_PY_VERSION:
         # breakpoint()
         code_filename = caller_frame.f_code.co_filename
         code_relpath = os.path.relpath(code_filename)
-        caller_info = "[%s:%s - %s()]" % (
+        caller_info = "['%s:%s' - %s()]" % (
             code_relpath,
             caller_frame.f_lineno,
             caller_frame.f_code.co_name,
@@ -55,12 +55,12 @@ if sys.version_info < MIN_PY_VERSION:
 
 else:
     FORMAT = (  # add timestamp.
-        "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"  # miliseconds already included!
+        "%(asctime)s <%(name)s:%(levelname)s> ['%(pathname)s:%(lineno)s' - %(funcName)s()]\n%(message)s"  # miliseconds already included!
         # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
         # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
     )
 
-    SHORT_FORMAT = "%(asctime)s <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(short_msg)s"
+    SHORT_FORMAT = "%(asctime)s <%(name)s:%(levelname)s> ['%(pathname)s:%(lineno)s' - %(funcName)s()]\n%(short_msg)s"
 
 # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 

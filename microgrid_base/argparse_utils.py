@@ -62,13 +62,13 @@ class ArgumentTransformer(Generic[T]):
                         f"Schema: {self.schema}",
                     )
                 help_info.append(
-                    f"[type]\t:\t{repr(annotated_type)}"
+                    f"[{'type'.center(7,' ')}]\t{repr(annotated_type)}"
                     # f"[type]\t{getattr(annotated_type, '__name__', repr(annotated_type))}"
                 )
 
                 for prop_name, prop_value in prop.items():
                     if prop_name == "default":
-                        help_info.append(f"[default]\t:\t{prop_value}")
+                        help_info.append(f"[{'default'.center(7,' ')}]\t{prop_value}")
                     translated_prop_name = prop_translation_table.get(prop_name, None)
                     if translated_prop_name:
                         args[translated_prop_name] = prop_value
