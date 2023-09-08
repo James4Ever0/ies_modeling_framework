@@ -35,6 +35,7 @@ def killAndPruneAllContainers():
             # os.system(f"docker container kill -s SIGKILL {cid}")
         os.system("docker container prune -f")
 
+
 # from config import IESEnv
 from config_dataclasses import IESEnv, DockerLauncherConfig
 
@@ -47,6 +48,8 @@ if config.TERMINATE_ONLY:
     killAndPruneAllContainers()
     logger_print("TERMINATE_ONLY is set. Exiting.")
     exit(0)
+
+
 def recursive_split_path(path):
     leftover, ret = os.path.split(path)
     if ret != "":
@@ -238,8 +241,9 @@ try:
         # command="bash -c 'cd microgrid/server && ls -lth .'",
         # command="echo 'hello world'",
         detach=True,
-        detach_keys=...,
-        # ref: https://www.howtogeek.com/devops/how-to-detach-from-a-docker-container-without-stopping-it/
+        restart_policy={
+            "Name": "on-failure"
+        },  # restart indefinitely, though might not always work.
         # detach=False,
         # we need to monitor this.
         tty=True,
@@ -253,7 +257,19 @@ try:
 
     short_id = container.short_id
     logger_print("attaching to: %s" % short_id)
-    os.system(f"docker attach {short_id}")
+    # ref: https://www.howtogeek.com/devops/how-to-detach-from-a-docker-container-without-stopping-it/
+    if os.name == 'nt':
+        logger_print("unable to configure detach keys on windows.")
+        os.system(f"docker attach {short_id}")
+    else:
+        os.system(f'docker attach {short_id} --detach-keys="{config.DETACH_KEYS}"')
+    # while True:
+    
+#     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
+    #     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
+    #     exit_code = os.system(f"docker attach {short_id}")
+    #     if exit_code == 0:
+    #         break
 except:
     import traceback
 

@@ -41,6 +41,7 @@ class DockerLauncherConfig(IESEnv):
     TERMINATE_ONLY: bool = Field(
         default=False, title="Only terminate all running containers and exit."
     )
+    DETACH_KEYS: str = Field(default="Ctrl-d,d", title="Key sequence to detach from Docker container (not working on Windows)")
     # FORCE_UPDATE: bool = Field(
     #     default=False,
     #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",

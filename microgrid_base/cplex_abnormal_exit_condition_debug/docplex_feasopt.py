@@ -46,9 +46,10 @@ def group_items(namelist: List[str], mode: group_mode):
 
 constraint_type_constant_map = feasopt.constraint_type._get_constant_map()
 # first count our constraints stat.
-
+constraint_instance_count_map = {}
 for ctype, type_const in constraint_type_constant_map.items():
-    transfunc_map[ctype] = type_const
+    constraint_instance_count_map[ctype] = feasopt._getnum(type_const)
+    transfunc_map[ctype] = feasopt._getconvfunc(type_const)
 feasopt(feasopt.all_constraints())
 # cplex._internal._aux_functions._group
 # feasopt._make_group

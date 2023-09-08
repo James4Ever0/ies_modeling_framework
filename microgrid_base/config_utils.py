@@ -39,7 +39,7 @@ class EnvBaseModel(BaseModel):
         """
         bases = self.__class__.__bases__
         for base in bases:
-            if isinstance(base, BaseModel):
+            if issubclass(base, Union[EnvBaseModel, BaseModel]):
                 return base.parse_obj(self)
         raise Exception(
             "Cannot reduce model: %s\nBases: %s" % (self.__class__.__name__, bases)
