@@ -26,7 +26,7 @@ class IESEnv(EnvBaseModel):
 
 class DockerLauncherConfig(IESEnv):
     """
-    IES Docker lanucher configurations.
+    IES Docker launcher configurations.
 
     Also parse algorithm related configs.
     """

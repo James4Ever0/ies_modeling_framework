@@ -80,6 +80,10 @@ class EnvBaseModel(BaseModel):
                                 % (upper_key, uk, min_upper_prop_key_st)
                             )
                     upper_prop_keys.add(upper_key)
+        # new_cls = super().__new__(cls)
+        # new_cls.__annotations__ = cls.__annotations__
+        # breakpoint()
+        # return new_cls
         return super().__new__(cls)
 
 
@@ -289,6 +293,7 @@ def extendEnvClass(
         **reserved_dataclass.__annotations__,
         **env_class.__annotations__,
     }
+    # breakpoint()
     extended_env_class.__doc__ = env_class.__doc__
     return extended_env_class
 

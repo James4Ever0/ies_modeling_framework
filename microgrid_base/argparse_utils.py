@@ -26,6 +26,8 @@ prop_translation_table = {
 
 T = TypeVar("T")
 
+import typing
+
 
 # @beartype
 # class ExternalFunctionManager:
@@ -33,6 +35,9 @@ class ArgumentTransformer(Generic[T]):
     def __init__(self, dataModel: T):
         self.dataModel = dataModel
         self.description = dataModel.__doc__
+        self.annotations = getattr(
+            typing, "get_type_hints", lambda m: m.__annotations__
+        )(self.dataModel)
         self.schema = self.dataModel.schema()
         self.properties = self.schema["properties"]
         self.fields = self.properties.keys()
@@ -48,22 +53,22 @@ class ArgumentTransformer(Generic[T]):
                 args = {"required": field in self.required}
                 pydantic_type = prop.pop("type")
                 pytype = pydantic_type_to_pytype.get(pydantic_type, None)
-                annotated_type = self.dataModel.__annotations__.get(field)  # .__name__?
+                annotated_type = self.annotations.get(field)
+                # annotated_type = self.dataModel.__annotations__.get(field)  # .__name__?
                 # BUG: type: None
                 if annotated_type is None:
-                    breakpoint()
                     logger_print(
                         f"Possible malformed annotation in field '{field}' of dataclass '{self.dataModel.__name__}'",
                         f"Schema: {self.schema}",
                     )
-                    # breakpoint()
                 help_info.append(
-                    f"[type]\t{getattr(annotated_type, '__name__', repr(annotated_type))}"
+                    f"[type]\t:\t{repr(annotated_type)}"
+                    # f"[type]\t{getattr(annotated_type, '__name__', repr(annotated_type))}"
                 )
 
                 for prop_name, prop_value in prop.items():
                     if prop_name == "default":
-                        help_info.append(f"[default]\t{prop_value}")
+                        help_info.append(f"[default]\t:\t{prop_value}")
                     translated_prop_name = prop_translation_table.get(prop_name, None)
                     if translated_prop_name:
                         args[translated_prop_name] = prop_value
@@ -90,6 +95,7 @@ class ArgumentTransformer(Generic[T]):
                 # args["help"] = '\n'.join([f'({", ".join(help_info)})',f'{args.get("help","")}'])
 
                 self.cli_arguments[field_lower] = args
+            # breakpoint()
 
     def parse(self):
         argparser = argparse.ArgumentParser(description=self.description)
