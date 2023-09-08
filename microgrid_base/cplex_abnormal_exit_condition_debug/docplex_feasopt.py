@@ -22,7 +22,10 @@ mdl.cplex.set_warning_stream(sys.stderr)
 # help(mdl.cplex.feasopt)
 # breakpoint()
 feasopt = mdl.cplex.feasopt
+breakpoint()
 feasopt(feasopt.all_constraints())
+# cplex._internal._aux_functions._group
+# feasopt._make_group
 sol = mdl.cplex.solution # this is taking eternal. we need to check progress!
 print("*"*60)
 print(sol)
