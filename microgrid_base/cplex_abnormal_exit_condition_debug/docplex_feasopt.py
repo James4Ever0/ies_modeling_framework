@@ -4,7 +4,7 @@ from cplex._internal._subinterfaces import _group
 
 # import cplex
 model_fpath = "converted.mps"
-import cplex
+# import cplex
 
 mdl: Model = ModelReader.read(model_fpath, model_name="InfeasibelLP")
 print("model loaded successfully from: %s" % model_fpath)

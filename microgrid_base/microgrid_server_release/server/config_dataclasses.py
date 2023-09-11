@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from pydantic import confloat, Field #, validator, ValidationError
+from pydantic import confloat, Field # , validator, ValidationError
 from config_utils import EnvBaseModel, Union
 
 
@@ -27,11 +27,20 @@ class IESEnv(EnvBaseModel):
     )
     GENERATED_MOCK: bool = Field(
         default=False,
-        title="If set to True, the server will generate mock results by analyzing the input parameters,if MOCK_TEST is False)",
+        title="If set to True, the server will generate mock results by analyzing the input parameters (if MOCK_TEST is False))",
     )
     DETERMINISTIC_MOCK: bool = Field(
         default=False,
         title="If set to True, then the server will return deterministic synthetic mock results based on input hash.",
+    )
+
+    MOCK_DATA_THRESHOLD: float = Field(
+        default=0.001,
+        title="Threshold for mock data manipulation, under which will not change.",
+    )
+    ANSWER_TO_THE_UNIVERSE: int = Field(
+        default=42,
+        title="Answer to the universe (value related to randomness restoration)",
     )
 
     # @validator("MOCKGEN")
@@ -62,7 +71,7 @@ class DockerLauncherConfig(IESEnv):
         default=False, title="Only terminate all running containers and exit."
     )
     DETACH_KEYS: str = Field(
-        default="Ctrl-d,d",
+        default="ctrl-d,d",
         title="Key sequence to detach from Docker container (not working on Windows)",
     )
     UNITTEST: bool = Field(

@@ -1,39 +1,6 @@
 from log_utils import logger_print
 
-THRESHOLD = 0.001
-
-def decreaseByOneThousand(number, threshold=10):
-    assert number >= 0, f"invalid number: {repr(number)}"
-    if number <= threshold:
-        return number
-    ret = number / 10
-    # logger_print(number, ret)
-    return decreaseByOneThousand(ret, threshold=threshold)
-
-
-import pandas
-from typing import Union
-import random
-
-
-def modifyIfIsDeviceCount(location, val):
-    if "deviceCount" in location:
-        return random.randint(1, 10)
-    return val
-
-def modifyValueIfNumber(location, val):
-    # bool is subclass of int
-    # if isinstance(val, Union[float, int]):
-    if type(val) in [float, int]:
-        if not pandas.isnull(val):
-            if val != 0:
-                positive = val > 0
-                val_abs = abs(val)
-                val_abs_modified = decreaseByOneThousand(val_abs , threshold=THRESHOLD)
-                val_modified = (1 if positive else -1) * val_abs_modified
-                return val_modified
-    return val
-
+from mock_utils import modifyValueIfNumber, modifyIfIsDeviceCount
 
 if __name__ == "__main__":
     from json_utils import jsonApply

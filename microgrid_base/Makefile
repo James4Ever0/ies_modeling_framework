@@ -81,7 +81,8 @@ MODEL_CODE = topo_check.py ies_optim.py ${EXPORT_FORMAT_CODE}
 
 # use $(wildcard <pattern>) to precompute the pattern.
 
-FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
+FILTERED_UTILS = $(wildcard csv* pyright* jinja*)
+# FILTERED_UTILS = $(wildcard csv* pyright* jinja* json*)
 
 # UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
 UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))

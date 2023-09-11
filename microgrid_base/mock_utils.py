@@ -1,8 +1,46 @@
 """
 This library mocks algorithm response.
 
-Hash input parameters for random seeds.
+Hash input parameters for random seeds, if configured.
 """
+
+from config import ies_env
+
+THRESHOLD = ies_env.MOCK_DATA_THRESHOLD
+
+
+def decreaseByOneThousand(number, threshold=10):
+    assert number >= 0, f"invalid number: {repr(number)}"
+    if number <= threshold:
+        return number
+    ret = number / 10
+    # logger_print(number, ret)
+    return decreaseByOneThousand(ret, threshold=threshold)
+
+
+import pandas
+
+
+def modifyIfIsDeviceCount(location, val):
+    if "deviceCount" in location:
+        return random.randint(1, 10)
+    return val
+
+
+def modifyValueIfNumber(location, val):
+    # bool is subclass of int
+    # if isinstance(val, Union[float, int]):
+    if type(val) in [float, int]:
+        if not pandas.isnull(val):
+            if val != 0:
+                positive = val > 0
+                val_abs = abs(val)
+                val_abs_modified = decreaseByOneThousand(val_abs, threshold=THRESHOLD)
+                val_modified = (1 if positive else -1) * val_abs_modified
+                return val_modified
+    return val
+
+
 from pydantic_factories import ModelFactory
 from log_utils import logger_print
 from fastapi_datamodel_template import (
@@ -20,11 +58,8 @@ from fastapi_datamodel_template import (
 
 from ies_optim import EnergyFlowGraph
 import random
-from config import ies_env
 from pydantic import BaseModel
 from solve_model import targetTypeAsTargetName
-
-from reduce_demo_data_size import modifyValueIfNumber, modifyIfIsDeviceCount
 from json_utils import jsonApply
 import hashlib
 
@@ -124,7 +159,7 @@ import os
 
 
 def restore_randomness():
-    trng_seed = lambda: os.urandom(43)
+    trng_seed = lambda: os.urandom(ies_env.ANSWER_TO_THE_UNIVERSE)
     random.seed(trng_seed())
     规划方案概览_翻译_工厂.seed_random(trng_seed())
     规划结果详情_翻译_工厂.seed_random(trng_seed())
