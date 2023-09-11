@@ -23,7 +23,7 @@ class IESEnv(EnvBaseModel):
         default=None,
         title="If set to an nonempty string, then the server will return mock results.",
     )
-    MOCKGEN: bool = Field(
+    SYNTHETIC_MOCK: bool = Field(
         default=False,
         title="If set to True, the server will generate mock results by analyzing the input parameters. (only if MOCK_TEST is True)",
     )

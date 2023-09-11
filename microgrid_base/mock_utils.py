@@ -3,3 +3,172 @@ This library mocks algorithm response.
 
 Hash input parameters for random seeds.
 """
+from pydantic_factories import ModelFactory
+
+from fastapi_datamodel_template import (
+    单次计算结果,
+    CalculationResult,
+    ObjectiveResult,
+    规划结果详情_翻译,
+    规划方案概览_翻译,
+    设备出力曲线,
+    仿真结果,
+    出力曲线,
+    曲线,
+    mDict,
+)
+
+from ies_optim import EnergyFlowGraph
+import random
+from config import ies_env
+from solve_model import targetTypeAsTargetName
+
+from reduce_demo_data_size import modifyValueIfNumber, modifyIfIsDeviceCount
+from json_utils import jsonApply
+import hashlib
+
+# mock_input = "mock_data_energy_flow_graph.json"
+# input_data = EnergyFlowGraph.parse_file(mock_input)
+# print(input_data)
+
+
+class 规划方案概览_翻译_工厂(ModelFactory):
+    __model__ = 规划方案概览_翻译
+
+
+# class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
+class 规划结果详情_翻译_工厂(ModelFactory):
+    __model__ = 规划结果详情_翻译
+
+
+# class 仿真结果工厂(DataclassFactory[仿真结果]):
+class 仿真结果工厂(ModelFactory):
+    __model__ = 仿真结果
+
+
+# seed input
+def generate_fake_output_data(input_data: EnergyFlowGraph):
+    (
+        firstMDict,
+        curve_elemsize,
+        curve_x_unit,
+        mDictCount,
+        planType,
+    ) = get_fake_output_data_params(input_data)
+
+    seed_fake_rng_if_necessary(input_data)
+
+    resultList = []
+
+    for _ in range(mDictCount):
+        obj_r = ObjectiveResult(
+            financialObjective=random.uniform(10, 1000),
+            environmentalObjective=random.uniform(10, 1000),
+        )
+        prt = []
+        ps = 规划方案概览_翻译_工厂.build()
+        ps.planType = planType
+        pdl = []
+        srt = []
+
+        for elem in firstMDict.nodes:
+            if getattr(elem, "type") == "设备":
+                prepare_fake_calc_result_per_device(curve_elemsize, curve_x_unit, prt, pdl, srt, elem)
+
+                result = 单次计算结果(
+                    objectiveResult=obj_r,
+                    planningResultTable=prt,
+                    planningSummary=ps,
+                    performanceDataList=pdl,
+                    simulationResultTable=srt,
+                )
+                resultList.append(result)
+
+    cr = CalculationResult(
+        resultList=resultList,
+        residualEquipmentAnnualFactor=random.uniform(0, 5),
+        success=True,
+        error_log="",
+    )
+
+    # finally, pass to the number manipulation routines.
+    processed_cr = jsonApply(cr.dict(), modifyValueIfNumber, modifyIfIsDeviceCount)
+    pcr_obj = CalculationResult.parse_obj(processed_cr)
+    return pcr_obj
+
+def prepare_fake_calc_result_per_device(curve_elemsize, curve_x_unit, prt, pdl, srt, elem):
+    subtype = getattr(elem, "subtype")
+    param = getattr(elem, "param")
+    设备名称, 生产厂商, 设备型号 = (
+                    getattr(param, "设备名称", "未知"),
+                    getattr(param, "生产厂商", "未知"),
+                    getattr(param, "设备型号", "未知"),
+                )
+    px = [f"{i}{curve_x_unit}" for i in range(curve_elemsize)]
+    py = [random.uniform(-10, 10) for _ in range(curve_elemsize)]
+    pcurve = 曲线(x=px, y=py)
+    abbr = "功率"
+                # abbr = ...
+    pl = [出力曲线(name=f"{subtype}{abbr}曲线", abbr=abbr, data=pcurve)]
+    pr = 规划结果详情_翻译_工厂.build()
+    pr.deviceName = 设备名称
+    pr.deviceModel = 设备型号
+    pd = 设备出力曲线(name=设备名称, plot_list=pl)
+    sr = 仿真结果工厂.build()
+    sr.name = 设备名称
+    sr.type = 设备型号
+    prt.append(pr)
+    pdl.append(pd)
+    srt.append(sr)
+
+
+def seed_fake_rng_if_necessary(input_data):
+    if ies_env.DETERMINISTIC_MOCK:
+        input_bytes = input_data.json().encode("utf-8")
+        input_hash = hashlib.sha1(input_bytes).digest()
+        random.seed(input_hash)
+        规划方案概览_翻译_工厂.seed_random(input_hash)
+        规划结果详情_翻译_工厂.seed_random(input_hash)
+        仿真结果工厂.seed_random(input_hash)
+
+
+def get_fake_output_data_params(input_data: EnergyFlowGraph):
+    firstMDict: mDict = input_data.mDictList[0]
+    calcTarget = firstMDict.graph.计算目标
+    calcStepSize = firstMDict.graph.计算步长
+
+    curve_elemsize, curve_x_unit = get_fake_data_curve_params(calcStepSize)
+
+    mDictCount = get_fake_data_mdict_count(calcTarget)
+
+    planType = targetTypeAsTargetName(calcTarget)
+    return firstMDict, curve_elemsize, curve_x_unit, mDictCount, planType
+
+
+def get_fake_data_mdict_count(calcTarget):
+    if calcTarget == "经济_环保":
+        mDictCount = 9
+    elif calcTarget in ["经济", "环保"]:
+        mDictCount = 1
+    else:
+        raise Exception("Unknown calculation target: %s" % calcTarget)
+    return mDictCount
+
+
+def get_fake_data_curve_params(calcStepSize):
+    if calcStepSize == "小时":
+        curve_elemsize = 8760
+        curve_x_unit = "时"
+    elif calcStepSize == "秒":
+        curve_elemsize = 7200
+        curve_x_unit = "秒"
+    else:
+        raise Exception("Unknown calculation step size: %s" % calcStepSize)
+    return curve_elemsize, curve_x_unit
+
+
+if __name__ == "__main__":
+    # test the util.
+    mock_input = "mock_data_energy_flow_graph.json"
+    input_data = EnergyFlowGraph.parse_file(mock_input)
+    fake_output_data = generate_fake_output_data(input_data)

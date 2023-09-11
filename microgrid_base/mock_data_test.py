@@ -96,6 +96,7 @@ from fastapi_datamodel_template import (
     仿真结果,
     出力曲线,
     曲线,
+    mDict,
 )
 
 # not working. but we can do this later.
@@ -129,9 +130,18 @@ print(input_data)
 import random
 from config import ies_env
 
+firstMDict: mDict = input_data.mDictList[0]
+calcTarget = firstMDict.graph.计算目标
+calcStepSize = firstMDict.graph.计算步长
 
-firstMDict = input_data.mDictList[0]
-calcTarget = firstMDict.计算目标
+if calcStepSize == "小时":
+    curve_elemsize = 8760
+    curve_x_unit = "时"
+elif calcStepSize == "秒":
+    curve_elemsize = 7200
+    curve_x_unit = "秒"
+else:
+    raise Exception("Unknown calculation step size: %s" % calcStepSize)
 
 if calcTarget == "经济_环保":
     mDictCount = 9
@@ -144,14 +154,21 @@ from solve_model import targetTypeAsTargetName
 planType = targetTypeAsTargetName(calcTarget)
 resultList = []
 
-class 规划方案概览_翻译_工厂(DataclassFactory[规划方案概览_翻译]):
+
+# class 规划方案概览_翻译_工厂(DataclassFactory[规划方案概览_翻译]):
+class 规划方案概览_翻译_工厂(ModelFactory):
     __model__ = 规划方案概览_翻译
 
-class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
+
+# class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
+class 规划结果详情_翻译_工厂(ModelFactory):
     __model__ = 规划结果详情_翻译
 
-class 仿真结果工厂(DataclassFactory[仿真结果]):
+
+# class 仿真结果工厂(DataclassFactory[仿真结果]):
+class 仿真结果工厂(ModelFactory):
     __model__ = 仿真结果
+
 
 if ies_env.DETERMINISTIC_MOCK:
     import hashlib
@@ -175,22 +192,24 @@ for _ in range(mDictCount):
     srt = []
 
     for elem in firstMDict.nodes:
-        if elem.get("type") == "设备":
-            subtype = elem.get("subtype")
-            param = elem.get("param")
+        if getattr(elem, "type") == "设备":
+            subtype = getattr(elem, "subtype")
+            param = getattr(elem, "param")
             设备名称, 生产厂商, 设备型号 = (
-                param.get("设备名称", "未知"),
-                param.get("生产厂商", "未知"),
-                param.get("设备型号", "未知"),
+                getattr(param, "设备名称", "未知"),
+                getattr(param, "生产厂商", "未知"),
+                getattr(param, "设备型号", "未知"),
             )
-            px = []
-            py = []
+            px = [f"{i}{curve_x_unit}" for i in range(curve_elemsize)]
+            py = [random.uniform(-10, 10) for _ in range(curve_elemsize)]
             pcurve = 曲线(x=px, y=py)
-            pl = [出力曲线(name=..., abbr=..., data=pcurve)]
+            abbr = "功率"
+            # abbr = ...
+            pl = [出力曲线(name=f"{subtype}{abbr}曲线", abbr=abbr, data=pcurve)]
             pr = 规划结果详情_翻译_工厂.build()
             pr.deviceName = 设备名称
             pr.deviceModel = 设备型号
-            pd = 设备出力曲线(name=..., plot_list=pl)
+            pd = 设备出力曲线(name=设备名称, plot_list=pl)
             sr = 仿真结果工厂.build()
             sr.name = 设备名称
             sr.type = 设备型号
@@ -198,14 +217,14 @@ for _ in range(mDictCount):
             pdl.append(pd)
             srt.append(sr)
 
-    result = 单次计算结果(
-        objectiveResult=obj_r,
-        plannintResultTable=prt,
-        planningSummary=ps,
-        performanceDataList=pdl,
-        simulationResultTable=srt,
-    )
-    resultList.append(result)
+            result = 单次计算结果(
+                objectiveResult=obj_r,
+                planningResultTable=prt,
+                planningSummary=ps,
+                performanceDataList=pdl,
+                simulationResultTable=srt,
+            )
+            resultList.append(result)
 
 cr = CalculationResult(
     resultList=resultList,
