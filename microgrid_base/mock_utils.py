@@ -4,7 +4,7 @@ This library mocks algorithm response.
 Hash input parameters for random seeds.
 """
 from pydantic_factories import ModelFactory
-
+from log_utils import logger_print
 from fastapi_datamodel_template import (
     单次计算结果,
     CalculationResult,
@@ -21,32 +21,26 @@ from fastapi_datamodel_template import (
 from ies_optim import EnergyFlowGraph
 import random
 from config import ies_env
+from pydantic import BaseModel
 from solve_model import targetTypeAsTargetName
 
 from reduce_demo_data_size import modifyValueIfNumber, modifyIfIsDeviceCount
 from json_utils import jsonApply
 import hashlib
 
-# mock_input = "mock_data_energy_flow_graph.json"
-# input_data = EnergyFlowGraph.parse_file(mock_input)
-# print(input_data)
-
 
 class 规划方案概览_翻译_工厂(ModelFactory):
     __model__ = 规划方案概览_翻译
 
 
-# class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
 class 规划结果详情_翻译_工厂(ModelFactory):
     __model__ = 规划结果详情_翻译
 
 
-# class 仿真结果工厂(DataclassFactory[仿真结果]):
 class 仿真结果工厂(ModelFactory):
     __model__ = 仿真结果
 
 
-# seed input
 def generate_fake_output_data(input_data: EnergyFlowGraph):
     (
         firstMDict,
@@ -56,59 +50,62 @@ def generate_fake_output_data(input_data: EnergyFlowGraph):
         planType,
     ) = get_fake_output_data_params(input_data)
 
-    seed_fake_rng_if_necessary(input_data)
+    with deterministic_rng_context(input_data):
+        resultList = []
 
-    resultList = []
+        for _ in range(mDictCount):
+            obj_r = ObjectiveResult(
+                financialObjective=random.uniform(10, 1000),
+                environmentalObjective=random.uniform(10, 1000),
+            )
+            prt = []
+            ps = 规划方案概览_翻译_工厂.build()
+            ps.planType = planType
+            pdl = []
+            srt = []
 
-    for _ in range(mDictCount):
-        obj_r = ObjectiveResult(
-            financialObjective=random.uniform(10, 1000),
-            environmentalObjective=random.uniform(10, 1000),
+            for elem in firstMDict.nodes:
+                if getattr(elem, "type") == "设备":
+                    prepare_fake_calc_result_per_device(
+                        curve_elemsize, curve_x_unit, prt, pdl, srt, elem
+                    )
+
+                    result = 单次计算结果(
+                        objectiveResult=obj_r,
+                        planningResultTable=prt,
+                        planningSummary=ps,
+                        performanceDataList=pdl,
+                        simulationResultTable=srt,
+                    )
+                    resultList.append(result)
+
+        cr = CalculationResult(
+            resultList=resultList,
+            residualEquipmentAnnualFactor=random.uniform(0, 5),
+            success=True,
+            error_log="",
         )
-        prt = []
-        ps = 规划方案概览_翻译_工厂.build()
-        ps.planType = planType
-        pdl = []
-        srt = []
 
-        for elem in firstMDict.nodes:
-            if getattr(elem, "type") == "设备":
-                prepare_fake_calc_result_per_device(curve_elemsize, curve_x_unit, prt, pdl, srt, elem)
+        # finally, pass to the number manipulation routines.
+        processed_cr = jsonApply(cr.dict(), modifyValueIfNumber, modifyIfIsDeviceCount)
+        pcr_obj = CalculationResult.parse_obj(processed_cr)
+        return pcr_obj
 
-                result = 单次计算结果(
-                    objectiveResult=obj_r,
-                    planningResultTable=prt,
-                    planningSummary=ps,
-                    performanceDataList=pdl,
-                    simulationResultTable=srt,
-                )
-                resultList.append(result)
 
-    cr = CalculationResult(
-        resultList=resultList,
-        residualEquipmentAnnualFactor=random.uniform(0, 5),
-        success=True,
-        error_log="",
-    )
-
-    # finally, pass to the number manipulation routines.
-    processed_cr = jsonApply(cr.dict(), modifyValueIfNumber, modifyIfIsDeviceCount)
-    pcr_obj = CalculationResult.parse_obj(processed_cr)
-    return pcr_obj
-
-def prepare_fake_calc_result_per_device(curve_elemsize, curve_x_unit, prt, pdl, srt, elem):
+def prepare_fake_calc_result_per_device(
+    curve_elemsize, curve_x_unit, prt, pdl, srt, elem
+):
     subtype = getattr(elem, "subtype")
     param = getattr(elem, "param")
     设备名称, 生产厂商, 设备型号 = (
-                    getattr(param, "设备名称", "未知"),
-                    getattr(param, "生产厂商", "未知"),
-                    getattr(param, "设备型号", "未知"),
-                )
+        getattr(param, "设备名称", "未知"),
+        getattr(param, "生产厂商", "未知"),
+        getattr(param, "设备型号", "未知"),
+    )
     px = [f"{i}{curve_x_unit}" for i in range(curve_elemsize)]
     py = [random.uniform(-10, 10) for _ in range(curve_elemsize)]
     pcurve = 曲线(x=px, y=py)
     abbr = "功率"
-                # abbr = ...
     pl = [出力曲线(name=f"{subtype}{abbr}曲线", abbr=abbr, data=pcurve)]
     pr = 规划结果详情_翻译_工厂.build()
     pr.deviceName = 设备名称
@@ -122,14 +119,37 @@ def prepare_fake_calc_result_per_device(curve_elemsize, curve_x_unit, prt, pdl, 
     srt.append(sr)
 
 
-def seed_fake_rng_if_necessary(input_data):
+from contextlib import contextmanager
+import os
+
+
+def restore_randomness():
+    trng_seed = lambda: os.urandom(43)
+    random.seed(trng_seed())
+    规划方案概览_翻译_工厂.seed_random(trng_seed())
+    规划结果详情_翻译_工厂.seed_random(trng_seed())
+    仿真结果工厂.seed_random(trng_seed())
+
+
+@contextmanager
+def deterministic_rng_context(input_data: BaseModel):
     if ies_env.DETERMINISTIC_MOCK:
-        input_bytes = input_data.json().encode("utf-8")
-        input_hash = hashlib.sha1(input_bytes).digest()
+        input_hash = get_datamodel_hash(input_data)
         random.seed(input_hash)
         规划方案概览_翻译_工厂.seed_random(input_hash)
         规划结果详情_翻译_工厂.seed_random(input_hash)
         仿真结果工厂.seed_random(input_hash)
+    try:
+        yield
+    finally:
+        if ies_env.DETERMINISTIC_MOCK:
+            restore_randomness()
+
+
+def get_datamodel_hash(input_data: BaseModel):
+    input_bytes = input_data.json().encode("utf-8")
+    input_hash = hashlib.sha1(input_bytes).digest()
+    return input_hash
 
 
 def get_fake_output_data_params(input_data: EnergyFlowGraph):
@@ -167,8 +187,32 @@ def get_fake_data_curve_params(calcStepSize):
     return curve_elemsize, curve_x_unit
 
 
+def determinism_assertation(deterministic, hash1, hash2):
+    expr = lambda a, b: a == b if deterministic else a != b
+    error_msg = (
+        f"Non-deterministic when configured as deterministic: {hash1} != {hash2}"
+        if deterministic
+        else f"Deterministic when configured as non-deterministic: {hash1} == {hash2}"
+    )
+    assert expr(hash1, hash2), error_msg
+    logger_print(f"Passed {'' if deterministic else 'non-'}determinism check.")
+
+
 if __name__ == "__main__":
     # test the util.
+    def test_determinism(input_data: EnergyFlowGraph, deterministic: bool):
+        ies_env.DETERMINISTIC_MOCK = deterministic
+
+        fake_output_data1 = generate_fake_output_data(input_data)
+        fake_output_data2 = generate_fake_output_data(input_data)
+
+        hash1 = get_datamodel_hash(fake_output_data1)
+        hash2 = get_datamodel_hash(fake_output_data2)
+
+        determinism_assertation(deterministic, hash1, hash2)
+
     mock_input = "mock_data_energy_flow_graph.json"
     input_data = EnergyFlowGraph.parse_file(mock_input)
-    fake_output_data = generate_fake_output_data(input_data)
+
+    for det in [True, False]:
+        test_determinism(input_data, det)

@@ -40,7 +40,7 @@ def logger_print(*args):  # override this.
 from config import *
 # import os
 
-MOCK = ies_env.MOCK_TEST
+MOCK = ies_env.STATIC_MOCK
 # changed to MOCK_TEST in config.py
 # MOCK = os.environ.get("MOCK", None)  # if this is mock test.
 import json

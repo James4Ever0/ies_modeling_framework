@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from log_utils import logger_print, makeRotatingFileHandler, celery_log_filename, timezone_str
+from log_utils import makeRotatingFileHandler, celery_log_filename, timezone_str
 
 from celery import Celery
 from passwords import redis_password
@@ -64,12 +64,13 @@ for handler in celery_logger.handlers:
 # from microgrid_base.ies_optim import EnergyFlowGraph
 # from celery.exceptions import Ignore
 from fastapi_celery_functions import calculate_energyflow_graph_base
-
+from config import ies_env
 
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
-    ret = calculate_energyflow_graph_base(energyflow_graph)
+    if ies_env.SYNTHETIC_MOCK:
+        ret = calculate_energyflow_graph_base(energyflow_graph)
     return ret
 
 
