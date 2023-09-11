@@ -7,6 +7,21 @@ import shutil
 from easyprocess import EasyProcess
 import traceback
 import filelock
+from hashlib import md5
+
+# this is equivalent to commandline 'md5sum' command
+def md5sum(filename, buf_size=8192):
+    m = md5()
+    # the with statement makes sure the file will be closed
+    with open(filename, 'rb') as f:
+        # We read the file in small chunk until EOF
+        data = f.read(buf_size)
+        while data:
+            # We had data to the md5 hash
+            m.update(data)
+            data = f.read(buf_size)
+    # We return the md5 hash in hexadecimal format
+    return m.hexdigest()
 
 # from easyprocess import EasyProcessError, log
 # from typing import Any
@@ -201,6 +216,10 @@ check_if_executable_in_path(
 )
 last_commit_time_filepath = ".last_commit_time"
 
+# import pathlib
+# GPTCOMMIT_HOOKED = ".gptcommit_hooked"
+GPTCOMMIT_HOOK_MD5SUM = '69de652c2f76f0c3a209363c4943821c'
+GPTCOMMIT_HOOK_PATH = '.git/hooks/prepare-commit-msg'
 
 total_modification = 0
 repo_absdir_to_modification = {}
@@ -225,18 +244,37 @@ for repo_absdir in repo_absdirs:  # is there anything needed to commit?
     repo_name_and_location = f"repo {repo_reldir}\nLocation: {repo_absdir}"
 
     # if any([k for k in check_if_exist_keylist if k not in proc.stdout]):
-    print(
-        f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
-    )
-    setup_file, SETUP_GPTCOMMIT = get_script_path_and_exec_cmd("setup_gptcommit")
-
-    if not os.path.exists(setup_file):
-        emit_message_and_raise_exception(
-            f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
-        )
-    run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
     repo_absdir_to_modification[repo_absdir] = modification
     total_modification += modification
+
+    # TODO: checksum the '.git/hooks/prepare-commit-msg' file if exists
+
+    # if not os.path.exists(GPTCOMMIT_HOOKED):
+    hooked = False
+    if os.path.exists(GPTCOMMIT_HOOK_PATH):
+        if md5sum(GPTCOMMIT_HOOK_PATH) == GPTCOMMIT_HOOK_MD5SUM:
+            hooked = True
+        else:
+            print("WARNING: md5sum mismatch.")
+            print("Installing the hook will overwrite the existing hook.")
+    else:
+        print("Could not find the hook.")
+    if not hooked:
+        print(
+            f"setting up gptcommmit locally at repo {repo_reldir}.\nLocation: {repo_absdir}"
+        )
+        setup_file, SETUP_GPTCOMMIT = get_script_path_and_exec_cmd("setup_gptcommit")
+
+        if not os.path.exists(setup_file):
+            emit_message_and_raise_exception(
+                f"setup file '{setup_file}' does not exist in {repo_name_and_location}"
+            )
+        run_and_check_proc(SETUP_GPTCOMMIT, "setting up gptcommit")
+        # pathlib.Path(GPTCOMMIT_HOOKED).touch()
+    else:
+        print(f"assume gptcommit already setup at repo {repo_reldir}.\nLocation: {repo_absdir}")
+
+
 
 if total_modification == 0:
     print("no modification, no need to commit")
