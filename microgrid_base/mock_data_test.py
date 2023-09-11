@@ -139,17 +139,19 @@ elif calcTarget in ["经济", "环保"]:
     mDictCount = 1
 else:
     raise Exception("Unknown calculation target: %s" % calcTarget)
+from solve_model import targetTypeAsTargetName
 
+planType = targetTypeAsTargetName(calcTarget)
 resultList = []
 
+class 规划方案概览_翻译_工厂(DataclassFactory[规划方案概览_翻译]):
+    __model__ = 规划方案概览_翻译
 
 class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
     __model__ = 规划结果详情_翻译
 
-
 class 仿真结果工厂(DataclassFactory[仿真结果]):
     __model__ = 仿真结果
-
 
 if ies_env.DETERMINISTIC_MOCK:
     import hashlib
@@ -157,6 +159,7 @@ if ies_env.DETERMINISTIC_MOCK:
     input_bytes = input_data.json().encode("utf-8")
     input_hash = hashlib.sha1(input_bytes).digest()
     random.seed(input_hash)
+    规划方案概览_翻译_工厂.seed_random(input_hash)
     规划结果详情_翻译_工厂.seed_random(input_hash)
     仿真结果工厂.seed_random(input_hash)
 
@@ -166,7 +169,8 @@ for _ in range(mDictCount):
         environmentalObjective=random.uniform(10, 1000),
     )
     prt = []
-    ps = 规划方案概览_翻译()
+    ps = 规划方案概览_翻译_工厂.build()
+    ps.planType = planType
     pdl = []
     srt = []
 
