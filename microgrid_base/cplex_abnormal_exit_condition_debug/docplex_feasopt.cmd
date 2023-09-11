@@ -1,0 +1,1 @@
+conda run -n docplex --live-stream --no-capture-output python docplex_feasopt.py
