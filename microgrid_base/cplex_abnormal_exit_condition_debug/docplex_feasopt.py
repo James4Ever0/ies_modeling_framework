@@ -47,12 +47,13 @@ group_mode = Literal["linear", "upper_bound", "lower_bound"]
 def group_items(namelist: List[str], mode: group_mode):
     # TODO: fix this!
     which = getattr(feasopt.constraint_type, mode)
-    conv = feasopt._getconvfunc(which)
-    # max_num = feasopt._getnum(which)
-    nameset = set(namelist)
-    gp = [(1.0, ((which, conv(name)))) for name in nameset]
-    ret = _group(gp)
-    # return getattr(feasopt, f"{mode}_constraints")(list(set(namelist)))
+    ret = feasopt._make_group(which, 1, namelist)
+    # conv = feasopt._getconvfunc(which)
+    # # max_num = feasopt._getnum(which)
+    # nameset = set(namelist)
+    # gp = [(1.0, ((which, conv(name)))) for name in nameset]
+    # ret = _group(gp)
+    # # return getattr(feasopt, f"{mode}_constraints")(list(set(namelist)))
     return ret
 
 
@@ -95,14 +96,24 @@ for ctype, type_const in constraint_type_constant_map.items():
     print(f"{ctype}:\t{instance_count} instances")
     # transfunc_map[ctype] = feasopt._getconvfunc(type_const)
 
+# api_group = feasopt._make_group(feasopt.constraint_type.lower_bound, 1, ["x4487", "x4488"])
+# print(api_group._gp)
+# print(api_group)
+# # breakpoint()
+
+
 lb_group = group_items(["x4487", "x4488"], "lower_bound")
 ub_group = group_items(["x4487", "x4488"], "upper_bound")
 linear_group = group_items(["c_e_x4508_", "c_e_x4507_"], "linear")
-constraints_group = merge_groups(lb_group, ub_group, linear_group)
+constraints_group = merge_groups(lb_group, ub_group, linear_group) # working!
 print(constraints_group)
-# pdb.set_trace()
-# feasopt(constraints_group)
-feasopt(feasopt.all_constraints())
+print(constraints_group._gp)
+# # pdb.set_trace()
+
+feasopt(constraints_group)
+# feasopt(feasopt.all_constraints())
+# feasopt(api_group)
+# feasopt(lb_group)
 # cplex._internal._aux_functions._group
 # feasopt._make_group
 sol = mdl.cplex.solution  # this is taking eternal. we need to check progress!

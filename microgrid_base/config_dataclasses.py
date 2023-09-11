@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from pydantic import confloat, Field # , validator, ValidationError
+from pydantic import confloat, Field  # , validator, ValidationError
 from config_utils import EnvBaseModel, Union
 
 
@@ -41,6 +41,11 @@ class IESEnv(EnvBaseModel):
     ANSWER_TO_THE_UNIVERSE: int = Field(
         default=42,
         title="Answer to the universe (value related to randomness restoration)",
+    )
+
+    FAILSAFE: bool = Field(
+        default=False,
+        title="Enable failsafe mode, which guarantees that task output will be generated in any condition.",
     )
 
     # @validator("MOCKGEN")
