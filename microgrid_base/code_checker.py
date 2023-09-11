@@ -144,11 +144,12 @@ for fpath in files:
             if isinstance(el, ast.Call):
                 # breakpoint()
                 funcName = stripped_source(el.func)
-                if "Field" in funcName:
+                if "Field" in funcName.split("."):
                     if len(el.args) > 0 or len(el.keywords) == 0:
                         source_code = stripped_source(el)
                         raise Exception(
-                            f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code}"
+                            f"Found erroneous `Field` call:\n    Location: '{fpath}:{el.lineno}':\n    {source_code}"
+                            # f"Found erroneous `Field` call:\n    File: {fpath} line {el.lineno}:\n    {source_code}"
                         )
             elif isinstance(el, ast.ImportFrom):
                 # check if really imported.

@@ -65,11 +65,17 @@ for handler in celery_logger.handlers:
 # from celery.exceptions import Ignore
 from fastapi_celery_functions import calculate_energyflow_graph_base
 from config import ies_env
+from mock_utils import generate_fake_output_data, EnergyFlowGraph
+
 
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
-    if ies_env.SYNTHETIC_MOCK:
+    if ies_env.GENERATED_MOCK:
+        input_data = EnergyFlowGraph.parse_obj(energyflow_graph)
+        fake_output_data = generate_fake_output_data(input_data)
+        ret = fake_output_data.dict()
+    else:
         ret = calculate_energyflow_graph_base(energyflow_graph)
     return ret
 

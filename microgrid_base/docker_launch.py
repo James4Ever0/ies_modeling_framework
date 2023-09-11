@@ -41,7 +41,7 @@ from config_dataclasses import IESEnv, DockerLauncherConfig
 
 config = getConfig(DockerLauncherConfig)
 # breakpoint()
-# print(config.reduce())
+# logger_print(config.reduce())
 # breakpoint()
 
 if config.TERMINATE_ONLY:

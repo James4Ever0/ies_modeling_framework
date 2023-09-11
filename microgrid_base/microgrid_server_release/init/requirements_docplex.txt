@@ -6,3 +6,8 @@ beartype
 # may require lower version of pydantic.
 pydantic
 rich
+pytz
+schedule
+better_exceptions
+# TODO: generate package dependencies from python file
+# TODO: generate python file dependencies from entry file

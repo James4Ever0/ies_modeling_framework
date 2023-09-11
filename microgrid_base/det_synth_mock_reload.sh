@@ -1,0 +1,1 @@
+env DETERMINISTIC_MOCK=True bash synth_mock_reload.sh

@@ -42,6 +42,7 @@ flashtext
 # levenshtein
 # python-dotenv
 pyecharts
+pydantic-factories
 # docker
 -r requirements_docker_launch.txt
 # ref: https://pip.pypa.io/en/stable/reference/requirements-file-format/

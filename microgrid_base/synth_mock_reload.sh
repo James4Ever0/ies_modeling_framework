@@ -1,0 +1,1 @@
+env GENERATED_MOCK=True bash reload.sh

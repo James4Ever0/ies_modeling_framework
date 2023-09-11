@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 # import os
 # import random
 
@@ -36,12 +38,12 @@ class PersonFactory(ModelFactory):
 PersonFactory.seed_random(100)  # working again!
 
 result = PersonFactory.build()
-print(result)
+logger_print(result)
 # exit()
 # random.seed(100)
 
 # result = PersonFactory.build()
-# print(result)
+# logger_print(result)
 
 ##############################################################
 
@@ -74,10 +76,10 @@ class PersonFactory(DataclassFactory[Person]):
 PersonFactory.seed_random(b"\x00\x01")
 # PersonFactory.seed_random(100) # working!
 p = PersonFactory.build()
-print(p)
+logger_print(p)
 
 p = PersonFactory.build()
-print(p)
+logger_print(p)
 
 # exit()
 # def test_setting_random() -> None:
@@ -104,7 +106,7 @@ from fastapi_datamodel_template import (
 #     __model__ = 单次计算结果
 
 # cr = 单次计算结果工厂.build()
-# print(cr)
+# logger_print(cr)
 
 # create output based on input.
 from ies_optim import EnergyFlowGraph
@@ -114,16 +116,16 @@ from ies_optim import EnergyFlowGraph
 #     __model__ = EnergyFlowGraph
 
 # input_data = EnergyFlowGraphFactory.build()
-# print(input_data)
+# logger_print(input_data)
 
 # with open(mock_input:='mock_data_energy_flow_graph.json', 'w+') as f:
 #     f.write(input_data.json())
-# print('write to:', mock_input)
+# logger_print('write to:', mock_input)
 
 
 mock_input = "mock_data_energy_flow_graph.json"
 input_data = EnergyFlowGraph.parse_file(mock_input)
-print(input_data)
+logger_print(input_data)
 
 # seed input
 
@@ -240,4 +242,4 @@ from json_utils import jsonApply
 
 processed_cr = jsonApply(cr.dict(), modifyValueIfNumber, modifyIfIsDeviceCount)
 pcr_obj = CalculationResult.parse_obj(processed_cr)
-print(pcr_obj)
+logger_print(pcr_obj)

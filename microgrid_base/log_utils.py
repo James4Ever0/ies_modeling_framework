@@ -49,8 +49,8 @@ if sys.version_info < MIN_PY_VERSION:
             caller_frame.f_lineno,
             caller_frame.f_code.co_name,
         )
-        # exprint(caller_info.center(60, "+"))
-        # exprint(*args, *[f"{k}:\t{v}" for k, v in kwargs.items()], sep=os.linesep)
+        # exlogger_print(caller_info.center(60, "+"))
+        # exlogger_print(*args, *[f"{k}:\t{v}" for k, v in kwargs.items()], sep=os.linesep)
         return caller_info
 
 else:
