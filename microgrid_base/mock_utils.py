@@ -3,8 +3,14 @@ This library mocks algorithm response.
 
 Hash input parameters for random seeds.
 """
+# import os
+# import random
 
-# determinism?
+# def urandom_deterministic(__size:int):
+#     return random.randbytes(__size)
+
+# # override system rng.
+# os.urandom = urandom_deterministic
 
 from datetime import date, datetime
 from typing import List, Union
@@ -24,7 +30,19 @@ class Person(BaseModel):
 
 class PersonFactory(ModelFactory):
     __model__ = Person
+    # not working!
+    # __random_seed__ = 100
 
+# not working.
+# import random
+
+# random.seed(100)
 
 result = PersonFactory.build()
 print(result)
+
+import ran
+# random.seed(100)
+
+# result = PersonFactory.build()
+# print(result)

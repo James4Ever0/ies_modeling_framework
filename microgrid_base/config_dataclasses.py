@@ -16,11 +16,15 @@ class IESEnv(EnvBaseModel):
         title="Treat unit related warnings as errors, such as percentage related warnings.",
     )
     PERCENT_WARNING_THRESHOLD: confloat(gt=0) = Field(
-        default=1, title="Emit warnings when any percentage values is less than given value."
+        default=1,
+        title="Emit warnings when any percentage values is less than given value.",
     )
     MOCK_TEST: Union[None, str] = Field(
         default=None,
         title="If set to an nonempty string, then the server will return mock results.",
+    )
+    DETERMINISTIC_MOCK: bool = Field(
+        default=False, title="If set to True, then the server will return deterministic mock results based on input hash."
     )
 
 
@@ -41,8 +45,13 @@ class DockerLauncherConfig(IESEnv):
     TERMINATE_ONLY: bool = Field(
         default=False, title="Only terminate all running containers and exit."
     )
-    DETACH_KEYS: str = Field(default="Ctrl-d,d", title="Key sequence to detach from Docker container (not working on Windows)")
-    UNITTEST: bool = Field(default=False, title="Perform unittest before launching the service")
+    DETACH_KEYS: str = Field(
+        default="Ctrl-d,d",
+        title="Key sequence to detach from Docker container (not working on Windows)",
+    )
+    UNITTEST: bool = Field(
+        default=False, title="Perform unittest before launching the service"
+    )
     # FORCE_UPDATE: bool = Field(
     #     default=False,
     #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",
