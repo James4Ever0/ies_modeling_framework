@@ -112,10 +112,12 @@ print(input_data)
 calcTarget = input_data.mDictList[0].计算目标
 
 if calcTarget == "经济_环保":
-    ...
+    mDictCount = 9
 elif calcTarget in ["经济", "环保"]:
-    ...
+    mDictCount = 1
 else:
     raise Exception("Unknown calculation target: %s" % calcTarget)
-# for _ in ...:
-#     单次计算结果
+calcResultList = []
+for _ in range(mDictCount):
+    calcResult = 单次计算结果()
+    calcResultList.append(calcResult)
