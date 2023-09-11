@@ -82,7 +82,15 @@ print(p)
 #     assert PersonFactory.build().name == "John"
 #     assert PersonFactory.build().name == "Alice"
 
-from fastapi_datamodel_template import 单次计算结果
+from fastapi_datamodel_template import (
+    单次计算结果,
+    CalculationResult,
+    ObjectiveResult,
+    规划结果详情_翻译,
+    规划方案概览_翻译,
+    设备出力曲线,
+    仿真结果,
+)
 
 # not working. but we can do this later.
 # class 单次计算结果工厂(ModelFactory):
@@ -109,6 +117,19 @@ from ies_optim import EnergyFlowGraph
 mock_input = "mock_data_energy_flow_graph.json"
 input_data = EnergyFlowGraph.parse_file(mock_input)
 print(input_data)
+
+# seed input
+
+import random
+from config import ies_env
+
+if ies_env.DETERMINISTIC_MOCK:
+    import hashlib
+
+    input_bytes = input_data.json().encode("utf-8")
+    input_hash = hashlib.sha1(input_bytes).digest()
+    random.seed(input_hash)
+
 calcTarget = input_data.mDictList[0].计算目标
 
 if calcTarget == "经济_环保":
@@ -117,7 +138,43 @@ elif calcTarget in ["经济", "环保"]:
     mDictCount = 1
 else:
     raise Exception("Unknown calculation target: %s" % calcTarget)
-calcResultList = []
+
+resultList = []
+
 for _ in range(mDictCount):
-    calcResult = 单次计算结果()
-    calcResultList.append(calcResult)
+    obj_r = ObjectiveResult(
+        financialObjective=random.uniform(10, 1000),
+        environmentalObjective=random.uniform(10, 1000),
+    )
+    prt = []
+    ps = 规划方案概览_翻译()
+    pdl = []
+    srt = []
+
+    for ... in ...:
+        pr = 规划结果详情_翻译()
+        pd = 设备出力曲线()
+        sr = 仿真结果()
+        prt.append(pr)
+        pdl.append(pd)
+        srt.append(sr)
+
+    result = 单次计算结果(
+        objectiveResult=obj_r,
+        plannintResultTable=prt,
+        planningSummary=ps,
+        performanceDataList=pdl,
+        simulationResultTable=srt,
+    )
+    resultList.append(result)
+
+cr = CalculationResult(
+    resultList=resultList,
+    residualEquipmentAnnualFactor=random.uniform(0, 5),
+    success=True,
+    error_log="",
+)
+
+# finally, pass to the number manipulation routines.
+
+processed_cr = cr.dict()

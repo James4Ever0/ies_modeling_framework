@@ -1,4 +1,4 @@
-from pydantic import confloat, Field
+from pydantic import confloat, Field, validator, ValidationError
 from config_utils import EnvBaseModel, Union
 
 
@@ -23,9 +23,23 @@ class IESEnv(EnvBaseModel):
         default=None,
         title="If set to an nonempty string, then the server will return mock results.",
     )
-    DETERMINISTIC_MOCK: bool = Field(
-        default=False, title="If set to True, then the server will return deterministic mock results based on input hash."
+    MOCKGEN: bool = Field(
+        default=False,
+        title="If set to True, the server will generate mock results by analyzing the input parameters. (only if MOCK_TEST is True)",
     )
+    DETERMINISTIC_MOCK: bool = Field(
+        default=False,
+        title="If set to True, then the server will return deterministic mock results based on input hash.",
+    )
+
+    @validator("MOCKGEN")
+    def validate_mockgen(cls, values, v):
+        mock_test = values.get("MOCK_TEST", None)
+        if v is True:
+            if mock_test is None:
+                raise ValidationError(
+                    "MOCKGEN shall not be set to True if MOCK_TEST is not set."
+                )
 
 
 class DockerLauncherConfig(IESEnv):
