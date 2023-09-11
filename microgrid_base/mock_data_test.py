@@ -33,10 +33,11 @@ class PersonFactory(ModelFactory):
 # import random
 
 # random.seed(100)
+PersonFactory.seed_random(100)  # working again!
 
 result = PersonFactory.build()
 print(result)
-
+# exit()
 # random.seed(100)
 
 # result = PersonFactory.build()
@@ -45,7 +46,8 @@ print(result)
 ##############################################################
 
 from dataclasses import dataclass
-from random import Random
+
+# from random import Random
 
 from polyfactory.factories import DataclassFactory
 
@@ -60,22 +62,24 @@ class Person:
 
 class PersonFactory(DataclassFactory[Person]):
     __model__ = Person
-    __random__ = Random(
-        10
-    )  # this is not really deterministic, unless you manually specify sampling logic
+    # __random__ = Random(
+    #     10
+    # )  # this is not really deterministic, unless you manually specify sampling logic
 
     # @classmethod
     # def name(cls) -> str:
     #     return cls.__random__.choice(["John", "Alice", "George"])
 
 
+PersonFactory.seed_random(b"\x00\x01")
+# PersonFactory.seed_random(100) # working!
 p = PersonFactory.build()
 print(p)
 
 p = PersonFactory.build()
 print(p)
 
-
+# exit()
 # def test_setting_random() -> None:
 #     # the outcome of 'factory.__random__.choice' is deterministic, because Random is configured with a set value.
 #     assert PersonFactory.build().name == "George"
@@ -90,6 +94,8 @@ from fastapi_datamodel_template import (
     规划方案概览_翻译,
     设备出力曲线,
     仿真结果,
+    出力曲线,
+    曲线,
 )
 
 # not working. but we can do this later.
@@ -123,14 +129,9 @@ print(input_data)
 import random
 from config import ies_env
 
-if ies_env.DETERMINISTIC_MOCK:
-    import hashlib
 
-    input_bytes = input_data.json().encode("utf-8")
-    input_hash = hashlib.sha1(input_bytes).digest()
-    random.seed(input_hash)
-
-calcTarget = input_data.mDictList[0].计算目标
+firstMDict = input_data.mDictList[0]
+calcTarget = firstMDict.计算目标
 
 if calcTarget == "经济_环保":
     mDictCount = 9
@@ -140,6 +141,24 @@ else:
     raise Exception("Unknown calculation target: %s" % calcTarget)
 
 resultList = []
+
+
+class 规划结果详情_翻译_工厂(DataclassFactory[规划结果详情_翻译]):
+    __model__ = 规划结果详情_翻译
+
+
+class 仿真结果工厂(DataclassFactory[仿真结果]):
+    __model__ = 仿真结果
+
+
+if ies_env.DETERMINISTIC_MOCK:
+    import hashlib
+
+    input_bytes = input_data.json().encode("utf-8")
+    input_hash = hashlib.sha1(input_bytes).digest()
+    random.seed(input_hash)
+    规划结果详情_翻译_工厂.seed_random(input_hash)
+    仿真结果工厂.seed_random(input_hash)
 
 for _ in range(mDictCount):
     obj_r = ObjectiveResult(
@@ -151,13 +170,29 @@ for _ in range(mDictCount):
     pdl = []
     srt = []
 
-    for ... in ...:
-        pr = 规划结果详情_翻译()
-        pd = 设备出力曲线()
-        sr = 仿真结果()
-        prt.append(pr)
-        pdl.append(pd)
-        srt.append(sr)
+    for elem in firstMDict.nodes:
+        if elem.get("type") == "设备":
+            subtype = elem.get("subtype")
+            param = elem.get("param")
+            设备名称, 生产厂商, 设备型号 = (
+                param.get("设备名称", "未知"),
+                param.get("生产厂商", "未知"),
+                param.get("设备型号", "未知"),
+            )
+            px = []
+            py = []
+            pcurve = 曲线(x=px, y=py)
+            pl = [出力曲线(name=..., abbr=..., data=pcurve)]
+            pr = 规划结果详情_翻译_工厂.build()
+            pr.deviceName = 设备名称
+            pr.deviceModel = 设备型号
+            pd = 设备出力曲线(name=..., plot_list=pl)
+            sr = 仿真结果工厂.build()
+            sr.name = 设备名称
+            sr.type = 设备型号
+            prt.append(pr)
+            pdl.append(pd)
+            srt.append(sr)
 
     result = 单次计算结果(
         objectiveResult=obj_r,
@@ -177,4 +212,9 @@ cr = CalculationResult(
 
 # finally, pass to the number manipulation routines.
 
-processed_cr = cr.dict()
+from reduce_demo_data_size import modifyValueIfNumber, modifyIfIsDeviceCount
+from json_utils import jsonApply
+
+processed_cr = jsonApply(cr.dict(), modifyValueIfNumber, modifyIfIsDeviceCount)
+pcr_obj = CalculationResult.parse_obj(processed_cr)
+print(pcr_obj)
