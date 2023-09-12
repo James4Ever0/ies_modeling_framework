@@ -13,6 +13,7 @@ from log_utils import logger_print
 # from pyomo.environ import *
 from pyomo_environ import *
 from ies_optim import ModelWrapper
+from contextlib import contextmanager
 
 import flashtext
 import os
@@ -25,6 +26,7 @@ from pydantic import BaseModel
 # from typing import Literal, TypedDict
 
 normalSSs = [SolverStatus.ok, SolverStatus.warning]
+# should you include more termination conditions, or should you just check for values, by creating dummy uninitialized variable or dummy independent  constraints with variables init at violation regions
 normalTCs = [
     TerminationCondition.globallyOptimal,
     TerminationCondition.locallyOptimal,
@@ -36,6 +38,10 @@ IOUTerminationConditions = [
     TerminationCondition.infeasibleOrUnbounded,
 ]
 
+@contextmanager
+def modelSolvedTestContext(model):
+    
+
 
 class SolverReturnStatus(BaseModel):
     terminationCondition: TerminationCondition
@@ -45,6 +51,8 @@ class SolverReturnStatus(BaseModel):
 class CheckSolverReturnValResult(BaseModel):
     success: bool
     status: SolverReturnStatus
+
+
 
 
 # deprecated.
@@ -155,7 +163,6 @@ class ExportedModel:
         self.translation_table = convertSymbolMapToTranslationTable(self.smap)
 
 
-from contextlib import contextmanager
 
 
 @contextmanager

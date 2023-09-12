@@ -243,6 +243,8 @@ def solve_model(
             # SS = results.solver.status
 
             with ErrorManager() as em:
+                # TODO: check if model has solved, in a more rational manner.
+                # TODO: branch infeasbility diagnostic code by config flag.
                 if TC in IOUTerminationConditions:
                     ...
                     # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
