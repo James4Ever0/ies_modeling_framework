@@ -37,8 +37,15 @@ def modifyValueIfNumber(location, val):
                 val_abs = abs(val)
                 val_abs_modified = decreaseByOneThousand(val_abs, threshold=THRESHOLD)
                 val_modified = (1 if positive else -1) * val_abs_modified
+                val_modified = reduceNumberPrecisionByDecimalPoints(val_modified)
                 return val_modified
     return val
+
+
+def reduceNumberPrecisionByDecimalPoints(num, precision=3):
+    factor = 10**precision
+    reduced_num = int(num * factor) / factor
+    return reduced_num
 
 
 from pydantic_factories import ModelFactory

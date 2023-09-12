@@ -237,17 +237,34 @@ def cplex_exec_script(script: List[str]):
     return_code = os.system(cmd)
     return return_code
 
+
+@contextmanager
+def chdir_context(dirpath: str):
+    cwd = os.getcwd()
+    os.chdir(dirpath)
+    try:
+        yield
+    finally:
+        os.chdir(cwd)
+
+
 @failsafe_methods.register
 def feasopt_with_optimization(mw: ModelWrapper):
     with tempfile.TemporaryDirectory() as tmpdir:
-        lp_path = os.path.join(tmpdir, "model.lp")
-        sol_path = os.path.join(tmpdir, "solution.xml")
-        _, smap_id = mw.model.write(lp_path)
-        script = [f"read {lp_path}", ""]
-        cplex_exec_script(script)
-        if os.path.exists(sol_path):
-            # parse and assign value from solution
-            return True
+        with chdir_context(tmpdir):
+            lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
+            sol_path_abs = os.path.join(tmpdir, sol_path := "solution.xml")
+            _, smap_id = mw.model.write(lp_path)
+            script = [
+                f"read {lp_path}",
+                "set timelimit 30",
+                "feasopt all",
+                f"write {sol_path}" "quit",
+            ]
+            cplex_exec_script(script)
+            if os.path.exists(sol_path):
+                # parse and assign value from solution
+                return True
     return False
 
 
