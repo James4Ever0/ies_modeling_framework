@@ -189,7 +189,7 @@ def solve_model(
                     analyzeInfeasibility(mw, solver, solver_log, results)
 
                 if ies_env.FAILSAFE:
-                    solved = solve_failsafe(mw, obj_expr, sense)
+                    solved = solve_failsafe(mw)
 
         logger_print("OBJ:", value(OBJ))
     return solved
@@ -225,33 +225,51 @@ class MethodRegistry(list):
         return obj
 
 
-failsafe_methods = MethodRegistry()
+failsafe_methods = MethodRegistry(["mw"])
+
+
+def quote(s: str, q='"'):
+    return q + s + q
+
+
+def cplex_exec_script(script: List[str]):
+    cmd = f"cplex -c {' '.join([quote(e) for e in script])}"
+    return_code = os.system(cmd)
+    return return_code
+
+@failsafe_methods.register
+def feasopt_with_optimization(mw: ModelWrapper):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        lp_path = os.path.join(tmpdir, "model.lp")
+        sol_path = os.path.join(tmpdir, "solution.xml")
+        _, smap_id = mw.model.write(lp_path)
+        script = [f"read {lp_path}", ""]
+        cplex_exec_script(script)
+        if os.path.exists(sol_path):
+            # parse and assign value from solution
+            return True
+    return False
 
 
 @failsafe_methods.register
-def feasopt_with_optimization(mw: ModelWrapper, obj_expr, sense):
-    script = [
-        ""
-    ]
-    cmd = f"cplex -c {' '.join([script)}
-
-
-@failsafe_methods.register
-def feasopt_only(mw: ModelWrapper, obj_expr, sense):
+def feasopt_only(mw: ModelWrapper):
     ...
 
 
 @failsafe_methods.register
-def ipopt_no_presolve(mw: ModelWrapper, obj_expr, sense):
+def ipopt_no_presolve(mw: ModelWrapper):
     ...
 
 
 @failsafe_methods.register
-def random_value_assignment(mw: ModelWrapper, obj_expr, sense):
-    ...
+def random_value_assignment(mw: ModelWrapper):
+    rng = lambda: random.uniform(-100, 100)
+    for v in mw.model.component_data_objects(ctype=Var):
+        v.set_value(rng())
+    return True
 
 
-def solve_failsafe(mw: ModelWrapper, obj_expr, sense):
+def solve_failsafe(mw: ModelWrapper):
     """
     Steps (fail and continue):
         1. feasopt & objective optimization
@@ -263,13 +281,14 @@ def solve_failsafe(mw: ModelWrapper, obj_expr, sense):
     for method in failsafe_methods:
         try:
             name = method.__name__
-            solved = method(mw, obj_expr, sense)
+            logger_print(f"trying failsafe method: {name}")
+            solved = method(mw)
 
             if solved:
-                logger_print(f"SOLVED WITH {name}")
+                logger_print(f"solved with {name}")
                 break
             else:
-                logger_print(f"FAILED TO SOLVE WITH {name}")
+                logger_print(f"failed to solve with {name}")
         except:
             logger_traceback_print()
 
