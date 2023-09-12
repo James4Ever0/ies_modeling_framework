@@ -45,9 +45,9 @@ from enum import StrEnum, auto
 
 
 class SolvedTestMode(StrEnum):
-    value_exist = auto()
-    value_exist_and_inbound = auto()
-    value_exist_and_satisfy_constraint = auto()
+    values_exist = auto()
+    values_exist_and_inbound = auto()
+    values_exist_and_satisfy_constraint = auto()
 
 
 def get_unassigned_attrname(obj):
@@ -62,17 +62,52 @@ def get_unassigned_attrname(obj):
 def assign_attr_to_obj_with_random_name(obj, value):
     attrName = get_unassigned_attrname(obj)
     setattr(obj, attrName, value)
+    attrName
 
 
 @contextmanager
-def modelSolvedTestContext(model, testMode: SolvedTestMode):
+def modelSolvedTestContext(
+    model: ConcreteModel, testMode: SolvedTestMode = SolvedTestMode.values_exist
+):
     """
     Context manager that checks that the model is solved, by means of micro challenges.
     """
-    try:
-        yield solved
-    finally:
+    lb = 20
+    ub = 40
+    attrNames = []
+    attrNames.append(assign_attr_to_obj_with_random_name(model, var := Var()))
+    if testMode == SolvedTestMode.values_exist_and_inbound:
+        var.setlb(lb)
+        var.setub(ub)
+    elif testMode == SolvedTestMode.values_exist_and_satisfy_constraint:
+        attrNames.append(
+            assign_attr_to_obj_with_random_name(
+                model, con1 := Constraint(expr=var >= lb)
+            )
+        )
+        attrNames.append(
+            assign_attr_to_obj_with_random_name(
+                model, con2 := Constraint(expr=var <= ub)
+            )
+        )
+    elif testMode == SolvedTestMode.values_exist:
         ...
+    else:
+        raise Exception("Unsupported test mode:", testMode)
+
+    def check_solved():
+        var_value = value(var, exception=False)
+        solved = False
+        if var_value is not None:
+            if testMode != SolvedTestMode.values_exist:
+                solved = var_value >= lb and var_value <= ub
+        return solved
+
+    try:
+        yield check_solved
+    finally:
+        for name in attrNames:
+            delattr(model, name)
 
 
 class SolverReturnStatus(BaseModel):
@@ -102,7 +137,7 @@ class CheckSolverReturnValResult(BaseModel):
 
 #     return word_counter
 
-
+# deprecated!
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
     TC = solver_result.solver.termination_condition
     SS = solver_result.solver.status
