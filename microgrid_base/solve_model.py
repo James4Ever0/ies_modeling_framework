@@ -1,9 +1,21 @@
-from log_utils import logger_print
+import cmath
+import datetime
+import json
+import os
+import tempfile
+from typing import Any, Dict, List, Tuple, Union, cast
+
+import pandas as pd
+from beartype import beartype
+
+from constants import *  # pylance issue: unrecognized var names
+from debug_utils import *
+from error_utils import ErrorManager
 
 # finding every integer feasible solution
 # ref: https://www.ibm.com/support/pages/obtaining-solution-values-each-time-cplex-finds-integer-solution
-from log_utils import log_dir, timezone
-import datetime
+from log_utils import log_dir, logger_print, pretty_format_excinfo_context, timezone, logger_traceback_print
+
 # TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
 # TODO: invoke conflict refiner everytime each submodel is built, once conflict is found.
@@ -13,16 +25,6 @@ import datetime
 # TODO: partial deletion/elastic filter
 # TODO: finding maximum feasible subset (maxFS) instead of IIS
 from pyomo_environ import *
-import json
-from typing import List, Dict, Any, Union, Tuple
-from beartype import beartype
-from debug_utils import *
-from error_utils import ErrorManager
-
-from typing import cast
-from constants import *  # pylance issue: unrecognized var names
-import pandas as pd
-import cmath
 
 # from ies_optim import 规划结果详情,规划方案概览
 
@@ -30,19 +32,16 @@ try:
     from typing import Literal
 except:
     from typing_extensions import Literal
-from ies_optim import ModelWrapper, InputParams
+
+from pydantic import BaseModel
+
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
-
-# from pyomo.environ import *
-from pyomo_environ import *
-
+from ies_optim import InputParams, ModelWrapper
 
 # from pyomo.util.infeasible import log_infeasible_constraints
 
 # TODO: add pareto plot, change data structure of solution result object.
 
-from pydantic import BaseModel
-import rich
 
 # import io
 # import logging
@@ -78,6 +77,7 @@ with open("frontend_sim_param_translation.json", "r") as f:
     FSPT = json.load(f)
 
 from pandas import DataFrame
+
 from topo_check import 拓扑图
 
 
@@ -139,10 +139,11 @@ def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     return ret
 
 
-from ies_optim import compute, ModelWrapperContext
-
 # obj_expr = 0
 from copy import deepcopy
+
+from ies_optim import ModelWrapperContext, compute
+
 
 # disable io_options.
 def solve_model(
@@ -170,8 +171,6 @@ def solve_model(
         logger_print(">>>SOLVING<<<")
         # results = solver.solve(mw.model, tee=True, keepfiles= True)
         # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
-        import tempfile
-        import os
 
         with tempfile.TemporaryDirectory() as solver_log_dir:
             solver_log = os.path.join(solver_log_dir, "solver.log")
@@ -190,94 +189,125 @@ def solve_model(
             logger_print(results)
 
             if not solved:
+                if ies_env.INFEASIBILITY_DIAGNOSTIC:
+                    # TODO. make this into background tasks
+                    analyzeInfeasibility(mw, solver, solver_log, results)
 
-                new_func(mw, solver, os, solver_log, results)
+                if ies_env.FAILSAFE:
+                    solved = solve_failsafe(mw, obj_expr, sense)
 
         logger_print("OBJ:", value(OBJ))
     return solved
 
-def new_func(mw, solver, os, solver_log, results):
+
+def solve_failsafe(mw: ModelWrapper, obj_expr, sense):
+    """
+    Steps (fail and continue):
+        1. feasopt & objective optimization
+        2. feasopt only
+        3. ipopt
+        4. random value assignment
+    """
+    solved = False
+    for method in failsafe_methods:
+        try:
+            solved = method(...)
+        except:
+
+        name = method.__name__
+        if solved:
+            logger_print(f"SOLVED WITH {name}")
+            break
+        else:
+            logger_print()
+    return solved
+
+
+import sys
+
+
+def analyzeInfeasibility(mw, solver, solver_log, results):
     with ErrorManager(default_error="Solver does not have solution.") as em:
-        checkResult = checkIfSolverHasSolvedModel(results)
-        status = checkResult.status
-        em.append(status)
-        TC = status.terminationCondition
-        SS = status.solverStatus
-                    # TODO: check if model has solved, in a more rational manner.
-                    # TODO: branch infeasbility diagnostic code by config flag.
-        if TC in IOUTerminationConditions:
-            ...
-        if TC not in normalTCs:
-            em.append(f"abnormal termination condition: {TC}")
-        if SS not in normalSSs:
-            em.append(f"abnormal solver status: {TC}")
-        if em:
-            timestamp = (
-                            str(datetime.datetime.now(timezone))
-                            .replace(" ", "_")
-                            .replace("-", "_")
-                            .replace(".", "_")
-                            .replace(":", "_")
-                            .replace("+", "_")
-                        )
-            os.mkdir(
-                            solver_log_dir_with_timestamp := os.path.join(
-                                log_dir, f"pyomo_{timestamp}"
-                            )
-                        )
-            lp_filepath = os.path.join(
-                            solver_log_dir_with_timestamp, "model.lp"
-                        )
-                        # TODO: export input parameters.
+        analyzeSolverResults(results, em)
 
-            input_params_filepath = os.path.join(
-                            solver_log_dir_with_timestamp, "input_params.json"
-                        )
-            with open(input_params_filepath, "w+") as f:
-                content = json.dumps(
-                                mw.inputParams.dict(), ensure_ascii=False, indent=4
-                            )
-                f.write(content)
+        timestamp = (
+            str(datetime.datetime.now(timezone))
+            .replace(" ", "_")
+            .replace("-", "_")
+            .replace(".", "_")
+            .replace(":", "_")
+            .replace("+", "_")
+        )
+        os.mkdir(
+            solver_log_dir_with_timestamp := os.path.join(log_dir, f"pyomo_{timestamp}")
+        )
+        lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
+        # TODO: export input parameters.
 
-            exported_model = ExportedModel(mw.model, lp_filepath)
-            export_model_smap = exported_model.smap
+        input_params_filepath = os.path.join(
+            solver_log_dir_with_timestamp, "input_params.json"
+        )
+        with open(input_params_filepath, "w+") as f:
+            content = json.dumps(mw.inputParams.dict(), ensure_ascii=False, indent=4)
+            f.write(content)
 
-            solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
+        exported_model = ExportedModel(mw.model, lp_filepath)
+        export_model_smap = exported_model.smap
 
-            if not cplex_refine_model_and_display_info(
-                            mw,
-                            lp_filepath,
-                            solver_log_dir_with_timestamp,
-                            export_model_smap,
-                            # word_counter,
-                        ):
-                em.append("No conflicts found by cplex.")
+        solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
 
-            import shutil
+        if not cplex_refine_model_and_display_info(
+            mw,
+            lp_filepath,
+            solver_log_dir_with_timestamp,
+            export_model_smap,
+            # word_counter,
+        ):
+            em.append("No conflicts found by cplex.")
 
-            solver_log_new = os.path.join(
-                            solver_log_dir_with_timestamp, os.path.basename(solver_log)
-                        )
+        import shutil
 
-            shutil.move(solver_log, solver_log_dir_with_timestamp)
+        solver_log_new = os.path.join(
+            solver_log_dir_with_timestamp, os.path.basename(solver_log)
+        )
 
-            em.append("")
-            em.append("Solver log saved to: " + solver_log_new)
-            em.append("Model saved to: " + lp_filepath)
-            em.append("Input params saved to: " + input_params_filepath)
+        shutil.move(solver_log, solver_log_dir_with_timestamp)
 
-            translateFileUsingSymbolMap(lp_filepath, export_model_smap)
+        em.append("")
+        em.append("Solver log saved to: " + solver_log_new)
+        em.append("Model saved to: " + lp_filepath)
+        em.append("Input params saved to: " + input_params_filepath)
 
-                        # BUG: solver_log not found (in temp)
-                        # translate_and_append(solver_log_new, solver_model_smap)
-            translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
+        translateFileUsingSymbolMap(lp_filepath, export_model_smap)
 
-                        # after translation, begin experiments.
-            checkIOUDirectory = os.path.join(
-                            solver_log_dir_with_timestamp, "checkIOU"
-                        )
-            os.mkdir(checkIOUDirectory)
-            checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
+        # BUG: solver_log not found (in temp)
+        # translate_and_append(solver_log_new, solver_model_smap)
+        translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
+
+        # after translation, begin experiments.
+        checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")
+        os.mkdir(checkIOUDirectory)
+        checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
+
+
+def analyzeSolverResults(results, em: ErrorManager):
+    if results is not None:
+        try:
+            checkResult = checkIfSolverHasSolvedModel(results)
+            status = checkResult.status
+            em.append(status)
+            TC = status.terminationCondition
+            SS = status.solverStatus
+            if TC in IOUTerminationConditions:
+                ...
+            if TC not in normalTCs:
+                em.append(f"abnormal termination condition: {TC}")
+            if SS not in normalSSs:
+                em.append(f"abnormal solver status: {TC}")
+        except:
+            em.append("exception while processing solver results")
+            with pretty_format_excinfo_context(*sys.exc_info()) as formatted:
+                em.append(formatted)
 
 
 class CalcStruct(BaseModel):

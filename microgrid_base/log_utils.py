@@ -206,7 +206,7 @@ logger.addHandler(myHandler)  # BUG: make sure long logs are unaffected in file.
 logger.addHandler(stdout_handler)
 
 
-def logger_print(*args, logger=logger):
+def logger_print(*args, logger=logger, stacklevel = 2):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!
@@ -221,9 +221,9 @@ def logger_print(*args, logger=logger):
                 for arg in args
             ],
             **(
-                {"stacklevel": 2}
+                {"stacklevel": stacklevel}
                 if not SHOW_PYTHON_VERSION_WARNING
-                else {"extra": {"callerInfo": get_caller_info()}}
+                else {"extra": {"callerInfo": get_caller_info(level = stacklevel)}}
             ),
         )  # it is been called elsewhere.
         # logger.debug(
@@ -250,13 +250,26 @@ logger_print(
 
 
 def logger_excepthook(exc_type, exc_value, tb):
-    better_exceptions.SUPPORTS_COLOR = False
-    formatted = "".join(better_exceptions.format_exception(exc_type, exc_value, tb))
-    formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
-    logger_print(*formatted_exc)
-    # ep(*formatted_exc)
-    better_exceptions.SUPPORTS_COLOR = True
+    
+    with pretty_format_excinfo_context(exc_type, exc_value, tb) as formatted:
+        formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
+        logger_print(*formatted_exc)
     better_exceptions.excepthook(exc_type, exc_value, tb)
+
+from contextlib import contextmanager
+
+@contextmanager
+def pretty_format_excinfo_context(exc_type, exc_value, tb):
+    try:
+        better_exceptions.SUPPORTS_COLOR = False
+        formatted = "".join(better_exceptions.format_exception(exc_type, exc_value, tb))
+        yield formatted
+    finally:
+        better_exceptions.SUPPORTS_COLOR = True
+
+def logger_traceback_print():
+    with pretty_format_excinfo_context(*sys.exc_info()) as formatted:
+        logger_print(formatted, stacklevel = 3)
 
 
 sys.excepthook = logger_excepthook
