@@ -14,7 +14,13 @@ from error_utils import ErrorManager
 
 # finding every integer feasible solution
 # ref: https://www.ibm.com/support/pages/obtaining-solution-values-each-time-cplex-finds-integer-solution
-from log_utils import log_dir, logger_print, pretty_format_excinfo_context, timezone, logger_traceback_print
+from log_utils import (
+    log_dir,
+    logger_print,
+    pretty_format_excinfo_context,
+    timezone,
+    logger_traceback_print,
+)
 
 # TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
@@ -42,29 +48,18 @@ from ies_optim import InputParams, ModelWrapper
 
 # TODO: add pareto plot, change data structure of solution result object.
 
+import shutil
 
-# import io
-# import logging
+REQUIRED_BINARIES = ["cplex"]
 
-# mstream = io.StringIO()
-# TODO: shall you test running under celery. shall you not using the root logger.
-# TODO: shall you save the log to file with "RotatingFileHandler"
-# logging.basicConfig(stream=mstream, level=logging.INFO)
-# mStreamHandler = logging.StreamHandler(stream=mstream)
-# import logging.handlers
-# import os
+if ies_env.FAILSAFE:
+    REQUIRED_BINARIES.append("ipopt")
 
-# log_path = os.path.join(
-#     os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
-# )
-# mRotateFileHandler = logging.handlers.RotatingFileHandler(
-#     log_path, maxBytes=1024 * 5 * 1024, backupCount=5
-# )
-# logger = logging.getLogger("SOLVE_MODEL_LOGGER")
-# logger.propagate = False
-# logger.setLevel(level=logging.INFO)
-# logger.addHandler(mStreamHandler)
-# logger.addHandler(mRotateFileHandler)
+with ErrorManager(default_error="Not all required binaries were found.") as em:
+    for b in REQUIRED_BINARIES:
+        if shutil.which(bin) is None:
+            em.append("Binary %s not found in PATH." % b)
+
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
@@ -200,6 +195,62 @@ def solve_model(
     return solved
 
 
+import inspect
+
+
+class MethodRegistry(list):
+    """
+    A registry of methods, used to register methods with given signature.
+    """
+
+    def __init__(self, signature: List[str]):
+        self.signature = signature
+        super().__init__()
+
+    def check_signature(self, obj):
+        obj_sig = inspect.signature(obj)
+        obj_keys = list(obj_sig.keys())
+        assert (
+            obj_keys == self.signature
+        ), "Signature mismatch: (registered signature: {}, given signature: {})".format(
+            self.signature, obj_keys
+        )
+
+    def append(self, obj):
+        if self.check_signature(obj, self.signature):
+            super().append(obj)
+
+    def register(self, obj):
+        self.append(obj)
+        return obj
+
+
+failsafe_methods = MethodRegistry()
+
+
+@failsafe_methods.register
+def feasopt_with_optimization(mw: ModelWrapper, obj_expr, sense):
+    script = [
+        ""
+    ]
+    cmd = f"cplex -c {' '.join([script)}
+
+
+@failsafe_methods.register
+def feasopt_only(mw: ModelWrapper, obj_expr, sense):
+    ...
+
+
+@failsafe_methods.register
+def ipopt_no_presolve(mw: ModelWrapper, obj_expr, sense):
+    ...
+
+
+@failsafe_methods.register
+def random_value_assignment(mw: ModelWrapper, obj_expr, sense):
+    ...
+
+
 def solve_failsafe(mw: ModelWrapper, obj_expr, sense):
     """
     Steps (fail and continue):
@@ -211,15 +262,17 @@ def solve_failsafe(mw: ModelWrapper, obj_expr, sense):
     solved = False
     for method in failsafe_methods:
         try:
-            solved = method(...)
-        except:
+            name = method.__name__
+            solved = method(mw, obj_expr, sense)
 
-        name = method.__name__
-        if solved:
-            logger_print(f"SOLVED WITH {name}")
-            break
-        else:
-            logger_print()
+            if solved:
+                logger_print(f"SOLVED WITH {name}")
+                break
+            else:
+                logger_print(f"FAILED TO SOLVE WITH {name}")
+        except:
+            logger_traceback_print()
+
     return solved
 
 
