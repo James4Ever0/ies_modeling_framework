@@ -1,5 +1,6 @@
 from log_utils import logger_print
 
+# TODO: deprecate and migrate to `error_utils.py`
 # from beartype import beartype
 from typing import Union
 

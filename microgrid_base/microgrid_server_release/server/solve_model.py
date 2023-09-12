@@ -1,7 +1,28 @@
 from log_utils import logger_print
 
+import cmath
+import datetime
+import json
+import os
+import tempfile
+from typing import Any, Dict, List, Tuple, Union, cast
+
+import pandas as pd
+from beartype import beartype
+
+from constants import *  # pylance issue: unrecognized var names
+from debug_utils import *
+from error_utils import ErrorManager
+
 # finding every integer feasible solution
 # ref: https://www.ibm.com/support/pages/obtaining-solution-values-each-time-cplex-finds-integer-solution
+from log_utils import (
+    log_dir,
+    logger_print,
+    pretty_format_excinfo_context,
+    timezone,
+    logger_traceback,
+)
 
 # TODO: save model as .lp & .mps format
 # import pyomo_patch  # type: ignore
@@ -12,16 +33,6 @@ from log_utils import logger_print
 # TODO: partial deletion/elastic filter
 # TODO: finding maximum feasible subset (maxFS) instead of IIS
 from pyomo_environ import *
-import json
-from typing import List, Dict, Any, Union, Tuple
-from beartype import beartype
-from debug_utils import *
-from error_utils import ErrorManager
-
-from typing import cast
-from constants import *  # pylance issue: unrecognized var names
-import pandas as pd
-import cmath
 
 # from ies_optim import 规划结果详情,规划方案概览
 
@@ -29,42 +40,28 @@ try:
     from typing import Literal
 except:
     from typing_extensions import Literal
-from ies_optim import ModelWrapper, InputParams
+
+from pydantic import BaseModel
+
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
-
-# from pyomo.environ import *
-from pyomo_environ import *
-
+from ies_optim import InputParams, ModelWrapper
 
 # from pyomo.util.infeasible import log_infeasible_constraints
 
 # TODO: add pareto plot, change data structure of solution result object.
 
-from pydantic import BaseModel
-import rich
+import shutil
 
-# import io
-# import logging
+REQUIRED_BINARIES = ["cplex"]
 
-# mstream = io.StringIO()
-# TODO: shall you test running under celery. shall you not using the root logger.
-# TODO: shall you save the log to file with "RotatingFileHandler"
-# logging.basicConfig(stream=mstream, level=logging.INFO)
-# mStreamHandler = logging.StreamHandler(stream=mstream)
-# import logging.handlers
-# import os
+if ies_env.FAILSAFE:
+    REQUIRED_BINARIES.append("ipopt")
 
-# log_path = os.path.join(
-#     os.path.dirname(os.path.abspath(__file__)), "logs/infeasible.log"
-# )
-# mRotateFileHandler = logging.handlers.RotatingFileHandler(
-#     log_path, maxBytes=1024 * 5 * 1024, backupCount=5
-# )
-# logger = logging.getLogger("SOLVE_MODEL_LOGGER")
-# logger.propagate = False
-# logger.setLevel(level=logging.INFO)
-# logger.addHandler(mStreamHandler)
-# logger.addHandler(mRotateFileHandler)
+with ErrorManager(default_error="Not all required binaries were found.") as em:
+    for b in REQUIRED_BINARIES:
+        if shutil.which(b) is None:
+            em.append("Binary %s not found in PATH." % b)
+
 
 with open("export_format.json", "r") as f:
     dt = json.load(f)
@@ -77,6 +74,7 @@ with open("frontend_sim_param_translation.json", "r") as f:
     FSPT = json.load(f)
 
 from pandas import DataFrame
+
 from topo_check import 拓扑图
 
 
@@ -138,10 +136,10 @@ def translateDataframeHeaders(df: DataFrame, translationTable: Dict[str, str]):
     return ret
 
 
-from ies_optim import compute, ModelWrapperContext
-
 # obj_expr = 0
 from copy import deepcopy
+
+from ies_optim import ModelWrapperContext, compute
 
 
 # disable io_options.
@@ -152,41 +150,6 @@ def solve_model(
     # io_options=dict()
 ):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
-
-    # devClassMapping = {
-    #     f"DI_{k}": c.__class__.__name__.strip("模型") for k, c in devInstDict.items()
-    # }
-
-    # def dumpCond():
-    #     exprs = [
-    #         str(mw.model.__dict__[x].expr)
-    #         for x in dir(mw.model)
-    #         if x.startswith("CON")
-    #     ]
-    #     import re
-
-    #     def process_expr(expr):
-    #         b = re.findall(r"\[\d+\]", expr)
-    #         for e in b:
-    #             expr = expr.replace(e, "[]")
-    #         for k, cn in devClassMapping.items():
-    #             expr = expr.replace(k, cn)
-    #         return expr
-
-    #     new_exprs = set([process_expr(e) for e in exprs])
-
-    #     exprs = list(new_exprs)
-
-    #     output_path = "dump.json"
-    #     logger_print("DUMPING COND TO:", output_path)
-    #     with open(output_path, "w+") as f:
-    #         import json
-
-    #         content = json.dumps(exprs, indent=4, ensure_ascii=False)
-    #         f.write(content)
-
-    # if DEBUG:
-    #     dumpCond()
 
     solved = False
     with SolverFactory("cplex") as solver:
@@ -205,223 +168,237 @@ def solve_model(
         logger_print(">>>SOLVING<<<")
         # results = solver.solve(mw.model, tee=True, keepfiles= True)
         # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
-        import tempfile
-        import os
 
         with tempfile.TemporaryDirectory() as solver_log_dir:
             solver_log = os.path.join(solver_log_dir, "solver.log")
-            results = solver.solve(
-                mw.model,
-                tee=True,
-                # io_options=io_options,
-                logfile=solver_log,
-            )
+            with modelSolvedTestContext(mw.model) as check_solved:
+                results = solver.solve(
+                    mw.model,
+                    tee=True,
+                    # io_options=io_options,
+                    logfile=solver_log,
+                )
+                solved = check_solved()
+
+            logger_print("SOLVED?", solved)
 
             logger_print("SOLVER RESULTS?")
             logger_print(results)
 
-            # breakpoint() # TODO: check diesel engine issues.
+            if not solved:
+                if ies_env.INFEASIBILITY_DIAGNOSTIC:
+                    # TODO. make this into background tasks
+                    analyzeInfeasibility(mw, solver, solver_log, results)
 
-            # except:
-            #     import traceback
-            #     traceback.print_exc()
-            # logger_print(">>>SOLVER ERROR<<<")
-            # breakpoint()
-            # "Solver (cplex) did not exit normally"
-            # return False  # you can never get value here.
-            # breakpoint()
-            # logger_print("OBJECTIVE?")
-            # OBJ.display()
-            # try:
-
-            assert results, "no solver result."
-            checkResult = checkIfSolverHasSolvedModel(results)
-            status = checkResult.status
-            TC = status.terminationCondition
-            SS = status.solverStatus
-            # TC = results.solver.termination_condition
-            # SS = results.solver.status
-
-            with ErrorManager() as em:
-                if TC in IOUTerminationConditions:
-                    ...
-                    # TODO: use non-linear solver or any solver which can solve "unsound" models to see how many constraints get violated.
-
-                    # mstream.truncate(0)
-                    # just don't do this.
-                    # logger.info("logging infeasible constraints".center(70, "="))
-                    # log_infeasible_constraints(
-                    #     mw.model, log_expression=True, log_variables=True, logger=logger
-                    # )
-
-                    # mstream.seek(0)
-                    # infeasible_constraint_log = mstream.getvalue()
-                    # mstream.truncate(0)
-                    # if infeasible_constraint_log:
-                    #     error_msg.append("")
-                    #     error_msg.append(infeasible_constraint_log)
-                    #     error_msg.append("")
-                    #     error_msg.append("_" * 20)
-                    #     error_msg.append("")
-                if TC not in normalTCs:
-                    em.append(f"abnormal termination condition: {TC}")
-                if SS not in normalSSs:
-                    em.append(f"abnormal solver status: {TC}")
-                # if error_msg:
-                if em:
-                    # word_counter = buildWordCounterFromModelWrapper(mw)
-                    from log_utils import log_dir, timezone
-                    import datetime
-
-                    # import pytz
-                    # tz = pytz.timezone("US/Eastern")
-                    timestamp = (
-                        str(datetime.datetime.now(timezone))
-                        .replace(" ", "_")
-                        .replace("-", "_")
-                        .replace(".", "_")
-                        .replace(":", "_")
-                        .replace("+", "_")
-                    )
-                    os.mkdir(
-                        solver_log_dir_with_timestamp := os.path.join(
-                            log_dir, f"pyomo_{timestamp}"
-                        )
-                    )
-                    lp_filepath = os.path.join(
-                        solver_log_dir_with_timestamp, "model.lp"
-                    )
-                    # TODO: export input parameters.
-
-                    input_params_filepath = os.path.join(
-                        solver_log_dir_with_timestamp, "input_params.json"
-                    )
-                    with open(input_params_filepath, "w+") as f:
-                        content = json.dumps(
-                            mw.inputParams.dict(), ensure_ascii=False, indent=4
-                        )
-                        f.write(content)
-
-                    # _, model_smap_id = mw.model.write(
-                    #     filename=lp_filepath,
-                    #     # io_options=io_options
-                    # )
-
-                    # begin to debug in detail.
-
-                    # export_model_smap = mw.model.solutions.symbol_map[model_smap_id]
-
-                    exported_model = ExportedModel(mw.model, lp_filepath)
-                    export_model_smap = exported_model.smap
-
-                    solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
-
-                    # translated_log_files = []
-
-                    # def translate_and_append(fpath, smap):
-                    #     translateFileUsingSymbolMap(fpath, smap)
-                    #     translated_log_files.append(fpath)
-
-                    # use conda "docplex" environment to get the result.
-
-                    # crp = ConflictRefinerParams(
-                    #     model_path=lp_filepath,
-                    #     output=(
-                    #         cplex_conflict_output_path := os.path.join(
-                    #             solver_log_dir_with_timestamp, "cplex_conflict.txt"
-                    #         )
-                    #     ),
-                    #     timeout=7,
-                    # )
-
-                    # refine_log = conflict_refiner(crp)
-                    # if refine_log:
-                    #     logger_print("cplex refine log:", refine_log)
-                    #     # translate_and_append(
-                    #     #     cplex_conflict_output_path, export_model_smap
-                    #     # )
-                    #     translateFileUsingSymbolMap(
-                    #         cplex_conflict_output_path, export_model_smap
-                    #     )
-
-                    #     # then you sort it by model.
-                    #     with open(cplex_conflict_output_path, "r") as f:
-                    #         content = f.read()
-                    #         varNameCountDict = word_counter(content)
-                    #         varNameCountList = [
-                    #             (varName, count)
-                    #             for varName, count in varNameCountDict.items()
-                    #         ]
-
-                    #     sortAndDisplayVarValues(
-                    #         varNameCountList, mw, banner="CONFLICT VAR COUNT"
-                    #     )
-
-                    #     sortAndDisplayVarValues(
-                    #         varNameCountList,
-                    #         mw,
-                    #         banner="CONFLICT VAR COUNT REVERSE",
-                    #         reverse=True,
-                    #     )
-
-                    #     selectiveSortVarNames(
-                    #         mw.submodelNameToVarName,
-                    #         varNameCountDict,
-                    #         mw,
-                    #         banner="(CONFLICT) SUBMODEL NAME",
-                    #     )
-                    #     selectiveSortVarNames(
-                    #         mw.submodelClassNameToVarName,
-                    #         varNameCountDict,
-                    #         mw,
-                    #         banner="(CONFLICT) SUBMODEL CLASS NAME",
-                    #     )
-                    if not cplex_refine_model_and_display_info(
-                        mw,
-                        lp_filepath,
-                        solver_log_dir_with_timestamp,
-                        export_model_smap,
-                        # word_counter,
-                    ):
-                        em.append("No conflicts found by cplex.")
-
-                    import shutil
-
-                    solver_log_new = os.path.join(
-                        solver_log_dir_with_timestamp, os.path.basename(solver_log)
-                    )
-
-                    shutil.move(solver_log, solver_log_dir_with_timestamp)
-
-                    em.append("")
-                    em.append("Solver log saved to: " + solver_log_new)
-                    em.append("Model saved to: " + lp_filepath)
-                    em.append("Input params saved to: " + input_params_filepath)
-
-                    # translate_and_append(lp_filepath, export_model_smap)
-                    translateFileUsingSymbolMap(lp_filepath, export_model_smap)
-
-                    # BUG: solver_log not found (in temp)
-                    # translate_and_append(solver_log_new, solver_model_smap)
-                    translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
-
-                    # after translation, begin experiments.
-                    checkIOUDirectory = os.path.join(
-                        solver_log_dir_with_timestamp, "checkIOU"
-                    )
-                    os.mkdir(checkIOUDirectory)
-                    checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
-
-                    # raise Exception("\n".join(error_msg))
-                    # em.raise_if_any()
+                if ies_env.FAILSAFE:
+                    solved = solve_failsafe(mw)
 
         logger_print("OBJ:", value(OBJ))
-        # export value.
-        # import json
-        solved = True
-        # except:
-        # logger_print("NO SOLUTION.")
     return solved
+
+
+import inspect
+
+
+class MethodRegistry(list):
+    """
+    A registry of methods, used to register methods with given signature.
+    """
+
+    def __init__(self, signature: List[str]):
+        self.signature = signature
+        super().__init__()
+
+    def check_signature(self, obj):
+        obj_sig = inspect.signature(obj)
+        obj_keys = list(obj_sig.parameters.keys())
+        assert (
+            obj_keys == self.signature
+        ), "Signature mismatch: (registered signature: {}, given signature: {})".format(
+            self.signature, obj_keys
+        )
+
+    def append(self, obj):
+        if self.check_signature(obj):
+            super().append(obj)
+
+    def register(self, obj):
+        self.append(obj)
+        return obj
+
+
+failsafe_methods = MethodRegistry(["mw"])
+
+
+def quote(s: str, q='"'):
+    return q + s + q
+
+
+def cplex_exec_script(script: List[str]):
+    cmd = f"cplex -c {' '.join([quote(e) for e in script])}"
+    return_code = os.system(cmd)
+    return return_code
+
+
+@contextmanager
+def chdir_context(dirpath: str):
+    cwd = os.getcwd()
+    os.chdir(dirpath)
+    try:
+        yield
+    finally:
+        os.chdir(cwd)
+
+
+@failsafe_methods.register
+def feasopt_with_optimization(mw: ModelWrapper):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with chdir_context(tmpdir):
+            lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
+            sol_path_abs = os.path.join(tmpdir, sol_path := "solution.xml")
+            _, smap_id = mw.model.write(lp_path)
+            script = [
+                f"read {lp_path}",
+                "set timelimit 30",
+                "feasopt all",
+                f"write {sol_path}" "quit",
+            ]
+            cplex_exec_script(script)
+            if os.path.exists(sol_path):
+                # parse and assign value from solution
+                return True
+    return False
+
+
+@failsafe_methods.register
+def feasopt_only(mw: ModelWrapper):
+    ...
+
+
+@failsafe_methods.register
+def ipopt_no_presolve(mw: ModelWrapper):
+    ...
+
+
+@failsafe_methods.register
+def random_value_assignment(mw: ModelWrapper):
+    rng = lambda: random.uniform(-100, 100)
+    for v in mw.model.component_data_objects(ctype=Var):
+        v.set_value(rng())
+    return True
+
+
+def solve_failsafe(mw: ModelWrapper):
+    """
+    Steps (fail and continue):
+        1. feasopt & objective optimization
+        2. feasopt only
+        3. ipopt
+        4. random value assignment
+    """
+    solved = False
+    for method in failsafe_methods:
+        try:
+            name = method.__name__
+            logger_print(f"trying failsafe method: {name}")
+            solved = method(mw)
+
+            if solved:
+                logger_print(f"solved with {name}")
+                break
+            else:
+                logger_print(f"failed to solve with {name}")
+        except:
+            logger_traceback()
+
+    return solved
+
+
+import sys
+
+
+def analyzeInfeasibility(mw, solver, solver_log, results):
+    with ErrorManager(default_error="Solver does not have solution.") as em:
+        analyzeSolverResults(results, em)
+
+        timestamp = (
+            str(datetime.datetime.now(timezone))
+            .replace(" ", "_")
+            .replace("-", "_")
+            .replace(".", "_")
+            .replace(":", "_")
+            .replace("+", "_")
+        )
+        os.mkdir(
+            solver_log_dir_with_timestamp := os.path.join(log_dir, f"pyomo_{timestamp}")
+        )
+        lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
+        # TODO: export input parameters.
+
+        input_params_filepath = os.path.join(
+            solver_log_dir_with_timestamp, "input_params.json"
+        )
+        with open(input_params_filepath, "w+") as f:
+            content = json.dumps(mw.inputParams.dict(), ensure_ascii=False, indent=4)
+            f.write(content)
+
+        exported_model = ExportedModel(mw.model, lp_filepath)
+        export_model_smap = exported_model.smap
+
+        solver_model_smap = mw.model.solutions.symbol_map[solver._smap_id]
+
+        if not cplex_refine_model_and_display_info(
+            mw,
+            lp_filepath,
+            solver_log_dir_with_timestamp,
+            export_model_smap,
+            # word_counter,
+        ):
+            em.append("No conflicts found by cplex.")
+
+        import shutil
+
+        solver_log_new = os.path.join(
+            solver_log_dir_with_timestamp, os.path.basename(solver_log)
+        )
+
+        shutil.move(solver_log, solver_log_dir_with_timestamp)
+
+        em.append("")
+        em.append("Solver log saved to: " + solver_log_new)
+        em.append("Model saved to: " + lp_filepath)
+        em.append("Input params saved to: " + input_params_filepath)
+
+        translateFileUsingSymbolMap(lp_filepath, export_model_smap)
+
+        # BUG: solver_log not found (in temp)
+        # translate_and_append(solver_log_new, solver_model_smap)
+        translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
+
+        # after translation, begin experiments.
+        checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")
+        os.mkdir(checkIOUDirectory)
+        checkInfeasibleOrUnboundedModel(mw, solver, checkIOUDirectory)
+
+
+def analyzeSolverResults(results, em: ErrorManager):
+    if results is not None:
+        try:
+            checkResult = checkIfSolverHasSolvedModel(results)
+            status = checkResult.status
+            em.append(status)
+            TC = status.terminationCondition
+            SS = status.solverStatus
+            if TC in IOUTerminationConditions:
+                ...
+            if TC not in normalTCs:
+                em.append(f"abnormal termination condition: {TC}")
+            if SS not in normalSSs:
+                em.append(f"abnormal solver status: {TC}")
+        except:
+            em.append("exception while processing solver results")
+            with pretty_format_excinfo_context(*sys.exc_info()) as formatted:
+                em.append(formatted)
 
 
 class CalcStruct(BaseModel):

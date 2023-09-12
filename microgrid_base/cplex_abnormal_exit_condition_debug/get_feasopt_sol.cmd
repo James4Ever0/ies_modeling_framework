@@ -1,4 +1,5 @@
-cplex -c "read converted.mps" "set timelimit 30" "feasopt all" "write feasopt.sol" "quit"
+cplex -c "read converted.mps" "set timelimit 30" "feasopt all" "write feasopt.sol" "quit" 
+@REM cannot use 'xml' as output solution file name
 @REM cplex -c "read converted.mps" "set feasopt mode 1" "feasopt all" "write feasopt.sol" "quit"
 @REM Please specify what to relax (constraints, variables, or all):
 @REM no need for "quit"

@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import cmath
 import datetime
 import json
@@ -19,7 +21,7 @@ from log_utils import (
     logger_print,
     pretty_format_excinfo_context,
     timezone,
-    logger_traceback_print,
+    logger_traceback,
 )
 
 # TODO: save model as .lp & .mps format
@@ -57,7 +59,7 @@ if ies_env.FAILSAFE:
 
 with ErrorManager(default_error="Not all required binaries were found.") as em:
     for b in REQUIRED_BINARIES:
-        if shutil.which(bin) is None:
+        if shutil.which(b) is None:
             em.append("Binary %s not found in PATH." % b)
 
 
@@ -209,7 +211,7 @@ class MethodRegistry(list):
 
     def check_signature(self, obj):
         obj_sig = inspect.signature(obj)
-        obj_keys = list(obj_sig.keys())
+        obj_keys = list(obj_sig.parameters.keys())
         assert (
             obj_keys == self.signature
         ), "Signature mismatch: (registered signature: {}, given signature: {})".format(
@@ -217,7 +219,7 @@ class MethodRegistry(list):
         )
 
     def append(self, obj):
-        if self.check_signature(obj, self.signature):
+        if self.check_signature(obj):
             super().append(obj)
 
     def register(self, obj):
@@ -257,8 +259,10 @@ def feasopt_with_optimization(mw: ModelWrapper):
             _, smap_id = mw.model.write(lp_path)
             script = [
                 f"read {lp_path}",
-                "set timelimit 30",
-                "feasopt all",
+                "set timelimit 30"
+                if ies_env.DETERMINISTIC_FAILSAFE
+                else f"set dettimelimit {30*290}",
+                "feasopt all", # dettime: 8816 ticks for 30s timelimit
                 f"write {sol_path}" "quit",
             ]
             cplex_exec_script(script)
@@ -307,7 +311,7 @@ def solve_failsafe(mw: ModelWrapper):
             else:
                 logger_print(f"failed to solve with {name}")
         except:
-            logger_traceback_print()
+            logger_traceback()
 
     return solved
 

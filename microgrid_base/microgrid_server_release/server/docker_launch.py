@@ -264,7 +264,6 @@ try:
     else:
         os.system(f'docker attach {short_id} --detach-keys="{config.DETACH_KEYS}"')
     # while True:
-    
 #     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
     #     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
     #     exit_code = os.system(f"docker attach {short_id}")
