@@ -3,8 +3,8 @@
 # import lxml
 from bs4 import BeautifulSoup
 
-sol_file = "feasopt.xml"
-# sol_file = "feasopt.sol"
+# sol_file = "feasopt.xml"
+sol_file = "feasopt.sol"
 
 with open(sol_file, "r") as f:
     file = f.read()

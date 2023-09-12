@@ -226,6 +226,13 @@ class ExportedModel:
 
         self.smap: SymbolMap = model.solutions.symbol_map[smap_id]
         self.translation_table = convertSymbolMapToTranslationTable(self.smap)
+        """
+        Translate exported names back to the original name.
+        """
+        self.reverse_translation_table = {v:k for k, v in self.translation_table.items()}
+        """
+        Translate original names to exported names.
+        """
 
 
 @contextmanager

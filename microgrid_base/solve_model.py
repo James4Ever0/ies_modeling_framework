@@ -42,6 +42,7 @@ except:
     from typing_extensions import Literal
 
 from pydantic import BaseModel
+from enum import IntEnum
 
 from export_format_validate import *  # pylance issue: multiple star import (false positive)
 from ies_optim import InputParams, ModelWrapper
@@ -250,36 +251,95 @@ def chdir_context(dirpath: str):
         os.chdir(cwd)
 
 
-@failsafe_methods.register
-def feasopt_with_optimization(mw: ModelWrapper):
+class FeasoptMode(IntEnum):
+    """
+    CPLEX> set feasopt mode <mode>
+        0 = find minimum-sum relaxation
+        1 = find optimal minimum-sum relaxation
+        2 = find minimum number of relaxations
+        3 = find optimal relaxation with minimum number of relaxations
+        4 = find minimum quadratic-sum relaxation
+        5 = find optimal minimum quadratic-sum relaxation
+    """
+    minimum_sum_relaxation = 0 # do not use 'auto' here because that will make it into 1
+    optimal_minimum_sum_relaxation = auto()
+    minimum_number_of_relaxations = auto()
+    optimal_relaxation_with_minimum_number_of_relaxations = auto()
+    minimum_quadratic_sum_relaxation = auto()
+    optimal_minimum_quadratic_sum_relaxation = auto()
+
+
+v = int(FeasoptMode.minimum_number_of_relaxations)
+FEASOPT_TIMELIMIT = 30
+CPLEX_SEC_TO_TICK = 290
+from bs4 import BeautifulSoup
+
+def load_cplex_sol_file(sol_file:str):
+
+    with open(sol_file, "r") as f:
+        file = f.read()
+
+    # 'xml' is the parser used. For html files, which BeautifulSoup is typically used for, it would be 'html.parser'.
+    soup = BeautifulSoup(file, "xml")
+    # breakpoint()
+    data = {}
+    for var in soup.find_all("variable"):
+        name = var["name"]
+        value = float(var["value"])
+        data[name] = value
+    return data
+
+def feasopt(mw:ModelWrapper, mode:FeasoptMode):
+    solved = False
     with tempfile.TemporaryDirectory() as tmpdir:
         with chdir_context(tmpdir):
-            lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
-            sol_path_abs = os.path.join(tmpdir, sol_path := "solution.xml")
-            _, smap_id = mw.model.write(lp_path)
-            script = [
-                f"read {lp_path}",
-                "set timelimit 30"
-                if ies_env.DETERMINISTIC_FAILSAFE
-                else f"set dettimelimit {30*290}",
-                "feasopt all", # dettime: 8816 ticks for 30s timelimit
-                f"write {sol_path}" "quit",
-            ]
-            cplex_exec_script(script)
-            if os.path.exists(sol_path):
-                # parse and assign value from solution
-                return True
-    return False
+            with modelSolvedTestContext(mw.model) as check_solved:
+                lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
+                sol_path_abs = os.path.join(tmpdir, sol_path := "solution.sol")
+                exp_model = ExportedModel(mw.model, lp_path_abs)
+                # _, smap_id = mw.model.write(lp_path)
+                # smap = mw.model.solutions.symbol_map[smap_id]
+                cplex_config = [
+                    f"timelimit {FEASOPT_TIMELIMIT}"
+                    if ies_env.DETERMINISTIC_FAILSAFE
+                    else f"dettimelimit {FEASOPT_TIMELIMIT*CPLEX_SEC_TO_TICK}",
+                    "feasopt 1"
+                ]
+                if ies_env.DETERMINISTIC_FAILSAFE:
+                    cplex_config.append(f"randomseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
+                script = [
+                    f"read {lp_path}",
+                    *[f"set {c}" for c in cplex_config],
+                    "feasopt all",  # dettime: 8816 ticks for 30s timelimit
+                    f"write {sol_path}",
+                    "quit",
+                ]
+                cplex_exec_script(script)
+                if os.path.exists(sol_path):
+                    # TODO: parse and assign value from solution
+                    cplex_solution = load_cplex_sol_file(sol_path)
+                    for v in mw.model.component_data_objects(ctype=Var):
+                        varname = v.name
+                        cplex_varname = exp_model.reverse_translation_table.get(varname, None)
+                        val = cplex_solution.get(cplex_varname, None)
+                        if val is not None:
+                            v.set_value(val)
+                    solved = check_solved()
+    return solved
 
+@failsafe_methods.register
+def feasopt_with_optimization(mw: ModelWrapper):
+    return feasopt(mw, FeasoptMode.optimal_minimum_sum_relaxation)
 
 @failsafe_methods.register
 def feasopt_only(mw: ModelWrapper):
-    ...
+    return feasopt(mw, FeasoptMode.minimum_sum_relaxation)
 
 
 @failsafe_methods.register
 def ipopt_no_presolve(mw: ModelWrapper):
-    ...
+    with SolverFactory('ipopt') as solver:
+        ...
 
 
 @failsafe_methods.register
