@@ -22,6 +22,8 @@ from beartype import beartype
 # import subprocess
 # from typing import TypedDict
 from pydantic import BaseModel
+import uuid
+
 
 # from typing import Literal, TypedDict
 
@@ -38,9 +40,39 @@ IOUTerminationConditions = [
     TerminationCondition.infeasibleOrUnbounded,
 ]
 
+
+from enum import StrEnum, auto
+
+
+class SolvedTestMode(StrEnum):
+    value_exist = auto()
+    value_exist_and_inbound = auto()
+    value_exist_and_satisfy_constraint = auto()
+
+
+def get_unassigned_attrname(obj):
+    while True:
+        attrname = str(uuid.uuid4()).replace("-", "_")
+        challange = uuid.UUID()
+        attr = getattr(obj, attrname, challange)
+        if attr == challange:
+            return attrname
+
+
+def assign_attr_to_obj_with_random_name(obj, value):
+    attrName = get_unassigned_attrname(obj)
+    setattr(obj, attrName, value)
+
+
 @contextmanager
-def modelSolvedTestContext(model):
-    
+def modelSolvedTestContext(model, testMode: SolvedTestMode):
+    """
+    Context manager that checks that the model is solved, by means of micro challenges.
+    """
+    try:
+        yield solved
+    finally:
+        ...
 
 
 class SolverReturnStatus(BaseModel):
@@ -51,8 +83,6 @@ class SolverReturnStatus(BaseModel):
 class CheckSolverReturnValResult(BaseModel):
     success: bool
     status: SolverReturnStatus
-
-
 
 
 # deprecated.
@@ -161,8 +191,6 @@ class ExportedModel:
 
         self.smap: SymbolMap = model.solutions.symbol_map[smap_id]
         self.translation_table = convertSymbolMapToTranslationTable(self.smap)
-
-
 
 
 @contextmanager
@@ -565,7 +593,9 @@ def solve_decompose_and_scan(
     # _, smap_id = modelWrapper.model.write(lp_filepath)
     # smap = modelWrapper.model.solutions.symbol_map[smap_id]
     lp_exported = ExportedModel(modelWrapper.model, lp_filepath)
-    cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, lp_exported.smap)
+    cplex_refine_model_and_display_info(
+        modelWrapper, lp_filepath, cplex_log_dir, lp_exported.smap
+    )
     # cplex_refine_model_and_display_info(modelWrapper, lp_filepath, cplex_log_dir, smap)
     # TODO: add translate method to export model wrapper class
     model = modelWrapper.model

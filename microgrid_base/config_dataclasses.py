@@ -48,6 +48,10 @@ class IESEnv(EnvBaseModel):
         title="Enable failsafe mode, which guarantees that task output will be generated in any condition.",
     )
 
+    DETERMINISTIC_FAILSAFE: bool = Field(
+        default=False, title="Ensure determinism in failsafe mode."
+    )
+
     INFEASIBILITY_DIAGNOSTIC: bool = Field(
         default=False,
         title="Enable infeasibility diagnostic mode, which will perform various tests to detect and analyze infeasibility, before and after accessing the solver.",
