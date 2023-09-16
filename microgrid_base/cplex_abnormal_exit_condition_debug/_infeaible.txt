@@ -1,4 +1,4 @@
-Current time: 2023-08-25T18:10:05.043115+08:00
+Current time: 2023-09-14T14:15:36.125527+08:00
 ============================================================
 running solver cplex
 warm start? True
@@ -17,11 +17,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart_infeasible.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpx_45mqmv.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp08w3eyw2.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpx_45mqmv.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp08w3eyw2.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
@@ -56,11 +56,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart_infeasible.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpc_tmc17k.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpqgfx52yq.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpc_tmc17k.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpqgfx52yq.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
@@ -94,11 +94,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart_infeasible.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpllpay20m.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpw0hwfviu.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpllpay20m.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpw0hwfviu.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
@@ -118,86 +118,86 @@ Solution time =    0.00 sec.
 Deterministic time = 0.00 ticks  (1.19 ticks/sec)
 CPLEX> CPLEX Error  1217: No solution exists.
 No file written.
-CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
-BOUND TERMINATION CONDITION: infeasible; SOLVED: False
+CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: (False, False)
+BOUND TERMINATION CONDITION: infeasible; SOLVED: (False, False)
 {
-    'x1': <weakref at 0x0000020974C38810; to 'ScalarVar' at 
-0x0000020974D363D0>,
-    'x2': <weakref at 0x0000020974C4ED90; to 'ScalarVar' at 
-0x0000020974D36650>,
-    'x3': <weakref at 0x00000209745E5670; to '_GeneralVarData' at 
-0x0000020974D49460>,
-    'x4': <weakref at 0x00000209745E5710; to '_GeneralVarData' at 
-0x0000020974D494D0>,
-    'x5': <weakref at 0x00000209745E5760; to 'ScalarObjective' at 
-0x0000020974D68470>,
-    'x6': <weakref at 0x0000020974D876F0; to 'ScalarConstraint' at 
-0x0000020974D49320>,
-    'x7': <weakref at 0x0000020974D87740; to 'ScalarConstraint' at 
-0x0000020974D49390>
+    'x1': <weakref at 0x0000027BFF8C5030; to 'ScalarVar' at 
+0x0000027BFFA9D450>,
+    'x2': <weakref at 0x0000027BFF633970; to 'ScalarVar' at 
+0x0000027BFFA9D6D0>,
+    'x3': <weakref at 0x0000027BFF5C5800; to '_GeneralVarData' at 
+0x0000027BFFA86110>,
+    'x4': <weakref at 0x0000027BFF34E8E0; to '_GeneralVarData' at 
+0x0000027BFFA86180>,
+    'x5': <weakref at 0x0000027BFF88F5B0; to 'ScalarObjective' at 
+0x0000027BFFAC8290>,
+    'x6': <weakref at 0x0000027BFFAE6160; to 'ScalarConstraint' at 
+0x0000027BFFA85FD0>,
+    'x7': <weakref at 0x0000027BFFAE61B0; to 'ScalarConstraint' at 
+0x0000027BFFA86040>
 }
 {
-    'v0': <weakref at 0x0000020974C38810; to 'ScalarVar' at 
-0x0000020974D363D0>,
-    'v1': <weakref at 0x0000020974C4ED90; to 'ScalarVar' at 
-0x0000020974D36650>,
-    'v2': <weakref at 0x00000209745E5670; to '_GeneralVarData' at 
-0x0000020974D49460>,
-    'v3': <weakref at 0x00000209745E5710; to '_GeneralVarData' at 
-0x0000020974D494D0>,
-    'c0': <weakref at 0x0000020974D876F0; to 'ScalarConstraint' at 
-0x0000020974D49320>,
-    'c1': <weakref at 0x0000020974D87740; to 'ScalarConstraint' at 
-0x0000020974D49390>,
-    'o0': <weakref at 0x00000209745E5760; to 'ScalarObjective' at 
-0x0000020974D68470>
+    'v0': <weakref at 0x0000027BFF8C5030; to 'ScalarVar' at 
+0x0000027BFFA9D450>,
+    'v1': <weakref at 0x0000027BFF633970; to 'ScalarVar' at 
+0x0000027BFFA9D6D0>,
+    'v2': <weakref at 0x0000027BFF5C5800; to '_GeneralVarData' at 
+0x0000027BFFA86110>,
+    'v3': <weakref at 0x0000027BFF34E8E0; to '_GeneralVarData' at 
+0x0000027BFFA86180>,
+    'c0': <weakref at 0x0000027BFFAE6160; to 'ScalarConstraint' at 
+0x0000027BFFA85FD0>,
+    'c1': <weakref at 0x0000027BFFAE61B0; to 'ScalarConstraint' at 
+0x0000027BFFA86040>,
+    'o0': <weakref at 0x0000027BFF88F5B0; to 'ScalarObjective' at 
+0x0000027BFFAC8290>
 }
 {
-    'x1': <weakref at 0x0000020974C38810; to 'ScalarVar' at 
-0x0000020974D363D0>,
-    'x2': <weakref at 0x0000020974C4ED90; to 'ScalarVar' at 
-0x0000020974D36650>,
-    'x5': <weakref at 0x0000020973A1E840; to 'ScalarObjective' at 
-0x0000020974D68D70>,
-    'x6': <weakref at 0x0000020974D876F0; to 'ScalarConstraint' at 
-0x0000020974D49320>,
-    'x7': <weakref at 0x0000020974D87740; to 'ScalarConstraint' at 
-0x0000020974D49390>
+    'x1': <weakref at 0x0000027BFF8C5030; to 'ScalarVar' at 
+0x0000027BFFA9D450>,
+    'x2': <weakref at 0x0000027BFF633970; to 'ScalarVar' at 
+0x0000027BFFA9D6D0>,
+    'x5': <weakref at 0x0000027BFF34E6B0; to 'ScalarObjective' at 
+0x0000027BFFAC8B90>,
+    'x6': <weakref at 0x0000027BFFAE6160; to 'ScalarConstraint' at 
+0x0000027BFFA85FD0>,
+    'x7': <weakref at 0x0000027BFFAE61B0; to 'ScalarConstraint' at 
+0x0000027BFFA86040>
 }
 {
-    'x1': <weakref at 0x0000020974C38810; to 'ScalarVar' at 
-0x0000020974D363D0>,
-    'x2': <weakref at 0x0000020974C4ED90; to 'ScalarVar' at 
-0x0000020974D36650>,
-    'x3': <weakref at 0x00000209745E5670; to '_GeneralVarData' at 
-0x0000020974D49460>,
-    'x4': <weakref at 0x00000209745E5710; to '_GeneralVarData' at 
-0x0000020974D494D0>,
-    'x5': <weakref at 0x00000209745E5760; to 'ScalarObjective' at 
-0x0000020974D68470>,
-    'x6': <weakref at 0x0000020974D876F0; to 'ScalarConstraint' at 
-0x0000020974D49320>,
-    'x7': <weakref at 0x0000020974D87740; to 'ScalarConstraint' at 
-0x0000020974D49390>
+    'x1': <weakref at 0x0000027BFF8C5030; to 'ScalarVar' at 
+0x0000027BFFA9D450>,
+    'x2': <weakref at 0x0000027BFF633970; to 'ScalarVar' at 
+0x0000027BFFA9D6D0>,
+    'x3': <weakref at 0x0000027BFF5C5800; to '_GeneralVarData' at 
+0x0000027BFFA86110>,
+    'x4': <weakref at 0x0000027BFF34E8E0; to '_GeneralVarData' at 
+0x0000027BFFA86180>,
+    'x5': <weakref at 0x0000027BFF88F5B0; to 'ScalarObjective' at 
+0x0000027BFFAC8290>,
+    'x6': <weakref at 0x0000027BFFAE6160; to 'ScalarConstraint' at 
+0x0000027BFFA85FD0>,
+    'x7': <weakref at 0x0000027BFFAE61B0; to 'ScalarConstraint' at 
+0x0000027BFFA86040>
 }
 {
-    'x1': <weakref at 0x0000020974C38810; to 'ScalarVar' at 
-0x0000020974D363D0>,
-    'x2': <weakref at 0x0000020974C4ED90; to 'ScalarVar' at 
-0x0000020974D36650>,
-    'x3': <weakref at 0x00000209745E5670; to '_GeneralVarData' at 
-0x0000020974D49460>,
-    'x4': <weakref at 0x00000209745E5710; to '_GeneralVarData' at 
-0x0000020974D494D0>,
-    'x5': <weakref at 0x00000209745FC7C0; to 'ScalarVar' at 
-0x0000020974D364D0>,
-    'x6': <weakref at 0x00000209745E5760; to 'ScalarObjective' at 
-0x0000020974D68470>,
-    'x7': <weakref at 0x0000020974D876F0; to 'ScalarConstraint' at 
-0x0000020974D49320>,
-    'x8': <weakref at 0x0000020974D87740; to 'ScalarConstraint' at 
-0x0000020974D49390>,
-    'x9': <weakref at 0x00000209745FC860; to 'ScalarConstraint' at 
-0x0000020974D499B0>
+    'x1': <weakref at 0x0000027BFF8C5030; to 'ScalarVar' at 
+0x0000027BFFA9D450>,
+    'x2': <weakref at 0x0000027BFF633970; to 'ScalarVar' at 
+0x0000027BFFA9D6D0>,
+    'x3': <weakref at 0x0000027BFF5C5800; to '_GeneralVarData' at 
+0x0000027BFFA86110>,
+    'x4': <weakref at 0x0000027BFF34E8E0; to '_GeneralVarData' at 
+0x0000027BFFA86180>,
+    'x5': <weakref at 0x0000027BFF34D080; to 'ScalarVar' at 
+0x0000027BFFA4F4D0>,
+    'x6': <weakref at 0x0000027BFF88F5B0; to 'ScalarObjective' at 
+0x0000027BFFAC8290>,
+    'x7': <weakref at 0x0000027BFFAE6160; to 'ScalarConstraint' at 
+0x0000027BFFA85FD0>,
+    'x8': <weakref at 0x0000027BFFAE61B0; to 'ScalarConstraint' at 
+0x0000027BFFA86040>,
+    'x9': <weakref at 0x0000027BFF34F4C0; to 'ScalarConstraint' at 
+0x0000027BFFA86660>
 }
 model not solved.

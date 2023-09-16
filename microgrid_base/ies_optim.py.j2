@@ -4,6 +4,13 @@ from typing import cast
 from config import *
 from pydantic import ValidationError
 import cmath
+from error_utils import ErrorManager
+# input: negative
+# output: positive
+# IO: Real
+import numpy as np
+import math
+
 
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
@@ -282,7 +289,7 @@ class 分时阶梯电价(BaseModel):
         self.ports = {}
         
         {% for port_name, port_type in 设备接口集合[class_name] %}
-        {% if port_type.endswith("输入输出") %}
+        {% if port_type.endswith("输入输出") or class_name in ['变压器', "传输线"]%}
         {% set mt = "Reals" %}
         {% elif port_type.endswith("输入") %}
         {# {% set mt = "NegativeReals"%} #}
@@ -383,19 +390,52 @@ class 设备基础信息(BaseModel):
     {{i}}: {{normal_str}} = Field(title = "{{i}}")
     
     def toStandard(self, attr:str):
-        props = schema['properties']
-        schema = self.schema()
-        attr_alias_dict = {k: v.get('title', None) for k,v in props.items()}
-        attrName= attr if attr in props.keys() else attr_alias_dict[attr]
-        className = self.__class__.__name__
-        assert attrName, f"Cannot find attribute name in class '{className}' with query '{attr}'"
-        val = getattr(self, attrName)
-        desc = props[attr]['description']
-        val_unit = desc.replace("：", ":").split(":")[-1].strip()
-        assert val_unit, f"{className}.{attrName} does not have unit definition"
-        ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
-        ret_val = val*ConversionRate
-        return ret_val
+        with ErrorManager(default_error = f"Instance data:\n{self.dict()}\nError converting attribute '{attr}' of class '{className}'"):
+            props = schema['properties']
+            schema = self.schema()
+
+            attr_alias_dict = {k: v.get('title', None) for k,v in props.items()}
+            attrName= attr if attr in props.keys() else attr_alias_dict[attr]
+            className = self.__class__.__name__
+            assert attrName, f"Cannot find attribute name in class '{className}' with query '{attr}'"
+            val = copy.deepcopy(getattr(self, attrName))
+
+            desc = props[attr]['description']
+            val_units = desc.replace("：", ":").split(":")[-1].strip()
+
+            units = []
+            for i, unit in enumerate(val_units.replace("，", ",").split(",")):
+                u = unit.strip()
+                if u:
+                    units.append(u)
+            
+            varNames = attrName.replace("-","_").split("_")
+            assert len(varNames) == len(units), f"units length ({units}) does not match varname length ({varNames}).\nfailed to parse unit for: {className}.{attrName}"
+        
+            assert len(units)>0, f"{className}.{attrName} does not have unit definition"
+
+            crlist = []
+
+            for val_unit in units:
+                ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
+                logger_print(f"Converting param {varNames[i]}: {val_unit} -> {StandardUnit} (magnitude: {ConversionRate})")
+                crlist.append(ConversionRate)
+
+            len_varNames = len(varNames)
+
+            if not hasattr(val,' __iter__'):
+                assert len_varNames == 1, f"input value {val} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
+                ret_val = val*crlist[0]
+            elif not hasattr(val[0], '__iter__'):
+                assert len_varNames == 1, f"input value {val} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
+                ret_val = [v*crlist[0] for v in val]
+            else:
+                # verify shape here.
+                ret_val = []
+                for it in val:
+                    assert len(it) == len_varNames, f"input value {it} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
+                    ret_val.append([it[i]*crlist[i] for i in range(len_varNames)])
+            return ret_val
 
 {% endfor %}
 
@@ -423,6 +463,22 @@ class 油耗规划算法(StrEnum):
     平均= auto()
     最佳= auto()
 
+class 新能源消纳约束(StrEnum):
+    无 = auto()
+    惩罚代价 = auto()
+    限制消纳率 = auto()
+
+class LoadType(StrEnum):
+    Normal = auto()
+    Punished = auto()
+    Flexible = auto()
+    Interruptable = auto()
+    InterruptableAndFlexible = auto()
+
+class Direction(StrEnum):
+    Directed = auto()
+    Bidirectional = auto()
+
 {% set NonLoadDeviceDict = {}%}
 
 {# 不是标准单位 #}
@@ -443,6 +499,7 @@ class 油耗规划算法(StrEnum):
         }
     }
 %}
+{%set RenewableEnergyDevices = ['风力发电', '光伏发电']%}
 {% for key in 燃料能源相关数据默认单位.keys()%}
     {% do 燃料能源相关数据默认单位[key].update(fuelEmissionUnits) %}
 {% endfor %}
@@ -455,7 +512,32 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
             
     {% if class_name not in NonLoadDeviceDict.keys() %}
         {% if class_name in load_class_names %}
+    LoadType: LoadType = Field(default = LoadType.Normal, title = "负荷类型", description = f"可选: {', '.join(LoadType.__members__.keys())}")
+
     # 正数
+    Pr: confloat(ge=0) = Field(default = 0, title = "惩罚系数", description="单位: 元/kWh")
+    """
+    单位: 元/kWh
+    """
+
+    Pmin = confloat(ge = 0) = Field(default = 0,title = "负荷功率最小值", description = "单位: kW")
+    """
+    单位: kW
+    """
+    
+    Pmax = confloat(ge = 0) = Field(default = 0,title = "负荷功率最大值", description = "单位: kW")
+    """
+    单位: kW
+    """
+
+    @validator('Pmax')
+    def validate_Pmax(cls, v, values):
+        if values.get('LoadType', None) in [LoadType.Flexible, LoadType.InterruptableAndFlexible]:
+            p_min = values.get('Pmin', 0)
+            assert v >= p_min, f"Pmax must be greater than or equal to Pmin\nGiven: Pmax={v}, Pmin={p_min}"
+        return v
+            
+
     EnergyConsumption: List[{{non_neg_float}}] = Field(title = '耗能功率表', description='单位: kW')
     """
     单位: kW
@@ -495,9 +577,42 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {# special variables for non-load device info #}
         {# {% if class_name in ['锂电池']%} #}
     {# needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减") #}
-        {% if class_name in ['风力发电']%}
+        {% if class_name in ['传输线'] %}
+        Optimize:bool = Field(default = False, title ="是否优化线径", description="若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值")
+        U:confloat(gt=0) = Field(title = "传输电压", description = "单位: kW")
+        """
+        单位: kW
+        """
+        Rho:confloat(gt=0) = Field(title = "传输线电阻率", description = "单位: Ω*m")
+        """
+        单位: Ω*m
+        """
+        GivenAveragePower:confloat(gt = 0) = Field(title = '平均功率', description = "单位: kW")
+        """
+        单位: kW
+        """
+        GivenMaxPower:confloat(gt = 0) = Field(title = '峰值功率', description = "单位: kW")
+        """
+        单位: kW
+        """
+
+        Pwire_Asec_Pr: List[Tuple[confloat(gt=0), confloat(gt=0), confloat(gt=0)]] = Field(title = "传输电功率上限-截面积-单位长度价格", description="单位：kW，mm2，万元/km")
+        """
+        Pwire（传输电功率上限）
+        单位：kW
+        
+        Asec（截面积）
+        单位：mm2
+        
+        Pr（单位长度价格）
+        单位：万元/km
+        """
+        {% elif class_name in RenewableEnergyDevices%}
+    RenewableEnergyConsumptionConstraint: 新能源消纳约束 = Field(default = 新能源消纳约束.无, title= "新能源消纳约束", description= "无、惩罚代价、限制消纳率" )
+            {% if class_name in ['风力发电'] %}
     machineType: 风力发电类型 = Field(default=风力发电类型.变桨, title = '选择风力发电类型', description = "定桨、变桨（默认）、标幺值")
     normalizedPower: Union[None, List[float]]= Field(default=None, title="风力发电标幺值", description = "空或数组(典型日长度为24,全年逐时长度为8760,秒级长度为7200)")
+            {%endif%}
         {% elif class_name in ['柴油发电']%}
     {# 机组年运行时间约束:bool (若选否，变量约束不创建，变量为自由变量，降低计算量)  #}
     {# unitAnnualOperatingTimeConstraint:bool #}
@@ -514,7 +629,8 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 ,title="机组规划算法选择", description="平均/最佳")
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
     averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
-
+            {% elif class_name in ['变压器']%}
+    direction: Direction = Field(default= Direction.Directed, title = "单双向模式",description="默认为单向")
         {% endif%} 
         {% set visited_fields = []%}
         {% for psc, mstr in mstrs %}
@@ -1271,12 +1387,6 @@ class 设备模型:
 
         return mx_my_multiply
 
-# input: negative
-# output: positive
-# IO: Real
-import numpy as np
-import math
-
 {% for super_class, class_name, mstrs, mdigits, mtables in 设备库 %}
 {% set SO.class_name = class_name %}
 
@@ -1286,6 +1396,11 @@ class {{class_name}}模型(设备模型):
         {% set mflag = namespace(val="")%}
         {% if class_name in ['柴油发电']%}
         self.燃料热值:float = 0 # 需要拓扑解析之后进行赋值
+        {% elif class_name in ['传输线']%}
+        # params added later
+            {% for lateinit_varname in ["U", "Rho", "GivenAveragePower", "GivenMaxPower","Pwire_Asec_Pr"] %}
+        self.{{lateinit_varname}} = self.设备信息.toStandard({{repr(lateinit_varname)}})
+            {% endif %}
         {% endif%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟", "设计规划"] %}
@@ -1342,7 +1457,7 @@ class {{class_name}}模型(设备模型):
 {{ port_variable_define(class_name)}}
         
         # 设备特有约束（变量）
-        {% if class_name in ['光伏发电','风力发电','柴油发电']%}
+        {% if class_name in ['光伏发电','风力发电','柴油发电'] %}
         self.电输出 = self.电接口
             {% if class_name in ["柴油发电"]%}
         self.柴油输入 = self.燃料接口
@@ -1351,9 +1466,58 @@ class {{class_name}}模型(设备模型):
             {% endif%}
         {% endif%}
 
-        {% if class_name in ['变压器'] %}
+        {% if class_name in ['变压器', '传输线'] %}
+
+        self.PowerInput_ = self.变量列表_带指示变量("PowerInput_")
+        self.PowerOutput_ = self.变量列表_带指示变量("PowerOutput_")
+
+        {if class_name in ['变压器']}
+
+        self.RangeConstraint(self.电输入, self.PowerInput_.x, expression=lambda x,y: x==y)
+        self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression=lambda x,y: x==y)
+
+        if self.设备信息.direction == Direction.Directed:
+            self.RangeConstraint(self.PowerInput_.x_pos, expression=lambda x: x == 0)
+            self.RangeConstraint(self.PowerOutput_.x_neg, expression=lambda x: x == 0)
+    
         {{设计规划}}: # 在变压器和负荷的交换节点处做处理
             self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/(1 if 0 == self.LoadRedundancyParameter else self.LoadRedundancyParameter) # type: ignore
+            {%elif class_name in ['传输线']%}
+        self.Pwire_Asec_Pr.sort(key=lambda x: x[0])
+        self.Pwire_arr = [e[0] for e in self.Pwire_Asec_Pr]
+        self.Asec_arr = [e[1] for e in self.Pwire_Asec_Pr]
+        self.Pr_arr = [e[2] for e in self.Pwire_Asec_Pr]
+
+        if self.设备信息.Optimize:
+            self.Pwire = self.单变量('Pwire', within=NonNegativeReals)
+            self.RangeConstraintMulti(self.PowerInput_.x_neg, self.PowerOutput_.x_neg, expression = lambda x,y: x+y<=self.Pwire)
+            self.Asec = self.单变量('Asec', within=NonNegativeReals)
+            self.Piecewise(x_var = [self.Pwire], y_var = [self.Asec],x_vals = self.Pwire_arr, y_vals = self.Asec_arr,range_list = [0])[0]
+            self.Pr = self.单变量('Pr', within=NonNegativeReals)
+            self.Piecewise(x_var = [self.Pwire], y_var = [self.Pr], x_vals = self.Pwire_arr, y_vals = self.Pr_arr ,range_list = [0])[0]
+        else:
+            self.Pwire = self.GivenMaxPower
+            {# self.Pwire = self.GivenAveragePower #}
+            self.Asec = np.interp(self.Pwire, self.Pwire_arr, self.Asec_arr)
+            self.Pr = np.interp(self.Pwire, self.Pwire_arr, self.Pr_arr)
+        self.R =(self.Rho*self.Length )/ self.Asec
+        """
+        传输线电阻
+        """
+        self.Ploss = self.R * ((self.GivenAveragePower/self.U) **2)
+
+        # unit please?
+        # overriding passed parameters.
+        # let's preserve this.
+        self.CostPerKilometer = self.Pr
+        {# no formula! #}
+        {# self.CostPerYearPerKilometer = ...  #}
+        {# self.BuildCostPerKilometer =  #}
+        
+        self.inputIndicators = self.变量列表_带指示变量('inputIndicators')
+        self.outputIndicators = self.变量列表_带指示变量('outputIndicators')
+        
+            {% endif %}
         {% endif %}
         {% if class_name in ['光伏发电'] %}
         {{设计规划}}:
@@ -1446,7 +1610,7 @@ class {{class_name}}模型(设备模型):
         单位: kWh
         """ #}
 
-        self.MaxTotalChargeOrDischargeRate =  self.BatteryDeltaLimit * self.TotalCapacity 
+        self.MaxTotalChargeOrDischargeRate = self.BatteryDeltaLimit * self.TotalCapacity 
         """
         最大总充放功率
         单位: kW
@@ -1474,8 +1638,10 @@ class {{class_name}}模型(设备模型):
                 self.CurrentTotalPowerOfDecayCompensated = self.变量列表('总补偿衰减率', bounds = (0,self.TotalStoragePowerOfDecay), within=NonNegativeReals) #}
 
         {%elif class_name in ['双向变流器']%}
-        self.线路端_ = self.变量列表_带指示变量("线路端_") 
+
+        self.线路端_ = self.变量列表_带指示变量("线路端_")
         self.储能端_ = self.变量列表_带指示变量("储能端_")
+
         {% elif class_name in ['传输线']%}
         self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗') 
         {%endif%}
@@ -1556,9 +1722,22 @@ class {{class_name}}模型(设备模型):
         # 输出输入功率约束
 
         {%if class_name in ['传输线']%}
+{#         
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
         self.RangeConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
-        self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y:x == y )
+        self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y: x == y ) #}
+        
+        self.RangeConstraint(self.电输入, self.PowerInput_.x, expression = lambda x,y: x==y)
+        self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression = lambda x,y: x==y)
+
+        self.RangeConstraint(self.电输入, self.inputIndicators.x, expression = lambda x,y: x == y+self.Ploss)
+
+        self.RangeConstraint(self.电输出, self.outputIndicators.x, expression = lambda x,y: x == y+self.Ploss)
+
+        self.RangeConstraint(self.PowerOutput.x_pos, self.inputIndicators.x_neg, lambda x,y: x==y)
+        self.RangeConstraint(self.PowerInput.x_pos, self.outputIndicators.x_neg, lambda x,y: x==y)
+
+
         {%elif class_name in ['双向变流器']%}
 
         self.RangeConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
@@ -1574,8 +1753,29 @@ class {{class_name}}模型(设备模型):
         {% elif class_name in 单向变电器列表 %}
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
+        {% if class_name in ['变压器']%}
         self.RangeConstraint(self.电输入, self.电输出, lambda x,y: x * self.Efficiency {{"* self.PowerParameter" if class_name in ['变压器'] else ""}} == -y)
-        self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount )
+        self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
+        {% else %}
+        self.RangeConstraint(
+            self.PowerInput_.x_neg,
+            self.PowerOutput_.x_pos,
+            lambda x, y: x * self.Efficiency * self.PowerParameter == y,
+        )
+        self.RangeConstraint(
+            self.PowerOutput_.x_neg,
+            self.PowerInput_.x_pos,
+            lambda x, y: x * self.Efficiency * self.PowerParameter == y,
+        )
+        
+        self.RangeConstraintMulti(
+            self.PowerInput_.x_neg, expression=lambda x: x <= self.RatedPower * self.DeviceCount
+        )
+        self.RangeConstraintMulti(
+            self.PowerOutput_.x_neg, expression=lambda x: x <= self.RatedPower * self.DeviceCount
+        )
+        {% endif%}
+
         {% elif class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 省略除以1 单位: one
         assert 光电转换效率<=1, f"光电转换效率数值不正常: {光电转换效率} (应当在0-1之间)\n光电转换效率 = 单块最大功率 / 单块面积"
@@ -1587,17 +1787,18 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
 
         # BUG: 限制最大功率输出（标准光照下）
-        self.RangeConstraintMulti(self.电输出, expression = lambda x: x<= self.MaxPower*self.DeviceCount*self.PowerConversionEfficiency)
+        self.RangeConstraintMulti(self.电输出, expression = lambda x: x <= self.MaxPower*self.DeviceCount*self.PowerConversionEfficiency)
 
         {% elif class_name in ['风力发电'] %}
         self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
 
         {% elif class_name in ['柴油发电'] %}
-        总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount
+        {# 总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount #}
+        总最小启动功率 = self.RatedPower * self.PowerStartupLimit
         {# 总最大输出功率 = self.RatedPower * self.DeviceCount #}
 
         self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
-        self.RangeConstraint(self.原电输出, self.电功率中转.x ,lambda x,y: x == y + 总最小启动功率)
+        self.RangeConstraint(self.原电输出, self.电功率中转.x, lambda x,y: x == y + 总最小启动功率)
 
         self.Piecewise(y_var = self.单台柴油输入, x_var = self.单台发电功率, y_vals = [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], x_vals = [self.RatedPower*x[1] for x in self.DieselToPower_Load])
         # 柴油输入率: L/h
@@ -1629,7 +1830,7 @@ class {{class_name}}模型(设备模型):
             self.原电接口.x_neg,
             self.电接口,
             {# self.CurrentTotalPowerOfDecayCompensated,  #}
-            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency- (x_neg ) / self.ChargeEfficiency== y,
+            expression=lambda x_pos, x_neg, y: x_pos * self.DischargeEfficiency - (x_neg) / self.ChargeEfficiency == y,
             {# expression=lambda x_pos, x_neg, y, z: x_pos * self.DischargeEfficiency- (x_neg + (self.TotalStoragePowerOfDecay - z)) / self.ChargeEfficiency== y, #}
         )
         {# {% else%} #}
@@ -1647,8 +1848,8 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraintMulti(self.原电接口.x_abs, expression = lambda x: x <= self.MaxTotalChargeOrDischargeRate)
         {# for i in range(self.计算参数.迭代步数-1): #}
             {# 
-            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <=self.MaxTotalCapacityDeltaPerStep)
-            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >=-self.MaxTotalCapacityDeltaPerStep) 
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] <= self.MaxTotalCapacityDeltaPerStep)
+            self.mw.Constraint(self.CurrentTotalCapacity[i+1] - self.CurrentTotalCapacity[i] >= -self.MaxTotalCapacityDeltaPerStep)
             #}
 
 {# 
@@ -1673,7 +1874,7 @@ class {{class_name}}模型(设备模型):
                     )
             # {%else%}
                 else:
-                    self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalCapacity[0]) * {{时间步长参数}} )
+                    self.mw.Constraint(self.原电接口.x[0] == (self.CurrentTotalCapacity[self.计算参数.迭代步数-1] - self.CurrentTotalCapacity[0]) * {{时间步长参数}})
             # {% endif%} 
             else:
                 raise Exception("未知循环边界条件:", self.设备信息.循环边界条件)
@@ -1782,8 +1983,14 @@ class {{class_name}}模型(设备模型):
         {% elif class_name in ['锂电池']%}
             {% set m1="计算范围内总平均放电功率*self.计算参数.迭代步数"%}
             {# {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%} #}
-        {% elif class_name in 单向变电器列表+['传输线']%}
+        {% elif class_name in 单向变电器列表 %}
+        {# {% elif class_name in 单向变电器列表+['传输线']%} #}
+            {% if class_name in ['变压器']%}
+            {# {% if class_name in ['变压器', '传输线']%} #}
+            {% set m1 = '(self.SumRange(self.PowerInput_.x_neg) + self.SumRange(self.PowerOutput_.x_neg))'%}
+            {% else%}
             {% set m1='-self.SumRange(self.电输入)'%}
+            {% endif%}
         {% elif class_name in ['双向变流器']%}
             {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
         {%elif class_name in ['传输线'] %}
@@ -1797,7 +2004,7 @@ class {{class_name}}模型(设备模型):
         # avg_power * 8760 = annual_work
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
-        {% else%}
+        {% else %}
         self.总成本年化 = self.总固定成本年化
         {% endif%}
         {% endwith%}
@@ -1834,20 +2041,31 @@ class {{class_name}}模型(设备模型):
 {{ port_variable_define(class_name)}}
 
     {% if k == "load_class"%}
-        {% if not class_name.endswith('负荷')%}
-            {% error("错误的负荷类名:", class_name)%}
-        {% else%}
-            {% set v = class_name.strip("负荷")%}
-        {% endif%}
+        {% if not class_name.endswith('负荷') %}
+            {% error("错误的负荷类名:", class_name) %}
+        {% else %}
+            {% set v = class_name.strip("负荷") %}
+        {% endif %}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
+        
+        if self.设备信息.LoadType == self.LoadType.Punished:
+            self.UnsatisfiedEnergyConsumption = self.变量列表(
+            "UnsatisfiedEnergyConsumption", within=NonNegativeReals
+        )
+
+        if self.LoadType.Interruptable in self.设备信息.LoadType:
+            self.Interrupted = self.变量列表(
+            "Interrupted", within=Binary)
 
         {% if v in ['电'] %}
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
+
         if self.设备信息.MaxEnergyConsumption is None:
             self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
         else:
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
             self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
+
         {% endif %}
 
         self.IncomeRates = ...
@@ -1902,26 +2120,39 @@ class {{class_name}}模型(设备模型):
         # TODO: 典型日的分时分月电价取每天同一小时的平均，在电价模型内实现
         getTimeInDay = lambda index: index {{小时}} else self.计算参数.分时计价开始时间点 + 每天小时数*convertMonthToDays(self.计算参数.分时计价开始月份) + (index/每小时秒数)
 
-        self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # positive?
+        self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # negative, means income
+        punishmentRates = [0]
 
-        self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
-
-        年化费用 = (sum(self.IncomeRates)/len(self.IncomeRates)) * 每年小时数
+        if self.设备信息.LoadType == LoadType.Normal:
+            self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
+        elif self.设备信息.LoadType == LoadType.Punished:
+            self.RangeConstraintMulti(self.{{port_name}}, self.UnsatisfiedEnergyConsumption, self.设备信息.EnergyConsumption,expression =  lambda x,y,z: x == -(z-y))
+            punishmentRates = [v*self.设备信息.Pr for v in self.UnsatisfiedEnergyConsumption.values()]
+        elif self.设备信息.LoadType == LoadType.Flexible:
+            self.RangeConstraintMulti(self.{{port_name}}, expression = lambda x: -x>=self.设备信息.Pmin)
+            self.RangeConstraintMulti(self.{{port_name}}, expression = lambda x: -x<=self.设备信息.Pmax)
+        elif self.设备信息.LoadType == LoadType.Interruptable:
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x==self.设备信息.Pmax*(1-y))
+        elif self.设备信息.LoadType == LoadType.InterruptableAndFlexible:
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x>=self.设备信息.Pmin*(1-y))
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x<=self.设备信息.Pmax*(1-y))
+        
+        年化费用 = ((quicksum(self.IncomeRates)+ quicksum(punishmentRates))/len(self.IncomeRates)) * 每年小时数
         # 已经是负数了
 
         {# 计价模型 #}
     {% elif k == "input_class"%}
-        {% if class_name in ['柴油']%}
+        {% if class_name in ['柴油'] %}
         平均消耗率 = self.SumRange(self.燃料接口) / self.计算参数.迭代步数
-        {% else%}
-            {% error('未知能源类型:', class_name)%}
-        {% endif%}
+        {% else %}
+            {% error('未知能源类型:', class_name) %}
+        {% endif %}
 
         年化费用 = 平均消耗率 * self.Price * 每年小时数 
 
     {% else%}
-        {% error("未知特殊类型:", k)%}
-    {% endif%}
+        {% error("未知特殊类型:", k) %}
+    {% endif %}
         self.总成本年化 = 年化费用
         return 年化费用
 
@@ -1965,10 +2196,18 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
 
 {% endfor %}
 
+def iterate_input_output_limit(attr, indexs, G, devInstDict):
+    m_limit_list = []
+    for m_id in indexs:
+        m_anchor = G.nodes[m_id]
+        m_node_id = m_anchor["device_id"]
+        m_devInst = devInstDict[m_node_id]
+        m_limit_list.append(getattr(m_devInst, attr))
+    io_limit = sum(m_limit_list)
+    return io_limit
 
-{% macro iterate_input_output_limit(io_type, attr, type_annotation)%}
+{# {% macro iterate_input_output_limit(io_type, attr, type_annotation) %}
     {% set devInstVarName = "m_devInst{}".format(io_type.title())%}
-                # IO TYPE: {{io_type}}
                 m_limit_list = []
                 for m_id in {{io_type}}_indexs:
                     m_anchor = G.nodes[m_id]
@@ -1976,7 +2215,7 @@ dev{{e}}ClassMap : Dict[str, {{"设备"+type_suffix if type_suffix != "信息" e
                     {{devInstVarName}} : {{type_annotation}} = devInstDict[m_node_id]
                     m_limit_list.append({{devInstVarName}}.{{attr}})
                 {{io_type}}_limit = {{- sum_reduce('m_limit_list') }}
-{% endmacro %}
+{% endmacro %} #}
 
 # export all these data with no dependency on calculation type.
 
@@ -2214,14 +2453,23 @@ class 设备节点基类(节点基类):
     type: Literal['设备']
     ports:Dict[{{normal_str}},设备接口映射] = Field(title = "设备接口映射", description = "描述设备所对应接口的类型和接口ID")
 
-{% set deviceNodeClasses = []%}
+deviceSubtypeAlias = dict(变流器=["单向变流器"], 锂电池=['蓄热设备','蓄冷设备','蓄冰设备'])
+DSAToDS = {e:k for k, v in deviceSubtypeAlias.items() for e in v}
+{# {% set deviceSubtypeAlias = dict(变流器=["单向变流器"]) %} #}
+{% set deviceNodeClasses = [] %}
 {% for infoClass in infoClassList %}
     {% set deviceName = infoClass.strip("信息")%}
     {% set deviceNodeClassName = deviceName+"节点" %}
     {% do deviceNodeClasses.append(deviceNodeClassName) %}
 class {{deviceNodeClassName}}(设备节点基类):
-    subtype: Literal[{{repr(deviceName)}}] = Field(title = "节点次类型")
+    subtype: Literal[{{repr(deviceName)}}, *deviceSubtypeAlias.get({{repr(deviceName)}}, [])] = Field(title = "节点次类型")
+    {# subtype: Literal[{{repr(deviceName)}}, {{",".join(aliasLiterals)}}] = Field(title = "节点次类型") #}
     param:{{infoClass}} = Field(title = '设备信息', description = {{repr(infoClass)}})
+
+    @validator('subtype')
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 {% endfor%}
 
@@ -2267,6 +2515,7 @@ class EnergyFlowGraph(BaseModel):
     )
 
 from networkx import Graph
+from failsafe_utils import failsafe_suppress_exception
 
 # partial if typical day mode is on.
 def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, mw: ModelWrapper):
@@ -2276,78 +2525,95 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     devInstDict = {}
 
     for dev in devs:
-        devSubtype = dev['subtype']
-        {# devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} } #}
-        devParam = dev['param']
-        devPorts = dev['ports']
+        with failsafe_suppress_exception():
+            devSubtype = dev['subtype']
+            {# devParam = {k:v for k,v in dev.items() if k not in {"subtype","type","ports"} } #}
+            devParam = dev['param']
+            devPorts = dev['ports']
 
-        devID_int = dev['id']
+            devID_int = dev['id']
 
-        devIDClass = devIDClassMap[devSubtype]
+            devIDClass = devIDClassMap[devSubtype]
 
-        devIDInstInit = {"ID": devID_int}
-        for port_name, port_info in devPorts.items():
-            port_id = port_info['id']
-            devIDInstInit.update({port_name:port_id})
-        devIDInst = devIDClass.parse_obj(devIDInstInit)
+            devIDInstInit = {"ID": devID_int}
+            for port_name, port_info in devPorts.items():
+                with failsafe_suppress_exception():
+                    port_id = port_info['id']
+                    devIDInstInit.update({port_name:port_id})
+            devIDInst = devIDClass.parse_obj(devIDInstInit)
 
-        devInfoInstInit = devParam
-        devInfoClass = devInfoClassMap[devSubtype]
-        devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
+            devInfoInstInit = devParam
+            devInfoClass = devInfoClassMap[devSubtype]
+            devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
-        devInstClass = devInstClassMap[devSubtype]
-        devInst = devInstClass(PD = PD, mw=mw, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst) # type: ignore
+            devInstClass = devInstClassMap[devSubtype]
+            devInst = devInstClass(PD = PD, mw=mw, 计算参数实例=algoParam, 设备ID= devIDInst, 设备信息=devInfoInst) # type: ignore
 
-        devInstDict.update({ devID_int: devInst})
+            devInstDict.update({devID_int: devInst})
+
     for adder_index, adder in adders.items():
-        input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
+        with failsafe_suppress_exception():
+            input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
 
-        # fill in missing params
-        if len(input_indexs) >= 1:
-            if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
-                assert len(input_indexs) == 1, "柴油元件只能一对多连接"
-                diesel_node_id = G.nodes[input_indexs[0]]['device_id']
-                {# 热值 = devInstDict[diesel_node_id].设备信息.热值 #}
-                热值 = devInstDict[diesel_node_id].热值
-                for output_index in output_indexs:
-                    output_node_index = G.nodes[output_index]['device_id']
-                    devInstDict[output_node_index].燃料热值 = 热值
+            # fill in missing params
+            with failsafe_suppress_exception():
+                if len(input_indexs) >= 1:
+                    if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
+                        assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                        diesel_node_id = G.nodes[input_indexs[0]]['device_id']
+                        {# 热值 = devInstDict[diesel_node_id].设备信息.热值 #}
+                        热值 = devInstDict[diesel_node_id].热值
+                        for output_index in output_indexs:
+                            output_node_index = G.nodes[output_index]['device_id']
+                            devInstDict[output_node_index].燃料热值 = 热值
+            # add them all.
 
-        # add them all.
+            logger_print("_"*20)
+            display_var_names = lambda indexs: '\n    '.join([str(PD[i]) for i in indexs])
+            logger_print(f"INPUTS:{display_var_names(input_indexs)}")
+            logger_print()
+            logger_print(f"OUTPUTS:{display_var_names(output_indexs)}")
+            logger_print()
+            logger_print(f"IO:{display_var_names(io_indexs)}")
+            logger_print("_"*20)
 
-        logger_print("_"*20)
-        display_var_names = lambda indexs: '\n    '.join([str(PD[i]) for i in indexs])
-        logger_print(f"INPUTS:{display_var_names(input_indexs)}")
-        logger_print()
-        logger_print(f"OUTPUTS:{display_var_names(output_indexs)}")
-        logger_print()
-        logger_print(f"IO:{display_var_names(io_indexs)}")
-        logger_print("_"*20)
+            for j in range(algoParam.迭代步数):
+                seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}
+                # TODO: 消纳率约束
+                mw.Constraint(seqsum >=0)
 
-        for j in range(algoParam.迭代步数):
-            seqsum = {{- sum_reduce('[PD[i][j] for i in input_indexs + output_indexs + io_indexs]') }}
-            # TODO: 消纳率约束
-            mw.Constraint(seqsum >=0)
-        
-        if algoParam.计算类型 == '设计规划':
-            cnt = 0
-            if len(input_indexs)==0:
-                continue
-            input_anchor_0 = G.nodes[input_indexs[0]]
-            if input_anchor_0['subtype'] == '变压器输出':
-                logger_print(f"Building Converter Constraint #{cnt}")
-                cnt+=1
-                assert io_indexs == []
+            with failsafe_suppress_exception():
+                if algoParam.计算类型 == '设计规划':
+                    cnt = 0
+                    if len(input_indexs)==0:
+                        continue
+                    input_anchor_0 = G.nodes[input_indexs[0]]
+                    if input_anchor_0['subtype'] == '变压器输出':
+                        logger_print(f"Building Converter Constraint #{cnt}")
+                        cnt+=1
+                        assert io_indexs == []
 
-{{ iterate_input_output_limit("input","最大允许的负载总功率", "变压器模型") }}
+                        input_limit = iterate_input_output_limit("最大允许的负载总功率", input_indexs, G, devInstDict)
+    {# {{ iterate_input_output_limit("input","最大允许的负载总功率", "变压器模型") }} #}
+                        output_limit = iterate_input_output_limit("MaxEnergyConsumption", output_indexs, G, devInstDict)
+    {# {{ iterate_input_output_limit("output","MaxEnergyConsumption", "电负荷模型") }} #}
 
-{{ iterate_input_output_limit("output","MaxEnergyConsumption", "电负荷模型") }}
+                        mw.Constraint(input_limit + output_limit >= 0)
 
-                mw.Constraint(input_limit + output_limit >= 0)
+    {# financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }} #}
+    financial_obj_expr = 0
 
-    financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }}
+    for e in devInstDict.values():
+        with failsafe_suppress_exception():
+            financial_obj_expr+= e.constraints_register()
 
-    financial_dyn_obj_expr = sum([(e.总可变维护成本年化) for e in devInstDict.values()])
+    financial_dyn_obj_expr = 0
+
+    for e in devInstDict.values():
+        with failsafe_suppress_exception():
+            financial_dyn_obj_expr+=e.总可变维护成本年化
+
+    {# financial_dyn_obj_expr = sum([(e.总可变维护成本年化) for e in devInstDict.values()]) #}
 
     environment_obj_exprs = [] # annual CO2 emission
     
@@ -2361,6 +2627,6 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     obj_exprs = (financial_obj_expr,
                 financial_dyn_obj_expr,
                 environment_obj_expr,
-)
+    )
     return obj_exprs, devInstDict, PD
     # always minimize the objective.

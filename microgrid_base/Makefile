@@ -149,6 +149,16 @@ code_check: code_checker.py
 test: release
 	${MAKE} -e -C test
 
+
+t_export: release
+	${MAKE} -e -C test t_export
+
+t_failsafe: release
+	${MAKE} -e -C test t_failsafe
+
+t_model: release
+	${MAKE} -e -C test t_model
+
 dsl:
 	${MAKE} -e -C dsl_parser
 

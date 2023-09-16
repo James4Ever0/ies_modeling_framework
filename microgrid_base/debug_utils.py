@@ -53,7 +53,7 @@ class SolvedTestMode(StrEnum):
 def get_unassigned_attrname(obj):
     while True:
         attrname = str(uuid.uuid4()).replace("-", "_")
-        challange = uuid.UUID()
+        challange = uuid.uuid4()
         attr = getattr(obj, attrname, challange)
         if attr == challange:
             return attrname
@@ -62,7 +62,7 @@ def get_unassigned_attrname(obj):
 def assign_attr_to_obj_with_random_name(obj, value):
     attrName = get_unassigned_attrname(obj)
     setattr(obj, attrName, value)
-    attrName
+    return attrName
 
 
 @contextmanager

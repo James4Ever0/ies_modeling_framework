@@ -95,7 +95,7 @@ class 常数电价(BaseModel, 电价转换):
     Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
 
     def getFee(self, power: float, time_in_day: float) -> float:
-        price = self.Price
+        price = self.Pricec
 
         # unit: [currency]/[time]
         # 万元/h
@@ -349,13 +349,13 @@ class 变压器ID(设备ID):
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
-    """
-    类型: 变流器输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    """
+    类型: 变流器输入
     """
 
 
@@ -371,13 +371,13 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
     """
     类型: 电母线输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -3481,18 +3481,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 变流器输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 变流器输入
         """
 
         # 设备特有约束（变量）
@@ -3791,18 +3791,18 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 电母线输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -4127,6 +4127,17 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
 }  # type: ignore
+
+
+def iterate_input_output_limit(attr, indexs, G, devInstDict):
+    m_limit_list = []
+    for m_id in indexs:
+        m_anchor = G.nodes[m_id]
+        m_node_id = m_anchor["device_id"]
+        m_devInst = devInstDict[m_node_id]
+        m_limit_list.append(getattr(m_devInst, attr))
+    io_limit = sum(m_limit_list)
+    return io_limit
 
 
 # export all these data with no dependency on calculation type.
@@ -4671,54 +4682,110 @@ class 设备节点基类(节点基类):
     )
 
 
+deviceSubtypeAlias = dict(变流器=["单向变流器"])
+DSAToDS = {e: k for k, v in deviceSubtypeAlias.items() for e in v}
+
+
 class 柴油节点(设备节点基类):
-    subtype: Literal["柴油"] = Field(title="节点次类型")
+    subtype: Literal["柴油", *deviceSubtypeAlias.get("柴油", [])] = Field(title="节点次类型")
     param: 柴油信息 = Field(title="设备信息", description="柴油信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 电负荷节点(设备节点基类):
-    subtype: Literal["电负荷"] = Field(title="节点次类型")
+    subtype: Literal["电负荷", *deviceSubtypeAlias.get("电负荷", [])] = Field(title="节点次类型")
     param: 电负荷信息 = Field(title="设备信息", description="电负荷信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 光伏发电节点(设备节点基类):
-    subtype: Literal["光伏发电"] = Field(title="节点次类型")
+    subtype: Literal["光伏发电", *deviceSubtypeAlias.get("光伏发电", [])] = Field(title="节点次类型")
     param: 光伏发电信息 = Field(title="设备信息", description="光伏发电信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 风力发电节点(设备节点基类):
-    subtype: Literal["风力发电"] = Field(title="节点次类型")
+    subtype: Literal["风力发电", *deviceSubtypeAlias.get("风力发电", [])] = Field(title="节点次类型")
     param: 风力发电信息 = Field(title="设备信息", description="风力发电信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 柴油发电节点(设备节点基类):
-    subtype: Literal["柴油发电"] = Field(title="节点次类型")
+    subtype: Literal["柴油发电", *deviceSubtypeAlias.get("柴油发电", [])] = Field(title="节点次类型")
     param: 柴油发电信息 = Field(title="设备信息", description="柴油发电信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 锂电池节点(设备节点基类):
-    subtype: Literal["锂电池"] = Field(title="节点次类型")
+    subtype: Literal["锂电池", *deviceSubtypeAlias.get("锂电池", [])] = Field(title="节点次类型")
     param: 锂电池信息 = Field(title="设备信息", description="锂电池信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 变压器节点(设备节点基类):
-    subtype: Literal["变压器"] = Field(title="节点次类型")
+    subtype: Literal["变压器", *deviceSubtypeAlias.get("变压器", [])] = Field(title="节点次类型")
     param: 变压器信息 = Field(title="设备信息", description="变压器信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 变流器节点(设备节点基类):
-    subtype: Literal["变流器"] = Field(title="节点次类型")
+    subtype: Literal["变流器", *deviceSubtypeAlias.get("变流器", [])] = Field(title="节点次类型")
     param: 变流器信息 = Field(title="设备信息", description="变流器信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 双向变流器节点(设备节点基类):
-    subtype: Literal["双向变流器"] = Field(title="节点次类型")
+    subtype: Literal["双向变流器", *deviceSubtypeAlias.get("双向变流器", [])] = Field(
+        title="节点次类型"
+    )
     param: 双向变流器信息 = Field(title="设备信息", description="双向变流器信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class 传输线节点(设备节点基类):
-    subtype: Literal["传输线"] = Field(title="节点次类型")
+    subtype: Literal["传输线", *deviceSubtypeAlias.get("传输线", [])] = Field(title="节点次类型")
     param: 传输线信息 = Field(title="设备信息", description="传输线信息")
+
+    @validator("subtype")
+    def validate_subtype(cls, v):
+        v = DSAToDS.get(v, v)
+        return v
 
 
 class mDict(BaseModel):
@@ -4786,6 +4853,7 @@ class EnergyFlowGraph(BaseModel):
 
 
 from networkx import Graph
+from failsafe_utils import failsafe_suppress_exception
 
 
 # partial if typical day mode is on.
@@ -4802,95 +4870,101 @@ def compute(
     devInstDict = {}
 
     for dev in devs:
-        devSubtype = dev["subtype"]
-        devParam = dev["param"]
-        devPorts = dev["ports"]
+        with failsafe_suppress_exception():
+            devSubtype = dev["subtype"]
+            devParam = dev["param"]
+            devPorts = dev["ports"]
 
-        devID_int = dev["id"]
+            devID_int = dev["id"]
 
-        devIDClass = devIDClassMap[devSubtype]
+            devIDClass = devIDClassMap[devSubtype]
 
-        devIDInstInit = {"ID": devID_int}
-        for port_name, port_info in devPorts.items():
-            port_id = port_info["id"]
-            devIDInstInit.update({port_name: port_id})
-        devIDInst = devIDClass.parse_obj(devIDInstInit)
+            devIDInstInit = {"ID": devID_int}
+            for port_name, port_info in devPorts.items():
+                with failsafe_suppress_exception():
+                    port_id = port_info["id"]
+                    devIDInstInit.update({port_name: port_id})
+            devIDInst = devIDClass.parse_obj(devIDInstInit)
 
-        devInfoInstInit = devParam
-        devInfoClass = devInfoClassMap[devSubtype]
-        devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
+            devInfoInstInit = devParam
+            devInfoClass = devInfoClassMap[devSubtype]
+            devInfoInst = devInfoClass.parse_obj(devInfoInstInit)
 
-        devInstClass = devInstClassMap[devSubtype]
-        devInst = devInstClass(PD=PD, mw=mw, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst)  # type: ignore
+            devInstClass = devInstClassMap[devSubtype]
+            devInst = devInstClass(PD=PD, mw=mw, 计算参数实例=algoParam, 设备ID=devIDInst, 设备信息=devInfoInst)  # type: ignore
 
-        devInstDict.update({devID_int: devInst})
+            devInstDict.update({devID_int: devInst})
+
     for adder_index, adder in adders.items():
-        input_indexs, output_indexs, io_indexs = (
-            adder["input"],
-            adder["output"],
-            adder["IO"],
-        )
+        with failsafe_suppress_exception():
+            input_indexs, output_indexs, io_indexs = (
+                adder["input"],
+                adder["output"],
+                adder["IO"],
+            )
 
-        # fill in missing params
-        if len(input_indexs) >= 1:
-            if G.nodes[input_indexs[0]]["subtype"] == "柴油输出":
-                assert len(input_indexs) == 1, "柴油元件只能一对多连接"
-                diesel_node_id = G.nodes[input_indexs[0]]["device_id"]
-                热值 = devInstDict[diesel_node_id].热值
-                for output_index in output_indexs:
-                    output_node_index = G.nodes[output_index]["device_id"]
-                    devInstDict[output_node_index].燃料热值 = 热值
+            # fill in missing params
+            with failsafe_suppress_exception():
+                if len(input_indexs) >= 1:
+                    if G.nodes[input_indexs[0]]["subtype"] == "柴油输出":
+                        assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                        diesel_node_id = G.nodes[input_indexs[0]]["device_id"]
+                        热值 = devInstDict[diesel_node_id].热值
+                        for output_index in output_indexs:
+                            output_node_index = G.nodes[output_index]["device_id"]
+                            devInstDict[output_node_index].燃料热值 = 热值
+            # add them all.
 
-        # add them all.
+            logger_print("_" * 20)
+            display_var_names = lambda indexs: "\n    ".join(
+                [str(PD[i]) for i in indexs]
+            )
+            logger_print(f"INPUTS:{display_var_names(input_indexs)}")
+            logger_print()
+            logger_print(f"OUTPUTS:{display_var_names(output_indexs)}")
+            logger_print()
+            logger_print(f"IO:{display_var_names(io_indexs)}")
+            logger_print("_" * 20)
 
-        logger_print("_" * 20)
-        display_var_names = lambda indexs: "\n    ".join([str(PD[i]) for i in indexs])
-        logger_print(f"INPUTS:{display_var_names(input_indexs)}")
-        logger_print()
-        logger_print(f"OUTPUTS:{display_var_names(output_indexs)}")
-        logger_print()
-        logger_print(f"IO:{display_var_names(io_indexs)}")
-        logger_print("_" * 20)
+            for j in range(algoParam.迭代步数):
+                seqsum = sum(
+                    [PD[i][j] for i in input_indexs + output_indexs + io_indexs]
+                )
 
-        for j in range(algoParam.迭代步数):
-            seqsum = sum([PD[i][j] for i in input_indexs + output_indexs + io_indexs])
+                # TODO: 消纳率约束
+                mw.Constraint(seqsum >= 0)
 
-            # TODO: 消纳率约束
-            mw.Constraint(seqsum >= 0)
+            with failsafe_suppress_exception():
+                if algoParam.计算类型 == "设计规划":
+                    cnt = 0
+                    if len(input_indexs) == 0:
+                        continue
+                    input_anchor_0 = G.nodes[input_indexs[0]]
+                    if input_anchor_0["subtype"] == "变压器输出":
+                        logger_print(f"Building Converter Constraint #{cnt}")
+                        cnt += 1
+                        assert io_indexs == []
 
-        if algoParam.计算类型 == "设计规划":
-            cnt = 0
-            if len(input_indexs) == 0:
-                continue
-            input_anchor_0 = G.nodes[input_indexs[0]]
-            if input_anchor_0["subtype"] == "变压器输出":
-                logger_print(f"Building Converter Constraint #{cnt}")
-                cnt += 1
-                assert io_indexs == []
+                        input_limit = iterate_input_output_limit(
+                            "最大允许的负载总功率", input_indexs, G, devInstDict
+                        )
+                        output_limit = iterate_input_output_limit(
+                            "MaxEnergyConsumption", output_indexs, G, devInstDict
+                        )
 
-                # IO TYPE: input
-                m_limit_list = []
-                for m_id in input_indexs:
-                    m_anchor = G.nodes[m_id]
-                    m_node_id = m_anchor["device_id"]
-                    m_devInstInput: 变压器模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInstInput.最大允许的负载总功率)
-                input_limit = sum(m_limit_list)
+                        mw.Constraint(input_limit + output_limit >= 0)
 
-                # IO TYPE: output
-                m_limit_list = []
-                for m_id in output_indexs:
-                    m_anchor = G.nodes[m_id]
-                    m_node_id = m_anchor["device_id"]
-                    m_devInstOutput: 电负荷模型 = devInstDict[m_node_id]
-                    m_limit_list.append(m_devInstOutput.MaxEnergyConsumption)
-                output_limit = sum(m_limit_list)
+    financial_obj_expr = 0
 
-                mw.Constraint(input_limit + output_limit >= 0)
+    for e in devInstDict.values():
+        with failsafe_suppress_exception():
+            financial_obj_expr += e.constraints_register()
 
-    financial_obj_expr = sum([e.constraints_register() for e in devInstDict.values()])
+    financial_dyn_obj_expr = 0
 
-    financial_dyn_obj_expr = sum([(e.总可变维护成本年化) for e in devInstDict.values()])
+    for e in devInstDict.values():
+        with failsafe_suppress_exception():
+            financial_dyn_obj_expr += e.总可变维护成本年化
 
     environment_obj_exprs = []  # annual CO2 emission
 

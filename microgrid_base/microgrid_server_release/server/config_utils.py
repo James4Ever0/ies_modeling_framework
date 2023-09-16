@@ -15,7 +15,7 @@ Description:
 import os
 import Levenshtein  # to detect suspicious mistypings
 from pydantic import BaseModel
-from exception_utils import ExceptionManager
+from error_utils import ErrorManager
 from typing import Union
 from argparse_utils import ArgumentTransformer
 
@@ -54,7 +54,7 @@ class EnvBaseModel(BaseModel):
     def __new__(cls, *args, **kwargs):
         upper_prop_keys = set()
 
-        with ExceptionManager() as exc_manager:
+        with ErrorManager() as exc_manager:
             for key in getBaseModelPropertyKeys(cls):
                 upper_key = key.upper()
                 keylen = len(key)
@@ -103,12 +103,13 @@ class ArgumentEnv(DotEnvBaseModel):
 
 
 class ShellEnv(DotEnvBaseModel):
+    SKIP_ARGENV: bool = Field(default=False, title="Skip parsing arguments from commandline arguments")
     @classmethod
     def load(cls):
         pks = getBaseModelPropertyKeys(cls)
         shellenvs = os.environ
         envs = {}
-        with ExceptionManager() as exc_manager:
+        with ErrorManager() as exc_manager:
             for k, v in shellenvs.items():
                 if len(pks) == 0:
                     break
@@ -174,7 +175,7 @@ class DotEnv(EnvBaseModel):
 
         vals = dotenv_values(fpath)
         prop_keys = getBaseModelPropertyKeys(cls)
-        with ExceptionManager() as exc_manager:
+        with ErrorManager() as exc_manager:
             for k, v in vals.items():
                 if len(prop_keys) == 0:
                     break
@@ -219,11 +220,22 @@ class EnvManager:
         cls.dotEnv: DotEnv
         cls.argumentEnv: ArgumentEnv
 
-        shellEnvInst = cls.shellEnv.load()
-        params = shellEnvInst.dict()
+        if os.environ.get('SKIP_SHELLENV', None) is None:
+            shellEnvInst = cls.shellEnv.load()
+            params = shellEnvInst.dict()
+        else:
+            params = {}
 
-        argumentEnvInst = cls.argumentEnv.load()
-        params.update(argumentEnvInst.diff())
+        if params == {} or not params.get('SKIP_ARGENV'):
+            argumentEnvInst = cls.argumentEnv.load()
+        else:
+            argumentEnvInst = None
+    
+        if params == {}:
+            params.update(argumentEnvInst)
+        elif argumentEnvInst is not None:
+            params.update(argumentEnvInst.diff())
+
         _dotenv = shellEnvInst.DOTENV
         if _dotenv is not None:
             dotEnvInst = cls.dotEnv.load(_dotenv)
@@ -273,7 +285,7 @@ def checkReservedKeywordNameClash(
     env = getFieldsSetByAnnotation(env_class)
     isect = reserved.intersection(env)
     if isect != set():
-        with ExceptionManager(
+        with ErrorManager(
             default_error=f"Dataclass '{env_class.__name__}' has name clash on reserved dataclass '{reserved_dataclass.__name__}'"
         ) as em:
             for field in isect:

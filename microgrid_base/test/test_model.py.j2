@@ -7,7 +7,6 @@ try:
 except:
     from typing_extensions import Protocol
 from pyomo.environ import *
-
 # may you hook arith methods to check expression (poly degree) on the way.
 
 # render constraints as latex. use sigma notation.
@@ -81,7 +80,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
 {% macro solveModel(objective, sense='sense')%}
     {# model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}}) #}
     model_wrapper.Objective(expr={{objective}}, sense={{sense}})
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver: # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5 
         s_results = solver.solve(model_wrapper.model, tee=True)

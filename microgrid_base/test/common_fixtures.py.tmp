@@ -7,12 +7,17 @@ import typing
 
 if typing.TYPE_CHECKING:
     from ..ies_optim import *  # workaround for pyright.
+    from ..constants import Solver
+    from ..solve_model import *
 else:
     from ies_optim import *
+    from constants import Solver
+    from solve_model import *
+
 
 import os
 
-os.environ[VAR_INIT_AS_ZERO] = "1"
+os.environ["VAR_INIT_AS_ZERO"] = "1"
 
 
 @fixture
@@ -328,8 +333,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输出=14,
-        电输入=15,
+        电输入=14,
+        电输出=15,
     )
     return val
 
@@ -368,8 +373,8 @@ def 测试变流器信息():
 def 测试变流器ID():
     val = 变流器ID(
         ID=16,
-        电输出=17,
-        电输入=18,
+        电输入=17,
+        电输出=18,
     )
     return val
 
@@ -408,8 +413,8 @@ def 测试双向变流器信息():
 def 测试双向变流器ID():
     val = 双向变流器ID(
         ID=19,
-        储能端=20,
-        线路端=21,
+        线路端=20,
+        储能端=21,
     )
     return val
 
@@ -448,8 +453,8 @@ def 测试传输线信息():
 def 测试传输线ID():
     val = 传输线ID(
         ID=22,
-        电输出=23,
-        电输入=24,
+        电输入=23,
+        电输出=24,
     )
     return val
 

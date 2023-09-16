@@ -1,28 +1,31 @@
 from log_utils import logger_print
 
-# TODO: deprecate and migrate to `error_utils.py`
 # from beartype import beartype
 from typing import Union
-
+import traceback
+import sys
 
 # @beartype
-# TODO: support custom exception/error handlers/formatters
-class ExceptionManager:
+class ErrorManager:
+    """
+    Manage exceptions and errors.
+
+    Can be used in `with` statements to automate such management, which behavior can be configured by setting `suppress_error` and `suppress_exception` arguments.
+
+    Args:
+    
+    suppress_error:bool: If suppressed, don't raise exception if having error messages
+    suppress_exception:bool: If suppressed, don't suppress exception raised by program
+    default_error:str: The default error message to display if any error occurs during execution
+
+    """
     def __init__(
         self,
         suppress_error: bool = False,
         suppress_exception: bool = False,
         default_error: Union[str, None] = None,
     ):
-        """
-        Manage exceptions and errors.
-        Can be used in `with` statements to automate management, which behavior can be configured by setting `suppress_error` and `suppress_exception` arguments.
 
-        Args:
-            suppress_error:bool: If suppressed, don't treat manual appended error messages as exception
-            suppress_exception:bool: If suppressed, don't suppress exception raised by program
-
-        """
         self.errors = []
         self.suppress_error = suppress_error
         self.suppress_exception = suppress_exception
@@ -31,12 +34,16 @@ class ExceptionManager:
     def __bool__(self):
         return len(self.errors) > 0
 
-    def has_exception(self):
+    @property
+    def has_error(self):
         return bool(self)
 
+    @property
+    def has_exception(self):
+        last_exc = sys.exc_info()
+        return last_exc[0] is not None
+
     def append(self, error: str):
-        if not isinstance(error, str):
-            raise Exception("Expected error to be a string.\nPassed: " + error)
         self.errors.append(error)
 
     def clear(self):
@@ -44,16 +51,17 @@ class ExceptionManager:
         self.default_error = None
 
     def format_error(self, clear=True, join: str = "\n"):
-        msgs = self.errors + (
-            [self.default_error] if (self and (self.default_error is not None)) else []
+        error_msg = join.join(
+            self.errors
+            + ([self.default_error] if (self and self.default_error) else [])
         )
-        error_msg = join.join(msgs)
         if clear:
             self.clear()
         return error_msg
 
     def raise_if_any(self):
         if self.errors:
+            self.print_if_any()
             raise Exception(self.format_error())
 
     def print_if_any(self):
@@ -71,6 +79,10 @@ class ExceptionManager:
             self.raise_if_any()
         else:
             self.print_if_any()
+        
+        if self.has_exception:
+            traceback_exc = traceback.format_exc()
+            logger_print(traceback_exc)
         return True if self.suppress_exception else None
 
     def __str__(self):
@@ -86,4 +98,9 @@ class ExceptionManager:
         return iter(self.errors)
 
 
-exceptionManager = ExceptionManager(suppress_error=True)
+if __name__ == "__main__":
+    # test this!
+    with ErrorManager() as em:
+        # raise Exception("before append")
+        em.append('abc')
+        raise Exception("after append")

@@ -1,21 +1,26 @@
 from pytest import fixture
+import os
+os.environ['SKIP_ARGENV']='True'
 import sys
 
 sys.path.append("../")
 # from ies_optim import *
 
 from pyomo_environ import *
-
 import typing
 
 if typing.TYPE_CHECKING:
-    from ..ies_optim import *
+    from ..ies_optim import *  # workaround for pyright.
+    from ..constants import Solver
+    from ..solve_model import *
+    from ..failsafe_utils import *
 else:
     from ies_optim import *
+    from constants import Solver
+    from solve_model import *
+    from failsafe_utils import *
 
-import os
 
-os.environ[VAR_INIT_AS_ZERO] = "1"
 
 
 @fixture

@@ -40,14 +40,11 @@ def logger_print(*args):  # override this.
 from config import *
 # import os
 
-MOCK = ies_env.STATIC_MOCK
+# MOCK = ies_env.STATIC_MOCK
 # changed to MOCK_TEST in config.py
 # MOCK = os.environ.get("MOCK", None)  # if this is mock test.
 import json
-
-with open("test_output_full_mock_reduced.json", "r") as f:
-    mock_output_data = json.loads(f.read())
-    mock_calculation_result = CalculationResult.parse_obj(mock_output_data)
+from mock_utils import mock_calculation_result
 
 appName = "IES Optim Server Template"
 version = "0.0.1"
@@ -81,7 +78,7 @@ import datetime
 from celery.result import AsyncResult
 from typing import Dict, Any
 
-if MOCK is None:
+if ies_env.STATIC_MOCK is None:
     from fastapi_celery_server import app as celery_app
 
 # remember these things won't persist.
@@ -278,7 +275,7 @@ def calculate_async(
 ) -> CalculationAsyncSubmitResult:
     # use celery
 
-    if MOCK:
+    if ies_env.STATIC_MOCK:
         submit_result = "success"
         calculation_id = uuid.uuid4().__str__()
     else:
@@ -320,7 +317,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     Returns:
         calculation_state (CalculationStateResult): 计算状态
     """
-    if MOCK:
+    if ies_env.STATIC_MOCK:
         calculation_state = "SUCCESS"
         # return CalculationStateResult(calculation_state="SUCCESS")
     else:
@@ -335,7 +332,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 
 # from fastapi_datamodel_template import ParetoCurve
 
-
+from log_utils import logger_traceback
 @remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_result_async",
@@ -346,24 +343,35 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     response_model=CalculationAsyncResult,
 )
 def get_calculation_result_async(calculation_id: str):
-    if MOCK:
-        calculation_result = mock_calculation_result.copy()
-        calculation_state = "SUCCESS"
+    if ies_env.STATIC_MOCK:
+        calculation_result, calculation_state = getStaticCalculationResultAndState()
     else:
-        calculation_result = taskResult.get(calculation_id, None)
-        calculation_state = get_calculation_state(calculation_id).calculation_state
-        if calculation_result is None:
-            if calculation_state == "FAILURE":
-                error_log = error_log_dict.get(calculation_id, None)
-                if error_log:
-                    calculation_result = CalculationResult(
-                        resultList=[], success=False, error_log=error_log
-                    ).dict()
-        calculation_result = (
-            CalculationResult.parse_obj(calculation_result)
-            if calculation_result
-            else None
-        )
+        try:
+            calculation_result = taskResult.get(calculation_id, None)
+            calculation_state = get_calculation_state(calculation_id).calculation_state
+            if calculation_result is None:
+                if calculation_state == "FAILURE":
+                    if ies_env.FAILSAFE:
+                        calculation_result, calculation_state = getStaticCalculationResultAndState()
+                    else:
+                        error_log = error_log_dict.get(calculation_id, None)
+                        if error_log:
+                            calculation_result = CalculationResult(
+                                resultList=[], success=False, error_log=error_log
+                            ).dict()
+            else:
+                calculation_result = CalculationResult.parse_obj(calculation_result)
+        except Exception as exc:
+            if ies_env.FAILSAFE:
+                calculation_result, calculation_state = getStaticCalculationResultAndState()
+                logger_traceback()
+            else:
+                raise exc
+        # calculation_result = (
+        #     CalculationResult.parse_obj(calculation_result)
+        #     if calculation_result
+        #     else None
+        # )
 
     # this is for generating pareto curve. since we cannot persist it, leave it to frontend.
 
@@ -376,10 +384,16 @@ def get_calculation_result_async(calculation_id: str):
     #         plotList.sort(lambda x: x[0])
     #         calculation_result.paretoCurve = ParetoCurve(x=[e[0] for e in plotList],x_label='经济', y=[e[1] for e in plotList], y_label='环保')
 
+
     return CalculationAsyncResult(
         calculation_state=calculation_state,
         calculation_result=calculation_result,
     )
+
+def getStaticCalculationResultAndState():
+    calculation_result = mock_calculation_result.copy()
+    calculation_state = "SUCCESS"
+    return calculation_result, calculation_state
 
 
 @remove_stale_tasks_decorator
@@ -396,7 +410,7 @@ def get_calculation_result_async(calculation_id: str):
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
-    if MOCK:
+    if ies_env.STATIC_MOCK:
         revoke_result = "success"
         calculation_state = "REVOKED"
     else:
@@ -428,7 +442,7 @@ from typing import List
     summary="查询任务ID",
 )
 def get_calculation_ids() -> List[str]:
-    if MOCK:
+    if ies_env.STATIC_MOCK:
         calculation_ids = []
     else:
         calculation_ids = list(taskDict.keys())

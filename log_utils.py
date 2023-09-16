@@ -267,9 +267,9 @@ def pretty_format_excinfo_context(exc_type, exc_value, tb):
     finally:
         better_exceptions.SUPPORTS_COLOR = True
 
-def logger_traceback(*args, stacklevel = 3):
+def logger_traceback_print():
     with pretty_format_excinfo_context(*sys.exc_info()) as formatted:
-        logger_print(*args, formatted, stacklevel = stacklevel)
+        logger_print(formatted, stacklevel = 3)
 
 
 sys.excepthook = logger_excepthook

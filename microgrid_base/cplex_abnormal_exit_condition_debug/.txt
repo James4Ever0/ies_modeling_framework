@@ -1,4 +1,4 @@
-Current time: 2023-08-25T18:10:01.245109+08:00
+Current time: 2023-09-14T14:15:33.775152+08:00
 ============================================================
 running solver cplex
 warm start? True
@@ -17,11 +17,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'no_obj_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmphk4u8iae.pyomo.lp' read.
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmplvxr727v.pyomo.lp' read.
 Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmphk4u8iae.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmplvxr727v.pyomo.lp
 Objective sense      : Minimize
 Variables            :       3  [Nneg: 1,  Box: 1,  Free: 1]
 Objective nonzeros   :       0
@@ -43,7 +43,7 @@ Dual simplex - Optimal:  Objective =  0.0000000000e+00
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (1.40 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpr37q2i0b.cplex.sol'.
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpgge7saqx.cplex.sol'.
 CPLEX> X=10.0, Y=0.0
 
 ======================================================================
@@ -59,11 +59,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'unbound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp377kyeoh.pyomo.lp' read.
-Read time = 0.00 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpd5b4p9bk.pyomo.lp' read.
+Read time = 0.02 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp377kyeoh.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpd5b4p9bk.pyomo.lp
 Objective sense      : Minimize
 Variables            :       5  [Nneg: 1,  Box: 1,  Free: 3]
 Objective nonzeros   :       5
@@ -97,11 +97,11 @@ information on commands.
 
 CPLEX> Logfile 'cplex.log' closed.
 Logfile 'bound_solver_cplex_warmstart.log' open.
-CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmp4xxd0_uz.pyomo.lp' read.
-Read time = 0.02 sec. (0.00 ticks)
+CPLEX> Problem 'C:\Users\z98hu\AppData\Local\Temp\tmpzqo2nqcj.pyomo.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
 CPLEX> Not a mixed integer problem.
 No file read.
-CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmp4xxd0_uz.pyomo.lp
+CPLEX> Problem name         : C:\Users\z98hu\AppData\Local\Temp\tmpzqo2nqcj.pyomo.lp
 Objective sense      : Minimize
 Variables            :       6  [Nneg: 1,  Box: 2,  Free: 3]
 Objective nonzeros   :       5
@@ -123,52 +123,52 @@ Dual simplex - Optimal:  Objective = -1.0000000000e+08
 Solution time =    0.00 sec.  Iterations = 0 (0)
 Deterministic time = 0.00 ticks  (2.64 ticks/sec)
 
-CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpekm6dvuu.cplex.sol'.
-CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: False
-BOUND TERMINATION CONDITION: optimal; SOLVED: True
+CPLEX> Solution written to file 'C:\Users\z98hu\AppData\Local\Temp\tmpa3ksajr1.cplex.sol'.
+CPLEX> UNBOUND TERMINATION CONDITION: unbounded; SOLVED: (False, False)
+BOUND TERMINATION CONDITION: optimal; SOLVED: (True, True)
 {
-    'x1': <weakref at 0x000002234A5D76A0; to 'ScalarVar' at 
-0x000002234A5863D0>,
-    'x2': <weakref at 0x000002234A5D76F0; to 'ScalarVar' at 
-0x000002234A586650>,
-    'x3': <weakref at 0x000002234A37FB00; to '_GeneralVarData' at 
-0x000002234A599460>,
-    'x4': <weakref at 0x0000022349E35620; to '_GeneralVarData' at 
-0x000002234A5994D0>,
-    'x5': <weakref at 0x0000022329116250; to 'ScalarObjective' at 
-0x000002234A5B8470>,
-    'x6': <weakref at 0x000002234A5D7740; to 'ScalarConstraint' at 
-0x000002234A599320>
+    'x1': <weakref at 0x000001D24914EED0; to 'ScalarVar' at 
+0x000001D24935D450>,
+    'x2': <weakref at 0x000001D2493A9F30; to 'ScalarVar' at 
+0x000001D24935D6D0>,
+    'x3': <weakref at 0x000001D248C22E30; to '_GeneralVarData' at 
+0x000001D249346110>,
+    'x4': <weakref at 0x000001D248C22D90; to '_GeneralVarData' at 
+0x000001D249346180>,
+    'x5': <weakref at 0x000001D248C22ED0; to 'ScalarObjective' at 
+0x000001D249388290>,
+    'x6': <weakref at 0x000001D2493A9F80; to 'ScalarConstraint' at 
+0x000001D249345FD0>
 }
 {
-    'v0': <weakref at 0x000002234A5D76A0; to 'ScalarVar' at 
-0x000002234A5863D0>,
-    'v1': <weakref at 0x000002234A5D76F0; to 'ScalarVar' at 
-0x000002234A586650>,
-    'v2': <weakref at 0x000002234A37FB00; to '_GeneralVarData' at 
-0x000002234A599460>,
-    'v3': <weakref at 0x0000022349E35620; to '_GeneralVarData' at 
-0x000002234A5994D0>,
-    'c0': <weakref at 0x000002234A5D7740; to 'ScalarConstraint' at 
-0x000002234A599320>,
-    'o0': <weakref at 0x0000022329116250; to 'ScalarObjective' at 
-0x000002234A5B8470>
+    'v0': <weakref at 0x000001D24914EED0; to 'ScalarVar' at 
+0x000001D24935D450>,
+    'v1': <weakref at 0x000001D2493A9F30; to 'ScalarVar' at 
+0x000001D24935D6D0>,
+    'v2': <weakref at 0x000001D248C22E30; to '_GeneralVarData' at 
+0x000001D249346110>,
+    'v3': <weakref at 0x000001D248C22D90; to '_GeneralVarData' at 
+0x000001D249346180>,
+    'c0': <weakref at 0x000001D2493A9F80; to 'ScalarConstraint' at 
+0x000001D249345FD0>,
+    'o0': <weakref at 0x000001D248C22ED0; to 'ScalarObjective' at 
+0x000001D249388290>
 }
 {
-    'x1': <weakref at 0x000002234A5D76A0; to 'ScalarVar' at 
-0x000002234A5863D0>,
-    'x2': <weakref at 0x000002234A5D76F0; to 'ScalarVar' at 
-0x000002234A586650>,
-    'x3': <weakref at 0x000002234A37FB00; to '_GeneralVarData' at 
-0x000002234A599460>,
-    'x4': <weakref at 0x0000022349E35620; to '_GeneralVarData' at 
-0x000002234A5994D0>,
-    'x5': <weakref at 0x0000022329116250; to 'ScalarObjective' at 
-0x000002234A5B8470>,
-    'x6': <weakref at 0x000002234A5D7740; to 'ScalarConstraint' at 
-0x000002234A599320>
+    'x1': <weakref at 0x000001D24914EED0; to 'ScalarVar' at 
+0x000001D24935D450>,
+    'x2': <weakref at 0x000001D2493A9F30; to 'ScalarVar' at 
+0x000001D24935D6D0>,
+    'x3': <weakref at 0x000001D248C22E30; to '_GeneralVarData' at 
+0x000001D249346110>,
+    'x4': <weakref at 0x000001D248C22D90; to '_GeneralVarData' at 
+0x000001D249346180>,
+    'x5': <weakref at 0x000001D248C22ED0; to 'ScalarObjective' at 
+0x000001D249388290>,
+    'x6': <weakref at 0x000001D2493A9F80; to 'ScalarConstraint' at 
+0x000001D249345FD0>
 }
-{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000002234A5863D0>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000002234A586650>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000002234A599460>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000002234A5994D0>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
+{'constant': 5, 'varNameToVarObject': {'变量x': <pyomo.core.base.var.ScalarVar object at 0x000001D24935D450>, '变量y': <pyomo.core.base.var.ScalarVar object at 0x000001D24935D6D0>, 'z[0]': <pyomo.core.base.var._GeneralVarData object at 0x000001D249346110>, 'z[1]': <pyomo.core.base.var._GeneralVarData object at 0x000001D249346180>}, 'varNameToVarCoefficient': {'变量x': 2, '变量y': 4, 'z[0]': 4, 'z[1]': 1}}
 ========================VAR NAME TO VAR VALUE=========================
 reversed: False
 
@@ -201,4 +201,4 @@ z[0]	-100000025.0
 (OBJ - OBJ_CONST)? -100000005.0
 OBJ? -100000000.0
 OBJ_CONST? 5
-solver smap ids: [2350594780240, 2350594792400, 2350594799248]
+solver smap ids: [2002683389648, 2002683362704, 2002683384720]

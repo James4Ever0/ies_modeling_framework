@@ -1,0 +1,1 @@
+env FAILSAFE=True bash reload.sh

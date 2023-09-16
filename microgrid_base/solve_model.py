@@ -6,6 +6,7 @@ import json
 import os
 import tempfile
 from typing import Any, Dict, List, Tuple, Union, cast
+from constants import Solver
 
 import pandas as pd
 from beartype import beartype
@@ -53,25 +54,30 @@ from ies_optim import InputParams, ModelWrapper
 
 import shutil
 
-REQUIRED_BINARIES = ["cplex"]
+REQUIRED_BINARIES = [Solver.cplex]
 
 if ies_env.FAILSAFE:
-    REQUIRED_BINARIES.append("ipopt")
+    REQUIRED_BINARIES.append(Solver.ipopt)
+    REQUIRED_BINARIES.append(Solver.scip)
 
 with ErrorManager(default_error="Not all required binaries were found.") as em:
     for b in REQUIRED_BINARIES:
         if shutil.which(b) is None:
             em.append("Binary %s not found in PATH." % b)
 
-
-with open("export_format.json", "r") as f:
+EXPORT_FORMAT_FPATH = os.path.join(
+    os.path.dirname(__file__), "export_format.json")
+with open(EXPORT_FORMAT_FPATH, "r") as f:
     dt = json.load(f)
     simulationResultColumns = dt["仿真结果"]["ALL"]
     simulationResultColumns = [
         e if type(e) == str else e[0] for e in simulationResultColumns
     ]
 
-with open("frontend_sim_param_translation.json", "r") as f:
+FRONTEND_SIM_PARAM_TRANS_FPATH = os.path.join(
+    os.path.dirname(__file__), "frontend_sim_param_translation.json")
+
+with open(FRONTEND_SIM_PARAM_TRANS_FPATH, "r") as f:
     FSPT = json.load(f)
 
 from pandas import DataFrame
@@ -104,11 +110,23 @@ def 导出结果表_格式化(
     return 结果表_未翻译, 结果表_导出, 结果表_格式化
 
 
+from networkx.readwrite import json_graph
+
+
+def calcParamListToMDictList(calcParamList: List):
+    mDictList = []
+    for calcParam in calcParamList:
+        devs, adders, graph_data, G = calcParam
+        mDict = json_graph.node_link_data(G)
+        mDictList.append(mDict)
+    return mDictList
+
+
 ###
-def mDictListToCalcParamList(mdictList: List):
+def mDictListToCalcParamList(mDictList: List):
     calcParamList = []
 
-    for md in mdictList:
+    for md in mDictList:
         topo_load = 拓扑图.from_json(md)  # static method, consistency checked
         # print_with_banner(topo_load, "图对象")
         # how to check error now?
@@ -142,6 +160,8 @@ from copy import deepcopy
 
 from ies_optim import ModelWrapperContext, compute
 
+SOLVER_LOG_FNAME = "solver.log"
+
 
 # disable io_options.
 def solve_model(
@@ -153,7 +173,7 @@ def solve_model(
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
     solved = False
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:
         # try:
         # io_options = dict() # disable unicode variables.
         # io_options = dict(symbolic_solver_labels=True)
@@ -169,9 +189,10 @@ def solve_model(
         logger_print(">>>SOLVING<<<")
         # results = solver.solve(mw.model, tee=True, keepfiles= True)
         # results = solver.solve(mw.model, tee=True, options = dict(mipgap=0.01, emphasis_numerical='y'))
+        timestamp = getTimestampForFilename()
 
         with tempfile.TemporaryDirectory() as solver_log_dir:
-            solver_log = os.path.join(solver_log_dir, "solver.log")
+            solver_log = os.path.join(solver_log_dir, SOLVER_LOG_FNAME)
             with modelSolvedTestContext(mw.model) as check_solved:
                 results = solver.solve(
                     mw.model,
@@ -182,218 +203,85 @@ def solve_model(
                 solved = check_solved()
 
             logger_print("SOLVED?", solved)
-
             logger_print("SOLVER RESULTS?")
             logger_print(results)
 
             if not solved:
-                if ies_env.INFEASIBILITY_DIAGNOSTIC:
-                    # TODO. make this into background tasks
-                    analyzeInfeasibility(mw, solver, solver_log, results)
-
-                if ies_env.FAILSAFE:
-                    solved = solve_failsafe(mw)
-
-        logger_print("OBJ:", value(OBJ))
+                solved = rescue(mw, solver, timestamp, solver_log, results)
+        if solved:
+            logger_print("OBJ:", value(OBJ))
     return solved
 
+from failsafe_utils import solve_failsafe
 
-import inspect
-
-
-class MethodRegistry(list):
-    """
-    A registry of methods, used to register methods with given signature.
-    """
-
-    def __init__(self, signature: List[str]):
-        self.signature = signature
-        super().__init__()
-
-    def check_signature(self, obj):
-        obj_sig = inspect.signature(obj)
-        obj_keys = list(obj_sig.parameters.keys())
-        assert (
-            obj_keys == self.signature
-        ), "Signature mismatch: (registered signature: {}, given signature: {})".format(
-            self.signature, obj_keys
+def rescue(mw, solver, timestamp, solver_log, results):
+    solved = False
+    
+    # TODO: make this into background tasks, which will not raise exception and stop failsafe routines
+    # TODO: prevent solver log get recycled
+    if ies_env.INFEASIBILITY_DIAGNOSTIC:
+        os.mkdir(
+            solver_log_dir_with_timestamp := os.path.join(
+                log_dir, f"infeasibility_diagnostic_{timestamp}"
+            )
+        )
+        shutil.move(
+            solver_log,
+            solver_log_new := os.path.join(
+                solver_log_dir_with_timestamp, SOLVER_LOG_FNAME
+            ),
         )
 
-    def append(self, obj):
-        if self.check_signature(obj):
-            super().append(obj)
+        analyzeInfeasibility(
+            mw,
+            solver,
+            solver_log_new,
+            results,
+            solver_log_dir_with_timestamp,
+        )
 
-    def register(self, obj):
-        self.append(obj)
-        return obj
-
-
-failsafe_methods = MethodRegistry(["mw"])
-
-
-def quote(s: str, q='"'):
-    return q + s + q
-
-
-def cplex_exec_script(script: List[str]):
-    cmd = f"cplex -c {' '.join([quote(e) for e in script])}"
-    return_code = os.system(cmd)
-    return return_code
-
-
-@contextmanager
-def chdir_context(dirpath: str):
-    cwd = os.getcwd()
-    os.chdir(dirpath)
-    try:
-        yield
-    finally:
-        os.chdir(cwd)
-
-
-class FeasoptMode(IntEnum):
-    """
-    CPLEX> set feasopt mode <mode>
-        0 = find minimum-sum relaxation
-        1 = find optimal minimum-sum relaxation
-        2 = find minimum number of relaxations
-        3 = find optimal relaxation with minimum number of relaxations
-        4 = find minimum quadratic-sum relaxation
-        5 = find optimal minimum quadratic-sum relaxation
-    """
-    minimum_sum_relaxation = 0 # do not use 'auto' here because that will make it into 1
-    optimal_minimum_sum_relaxation = auto()
-    minimum_number_of_relaxations = auto()
-    optimal_relaxation_with_minimum_number_of_relaxations = auto()
-    minimum_quadratic_sum_relaxation = auto()
-    optimal_minimum_quadratic_sum_relaxation = auto()
-
-
-v = int(FeasoptMode.minimum_number_of_relaxations)
-FEASOPT_TIMELIMIT = 30
-CPLEX_SEC_TO_TICK = 290
-from bs4 import BeautifulSoup
-
-def load_cplex_sol_file(sol_file:str):
-
-    with open(sol_file, "r") as f:
-        file = f.read()
-
-    # 'xml' is the parser used. For html files, which BeautifulSoup is typically used for, it would be 'html.parser'.
-    soup = BeautifulSoup(file, "xml")
-    # breakpoint()
-    data = {}
-    for var in soup.find_all("variable"):
-        name = var["name"]
-        value = float(var["value"])
-        data[name] = value
-    return data
-
-def feasopt(mw:ModelWrapper, mode:FeasoptMode):
-    solved = False
-    with tempfile.TemporaryDirectory() as tmpdir:
-        with chdir_context(tmpdir):
-            with modelSolvedTestContext(mw.model) as check_solved:
-                lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
-                sol_path_abs = os.path.join(tmpdir, sol_path := "solution.sol")
-                exp_model = ExportedModel(mw.model, lp_path_abs)
-                # _, smap_id = mw.model.write(lp_path)
-                # smap = mw.model.solutions.symbol_map[smap_id]
-                cplex_config = [
-                    f"timelimit {FEASOPT_TIMELIMIT}"
-                    if ies_env.DETERMINISTIC_FAILSAFE
-                    else f"dettimelimit {FEASOPT_TIMELIMIT*CPLEX_SEC_TO_TICK}",
-                    "feasopt 1"
-                ]
-                if ies_env.DETERMINISTIC_FAILSAFE:
-                    cplex_config.append(f"randomseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
-                script = [
-                    f"read {lp_path}",
-                    *[f"set {c}" for c in cplex_config],
-                    "feasopt all",  # dettime: 8816 ticks for 30s timelimit
-                    f"write {sol_path}",
-                    "quit",
-                ]
-                cplex_exec_script(script)
-                if os.path.exists(sol_path):
-                    # TODO: parse and assign value from solution
-                    cplex_solution = load_cplex_sol_file(sol_path)
-                    for v in mw.model.component_data_objects(ctype=Var):
-                        varname = v.name
-                        cplex_varname = exp_model.reverse_translation_table.get(varname, None)
-                        val = cplex_solution.get(cplex_varname, None)
-                        if val is not None:
-                            v.set_value(val)
-                    solved = check_solved()
+    if ies_env.FAILSAFE:
+        failsafe_logdir = os.path.join(log_dir, f"failsafe_{timestamp}")
+        os.mkdir(failsafe_logdir)
+        solved = solve_failsafe(mw, failsafe_logdir)
     return solved
 
-@failsafe_methods.register
-def feasopt_with_optimization(mw: ModelWrapper):
-    return feasopt(mw, FeasoptMode.optimal_minimum_sum_relaxation)
-
-@failsafe_methods.register
-def feasopt_only(mw: ModelWrapper):
-    return feasopt(mw, FeasoptMode.minimum_sum_relaxation)
-
-
-@failsafe_methods.register
-def ipopt_no_presolve(mw: ModelWrapper):
-    with SolverFactory('ipopt') as solver:
-        ...
-
-
-@failsafe_methods.register
-def random_value_assignment(mw: ModelWrapper):
-    rng = lambda: random.uniform(-100, 100)
-    for v in mw.model.component_data_objects(ctype=Var):
-        v.set_value(rng())
-    return True
-
-
-def solve_failsafe(mw: ModelWrapper):
-    """
-    Steps (fail and continue):
-        1. feasopt & objective optimization
-        2. feasopt only
-        3. ipopt
-        4. random value assignment
-    """
-    solved = False
-    for method in failsafe_methods:
-        try:
-            name = method.__name__
-            logger_print(f"trying failsafe method: {name}")
-            solved = method(mw)
-
-            if solved:
-                logger_print(f"solved with {name}")
-                break
-            else:
-                logger_print(f"failed to solve with {name}")
-        except:
-            logger_traceback()
-
-    return solved
 
 
 import sys
 
 
-def analyzeInfeasibility(mw, solver, solver_log, results):
+def getTimestampForFilename():
+    timestamp = (
+        str(datetime.datetime.now(timezone))
+        .replace(" ", "_")
+        .replace("-", "_")
+        .replace(".", "_")
+        .replace(":", "_")
+        .replace("+", "_")
+    )
+    return timestamp
+
+
+from plot_utils import plotMultipleTopologies
+
+
+def analyzeInfeasibility(
+    mw: ModelWrapper, solver, solver_log, results, solver_log_dir_with_timestamp
+):
     with ErrorManager(default_error="Solver does not have solution.") as em:
+        # TODO: plot the model.
+        os.mkdir(
+            plot_output_dir := os.path.join(
+                solver_log_dir_with_timestamp, "topology_plots"
+            )
+        )
+        mDictList = calcParamListToMDictList(
+            mw.inputParam.calcParamList
+        )  # [(devs, adders, graph_data, topo_load.G), ...]
+        plotMultipleTopologies(dict(mDictList=mDictList), plot_output_dir)
         analyzeSolverResults(results, em)
 
-        timestamp = (
-            str(datetime.datetime.now(timezone))
-            .replace(" ", "_")
-            .replace("-", "_")
-            .replace(".", "_")
-            .replace(":", "_")
-            .replace("+", "_")
-        )
-        os.mkdir(
-            solver_log_dir_with_timestamp := os.path.join(log_dir, f"pyomo_{timestamp}")
-        )
         lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
         # TODO: export input parameters.
 
@@ -418,16 +306,14 @@ def analyzeInfeasibility(mw, solver, solver_log, results):
         ):
             em.append("No conflicts found by cplex.")
 
-        import shutil
+        # solver_log_new = os.path.join(
+        #     solver_log_dir_with_timestamp, os.path.basename(solver_log)
+        # )
 
-        solver_log_new = os.path.join(
-            solver_log_dir_with_timestamp, os.path.basename(solver_log)
-        )
-
-        shutil.move(solver_log, solver_log_dir_with_timestamp)
+        # shutil.move(solver_log, solver_log_new)
 
         em.append("")
-        em.append("Solver log saved to: " + solver_log_new)
+        em.append("Solver log saved to: " + solver_log)
         em.append("Model saved to: " + lp_filepath)
         em.append("Input params saved to: " + input_params_filepath)
 
@@ -435,7 +321,7 @@ def analyzeInfeasibility(mw, solver, solver_log, results):
 
         # BUG: solver_log not found (in temp)
         # translate_and_append(solver_log_new, solver_model_smap)
-        translateFileUsingSymbolMap(solver_log_new, solver_model_smap)
+        translateFileUsingSymbolMap(solver_log, solver_model_smap)
 
         # after translation, begin experiments.
         checkIOUDirectory = os.path.join(solver_log_dir_with_timestamp, "checkIOU")

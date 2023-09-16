@@ -40,9 +40,10 @@ import logging
 
 # logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logging.basicConfig(stream=mstream, level=logging.INFO)
+from constants import Solver
 
-solver = SolverFactory("cplex")
-# solver = SolverFactory("glpk")
+solver = SolverFactory(Solver.cplex)
+# solver = SolverFactory(Solver.glpk)
 solution = solver.solve(m, tee=True)
 # after solving.
 log_infeasible_constraints(m, log_expression=True, log_variables=True)

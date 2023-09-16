@@ -6,7 +6,7 @@ try:
     from typing import Protocol
 except:
     from typing_extensions import Protocol
-# from pyomo.environ import *
+from pyomo.environ import *
 
 # may you hook arith methods to check expression (poly degree) on the way.
 
@@ -83,7 +83,7 @@ def test_BinVarMultiplySingle(
     v1 = 测试设备模型.单变量("v1", within=v1_within, initialize=v1_init)
     v_result = 测试设备模型.BinVarMultiplySingle(v1, v0)
     model_wrapper.Objective(expr=v_result, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -135,7 +135,7 @@ def test_VarMultiplySingle(
     v0_v1 = 测试设备模型.Multiply(v0_dict, v1_dict, "v0_v1")
     obj_expr = v0_v1[0] + param * (v0[0] + v1[0])
     model_wrapper.Objective(expr=obj_expr, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -171,7 +171,7 @@ def test_单表达式生成指示变量(
     v1 = 测试设备模型.单表达式生成指示变量("v1", v0)
     # v1 = 测试设备模型.单表达式生成指示变量("v1", v0+0)
     model_wrapper.Objective(expr=v0, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -213,7 +213,7 @@ def test_Piecewise(
     测试设备模型.Piecewise(x, y, x_vals.tolist(), y_vals.tolist(), range_list=[0])
     obj_expr = y[0]
     model_wrapper.Objective(expr=obj_expr, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -239,7 +239,7 @@ def test_柴油(
     )  # unit: m^3
     obj_expr = 测试柴油模型.燃料接口[0]
     model_wrapper.Objective(expr=obj_expr, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -272,7 +272,7 @@ def test_柴油发电(
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
     model_wrapper.Objective(expr=obj_expr, sense=minimize)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -341,7 +341,7 @@ def test_光伏发电(model_wrapper: ModelWrapper, 测试光伏发电模型: 光
     测试光伏发电模型.计算参数.光照 = illumination_array
     测试光伏发电模型.constraints_register()
     model_wrapper.Objective(expr=测试光伏发电模型.电接口[0] + 测试光伏发电模型.电接口[2], sense=maximize)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -373,7 +373,7 @@ def test_风力发电(model_wrapper: ModelWrapper, 测试风力发电模型: 风
     测试风力发电模型.计算参数.风速 = windspeed_array
     测试风力发电模型.constraints_register()
     model_wrapper.Objective(expr=测试风力发电模型.电接口[0] + 测试风力发电模型.电接口[2], sense=maximize)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -403,7 +403,7 @@ def test_双向变流器(
     else:
         测试双向变流器模型.RangeConstraintMulti(测试双向变流器模型.线路端, expression=lambda x: x == -_input)
     model_wrapper.Objective(expr=测试双向变流器模型.总成本年化, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -431,7 +431,7 @@ def test_传输线(
     else:
         测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == output)
     model_wrapper.Objective(expr=测试传输线模型.SumRange(测试传输线模型.电输出), sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -466,7 +466,7 @@ def test_锂电池(
         )
 
     model_wrapper.Objective(expr=测试锂电池模型.总成本年化, sense=sense)
-    with SolverFactory("cplex") as solver:
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5
         s_results = solver.solve(model_wrapper.model, tee=True)

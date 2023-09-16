@@ -7,3 +7,11 @@ from log_utils import logger_print
 两小时秒数 = 每小时秒数 * 秒级仿真小时数
 每年小时数 = 每天小时数 * 每年天数
 每年月数 = 12
+
+from enum import StrEnum, auto
+class Solver(StrEnum):
+    cplex = auto()
+    gurobi = auto()
+    ipopt = auto()
+    cbc = auto()
+    glpk = auto()

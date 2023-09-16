@@ -3,6 +3,26 @@ This library mocks algorithm response.
 
 Hash input parameters for random seeds, if configured.
 """
+import json
+
+from pydantic_factories import ModelFactory
+from log_utils import logger_print
+from fastapi_datamodel_template import (
+    单次计算结果,
+    CalculationResult,
+    ObjectiveResult,
+    规划结果详情_翻译,
+    规划方案概览_翻译,
+    设备出力曲线,
+    仿真结果,
+    出力曲线,
+    曲线,
+    mDict,
+)
+
+with open("test_output_full_mock_reduced.json", "r") as f:
+    mock_output_data = json.loads(f.read())
+    mock_calculation_result = CalculationResult.parse_obj(mock_output_data)
 
 from config import ies_env
 
@@ -47,21 +67,6 @@ def reduceNumberPrecisionAfterDecimalPoint(num, precision=3):
     reduced_num = int(num * factor) / factor
     return reduced_num
 
-
-from pydantic_factories import ModelFactory
-from log_utils import logger_print
-from fastapi_datamodel_template import (
-    单次计算结果,
-    CalculationResult,
-    ObjectiveResult,
-    规划结果详情_翻译,
-    规划方案概览_翻译,
-    设备出力曲线,
-    仿真结果,
-    出力曲线,
-    曲线,
-    mDict,
-)
 
 from ies_optim import EnergyFlowGraph
 import random

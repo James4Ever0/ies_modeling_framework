@@ -76,6 +76,8 @@ def md5sum(filename, buf_size=8192):
 base_repo = os.path.basename(os.curdir)
 repo_basedir = os.path.abspath(".")
 os_name = os.name
+import platform
+platform_name = platform.system()
 toast_title = f"commit error at '{base_repo}'"
 
 
@@ -109,7 +111,7 @@ def check_if_executable_in_path(
     return False
 
 
-if os_name == "nt":
+if platform_name == "Windows":
     from win10toast import ToastNotifier
 
     toaster = ToastNotifier()
@@ -117,7 +119,7 @@ if os_name == "nt":
     def show_toast(msg):
         toaster.show_toast(title=toast_title, msg=msg)
 
-elif os_name == "darwin":
+elif platform_name == "Darwin":
     notifier_exec = "terminal-notifier"
     check_if_executable_in_path(notifier_exec)
 
@@ -125,7 +127,7 @@ elif os_name == "darwin":
         cmd = [notifier_exec, "-title", toast_title, "-message", msg]
         run_and_check_proc_base(cmd, "sending macos toast")
 
-elif os_name == "linux":
+elif platform_name == "Linux":
     notifier_exec = "notify-send"
     check_if_executable_in_path(notifier_exec)
 
@@ -134,7 +136,7 @@ elif os_name == "linux":
         run_and_check_proc_base(cmd, "sending linux toast")
 
 else:
-    raise Exception(f"\nunable to show toast message due to unknown os: {os_name}")
+    raise Exception(f"\nunable to show toast message due to unknown os: {platform_name}")
 
 
 def emit_message_and_raise_exception(exc_info: str):

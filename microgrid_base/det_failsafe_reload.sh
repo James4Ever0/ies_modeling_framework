@@ -1,0 +1,1 @@
+env DETERMINISTIC_FAILSAFE=True bash failsafe_reload.sh

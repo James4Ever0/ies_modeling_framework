@@ -1,6 +1,6 @@
 from log_utils import logger_print
 
-from log_utils import makeRotatingFileHandler, celery_log_filename, timezone_str
+from log_utils import makeRotatingFileHandler, celery_log_filename, timezone_str, logger_traceback
 
 from celery import Celery
 from passwords import redis_password
@@ -67,16 +67,32 @@ from fastapi_celery_functions import calculate_energyflow_graph_base
 from config import ies_env
 from mock_utils import generate_fake_output_data, EnergyFlowGraph
 
+from mock_utils import mock_output_data
 
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
     if ies_env.GENERATED_MOCK:
-        input_data = EnergyFlowGraph.parse_obj(energyflow_graph)
-        fake_output_data = generate_fake_output_data(input_data)
-        ret = fake_output_data.dict()
+        ret = generate_fake_data_based_on_input(energyflow_graph)
     else:
-        ret = calculate_energyflow_graph_base(energyflow_graph)
+        try:
+            ret = calculate_energyflow_graph_base(energyflow_graph)
+        except Exception as exc:
+            if ies_env.FAILSAFE:
+                logger_traceback()
+                try:
+                    ret = generate_fake_data_based_on_input(energyflow_graph)
+                except:
+                    logger_traceback()
+                    ret = mock_output_data.copy()
+            else:
+                raise exc
+    return ret
+
+def generate_fake_data_based_on_input(energyflow_graph):
+    input_data = EnergyFlowGraph.parse_obj(energyflow_graph)
+    fake_output_data = generate_fake_output_data(input_data)
+    ret = fake_output_data.dict()
     return ret
 
 
