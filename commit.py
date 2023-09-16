@@ -1,4 +1,5 @@
 # this file shall be identical anywhere else.
+# TODO: fallback to default commit message when git commit failed
 import pytz
 import datetime
 import os
