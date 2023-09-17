@@ -13,7 +13,7 @@ echo %USERNAME% executed commit script at %DATE% %TIME%
 git pull origin_devops main
 git add .
 git commit --no-edit
-@REM git commit -m 'update'
+git commit -m 'update'
 git push origin_devops main
 git push origin main
 
@@ -22,8 +22,8 @@ cd microgrid_base/dsl_parser
 @REM git config --global --add safe.directory E:/works/jubilant-adventure3/microgrid_base/dsl_parser
 git pull origin_devops main
 git add .
-@REM git commit -m 'update'
 git commit --no-edit
+git commit -m 'update'
 git push origin_devops main
 git push origin main
 cd ../..

@@ -1,5 +1,5 @@
 # this file shall be identical anywhere else.
-# TODO: fallback to default commit message when git commit failed
+# TODO: fallback to default commit message when git commit failed (just add another line `git commit -m 'update'` right after `git commit --noedit`
 import pytz
 import datetime
 import os
