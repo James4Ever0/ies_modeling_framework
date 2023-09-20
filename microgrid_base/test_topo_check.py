@@ -1,9 +1,11 @@
+import os
+os.environ['SKIP_ARGENV'] = 'True'
+os.environ["DOTENV"] = ".test_topo_env"
 from log_utils import logger_print
 
 MAKEFILE = dict(inputs=["topo_check.py"], outputs=["check_topo"], args=[])
-import os
 
-os.environ["DOTENV"] = ".test_topo_env"
+
 from config import *
 
 # ies_env.VAR_INIT_AS_ZERO = "1"

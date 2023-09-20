@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 """
 for any other model not within the microgrid (or you don't want to write it in template), make it here.
 

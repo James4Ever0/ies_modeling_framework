@@ -143,6 +143,7 @@ def prepare_fake_calc_result_per_device(
     curve_elemsize, curve_x_unit, prt, pdl, srt, elem
 ):
     subtype = getattr(elem, "subtype")
+    # subtype = getattr(elem, "subtype_hidden", getattr(elem, 'subtype'))
     param = getattr(elem, "param")
     设备名称, 生产厂商, 设备型号 = (
         getattr(param, "设备名称", "未知"),

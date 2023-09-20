@@ -38,7 +38,7 @@ def calculate_energyflow_graph_base(energyflow_graph: dict) -> Union[None, dict]
     # success = False
     # error_name = None
     # try:
-    resultList = solveModelFromCalcParamfList(calcParamList)
+    resultList = solveModelFromCalcParamList(calcParamList)
     # except Exception as ex:
     # import traceback
 

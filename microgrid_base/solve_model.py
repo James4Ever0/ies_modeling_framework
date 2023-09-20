@@ -494,12 +494,18 @@ def fetchResult(solved: bool, ret: CalcStruct, 典型日):
             # timeParam /= 8760
             for devId, devInst in devInstDict.items():
                 devClassName = devInst.__class__.__name__.strip("模型")
+                # devClassHiddenName = devInst.设备信息.subtype
+                # devClassHiddenName = devInst.设备信息.subtype_hidden
                 # where you convert the units.
                 # devName = devInst.设备信息.设备名称
                 结果类 = globals()[f"{devClassName}仿真结果"]  # 一定有的
                 出力曲线类 = globals().get(f"{devClassName}出力曲线", None)
                 _仿真结果 = 结果 = 结果类.export(devInst, timeParam)
+                # 结果.元件类型 = devClassName
+                # 结果['元件类型'] = devClassName
+                # 结果['元件类型'] = devClassHiddenName
                 _规划结果详情 = 规划结果详情.export(devInst, _仿真结果, timeParam)
+                # _规划结果详情[] = devClassHiddenName
                 # use this as input for planning data export export
                 # 仿真结果表.append(结果.dict())
                 # 之前结果 = deepcopy(仿真结果表.get(devInst, None))
@@ -519,6 +525,7 @@ def fetchResult(solved: bool, ret: CalcStruct, 典型日):
                 if 出力曲线类:
                     出力曲线 = 出力曲线类.export(devInst, timeParam)
                     logger_print("EXPORTING:", 出力曲线类.__name__)
+                    # logger_print("EXPORTING:", 出力曲线类.__name__.replace(devClassName, devClassHiddenName))
                     logger_print("DATA:")
                     logger_print(出力曲线)
                     if 典型日:
@@ -581,10 +588,13 @@ def fetchResult(solved: bool, ret: CalcStruct, 典型日):
         for devId, content_dict in 出力曲线字典.items():
             deviceName = ret.devInstDictList[0][devId].设备信息.设备名称
             deviceType = ret.devInstDictList[0][devId].__class__.__name__.strip("模型")
+            # deviceHiddenType = ret.devInstDictList[0][devId].设备信息.subtype
+            # deviceHiddenType = ret.devInstDictList[0][devId].设备信息.subtype_hidden
             elem = {"name": deviceName, "plot_list": []}
             for abbr, val in content_dict.items():
                 if abbr in ["元件名称", "时间"]:
                     continue
+                # plotName = f"{deviceHiddenType}{abbr}曲线"
                 plotName = f"{deviceType}{abbr}曲线"
                 # plotName = f"{deviceType}{abbr}出力曲线"
                 # xData = content_dict["时间"]

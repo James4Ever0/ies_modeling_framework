@@ -8,7 +8,8 @@ from log_utils import logger_print
 每年小时数 = 每天小时数 * 每年天数
 每年月数 = 12
 
-from enum import StrEnum, auto
+from enum import auto
+from strenum import StrEnum
 
 class Solver(StrEnum):
     cplex = auto()
@@ -53,7 +54,7 @@ Integer parameters:
 - `output(Format)` - output format for the solution
 - `randomS(eed)` - seed for the random number generator
 - `slog(Level)` - logging level for the solver
-- `sprint(Crash)` - enable/disable sprint crash mode
+- `slogger_print(Crash)` - enable/disable sprint crash mode
 
 Branch and Cut integer parameters:
 - `cutD(epth)` - maximum depth to explore when generating cutting planes

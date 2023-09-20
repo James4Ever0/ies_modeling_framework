@@ -181,8 +181,8 @@ def feasopt(mw: ModelWrapper, mode: FeasoptMode, logfile: str):
     with tempfile.TemporaryDirectory() as tmpdir:
         with chdir_context(tmpdir):
             with modelSolvedTestContext(mw.model) as check_solved:
-                lp_path_abs = os.path.join(tmpdir, lp_path := "model.mps")
-                # lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
+                # lp_path_abs = os.path.join(tmpdir, lp_path := "model.mps")
+                lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
                 sol_path_abs = os.path.join(tmpdir, sol_path := "solution.sol")
                 exp_model = ExportedModel(mw.model, lp_path_abs)
                 # _, smap_id = mw.model.write(lp_path)

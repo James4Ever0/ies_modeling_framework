@@ -211,8 +211,8 @@ def check_proc_exit_status(proc, action):
 def run_and_check_proc(cmd, action):
     run_and_check_proc_base(cmd, action, emit_message_and_raise_exception)
 
-
-repo_absdirs = [os.path.abspath(p) for p in repodirs]
+reserved_repos = ['.git_backup']
+repo_absdirs = [os.path.abspath(p) for p in repodirs if os.path.basename(p) not in reserved_repos]
 
 check_if_executable_in_path(
     "gptcommit", "please install by running `cargo install --locked gptcommit`."

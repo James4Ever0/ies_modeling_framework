@@ -41,13 +41,12 @@ IOUTerminationConditions = [
 ]
 
 
-from enum import StrEnum, auto
-
-
+from enum import auto
+from strenum import StrEnum
 class SolvedTestMode(StrEnum):
-    values_exist = auto()
+    values_exist = auto() # does not work well with cplex.
     values_exist_and_inbound = auto()
-    values_exist_and_satisfy_constraint = auto()
+    values_exist_and_satisfy_constraint = auto() # default.
 
 
 def get_unassigned_attrname(obj):
@@ -67,7 +66,7 @@ def assign_attr_to_obj_with_random_name(obj, value):
 
 @contextmanager
 def modelSolvedTestContext(
-    model: ConcreteModel, testMode: SolvedTestMode = SolvedTestMode.values_exist
+    model: ConcreteModel, testMode: SolvedTestMode = SolvedTestMode.values_exist_and_satisfy_constraint
 ):
     """
     Context manager that checks that the model is solved, by means of micro challenges.
@@ -101,6 +100,8 @@ def modelSolvedTestContext(
         if var_value is not None:
             if testMode != SolvedTestMode.values_exist:
                 solved = var_value >= lb and var_value <= ub
+            else:
+                solved=True
         return solved
 
     try:

@@ -95,10 +95,12 @@ standard_units = frozenset(
 BASE_UNIT_TRANSLATION_TABLE = {
     "percent": ["%"],
     "m2": ["m²"],
+    "mm2": ["mm²"],
     "/hour": [
         "/h",
     ],
     "m3": ["m³", "Nm3", "Nm³"],
+    "mm3": ["mm³"],
     "p_u_": [
         "p.u.",
     ],

@@ -1,6 +1,3 @@
-import os
-os.environ['VAR_INIT_AS_ZERO'] = "1"
-
 from common_fixtures import *
 from export_format_validate import *
 

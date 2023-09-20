@@ -37,7 +37,7 @@ for index, mDict in enumerate(EFG.mDictList):
     logger_print()
     logger_print(f"_____parsing mDict #{index}_____")
     topo = 拓扑图.from_json(mDict.dict())
-    topo.check_consistency()
+    topo.check_consistency
 
 mDictList = EFG.dict()["mDictList"]
 calcParamList = mDictListToCalcParamList(mDictList)

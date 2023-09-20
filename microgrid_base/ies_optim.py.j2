@@ -1,9 +1,11 @@
 from log_utils import logger_print
 from pyomo_environ import *
-from typing import cast
+from typing import cast, Optional
 from config import *
 from pydantic import ValidationError
 import cmath
+from copy import deepcopy
+import copy
 from error_utils import ErrorManager
 # input: negative
 # output: positive
@@ -388,17 +390,25 @@ class {{class_name}}ID(设备ID):
 class 设备基础信息(BaseModel):
 {% for i in deviceBaseIdentifiers%}
     {{i}}: {{normal_str}} = Field(title = "{{i}}")
-    
+{# 
+    subtype_hidden: Union[None, str] = Field(
+        default=None, title="节点原次类型", description="内部变量，不要填写"
+    )
+     #}
     def toStandard(self, attr:str):
+        className = self.__class__.__name__
+
         with ErrorManager(default_error = f"Instance data:\n{self.dict()}\nError converting attribute '{attr}' of class '{className}'"):
-            props = schema['properties']
             schema = self.schema()
+            props = schema['properties']
 
             attr_alias_dict = {k: v.get('title', None) for k,v in props.items()}
             attrName= attr if attr in props.keys() else attr_alias_dict[attr]
-            className = self.__class__.__name__
             assert attrName, f"Cannot find attribute name in class '{className}' with query '{attr}'"
             val = copy.deepcopy(getattr(self, attrName))
+            if val is None:
+                logger_print("Warning: Attribute '{attr}' of class '{className}' is None. Using zero instead.")
+                return 0
 
             desc = props[attr]['description']
             val_units = desc.replace("：", ":").split(":")[-1].strip()
@@ -448,11 +458,13 @@ class 设备信息(设备基础信息):
 {# 设备特有类型 #}
 from enum import auto
 import sys
-
+{# 
 if sys.version_info >= (3,11):
     from enum import StrEnum
 else:
-    from strenum import StrEnum
+    from strenum import StrEnum #}
+from strenum import StrEnum
+
 
 class 风力发电类型(StrEnum):
     变桨 = auto()
@@ -468,7 +480,7 @@ class 新能源消纳约束(StrEnum):
     惩罚代价 = auto()
     限制消纳率 = auto()
 
-class LoadType(StrEnum):
+class 负荷类型(StrEnum):
     Normal = auto()
     Punished = auto()
     Flexible = auto()
@@ -512,27 +524,27 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
             
     {% if class_name not in NonLoadDeviceDict.keys() %}
         {% if class_name in load_class_names %}
-    LoadType: LoadType = Field(default = LoadType.Normal, title = "负荷类型", description = f"可选: {', '.join(LoadType.__members__.keys())}")
+    LoadType: 负荷类型 = Field(default = 负荷类型.Normal, title = "负荷类型", description = f"可选: {', '.join(负荷类型.__members__.keys())}")
 
     # 正数
-    Pr: confloat(ge=0) = Field(default = 0, title = "惩罚系数", description="单位: 元/kWh")
+    PunishmentRate: confloat(ge=0) = Field(default = 0, title = "惩罚系数", description="单位: 元/kWh")
     """
     单位: 元/kWh
     """
 
-    Pmin = confloat(ge = 0) = Field(default = 0,title = "负荷功率最小值", description = "单位: kW")
+    Pmin : confloat(ge = 0) = Field(default = 0,title = "负荷功率最小值", description = "单位: kW")
     """
     单位: kW
     """
     
-    Pmax = confloat(ge = 0) = Field(default = 0,title = "负荷功率最大值", description = "单位: kW")
+    Pmax : confloat(ge = 0) = Field(default = 0,title = "负荷功率最大值", description = "单位: kW")
     """
     单位: kW
     """
 
     @validator('Pmax')
     def validate_Pmax(cls, v, values):
-        if values.get('LoadType', None) in [LoadType.Flexible, LoadType.InterruptableAndFlexible]:
+        if values.get('LoadType', None) in [负荷类型.Flexible, 负荷类型.InterruptableAndFlexible]:
             p_min = values.get('Pmin', 0)
             assert v >= p_min, f"Pmax must be greater than or equal to Pmin\nGiven: Pmax={v}, Pmin={p_min}"
         return v
@@ -578,37 +590,50 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {# {% if class_name in ['锂电池']%} #}
     {# needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减") #}
         {% if class_name in ['传输线'] %}
-        Optimize:bool = Field(default = False, title ="是否优化线径", description="若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值")
-        U:confloat(gt=0) = Field(title = "传输电压", description = "单位: kW")
-        """
-        单位: kW
-        """
-        Rho:confloat(gt=0) = Field(title = "传输线电阻率", description = "单位: Ω*m")
-        """
-        单位: Ω*m
-        """
-        GivenAveragePower:confloat(gt = 0) = Field(title = '平均功率', description = "单位: kW")
-        """
-        单位: kW
-        """
-        GivenMaxPower:confloat(gt = 0) = Field(title = '峰值功率', description = "单位: kW")
-        """
-        单位: kW
-        """
+    Optimize:bool = Field(default = False, title ="是否优化线径", description="若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值")
+    U:confloat(gt=0) = Field(title = "传输电压", description = "单位: kW")
+    """
+    单位: kW
+    """
+    Rho:confloat(gt=0) = Field(title = "传输线电阻率", description = "单位: Ω*m")
+    """
+    单位: Ω*m
+    """
+    GivenAveragePower:confloat(gt = 0) = Field(title = '平均功率', description = "单位: kW")
+    """
+    单位: kW
+    """
+    GivenMaxPower:confloat(gt = 0) = Field(title = '峰值功率', description = "单位: kW")
+    """
+    单位: kW
+    """
 
-        Pwire_Asec_Pr: List[Tuple[confloat(gt=0), confloat(gt=0), confloat(gt=0)]] = Field(title = "传输电功率上限-截面积-单位长度价格", description="单位：kW，mm2，万元/km")
-        """
-        Pwire（传输电功率上限）
-        单位：kW
-        
-        Asec（截面积）
-        单位：mm2
-        
-        Pr（单位长度价格）
-        单位：万元/km
-        """
+    Pwire_Asec_Pr: List[Tuple[confloat(gt=0), confloat(gt=0), confloat(gt=0)]] = Field(title = "传输电功率上限-截面积-单位长度价格", description="单位：kW，mm2，万元/km")
+    """
+    Pwire（传输电功率上限）
+    单位：kW
+    
+    Asec（截面积）
+    单位：mm2
+    
+    Pr（单位长度价格）
+    单位：万元/km
+    """
         {% elif class_name in RenewableEnergyDevices%}
-    RenewableEnergyConsumptionConstraint: 新能源消纳约束 = Field(default = 新能源消纳约束.无, title= "新能源消纳约束", description= "无、惩罚代价、限制消纳率" )
+    RenewableEnergyConsumptionConstraint: 新能源消纳约束 = Field(default = 新能源消纳约束.无, title= "新能源消纳约束", description = "无、惩罚代价、限制消纳率" )
+    RenewableEnergyConsumptionPunishmentRate: confloat(ge=0) = Field(default=0, title = "新能源消纳约束惩罚代价", description = "单位: 元/kWh")
+    """
+    单位: 元/kWh
+    """
+    RenewableEnergyConsumptionRate: confloat(ge=0, le=100) = Field(default=0, title = "新能源消纳率",description = "单位: percent")
+    """
+    单位: percent
+    """
+    @validator("RenewableEnergyConsumptionPunishmentRate")
+    def validate_RenewableEnergyConsumptionPunishmentRate(cls, v, values):
+        if values.get('RenewableEnergyConsumptionConstraint', 新能源消纳约束.无) == 新能源消纳约束.惩罚代价:
+            assert v>0, f"不合理的惩罚代价：{v}"
+        return v
             {% if class_name in ['风力发电'] %}
     machineType: 风力发电类型 = Field(default=风力发电类型.变桨, title = '选择风力发电类型', description = "定桨、变桨（默认）、标幺值")
     normalizedPower: Union[None, List[float]]= Field(default=None, title="风力发电标幺值", description = "空或数组(典型日长度为24,全年逐时长度为8760,秒级长度为7200)")
@@ -619,7 +644,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量") #}
     unitAnnualOperatingTimeConstraint:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
     {# 机组年运行时间最高限值，单位：次。 #}
-    maximumAnnualOperatingTimeLimitOfTheUnit:Union[conint(ge=0), None]=Field(default =None, title="机组年运行时间最高限值", description="单位：次")
+    maximumAnnualOperatingTimeLimitOfTheUnit:Union[conint(ge=0), None]=Field(default =None, title="机组年运行时间最高限值", description="单位：小时")
     {# {{cws("Maximum annual operating time limit of the unit")}}:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次") #}
     {# 考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量) #}
     considerUnitStartUpCosts:bool=Field(default = False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
@@ -867,9 +892,10 @@ class InputParams(SharedParams):
 class ModelWrapper:
     {# __slots__ = ['obj',"obj_expr"] #}
     inputParam: InputParams
-    def __init__(self):
-        self.model = ConcreteModel()
+    def __init__(self, model:Optional[ConcreteModel]=None, cloned:bool = False):
+        self.model = model if model is not None else ConcreteModel()
         self.clock = {}
+        self.cloned = cloned
         self.assumptions: List[Callable] = []
         self.keyword_processor = flashtext.KeywordProcessor()
 {% for objRelatedAttr in objectiveRelatedAttrs %}
@@ -957,6 +983,14 @@ class ModelWrapper:
         {# self.model.__setattr__(name, ret) #}
         return ret
     {% endfor%}
+    def Block(self, model:Optional[ConcreteModel], cloned:bool = False):
+        wrapper = ModelWrapper(model, cloned=cloned)
+        name = self.getSpecialName("BLK")
+        self.model.__setattr__(name, wrapper.model)
+{{applyMacroWithSingleParam(modifySubmodelRelatedTranslationTable, submodelRelatedAttrs)}}
+        return wrapper
+
+
 
 
 # first convert the unit.
@@ -1132,11 +1166,17 @@ class 设备模型:
         {% endfor %}
         self.年化率 = ...
     
+    def TimeSummation(self, target:list, source, mrange = None):
+        mrange = self.getRange(mrange)
+        for i in mrange:
+            target[i]+= source[i]
+        return target
+
     @staticmethod
     def 处理最终财务输出(mclass: 可购买类):
         {% for e0 in financial_param_names%}
         mclass.{{e0}} = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.{{e0}})
-        {% endfor%}
+        {% endfor %}
     
     def constraints_register(self):
         if self.__class__.__name__ == "设备模型":
@@ -1393,14 +1433,28 @@ class 设备模型:
 class {{class_name}}模型(设备模型):
 {{ init_super_class(class_name)}}
 
-        {% set mflag = namespace(val="")%}
-        {% if class_name in ['柴油发电']%}
+        {% set mflag = namespace(val="") %}
+        {% if class_name in RenewableEnergyDevices %}
+        self.RenewableEnergyConsumptionPunishmentRate = self.设备信息.toStandard("RenewableEnergyConsumptionPunishmentRate")
+        self.RenewableEnergyConsumptionConstraint = self.设备信息.RenewableEnergyConsumptionConstraint
+        self.RenewableEnergyConsumptionRate = self.设备信息.toStandard("RenewableEnergyConsumptionRate")
+        self.discardedRenewableEnergyPower = self.变量列表('discardedRenewableEnergyPower', within=NonNegativeReals)
+        self.punishRate = 0
+        """
+        惩罚代价
+        单位：万元/h
+        """
+        {% endif %}
+        {% if class_name in ['柴油发电'] %}
         self.燃料热值:float = 0 # 需要拓扑解析之后进行赋值
-        {% elif class_name in ['传输线']%}
+            {% for e in ['unitSingleStartupCost', 'averageLoadRate'] %}
+        self.{{e}} = self.设备信息.toStandard({{repr(e)}})
+            {% endfor %}
+        {% elif class_name in ['传输线'] %}
         # params added later
             {% for lateinit_varname in ["U", "Rho", "GivenAveragePower", "GivenMaxPower","Pwire_Asec_Pr"] %}
         self.{{lateinit_varname}} = self.设备信息.toStandard({{repr(lateinit_varname)}})
-            {% endif %}
+            {% endfor %}
         {% endif%}
         {% for psc, mdigit in mdigits %}
         {% if psc in ["仿真模拟", "设计规划"] %}
@@ -1412,9 +1466,9 @@ class {{class_name}}模型(设备模型):
         {{psc2}}:
         {% if psc2 == 设计规划 %}
             # BUG: if unbounded, then we get some error.
-            {% if class_name not in ['传输线']%}
+            {% if class_name not in ['传输线'] %}
                 {# {% if class_name not in ['锂电池','光伏发电']%}
-                    {% set mbounds = "bounds = (self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)"%}
+                    {% set mbounds = "bounds = (self.设备信息.MinDeviceCount, self.设备信息.MaxDeviceCount)" %}
                 {% endif%} #}
             self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers) # type: ignore
             {# self.DeviceCount = self.单变量('DeviceCount', within=NonNegativeIntegers, {{mbounds}}) # type: ignore #}
@@ -1471,14 +1525,14 @@ class {{class_name}}模型(设备模型):
         self.PowerInput_ = self.变量列表_带指示变量("PowerInput_")
         self.PowerOutput_ = self.变量列表_带指示变量("PowerOutput_")
 
-        {if class_name in ['变压器']}
+            {%if class_name in ['变压器']%}
 
         self.RangeConstraint(self.电输入, self.PowerInput_.x, expression=lambda x,y: x==y)
         self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression=lambda x,y: x==y)
 
         if self.设备信息.direction == Direction.Directed:
-            self.RangeConstraint(self.PowerInput_.x_pos, expression=lambda x: x == 0)
-            self.RangeConstraint(self.PowerOutput_.x_neg, expression=lambda x: x == 0)
+            self.RangeConstraintMulti(self.PowerInput_.x_pos, expression=lambda x: x == 0)
+            self.RangeConstraintMulti(self.PowerOutput_.x_neg, expression=lambda x: x == 0)
     
         {{设计规划}}: # 在变压器和负荷的交换节点处做处理
             self.最大允许的负载总功率 = self.DeviceCount*(self.RatedPower*self.Efficiency)*self.PowerParameter/(1 if 0 == self.LoadRedundancyParameter else self.LoadRedundancyParameter) # type: ignore
@@ -1529,14 +1583,76 @@ class {{class_name}}模型(设备模型):
         {% elif class_name == "柴油发电" %}
         
         # TODO: define some variables with expression
-        {% for attrName in ["机组年启动次数","机组年运行时间"] %}
-        self.{{attrName}} = ...
-        {% endfor %}
-        self.电功率中转 = self.变量列表_带指示变量("电功率中转")
-        
-        self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
-        self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals)
 
+
+        {# self.电功率中转 = self.变量列表_带指示变量("电功率中转") #}
+        {# self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
+        self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals) #}
+
+        self.Nrun = self.变量列表("Nrun", within=NonNegativeIntegers)
+        """
+        机组开启台数
+        """
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+        self.RangeConstraint(self.Nrun, self.Nrun_indicators.x, expression = lambda x,y: x == y + 0.5)
+        
+        self.RangeConstraintMulti(self.Nrun, expression = lambda x: x <= self.DeviceCount)
+        self.Nstart = self.变量列表_带指示变量("Nstart")
+        """
+        机组开启台数求导
+        """
+        self.mw.Constraint(expr = self.Nstart.x[0] == 0)
+        self.CustomRangeConstraintMulti(self.Nstart.x, self.Nrun, expression = lambda x,y,i: x[i+1] == y[i+1] - y[i], customRange = range(self.计算参数.迭代步数 - 1))
+
+        self.机组年启动次数 = quicksum(self.Nstart.x_pos) * (8760/self.计算参数.总计算时长)
+        self.机组年运行时间 = (quicksum(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数) * 8760
+        
+        if self.设备信息.unitAnnualOperatingTimeConstraint:
+            self.mw.Constraint(expr = self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit)
+        
+        self.annualUnitStartupCosts = 0
+        if self.设备信息.considerUnitStartUpCosts:
+            self.annualUnitStartupCosts = self.机组年启动次数 * self.unitSingleStartupCost
+
+        if self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.平均:
+            x = self.averageLoadRate
+            {# already sorted. #}
+            {# xfp = list(sorted(self.设备信息.DieselToPower_Load, key = lambda e: e[1])) #}
+            xp = [e[1] for e in self.设备信息.DieselToPower_Load]
+            fp = [e[0] for e in self.设备信息.DieselToPower_Load]
+            self.averageDieselConsumptionRate = np.interp(x, xp, fp)
+
+        elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
+            self.子机组列表 = []
+            {% set subModelParamsAndRanges = [
+                ["柴油输入", "NonPositiveReals"],
+                ["电输出", "NonNegativeReals"],
+                ["是否开启", "Boolean"],
+                ["是否真的开启", "Boolean"],
+            ] %}
+            {% for p, r in subModelParamsAndRanges%}
+            self.子机组{{p}}列表 = []
+            {% endfor%}
+            {# self.柴油子机组基础模型 = self.Block() # modelwrapper #}
+            self.子机组数目 = self.MaxDeviceCount if self.计算参数.计算类型 == '设计规划' else self.DeviceCount
+            self.子机组是否购买 = self.变量列表('子机组是否购买', mrange = range(self.子机组数目), within=Boolean)
+
+            for i in range(self.子机组数目):
+                logger_print(f"正在创建第{i+1}个柴油子机组模型")
+                subModelWrapper = self.Block()
+                子机组模型 = 设备模型({}, subModelWrapper, self.计算参数, i)
+                self.子机组列表.append(子机组模型)
+            {% for p, r in subModelParamsAndRanges%}
+
+                子机组{{p}} = 子机组模型.变量列表('子机组{{p}}', within={{r}})
+                self.子机组{{p}}列表.append(子机组{{p}})
+            {% endfor%}
+
+            # define series of submodels
+        else:
+            raise Exception("未知油耗规划算法：", self.设备信息.unitPlanningAlgorithmSelection)
+
+        {# 
         {{设计规划}}:
             self.最大油耗率 = max([x[0] for x in self.DieselToPower_Load])
 
@@ -1545,17 +1661,14 @@ class {{class_name}}模型(设备模型):
             self.柴油输入_ = self.Multiply(dict(var=self.单台柴油输入, max=0, min=-self.RatedPower*self.最大油耗率), dict(var=self.单变量转列表(self.DeviceCount),max=self.MaxDeviceCount, min=self.MinDeviceCount), "柴油输入_", within = NonPositiveReals)
             self.RangeConstraint(self.柴油输入_, self.柴油输入, lambda x,y: x == y)
         else:
-            self.原电输出 = self.变量列表("原电输出",within = NonNegativeReals)
+            self.原电输出 = self.变量列表("原电输出", within = NonNegativeReals)
             self.RangeConstraint(self.原电输出, self.单台发电功率, lambda x,y: x == y*self.DeviceCount)
-            # change #1: add line to define "self.柴油输入"
             self.RangeConstraint(
-            # self.RangeConstraintMulti(
                 self.柴油输入,
                 self.单台柴油输入,
-                # self.单变量转列表(self.DeviceCount),
-                # expression=lambda x, y, z: x == y * z,
                 expression=lambda x, y: x == y * self.DeviceCount,
-            )
+            ) 
+        #}
         {% elif class_name  == '锂电池' %}
 
         {# self.needStorageDecayCompensation:bool = self.设备信息.needStorageDecayCompensation
@@ -1660,8 +1773,10 @@ class {{class_name}}模型(设备模型):
         # 设备特有约束（非变量）
         {# 检验解析时参数是否填写完全 #}
         {% if class_name in ['柴油发电']%}
+
         assert self.燃料热值!=0
         assert type(self.燃料热值) in [int,float]
+
         {% endif%}
         {% if class_name == "风力发电" %}
         # define a single-variate piecewise function
@@ -1753,7 +1868,7 @@ class {{class_name}}模型(设备模型):
         {% elif class_name in 单向变电器列表 %}
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
-        {% if class_name in ['变压器']%}
+        {% if class_name not in ['变压器']%}
         self.RangeConstraint(self.电输入, self.电输出, lambda x,y: x * self.Efficiency {{"* self.PowerParameter" if class_name in ['变压器'] else ""}} == -y)
         self.RangeConstraintMulti(self.电输入, expression=lambda x: -x<=self.RatedPower * self.DeviceCount)
         {% else %}
@@ -1776,7 +1891,8 @@ class {{class_name}}模型(设备模型):
         )
         {% endif%}
 
-        {% elif class_name in ['光伏发电'] %}
+        {% elif class_name in RenewableEnergyDevices %}
+            {% if class_name in ['光伏发电'] %}
         光电转换效率 = self.MaxPower / self.Area # 1kW/m2光照下能产生的能量 省略除以1 单位: one
         assert 光电转换效率<=1, f"光电转换效率数值不正常: {光电转换效率} (应当在0-1之间)\n光电转换效率 = 单块最大功率 / 单块面积"
         总最大功率 = self.MaxPower * self.DeviceCount
@@ -1784,26 +1900,104 @@ class {{class_name}}模型(设备模型):
 
         # 光照强度 * 总面积 * 光电转换效率 * 电电转换效率
         # (kW/m2) * m2 * one * one -> kW
-        self.RangeConstraint(self.计算参数.光照, self.电输出, lambda x,y: x*总面积*光电转换效率*self.PowerConversionEfficiency >= y)
+        self.RangeConstraintMulti(self.计算参数.光照, self.电输出, self.discardedRenewableEnergyPower, expression = lambda x,y,z: x*总面积*光电转换效率*self.PowerConversionEfficiency == y+z)
 
         # BUG: 限制最大功率输出（标准光照下）
         self.RangeConstraintMulti(self.电输出, expression = lambda x: x <= self.MaxPower*self.DeviceCount*self.PowerConversionEfficiency)
 
-        {% elif class_name in ['风力发电'] %}
-        self.RangeConstraint(单台发电功率, self.电输出, lambda x,y: x*self.DeviceCount >= y)
-
+            {% elif class_name in ['风力发电'] %}
+        self.RangeConstraintMulti(单台发电功率, self.电输出, self.discardedRenewableEnergyPower, expression = lambda x,y,z: x*self.DeviceCount ==y+z)
+            {% endif%}
+        if self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.惩罚代价:
+            self.punishRate =(quicksum(self.discardedRenewableEnergyPower)/self.计算参数.迭代步数)* self.RenewableEnergyConsumptionPunishmentRate
+        elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.限制消纳率:
+            self.mw.Constraint(expr = (1-self.RenewableEnergyConsumptionRate)*quicksum(self.电输出) > self.RenewableEnergyConsumptionRate*quicksum(self.discardedRenewableEnergyPower))
+        elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.无:
+            ...
+        else:
+            raise Exception(f"未知新能源消纳约束：{self.RenewableEnergyConsumptionConstraint}\n元件模型: {self.__class__.__name__}")
         {% elif class_name in ['柴油发电'] %}
         {# 总最小启动功率 = self.RatedPower * self.PowerStartupLimit * self.DeviceCount #}
-        总最小启动功率 = self.RatedPower * self.PowerStartupLimit
+        {# 总最小启动功率 = self.RatedPower * self.PowerStartupLimit #}
         {# 总最大输出功率 = self.RatedPower * self.DeviceCount #}
-
+{# 
         self.RangeConstraintMulti(self.单台发电功率, expression = lambda x: x <= self.RatedPower)
         self.RangeConstraint(self.原电输出, self.电功率中转.x, lambda x,y: x == y + 总最小启动功率)
 
         self.Piecewise(y_var = self.单台柴油输入, x_var = self.单台发电功率, y_vals = [-x[0]*self.RatedPower*x[1] for x in self.DieselToPower_Load], x_vals = [self.RatedPower*x[1] for x in self.DieselToPower_Load])
         # 柴油输入率: L/h
 
-        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + self.BinVarMultiplySingle(z,总最小启动功率) == y)
+        self.RangeConstraintMulti(self.电功率中转.x_pos, self.电输出, self.电功率中转.b_pos, expression = lambda x,y,z: x + self.BinVarMultiplySingle(z,总最小启动功率) == y) #}
+
+        if self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.平均:
+        
+            self.RangeConstraint(self.电输出, self.Nrun_indicators.b_pos, lambda x,y: x >= y * self.RatedPower * self.PowerStartupLimit)
+            self.RangeConstraint(self.电输出, self.Nrun, lambda x, y: x <= y * self.RatedPower)
+            self.RangeConstraint(self.电输出, self.Nrun, lambda x, y: x >= (y-1) * self.RatedPower)
+
+            self.RangeConstraint(self.柴油输入, self.电输出, lambda x, y: -x == self.averageDieselConsumptionRate * y)
+
+        elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
+            子机组购买数目 = 0
+
+            {% set subModelParamsNeeded = [] %}
+            {% for p, r in subModelParamsAndRanges %}
+                {% if p not in ['是否开启'] %}
+                    {% do subModelParamsNeeded.append(p) %}
+                {% endif %}
+            {% endfor %}
+            
+            {% for p in subModelParamsNeeded%}
+            子机组{{p}}求和 = [0]* self.计算参数.迭代步数
+            {% endfor%}
+
+            for i in range(self.子机组数目):
+                logger_print(f"正在为第{i+1}个柴油子机组模型创建约束")
+
+                子机组模型 = self.子机组列表
+
+            {% for p, r in subModelParamsAndRanges%}
+                子机组{{p}} = self.子机组{{p}}列表[i]
+            {% endfor%}
+
+                子机组是否购买 = self.子机组是否购买[i]
+
+                子机组模型.RangeConstraintMulti(子机组电输出, expression = lambda x: x <= 子机组是否购买 * self.BigM)
+                子机组模型.RangeConstraint(子机组电输出, 子机组是否开启, expression = lambda x,y: x <= y * self.RatedPower)
+                子机组模型.RangeConstraint(子机组电输出, 子机组是否开启, expression = lambda x,y: x >= y * self.RatedPower * self.PowerStartupLimit)
+
+
+                子机组模型.RangeConstraintMulti(子机组是否购买, 子机组是否开启, 子机组是否真的开启,expression = lambda x,y,z: 子机组模型.BinVarMultiplySingle(x,y) == z)
+                {# for j in range(self.计算参数.迭代步数): #}
+                    {# 子机组是否真的开启求和[j] += 子机组是否真的开启[j] #}
+                    
+                if self.计算参数.计算步长 == "秒":
+                    # deltalimit
+                    subModelElectricityPowerDeltaLimit = self.RatedPower * self.PowerDeltaLimit / 100
+
+                    子机组模型.CustomRangeConstraintMulti(子机组电输出,子机组是否真的开启, customRange = range(self.计算参数.迭代步数), expression = lambda x,y,i: x[i+1] - x[i]>= -subModelElectricityPowerDeltaLimit*y)
+                    子机组模型.CustomRangeConstraintMulti(子机组电输出,子机组是否真的开启, customRange = range(self.计算参数.迭代步数), expression = lambda x,y,i: x[i+1] - x[i]<=subModelElectricityPowerDeltaLimit*y)
+            
+            {% for p in subModelParamsNeeded %}
+                子机组{{p}}求和 = 子机组模型.TimeSummation(子机组{{p}}求和, 子机组{{p}})
+            {% endfor %}
+
+                子机组模型.Piecewise(
+                    y_var=self.子机组柴油输入,
+                    x_var=self.子机组电输出,
+                    y_vals=[-x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load],
+                    x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
+                )
+            子机组购买数目 = quicksum(self.子机组是否购买)
+            self.mw.Constraint(expr = 子机组购买数目 == self.DeviceCount)
+            self.RangeConstraint(self.Nrun, 子机组是否真的开启求和, expression = lambda x,y: x==y)
+
+            {% for p in ['柴油输入', '电输出'] %}
+            self.RangeConstraint(self.{{p}}, 子机组{{p}}求和, expression = lambda x,y: x==y)
+            {% endfor %}
+        else:
+            raise Exception(f"未知油耗规划算法：{self.设备信息.unitPlanningAlgorithmSelection}") 
+        
 
         {%elif class_name in ['锂电池'] %}
         {# self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity) #}
@@ -1822,7 +2016,7 @@ class {{class_name}}模型(设备模型):
             {# self.CurrentTotalPowerOfDecayCompensated, #}
             customRange = range(self.计算参数.迭代步数 - 1),
             expression = 
-            lambda x, y, i: x[i] *self.计算参数.deltaT == (y[i] * (1- self.计算参数.deltaT * self.sigma)  - y[i + 1]) 
+            lambda x, y, i: x[i] *self.计算参数.deltaT == (y[i] * (1- self.计算参数.deltaT * self.sigma)  - y[i + 1])
             {# lambda x, y, z, i: x[i] - z[i] == (y[i] - y[i + 1]) * self.计算参数.时间参数, #}
         )
         self.RangeConstraintMulti(
@@ -1894,11 +2088,22 @@ class {{class_name}}模型(设备模型):
 
         {# 秒级功率变化限制，有特定的变量限制 #}
         {% if class_name in ['光伏发电', '风力发电', '柴油发电'] %}
-        {{秒}}{{" and self.设备信息.machineType != 风力发电类型.标幺值" if class_name in ['风力发电'] else ""}}:
+            {% set extraDeltaLimitConditions = {
+                "风力发电":" and self.设备信息.machineType != 风力发电类型.标幺值",
+                "柴油发电":" and self.设备信息.unitPlanningAlgorithmSelection != 油耗规划算法.最佳"
+            }%}
+        {{秒}} {{extraDeltaLimitConditions.get(class_name, "")}}:
             总最大功率 = {{'self.MaxPower' if class_name in ['光伏发电'] else 'self.RatedPower'}} * self.DeviceCount
             最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
-            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange = range(self.计算参数.迭代步数-1), expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
-            self.CustomRangeConstraintMulti(self.{{'原电输出' if class_name in ['柴油发电'] else '电输出'}} , customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
+            {% if class_name in ['柴油发电'] %}
+            最大下行功率变化生成 = lambda Nrun_t: Nrun_t * self.RatedPower * self.PowerDeltaLimit / 100
+            {% endif %}
+            self.CustomRangeConstraintMulti(self.电输出 , customRange = range(self.计算参数.迭代步数-1), expression = lambda x,i: x[i+1] - x[i] <= 最大功率变化)
+            {% if class_name in ['柴油发电']%}
+            self.CustomRangeConstraintMulti(self.电输出, self.Nrun, customRange = range(self.计算参数.迭代步数-1), expression = lambda x,y,i: x[i+1] - x[i] >= -最大下行功率变化生成(y[i]))
+            {% else %}
+            self.CustomRangeConstraintMulti(self.电输出, customRange =  range(self.计算参数.迭代步数-1),expression = lambda x,i: x[i+1] - x[i] >= -最大功率变化)
+            {% endif %}
         {% endif %}
         {# elif self.计算参数.计算步长 == "小时":
             ... # skip it.
@@ -1985,44 +2190,47 @@ class {{class_name}}模型(设备模型):
             {# {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%} #}
         {% elif class_name in 单向变电器列表 %}
         {# {% elif class_name in 单向变电器列表+['传输线']%} #}
-            {% if class_name in ['变压器']%}
+            {% if class_name in ['变压器'] %}
             {# {% if class_name in ['变压器', '传输线']%} #}
             {% set m1 = '(self.SumRange(self.PowerInput_.x_neg) + self.SumRange(self.PowerOutput_.x_neg))'%}
             {% else%}
             {% set m1='-self.SumRange(self.电输入)'%}
             {% endif%}
-        {% elif class_name in ['双向变流器']%}
+        {% elif class_name in ['双向变流器'] %}
             {% set m1='(self.SumRange(self.储能端_.x_neg)+self.SumRange(self.线路端_.x_neg))'%}
         {%elif class_name in ['传输线'] %}
             {% set m1='0' %}
-        {% else%}
+        {% else %}
             {% error("不支持的类型:", class_name) %}
         {% endif %}
-        {% if class_name not in ['传输线']%}
+        {% if class_name not in ['传输线'] %}
         {# 总可变维护成本年化 = ({{m1}}) * (8760 / self.计算参数.迭代步数) * ({{时间步长参数}}) *self.VariationalCostPer{{vv}} #}
-        self.总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 每年小时数 * self.VariationalCostPer{{vv}} 
+        self.总可变维护成本年化 = (({{m1}}) / self.计算参数.迭代步数) * 每年小时数 * self.VariationalCostPer{{vv}}
         # avg_power * 8760 = annual_work
+        {% if class_name in ['柴油发电'] %}
+        self.总可变维护成本年化 += self.annualUnitStartupCosts
+        {% endif %}
 
         self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
         {% else %}
         self.总成本年化 = self.总固定成本年化
-        {% endif%}
-        {% endwith%}
+        {% endif %}
+        {% endwith %}
 
         {% if class_name != "传输线" %}
         {# 忽略传输线 #}
         self.处理最终财务输出(self)
-        {% endif%}
+        {% endif %}
 
         return self.总成本年化
 {% endfor %}
 
 {% set load_class_names = [] %}
-{% for v in load_types%}
+{% for v in load_types %}
     {% do load_class_names.append(v+"负荷")%}
-{% endfor%}
+{% endfor %}
 {% set input_class_names = input_types%}
-{% set special_classes = {"load_class": load_class_names, "input_class": input_class_names}%}
+{% set special_classes = {"load_class": load_class_names, "input_class": input_class_names} %}
 
 {# check for coverage #}
 {% for class_name in 设备接口集合.keys() %}
@@ -2048,12 +2256,12 @@ class {{class_name}}模型(设备模型):
         {% endif %}
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
         
-        if self.设备信息.LoadType == self.LoadType.Punished:
+        if self.设备信息.LoadType == 负荷类型.Punished:
             self.UnsatisfiedEnergyConsumption = self.变量列表(
             "UnsatisfiedEnergyConsumption", within=NonNegativeReals
         )
 
-        if self.LoadType.Interruptable in self.设备信息.LoadType:
+        if 负荷类型.Interruptable in self.设备信息.LoadType:
             self.Interrupted = self.变量列表(
             "Interrupted", within=Binary)
 
@@ -2069,6 +2277,7 @@ class {{class_name}}模型(设备模型):
         {% endif %}
 
         self.IncomeRates = ...
+        self.punishRate = 0
         self.PriceModel = self.设备信息.PriceModel
 
     {% elif k == 'input_class' %}
@@ -2123,43 +2332,50 @@ class {{class_name}}模型(设备模型):
         self.IncomeRates = [self.PriceModel.getFee(power, getTimeInDay(index)) for index, power in enumerate(self.{{port_name}}.values())] # negative, means income
         punishmentRates = [0]
 
-        if self.设备信息.LoadType == LoadType.Normal:
+        if self.设备信息.LoadType == 负荷类型.Normal:
             self.RangeConstraint(self.{{port_name}}, self.设备信息.EnergyConsumption, lambda x,y: x == -y)
-        elif self.设备信息.LoadType == LoadType.Punished:
+        elif self.设备信息.LoadType == 负荷类型.Punished:
             self.RangeConstraintMulti(self.{{port_name}}, self.UnsatisfiedEnergyConsumption, self.设备信息.EnergyConsumption,expression =  lambda x,y,z: x == -(z-y))
-            punishmentRates = [v*self.设备信息.Pr for v in self.UnsatisfiedEnergyConsumption.values()]
-        elif self.设备信息.LoadType == LoadType.Flexible:
+            punishmentRates = [v*self.设备信息.PunishmentRate for v in self.UnsatisfiedEnergyConsumption.values()]
+        elif self.设备信息.LoadType == 负荷类型.Flexible:
             self.RangeConstraintMulti(self.{{port_name}}, expression = lambda x: -x>=self.设备信息.Pmin)
             self.RangeConstraintMulti(self.{{port_name}}, expression = lambda x: -x<=self.设备信息.Pmax)
-        elif self.设备信息.LoadType == LoadType.Interruptable:
-            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x==self.设备信息.Pmax*(1-y))
-        elif self.设备信息.LoadType == LoadType.InterruptableAndFlexible:
-            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x>=self.设备信息.Pmin*(1-y))
-            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x: -x<=self.设备信息.Pmax*(1-y))
+        elif self.设备信息.LoadType == 负荷类型.Interruptable:
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x,y : -x==self.设备信息.Pmax*(1-y))
+        elif self.设备信息.LoadType == 负荷类型.InterruptableAndFlexible:
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x,y : -x>=self.设备信息.Pmin*(1-y))
+            self.RangeConstraintMulti(self.{{port_name}}, self.Interrupted, expression = lambda x,y : -x<=self.设备信息.Pmax*(1-y))
+        else:
+            raise Exception("不合理的负荷类型:", self.设备信息.LoadType)
         
-        年化费用 = ((quicksum(self.IncomeRates)+ quicksum(punishmentRates))/len(self.IncomeRates)) * 每年小时数
+        {# 年化费用 = ((0 if self.设备信息.LoadType == LoadType.Punished else (quicksum(self.IncomeRates)))/len(self.IncomeRates)) * 每年小时数 #}
+        if self.设备信息.LoadType == 负荷类型.Punished:
+            年化费用 = 0
+            self.punishRate = quicksum(punishmentRates)/self.计算参数.迭代步数
+        else:
+            年化费用 = (quicksum(self.IncomeRates)/self.计算参数.迭代步数) * 每年小时数
+        {# 年化费用 = ((0 if self.设备信息.LoadType == LoadType.Punished else (quicksum(self.IncomeRates)) + quicksum(punishmentRates))/len(self.IncomeRates)) * 每年小时数 #}
         # 已经是负数了
 
         {# 计价模型 #}
-    {% elif k == "input_class"%}
+    {% elif k == "input_class" %}
         {% if class_name in ['柴油'] %}
         平均消耗率 = self.SumRange(self.燃料接口) / self.计算参数.迭代步数
         {% else %}
             {% error('未知能源类型:', class_name) %}
         {% endif %}
 
-        年化费用 = 平均消耗率 * self.Price * 每年小时数 
+        年化费用 = 平均消耗率 * self.Price * 每年小时数
 
-    {% else%}
+    {% else %}
         {% error("未知特殊类型:", k) %}
     {% endif %}
-        self.总成本年化 = 年化费用
+        self.总成本年化 = self.总可变维护成本年化 = 年化费用
         return 年化费用
 
 {% endfor %}
 {% endfor %}
 
-from copy import deepcopy
 
 class ModelWrapperContext:
     def __init__(self, inputParams:InputParams):
@@ -2453,7 +2669,8 @@ class 设备节点基类(节点基类):
     type: Literal['设备']
     ports:Dict[{{normal_str}},设备接口映射] = Field(title = "设备接口映射", description = "描述设备所对应接口的类型和接口ID")
 
-deviceSubtypeAlias = dict(变流器=["单向变流器"], 锂电池=['蓄热设备','蓄冷设备','蓄冰设备'])
+deviceSubtypeAlias = dict(变流器=["单向变流器"])
+{# deviceSubtypeAlias = dict(变流器=["单向变流器"], 锂电池=['蓄热设备','蓄冷设备','蓄冰设备']) #}
 DSAToDS = {e:k for k, v in deviceSubtypeAlias.items() for e in v}
 {# {% set deviceSubtypeAlias = dict(变流器=["单向变流器"]) %} #}
 {% set deviceNodeClasses = [] %}
@@ -2462,16 +2679,19 @@ DSAToDS = {e:k for k, v in deviceSubtypeAlias.items() for e in v}
     {% set deviceNodeClassName = deviceName+"节点" %}
     {% do deviceNodeClasses.append(deviceNodeClassName) %}
 class {{deviceNodeClassName}}(设备节点基类):
+    {# subtype_hidden:Union[None, str] = Field(default = None, title = "节点原次类型", description = "内部变量，不要填写") #}
     subtype: Literal[{{repr(deviceName)}}, *deviceSubtypeAlias.get({{repr(deviceName)}}, [])] = Field(title = "节点次类型")
     {# subtype: Literal[{{repr(deviceName)}}, {{",".join(aliasLiterals)}}] = Field(title = "节点次类型") #}
     param:{{infoClass}} = Field(title = '设备信息', description = {{repr(infoClass)}})
 
     @validator('subtype')
-    def validate_subtype(cls, v):
+    def validate_subtype(cls, v, values):
         v = DSAToDS.get(v, v)
+        {# values['subtype_hidden'] = v #}
+        {# values['param']['subtype_hidden'] = v #}
         return v
 
-{% endfor%}
+{% endfor %}
 
 class mDict(BaseModel):
     directed:bool=Field(default = False, title='保留字段')
@@ -2603,15 +2823,19 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     {# financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }} #}
     financial_obj_expr = 0
 
+
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_obj_expr+= e.constraints_register()
+            financial_obj_expr += e.constraints_register()
+            financial_obj_expr = addPunishRateToFinancialTarget(financial_obj_expr, devInst)
 
     financial_dyn_obj_expr = 0
 
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_dyn_obj_expr+=e.总可变维护成本年化
+            financial_dyn_obj_expr += e.总可变维护成本年化
+            financial_dyn_obj_expr = addPunishRateToFinancialTarget(financial_obj_expr, devInst)
+
 
     {# financial_dyn_obj_expr = sum([(e.总可变维护成本年化) for e in devInstDict.values()]) #}
 
@@ -2630,3 +2854,16 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     )
     return obj_exprs, devInstDict, PD
     # always minimize the objective.
+
+def addValueToTarget(target, devInst, attrName:str, iterCount:int):
+    if hasattr(devInst, attrName):
+        target += getattr(devInst, attrName) * iterCount
+    return target
+
+def addNewRateToAnnualTarget(target, devInst, attrName:str):
+    target = addValueToTarget(target, devInst, attrName, 每年小时数)
+    return target
+
+def addPunishRateToFinancialTarget(target, devInst):
+    target = addNewRateToAnnualTarget(target, devInst, 'punishRate')
+    return target
