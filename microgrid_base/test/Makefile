@@ -33,7 +33,7 @@ endif
 
 # main: run_test.sh test_model.py common_fixtures.py stepwise
 main: run_test.sh test_model.py test_export.py test_failsafe.py common_fixtures.py
-	${MAIN_EXEC} test_export.py
+	env VAR_INIT_AS_ZERO=1 ${MAIN_EXEC} test_export.py
 	${MAIN_EXEC} test_model.py
 	${PYTHON} test_failsafe.py
 

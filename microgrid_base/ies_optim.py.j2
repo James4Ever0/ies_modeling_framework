@@ -17,6 +17,7 @@ import math
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
+{% macro IsIterable(it)%}hasattr({{it}}, "__iter__"){% endmacro %}
 
 def getattr_with_ellipsis_fallback(obj, attrName, default=cmath.nan):
     val = getattr(obj, attrName, default)
@@ -24,7 +25,7 @@ def getattr_with_ellipsis_fallback(obj, attrName, default=cmath.nan):
         val = default
     return val
 
-{% macro applyMacroWithSingleParam(_macro, paramList)%}
+{% macro applyMacroWithSingleParam(_macro, paramList) %}
     {% for param in paramList%}
 {{_macro(param)}}
 
@@ -428,15 +429,15 @@ class 设备基础信息(BaseModel):
 
             for val_unit in units:
                 ConversionRate, StandardUnit = unitFactorCalculator(ureg, standard_units, val_unit)
-                logger_print(f"Converting param {varNames[i]}: {val_unit} -> {StandardUnit} (magnitude: {ConversionRate})")
+                logger_print(f"Converting param {varNames[i]} at {className}.{attrName}: {val_unit} -> {StandardUnit} (magnitude: {ConversionRate})")
                 crlist.append(ConversionRate)
 
             len_varNames = len(varNames)
 
-            if not hasattr(val,' __iter__'):
+            if not {{ IsIterable('val') }}:
                 assert len_varNames == 1, f"input value {val} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
                 ret_val = val*crlist[0]
-            elif not hasattr(val[0], '__iter__'):
+            elif not {{ IsIterable('val[0]') }} :
                 assert len_varNames == 1, f"input value {val} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
                 ret_val = [v*crlist[0] for v in val]
             else:
@@ -644,16 +645,16 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     {# {{cws("Unit annual operating time constraint")}}:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量") #}
     unitAnnualOperatingTimeConstraint:bool=Field(default = False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
     {# 机组年运行时间最高限值，单位：次。 #}
-    maximumAnnualOperatingTimeLimitOfTheUnit:Union[conint(ge=0), None]=Field(default =None, title="机组年运行时间最高限值", description="单位：小时")
+    maximumAnnualOperatingTimeLimitOfTheUnit:conint(ge=0)=Field(default=0, title="机组年运行时间最高限值", description="单位：小时")
     {# {{cws("Maximum annual operating time limit of the unit")}}:bool=Field(default = False, title="机组年运行时间最高限值", description="单位：次") #}
     {# 考虑机组启动费用:bool(若选否，变量约束不创建，变量为自由变量，降低计算量) #}
     considerUnitStartUpCosts:bool=Field(default = False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量")
     {# 机组单次启动费用，单位：元/次 #}
-    unitSingleStartupCost:Union[conint(ge=0), None]=Field(default =None, title="机组单次启动费用", description="单位：元/次")
+    unitSingleStartupCost:conint(ge=0) =Field(default =0, title="机组单次启动费用", description="单位：元/次")
     {# 机组规划算法选择 (平均油耗规划算法或者最佳油耗规划算法)。 #}
     unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 ,title="机组规划算法选择", description="平均/最佳")
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
-    averageLoadRate :Union[confloat(ge=0, le=100), None] = Field(default =None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空")
+    averageLoadRate : confloat(ge=0, le=100) = Field(default =0, title="平均负载率", description="单位：percent")
             {% elif class_name in ['变压器']%}
     direction: Direction = Field(default= Direction.Directed, title = "单双向模式",description="默认为单向")
         {% endif%} 
@@ -1525,10 +1526,14 @@ class {{class_name}}模型(设备模型):
         self.PowerInput_ = self.变量列表_带指示变量("PowerInput_")
         self.PowerOutput_ = self.变量列表_带指示变量("PowerOutput_")
 
-            {%if class_name in ['变压器']%}
-
         self.RangeConstraint(self.电输入, self.PowerInput_.x, expression=lambda x,y: x==y)
         self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression=lambda x,y: x==y)
+        
+        self.RangeConstraint(self.PowerInput_.b_pos, self.PowerOutput_.b_pos, expression = lambda x,y: x + y <=1)
+        self.RangeConstraint(self.PowerInput_.b_neg, self.PowerOutput_.b_neg, expression = lambda x,y: x + y <=1)
+
+            {%if class_name in ['变压器']%}
+
 
         if self.设备信息.direction == Direction.Directed:
             self.RangeConstraintMulti(self.PowerInput_.x_pos, expression=lambda x: x == 0)
@@ -1618,8 +1623,8 @@ class {{class_name}}模型(设备模型):
             x = self.averageLoadRate
             {# already sorted. #}
             {# xfp = list(sorted(self.设备信息.DieselToPower_Load, key = lambda e: e[1])) #}
-            xp = [e[1] for e in self.设备信息.DieselToPower_Load]
-            fp = [e[0] for e in self.设备信息.DieselToPower_Load]
+            xp = [e[1] for e in self.DieselToPower_Load]
+            fp = [e[0] for e in self.DieselToPower_Load]
             self.averageDieselConsumptionRate = np.interp(x, xp, fp)
 
         elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
@@ -1639,7 +1644,7 @@ class {{class_name}}模型(设备模型):
 
             for i in range(self.子机组数目):
                 logger_print(f"正在创建第{i+1}个柴油子机组模型")
-                subModelWrapper = self.Block()
+                subModelWrapper = self.mw.Block()
                 子机组模型 = 设备模型({}, subModelWrapper, self.计算参数, i)
                 self.子机组列表.append(子机组模型)
             {% for p, r in subModelParamsAndRanges%}
@@ -1754,9 +1759,9 @@ class {{class_name}}模型(设备模型):
 
         self.线路端_ = self.变量列表_带指示变量("线路端_")
         self.储能端_ = self.变量列表_带指示变量("储能端_")
-
+{# 
         {% elif class_name in ['传输线']%}
-        self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗') 
+        self.电输入_去除损耗 = self.变量列表_带指示变量('电输入_去除损耗')  #}
         {%endif%}
 
         {% if class_name not in ["传输线"]%}
@@ -1841,19 +1846,24 @@ class {{class_name}}模型(设备模型):
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
         self.RangeConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
         self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y: x == y ) #}
-        
+{#         
         self.RangeConstraint(self.电输入, self.PowerInput_.x, expression = lambda x,y: x==y)
-        self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression = lambda x,y: x==y)
+        self.RangeConstraint(self.电输出, self.PowerOutput_.x, expression = lambda x,y: x==y) #}
 
-        self.RangeConstraint(self.电输入, self.inputIndicators.x, expression = lambda x,y: x == y+self.Ploss)
+        self.RangeConstraint(self.电输入, self.inputIndicators.x, expression = lambda x,y: x == y-self.Ploss)
 
-        self.RangeConstraint(self.电输出, self.outputIndicators.x, expression = lambda x,y: x == y+self.Ploss)
+        self.RangeConstraint(self.电输出, self.outputIndicators.x, expression = lambda x,y: x == y-self.Ploss)
 
-        self.RangeConstraint(self.PowerOutput.x_pos, self.inputIndicators.x_neg, lambda x,y: x==y)
-        self.RangeConstraint(self.PowerInput.x_pos, self.outputIndicators.x_neg, lambda x,y: x==y)
+        self.RangeConstraintMulti(self.PowerOutput_.x_pos, self.inputIndicators.x_neg, expression = lambda x,y: x==y)
+        {# self.RangeConstraintMulti(self.PowerOutput_.x_pos, self.inputIndicators.x_neg, self.inputIndicators.b_neg, expression = lambda x,y,z: x==y - 2* z * self.Ploss) #}
+        self.RangeConstraintMulti(self.PowerInput_.x_pos, self.outputIndicators.x_neg, expression = lambda x,y: x==y)
+        {# self.RangeConstraintMulti(self.PowerInput_.x_pos, self.outputIndicators.x_neg, self.outputIndicators.b_neg, expression = lambda x,y,z: x==y - 2* z * self.Ploss) #}
 
+        {# direction constraint#}
+        self.RangeConstraint(self.PowerInput_.b_pos, self.PowerOutput_.b_pos, expression = lambda x,y: x + y <=1)
+        self.RangeConstraint(self.PowerInput_.b_neg, self.PowerOutput_.b_neg, expression = lambda x,y: x + y <=1)
 
-        {%elif class_name in ['双向变流器']%}
+        {% elif class_name in ['双向变流器'] %}
 
         self.RangeConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
         self.RangeConstraint(self.储能端_.x , self.储能端, lambda x,y: x==y)
@@ -2263,7 +2273,8 @@ class {{class_name}}模型(设备模型):
 
         if 负荷类型.Interruptable in self.设备信息.LoadType:
             self.Interrupted = self.变量列表(
-            "Interrupted", within=Binary)
+            "Interrupted", within=Boolean)
+            # Binary is ok.
 
         {% if v in ['电'] %}
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)

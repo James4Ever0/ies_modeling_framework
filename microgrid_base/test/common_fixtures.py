@@ -225,8 +225,8 @@ def 测试柴油发电信息():
         设备型号="柴油发电1",
         设备名称="柴油发电1",
         RatedPower=20,
-        PowerDeltaLimit=1,
-        PowerStartupLimit=1,
+        PowerDeltaLimit=2,
+        PowerStartupLimit=2,
         CostPerMachine=100,
         CostPerYearPerMachine=100,
         VariationalCostPerWork=100,
@@ -237,6 +237,7 @@ def 测试柴油发电信息():
         DeviceCount=1,
         MaxDeviceCount=1,
         MinDeviceCount=1,
+        averageLoadRate=80,
     )
     return val
 
@@ -460,6 +461,11 @@ def 测试传输线信息():
         BuildCostPerKilometer=20,
         BuildBaseCost=20,
         Length=10,
+        U=220,
+        Rho=2,
+        GivenAveragePower=100,
+        GivenMaxPower = 200,
+        Pwire_Asec_Pr= [[1,3,4]]
     )
     return val
 

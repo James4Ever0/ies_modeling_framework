@@ -31,10 +31,6 @@ class MethodRegistry(list):
     """
 
     def __init__(self, signature: List[str]):
-        # def __init__(self, name: str, signature: List[str]):
-        # self.__name__ = name
-        # TODO: dynamically infer registry name
-        # self.decorator_source = f"{self.__name__}.register"
         self.signature = signature
         self.names = set()
         super().__init__()
@@ -94,6 +90,7 @@ import subprocess
 
 
 def solver_exec_script(solver: Solver, script: List[str], logfile: str, timeout: float):
+    check_script_is_not_empty(script)
     cmd = [solver, *script]
     flogger = FileLogger(logfile)
     logger_print("running solver:", cmd)
@@ -122,8 +119,56 @@ def solver_exec_script(solver: Solver, script: List[str], logfile: str, timeout:
 
 
 def cplex_exec_script(script: List[str], logfile: str, timeout: float):
+    check_script_is_not_empty(script)
     return solver_exec_script(Solver.cplex, ["-c", *script], logfile, timeout)
 
+def check_script_is_not_empty(script):
+    assert len(script)>0, "no script to execute"
+
+def scip_exec_script(script: List[str], logfile: str, timeout: float):
+    check_script_is_not_empty(script)
+    args = []
+    for s in script:
+        args.append("-c")
+        args.append(s)
+    return  solver_exec_script(Solver.scip, args, logfile, timeout)
+
+SCIP_NOT_SOLVED_KW="no solution available" 
+SCIP_SOLVED_KW = "objective value"
+def check_scip_if_solved(first_two_lines:list[str]):
+    _c = "\n".join(first_two_lines)
+    if SCIP_SOLVED_KW in _c:
+        return True
+    elif SCIP_NOT_SOLVED_KW in _c:
+        return False
+    else:
+        raise Exception(f"Unknown scip solution conditon. Is it a scip solution file?\nFirst two lines:\n{_c}")
+import re
+REGEX_FIND_NON_BLANK_SEGMENTS = re.compile(r"[^ \t]+")
+TWO = 2
+def parse_scip_solution_content(content:str):
+    lines = content.strip().split("\n")
+    first_two_lines = lines[:TWO]
+    solution_lines = lines[TWO:]
+    solved = check_scip_if_solved(first_two_lines)
+    solution = {}
+    if solved:
+        for line in solution_lines:
+            line = line.strip()
+            if len(line)>0:
+                candidates = REGEX_FIND_NON_BLANK_SEGMENTS.findall(line)
+                if len(candidates)>=TWO:
+                    try:
+                        varname, value_str = candidates[:TWO]
+                        varname = varname.strip()
+                        if len(varname)>0:
+                            value = float(value_str)
+                            solution[varname] = value
+                    except TypeError:
+                        pass
+                    except Exception as e:
+                        raise e
+    return solution
 
 @contextmanager
 def chdir_context(dirpath: str):
@@ -160,13 +205,13 @@ FEASOPT_TIMELIMIT = 30
 CPLEX_SEC_TO_TICK = 290
 from bs4 import BeautifulSoup
 
+def load_scip_sol_file(sol_file:str):
+    return solution_loader(sol_file, parse_scip_solution_content)
 
-def load_cplex_sol_file(sol_file: str):
-    with open(sol_file, "r") as f:
-        file = f.read()
-
+def parse_cplex_solution_content(content):
+    
     # 'xml' is the parser used. For html files, which BeautifulSoup is typically used for, it would be 'html.parser'.
-    soup = BeautifulSoup(file, "xml")
+    soup = BeautifulSoup(content, "xml")
     data = {}
     for var in soup.find_all("variable"):
         name = var["name"]
@@ -174,8 +219,17 @@ def load_cplex_sol_file(sol_file: str):
         data[name] = value
     return data
 
+def solution_loader(sol_file:str, parser):
+    
+    with open(sol_file, "r") as f:
+        content = f.read()
+        data = parser(content)
+        return data
 
-def feasopt(mw: ModelWrapper, mode: FeasoptMode, logfile: str):
+def load_cplex_sol_file(sol_file: str):
+    return solution_loader(sol_file, parse_cplex_solution_content)
+
+def invoke_solver_with_custom_config_and_solution_parser(mw: ModelWrapper, logfile:str, timelimit:int, script_generator, script_executor, solution_parser):
     solved = False
     # TODO: logging
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -183,43 +237,52 @@ def feasopt(mw: ModelWrapper, mode: FeasoptMode, logfile: str):
             with modelSolvedTestContext(mw.model) as check_solved:
                 # lp_path_abs = os.path.join(tmpdir, lp_path := "model.mps")
                 lp_path_abs = os.path.join(tmpdir, lp_path := "model.lp")
-                sol_path_abs = os.path.join(tmpdir, sol_path := "solution.sol")
+                sol_path = "solution.sol"
                 exp_model = ExportedModel(mw.model, lp_path_abs)
-                # _, smap_id = mw.model.write(lp_path)
-                # smap = mw.model.solutions.symbol_map[smap_id]
-                cplex_config = [
-                    f"timelimit {FEASOPT_TIMELIMIT}"
-                    if not ies_env.DETERMINISTIC_FAILSAFE
-                    else f"dettimelimit {FEASOPT_TIMELIMIT*CPLEX_SEC_TO_TICK}",
-                    f"feasopt mode {mode}",
-                ]
-                if ies_env.DETERMINISTIC_FAILSAFE:
-                    cplex_config.append(f"randomseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
-                script = [
-                    f"read {lp_path}",
-                    *[f"set {c}" for c in cplex_config],
-                    "feasopt all",  # dettime: 8816 ticks for 30s timelimit
-                    f"write {sol_path}",
-                    "quit",
-                ]
-                cplex_exec_script(
-                    script, logfile, FEASOPT_TIMELIMIT + 10
-                )  # we don't care about the exit code.
+
+                script = script_generator(lp_path, sol_path)
+
+                script_executor(
+                    script, logfile, timelimit
+                )
                 if os.path.exists(sol_path):
                     # TODO: parse and assign value from solution
-                    cplex_solution = load_cplex_sol_file(sol_path)
+                    solution = solution_parser(sol_path)
                     for v in mw.model.component_data_objects(ctype=Var):
                         varname = v.name
-                        cplex_varname = exp_model.reverse_translation_table.get(
+                        trans_varname = exp_model.reverse_translation_table.get(
                             varname, None
                         )
-                        val = cplex_solution.get(cplex_varname, None)
+                        val = solution.get(trans_varname, None)
                         if val is not None:
                             v.set_value(val)
                     solved = check_solved()
-        # breakpoint()
+                # breakpoint()
     return solved
 
+def feasopt_script_generator(lp_path:str, sol_path:str, mode:FeasoptMode, solutionCount:int):
+    cplex_config = [
+        f"timelimit {FEASOPT_TIMELIMIT}"
+        if not ies_env.DETERMINISTIC_FAILSAFE
+        else f"dettimelimit {FEASOPT_TIMELIMIT*CPLEX_SEC_TO_TICK}",
+        f"feasopt mode {mode}",
+        f"mip limits solutions {solutionCount}",
+    ]
+    if ies_env.DETERMINISTIC_FAILSAFE:
+        cplex_config.append(f"randomseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
+    script = [
+        f"read {lp_path}",
+        *[f"set {c}" for c in cplex_config],
+        "feasopt all",  # dettime: 8816 ticks for 30s timelimit
+        f"write {sol_path}",
+        "quit",
+    ]
+    return script
+
+from functools import partial
+def feasopt(mw: ModelWrapper, mode: FeasoptMode, logfile: str, solutionCount:int=1):
+    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT + 10, partial(feasopt_script_generator, mode=mode, solutionCount=solutionCount), cplex_exec_script,load_cplex_sol_file)
+    return solved
 
 @failsafe_methods.register
 def feasopt_with_optimization(mw: ModelWrapper, logdir: str):
@@ -232,6 +295,31 @@ def feasopt_only(mw: ModelWrapper, logdir: str):
     logfile = os.path.join(logdir, "cplex_feasopt_only_failsafe.log")
     return feasopt(mw, FeasoptMode.minimum_sum_relaxation, logfile), logfile
 
+def scip_minuc_script_generator(lp_path:str, sol_path:str, solutionCount:int = 1):
+    scip_config = [
+                    f"limits time {FEASOPT_TIMELIMIT}",
+                    f"limits solutions {solutionCount}",
+                    f"limits maxsol {solutionCount}",
+    ]
+    if ies_env.DETERMINISTIC_FAILSAFE:
+        scip_config.append(f"random lpseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
+        scip_config.append(f"random permutationseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
+        scip_config.append(f"random randomseedshift {ies_env.ANSWER_TO_THE_UNIVERSE}")
+    script = [
+        f"read {lp_path}",
+        *[f"set {c}" for c in scip_config],
+        "change minuc",
+        "optimize",
+        f"write solution {sol_path}",
+        "quit",
+    ]
+    return script
+
+@failsafe_methods.register
+def scip_minuc(mw:ModelWrapper, logdir:str):
+    logfile = os.path.join(logdir, "scip_minuc.log")
+    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT + 30, scip_minuc_script_generator, scip_exec_script,load_scip_sol_file)
+    return solved, logfile
 
 IPOPT_MAX_ITERATION = 1000
 IPOPT_TIMELIMIT = 30
@@ -242,7 +330,8 @@ IPOPT_MAX_CPUTIME = 10
 # you cannot use ipopt with constant objective.
 
 
-@failsafe_methods.register
+# @failsafe_methods.register
+# don't register it. deprecated.
 def ipopt_no_presolve(mw: ModelWrapper, logdir: str):
     solved = False
     logfile = os.path.join(logdir, "ipopt_failsafe.log")
@@ -313,7 +402,7 @@ def solve_failsafe(mw: ModelWrapper, logdir: str):
     Steps (fail and continue):
         1. feasopt & objective optimization
         2. feasopt only
-        3. ipopt
+        3. scip minuc
         4. random value assignment
     """
     solved = False

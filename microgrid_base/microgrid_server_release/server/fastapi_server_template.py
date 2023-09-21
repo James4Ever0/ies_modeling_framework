@@ -271,20 +271,20 @@ import uuid
     response_model=CalculationAsyncSubmitResult,
 )
 def calculate_async(
-    graph: EnergyFlowGraph, background_task: BackgroundTasks
+    graph: EnergyFlowGraph if not (ies_env.FAILSAFE or ies_env.STATIC_MOCK) else dict, background_task: BackgroundTasks
 ) -> CalculationAsyncSubmitResult:
     # use celery
+    calculation_id = None
+    submit_result = "failed"
 
     if ies_env.STATIC_MOCK:
         submit_result = "success"
         calculation_id = uuid.uuid4().__str__()
     else:
-        submit_result = "failed"
-        calculation_id = None
         try:
             function_id = "fastapi_celery.calculate_energyflow_graph"
             task = celery_app.send_task(
-                function_id, args=(graph.dict(),)
+                function_id, args=(graph if isinstance(graph, dict) else graph.dict(),)
             )  # async result?
             taskInfo[task.id] = datetime.datetime.now()
             taskDict[task.id] = task
@@ -293,8 +293,13 @@ def calculate_async(
             submit_result = "success"
         except:
             traceback.print_exc()
+    if ies_env.FAILSAFE:
+        if calculation_id is None:
+            calculation_id = uuid.uuid4().__str__()
+        if submit_result is not "success":
+            submit_result = "success"
     return CalculationAsyncSubmitResult(
-        calculation_id=calculation_id, submit_result=submit_result
+        calculation_id=calculation_id, submit_result='success',
     )
 
 
@@ -317,7 +322,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
     Returns:
         calculation_state (CalculationStateResult): 计算状态
     """
-    if ies_env.STATIC_MOCK:
+    if ies_env.STATIC_MOCK or ies_env.FAILSAFE:
         calculation_state = "SUCCESS"
         # return CalculationStateResult(calculation_state="SUCCESS")
     else:
@@ -333,6 +338,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 # from fastapi_datamodel_template import ParetoCurve
 
 from log_utils import logger_traceback
+
 @remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_result_async",
@@ -410,12 +416,13 @@ def getStaticCalculationResultAndState():
     # responses={"200": {"description": "撤销成功", "model": RevokeResult}},
 )
 def revoke_calculation(calculation_id: str):
+    revoke_result = "failed"
+    calculation_state = None
+
     if ies_env.STATIC_MOCK:
         revoke_result = "success"
         calculation_state = "REVOKED"
     else:
-        revoke_result = "failed"
-        calculation_state = None
         if calculation_id in taskDict.keys():
             logger_print("TERMINATING TASK:", calculation_id)
             taskDict[calculation_id].revoke(terminate=True)
@@ -425,6 +432,11 @@ def revoke_calculation(calculation_id: str):
             logger_print("TASK DOES NOT EXIST:", calculation_id)
             calculation_state = "NOT_CREATED"
 
+    if ies_env.FAILSAFE:
+        if revoke_result is not 'success':
+            revoke_result = 'success'
+        if calculation_state is not "REVOKED":
+            calculation_state = "REVOKED"
     return RevokeResult(
         revoke_result=revoke_result, calculation_state=calculation_state
     )

@@ -348,13 +348,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
-    """
-    类型: 变压器输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
     """
     类型: 电母线输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    """
+    类型: 变压器输出
     """
 
 
@@ -445,13 +445,13 @@ class 设备基础信息(BaseModel):
                     ureg, standard_units, val_unit
                 )
                 logger_print(
-                    f"Converting param {varNames[i]}: {val_unit} -> {StandardUnit} (magnitude: {ConversionRate})"
+                    f"Converting param {varNames[i]} at {className}.{attrName}: {val_unit} -> {StandardUnit} (magnitude: {ConversionRate})"
                 )
                 crlist.append(ConversionRate)
 
             len_varNames = len(varNames)
 
-            if not hasattr(val, " __iter__"):
+            if not hasattr(val, "__iter__"):
                 assert (
                     len_varNames == 1
                 ), f"input value {val} failed to match shape of class {className}.{attrName} (len: {len_varNames})"
@@ -901,20 +901,20 @@ class 柴油发电信息(设备信息):
     unitAnnualOperatingTimeConstraint: bool = Field(
         default=False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
     )
-    maximumAnnualOperatingTimeLimitOfTheUnit: Union[conint(ge=0), None] = Field(
-        default=None, title="机组年运行时间最高限值", description="单位：小时"
+    maximumAnnualOperatingTimeLimitOfTheUnit: conint(ge=0) = Field(
+        default=0, title="机组年运行时间最高限值", description="单位：小时"
     )
     considerUnitStartUpCosts: bool = Field(
         default=False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
     )
-    unitSingleStartupCost: Union[conint(ge=0), None] = Field(
-        default=None, title="机组单次启动费用", description="单位：元/次"
+    unitSingleStartupCost: conint(ge=0) = Field(
+        default=0, title="机组单次启动费用", description="单位：元/次"
     )
     unitPlanningAlgorithmSelection: 油耗规划算法 = Field(
         default=油耗规划算法.平均, title="机组规划算法选择", description="平均/最佳"
     )
-    averageLoadRate: Union[confloat(ge=0, le=100), None] = Field(
-        default=None, title="平均负载率", description="如果是平均油耗规划算法，需要填写，否则默认为空"
+    averageLoadRate: confloat(ge=0, le=100) = Field(
+        default=0, title="平均负载率", description="单位：percent"
     )
 
     RatedPower: confloat(ge=0) = Field(title="额定功率", description="名称: 额定功率\n单位: kW")
@@ -3081,8 +3081,8 @@ class 柴油发电模型(设备模型):
 
         if self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.平均:
             x = self.averageLoadRate
-            xp = [e[1] for e in self.设备信息.DieselToPower_Load]
-            fp = [e[0] for e in self.设备信息.DieselToPower_Load]
+            xp = [e[1] for e in self.DieselToPower_Load]
+            fp = [e[0] for e in self.DieselToPower_Load]
             self.averageDieselConsumptionRate = np.interp(x, xp, fp)
 
         elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
@@ -3100,7 +3100,7 @@ class 柴油发电模型(设备模型):
 
             for i in range(self.子机组数目):
                 logger_print(f"正在创建第{i+1}个柴油子机组模型")
-                subModelWrapper = self.Block()
+                subModelWrapper = self.mw.Block()
                 子机组模型 = 设备模型({}, subModelWrapper, self.计算参数, i)
                 self.子机组列表.append(子机组模型)
 
@@ -3721,18 +3721,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
-        )
-        """
-        类型: 变压器输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=Reals
         )
         """
         类型: 电母线输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
+        )
+        """
+        类型: 变压器输出
         """
 
         # 设备特有约束（变量）
@@ -3745,6 +3745,17 @@ class 变压器模型(设备模型):
         )
         self.RangeConstraint(
             self.电输出, self.PowerOutput_.x, expression=lambda x, y: x == y
+        )
+
+        self.RangeConstraint(
+            self.PowerInput_.b_pos,
+            self.PowerOutput_.b_pos,
+            expression=lambda x, y: x + y <= 1,
+        )
+        self.RangeConstraint(
+            self.PowerInput_.b_neg,
+            self.PowerOutput_.b_neg,
+            expression=lambda x, y: x + y <= 1,
         )
 
         if self.设备信息.direction == Direction.Directed:
@@ -4262,6 +4273,24 @@ class 传输线模型(设备模型):
         self.PowerInput_ = self.变量列表_带指示变量("PowerInput_")
         self.PowerOutput_ = self.变量列表_带指示变量("PowerOutput_")
 
+        self.RangeConstraint(
+            self.电输入, self.PowerInput_.x, expression=lambda x, y: x == y
+        )
+        self.RangeConstraint(
+            self.电输出, self.PowerOutput_.x, expression=lambda x, y: x == y
+        )
+
+        self.RangeConstraint(
+            self.PowerInput_.b_pos,
+            self.PowerOutput_.b_pos,
+            expression=lambda x, y: x + y <= 1,
+        )
+        self.RangeConstraint(
+            self.PowerInput_.b_neg,
+            self.PowerOutput_.b_neg,
+            expression=lambda x, y: x + y <= 1,
+        )
+
         self.Pwire_Asec_Pr.sort(key=lambda x: x[0])
         self.Pwire_arr = [e[0] for e in self.Pwire_Asec_Pr]
         self.Asec_arr = [e[1] for e in self.Pwire_Asec_Pr]
@@ -4308,8 +4337,6 @@ class 传输线模型(设备模型):
         self.inputIndicators = self.变量列表_带指示变量("inputIndicators")
         self.outputIndicators = self.变量列表_带指示变量("outputIndicators")
 
-        self.电输入_去除损耗 = self.变量列表_带指示变量("电输入_去除损耗")
-
     def constraints_register(self):
         super().constraints_register()
         # 设备特有约束（非变量）
@@ -4317,29 +4344,37 @@ class 传输线模型(设备模型):
         # 输出输入功率约束
 
         self.RangeConstraint(
-            self.电输入, self.PowerInput_.x, expression=lambda x, y: x == y
-        )
-        self.RangeConstraint(
-            self.电输出, self.PowerOutput_.x, expression=lambda x, y: x == y
-        )
-
-        self.RangeConstraint(
             self.电输入,
             self.inputIndicators.x,
-            expression=lambda x, y: x == y + self.Ploss,
+            expression=lambda x, y: x == y - self.Ploss,
         )
 
         self.RangeConstraint(
             self.电输出,
             self.outputIndicators.x,
-            expression=lambda x, y: x == y + self.Ploss,
+            expression=lambda x, y: x == y - self.Ploss,
+        )
+
+        self.RangeConstraintMulti(
+            self.PowerOutput_.x_pos,
+            self.inputIndicators.x_neg,
+            expression=lambda x, y: x == y,
+        )
+        self.RangeConstraintMulti(
+            self.PowerInput_.x_pos,
+            self.outputIndicators.x_neg,
+            expression=lambda x, y: x == y,
         )
 
         self.RangeConstraint(
-            self.PowerOutput.x_pos, self.inputIndicators.x_neg, lambda x, y: x == y
+            self.PowerInput_.b_pos,
+            self.PowerOutput_.b_pos,
+            expression=lambda x, y: x + y <= 1,
         )
         self.RangeConstraint(
-            self.PowerInput.x_pos, self.outputIndicators.x_neg, lambda x, y: x == y
+            self.PowerInput_.b_neg,
+            self.PowerOutput_.b_neg,
+            expression=lambda x, y: x + y <= 1,
         )
 
         # 计算年化
@@ -4385,7 +4420,8 @@ class 电负荷模型(设备模型):
             )
 
         if 负荷类型.Interruptable in self.设备信息.LoadType:
-            self.Interrupted = self.变量列表("Interrupted", within=Binary)
+            self.Interrupted = self.变量列表("Interrupted", within=Boolean)
+            # Binary is ok.
 
         MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
 

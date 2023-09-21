@@ -1,0 +1,1 @@
+scip -c "read converted.mps" -c "set limits solutions 1" -c "set limits time 30" -c "change minuc" -c "optimize" -c "write solution relaxed_scip.sol" -c "quit"

@@ -4,6 +4,8 @@ class A(enum.Enum):
     MEMBER1 = 'member1'
     MEMBER2 = 'member2'
 
+# not working.
+
 class B(enum.Enum):
     MEMBER3 = 'member3'
     MEMBER4 = 'member4'

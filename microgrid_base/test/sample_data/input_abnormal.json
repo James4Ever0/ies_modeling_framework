@@ -35370,7 +35370,18 @@
                         "Life": 20.0,
                         "BuildCostPerKilometer": 0.2,
                         "BuildBaseCost": 0.2,
-                        "Length": 1.0
+                        "Length": 1.0,
+                        "U": 1,
+                        "Rho": 1,
+                        "GivenAveragePower": 100,
+                        "Pwire_Asec_Pr": [
+                            [
+                                1,
+                                1,
+                                1
+                            ]
+                        ],
+                        "GivenMaxPower": 200
                     }
                 }
             ],

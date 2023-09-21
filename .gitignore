@@ -6,6 +6,9 @@
 # gptcommit secrets
 setup_gptcommit.*
 
+# jinja python intermediate files
+*.new.py
+
 #!.last_commit_time
 !.gitignore
 !*.j2

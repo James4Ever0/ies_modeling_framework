@@ -253,10 +253,10 @@ def test_柴油(
 
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
 @pytest.mark.parametrize(
-    "power_output, expected_val, expected_diesel",
+    "power_output, expected_val, expected_diesel, adcr_expected",
     [
-        (10, 10, -3 * 0.001 * 10),
-        (20, 20, -1 * 0.001 * 20),
+        (10, 10, -(3 * 2 + 1 * 3) / 5 * 0.001 * 10, (3 * 2 + 1 * 3) / 5 * 0.001),
+        (20, 20, -(3 * 2 + 1 * 3) / 5 * 0.001 * 20, (3 * 2 + 1 * 3) / 5 * 0.001),
     ],
 )
 def test_柴油发电(
@@ -265,10 +265,13 @@ def test_柴油发电(
     power_output,
     expected_val,
     expected_diesel,
+    adcr_expected,
 ):
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
+    assert (测试柴油发电模型.averageDieselConsumptionRate - adcr_expected) < EPS
+    assert 测试柴油发电模型.averageLoadRate == 0.8
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
     model_wrapper.Objective(expr=obj_expr, sense=minimize)
@@ -280,9 +283,9 @@ def test_柴油发电(
         print(s_results)
         check_solver_result(s_results)
 
-        print("ELECTRICITY:", value(测试柴油发电模型.原电输出[0]), expected_val)
+        print("ELECTRICITY:", value(测试柴油发电模型.电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
-        assert abs(value(测试柴油发电模型.原电输出[0]) - expected_val) <= EPS
+        assert abs(value(测试柴油发电模型.电输出[0]) - expected_val) <= EPS
         assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
         # breakpoint()
 
@@ -419,17 +422,14 @@ def test_双向变流器(
             assert abs(value(测试双向变流器模型.储能端[2]) - output) < EPS
 
 
-@pytest.mark.parametrize("_input, output", [(100, 90), (200, 190)])
-@pytest.mark.parametrize("input_only", [False, True])
+@pytest.mark.parametrize(
+    "_input, output",
+    [(100, 100 - 1.377), (200, 200 - 1.377), (1, 0), (1.377, 0), (1.378, 0.001)],
+)
 @pytest.mark.parametrize("sense", [minimize, maximize])
-def test_传输线(
-    model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, input_only, sense
-):
+def test_传输线(model_wrapper: ModelWrapper, 测试传输线模型: 传输线模型, _input, output, sense):
     测试传输线模型.constraints_register()
-    if input_only:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == -_input)
-    else:
-        测试传输线模型.RangeConstraintMulti(测试传输线模型.电输出, expression=lambda x: x == output)
+    测试传输线模型.RangeConstraintMulti(测试传输线模型.电输入, expression=lambda x: x == -_input)
     model_wrapper.Objective(expr=测试传输线模型.SumRange(测试传输线模型.电输出), sense=sense)
     with SolverFactory(Solver.cplex) as solver:  # type: ignore
         print(">>>SOLVING<<<")
