@@ -30,6 +30,8 @@ setup_gptcommit.*
 !*.js
 !*.ts
 !*.jl
+!*.pl
+!*.pro
 
 # IES Language (DSL)
 !*.ies

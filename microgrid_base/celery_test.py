@@ -5,8 +5,8 @@ os.environ['http_proxy'] = ""
 os.environ['https_proxy'] = ""
 os.environ['all_proxy'] = ""
 import json
-# parsing = False
-parsing = True
+parsing = False
+# parsing = True
 
 with open("template_input.json", "r") as f:
     mDictList = json.load(f)
@@ -29,11 +29,12 @@ url = f"http://{ip}:{port}/calculate_async"
 result_url = f"http://{ip}:{port}/get_calculation_result_async"
 status_url = f"http://{ip}:{port}/get_calculation_state"
 
-test = "create_task"
-# test = "check_result"
+# test = "create_task"
+test = "check_result"
 # test = "check_status"
 
-task_id = "914702ea-433c-4534-97ea-5cc619e37730"
+task_id = "9ebda25b-92f9-4b77-acc3-9c85c0cfefa9"
+# task_id = "914702ea-433c-4534-97ea-5cc619e37730"
 # task_id = "2533b339-86db-45bb-8d03-5d38ff9ff52c"
 check_data = dict(calculation_id=task_id)
 
