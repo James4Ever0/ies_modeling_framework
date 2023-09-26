@@ -1,6 +1,25 @@
 from log_utils import logger_print
 import progressbar
 import sys
+import easyprocess, func_timeout
+import json
+
+DOCKER_PROC_TIMEOUT = 15
+ACCEPTED_DOCKER_ARCH = ...
+# hold, we may check the architecture.
+
+
+def check_if_docker_arch_acceptable():
+    cmd = "docker info -f json"
+    proc = call_cmd_with_timeout_and_return_proc(cmd)
+    obj = json.loads(proc.stdout)
+    arch = obj["Architecture"]
+    if arch != ACCEPTED_DOCKER_ARCH:
+        raise Exception(
+            "Unsupported architecture: %s (run under %s instead)"
+            % (arch, ACCEPTED_DOCKER_ARCH)
+        )
+
 
 """
 create or import docker environment with scripts.
@@ -15,11 +34,10 @@ import docker
 import os
 from config_utils import getConfig
 
-import easyprocess, func_timeout
-
 
 def killAndPruneAllContainers():
-    proc = easyprocess.EasyProcess("docker container ls").call()
+    cmd = "docker container ls"
+    proc = call_cmd_with_timeout_and_return_proc(cmd)
     # proc = easyprocess.EasyProcess("docker container ls -a").call()
     if proc.stdout:
         lines = proc.stdout.split("\n")[1:]
@@ -34,6 +52,11 @@ def killAndPruneAllContainers():
                 )
             # os.system(f"docker container kill -s SIGKILL {cid}")
         os.system("docker container prune -f")
+
+
+def call_cmd_with_timeout_and_return_proc(cmd, timeout=DOCKER_PROC_TIMEOUT):
+    proc = easyprocess.EasyProcess(cmd).call(timeout=timeout)
+    return proc
 
 
 # from config import IESEnv
@@ -73,6 +96,7 @@ dockerfile_init_path = "Dockerfile_init"
 dockerfile_main_path = "Dockerfile_main"
 dockerfile_patch_path = "Dockerfile_patch"
 dockerfile_update_path = "Dockerfile_update"
+dockerfile_update_self_path = "Dockerfile_update_self"
 
 RELEASE_ENV = False
 if rel_curdir != "microgrid_base":
@@ -220,7 +244,10 @@ if os.name == "nt":
 
 killAndPruneAllContainers()
 
-build_image(update_image_tag, dockerfile_update_path, context_path)
+if update_image_tag in image_tags:  # recursive update, hopefully.
+    build_image(update_image_tag, dockerfile_update_self_path, context_path)
+else:
+    build_image(update_image_tag, dockerfile_update_path, context_path)
 
 # BUG: error while creating mount source path
 # FIX: restart the docker engine (win) if fail to run container (usually caused by unplugging anything mounted by volume)
@@ -258,17 +285,17 @@ try:
     short_id = container.short_id
     logger_print("attaching to: %s" % short_id)
     # ref: https://www.howtogeek.com/devops/how-to-detach-from-a-docker-container-without-stopping-it/
-    if os.name == 'nt':
+    if os.name == "nt":
         logger_print("unable to configure detach keys on windows.")
         os.system(f"docker attach {short_id}")
     else:
         os.system(f'docker attach {short_id} --detach-keys="{config.DETACH_KEYS}"')
     # while True:
 #     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
-    #     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
-    #     exit_code = os.system(f"docker attach {short_id}")
-    #     if exit_code == 0:
-    #         break
+#     # exit_code = os.system(f"docker attach {short_id} --detach-keys '{config.DETACH_KEYS}'")
+#     exit_code = os.system(f"docker attach {short_id}")
+#     if exit_code == 0:
+#         break
 except:
     import traceback
 
