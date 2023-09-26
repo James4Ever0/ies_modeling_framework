@@ -291,6 +291,12 @@ class 分时阶梯电价(BaseModel):
 # you can dump and load from json.
 
 
+def quicksum_indexed_var(indexed_var):
+    if isinstance(indexed_var, list):
+        return sum(indexed_var)
+    return sum(indexed_var.values())
+
+
 #############
 # Device ID #
 #############
@@ -330,13 +336,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -348,13 +354,13 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
-    """
-    类型: 电母线输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
     """
     类型: 变压器输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    """
+    类型: 电母线输入
     """
 
 
@@ -370,13 +376,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
-    """
-    类型: 双向变流器储能端输入输出
-    """
     线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
     """
     类型: 双向变流器线路端输入输出
+    """
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    """
+    类型: 双向变流器储能端输入输出
     """
 
 
@@ -1905,7 +1911,7 @@ class ModelWrapper:
 
         return ret
 
-    def Block(self, model: Optional[ConcreteModel], cloned: bool = False):
+    def Block(self, model: Optional[ConcreteModel] = None, cloned: bool = False):
         wrapper = ModelWrapper(model, cloned=cloned)
         name = self.getSpecialName("BLK")
         self.model.__setattr__(name, wrapper.model)
@@ -2571,13 +2577,15 @@ class 光伏发电模型(设备模型):
 
         if self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.惩罚代价:
             self.punishRate = (
-                quicksum(self.discardedRenewableEnergyPower) / self.计算参数.迭代步数
+                quicksum_indexed_var(self.discardedRenewableEnergyPower)
+                / self.计算参数.迭代步数
             ) * self.RenewableEnergyConsumptionPunishmentRate
         elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.限制消纳率:
             self.mw.Constraint(
-                expr=(1 - self.RenewableEnergyConsumptionRate) * quicksum(self.电输出)
+                expr=(1 - self.RenewableEnergyConsumptionRate)
+                * quicksum_indexed_var(self.电输出)
                 > self.RenewableEnergyConsumptionRate
-                * quicksum(self.discardedRenewableEnergyPower)
+                * quicksum_indexed_var(self.discardedRenewableEnergyPower)
             )
         elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.无:
             ...
@@ -2847,13 +2855,15 @@ class 风力发电模型(设备模型):
         )
         if self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.惩罚代价:
             self.punishRate = (
-                quicksum(self.discardedRenewableEnergyPower) / self.计算参数.迭代步数
+                quicksum_indexed_var(self.discardedRenewableEnergyPower)
+                / self.计算参数.迭代步数
             ) * self.RenewableEnergyConsumptionPunishmentRate
         elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.限制消纳率:
             self.mw.Constraint(
-                expr=(1 - self.RenewableEnergyConsumptionRate) * quicksum(self.电输出)
+                expr=(1 - self.RenewableEnergyConsumptionRate)
+                * quicksum_indexed_var(self.电输出)
                 > self.RenewableEnergyConsumptionRate
-                * quicksum(self.discardedRenewableEnergyPower)
+                * quicksum_indexed_var(self.discardedRenewableEnergyPower)
             )
         elif self.RenewableEnergyConsumptionConstraint == 新能源消纳约束.无:
             ...
@@ -3025,18 +3035,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -3067,8 +3077,12 @@ class 柴油发电模型(设备模型):
             customRange=range(self.计算参数.迭代步数 - 1),
         )
 
-        self.机组年启动次数 = quicksum(self.Nstart.x_pos) * (8760 / self.计算参数.总计算时长)
-        self.机组年运行时间 = (quicksum(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数) * 8760
+        self.机组年启动次数 = quicksum_indexed_var(self.Nstart.x_pos) * (
+            8760 / self.计算参数.总计算时长
+        )
+        self.机组年运行时间 = (
+            quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数
+        ) * 8760
 
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
@@ -3094,6 +3108,7 @@ class 柴油发电模型(设备模型):
             self.子机组数目 = (
                 self.MaxDeviceCount if self.计算参数.计算类型 == "设计规划" else self.DeviceCount
             )
+            self.子机组数目 = int(self.子机组数目)
             self.子机组是否购买 = self.变量列表(
                 "子机组是否购买", mrange=range(self.子机组数目), within=Boolean
             )
@@ -3165,7 +3180,7 @@ class 柴油发电模型(设备模型):
             for i in range(self.子机组数目):
                 logger_print(f"正在为第{i+1}个柴油子机组模型创建约束")
 
-                子机组模型 = self.子机组列表
+                子机组模型: 设备模型 = self.子机组列表[i]
 
                 子机组柴油输入 = self.子机组柴油输入列表[i]
                 子机组电输出 = self.子机组电输出列表[i]
@@ -3187,11 +3202,10 @@ class 柴油发电模型(设备模型):
                     >= y * self.RatedPower * self.PowerStartupLimit,
                 )
 
-                子机组模型.RangeConstraintMulti(
-                    子机组是否购买,
+                子机组模型.RangeConstraint(
                     子机组是否开启,
                     子机组是否真的开启,
-                    expression=lambda x, y, z: 子机组模型.BinVarMultiplySingle(x, y) == z,
+                    expression=lambda x, y: 子机组模型.BinVarMultiplySingle(子机组是否购买, x) == y,
                 )
 
                 if self.计算参数.计算步长 == "秒":
@@ -3220,14 +3234,14 @@ class 柴油发电模型(设备模型):
                 子机组是否真的开启求和 = 子机组模型.TimeSummation(子机组是否真的开启求和, 子机组是否真的开启)
 
                 子机组模型.Piecewise(
-                    y_var=self.子机组柴油输入,
-                    x_var=self.子机组电输出,
+                    y_var=子机组柴油输入,
+                    x_var=子机组电输出,
                     y_vals=[
                         -x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load
                     ],
                     x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
                 )
-            子机组购买数目 = quicksum(self.子机组是否购买)
+            子机组购买数目 = quicksum_indexed_var(self.子机组是否购买)
             self.mw.Constraint(expr=子机组购买数目 == self.DeviceCount)
             self.RangeConstraint(self.Nrun, 子机组是否真的开启求和, expression=lambda x, y: x == y)
 
@@ -3721,18 +3735,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=Reals
         )
         """
         类型: 变压器输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
+        )
+        """
+        类型: 电母线输入
         """
 
         # 设备特有约束（变量）
@@ -4100,18 +4114,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
-        )
-        """
-        类型: 双向变流器储能端输入输出
-        """
-
         self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
             "线路端", within=Reals
         )
         """
         类型: 双向变流器线路端输入输出
+        """
+
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
+        )
+        """
+        类型: 双向变流器储能端输入输出
         """
 
         # 设备特有约束（变量）
@@ -4496,9 +4510,9 @@ class 电负荷模型(设备模型):
 
         if self.设备信息.LoadType == 负荷类型.Punished:
             年化费用 = 0
-            self.punishRate = quicksum(punishmentRates) / self.计算参数.迭代步数
+            self.punishRate = quicksum_indexed_var(punishmentRates) / self.计算参数.迭代步数
         else:
-            年化费用 = (quicksum(self.IncomeRates) / self.计算参数.迭代步数) * 每年小时数
+            年化费用 = (quicksum_indexed_var(self.IncomeRates) / self.计算参数.迭代步数) * 每年小时数
         # 已经是负数了
 
         self.总成本年化 = self.总可变维护成本年化 = 年化费用

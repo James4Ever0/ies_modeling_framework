@@ -12,7 +12,7 @@ class 基本类型(StrEnum):
     氢气 = auto()
     电 = auto()
     水 = auto()
-    蒸汽 = auto() # 有蒸汽管道
+    蒸汽 = auto()
     烟气 = auto()
     导热油 = auto()
     乙二醇 = auto()
@@ -21,7 +21,6 @@ class 基本类型(StrEnum):
 class 水类型(StrEnum):
     管道水 = auto()
     自来水 = auto()
-    # 余热热水 = auto()
 
 
 class 乙二醇类型(StrEnum):
@@ -34,18 +33,11 @@ class 管道水类型(StrEnum):
     热水 = auto()
     冷水 = auto()
 
-# class 热水(StrEnum):
-#     蓄热 = auto()
-#     制热 = auto()
-# class 冷水(StrEnum):
-#     蓄冷 = auto()
-#     制冷 = auto()
+
 _mappings = {
     基本类型.水: 水类型,
     水类型.管道水: 管道水类型,
     基本类型.乙二醇: 乙二醇类型,
-    # 水类型.冷水: 冷水,
-    # 水类型.热水: 热水
 }
 
 类型细分表 = {}

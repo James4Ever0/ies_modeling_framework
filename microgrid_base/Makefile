@@ -61,6 +61,10 @@ MICROGRID_TYPESYS_JSONS = microgrid_v2_all_types_structured.json microgrid_v2_co
 
 TYPESYS_PLOTS = type_system.png device_connectivity_matrix.png
 
+TYPE_UTILS_RESDIR = type_utils_resources
+TYPE_UTILS_RESOURCE_JSON = ${TYPE_UTILS_RESDIR}/extra_ports.json ${TYPE_UTILS_RESDIR}/microgrid_ports.json
+TYPE_UTILS_EXCEL_INPUT = ${TYPE_UTILS_RESDIR}/设备接口.xlsx
+
 RELEASE_DIR = microgrid_server_release
 
 SERVER_RELEASE_DIR = ${RELEASE_DIR}/server
@@ -215,7 +219,8 @@ frontend_sim_param_translation.json: frontend_sim_param_translation.js parse_fro
 	${PYTHON} parse_frontend_sim_param_translation.py
 
 # device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
-device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数_23_7_24.xlsx
+
+device_params_intermediate.json microgrid_device_params_intermediate.json ${TYPE_UTILS_RESOURCE_JSON}: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数_23_7_24.xlsx ${TYPE_UTILS_EXCEL_INPUT}
 	${PYTHON} parse_params.py
 
 constraints.log: parse_optim_constraints.py ies_optim.py

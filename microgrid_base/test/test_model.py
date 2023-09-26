@@ -251,12 +251,25 @@ def test_柴油(
         assert abs(val_fee - fee_rate_per_hour) < EPS
 
 
+# 20 is rated power, 10 is halfway.
 @pytest.mark.timeout(30)  # pip3 install pytest-timeout
 @pytest.mark.parametrize(
-    "power_output, expected_val, expected_diesel, adcr_expected",
+    "power_output, expected_val, expected_diesel, adcr_expected, expected_diesel_optim",
     [
-        (10, 10, -(3 * 2 + 1 * 3) / 5 * 0.001 * 10, (3 * 2 + 1 * 3) / 5 * 0.001),
-        (20, 20, -(3 * 2 + 1 * 3) / 5 * 0.001 * 20, (3 * 2 + 1 * 3) / 5 * 0.001),
+        (
+            10,
+            10,
+            -(3 * 2 + 1 * 3) / 5 * 0.001 * 10,
+            (3 * 2 + 1 * 3) / 5 * 0.001,
+            -3 * 0.001 * 10,
+        ),
+        (
+            20,
+            20,
+            -(3 * 2 + 1 * 3) / 5 * 0.001 * 20,
+            (3 * 2 + 1 * 3) / 5 * 0.001,
+            -1 * 0.001 * 20,
+        ),
     ],
 )
 def test_柴油发电(
@@ -266,11 +279,16 @@ def test_柴油发电(
     expected_val,
     expected_diesel,
     adcr_expected,
+    expected_diesel_optim,
 ):
+    optim = 测试柴油发电模型.设备信息.unitPlanningAlgorithmSelection == "最佳"
+    if optim:
+        expected_diesel = expected_diesel_optim
     测试柴油发电模型.燃料热值 = 1
     测试柴油发电模型.constraints_register()
     测试柴油发电模型.RangeConstraintMulti(测试柴油发电模型.电输出, expression=lambda x: x == power_output)
-    assert (测试柴油发电模型.averageDieselConsumptionRate - adcr_expected) < EPS
+    if not optim:
+        assert (测试柴油发电模型.averageDieselConsumptionRate - adcr_expected) < EPS
     assert 测试柴油发电模型.averageLoadRate == 0.8
     obj_expr = 测试柴油发电模型.总成本年化
     print("年化:", obj_expr)
@@ -420,6 +438,47 @@ def test_双向变流器(
         else:
             assert abs(value(测试双向变流器模型.储能端[0]) - output) < EPS
             assert abs(value(测试双向变流器模型.储能端[2]) - output) < EPS
+
+
+@pytest.mark.parametrize("_input, output", [(10, 8.1), (5, 8.1 / 2)])
+@pytest.mark.parametrize("sense", [minimize, maximize])
+def test_变压器(model_wrapper: ModelWrapper, 测试变压器模型: 变压器模型, _input, output, sense):
+    测试变压器模型.constraints_register()
+    unidirected = 测试变压器模型.设备信息.direction == "Directed"
+    if unidirected:
+        测试变压器模型.RangeConstraintMulti(测试变压器模型.电输入, expression=lambda x: x == -_input)
+    else:
+        测试变压器模型.RangeConstraintMulti(测试变压器模型.电输入, expression=lambda x: x == output)
+    model_wrapper.Objective(expr=测试变压器模型.总成本年化, sense=sense)
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        if unidirected:
+            assert abs(value(测试变压器模型.电输出[2]) - output) < EPS
+        else:
+            assert abs(value(测试变压器模型.电输入[2]) - output) < EPS
+
+
+@pytest.mark.parametrize("_input, output", [(10, 9), (5, 9 / 2)])
+@pytest.mark.parametrize("sense", [minimize, maximize])
+def test_变流器(model_wrapper: ModelWrapper, 测试变流器模型: 变流器模型, _input, output, sense):
+    测试变流器模型.constraints_register()
+    测试变流器模型.RangeConstraintMulti(测试变流器模型.电输入, expression=lambda x: x == -_input)
+    model_wrapper.Objective(expr=测试变流器模型.总成本年化, sense=sense)
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        assert abs(value(测试变流器模型.电输出[2]) - output) < EPS
 
 
 @pytest.mark.parametrize(

@@ -45,5 +45,7 @@ pyecharts
 pydantic-factories
 # docker
 beautifulsoup4
+swiplserver
+frozendict
 -r requirements_docker_launch.txt
 # ref: https://pip.pypa.io/en/stable/reference/requirements-file-format/

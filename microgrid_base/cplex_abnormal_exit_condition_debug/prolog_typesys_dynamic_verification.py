@@ -129,7 +129,8 @@ banner("querying")
 
 with PrologMQI() as mqi:
     with mqi.create_thread() as prolog_thread:
-        prolog_thread.query('["test_prolog.pro"].')
+        prolog_thread.query('["prolog_gen.pro"].') # shall be identical.
+        # prolog_thread.query('["test_prolog.pro"].')
         result = prolog_thread.query(
             "findall(STATUS, adder_port_status_list([adder1], STATUS), STATUS_LIST)"
         )

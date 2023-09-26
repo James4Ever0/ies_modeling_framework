@@ -218,8 +218,8 @@ def 测试风力发电模型(
 # =================================柴油发电================================= #
 
 
-@fixture
-def 测试柴油发电信息():
+@fixture(scope="session", params=["最佳", "平均"], ids=["OPTIM", "AVERAGE"])
+def 测试柴油发电信息(request: Request):
     val = 柴油发电信息(
         生产厂商="柴油发电1",
         设备型号="柴油发电1",
@@ -228,6 +228,7 @@ def 测试柴油发电信息():
         PowerDeltaLimit=2,
         PowerStartupLimit=2,
         CostPerMachine=100,
+        unitPlanningAlgorithmSelection=request.param,
         CostPerYearPerMachine=100,
         VariationalCostPerWork=100,
         Life=20,
@@ -322,13 +323,16 @@ def 测试锂电池模型(测试锂电池信息: 锂电池信息, model_wrapper:
 # =================================变压器================================== #
 
 
-@fixture
-def 测试变压器信息():
+@fixture(scope="session", params=[
+    "Directed",
+    "Bidirectional"], ids=["UNIDIRECTIONAL", "BIDIRECTIONAL"])
+def 测试变压器信息(request:Request):
     val = 变压器信息(
         设备名称="变压器",
         生产厂商="Any",
         设备型号="变压器1",
         Efficiency=90,
+        direction= request.param,
         RatedPower=10,
         CostPerKilowatt=10,
         CostPerYearPerKilowatt=10,
@@ -336,7 +340,7 @@ def 测试变压器信息():
         Life=10,
         BuildCostPerKilowatt=10,
         BuildBaseCost=10,
-        PowerParameter=10,
+        PowerParameter=0.9,
         LoadRedundancyParameter=10,
         MaxDeviceCount=10,
         MinDeviceCount=10,

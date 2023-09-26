@@ -318,7 +318,7 @@ def scip_minuc_script_generator(lp_path:str, sol_path:str, solutionCount:int = 1
 @failsafe_methods.register
 def scip_minuc(mw:ModelWrapper, logdir:str):
     logfile = os.path.join(logdir, "scip_minuc.log")
-    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT + 30, scip_minuc_script_generator, scip_exec_script,load_scip_sol_file)
+    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT*3, scip_minuc_script_generator, scip_exec_script,load_scip_sol_file)
     return solved, logfile
 
 IPOPT_MAX_ITERATION = 1000
