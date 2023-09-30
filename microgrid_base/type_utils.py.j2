@@ -1,65 +1,48 @@
 from log_utils import logger_print
+from type_def import *
 
 """static & dynamic topology type checking"""
 
-from enum import auto
-from strenum import StrEnum
+deviceTypes = {{deviceTypes}}
+energyTypes = {{energyTypes}}
 
-class 基本类型(StrEnum):
-    柴油 = auto()
-    天然气 = auto()
-    氢气 = auto()
-    电 = auto()
-    水 = auto()
-    蒸汽 = auto()
-    烟气 = auto()
-    导热油 = auto()
-    乙二醇 = auto()
+def ensureUniquenessInList(lst:list[str]):
+    assert len(set(lst)) == len(lst)
 
+class 动态拓扑校验节点:
+    def __init__(self, deviceType:str, deviceNameFromFrontend:str, deviceIndex:int, portIndexToPortFrontendName:dict, requiredPortFrontendNameToPortPossibleStates:dict, requiredPortFrontendNameToEnergyTypes:dict, deviceCounter:int = 0):
+        requiredPortFrontendNames = list(requiredPortFrontendNameToPortPossibleStates.keys())
+        ensureUniquenessInList(requiredPortFrontendNames)
+        deviceCounter += 1
 
-class 水类型(StrEnum):
-    管道水 = auto()
-    自来水 = auto()
+        self.deviceName = f"设备{deviceCounter}_{deviceType}"
+        self.deviceNameFromFrontend = deviceNameFromFrontend
+        self.deviceCounter = deviceCounter
+        self.deviceIndex = deviceIndex
 
+        portFrontendNames = list(portIndexToPortFrontendName.values())
+        ensureUniquenessInList(portFrontendNames)
+        assert set(portFrontendNames) == set(requiredPortFrontendNames)
 
-class 乙二醇类型(StrEnum):
-    冷乙二醇 = auto()
-    热乙二醇 = auto()
-    冰乙二醇 = auto()
+        self.deviceTypeToDeviceName = {deviceType: self.deviceName}
+        self.portFrontendNameToPortName = {portFrontendName: f"{self.deviceName}_{portFrontendName}" for portFrontendName in portFrontendNames}
+        self.deviceNameToPortNames = {self.deviceName: list(self.portFrontendNameToPortName.values())}
+        self.portIndexToPortName = {portIndex: self.portFrontendNameToPortName[portFrontendName] for portIndex, portFrontendName in portIndexToPortFrontendName.items()}
+        self.portNameToPortPossibleStates = {self.portFrontendNameToPortName[requiredPortFrontendName]: portPossibleStates for requiredPortFrontendName, portPossibleStates in requiredPortFrontendNameToPortPossibleStates.items()}
 
+        self.energyTypeToPortNames = {}
+        for requiredPortFrontendName, energyTypes in requiredPortFrontendNameToEnergyTypes.items():
+            for energyType in energyTypes:
+                if energyType not in self.energyTypeToPortNames.keys():
+                    self.energyTypeToPortNames[energyType] = []
+                self.energyTypeToPortNames[energyType].append(self.portFrontendNameToPortName[requiredPortFrontendName])
 
-class 管道水类型(StrEnum):
-    热水 = auto()
-    冷水 = auto()
+{% for deviceType, requiredPortFrontendNameToPortPossibleStates,requiredPortFrontendNameToEnergyTypes in deviceTypeTriplets %}
+class {{deviceType}}_动态拓扑校验节点(动态拓扑校验节点):
+    def __init__(self,  deviceNameFromFrontend:str, portIndexToPortFrontendName:dict, deviceIndex:int, deviceCounter:int):
+        deviceType = {{repr(deviceType)}}
+        requiredPortFrontendNameToPortPossibleStates = {{requiredPortFrontendNameToPortPossibleStates}}
+        requiredPortFrontendNameToEnergyTypes = {{requiredPortFrontendNameToEnergyTypes}}
+        super().__init__(deviceType, deviceNameFromFrontend, deviceIndex, portIndexToPortFrontendName, requiredPortFrontendNameToPortPossibleStates, requiredPortFrontendNameToEnergyTypes, deviceCounter)
 
-_mappings = {
-    基本类型.水: 水类型,
-    水类型.管道水: 管道水类型,
-    基本类型.乙二醇: 乙二醇类型,
-}
-
-类型细分表 = {}
-
-def flatten_mappings(c, cs: list):
-    if isinstance(c, str):
-        cs.append(c)
-    elif issubclass(c, StrEnum):
-        cs.extend(list(c.__members__.values()))
-    else:
-        raise Exception("Unsupported type:", type(c))
-
-
-from error_utils import ErrorManager
-
-with ErrorManager(default_error=f"Found duplicated keys while processing.") as em:
-    for k, v in _mappings.items():
-        ks = []
-        vs = []
-        flatten_mappings(k, ks)
-        flatten_mappings(v, vs)
-        for k in ks:
-            for v in vs:
-                if k in 类型细分表.keys():
-                    em.append(f"Duplicated: {k} -> {v} (Already have: {类型细分表[k]})")
-                else:
-                    类型细分表[k] = v
+{% endfor %}

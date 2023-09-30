@@ -23,7 +23,7 @@ render_params = dict(
         "load": ["load1"],
         "generator": ["generator1"],
     },
-    deviceNameToPorts={
+    deviceNameToPortNames={
         "battery1": ["bat_port1"],
         "generator1": ["generator_port1"],
         "load1": ["load_port1"],

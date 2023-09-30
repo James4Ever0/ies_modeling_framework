@@ -224,10 +224,25 @@ rich.print(verified_topology_status_dict)
 possible_adder_energy_type_set_counts = len(verified_topology_status_dict)
 print("possible adder energy type set counts:", possible_adder_energy_type_set_counts)
 
+def isomorphicTopologyStatusCombinator(topology_status_dict:dict):
+    topo_status_to_adder_status_dict:Dict[frozenset, set] = {}
+    for adder_index_to_energy_type, topo_status in topology_status_dict.items():
+        topo_status_frozen = frozenset(topo_status)
+        if topo_status_frozen not in topo_status_to_adder_status_dict.keys():
+            topo_status_to_adder_status_dict[topo_status_frozen] = set()
+        topo_status_to_adder_status_dict[topo_status_frozen].add(adder_index_to_energy_type)
+    return topo_status_to_adder_status_dict
+
+isomorphic_topo_status = isomorphicTopologyStatusCombinator(verified_topology_status_dict)
+banner("isomorphic topo status")
+rich.print(isomorphic_topo_status)
+isomorphic_topo_status_counts = len(isomorphic_topo_status.keys())
+print("isomorphic topo status counts:", isomorphic_topo_status_counts)
+
 can_proceed = False
-if possible_adder_energy_type_set_counts == 0:
+if isomorphic_topo_status_counts == 0:
     print("no adder energy type set")
-elif possible_adder_energy_type_set_counts > 1:
+elif isomorphic_topo_status_counts > 1:
     print("multiple adder energy type sets found")
 else:
     can_proceed = True

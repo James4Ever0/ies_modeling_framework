@@ -91,6 +91,7 @@ class DockerLauncherConfig(IESEnv):
     UNITTEST: bool = Field(
         default=False, title="Perform unittest before launching the service"
     )
+    FINAL_IMAGE_TAG: str = Field(default = 'latest', title = 'Tag name(setting anything other than "latest" will skip image building and run final image with that tag instead)')
     # FORCE_UPDATE: bool = Field(
     #     default=False,
     #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",

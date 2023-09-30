@@ -11,6 +11,7 @@ setup_gptcommit.*
 
 #!.last_commit_time
 !.gitignore
+!.dockerignore
 !*.j2
 !*.json
 !*.mjson

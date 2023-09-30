@@ -1,6 +1,13 @@
 # https://www.gnu.org/software/make/manual/html_node/Parallel-Output.html
 # gmake -Oline
 
+# running this under bash. will be a lot better.
+# courtesy from ChatGPT
+.SHELLFLAGS := -ec 
+
+# cygwin heap error: https://blog.csdn.net/lemontree1945/article/details/86975644
+# PS C:\Users\z98hu\scoop\apps\git\2.40.0.windows.1\usr\bin> C:\Users\z98hu\scoop\apps\git\2.40.0.windows.1\usr\bin\rebase.exe -b 0x200000000 .\msys-2.0.dll
+
 # makefile launches subshell every individual line.
 
 .PHONY: test
@@ -91,7 +98,8 @@ FILTERED_UTILS = $(wildcard csv* pyright* jinja*)
 # UTILS = $(filter-out ${FILTERED_UTILS}, *_utils.py)
 UTILS = $(filter-out ${FILTERED_UTILS}, $(wildcard *_utils.py))
 
-DOCKERFILES = Dockerfile_patch Dockerfile_update Dockerfile_update_self
+DOCKERFILES = Dockerfile_patch Dockerfile_update .dockerignore
+# DOCKERFILES = Dockerfile_patch Dockerfile_update Dockerfile_update_self
 # DOCKERFILES = Dockerfile_*
 
 DOCKER_DEPS = docker_launch.py ${DOCKERFILES}
@@ -116,7 +124,8 @@ TEST_INPUT_FORMAT_FILES = template_input.json test_json_input_format.py
 
 TEST_CODE = test_topo_check.py ${TEST_INPUT_FORMAT_FILES}
 
-LOG_DIRS = logs ${SERVER_RELEASE_DIR}/logs
+LOG_DIRS = logs
+# LOG_DIRS = logs ${SERVER_RELEASE_DIR}/logs
 
 PARAM_BASE_REQUIREMENTS = frontend_sim_param_translation.json microgrid_jinja_param_base.json ${MICROGRID_TYPESYS_JSONS} lib_parse_params.py
 

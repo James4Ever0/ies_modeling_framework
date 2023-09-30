@@ -2,12 +2,23 @@
 To use 'managed' loggers, you must import 'logger' from this file and pass it to other code.
 """
 
+import sys  # recommend: 3.11.2
+import os
 # TODO: top-level exception hook (sys.excepthook)
 # TODO: configure file handlers for celery logging
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 
 from rich.pretty import pretty_repr
 
+DOCKER_IMAGE_TAG = 'DOCKER_IMAGE_TAG'
+
+def get_docker_image_tag():
+    tag = os.environ.get(DOCKER_IMAGE_TAG, '').strip()
+    if tag:
+        return tag
+    return 'unknown'
+
+current_docker_image_tag_hint = f"(image: {get_docker_image_tag()})"
 
 def pretty(obj):
     return pretty_repr(obj)
@@ -15,8 +26,6 @@ def pretty(obj):
 
 # python version check
 
-import sys  # recommend: 3.11.2
-import os
 
 try:
     terminal_column_size = os.get_terminal_size().columns
@@ -32,9 +41,7 @@ if sys.version_info < MIN_PY_VERSION:
     import inspect
     from exceptional_print import exprint
 
-    FORMAT = "%(asctime)s <%(name)s:%(levelname)s> %(callerInfo)s\n%(message)s"
 
-    SHORT_FORMAT = "%(asctime)s <%(name)s:%(levelname)s> %(callerInfo)s\n%(short_msg)s"
 
     def get_caller_info(level: int = 2):
         assert level >= 2, f"level {level} less than 2"
@@ -52,15 +59,22 @@ if sys.version_info < MIN_PY_VERSION:
         # exlogger_print(caller_info.center(60, "+"))
         # exlogger_print(*args, *[f"{k}:\t{v}" for k, v in kwargs.items()], sep=os.linesep)
         return caller_info
+    
+    CALLER_INFO_IMPLEMENT = "%(callerInfo)s"
+    # FORMAT_PREFIX = f"%(asctime)s <%(name)s:%(levelname)s> {current_docker_image_tag_hint} %(callerInfo)s\n"
 
 else:
-    FORMAT = (  # add timestamp.
-        "%(asctime)s <%(name)s:%(levelname)s> ['%(pathname)s:%(lineno)s' - %(funcName)s()]\n%(message)s"  # miliseconds already included!
-        # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
-        # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
-    )
+    CALLER_INFO_IMPLEMENT = "['%(pathname)s:%(lineno)s' - %(funcName)s()]"
 
-    SHORT_FORMAT = "%(asctime)s <%(name)s:%(levelname)s> ['%(pathname)s:%(lineno)s' - %(funcName)s()]\n%(short_msg)s"
+FORMAT_PREFIX = f"%(asctime)s <%(name)s:%(levelname)s> {current_docker_image_tag_hint} {CALLER_INFO_IMPLEMENT}\n"
+
+FORMAT = (  # add timestamp.
+    f"{FORMAT_PREFIX}%(message)s"  # miliseconds already included!
+    # "%(asctime)s.%(msecs)03d <%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
+    # "<%(name)s:%(levelname)s> [%(pathname)s:%(lineno)s - %(funcName)s()]\n%(message)s"
+)
+
+SHORT_FORMAT = f"{FORMAT_PREFIX}%(short_msg)s"
 
 # TODO: use `code_checker.py` to insert `log_utils` dependency to every py file under this folder. except for this one!
 

@@ -128,6 +128,7 @@ def main_parser(filepath, sheet_name, output_path, type_utils_parser: bool):
                     if currentDevData is None:
                         currentDevData = createDevDataTemplate()
                     portName = devNameOrPortName
+                    assert portName not in currentDevData["ports"].keys(), f"duplicate port name found: {currentDevName} -> {portName}"
                     currentDevData["ports"][portName] = dict(
                         info=portInfo, 细分类型=细分类型, 基本类型=基本类型, 能流方向=能流方向, 必有工况=必有工况
                     )

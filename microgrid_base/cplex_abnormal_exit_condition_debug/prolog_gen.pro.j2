@@ -24,14 +24,14 @@ device({{deviceType}}).
 
 device(DEVICE_NAME):- device(DEVICE_TYPE), call(DEVICE_TYPE, DEVICE_NAME).
 
-{% for deviceType, deviceName in deviceTypeToDeviceNames.items()%}
+{% for deviceType, deviceNames in deviceTypeToDeviceNames.items()%}
     {% for deviceName in deviceNames%}
 {{deviceType}}({{deviceName}}).
     {% endfor%}
 
 {% endfor%}
 
-{% for deviceName, devicePortNames in deviceNameToPorts.items()%}
+{% for deviceName, devicePortNames in deviceNameToPortNames.items()%}
     {% for devicePortName in devicePortNames%}
 port_mapping({{deviceName}}, {{devicePortName}}).
     {% endfor%}

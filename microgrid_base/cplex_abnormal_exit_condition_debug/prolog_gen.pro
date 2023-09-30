@@ -22,8 +22,11 @@ device(generator).
 device(DEVICE_NAME):- device(DEVICE_TYPE), call(DEVICE_TYPE, DEVICE_NAME).
 
 battery(battery1).
+
 load(load1).
+
 generator(generator1).
+
 
 port_mapping(battery1, bat_port1).
     

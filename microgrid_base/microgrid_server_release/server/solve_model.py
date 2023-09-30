@@ -54,7 +54,7 @@ from ies_optim import InputParams, ModelWrapper
 
 import shutil
 
-REQUIRED_BINARIES = [Solver.cplex]
+REQUIRED_BINARIES = [Solver.cplex, 'swipl']
 
 if ies_env.FAILSAFE:
     REQUIRED_BINARIES.append(Solver.ipopt)
