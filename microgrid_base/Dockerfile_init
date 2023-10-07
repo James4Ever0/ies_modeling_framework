@@ -1,0 +1,35 @@
+FROM ubuntu:22.04
+# ENTRYPOINT [ "/bin/bash" ]
+ARG MICROGRID_DIR=./jubilant-adventure2/microgrid_base
+# ARG MODIFY_BASHRC=modify_bashrc_for_mamba.py
+ARG BASHRC=.bashrc
+ARG BASH=/bin/bash
+ARG CPLEX_INSTALL_BIN=cplex_128.bin
+# TODO: fill in the blank.
+# ARG MAIN_SCRIPT_PATH=...
+ARG INIT=init.sh
+ARG CONDA_INIT=conda_init.sh
+ARG REQUIREMENTS=requirements.txt
+ARG CPLEX_PATH=/opt/ibm/ILOG/CPLEX_Studio128/cplex/bin/x86-64_linux
+ARG CONDA_INSTALL=conda_install.sh
+ENV PATH="/root/miniconda3/bin:${CPLEX_PATH}:${PATH}"
+WORKDIR /root
+# COPY ${MICROGRID_DIR}/ubuntu_environment /etc/environment
+# COPY ${MICROGRID_DIR}/${MODIFY_BASHRC} .
+# RUN rm -rf *
+COPY ./cplex_install_packages/cplex_studio128.linux-x86-64.bin ${CPLEX_INSTALL_BIN}
+# RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+# COPY ${MICROGRID_DIR}/ubuntu_jammy_sources.list /etc/apt/sources.list
+# RUN cat /etc/apt/sources.list.bak >> /etc/apt/sources.list
+# RUN rm /etc/apt/sources.list.bak
+RUN apt update
+RUN apt install -y curl bzip2
+# RUN curl -o ${MAMBA_INSTALL} https://micro.mamba.pm/install.sh
+# RUN bash ${MAMBA_INSTALL}
+# RUN curl -o ${CONDA_INSTALL} https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh
+COPY ./miniconda_installer/Miniconda3-py39_4.12.0-Linux-x86_64.sh ${CONDA_INSTALL}
+COPY ${MICROGRID_DIR}/${INIT} .
+COPY ${MICROGRID_DIR}/${CONDA_INIT} .
+COPY ${MICROGRID_DIR}/${REQUIREMENTS} .
+# THIS STEP IS TAKING SUPER LONG. PLEASE MAKE THIS INTO AN IMAGE.
+# CMD ${BASH}

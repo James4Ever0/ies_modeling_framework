@@ -1,0 +1,13 @@
+FROM microgrid_server:latest
+# target: microgrid_docplex
+# install: python3.6 conda env & cplex python libraries
+# TODO: does container itself or its "layers" contain any "ARG" or "ENV" which defines ${VAR} that can be used in "Dockerfile"?
+# TODO: use hadolint
+ARG CPLEX_PYPATH=/opt/ibm/ILOG/CPLEX_Studio128/cplex/python/3.6/x86-64_linux
+ARG MICROGRID_DIR=./jubilant-adventure2/microgrid_base
+
+WORKDIR /root
+COPY ${MICROGRID_DIR}/requirements_docplex.txt .
+RUN conda create -y -n docplex python==3.6.2
+RUN cd ${CPLEX_PYPATH} && conda run -n docplex python setup.py install
+RUN conda run -n docplex pip install -r requirements_docplex.txt

@@ -1,0 +1,35 @@
+FROM microgrid_init
+ARG BASHRC=.bashrc
+ARG BASH=/bin/bash
+ARG CPLEX_INSTALL_BIN=cplex_128.bin
+ARG MICROGRID_DIR=./jubilant-adventure2/microgrid_base
+# TODO: fill in the blank.
+# ARG MAIN_SCRIPT_PATH=...
+# ARG INIT=init.sh
+ARG CONDA_INIT=conda_init.sh
+ARG CPLEX_PATH=/opt/ibm/ILOG/CPLEX_Studio128/cplex/bin/x86-64_linux
+ARG CONDA_INSTALL=conda_install.sh
+WORKDIR /root
+RUN chmod u+x ${CONDA_INSTALL}
+RUN ./${CONDA_INSTALL} -b
+# ENV PATH="/root/miniconda3/bin:${PATH}"
+# RUN python3 ${MODIFY_BASHRC}
+# RUN source ${BASHRC}
+ARG BASH_INIT=.bashrc
+# RUN ${BASH} ln -s $(which micromamba) /bin/conda
+RUN echo 'export PATH="/opt/ibm/ILOG/CPLEX_Studio128/cplex/bin/x86-64_linux:$PATH"' >> ${BASH_INIT}
+RUN conda init
+RUN mkdir miniconda3/envs/cplex
+COPY ${MICROGRID_DIR}/condarc .condarc
+RUN ${BASH} ${CONDA_INIT}
+RUN ${BASH} init.sh
+RUN chmod +x ${CPLEX_INSTALL_BIN}
+# RUN echo -e "2\n\n1\n\n\n\n\n" | ./${CPLEX_INSTALL_BIN}
+COPY ${MICROGRID_DIR}/install_cplex.sh .
+RUN ${BASH} install_cplex.sh
+# RUN echo "export PATH=\$PATH:${CPLEX_PATH}" >> ${BASHRC}
+# shall we ensure self-updates.
+# shall we mount some paths from local directory and put entry script there when launch container from python script.
+# CMD ${BASH} ${MAIN_SCRIPT_PATH}
+# think we can do more with less constraints.
+# CMD ${BASH}

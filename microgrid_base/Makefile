@@ -88,7 +88,7 @@ RELEASE_ARCHIVE = release.7z
 
 EXPORT_FORMAT_CODE = export_format_validate.py export_format_units.py
 
-MODEL_CODE = topo_check.py ies_optim.py ${EXPORT_FORMAT_CODE}
+MODEL_CODE = topo_check.py topo_check_v2.py ies_optim.py ${EXPORT_FORMAT_CODE}
 
 # use $(wildcard <pattern>) to precompute the pattern.
 
@@ -209,7 +209,8 @@ templates: output_template.json template_input.json
 
 ################ IMPLEMENTATION ################
 
-topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
+# topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
+topo_check_v2.py ies_optim.py: topo_check_v2.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
 	${PYTHON} jinja_template_model_generator.py
 
 # pyright_regex_check:

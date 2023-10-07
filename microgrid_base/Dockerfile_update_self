@@ -1,0 +1,30 @@
+# !!!DO NOT USE THIS FILE!!!
+# YOU HAVE BEEN WARNED
+FROM microgrid_update:latest as previous_stage
+
+# seriously?
+FROM scratch
+COPY --from=previous_stage / /
+
+ARG BASH=/bin/bash
+ARG MICROGRID_DIR=./jubilant-adventure2/microgrid_base
+WORKDIR /root
+
+COPY ${MICROGRID_DIR}/init_solver.sh .
+RUN ${BASH} init_solver.sh
+
+# COPY ${MICROGRID_DIR}/init_apt_environ.sh .
+# RUN ${BASH} init_apt_environ.sh
+
+COPY ${MICROGRID_DIR}/requirements_docplex.txt .
+COPY ${MICROGRID_DIR}/init_update_conda_docplex.sh .
+RUN ${BASH} init_update_conda_docplex.sh
+
+COPY ${MICROGRID_DIR}/requirements_docker_launch.txt .
+COPY ${MICROGRID_DIR}/requirements.txt .
+COPY ${MICROGRID_DIR}/init_update_conda_cplex.sh .
+RUN ${BASH} init_update_conda_cplex.sh
+
+# finally we run this.
+COPY ${MICROGRID_DIR}/init_apt_environ.sh .
+RUN ${BASH} init_apt_environ.sh

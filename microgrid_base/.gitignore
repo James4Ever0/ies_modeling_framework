@@ -4,3 +4,5 @@
 !*.xlsx
 !*.tmp
 upload_to_server.*
+!Dockerfile_*
+!Dockerfile
