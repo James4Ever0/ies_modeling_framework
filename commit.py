@@ -337,7 +337,7 @@ def check_if_commitable():
 
 def commit():
     if check_if_commitable():
-        with filelock.FileLock(".commit_lock", timeout=1):
+        with filelock.FileLock(f".commit_lock{'_nt' if os.name == 'nt' else ''}" , timeout=1):
             exit_code = os.system(COMMIT_EXEC)
             if exit_code != 0:
                 emit_message_and_raise_exception(
