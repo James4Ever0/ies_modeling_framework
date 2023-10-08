@@ -70,17 +70,27 @@ for k, v in 类型泛化表.items():
         类型细分表[v] = set()
     类型细分表[v].add(k)
 
-def 解析基本类型(t):
-    if not isinstance(t, list):
-        t = [t]
+def 解析基本类型(t0):
+    if isinstance(t0, str):
+        t = [t0]
+    else:
+        t = t0
     t_resolved = set()
     for _t in t:
+        # if _t in ['乙', '醇', '二']:
+        #     breakpoint()
         if _t in 类型细分表.keys():
-            t_resolved.update(_t)
+            # print('update:', _t)
+            t_resolved.update(类型细分表[_t])
         else:
+            # print('add:', _t)
             t_resolved.add(_t)
     ret = list(t_resolved)
+    # print('ret:', ret)
     if t_resolved == set(t):
         return ret
     else:
+        # print("t_resolved:", t_resolved)
+        # if t_resolved == {'乙', '醇', '二'}: breakpoint()
+        # print('rec ret:', ret)
         return 解析基本类型(ret)

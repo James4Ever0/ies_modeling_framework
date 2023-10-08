@@ -202,53 +202,74 @@ def code_and_template_path(base_name):
     return code_path, template_path
 
 
-def load_template(template_path, extra_func_dict={}):
+jinja2_template_arguments = dict(
+    extensions=[
+        "jinja2_error.ErrorExtension",
+        "jinja2.ext.do",
+        "jinja2.ext.loopcontrols",
+    ],
+    trim_blocks=True,
+    lstrip_blocks=True,
+    # undefined=jinja2.StrictUndefined,
+    undefined=NeverUndefined,
+)
+
+jinja2_func_dict = dict(
+    list=list,
+    str=str,
+    _dict=dict,
+    _set=set,  # avoid name collision
+    tuple=tuple,
+    ord=ord,
+    len=len,
+    repr=repr,
+    c2s=c2s,
+    # s2c=s2c,
+    s2cl=s2cl,
+    s2cu=s2cu,
+    zip=zip,
+    cws=camelize_with_space,
+    lstrip=lstrip,
+    remove_typehint=remove_typehint,
+    kebabize=humps.kebabize,
+    pascalize=humps.pascalize,
+    # enumerate=enumerate,
+    # eval=eval,
+    # join=myJoin
+)
+
+
+def make_jinja2_func_dict(extra_func_dict={}):
+    func_dict = dict(**jinja2_func_dict, **extra_func_dict)
+    return func_dict
+
+
+from jinja2 import Template
+
+
+def inject_template_globals(template: Template, func_dict: dict) -> Template:
+    func_dict = make_jinja2_func_dict(func_dict)
+    template.globals.update(func_dict)
+    return template
+
+
+def load_template_text(template_text: str, extra_func_dict={}):
+    tpl = Template(template_text, **jinja2_template_arguments)
+    inject_template_globals(tpl, extra_func_dict)
+    return tpl
+
+
+def load_template(template_path: str, extra_func_dict={}):
     try:
         assert template_path.endswith(".j2")
     except:
         Exception(f"jinja template path '{template_path}' is malformed.")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(searchpath=["./", "../"]),
-        extensions=[
-            "jinja2_error.ErrorExtension",
-            "jinja2.ext.do",
-            "jinja2.ext.loopcontrols",
-        ],
-        trim_blocks=True,
-        lstrip_blocks=True,
-        # undefined=jinja2.StrictUndefined,
-        undefined=NeverUndefined,
+        **jinja2_template_arguments,
     )
     tpl = env.get_template(template_path)
-    # def myJoin(mstr, mlist):
-    #     logger_print("STR:", repr(mstr))
-    #     logger_print("LIST:", repr(mlist))
-    #     return mstr.join(mlist)
-    func_dict = dict(
-        list=list,
-        str=str,
-        _dict=dict,
-        _set=set,  # avoid name collision
-        tuple=tuple,
-        ord=ord,
-        len=len,
-        repr=repr,
-        c2s=c2s,
-        # s2c=s2c,
-        s2cl=s2cl,
-        s2cu=s2cu,
-        zip=zip,
-        cws=camelize_with_space,
-        lstrip=lstrip,
-        remove_typehint=remove_typehint,
-        kebabize=humps.kebabize,
-        pascalize=humps.pascalize,
-        # enumerate=enumerate,
-        # eval=eval,
-        # join=myJoin
-        ** extra_func_dict,
-    )
-    tpl.globals.update(func_dict)
+    inject_template_globals(tpl, extra_func_dict)
     return tpl
 
 

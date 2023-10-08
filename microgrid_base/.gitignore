@@ -6,3 +6,5 @@
 upload_to_server.*
 !Dockerfile_*
 !Dockerfile
+!.*_env
+!.dockerignore

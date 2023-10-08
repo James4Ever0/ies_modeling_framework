@@ -1,6 +1,7 @@
 from log_utils import logger_print
 from type_def import *
 
+
 """static & dynamic topology type checking"""
 
 deviceTypes = [

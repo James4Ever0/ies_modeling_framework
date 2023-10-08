@@ -65,8 +65,8 @@ infeasible_mw.model.write("infeasible_model.lp")
 # sometimes these will stuck
 # but i think ipopt may always stuck.
 params = [
-    # [feasopt_with_optimization,"feasopt_with_optimization"],
-    # [feasopt_only,"feasopt_only"],
+    # [feasopt_with_optimization, "feasopt_with_optimization"],
+    # [feasopt_only, "feasopt_only"],
     [scip_minuc, "scip_minuc"],
     # [ipopt_no_presolve, "ipopt_no_presolve"],
     [random_value_assignment, "random_value_assignment"],

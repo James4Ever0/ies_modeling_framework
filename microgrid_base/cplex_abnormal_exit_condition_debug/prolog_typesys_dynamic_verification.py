@@ -100,153 +100,239 @@ class ErrorManager:
 
 ######## ERROR UTILS END ########
 
+######## FAILSAFE UTILS START #####
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def chdir_context(dirpath: str):
+    cwd = os.getcwd()
+    os.chdir(dirpath)
+    try:
+        yield
+    finally:
+        os.chdir(cwd)
+
+
+######## FAILSAFE UTILS END #####
+
 from swiplserver import PrologMQI, PrologThread
 from pydantic import BaseModel
 from typing import List, Dict
+
 # from HashableDict.HashableDict import HashDict
 from frozendict import frozendict
 import rich
+import os
+import tempfile
 
-topology_status_dict = {}
-
-# class TopologyStatus(BaseModel):
-#     adder_energy_types: Dict[int, str]
-#     port_status: List[Dict[str, str]]
-
-# {adder_index: {adder_port_index: port_name}}
-adder_index_to_port_name = {0: {0: "bat_port1", 1: "generator_port1", 2: "load_port1"}}
-
-port_verifiers = {
-    "bat_port1": lambda conds: "input" in conds,
-    "load_port1": lambda conds: "input" in conds,
-}
-
-# {set_of_port_names: lambda cond1, cond2: ...}
-conjugate_port_verifiers = {}
 
 banner = lambda title: print(title.center(60, "-"))
-banner("querying")
 
-with PrologMQI() as mqi:
-    with mqi.create_thread() as prolog_thread:
-        prolog_thread.query('["prolog_gen.pro"].') # shall be identical.
-        # prolog_thread.query('["test_prolog.pro"].')
-        result = prolog_thread.query(
-            "findall(STATUS, adder_port_status_list([adder1], STATUS), STATUS_LIST)"
-        )
-        print(result)  # list, get first element
-        STATUS_LIST = result[0]["STATUS_LIST"]
-        for simutaneous_status in STATUS_LIST:
-            adder_status_dict = {}
-            port_status_dict = {}
-            for adder_index, adder_simutaneous_status in enumerate(simutaneous_status):
-                adder_energy_type, adder_port_status = adder_simutaneous_status
-                adder_status_dict[adder_index] = adder_energy_type
-                print(f"adder #{adder_index}")
-                print(f"\tenergy type: {adder_energy_type}")
-                print(f"\tport_status:")
-                port_index_to_port_name = adder_index_to_port_name[adder_index]
-                for adder_port_index, port_status in enumerate(adder_port_status):
-                    port_name = port_index_to_port_name[adder_port_index]
-                    port_status_dict[port_name] = port_status
-                    print(f"\t\t{port_name}: {port_status}")
-            key = frozendict(adder_status_dict)
-            value = frozendict(port_status_dict)
-            if key not in topology_status_dict.keys():
-                topology_status_dict[key] = set()
-            topology_status_dict[key].add(value)
-            print("-" * 60)
-banner("unverified topo status")
-rich.print(topology_status_dict)
-banner("verifying")
 
-verified_topology_status_dict = {}
-for topo_status_index, (adder_status, topo_status) in enumerate(
-    topology_status_dict.items()
+def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_name):
+    banner("querying")
+    topology_status_dict = {}
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with chdir_context(temp_dir):
+            prolog_file_path = "prolog_script.pro"
+            prolog_file_path_abs = os.path.join(prolog_file_path)
+            with open(prolog_file_path_abs, "w+") as f:
+                f.write(prolog_script_content)
+            with PrologMQI() as mqi:
+                with mqi.create_thread() as prolog_thread:
+                    topology_status_dict = query_prolog_in_context(
+                        topology_status_dict,
+                        prolog_file_path,
+                        prolog_thread,
+                        adder_index_to_port_name,
+                    )
+    return topology_status_dict
+
+
+def query_prolog_in_context(
+    topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name
 ):
-    topo_status_frame_flatten = {}
-    port_verified = {}
-    conjugate_port_verified = {}
+    prolog_thread.query(f'["{prolog_file_path}"].')
+    result = prolog_thread.query(
+        "findall(STATUS, adder_port_status_list([adder1], STATUS), STATUS_LIST)"
+    )
+    print(result)  # list, get first element
+    STATUS_LIST = result[0]["STATUS_LIST"]
+    for simutaneous_status in STATUS_LIST:
+        adder_status_dict = {}
+        port_status_dict = {}
+        for adder_index, adder_simutaneous_status in enumerate(simutaneous_status):
+            adder_energy_type, adder_port_status = adder_simutaneous_status
+            adder_status_dict[adder_index] = adder_energy_type
+            print(f"adder #{adder_index}")
+            print(f"\tenergy type: {adder_energy_type}")
+            print(f"\tport_status:")
+            port_index_to_port_name = adder_index_to_port_name[adder_index]
+            for adder_port_index, port_status in enumerate(adder_port_status):
+                port_name = port_index_to_port_name[adder_port_index]
+                port_status_dict[port_name] = port_status
+                print(f"\t\t{port_name}: {port_status}")
+        key = frozendict(adder_status_dict)
+        value = frozendict(port_status_dict)
+        if key not in topology_status_dict.keys():
+            topology_status_dict[key] = set()
+        topology_status_dict[key].add(value)
+        print("-" * 60)
+    return topology_status_dict
 
-    for topo_status_frames in topo_status:
-        for topo_status_frame_index, (port_name, port_status) in enumerate(topo_status_frames.items()):
-            if port_name not in topo_status_frame_flatten.keys():
-                topo_status_frame_flatten[port_name] = set()
-            _conjugate_verified = True
-            with ErrorManager(suppress_error=True) as em:
-                for (
-                    conjugate_ports,
-                    conjugate_verifier,
-                ) in conjugate_port_verifiers.items():
-                    conds = [port_status[port_name] for port_name in conjugate_ports]
-                    conjugate_verified = conjugate_verifier(*conds)
-                    if not conjugate_verified:
-                        em.append(
-                            f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
-                        )
-                        if _conjugate_verified:
-                            _conjugate_verified = False
-            if _conjugate_verified:
-                topo_status_frame_flatten[port_name].add(port_status)
-            else:
-                print(
-                    f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
-                )
-    for port_name, verifier in port_verifiers.items():
-        conds = topo_status_frame_flatten[port_name]
-        verified = verifier(conds)
-        port_verified[port_name] = verified
-        if not verified:
-            print(f"verifier failed for port '{port_name}'")
 
-    all_ports_verified = all(port_verified.values())
-    all_conjugate_ports_verified = all(conjugate_port_verified.values())
-    topo_verified = all_ports_verified and all_conjugate_ports_verified
+def verify_topology_status_dict(
+    topology_status_dict, port_verifiers, conjugate_port_verifiers
+):
+    banner("unverified topo status")
+    rich.print(topology_status_dict)
+    banner("verifying")
 
-    if not all_ports_verified:
-        print("not all port vaildations have passed")
+    verified_topology_status_dict = {}
+    for topo_status_index, (adder_status, topo_status) in enumerate(
+        topology_status_dict.items()
+    ):
+        topo_status_frame_flatten = {}
+        port_verified = {}
+        conjugate_port_verified = {}
 
-    if not all_conjugate_ports_verified:
-        print("not all conjugate port vaildations have passed")
+        for topo_status_frames in topo_status:
+            for topo_status_frame_index, (port_name, port_status) in enumerate(
+                topo_status_frames.items()
+            ):
+                if port_name not in topo_status_frame_flatten.keys():
+                    topo_status_frame_flatten[port_name] = set()
+                _conjugate_verified = True
+                with ErrorManager(suppress_error=True) as em:
+                    for (
+                        conjugate_ports,
+                        conjugate_verifier,
+                    ) in conjugate_port_verifiers.items():
+                        conds = [
+                            port_status[port_name] for port_name in conjugate_ports
+                        ]
+                        conjugate_verified = conjugate_verifier(*conds)
+                        if not conjugate_verified:
+                            em.append(
+                                f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
+                            )
+                            if _conjugate_verified:
+                                _conjugate_verified = False
+                if _conjugate_verified:
+                    topo_status_frame_flatten[port_name].add(port_status)
+                else:
+                    print(
+                        f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
+                    )
+        for port_name, verifier in port_verifiers.items():
+            conds = topo_status_frame_flatten[port_name]
+            verified = verifier(conds)
+            port_verified[port_name] = verified
+            if not verified:
+                print(f"verifier failed for port '{port_name}'")
 
-    if not topo_verified:
-        print(f"topo verification failed for topo status #{topo_status_index}")
-    else:
-        if len(topo_status) > 0:
-            verified_topology_status_dict[adder_status] = topo_status
+        all_ports_verified = all(port_verified.values())
+        all_conjugate_ports_verified = all(conjugate_port_verified.values())
+        topo_verified = all_ports_verified and all_conjugate_ports_verified
+
+        if not all_ports_verified:
+            print("not all port vaildations have passed")
+
+        if not all_conjugate_ports_verified:
+            print("not all conjugate port vaildations have passed")
+
+        if not topo_verified:
+            print(f"topo verification failed for topo status #{topo_status_index}")
         else:
-            print("skipping due to empty topo status")
-    banner(f"processed topo status #{topo_status_index}")
+            if len(topo_status) > 0:
+                verified_topology_status_dict[adder_status] = topo_status
+            else:
+                print("skipping due to empty topo status")
+        banner(f"processed topo status #{topo_status_index}")
 
-banner("verified topo status")
-rich.print(verified_topology_status_dict)
+    banner("verified topo status")
+    rich.print(verified_topology_status_dict)
+    return verified_topology_status_dict
 
-possible_adder_energy_type_set_counts = len(verified_topology_status_dict)
-print("possible adder energy type set counts:", possible_adder_energy_type_set_counts)
 
-def isomorphicTopologyStatusCombinator(topology_status_dict:dict):
-    topo_status_to_adder_status_dict:Dict[frozenset, set] = {}
+def isomorphicTopologyStatusCombinator(topology_status_dict: dict):
+    topo_status_to_adder_status_dict: Dict[frozenset, set] = {}
     for adder_index_to_energy_type, topo_status in topology_status_dict.items():
         topo_status_frozen = frozenset(topo_status)
         if topo_status_frozen not in topo_status_to_adder_status_dict.keys():
             topo_status_to_adder_status_dict[topo_status_frozen] = set()
-        topo_status_to_adder_status_dict[topo_status_frozen].add(adder_index_to_energy_type)
+        topo_status_to_adder_status_dict[topo_status_frozen].add(
+            adder_index_to_energy_type
+        )
     return topo_status_to_adder_status_dict
 
-isomorphic_topo_status = isomorphicTopologyStatusCombinator(verified_topology_status_dict)
-banner("isomorphic topo status")
-rich.print(isomorphic_topo_status)
-isomorphic_topo_status_counts = len(isomorphic_topo_status.keys())
-print("isomorphic topo status counts:", isomorphic_topo_status_counts)
 
-can_proceed = False
-if isomorphic_topo_status_counts == 0:
-    print("no adder energy type set")
-elif isomorphic_topo_status_counts > 1:
-    print("multiple adder energy type sets found")
-else:
-    can_proceed = True
-if not can_proceed:
-    print("cannot proceed")
-else:
-    print("clear to proceed")
+def check_if_can_proceed(verified_topology_status_dict):
+    possible_adder_energy_type_set_counts = len(verified_topology_status_dict)
+    print(
+        "possible adder energy type set counts:", possible_adder_energy_type_set_counts
+    )
+
+    isomorphic_topo_status = isomorphicTopologyStatusCombinator(
+        verified_topology_status_dict
+    )
+
+    banner("isomorphic topo status")
+    rich.print(isomorphic_topo_status)
+    isomorphic_topo_status_counts = len(isomorphic_topo_status.keys())
+    print("isomorphic topo status counts:", isomorphic_topo_status_counts)
+
+    can_proceed = False
+    if isomorphic_topo_status_counts == 0:
+        print("no adder energy type set")
+    elif isomorphic_topo_status_counts > 1:
+        print("multiple adder energy type sets found")
+    else:
+        can_proceed = True
+    if not can_proceed:
+        print("cannot proceed")
+    else:
+        print("clear to proceed")
+    return can_proceed
+
+
+def execute_prolog_script_and_check_if_can_proceed(
+    prolog_script_content,
+    adder_index_to_port_name,
+    port_verifiers,
+    conjugate_port_verifiers,
+):
+    topology_status_dict = query_result_from_prolog(
+        prolog_script_content, adder_index_to_port_name
+    )
+    verified_topology_status_dict = verify_topology_status_dict(
+        topology_status_dict, port_verifiers, conjugate_port_verifiers
+    )
+    can_proceed = check_if_can_proceed(verified_topology_status_dict)
+    return can_proceed
+
+
+if __name__ == "__main__":
+    with open("prolog_gen.pro", "r") as f:
+        prolog_script_content = f.read()
+
+    adder_index_to_port_name = {
+        0: {0: "bat_port1", 1: "generator_port1", 2: "load_port1"}
+    }
+
+    port_verifiers = {
+        "bat_port1": lambda conds: "input" in conds,
+        "load_port1": lambda conds: "input" in conds,
+    }
+
+    # {set_of_port_names: lambda cond1, cond2: ...}
+    conjugate_port_verifiers = {}
+
+    execute_prolog_script_and_check_if_can_proceed(
+        prolog_script_content,
+        adder_index_to_port_name,
+        port_verifiers,
+        conjugate_port_verifiers,
+    )

@@ -62,6 +62,9 @@ if __name__ == "__main__":
     deviceTypes = []
     energyTypes = set()
 
+    port_verifier_lookup_table = {}
+    conjugate_port_verifier_constructor_lookup_table = {}
+
     def assert_is_nonempty_dict(d):
         assert isinstance(d, dict)
         assert d != {}
@@ -83,16 +86,21 @@ if __name__ == "__main__":
         _基本类型 = portDef["基本类型"]
         candidates = _基本类型 if _细分类型 is None else _细分类型
         for t in candidates.split("/"):
+            # if isinstance(t, list):
+            #     if set(t) == set(['醇', '乙', '二']): breakpoint()
+            # print('t:', t, type(t))
             t_resolved = 解析基本类型(t)
             eTypes.extend(t_resolved)
+        print(eTypes)
         return eTypes
 
-    for dat, fpath in {
+    for fpath, dat in {
         TYPE_UTILS_MICROGRID_PORTS: TYPE_UTILS_MICROGRID_PORTS_DATA,
         TYPE_UTILS_EXTRA_PORTS: TYPE_UTILS_EXTRA_PORTS_DATA,
     }.items():
         logger_print("Parsing:", fpath)
         # dat = load_json(fpath + ".json")
+        # breakpoint()
         for devType, devDict in dat.items():
             logger_print("parsing devType:", devType)
             assert_is_nonempty_dict(devDict)
@@ -129,6 +137,9 @@ if __name__ == "__main__":
 
     render_params["deviceTypes"] = deviceTypes
     render_params["energyTypes"] = list(energyTypes)
+    # breakpoint()
+    render_params['port_verifier_lookup_table'] = port_verifier_lookup_table
+    render_params['conjugate_port_verifier_constructor_lookup_table'] = conjugate_port_verifier_constructor_lookup_table
 
     load_render_and_format(
         template_path,
