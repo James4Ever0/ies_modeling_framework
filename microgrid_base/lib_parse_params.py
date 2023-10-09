@@ -106,7 +106,7 @@ def main_parser(filepath, sheet_name, output_path, type_utils_parser: bool):
         currentDevName = None
         currentDevData = None
         prevDevName = None
-        createDevDataTemplate = lambda: {"ports": {}, "rules": [], "requirements": []}
+        createDevDataTemplate = lambda: {"ports": dict(), "rules": [], "requirements": []}
         for i, row_i in enumerate(indexs):
             head = headMaps[row_i]
             if head in unwanted_headers:

@@ -1,5 +1,6 @@
 from log_utils import logger_print
 from type_def import *
+import os
 
 from topo_check import 拓扑图
 
@@ -19,7 +20,11 @@ deviceTypeToTypeInfo = {
 
 port_verifier_lookup_table = {
 {% for k, v in port_verifier_lookup_table.items() %}
-    {{repr(k)}}: {{v}},
+    {{repr(k)}}: {
+    {% for v_k, v_v in v.items() %}
+        {{repr(v_k)}}: {{v_v}},
+    {% endfor %}
+    },
 {% endfor %}
 }
 
@@ -101,7 +106,7 @@ def convert_topo_to_prolog_render_params_and_verification_params(topo:拓扑图)
                 port_name_list.append(port_name)
         adderNameToAdderPortNames[adder_name] = port_name_list
 
-    render_params = {
+    render_params = dict(
         portNameToPortPossibleStates=portNameToPortPossibleStates,
         deviceTypes=list(possibleDeviceTypes),
         deviceTypeToDeviceNames=deviceTypeToDeviceNames,
@@ -109,15 +114,17 @@ def convert_topo_to_prolog_render_params_and_verification_params(topo:拓扑图)
         energyTypes=list(possibleEnergyTypes),
         energyTypeToPortNames=energyTypeToPortNames,
         adderNameToAdderPortNames=adderNameToAdderPortNames,
-    }
+    )
 
     port_index_lookup_table = {v:k for k, v in port_name_lookup_table.items()}
 
+    adder_name_to_adder_index = {v:k for k, v in adder_index_to_adder_name.items()}
     adder_index_to_port_name = {}
     
     for adderName, adderPortNames in adderNameToAdderPortNames.items():
-        dderPortNames
+        {# adderPortNames #}
         port_index_to_port_name = {port_index_lookup_table[portName]:portName for portName in adderPortNames}
+        adder_index = adder_name_to_adder_index[adderName]
         adder_index_to_port_name[adder_index] = port_index_to_port_name
 
     verification_params = (adder_index_to_port_name, port_verifiers, conjugate_port_verifiers)
@@ -130,11 +137,11 @@ template_path = "prolog_gen.pro.j2"
 
 template_abs_path = os.path.join(basepath, template_path)
 
+from jinja_utils import load_template_text
 with open(template_abs_path, 'r') as f:
     template_content = f.read()
     template_obj = load_template_text(template_content)
 
-from jinja_utils import load_template_text
 
 def render_prolog_code(render_params):
     prolog_code = template_obj.render(**render_params)
@@ -226,7 +233,10 @@ def query_prolog_in_context(
 
 
 def verify_topology_status_dict(
-    topology_status_dict, port_verifiers, conjugate_port_verifiers
+    topology_status_dict,
+    port_verifiers,
+    conjugate_port_verifiers,
+    adder_index_to_port_name,
 ):
     banner("unverified topo status")
     rich.print(topology_status_dict)
@@ -240,10 +250,17 @@ def verify_topology_status_dict(
         port_verified = {}
         conjugate_port_verified = {}
 
+        port_name_to_energy_type = {
+            v_v: adder_status[k]
+            for k, v in adder_index_to_port_name.items()
+            for v_k, v_v in v.items()
+        }
+
         for topo_status_frames in topo_status:
             for topo_status_frame_index, (port_name, port_status) in enumerate(
                 topo_status_frames.items()
             ):
+                # breakpoint()
                 if port_name not in topo_status_frame_flatten.keys():
                     topo_status_frame_flatten[port_name] = set()
                 _conjugate_verified = True
@@ -255,7 +272,9 @@ def verify_topology_status_dict(
                         conds = [
                             port_status[port_name] for port_name in conjugate_ports
                         ]
-                        conjugate_verified = conjugate_verifier(*conds)
+                        energytypes = [port_name_to_energy_type[port_name] for port_name in conjugate_ports]
+                        conjugate_verified = conjugate_verifier(*conds, *energytypes)
+                        # conjugate_verified = conjugate_verifier(*conds)
                         if not conjugate_verified:
                             em.append(
                                 f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
@@ -350,7 +369,7 @@ def execute_prolog_script_and_check_if_can_proceed(
         prolog_script_content, adder_index_to_port_name
     )
     verified_topology_status_dict = verify_topology_status_dict(
-        topology_status_dict, port_verifiers, conjugate_port_verifiers
+        topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name
     )
     can_proceed = check_if_can_proceed(verified_topology_status_dict)
     return can_proceed

@@ -49,7 +49,7 @@ def getMainType(data):
     "冷负荷",
     "热负荷",
     "蒸汽负荷",
-    "氢气负荷",
+    "氢负荷",
     "燃气发电机",
     "蒸汽轮机",
     "氢燃料电池",
@@ -76,6 +76,7 @@ def getMainType(data):
     "电蒸汽锅炉",
     "天然气热水锅炉",
     "天然气蒸汽锅炉",
+    "电解槽",
     "水蓄能",
     "蓄冰槽",
     "储氢罐",
@@ -93,12 +94,12 @@ def getMainType(data):
     "电负荷": {"电接口"},
     "光伏发电": {"电接口"},
     "风力发电": {"电接口"},
-    "柴油发电": {"电接口", "燃料接口"},
+    "柴油发电": {"燃料接口", "电接口"},
     "锂电池": {"电接口"},
-    "变压器": {"电输入", "电输出"},
-    "双向变压器": {"电输入", "电输出"},
-    "变流器": {"电输入", "电输出"},
-    "双向变流器": {"储能端", "线路端"},
+    "变压器": {"电输出", "电输入"},
+    "双向变压器": {"电输出", "电输入"},
+    "变流器": {"电输出", "电输入"},
+    "双向变流器": {"线路端", "储能端"},
     "市政自来水": {"水接口"},
     "天然气": {"燃料接口"},
     "电网": {"电接口"},
@@ -106,41 +107,42 @@ def getMainType(data):
     "冷负荷": {"冷源接口"},
     "热负荷": {"热源接口"},
     "蒸汽负荷": {"蒸汽接口"},
-    "氢气负荷": {"氢气接口"},
-    "燃气发电机": {"电接口", "高温烟气余热接口", "燃料接口", "缸套水余热接口"},
-    "蒸汽轮机": {"电接口", "蒸汽接口"},
+    "氢负荷": {"氢气接口"},
+    "燃气发电机": {"燃料接口", "缸套水余热接口", "电接口", "高温烟气余热接口"},
+    "蒸汽轮机": {"蒸汽接口", "电接口"},
     "氢燃料电池": {"氢气接口", "设备余热接口", "电接口"},
     "平板太阳能": {"热接口"},
     "槽式太阳能": {"热接口"},
-    "余热热水锅炉": {"制热接口", "烟气接口"},
-    "余热蒸汽锅炉": {"烟气接口", "蒸汽接口"},
-    "浅层地热井": {"热源接口", "电接口", "冷源接口"},
+    "余热热水锅炉": {"烟气接口", "制热接口"},
+    "余热蒸汽锅炉": {"蒸汽接口", "烟气接口"},
+    "浅层地热井": {"冷源接口", "热源接口", "电接口"},
     "中深层地热井": {"热源接口", "电接口"},
-    "地表水源": {"热源接口", "电接口", "冷源接口"},
-    "水冷冷却塔": {"电接口", "水接口", "冷源接口"},
+    "地表水源": {"冷源接口", "热源接口", "电接口"},
+    "水冷冷却塔": {"水接口", "冷源接口", "电接口"},
     "余热热源": {"热源接口"},
-    "浅层双源四工况热泵": {"电接口", "蓄冷接口", "制冷接口", "热源接口", "制热接口", "蓄热接口", "冷源接口"},
-    "中深层双源四工况热泵": {"电接口", "蓄冷接口", "制冷接口", "热源接口", "制热接口", "蓄热接口", "冷源接口"},
-    "浅层双源三工况热泵": {"电接口", "制冷接口", "热源接口", "制热接口", "冷源接口", "制冰接口"},
-    "中深层双源三工况热泵": {"电接口", "制冷接口", "热源接口", "制热接口", "冷源接口", "制冰接口"},
-    "水冷螺杆机": {"电接口", "冷源接口", "蓄冷接口", "制冷接口"},
-    "双工况水冷螺杆机组": {"电接口", "制冰接口", "冷源接口", "制冷接口"},
+    "浅层双源四工况热泵": {"制冷接口", "冷源接口", "制热接口", "电接口", "蓄冷接口", "热源接口", "蓄热接口"},
+    "中深层双源四工况热泵": {"制冷接口", "冷源接口", "制热接口", "电接口", "蓄冷接口", "热源接口", "蓄热接口"},
+    "浅层双源三工况热泵": {"制冷接口", "冷源接口", "制热接口", "电接口", "制冰接口", "热源接口"},
+    "中深层双源三工况热泵": {"制冷接口", "冷源接口", "制热接口", "电接口", "制冰接口", "热源接口"},
+    "水冷螺杆机": {"制冷接口", "蓄冷接口", "冷源接口", "电接口"},
+    "双工况水冷螺杆机组": {"制冷接口", "冷源接口", "制冰接口", "电接口"},
     "吸收式燃气热泵": {"燃料接口", "制热接口"},
-    "空气源热泵": {"电接口", "蓄冷接口", "制冷接口", "制热接口", "蓄热接口"},
-    "蒸汽溴化锂": {"冷源接口", "蒸汽接口", "制冷接口"},
-    "热水溴化锂": {"冷源接口", "热水接口", "制冷接口"},
-    "电热水锅炉": {"电接口", "制热接口"},
-    "电蒸汽锅炉": {"电接口", "蒸汽接口"},
+    "空气源热泵": {"制冷接口", "制热接口", "电接口", "蓄冷接口", "蓄热接口"},
+    "蒸汽溴化锂": {"制冷接口", "冷源接口", "蒸汽接口"},
+    "热水溴化锂": {"制冷接口", "冷源接口", "热水接口"},
+    "电热水锅炉": {"制热接口", "电接口"},
+    "电蒸汽锅炉": {"蒸汽接口", "电接口"},
     "天然气热水锅炉": {"燃料接口", "制热接口"},
-    "天然气蒸汽锅炉": {"燃料接口", "蒸汽接口"},
+    "天然气蒸汽锅炉": {"蒸汽接口", "燃料接口"},
+    "电解槽": {"制氢接口", "设备余热接口", "电接口"},
     "水蓄能": {"蓄冷接口", "蓄热接口"},
     "蓄冰槽": {"蓄冰接口"},
     "储氢罐": {"储氢接口"},
-    "输水管道": {"电接口", "输入接口", "输出接口"},
+    "输水管道": {"输入接口", "输出接口", "电接口"},
     "蒸汽管道": {"输入接口", "输出接口"},
-    "复合输水管道": {"热输入接口", "电接口", "冷输出接口", "热输出接口", "冷输入接口"},
+    "复合输水管道": {"电接口", "冷输出接口", "热输出接口", "热输入接口", "冷输入接口"},
     "水水换热器": {"输入接口", "输出接口"},
-    "复合水水换热器": {"热输出接口", "热输入接口", "冷输出接口", "冷输入接口"},
+    "复合水水换热器": {"冷输出接口", "热输出接口", "冷输入接口", "热输入接口"},
     "气水换热器": {"输入接口", "输出接口"},
 }
 
@@ -162,7 +164,7 @@ directionLookupTable = {
     "冷负荷": {"冷源接口": "输入"},
     "热负荷": {"热源接口": "输入"},
     "蒸汽负荷": {"蒸汽接口": "输入"},
-    "氢气负荷": {"氢气接口": "输入"},
+    "氢负荷": {"氢气接口": "输入"},
     "燃气发电机": {"燃料接口": "输入", "电接口": "输出", "高温烟气余热接口": "输出", "缸套水余热接口": "输出"},
     "蒸汽轮机": {"蒸汽接口": "输入", "电接口": "输出"},
     "氢燃料电池": {"氢气接口": "输入", "电接口": "输出", "设备余热接口": "输出"},
@@ -219,6 +221,7 @@ directionLookupTable = {
     "电蒸汽锅炉": {"电接口": "输入", "蒸汽接口": "输出"},
     "天然气热水锅炉": {"燃料接口": "输入", "制热接口": "输出"},
     "天然气蒸汽锅炉": {"燃料接口": "输入", "蒸汽接口": "输出"},
+    "电解槽": {"电接口": "输入", "制氢接口": "输出", "设备余热接口": "输出"},
     "水蓄能": {"蓄热接口": "输入输出", "蓄冷接口": "输入输出"},
     "蓄冰槽": {"蓄冰接口": "输入输出"},
     "储氢罐": {"储氢接口": "输入输出"},
@@ -628,11 +631,11 @@ class 风力发电(设备):
 class 柴油发电(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="柴油发电", port_definition={"电接口", "燃料接口"}, **kwargs
+            topo=topo, device_type="柴油发电", port_definition={"燃料接口", "电接口"}, **kwargs
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.燃料接口 = self.ports["燃料接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 锂电池(设备):
@@ -647,41 +650,41 @@ class 锂电池(设备):
 class 变压器(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="变压器", port_definition={"电输入", "电输出"}, **kwargs
+            topo=topo, device_type="变压器", port_definition={"电输出", "电输入"}, **kwargs
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 双向变压器(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="双向变压器", port_definition={"电输入", "电输出"}, **kwargs
+            topo=topo, device_type="双向变压器", port_definition={"电输出", "电输入"}, **kwargs
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 变流器(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="变流器", port_definition={"电输入", "电输出"}, **kwargs
+            topo=topo, device_type="变流器", port_definition={"电输出", "电输入"}, **kwargs
         )
 
-        self.电输入 = self.ports["电输入"]["id"]
         self.电输出 = self.ports["电输出"]["id"]
+        self.电输入 = self.ports["电输入"]["id"]
 
 
 class 双向变流器(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="双向变流器", port_definition={"储能端", "线路端"}, **kwargs
+            topo=topo, device_type="双向变流器", port_definition={"线路端", "储能端"}, **kwargs
         )
 
-        self.储能端 = self.ports["储能端"]["id"]
         self.线路端 = self.ports["线路端"]["id"]
+        self.储能端 = self.ports["储能端"]["id"]
 
 
 class 市政自来水(设备):
@@ -745,10 +748,10 @@ class 蒸汽负荷(设备):
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
 
 
-class 氢气负荷(设备):
+class 氢负荷(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="氢气负荷", port_definition={"氢气接口"}, **kwargs
+            topo=topo, device_type="氢负荷", port_definition={"氢气接口"}, **kwargs
         )
 
         self.氢气接口 = self.ports["氢气接口"]["id"]
@@ -759,24 +762,24 @@ class 燃气发电机(设备):
         super().__init__(
             topo=topo,
             device_type="燃气发电机",
-            port_definition={"电接口", "高温烟气余热接口", "燃料接口", "缸套水余热接口"},
+            port_definition={"燃料接口", "缸套水余热接口", "电接口", "高温烟气余热接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
-        self.高温烟气余热接口 = self.ports["高温烟气余热接口"]["id"]
         self.燃料接口 = self.ports["燃料接口"]["id"]
         self.缸套水余热接口 = self.ports["缸套水余热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
+        self.高温烟气余热接口 = self.ports["高温烟气余热接口"]["id"]
 
 
 class 蒸汽轮机(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="蒸汽轮机", port_definition={"电接口", "蒸汽接口"}, **kwargs
+            topo=topo, device_type="蒸汽轮机", port_definition={"蒸汽接口", "电接口"}, **kwargs
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 氢燃料电池(设备):
@@ -814,21 +817,21 @@ class 槽式太阳能(设备):
 class 余热热水锅炉(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="余热热水锅炉", port_definition={"制热接口", "烟气接口"}, **kwargs
+            topo=topo, device_type="余热热水锅炉", port_definition={"烟气接口", "制热接口"}, **kwargs
         )
 
-        self.制热接口 = self.ports["制热接口"]["id"]
         self.烟气接口 = self.ports["烟气接口"]["id"]
+        self.制热接口 = self.ports["制热接口"]["id"]
 
 
 class 余热蒸汽锅炉(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="余热蒸汽锅炉", port_definition={"烟气接口", "蒸汽接口"}, **kwargs
+            topo=topo, device_type="余热蒸汽锅炉", port_definition={"蒸汽接口", "烟气接口"}, **kwargs
         )
 
-        self.烟气接口 = self.ports["烟气接口"]["id"]
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
+        self.烟气接口 = self.ports["烟气接口"]["id"]
 
 
 class 浅层地热井(设备):
@@ -836,13 +839,13 @@ class 浅层地热井(设备):
         super().__init__(
             topo=topo,
             device_type="浅层地热井",
-            port_definition={"热源接口", "电接口", "冷源接口"},
+            port_definition={"冷源接口", "热源接口", "电接口"},
             **kwargs,
         )
 
+        self.冷源接口 = self.ports["冷源接口"]["id"]
         self.热源接口 = self.ports["热源接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
 
 
 class 中深层地热井(设备):
@@ -860,13 +863,13 @@ class 地表水源(设备):
         super().__init__(
             topo=topo,
             device_type="地表水源",
-            port_definition={"热源接口", "电接口", "冷源接口"},
+            port_definition={"冷源接口", "热源接口", "电接口"},
             **kwargs,
         )
 
+        self.冷源接口 = self.ports["冷源接口"]["id"]
         self.热源接口 = self.ports["热源接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
 
 
 class 水冷冷却塔(设备):
@@ -874,13 +877,13 @@ class 水冷冷却塔(设备):
         super().__init__(
             topo=topo,
             device_type="水冷冷却塔",
-            port_definition={"电接口", "水接口", "冷源接口"},
+            port_definition={"水接口", "冷源接口", "电接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.水接口 = self.ports["水接口"]["id"]
         self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 余热热源(设备):
@@ -897,17 +900,17 @@ class 浅层双源四工况热泵(设备):
         super().__init__(
             topo=topo,
             device_type="浅层双源四工况热泵",
-            port_definition={"电接口", "蓄冷接口", "制冷接口", "热源接口", "制热接口", "蓄热接口", "冷源接口"},
+            port_definition={"制冷接口", "冷源接口", "制热接口", "电接口", "蓄冷接口", "热源接口", "蓄热接口"},
             **kwargs,
         )
 
+        self.制冷接口 = self.ports["制冷接口"]["id"]
+        self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.制热接口 = self.ports["制热接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
         self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
-        self.制冷接口 = self.ports["制冷接口"]["id"]
         self.热源接口 = self.ports["热源接口"]["id"]
-        self.制热接口 = self.ports["制热接口"]["id"]
         self.蓄热接口 = self.ports["蓄热接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
 
 
 class 中深层双源四工况热泵(设备):
@@ -915,17 +918,17 @@ class 中深层双源四工况热泵(设备):
         super().__init__(
             topo=topo,
             device_type="中深层双源四工况热泵",
-            port_definition={"电接口", "蓄冷接口", "制冷接口", "热源接口", "制热接口", "蓄热接口", "冷源接口"},
+            port_definition={"制冷接口", "冷源接口", "制热接口", "电接口", "蓄冷接口", "热源接口", "蓄热接口"},
             **kwargs,
         )
 
+        self.制冷接口 = self.ports["制冷接口"]["id"]
+        self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.制热接口 = self.ports["制热接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
         self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
-        self.制冷接口 = self.ports["制冷接口"]["id"]
         self.热源接口 = self.ports["热源接口"]["id"]
-        self.制热接口 = self.ports["制热接口"]["id"]
         self.蓄热接口 = self.ports["蓄热接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
 
 
 class 浅层双源三工况热泵(设备):
@@ -933,16 +936,16 @@ class 浅层双源三工况热泵(设备):
         super().__init__(
             topo=topo,
             device_type="浅层双源三工况热泵",
-            port_definition={"电接口", "制冷接口", "热源接口", "制热接口", "冷源接口", "制冰接口"},
+            port_definition={"制冷接口", "冷源接口", "制热接口", "电接口", "制冰接口", "热源接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.制冷接口 = self.ports["制冷接口"]["id"]
-        self.热源接口 = self.ports["热源接口"]["id"]
-        self.制热接口 = self.ports["制热接口"]["id"]
         self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.制热接口 = self.ports["制热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
         self.制冰接口 = self.ports["制冰接口"]["id"]
+        self.热源接口 = self.ports["热源接口"]["id"]
 
 
 class 中深层双源三工况热泵(设备):
@@ -950,16 +953,16 @@ class 中深层双源三工况热泵(设备):
         super().__init__(
             topo=topo,
             device_type="中深层双源三工况热泵",
-            port_definition={"电接口", "制冷接口", "热源接口", "制热接口", "冷源接口", "制冰接口"},
+            port_definition={"制冷接口", "冷源接口", "制热接口", "电接口", "制冰接口", "热源接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.制冷接口 = self.ports["制冷接口"]["id"]
-        self.热源接口 = self.ports["热源接口"]["id"]
-        self.制热接口 = self.ports["制热接口"]["id"]
         self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.制热接口 = self.ports["制热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
         self.制冰接口 = self.ports["制冰接口"]["id"]
+        self.热源接口 = self.ports["热源接口"]["id"]
 
 
 class 水冷螺杆机(设备):
@@ -967,14 +970,14 @@ class 水冷螺杆机(设备):
         super().__init__(
             topo=topo,
             device_type="水冷螺杆机",
-            port_definition={"电接口", "冷源接口", "蓄冷接口", "制冷接口"},
+            port_definition={"制冷接口", "蓄冷接口", "冷源接口", "电接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
-        self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
         self.制冷接口 = self.ports["制冷接口"]["id"]
+        self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
+        self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 双工况水冷螺杆机组(设备):
@@ -982,14 +985,14 @@ class 双工况水冷螺杆机组(设备):
         super().__init__(
             topo=topo,
             device_type="双工况水冷螺杆机组",
-            port_definition={"电接口", "制冰接口", "冷源接口", "制冷接口"},
+            port_definition={"制冷接口", "冷源接口", "制冰接口", "电接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
-        self.制冰接口 = self.ports["制冰接口"]["id"]
-        self.冷源接口 = self.ports["冷源接口"]["id"]
         self.制冷接口 = self.ports["制冷接口"]["id"]
+        self.冷源接口 = self.ports["冷源接口"]["id"]
+        self.制冰接口 = self.ports["制冰接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 吸收式燃气热泵(设备):
@@ -1007,14 +1010,14 @@ class 空气源热泵(设备):
         super().__init__(
             topo=topo,
             device_type="空气源热泵",
-            port_definition={"电接口", "蓄冷接口", "制冷接口", "制热接口", "蓄热接口"},
+            port_definition={"制冷接口", "制热接口", "电接口", "蓄冷接口", "蓄热接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
-        self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
         self.制冷接口 = self.ports["制冷接口"]["id"]
         self.制热接口 = self.ports["制热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
+        self.蓄冷接口 = self.ports["蓄冷接口"]["id"]
         self.蓄热接口 = self.ports["蓄热接口"]["id"]
 
 
@@ -1023,13 +1026,13 @@ class 蒸汽溴化锂(设备):
         super().__init__(
             topo=topo,
             device_type="蒸汽溴化锂",
-            port_definition={"冷源接口", "蒸汽接口", "制冷接口"},
+            port_definition={"制冷接口", "冷源接口", "蒸汽接口"},
             **kwargs,
         )
 
+        self.制冷接口 = self.ports["制冷接口"]["id"]
         self.冷源接口 = self.ports["冷源接口"]["id"]
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
-        self.制冷接口 = self.ports["制冷接口"]["id"]
 
 
 class 热水溴化锂(设备):
@@ -1037,33 +1040,33 @@ class 热水溴化锂(设备):
         super().__init__(
             topo=topo,
             device_type="热水溴化锂",
-            port_definition={"冷源接口", "热水接口", "制冷接口"},
+            port_definition={"制冷接口", "冷源接口", "热水接口"},
             **kwargs,
         )
 
+        self.制冷接口 = self.ports["制冷接口"]["id"]
         self.冷源接口 = self.ports["冷源接口"]["id"]
         self.热水接口 = self.ports["热水接口"]["id"]
-        self.制冷接口 = self.ports["制冷接口"]["id"]
 
 
 class 电热水锅炉(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="电热水锅炉", port_definition={"电接口", "制热接口"}, **kwargs
+            topo=topo, device_type="电热水锅炉", port_definition={"制热接口", "电接口"}, **kwargs
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.制热接口 = self.ports["制热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 电蒸汽锅炉(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="电蒸汽锅炉", port_definition={"电接口", "蒸汽接口"}, **kwargs
+            topo=topo, device_type="电蒸汽锅炉", port_definition={"蒸汽接口", "电接口"}, **kwargs
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 天然气热水锅炉(设备):
@@ -1079,11 +1082,25 @@ class 天然气热水锅炉(设备):
 class 天然气蒸汽锅炉(设备):
     def __init__(self, topo: 拓扑图, **kwargs):
         super().__init__(
-            topo=topo, device_type="天然气蒸汽锅炉", port_definition={"燃料接口", "蒸汽接口"}, **kwargs
+            topo=topo, device_type="天然气蒸汽锅炉", port_definition={"蒸汽接口", "燃料接口"}, **kwargs
         )
 
-        self.燃料接口 = self.ports["燃料接口"]["id"]
         self.蒸汽接口 = self.ports["蒸汽接口"]["id"]
+        self.燃料接口 = self.ports["燃料接口"]["id"]
+
+
+class 电解槽(设备):
+    def __init__(self, topo: 拓扑图, **kwargs):
+        super().__init__(
+            topo=topo,
+            device_type="电解槽",
+            port_definition={"制氢接口", "设备余热接口", "电接口"},
+            **kwargs,
+        )
+
+        self.制氢接口 = self.ports["制氢接口"]["id"]
+        self.设备余热接口 = self.ports["设备余热接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 水蓄能(设备):
@@ -1119,13 +1136,13 @@ class 输水管道(设备):
         super().__init__(
             topo=topo,
             device_type="输水管道",
-            port_definition={"电接口", "输入接口", "输出接口"},
+            port_definition={"输入接口", "输出接口", "电接口"},
             **kwargs,
         )
 
-        self.电接口 = self.ports["电接口"]["id"]
         self.输入接口 = self.ports["输入接口"]["id"]
         self.输出接口 = self.ports["输出接口"]["id"]
+        self.电接口 = self.ports["电接口"]["id"]
 
 
 class 蒸汽管道(设备):
@@ -1143,14 +1160,14 @@ class 复合输水管道(设备):
         super().__init__(
             topo=topo,
             device_type="复合输水管道",
-            port_definition={"热输入接口", "电接口", "冷输出接口", "热输出接口", "冷输入接口"},
+            port_definition={"电接口", "冷输出接口", "热输出接口", "热输入接口", "冷输入接口"},
             **kwargs,
         )
 
-        self.热输入接口 = self.ports["热输入接口"]["id"]
         self.电接口 = self.ports["电接口"]["id"]
         self.冷输出接口 = self.ports["冷输出接口"]["id"]
         self.热输出接口 = self.ports["热输出接口"]["id"]
+        self.热输入接口 = self.ports["热输入接口"]["id"]
         self.冷输入接口 = self.ports["冷输入接口"]["id"]
 
 
@@ -1169,14 +1186,14 @@ class 复合水水换热器(设备):
         super().__init__(
             topo=topo,
             device_type="复合水水换热器",
-            port_definition={"热输出接口", "热输入接口", "冷输出接口", "冷输入接口"},
+            port_definition={"冷输出接口", "热输出接口", "冷输入接口", "热输入接口"},
             **kwargs,
         )
 
-        self.热输出接口 = self.ports["热输出接口"]["id"]
-        self.热输入接口 = self.ports["热输入接口"]["id"]
         self.冷输出接口 = self.ports["冷输出接口"]["id"]
+        self.热输出接口 = self.ports["热输出接口"]["id"]
         self.冷输入接口 = self.ports["冷输入接口"]["id"]
+        self.热输入接口 = self.ports["热输入接口"]["id"]
 
 
 class 气水换热器(设备):

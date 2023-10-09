@@ -184,7 +184,10 @@ def query_prolog_in_context(
 
 
 def verify_topology_status_dict(
-    topology_status_dict, port_verifiers, conjugate_port_verifiers
+    topology_status_dict,
+    port_verifiers,
+    conjugate_port_verifiers,
+    adder_index_to_port_name,
 ):
     banner("unverified topo status")
     rich.print(topology_status_dict)
@@ -198,10 +201,17 @@ def verify_topology_status_dict(
         port_verified = {}
         conjugate_port_verified = {}
 
+        port_name_to_energy_type = {
+            v_v: adder_status[k]
+            for k, v in adder_index_to_port_name.items()
+            for v_k, v_v in v.items()
+        }
+
         for topo_status_frames in topo_status:
             for topo_status_frame_index, (port_name, port_status) in enumerate(
                 topo_status_frames.items()
             ):
+                # breakpoint()
                 if port_name not in topo_status_frame_flatten.keys():
                     topo_status_frame_flatten[port_name] = set()
                 _conjugate_verified = True
@@ -213,7 +223,9 @@ def verify_topology_status_dict(
                         conds = [
                             port_status[port_name] for port_name in conjugate_ports
                         ]
-                        conjugate_verified = conjugate_verifier(*conds)
+                        energytypes = [port_name_to_energy_type[port_name] for port_name in conjugate_ports]
+                        conjugate_verified = conjugate_verifier(*conds, *energytypes)
+                        # conjugate_verified = conjugate_verifier(*conds)
                         if not conjugate_verified:
                             em.append(
                                 f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
@@ -308,7 +320,10 @@ def execute_prolog_script_and_check_if_can_proceed(
         prolog_script_content, adder_index_to_port_name
     )
     verified_topology_status_dict = verify_topology_status_dict(
-        topology_status_dict, port_verifiers, conjugate_port_verifiers
+        topology_status_dict,
+        port_verifiers,
+        conjugate_port_verifiers,
+        adder_index_to_port_name,
     )
     can_proceed = check_if_can_proceed(verified_topology_status_dict)
     return can_proceed
@@ -327,7 +342,7 @@ if __name__ == "__main__":
         "load_port1": lambda conds: "input" in conds,
     }
 
-    # {set_of_port_names: lambda cond1, cond2: ...}
+    # {tuple_of_port_names: lambda cond1, cond2, etype1, etype2: ...}
     conjugate_port_verifiers = {}
 
     execute_prolog_script_and_check_if_can_proceed(
