@@ -3,11 +3,16 @@ from log_utils import logger_print
 from config import ies_env
 from contextlib import contextmanager
 from log_utils import logger_traceback
-from ies_optim import *
+# from ies_optim import *
 from enum import auto, IntEnum
 from debug_utils import ExportedModel, modelSolvedTestContext
 import random
+import sys
+from pyomo_environ import *
 import tempfile
+from constants import *
+import os
+from typing import List
 
 
 # we need a configurable context manager which suppress exception.
@@ -229,7 +234,7 @@ def solution_loader(sol_file:str, parser):
 def load_cplex_sol_file(sol_file: str):
     return solution_loader(sol_file, parse_cplex_solution_content)
 
-def invoke_solver_with_custom_config_and_solution_parser(mw: ModelWrapper, logfile:str, timelimit:int, script_generator, script_executor, solution_parser):
+def invoke_solver_with_custom_config_and_solution_parser(mw, logfile:str, timelimit:int, script_generator, script_executor, solution_parser):
     solved = False
     # TODO: logging
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -280,18 +285,18 @@ def feasopt_script_generator(lp_path:str, sol_path:str, mode:FeasoptMode, soluti
     return script
 
 from functools import partial
-def feasopt(mw: ModelWrapper, mode: FeasoptMode, logfile: str, solutionCount:int=1):
+def feasopt(mw, mode: FeasoptMode, logfile: str, solutionCount:int=1):
     solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT + 10, partial(feasopt_script_generator, mode=mode, solutionCount=solutionCount), cplex_exec_script,load_cplex_sol_file)
     return solved
 
 @failsafe_methods.register
-def feasopt_with_optimization(mw: ModelWrapper, logdir: str):
+def feasopt_with_optimization(mw, logdir: str):
     logfile = os.path.join(logdir, "cplex_feasopt_with_optimization_failsafe.log")
     return feasopt(mw, FeasoptMode.optimal_minimum_sum_relaxation, logfile), logfile
 
 
 @failsafe_methods.register
-def feasopt_only(mw: ModelWrapper, logdir: str):
+def feasopt_only(mw, logdir: str):
     logfile = os.path.join(logdir, "cplex_feasopt_only_failsafe.log")
     return feasopt(mw, FeasoptMode.minimum_sum_relaxation, logfile), logfile
 
@@ -316,7 +321,7 @@ def scip_minuc_script_generator(lp_path:str, sol_path:str, solutionCount:int = 1
     return script
 
 @failsafe_methods.register
-def scip_minuc(mw:ModelWrapper, logdir:str):
+def scip_minuc(mw, logdir:str):
     logfile = os.path.join(logdir, "scip_minuc.log")
     solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT*3, scip_minuc_script_generator, scip_exec_script,load_scip_sol_file)
     return solved, logfile
@@ -332,7 +337,7 @@ IPOPT_MAX_CPUTIME = 10
 
 # @failsafe_methods.register
 # don't register it. deprecated.
-def ipopt_no_presolve(mw: ModelWrapper, logdir: str):
+def ipopt_no_presolve(mw, logdir: str):
     solved = False
     logfile = os.path.join(logdir, "ipopt_failsafe.log")
     with SolverFactory(Solver.ipopt) as solver:
@@ -377,7 +382,7 @@ def ipopt_solve(mw, logfile, solver, check_solved):
 
 
 @failsafe_methods.register
-def random_value_assignment(mw: ModelWrapper, logdir: str):
+def random_value_assignment(mw, logdir: str):
     rng = lambda: random.uniform(-100, 100)
     for v in mw.model.component_data_objects(ctype=Var):
         v.set_value(rng(), skip_validation=True) # suppress W1001
@@ -397,7 +402,7 @@ def random_value_assignment(mw: ModelWrapper, logdir: str):
 #     failsafe_methods.add(m)
 
 
-def solve_failsafe(mw: ModelWrapper, logdir: str):
+def solve_failsafe(mw, logdir: str):
     """
     Steps (fail and continue):
         1. feasopt & objective optimization
@@ -408,8 +413,8 @@ def solve_failsafe(mw: ModelWrapper, logdir: str):
     solved = False
     report = []
     for method in failsafe_methods:
+        name = method.__name__
         try:
-            name = method.__name__
             logger_print(f"trying failsafe method: {name}")
             solved, logfile = method(mw, logdir)
 

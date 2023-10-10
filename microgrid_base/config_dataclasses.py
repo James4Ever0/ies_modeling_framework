@@ -56,6 +56,10 @@ class IESEnv(EnvBaseModel):
         default=False,
         title="Enable infeasibility diagnostic mode, which will perform various tests to detect and analyze infeasibility, before and after accessing the solver.",
     )
+    DYNAMIC_TYPE_VERIFICATION:bool = Field(
+        default = True,
+        title = "Enable dynamic type verification on topology."
+    )
 
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):

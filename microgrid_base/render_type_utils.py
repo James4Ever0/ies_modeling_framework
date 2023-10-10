@@ -47,8 +47,11 @@ if __name__ == "__main__":
         **{k: f"{repr(v)} in conds" for k, v in 工况翻译.items()},
     )
     make_param_list = lambda e: [e + str(i) for i in range(len(k))]
-    makeRule = lambda c0, c1: f"{c0} == {repr(c1)}"
-    def parse_rule_side(left_or_right:str):
+    makeRule = (
+        lambda c0, c1: f"{c0} != 'idle'" if c1 is None else f"{c0} == {repr(工况翻译[c1])}"
+    )
+
+    def parse_rule_side(left_or_right: str):
         left_or_right = left_or_right.strip()
         comps = left_or_right.split(";")
         ret = []
@@ -99,8 +102,8 @@ if __name__ == "__main__":
         content = parse_rule_side(_content)
         k = parse_rule_key(content)
         if header == "互斥":
-            v = ", ".join([f'int({makeRule(c0, c1)})' for c0, c1 in content])
-            v = f'sum([{v}]) <= 1'
+            v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
+            v = f"sum([{v}]) <= 1"
             v = replace_as_cond_or_etype(v, k, "cond")
         elif header == "冷热互斥":
             c0s = [c0 for c0, _ in content]
@@ -166,14 +169,15 @@ if __name__ == "__main__":
         _细分类型 = portDef["细分类型"]
         _基本类型 = portDef["基本类型"]
         candidates = _基本类型 if _细分类型 is None else _细分类型
-        if candidates is None:breakpoint()
+        if candidates is None:
+            breakpoint()
         for t in candidates.split("/"):
             # if isinstance(t, list):
             #     if set(t) == set(['醇', '乙', '二']): breakpoint()
-            # print('t:', t, type(t))
+            # logger_print('t:', t, type(t))
             t_resolved = 解析基本类型(t)
             eTypes.extend(t_resolved)
-        print(eTypes)
+        logger_print(eTypes)
         return eTypes
 
     for fpath, dat in {
@@ -255,12 +259,15 @@ if __name__ == "__main__":
                     v = f"lambda {lambda_params}: {v}"
                     conjugate_verifiers[k] = v
 
-
                 if conjugate_verifiers:
                     for k in conjugate_verifiers.keys():
                         for e_k in k:
-                            assert e_k in ports.keys(), f"found nonexistant key {e_k} at device {devSubType}"
-                    conjugate_verifiers_repr = ", ".join([f"{repr(k)}: {v}" for k, v in conjugate_verifiers.items()])
+                            assert (
+                                e_k in ports.keys()
+                            ), f"found nonexistant key {e_k} at device {devSubType}"
+                    conjugate_verifiers_repr = ", ".join(
+                        [f"{repr(k)}: {v}" for k, v in conjugate_verifiers.items()]
+                    )
                     conjugate_verifiers_repr = f"{{{conjugate_verifiers_repr}}}"
                     conjugate_verifiers_constructor = f"lambda port_kind_to_port_name: {{tuple([port_kind_to_port_name[it] for it in k]): v for k, v in {conjugate_verifiers_repr}.items()}}"
                     conjugate_port_verifier_constructor_lookup_table[

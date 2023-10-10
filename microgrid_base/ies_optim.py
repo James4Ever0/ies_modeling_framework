@@ -336,13 +336,13 @@ class 风力发电ID(设备ID):
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
-    """
-    类型: 供电端输出
-    """
     燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
     """
     类型: 柴油输入
+    """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    """
+    类型: 供电端输出
     """
 
 
@@ -376,13 +376,13 @@ class 变流器ID(设备ID):
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
-    """
-    类型: 双向变流器线路端输入输出
-    """
     储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
     """
     类型: 双向变流器储能端输入输出
+    """
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    """
+    类型: 双向变流器线路端输入输出
     """
 
 
@@ -3035,18 +3035,18 @@ class 柴油发电模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonNegativeReals
-        )
-        """
-        类型: 供电端输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
         类型: 柴油输入
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 供电端输出
         """
 
         # 设备特有约束（变量）
@@ -4114,18 +4114,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
         类型: 双向变流器储能端输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 双向变流器线路端输入输出
         """
 
         # 设备特有约束（变量）
@@ -5303,7 +5303,7 @@ class 设备节点基类(节点基类):
     )
 
 
-deviceSubtypeAlias = dict(变流器=["单向变流器"])
+deviceSubtypeAlias = dict(变流器=["单向变流器"], 变压器="双向变压器")
 DSAToDS = {e: k for k, v in deviceSubtypeAlias.items() for e in v}
 
 
@@ -5523,12 +5523,14 @@ def compute(
                 adder["output"],
                 adder["IO"],
             )
+            logger_print(f"adder #{adder_index}:", adder)
 
             # fill in missing params
             with failsafe_suppress_exception():
                 if len(input_indexs) >= 1:
-                    if G.nodes[input_indexs[0]]["subtype"] == "柴油输出":
-                        assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                    first_port_info = G.nodes[input_indexs[0]]
+                    if first_port_info["port_name"] == "燃料接口":
+                        assert len(input_indexs) == 1, "燃料元件只能一对多连接"
                         diesel_node_id = G.nodes[input_indexs[0]]["device_id"]
                         热值 = devInstDict[diesel_node_id].热值
                         for output_index in output_indexs:

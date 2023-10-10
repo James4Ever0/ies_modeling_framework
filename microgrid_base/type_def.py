@@ -80,17 +80,17 @@ def 解析基本类型(t0):
         # if _t in ['乙', '醇', '二']:
         #     breakpoint()
         if _t in 类型细分表.keys():
-            # print('update:', _t)
+            # logger_print('update:', _t)
             t_resolved.update(类型细分表[_t])
         else:
-            # print('add:', _t)
+            # logger_print('add:', _t)
             t_resolved.add(_t)
     ret = list(t_resolved)
-    # print('ret:', ret)
+    # logger_print('ret:', ret)
     if t_resolved == set(t):
         return ret
     else:
-        # print("t_resolved:", t_resolved)
+        # logger_print("t_resolved:", t_resolved)
         # if t_resolved == {'乙', '醇', '二'}: breakpoint()
-        # print('rec ret:', ret)
+        # logger_print('rec ret:', ret)
         return 解析基本类型(ret)

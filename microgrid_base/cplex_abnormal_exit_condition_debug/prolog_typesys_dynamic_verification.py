@@ -154,16 +154,25 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
 def query_prolog_in_context(
     topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name
 ):
+    adder_name_list = []
+    adder_index_mapping = {}
+    for i, k in enumerate(adder_index_to_port_name.keys()):
+        adder_name_list.append("adder{}".format(str(k).replace('-','_')))
+        adder_index_mapping[i] = k
+    adder_names = ", ".join(adder_name_list)
+    print('adder_names: ',adder_names)
+    # breakpoint()
     prolog_thread.query(f'["{prolog_file_path}"].')
     result = prolog_thread.query(
-        "findall(STATUS, adder_port_status_list([adder1], STATUS), STATUS_LIST)"
+        f"findall(STATUS, adder_port_status_list([{adder_names}], STATUS), STATUS_LIST)"
     )
     print(result)  # list, get first element
     STATUS_LIST = result[0]["STATUS_LIST"]
     for simutaneous_status in STATUS_LIST:
         adder_status_dict = {}
         port_status_dict = {}
-        for adder_index, adder_simutaneous_status in enumerate(simutaneous_status):
+        for _index, adder_simutaneous_status in enumerate(simutaneous_status):
+            adder_index = adder_index_mapping[_index]
             adder_energy_type, adder_port_status = adder_simutaneous_status
             adder_status_dict[adder_index] = adder_energy_type
             print(f"adder #{adder_index}")
@@ -221,7 +230,7 @@ def verify_topology_status_dict(
                         conjugate_verifier,
                     ) in conjugate_port_verifiers.items():
                         conds = [
-                            port_status[port_name] for port_name in conjugate_ports
+                            topo_status_frames[port_name] for port_name in conjugate_ports
                         ]
                         energytypes = [port_name_to_energy_type[port_name] for port_name in conjugate_ports]
                         conjugate_verified = conjugate_verifier(*conds, *energytypes)
@@ -334,7 +343,7 @@ if __name__ == "__main__":
         prolog_script_content = f.read()
 
     adder_index_to_port_name = {
-        0: {0: "bat_port1", 1: "generator_port1", 2: "load_port1"}
+        1: {0: "bat_port1", 1: "generator_port1", 2: "load_port1"}
     }
 
     port_verifiers = {

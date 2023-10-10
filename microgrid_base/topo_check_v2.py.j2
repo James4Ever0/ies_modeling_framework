@@ -1,5 +1,6 @@
 from log_utils import logger_print
 from log_utils import logger_traceback
+from type_utils import dynamic_verify_topo_object
 
 import networkx
 from networkx.readwrite import json_graph
@@ -177,7 +178,7 @@ class 拓扑图:
         return neighbors
     
     # monotonically adding a node.
-    def check_consistency(self):  # return nothing.
+    def _check_consistency(self):  # return nothing.
         #  use subgraph
         # 提取所有母线ID
         母线ID列表 = []
@@ -282,6 +283,17 @@ class 拓扑图:
             set([i for i in e if i not in 合并线ID列表]) for e in self.合并母线ID集合列表
         ]
         logger_print("合并母线ID集合列表:", self.合并母线ID集合列表)
+    
+    def check_consistency(self):
+        self._check_consistency()
+        verified = False
+        if ies_env.DYNAMIC_TYPE_VERIFICATION:
+            verified = dynamic_verify_topo_object(self)
+        else:
+            logger_print("skipping dynamic verification")
+            verified = True
+        if not verified:
+            raise Exception("Dynamical verification failed.")
         self.is_valid = True
 
     def to_json(self) -> dict:

@@ -2,8 +2,6 @@ from log_utils import logger_print
 from type_def import *
 import os
 
-from topo_check import 拓扑图
-
 """static & dynamic topology type checking"""
 
 deviceTypes = [
@@ -63,19 +61,19 @@ deviceTypes = [
     "气水换热器",
 ]
 energyTypes = [
-    "天然气",
     "热水",
-    "冰乙二醇",
-    "热乙二醇",
-    "氢气",
-    "电",
-    "蒸汽",
-    "柴油",
-    "自来水",
-    "导热油",
     "冷乙二醇",
+    "冰乙二醇",
+    "天然气",
+    "电",
+    "热乙二醇",
+    "柴油",
     "冷水",
     "烟气",
+    "导热油",
+    "氢气",
+    "蒸汽",
+    "自来水",
 ]
 
 deviceTypeToTypeInfo = {
@@ -110,8 +108,8 @@ deviceTypeToTypeInfo = {
     },
     "变压器": {
         "requiredPortFrontendNameToPortPossibleStates": {
-            "电输入": ["idle", "input", "output"],
-            "电输出": ["idle", "input", "output"],
+            "电输入": ["idle", "input"],
+            "电输出": ["idle", "output"],
         },
         "requiredPortFrontendNameToEnergyTypes": {"电输入": ["电"], "电输出": ["电"]},
     },
@@ -523,8 +521,8 @@ deviceTypeToTypeInfo = {
             "输出接口": ["idle", "input", "output"],
         },
         "requiredPortFrontendNameToEnergyTypes": {
-            "输入接口": ["热乙二醇", "冰乙二醇", "冷乙二醇", "自来水", "热水", "冷水", "导热油"],
-            "输出接口": ["热乙二醇", "冰乙二醇", "冷乙二醇", "自来水", "热水", "冷水", "导热油"],
+            "输入接口": ["冷乙二醇", "冰乙二醇", "热乙二醇", "冷水", "热水", "自来水", "导热油"],
+            "输出接口": ["冷乙二醇", "冰乙二醇", "热乙二醇", "冷水", "热水", "自来水", "导热油"],
         },
     },
     "复合水水换热器": {
@@ -591,8 +589,8 @@ conjugate_port_verifier_constructor_lookup_table = {
     "柴油发电": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+            ("燃料接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
@@ -600,7 +598,7 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
@@ -608,17 +606,17 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
-            and (all([cond1 == "进"]) if cond0 == "出" else True)
-            and (sum([int(cond1 == "进"), int(cond0 == "进")]) <= 1)
+            and (all([cond1 == "input"]) if cond0 == "output" else True)
+            and (sum([int(cond1 == "input"), int(cond0 == "input")]) <= 1)
         }.items()
     },
     "变流器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
@@ -626,43 +624,38 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("储能端", "线路端"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
-            and (all([cond0 == "进"]) if cond1 == "出" else True)
-            and (sum([int(cond0 == "进"), int(cond1 == "进")]) <= 1)
+            and (all([cond0 == "input"]) if cond1 == "output" else True)
+            and (sum([int(cond0 == "input"), int(cond1 == "input")]) <= 1)
         }.items()
     },
     "燃气发电机": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "缸套水余热接口",
                 "燃料接口",
                 "高温烟气余热接口",
+                "缸套水余热接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all([cond2 == "进", cond3 == "出", cond1 == "出"])
-                if cond0 == "出"
+                all([cond0 == "input", cond1 == "output", cond2 == "output"])
+                if cond3 == "output"
+                else True
+            )
+            and (
+                all([cond0 == "input", cond3 == "output", cond2 == "output"])
+                if cond1 == "output"
                 else True
             ),
             (
                 "燃料接口",
                 "缸套水余热接口",
-                "电接口",
                 "高温烟气余热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all([cond0 == "进", cond2 == "出", cond1 == "出"])
-                if cond3 == "出"
-                else True
-            ),
-            (
                 "电接口",
-                "燃料接口",
-                "缸套水余热接口",
-                "高温烟气余热接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all([cond1 == "进", cond0 == "出", cond3 == "出"])
-                if cond2 == "出"
+                all([cond0 == "input", cond3 == "output", cond2 == "output"])
+                if cond1 == "output"
                 else True
             ),
         }.items()
@@ -670,8 +663,8 @@ conjugate_port_verifier_constructor_lookup_table = {
     "蒸汽轮机": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
@@ -680,19 +673,29 @@ conjugate_port_verifier_constructor_lookup_table = {
         for k, v in {
             (
                 "氢气接口",
+                "设备余热接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+                all([cond0 == "input", cond1 == "output"])
+                if cond2 == "output"
+                else True
+            ),
+            (
                 "电接口",
                 "设备余热接口",
+                "氢气接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "出"]) if cond1 == "出" else True
-            )
-            and (all([cond0 == "进", cond1 == "出"]) if cond2 == "出" else True)
+                all([cond2 == "input", cond0 == "output"])
+                if cond1 == "output"
+                else True
+            ),
         }.items()
     },
     "余热热水锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("制热接口", "烟气接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
@@ -700,7 +703,7 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("蒸汽接口", "烟气接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
@@ -708,13 +711,13 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("电接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("冷源接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("热源接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 == "出"), int(cond0 == "出")]) <= 1
+            ("冷源接口", "热源接口"): lambda cond0, cond1, etype0, etype1: (
+                sum([int(cond0 == "output"), int(cond1 == "output")]) <= 1
             ),
         }.items()
     },
@@ -722,21 +725,21 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
     "地表水源": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("冷源接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
             ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("热源接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 == "出"), int(cond0 == "出")]) <= 1
+            ("冷源接口", "热源接口"): lambda cond0, cond1, etype0, etype1: (
+                sum([int(cond0 == "output"), int(cond1 == "output")]) <= 1
             ),
         }.items()
     },
@@ -744,11 +747,11 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "水接口",
                 "冷源接口",
+                "水接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond1 == "进"]) if cond2 == "出" else True
+                all([cond2 == "input", cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
@@ -756,45 +759,45 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "电接口",
-                "蓄冷接口",
                 "冷源接口",
+                "蓄冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "热源接口",
                 "制热接口",
                 "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond2 == "进", cond0 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "热源接口",
-                "电接口",
                 "蓄热接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond0 == "进"]) if cond2 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "制热接口",
                 "制冷接口",
-                "蓄冷接口",
                 "蓄热接口",
+                "制热接口",
+                "蓄冷接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
                 sum(
                     [
-                        int(cond1 == "出"),
-                        int(cond0 == "出"),
-                        int(cond2 == "出"),
-                        int(cond3 == "出"),
+                        int(cond0 == "output"),
+                        int(cond2 == "output"),
+                        int(cond3 == "output"),
+                        int(cond1 == "output"),
                     ]
                 )
                 <= 1
@@ -805,45 +808,45 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "电接口",
-                "蓄冷接口",
                 "冷源接口",
+                "蓄冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "热源接口",
                 "制热接口",
                 "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond2 == "进", cond0 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "热源接口",
-                "电接口",
                 "蓄热接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond0 == "进"]) if cond2 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "制热接口",
                 "制冷接口",
-                "蓄冷接口",
                 "蓄热接口",
+                "制热接口",
+                "蓄冷接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
                 sum(
                     [
-                        int(cond1 == "出"),
-                        int(cond0 == "出"),
-                        int(cond2 == "出"),
-                        int(cond3 == "出"),
+                        int(cond0 == "output"),
+                        int(cond2 == "output"),
+                        int(cond3 == "output"),
+                        int(cond1 == "output"),
                     ]
                 )
                 <= 1
@@ -854,32 +857,39 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "电接口",
-                "制冰接口",
                 "冷源接口",
+                "制冰接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input", cond1 == "input"]) if cond2 == "output" else True
             ),
             (
                 "热源接口",
                 "制热接口",
                 "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond2 == "进", cond0 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "制热接口",
                 "制冷接口",
+                "制热接口",
                 "制冰接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                sum([int(cond1 == "出"), int(cond0 == "出"), int(cond2 == "出")]) <= 1
+                sum(
+                    [
+                        int(cond0 == "output"),
+                        int(cond1 == "output"),
+                        int(cond2 == "output"),
+                    ]
+                )
+                <= 1
             ),
         }.items()
     },
@@ -887,32 +897,39 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "电接口",
-                "制冰接口",
                 "冷源接口",
+                "制冰接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input", cond1 == "input"]) if cond2 == "output" else True
             ),
             (
                 "热源接口",
                 "制热接口",
                 "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond2 == "进", cond0 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "制热接口",
                 "制冷接口",
+                "制热接口",
                 "制冰接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                sum([int(cond1 == "出"), int(cond0 == "出"), int(cond2 == "出")]) <= 1
+                sum(
+                    [
+                        int(cond0 == "output"),
+                        int(cond1 == "output"),
+                        int(cond2 == "output"),
+                    ]
+                )
+                <= 1
             ),
         }.items()
     },
@@ -920,21 +937,21 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
-                "电接口",
-                "蓄冷接口",
                 "冷源接口",
+                "蓄冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             ("制冷接口", "蓄冷接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond0 == "出"), int(cond1 == "出")]) <= 1
+                sum([int(cond0 == "output"), int(cond1 == "output")]) <= 1
             ),
         }.items()
     },
@@ -942,59 +959,59 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
+                "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             ),
             (
                 "电接口",
-                "制冰接口",
                 "冷源接口",
+                "制冰接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input", cond1 == "input"]) if cond2 == "output" else True
             ),
             ("制冷接口", "制冰接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond0 == "出"), int(cond1 == "出")]) <= 1
+                sum([int(cond0 == "output"), int(cond1 == "output")]) <= 1
             ),
         }.items()
     },
     "吸收式燃气热泵": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("制热接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
     "空气源热泵": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("制冷接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("电接口", "蓄冷接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("蓄冷接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
             ("制热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("电接口", "蓄热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("蓄热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
             (
-                "制热接口",
                 "制冷接口",
-                "蓄冷接口",
                 "蓄热接口",
+                "制热接口",
+                "蓄冷接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
                 sum(
                     [
-                        int(cond1 == "出"),
-                        int(cond0 == "出"),
-                        int(cond2 == "出"),
-                        int(cond3 == "出"),
+                        int(cond0 == "output"),
+                        int(cond2 == "output"),
+                        int(cond3 == "output"),
+                        int(cond1 == "output"),
                     ]
                 )
                 <= 1
@@ -1005,11 +1022,11 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
                 "冷源接口",
+                "制冷接口",
                 "蒸汽接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond2 == "进", cond1 == "进"]) if cond0 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
@@ -1017,11 +1034,11 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
+                "冷源接口",
                 "制冷接口",
                 "热水接口",
-                "冷源接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond2 == "进"]) if cond0 == "出" else True
+                all([cond2 == "input", cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
@@ -1029,23 +1046,23 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("制热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
     "电蒸汽锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
     "天然气热水锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("制热接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
@@ -1053,18 +1070,18 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("燃料接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
         }.items()
     },
     "电解槽": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "设备余热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("设备余热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
-            ("电接口", "制氢接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("制氢接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             ),
         }.items()
     },
@@ -1072,7 +1089,7 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("蓄热接口", "蓄冷接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond0 == None), int(cond1 == None)]) <= 1
+                sum([int(cond0 != "idle"), int(cond1 != "idle")]) <= 1
             )
         }.items()
     },
@@ -1080,21 +1097,17 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "电接口",
                 "输出接口",
                 "输入接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond0 == "进"]) if cond2 == "出" else True
-            ),
-            (
                 "电接口",
-                "输入接口",
-                "输出接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond0 == "进"]) if cond2 == "出" else True
+                all([cond0 == "input", cond2 == "input"]) if cond1 == "output" else True
+            )
+            and (
+                all([cond1 == "input", cond2 == "input"]) if cond0 == "output" else True
             ),
             ("输出接口", "输入接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 == "进"), int(cond0 == "进")]) <= 1
+                sum([int(cond1 == "input"), int(cond0 == "input")]) <= 1
             )
             and (
                 all(["冷" in it for it in [etype1, etype0]])
@@ -1106,45 +1119,47 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("输出接口", "输入接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
-            and (sum([int(cond1 == "进"), int(cond0 == "进")]) <= 1),
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
-            ),
+            and (all([cond1 == "input"]) if cond0 == "output" else True)
+            and (sum([int(cond1 == "input"), int(cond0 == "input")]) <= 1)
         }.items()
     },
     "复合输水管道": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "冷输入接口",
                 "冷输出接口",
+                "冷输入接口",
                 "电接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 == "进", cond2 == "进"]) if cond0 == "出" else True
+                all([cond0 == "input", cond2 == "input"]) if cond1 == "output" else True
             )
-            and (all([cond0 == "进", cond2 == "进"]) if cond1 == "出" else True),
+            and (
+                all([cond1 == "input", cond2 == "input"]) if cond0 == "output" else True
+            ),
             (
+                "热输入接口",
                 "热输出接口",
                 "电接口",
-                "热输入接口",
             ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 == "进", cond1 == "进"]) if cond2 == "出" else True
+                all([cond1 == "input", cond2 == "input"]) if cond0 == "output" else True
             )
-            and (all([cond2 == "进", cond1 == "进"]) if cond0 == "出" else True),
+            and (
+                all([cond0 == "input", cond2 == "input"]) if cond1 == "output" else True
+            ),
             (
-                "热输出接口",
-                "冷输入接口",
-                "冷输出接口",
                 "热输入接口",
+                "冷输出接口",
+                "冷输入接口",
+                "热输出接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
                 sum(
                     [
-                        int(cond1 == "进"),
-                        int(cond3 == "进"),
-                        int(cond2 == "进"),
-                        int(cond0 == "进"),
+                        int(cond2 == "input"),
+                        int(cond0 == "input"),
+                        int(cond1 == "input"),
+                        int(cond3 == "input"),
                     ]
                 )
                 <= 1
@@ -1155,41 +1170,39 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             ("输出接口", "输入接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
-            and (sum([int(cond1 == "进"), int(cond0 == "进")]) <= 1)
+            and (all([cond1 == "input"]) if cond0 == "output" else True)
+            and (sum([int(cond1 == "input"), int(cond0 == "input")]) <= 1)
             and (
                 all(["冷" in it for it in [etype1, etype0]])
                 or all(["热" in it for it in [etype1, etype0]])
-            ),
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
-            ),
+            )
         }.items()
     },
     "复合水水换热器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("冷输入接口", "冷输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 == "进"]) if cond0 == "出" else True
+            ("冷输出接口", "冷输入接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond0 == "input"]) if cond1 == "output" else True
             )
-            and (all([cond0 == "进"]) if cond1 == "出" else True),
-            ("热输出接口", "热输入接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            and (all([cond1 == "input"]) if cond0 == "output" else True),
+            ("热输入接口", "热输出接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
-            and (all([cond1 == "进"]) if cond0 == "出" else True),
+            and (all([cond0 == "input"]) if cond1 == "output" else True),
             (
-                "热输出接口",
-                "冷输入接口",
-                "冷输出接口",
                 "热输入接口",
+                "冷输出接口",
+                "冷输入接口",
+                "热输出接口",
             ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
                 sum(
                     [
-                        int(cond1 == "进"),
-                        int(cond3 == "进"),
-                        int(cond2 == "进"),
-                        int(cond0 == "进"),
+                        int(cond2 == "input"),
+                        int(cond0 == "input"),
+                        int(cond1 == "input"),
+                        int(cond3 == "input"),
                     ]
                 )
                 <= 1
@@ -1199,15 +1212,15 @@ conjugate_port_verifier_constructor_lookup_table = {
     "气水换热器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 == "进"]) if cond1 == "出" else True
+            ("输出接口", "输入接口"): lambda cond0, cond1, etype0, etype1: (
+                all([cond1 == "input"]) if cond0 == "output" else True
             )
         }.items()
     },
 }
 
 
-def convert_topo_to_prolog_render_params_and_verification_params(topo: 拓扑图):
+def convert_topo_to_prolog_render_params_and_verification_params(topo):
     possibleEnergyTypes = set()
     possibleDeviceTypes = set()
 
@@ -1337,10 +1350,11 @@ with open(template_abs_path, "r") as f:
 
 def render_prolog_code(render_params):
     prolog_code = template_obj.render(**render_params)
+    logger_print("prolog code:", prolog_code)
     return prolog_code
 
 
-def dynamic_verify_topo_object(topo: 拓扑图):
+def dynamic_verify_topo_object(topo):
     (
         render_params,
         verification_params,
@@ -1354,11 +1368,14 @@ def dynamic_verify_topo_object(topo: 拓扑图):
 
     prolog_script_content = render_prolog_code(render_params)
 
+    adderNameToAdderPortNames = render_params["adderNameToAdderPortNames"]
+
     can_proceed = execute_prolog_script_and_check_if_can_proceed(
         prolog_script_content,
         adder_index_to_port_name,
         port_verifiers,
         conjugate_port_verifiers,
+        adderNameToAdderPortNames,
     )
 
     return can_proceed
@@ -1382,10 +1399,12 @@ import os
 import tempfile
 
 
-banner = lambda title: print(title.center(60, "-"))
+banner = lambda title: logger_print(title.center(60, "-"))
 
 
-def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_name):
+def query_result_from_prolog(
+    prolog_script_content: str, adder_index_to_port_name, adderNameToAdderPortNames
+):
     banner("querying")
     topology_status_dict = {}
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -1401,39 +1420,54 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
                         prolog_file_path,
                         prolog_thread,
                         adder_index_to_port_name,
+                        adderNameToAdderPortNames,
                     )
     return topology_status_dict
 
 
+import progressbar
+
+
 def query_prolog_in_context(
-    topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name
+    topology_status_dict,
+    prolog_file_path,
+    prolog_thread,
+    adder_index_to_port_name,
+    adderNameToAdderPortNames,
 ):
+    adder_name_list = []
+    adder_index_mapping = {}
+    for i, k in enumerate(adder_index_to_port_name.keys()):
+        adder_name_list.append("adder{}".format(str(k).replace("-", "_")))
+        adder_index_mapping[i] = k
+    adder_names = ", ".join(adder_name_list)
+    logger_print("adder_names: ", adder_names)
+    # breakpoint()
     prolog_thread.query(f'["{prolog_file_path}"].')
     result = prolog_thread.query(
-        "findall(STATUS, adder_port_status_list([adder1], STATUS), STATUS_LIST)"
+        f"findall(STATUS, adder_port_status_list([{adder_names}], STATUS), STATUS_LIST)"
     )
-    print(result)  # list, get first element
+    logger_print("parsing result")
     STATUS_LIST = result[0]["STATUS_LIST"]
-    for simutaneous_status in STATUS_LIST:
+
+    for simutaneous_status in progressbar.progressbar(STATUS_LIST):
         adder_status_dict = {}
         port_status_dict = {}
-        for adder_index, adder_simutaneous_status in enumerate(simutaneous_status):
+        for _index, adder_simutaneous_status in enumerate(simutaneous_status):
+            adder_index = adder_index_mapping[_index]
+            adder_name = "adder{}".format(str(adder_index).replace("-", "_"))
             adder_energy_type, adder_port_status = adder_simutaneous_status
             adder_status_dict[adder_index] = adder_energy_type
-            print(f"adder #{adder_index}")
-            print(f"\tenergy type: {adder_energy_type}")
-            print(f"\tport_status:")
             port_index_to_port_name = adder_index_to_port_name[adder_index]
-            for adder_port_index, port_status in enumerate(adder_port_status):
-                port_name = port_index_to_port_name[adder_port_index]
+            for _port_index, port_status in enumerate(adder_port_status):
+                port_name = adderNameToAdderPortNames[adder_name][_port_index]
                 port_status_dict[port_name] = port_status
-                print(f"\t\t{port_name}: {port_status}")
         key = frozendict(adder_status_dict)
         value = frozendict(port_status_dict)
         if key not in topology_status_dict.keys():
             topology_status_dict[key] = set()
         topology_status_dict[key].add(value)
-        print("-" * 60)
+    logger_print("result parsed")
     return topology_status_dict
 
 
@@ -1444,7 +1478,7 @@ def verify_topology_status_dict(
     adder_index_to_port_name,
 ):
     banner("unverified topo status")
-    rich.print(topology_status_dict)
+    logger_print(topology_status_dict)
     banner("verifying")
 
     verified_topology_status_dict = {}
@@ -1461,9 +1495,9 @@ def verify_topology_status_dict(
             for v_k, v_v in v.items()
         }
 
-        for topo_status_frames in topo_status:
+        for topo_status_frame in topo_status:
             for topo_status_frame_index, (port_name, port_status) in enumerate(
-                topo_status_frames.items()
+                topo_status_frame.items()
             ):
                 # breakpoint()
                 if port_name not in topo_status_frame_flatten.keys():
@@ -1475,7 +1509,8 @@ def verify_topology_status_dict(
                         conjugate_verifier,
                     ) in conjugate_port_verifiers.items():
                         conds = [
-                            port_status[port_name] for port_name in conjugate_ports
+                            topo_status_frame[port_name]
+                            for port_name in conjugate_ports
                         ]
                         energytypes = [
                             port_name_to_energy_type[port_name]
@@ -1492,7 +1527,7 @@ def verify_topology_status_dict(
                 if _conjugate_verified:
                     topo_status_frame_flatten[port_name].add(port_status)
                 else:
-                    print(
+                    logger_print(
                         f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
                     )
         for port_name, verifier in port_verifiers.items():
@@ -1500,29 +1535,31 @@ def verify_topology_status_dict(
             verified = verifier(conds)
             port_verified[port_name] = verified
             if not verified:
-                print(f"verifier failed for port '{port_name}'")
+                logger_print(f"verifier failed for port '{port_name}'")
 
         all_ports_verified = all(port_verified.values())
         all_conjugate_ports_verified = all(conjugate_port_verified.values())
         topo_verified = all_ports_verified and all_conjugate_ports_verified
 
         if not all_ports_verified:
-            print("not all port vaildations have passed")
+            logger_print("not all port vaildations have passed")
 
         if not all_conjugate_ports_verified:
-            print("not all conjugate port vaildations have passed")
+            logger_print("not all conjugate port vaildations have passed")
 
         if not topo_verified:
-            print(f"topo verification failed for topo status #{topo_status_index}")
+            logger_print(
+                f"topo verification failed for topo status #{topo_status_index}"
+            )
         else:
             if len(topo_status) > 0:
                 verified_topology_status_dict[adder_status] = topo_status
             else:
-                print("skipping due to empty topo status")
+                logger_print("skipping due to empty topo status")
         banner(f"processed topo status #{topo_status_index}")
 
     banner("verified topo status")
-    rich.print(verified_topology_status_dict)
+    logger_print(verified_topology_status_dict)
     return verified_topology_status_dict
 
 
@@ -1540,7 +1577,7 @@ def isomorphicTopologyStatusCombinator(topology_status_dict: dict):
 
 def check_if_can_proceed(verified_topology_status_dict):
     possible_adder_energy_type_set_counts = len(verified_topology_status_dict)
-    print(
+    logger_print(
         "possible adder energy type set counts:", possible_adder_energy_type_set_counts
     )
 
@@ -1548,22 +1585,23 @@ def check_if_can_proceed(verified_topology_status_dict):
         verified_topology_status_dict
     )
 
-    banner("isomorphic topo status")
-    rich.print(isomorphic_topo_status)
+    banner("isomorphic topo status (converted)")
+    for k, v in isomorphic_topo_status.items():
+        logger_print("key:", *[f"\t{str(e_k)}" for e_k in k], "value:", f"\t{v}")
     isomorphic_topo_status_counts = len(isomorphic_topo_status.keys())
-    print("isomorphic topo status counts:", isomorphic_topo_status_counts)
+    logger_print("isomorphic topo status counts:", isomorphic_topo_status_counts)
 
     can_proceed = False
     if isomorphic_topo_status_counts == 0:
-        print("no adder energy type set")
+        logger_print("no adder energy type set")
     elif isomorphic_topo_status_counts > 1:
-        print("multiple adder energy type sets found")
+        logger_print("multiple adder energy type sets found")
     else:
         can_proceed = True
     if not can_proceed:
-        print("cannot proceed")
+        logger_print("cannot proceed")
     else:
-        print("clear to proceed")
+        logger_print("clear to proceed")
     return can_proceed
 
 
@@ -1572,9 +1610,10 @@ def execute_prolog_script_and_check_if_can_proceed(
     adder_index_to_port_name,
     port_verifiers,
     conjugate_port_verifiers,
+    adderNameToAdderPortNames,
 ):
     topology_status_dict = query_result_from_prolog(
-        prolog_script_content, adder_index_to_port_name
+        prolog_script_content, adder_index_to_port_name, adderNameToAdderPortNames
     )
     verified_topology_status_dict = verify_topology_status_dict(
         topology_status_dict,

@@ -12,7 +12,7 @@ from log_utils import logger_print
 # output: multiple diagnostics
 # from pyomo.environ import *
 from pyomo_environ import *
-from ies_optim import ModelWrapper
+# from ies_optim import ModelWrapper
 from contextlib import contextmanager
 
 import flashtext
@@ -122,7 +122,7 @@ class CheckSolverReturnValResult(BaseModel):
 
 
 # deprecated.
-# def buildWordCounterFromModelWrapper(mw: ModelWrapper):
+# def buildWordCounterFromModelWrapper(mw):
 #     keyword_processor = flashtext.KeywordProcessor()
 #     for varName in mw.varNameToSubmodelName.keys():
 #         keyword_processor.add_keyword(varName)
@@ -279,7 +279,7 @@ def translateFileUsingSymbolMap(filepath: str, symbolMap: SymbolMap):
 def solve_with_translated_log_and_statistics(
     model: ConcreteModel, solver, log_directory, label
 ):
-    # def solve_with_translated_log_and_statistics(modelWrapper: ModelWrapper, solver, log_directory, label):
+    # def solve_with_translated_log_and_statistics(modelWrapper, solver, log_directory, label):
     # model = modelWrapper.model
     label = label.strip()
     assert " " not in label
@@ -349,7 +349,7 @@ def getValueListFromValueDict(valueDict: Dict[str, float]):
 
 def sortAndDisplayVarValues(
     valueList: List[Tuple[str, float]],
-    mw: ModelWrapper,
+    mw,
     banner: str,
     head_count=10,
     reverse=False,
@@ -378,7 +378,7 @@ def sortAndDisplayVarValues(
 def sortAndDisplayVarValuesAndTermValues(
     varNameToVarValue: Dict[str, float],
     varNameToTermValue: Dict[str, float],
-    mw: ModelWrapper,
+    mw,
     submodelName: str = "",
 ):
     BANNER_VARNAME_TO_VAR_VALUE = (
@@ -432,7 +432,7 @@ def selectiveSortVarNames(
 
 
 def cplex_refine_model_and_display_info(
-    mw: ModelWrapper,
+    mw,
     lp_filepath,
     log_dir,
     smap,
@@ -508,7 +508,7 @@ def groupBySubModelRelatedTranslationTable(
     varNameToTermValue: Dict[str, float],
     translationTable: Dict[str, List[str]],
     label: str,
-    mw: ModelWrapper,
+    mw,
 ):
     logger_print(f"grouping by submodel {label}:")
 
@@ -524,7 +524,7 @@ def decomposeAndAnalyzeObjectiveExpression(
     obj_expr,
     submodelNameToVarNames: Dict[str, List[str]],
     submodelClassNameToVarNames: Dict[str, List[str]],
-    mw: ModelWrapper,
+    mw,
 ):
     decomposedResult = decomposeExpression(obj_expr)
     if decomposedResult:
@@ -628,7 +628,7 @@ from violation_utils import modelScannerContext
 
 
 def solve_decompose_and_scan(
-    modelWrapper: ModelWrapper, solver, log_directory, banner, decompose=False
+    modelWrapper, solver, log_directory, banner, decompose=False
 ):
     cplex_log_dir = os.path.join(log_directory, f"{banner}_cplex_log")
     os.mkdir(cplex_log_dir)
@@ -666,7 +666,7 @@ import random
 
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
-    modelWrapper: ModelWrapper,
+    modelWrapper,
     # obj,
     # obj_expr,
     solver,

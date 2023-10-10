@@ -2684,13 +2684,13 @@ class 设备节点基类(节点基类):
     type: Literal['设备']
     ports:Dict[{{normal_str}},设备接口映射] = Field(title = "设备接口映射", description = "描述设备所对应接口的类型和接口ID")
 
-deviceSubtypeAlias = dict(变流器=["单向变流器"])
+deviceSubtypeAlias = dict(变流器=["单向变流器"], 变压器='双向变压器')
 {# deviceSubtypeAlias = dict(变流器=["单向变流器"], 锂电池=['蓄热设备','蓄冷设备','蓄冰设备']) #}
 DSAToDS = {e:k for k, v in deviceSubtypeAlias.items() for e in v}
 {# {% set deviceSubtypeAlias = dict(变流器=["单向变流器"]) %} #}
 {% set deviceNodeClasses = [] %}
 {% for infoClass in infoClassList %}
-    {% set deviceName = infoClass.strip("信息")%}
+    {% set deviceName = infoClass.strip("信息") %}
     {% set deviceNodeClassName = deviceName+"节点" %}
     {% do deviceNodeClasses.append(deviceNodeClassName) %}
 class {{deviceNodeClassName}}(设备节点基类):
@@ -2789,12 +2789,16 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     for adder_index, adder in adders.items():
         with failsafe_suppress_exception():
             input_indexs, output_indexs, io_indexs = adder['input'], adder['output'], adder['IO']
+            logger_print(f'adder #{adder_index}:', adder)
 
             # fill in missing params
             with failsafe_suppress_exception():
                 if len(input_indexs) >= 1:
-                    if G.nodes[input_indexs[0]]['subtype'] == "柴油输出":
-                        assert len(input_indexs) == 1, "柴油元件只能一对多连接"
+                    first_port_info = G.nodes[input_indexs[0]]
+                    if first_port_info['port_name'] == "燃料接口":
+                    {# if G.nodes[input_indexs[0]]['subtype'] == "柴油输出": #}
+                        assert len(input_indexs) == 1, "燃料元件只能一对多连接"
+                        {# assert len(input_indexs) == 1, "柴油元件只能一对多连接" #}
                         diesel_node_id = G.nodes[input_indexs[0]]['device_id']
                         {# 热值 = devInstDict[diesel_node_id].设备信息.热值 #}
                         热值 = devInstDict[diesel_node_id].热值
