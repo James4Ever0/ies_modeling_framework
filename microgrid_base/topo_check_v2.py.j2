@@ -287,14 +287,16 @@ class 拓扑图:
     def check_consistency(self):
         self._check_consistency()
         verified = False
+        isomorphic_topo_status = None
         if ies_env.DYNAMIC_TYPE_VERIFICATION:
-            verified = dynamic_verify_topo_object(self)
-        else:
+            verified, isomorphic_topo_status = dynamic_verify_topo_object(self)
+        else:,
             logger_print("skipping dynamic verification")
             verified = True
         if not verified:
             raise Exception("Dynamical verification failed.")
         self.is_valid = True
+        return verified, isomorphic_topo_status
 
     def to_json(self) -> dict:
         data = json_graph.node_link_data(self.G)

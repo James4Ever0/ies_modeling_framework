@@ -1,5 +1,5 @@
 
-:- use_module(library(clpfd)).
+% :- use_module(library(clpfd)).
 
 port(光伏发电_0_电接口).
 port(光伏发电_2_电接口).

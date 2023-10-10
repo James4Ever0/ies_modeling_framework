@@ -88,7 +88,7 @@ RELEASE_ARCHIVE = release.7z
 
 EXPORT_FORMAT_CODE = export_format_validate.py export_format_units.py
 
-MODEL_CODE = topo_check.py topo_check_v2.py ies_optim.py ${EXPORT_FORMAT_CODE}
+MODEL_CODE = topo_check.py topo_check_v2.py ies_optim.py prolog_gen.pro.j2 ${EXPORT_FORMAT_CODE}
 
 # use $(wildcard <pattern>) to precompute the pattern.
 

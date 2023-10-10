@@ -291,6 +291,7 @@ def isomorphicTopologyStatusCombinator(topology_status_dict: dict):
 
 
 def check_if_can_proceed(verified_topology_status_dict):
+    isomorphic_topo_status = None
     possible_adder_energy_type_set_counts = len(verified_topology_status_dict)
     print(
         "possible adder energy type set counts:", possible_adder_energy_type_set_counts
@@ -316,7 +317,7 @@ def check_if_can_proceed(verified_topology_status_dict):
         print("cannot proceed")
     else:
         print("clear to proceed")
-    return can_proceed
+    return can_proceed, isomorphic_topo_status
 
 
 def execute_prolog_script_and_check_if_can_proceed(
@@ -334,8 +335,8 @@ def execute_prolog_script_and_check_if_can_proceed(
         conjugate_port_verifiers,
         adder_index_to_port_name,
     )
-    can_proceed = check_if_can_proceed(verified_topology_status_dict)
-    return can_proceed
+    can_proceed, isomorphic_topo_status = check_if_can_proceed(verified_topology_status_dict)
+    return can_proceed, isomorphic_topo_status
 
 
 if __name__ == "__main__":
@@ -354,9 +355,16 @@ if __name__ == "__main__":
     # {tuple_of_port_names: lambda cond1, cond2, etype1, etype2: ...}
     conjugate_port_verifiers = {}
 
-    execute_prolog_script_and_check_if_can_proceed(
+    can_proceed, isomorphic_topo_status = execute_prolog_script_and_check_if_can_proceed(
         prolog_script_content,
         adder_index_to_port_name,
         port_verifiers,
         conjugate_port_verifiers,
     )
+
+    output_fpath = "isomorphic_topo_status.pkl"
+    if can_proceed:
+        print('write data to:', output_fpath)
+        import pickle
+        with open(output_fpath, 'wb') as f:
+            pickle.dump(isomorphic_topo_status, f)
