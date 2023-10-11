@@ -172,6 +172,8 @@ def solve_model(
 ):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
+    transformDisjunctiveModel(mw.model) # right before solving
+
     solved = False
     with SolverFactory(Solver.cplex) as solver:
         # try:

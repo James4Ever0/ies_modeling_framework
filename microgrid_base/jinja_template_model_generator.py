@@ -17,8 +17,12 @@ topo_code_v2_output_path, topo_code_v2_template_path = code_and_template_path(
     "topo_check_v2"
 )
 
+# ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
+#     "ies_optim"
+# )
+
 ies_optim_code_output_path, ies_optim_code_template_path = code_and_template_path(
-    "ies_optim"
+    "ies_optim_legacy"
 )
 
 MAKEFILE = dict(

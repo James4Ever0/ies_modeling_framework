@@ -4,15 +4,15 @@ from pyomo.gdp import *
 # Create a concrete model
 m = model =  ConcreteModel()
 
-# m.x1 = Var(within=Integers, bounds=(-10,10))
-# m.x2 = Var(within=Integers, bounds=(-10,10))
-# m.x3 = Var(within=Integers, bounds=(-10,10))
-# m.x4 = Var(within=Integers, bounds=(-10,10))
+m.x1 = Var(within=Integers, bounds=(-10,10))
+m.x2 = Var(within=Integers, bounds=(-10,10))
+m.x3 = Var(within=Integers, bounds=(-10,10))
+m.x4 = Var(within=Integers, bounds=(-10,10))
 
-m.x1 = Var(within=Integers)
-m.x2 = Var(within=Integers)
-m.x3 = Var(within=Integers)
-m.x4 = Var(within=Integers)
+# m.x1 = Var(within=Integers)
+# m.x2 = Var(within=Integers)
+# m.x3 = Var(within=Integers)
+# m.x4 = Var(within=Integers)
 
 m.unit1 = Disjunct()
 m.unit1.inout = Constraint(expr=2*m.x2 - 2 == m.x1)
@@ -28,8 +28,8 @@ m.use_unit1or2 = Disjunction(expr=[m.unit1, m.unit2])
 
 # Set the objective
 # model.obj = Objective(expr=model.x[4]+model[1]+model.x[2]+model.x[3])
-model.obj = Objective(expr=0, sense=minimize)
-# model.obj = Objective(expr=m.x1+m.x2+m.x3+m.x4, sense=minimize)
+# model.obj = Objective(expr=0, sense=minimize)
+model.obj = Objective(expr=m.x1+m.x2+m.x3+m.x4, sense=minimize)
 # model.obj = Objective(expr=quicksum(model.x), sense=minimize)
 # Solve the problem
 # apply to logical constraints, not gdp!

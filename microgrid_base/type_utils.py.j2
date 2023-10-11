@@ -157,7 +157,7 @@ def dynamic_verify_topo_object(topo):
 
     adderNameToAdderPortNames = render_params["adderNameToAdderPortNames"]
 
-    can_proceed, isomorphic_topo_status = execute_prolog_script_and_check_if_can_proceed(prolog_script_content, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames), isomorphic_topo_status
+    can_proceed, isomorphic_topo_status = execute_prolog_script_and_check_if_can_proceed(prolog_script_content, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames)
 
     return can_proceed, isomorphic_topo_status
 

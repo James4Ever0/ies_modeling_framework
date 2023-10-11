@@ -290,7 +290,7 @@ class 拓扑图:
         isomorphic_topo_status = None
         if ies_env.DYNAMIC_TYPE_VERIFICATION:
             verified, isomorphic_topo_status = dynamic_verify_topo_object(self)
-        else:,
+        else:
             logger_print("skipping dynamic verification")
             verified = True
         if not verified:

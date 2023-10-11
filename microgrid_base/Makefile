@@ -88,7 +88,7 @@ RELEASE_ARCHIVE = release.7z
 
 EXPORT_FORMAT_CODE = export_format_validate.py export_format_units.py
 
-MODEL_CODE = topo_check.py topo_check_v2.py ies_optim.py prolog_gen.pro.j2 ${EXPORT_FORMAT_CODE}
+MODEL_CODE = topo_check.py topo_check_v2.py ies_optim.py ies_optim_legacy.py prolog_gen.pro.j2 ${EXPORT_FORMAT_CODE}
 
 # use $(wildcard <pattern>) to precompute the pattern.
 
@@ -210,7 +210,7 @@ templates: output_template.json template_input.json
 ################ IMPLEMENTATION ################
 
 # topo_check.py ies_optim.py: topo_check.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
-topo_check_v2.py ies_optim.py: topo_check_v2.py.j2 ies_optim.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
+topo_check_v2.py ies_optim_legacy.py: topo_check_v2.py.j2 ies_optim_legacy.py.j2 jinja_template_model_generator.py jinja_utils.py param_base.py unit_utils.py ${UNIT_DEFINITIONS} ${PARAM_BASE_REQUIREMENTS}
 	${PYTHON} jinja_template_model_generator.py
 
 # pyright_regex_check:
@@ -241,6 +241,9 @@ passwords.py: passwords_template.py
 
 test_output_full_mock.json: test_output_full.json
 	cp test_output_full.json test_output_full_mock.json
+
+type_utils.py: type_utils.py.j2 render_type_utils.py ${TYPE_UTILS_RESOURCE_JSON}
+	${PYTHON} render_type_utils.py
 
 test_output_full_mock_reduced.json: test_output_full_mock.json reduce_demo_data_size.py json_utils.py
 	${PYTHON} reduce_demo_data_size.py
