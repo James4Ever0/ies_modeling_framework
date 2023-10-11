@@ -13,7 +13,7 @@
 
 fpath = "isomorphic_topo_status.pkl"
 
-# 1. miniature system check
+# 1. miniature system check (skipped)
 #   cplex
 
 # 2. time sliced system check
@@ -21,6 +21,8 @@ fpath = "isomorphic_topo_status.pkl"
 
 # 3. build and solve the model
 #   cplex
+
+# if the final solution has failed, we will perform feasopt to check which case is unsatisfiable, which case is missing and which case does not exist in existing state set.
 
 # to ensure solveability, we elimitate the initial soc limit of lithium battery model. 
 # for some model, only output port ranges will be acquired, like load, PV, lithium battery and diesel generator
