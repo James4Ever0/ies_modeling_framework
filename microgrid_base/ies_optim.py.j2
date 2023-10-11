@@ -496,7 +496,7 @@ class Direction(StrEnum):
     Directed = auto()
     Bidirectional = auto()
 
-{% set NonLoadDeviceDict = {}%}
+{% set NonLoadDeviceDict = {} %}
 
 {# 不是标准单位 #}
 {% set gasEmissionUnit = "kg/L" %}
@@ -659,14 +659,14 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
     unitPlanningAlgorithmSelection: 油耗规划算法=Field(default =油耗规划算法.平均 ,title="机组规划算法选择", description="平均/最佳")
     {# 平均负载率: (如果是平均油耗规划算法，需要填写，否则默认为空） #}
     averageLoadRate : confloat(ge=0, le=100) = Field(default =0, title="平均负载率", description="单位：percent")
-            {% elif class_name in ['变压器']%}
+            {% elif class_name in ['变压器'] %}
     direction: Direction = Field(default= Direction.Directed, title = "单双向模式",description="默认为单向")
-        {% endif%} 
-        {% set visited_fields = []%}
+        {% endif %} 
+        {% set visited_fields = [] %}
         {% for psc, mstr in mstrs %}
-            {%if mstr not in deviceIdentifiers%}
-                {% if mstr not in visited_fields%}
-                    {% do visited_fields.append(mstr)%}
+            {%if mstr not in deviceIdentifiers %}
+                {% if mstr not in visited_fields %}
+                    {% do visited_fields.append(mstr) %}
     {{ mstr }}: {{normal_str}} = Field(title = "{{mstr}}")
                 {% endif%}
 

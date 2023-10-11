@@ -3,10 +3,15 @@
 :- use_module(library(clpr)).
 
 % need separation.
-% Y < -1 instead of Y<-1
+% Y < -1 instead of Y < -1
+
+% {X => 0, X =< 1}, minimize(X).
+% do not use strict inequalities.
+% replace("=>", ">=").replace("<=", "=<")
+% {Y >= 0, Y =< 1.5}, {(Y >= 0.5, Y =< 1, X = 0.5 + Y; Y >= 1, X = 2*Y ; Y =< 0.5, X = 0.5 - Y)} , {X >= 1}, minimize(X).
 
 solve(X) :- 
-    {Y > 0, Y < 1.5}, {(Y > 0.5, Y =< 1, X = 0.5 + Y; Y>1, X = 2*Y ; Y =< 0.5, X = 0.5 - Y)} , {X>1}.
+    {Y >= 0, Y =< 1.5}, {(Y >= 0.5, Y =< 1, X = 0.5 + Y; Y >= 1, X = 2*Y ; Y =< 0.5, X = 0.5 - Y)} , {X >= 1}.
 
 solve_false(X) :-
     {X > 0, X < -1}.

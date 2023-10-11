@@ -3,6 +3,7 @@ from log_utils import logger_print
 from config import ies_env
 from contextlib import contextmanager
 from log_utils import logger_traceback
+
 # from ies_optim import *
 from enum import auto, IntEnum
 from debug_utils import ExportedModel, modelSolvedTestContext
@@ -127,8 +128,10 @@ def cplex_exec_script(script: List[str], logfile: str, timeout: float):
     check_script_is_not_empty(script)
     return solver_exec_script(Solver.cplex, ["-c", *script], logfile, timeout)
 
+
 def check_script_is_not_empty(script):
-    assert len(script)>0, "no script to execute"
+    assert len(script) > 0, "no script to execute"
+
 
 def scip_exec_script(script: List[str], logfile: str, timeout: float):
     check_script_is_not_empty(script)
@@ -136,22 +139,32 @@ def scip_exec_script(script: List[str], logfile: str, timeout: float):
     for s in script:
         args.append("-c")
         args.append(s)
-    return  solver_exec_script(Solver.scip, args, logfile, timeout)
+    return solver_exec_script(Solver.scip, args, logfile, timeout)
 
-SCIP_NOT_SOLVED_KW="no solution available" 
+
+SCIP_NOT_SOLVED_KW = "no solution available"
 SCIP_SOLVED_KW = "objective value"
-def check_scip_if_solved(first_two_lines:list[str]):
+
+
+def check_scip_if_solved(first_two_lines: list[str]):
     _c = "\n".join(first_two_lines)
     if SCIP_SOLVED_KW in _c:
         return True
     elif SCIP_NOT_SOLVED_KW in _c:
         return False
     else:
-        raise Exception(f"Unknown scip solution conditon. Is it a scip solution file?\nFirst two lines:\n{_c}")
+        raise Exception(
+            f"Unknown scip solution conditon. Is it a scip solution file?\nFirst two lines:\n{_c}"
+        )
+
+
 import re
+
 REGEX_FIND_NON_BLANK_SEGMENTS = re.compile(r"[^ \t]+")
 TWO = 2
-def parse_scip_solution_content(content:str):
+
+
+def parse_scip_solution_content(content: str):
     lines = content.strip().split("\n")
     first_two_lines = lines[:TWO]
     solution_lines = lines[TWO:]
@@ -160,13 +173,13 @@ def parse_scip_solution_content(content:str):
     if solved:
         for line in solution_lines:
             line = line.strip()
-            if len(line)>0:
+            if len(line) > 0:
                 candidates = REGEX_FIND_NON_BLANK_SEGMENTS.findall(line)
-                if len(candidates)>=TWO:
+                if len(candidates) >= TWO:
                     try:
                         varname, value_str = candidates[:TWO]
                         varname = varname.strip()
-                        if len(varname)>0:
+                        if len(varname) > 0:
                             value = float(value_str)
                             solution[varname] = value
                     except TypeError:
@@ -174,6 +187,7 @@ def parse_scip_solution_content(content:str):
                     except Exception as e:
                         raise e
     return solution
+
 
 @contextmanager
 def chdir_context(dirpath: str):
@@ -210,11 +224,12 @@ FEASOPT_TIMELIMIT = 30
 CPLEX_SEC_TO_TICK = 290
 from bs4 import BeautifulSoup
 
-def load_scip_sol_file(sol_file:str):
+
+def load_scip_sol_file(sol_file: str):
     return solution_loader(sol_file, parse_scip_solution_content)
 
+
 def parse_cplex_solution_content(content):
-    
     # 'xml' is the parser used. For html files, which BeautifulSoup is typically used for, it would be 'html.parser'.
     soup = BeautifulSoup(content, "xml")
     data = {}
@@ -224,17 +239,21 @@ def parse_cplex_solution_content(content):
         data[name] = value
     return data
 
-def solution_loader(sol_file:str, parser):
-    
+
+def solution_loader(sol_file: str, parser):
     with open(sol_file, "r") as f:
         content = f.read()
         data = parser(content)
         return data
 
+
 def load_cplex_sol_file(sol_file: str):
     return solution_loader(sol_file, parse_cplex_solution_content)
 
-def invoke_solver_with_custom_config_and_solution_parser(mw, logfile:str, timelimit:int, script_generator, script_executor, solution_parser):
+
+def invoke_solver_with_custom_config_and_solution_parser(
+    mw, logfile: str, timelimit: int, script_generator, script_executor, solution_parser
+):
     solved = False
     # TODO: logging
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -247,9 +266,7 @@ def invoke_solver_with_custom_config_and_solution_parser(mw, logfile:str, timeli
 
                 script = script_generator(lp_path, sol_path)
 
-                script_executor(
-                    script, logfile, timelimit
-                )
+                script_executor(script, logfile, timelimit)
                 if os.path.exists(sol_path):
                     # TODO: parse and assign value from solution
                     solution = solution_parser(sol_path)
@@ -265,7 +282,10 @@ def invoke_solver_with_custom_config_and_solution_parser(mw, logfile:str, timeli
                 # breakpoint()
     return solved
 
-def feasopt_script_generator(lp_path:str, sol_path:str, mode:FeasoptMode, solutionCount:int):
+
+def feasopt_script_generator(
+    lp_path: str, sol_path: str, mode: FeasoptMode, solutionCount: int
+):
     cplex_config = [
         f"timelimit {FEASOPT_TIMELIMIT}"
         if not ies_env.DETERMINISTIC_FAILSAFE
@@ -284,10 +304,21 @@ def feasopt_script_generator(lp_path:str, sol_path:str, mode:FeasoptMode, soluti
     ]
     return script
 
+
 from functools import partial
-def feasopt(mw, mode: FeasoptMode, logfile: str, solutionCount:int=1):
-    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT + 10, partial(feasopt_script_generator, mode=mode, solutionCount=solutionCount), cplex_exec_script,load_cplex_sol_file)
+
+
+def feasopt(mw, mode: FeasoptMode, logfile: str, solutionCount: int = 1):
+    solved = invoke_solver_with_custom_config_and_solution_parser(
+        mw,
+        logfile,
+        FEASOPT_TIMELIMIT + 10,
+        partial(feasopt_script_generator, mode=mode, solutionCount=solutionCount),
+        cplex_exec_script,
+        load_cplex_sol_file,
+    )
     return solved
+
 
 @failsafe_methods.register
 def feasopt_with_optimization(mw, logdir: str):
@@ -300,11 +331,12 @@ def feasopt_only(mw, logdir: str):
     logfile = os.path.join(logdir, "cplex_feasopt_only_failsafe.log")
     return feasopt(mw, FeasoptMode.minimum_sum_relaxation, logfile), logfile
 
-def scip_minuc_script_generator(lp_path:str, sol_path:str, solutionCount:int = 1):
+
+def scip_minuc_script_generator(lp_path: str, sol_path: str, solutionCount: int = 1):
     scip_config = [
-                    f"limits time {FEASOPT_TIMELIMIT}",
-                    f"limits solutions {solutionCount}",
-                    f"limits maxsol {solutionCount}",
+        f"limits time {FEASOPT_TIMELIMIT}",
+        f"limits solutions {solutionCount}",
+        f"limits maxsol {solutionCount}",
     ]
     if ies_env.DETERMINISTIC_FAILSAFE:
         scip_config.append(f"random lpseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
@@ -320,11 +352,20 @@ def scip_minuc_script_generator(lp_path:str, sol_path:str, solutionCount:int = 1
     ]
     return script
 
+
 @failsafe_methods.register
-def scip_minuc(mw, logdir:str):
+def scip_minuc(mw, logdir: str):
     logfile = os.path.join(logdir, "scip_minuc.log")
-    solved = invoke_solver_with_custom_config_and_solution_parser(mw, logfile, FEASOPT_TIMELIMIT*3, scip_minuc_script_generator, scip_exec_script,load_scip_sol_file)
+    solved = invoke_solver_with_custom_config_and_solution_parser(
+        mw,
+        logfile,
+        FEASOPT_TIMELIMIT * 3,
+        scip_minuc_script_generator,
+        scip_exec_script,
+        load_scip_sol_file,
+    )
     return solved, logfile
+
 
 IPOPT_MAX_ITERATION = 1000
 IPOPT_TIMELIMIT = 30
@@ -385,7 +426,7 @@ def ipopt_solve(mw, logfile, solver, check_solved):
 def random_value_assignment(mw, logdir: str):
     rng = lambda: random.uniform(-100, 100)
     for v in mw.model.component_data_objects(ctype=Var):
-        v.set_value(rng(), skip_validation=True) # suppress W1001
+        v.set_value(rng(), skip_validation=True)  # suppress W1001
         # ref: https://pyomo.readthedocs.io/en/stable/errors.html#W1001
     return (
         True,
