@@ -308,92 +308,107 @@ class 设备ID(BaseModel):
 
 
 class 柴油ID(设备ID):
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输出")
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 输出")
     """
-    类型: 柴油输出
+    类型: 输出
     """
 
 
 class 电负荷ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 负荷电输入")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入")
     """
-    类型: 负荷电输入
+    类型: 输入
     """
 
 
 class 光伏发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输出")
     """
-    类型: 供电端输出
+    类型: 输出
     """
 
 
 class 风力发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输出")
     """
-    类型: 供电端输出
+    类型: 输出
     """
 
 
 class 柴油发电ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 供电端输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输出")
     """
-    类型: 供电端输出
+    类型: 输出
     """
-    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 柴油输入")
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 输入")
     """
-    类型: 柴油输入
+    类型: 输入
     """
 
 
 class 锂电池ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 电储能端输入输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入输出")
     """
-    类型: 电储能端输入输出
+    类型: 输入输出
     """
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
-    类型: 电母线输入
+    类型: 输出
     """
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 变压器输出")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
-    类型: 变压器输出
+    类型: 输入
     """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
-    类型: 电母线输出
+    类型: 输出
     """
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 变流器输入")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
-    类型: 变流器输入
+    类型: 输入
     """
 
 
 class 双向变流器ID(设备ID):
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 双向变流器线路端输入输出")
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 输入输出")
     """
-    类型: 双向变流器线路端输入输出
+    类型: 输入输出
     """
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 双向变流器储能端输入输出")
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 输入输出")
     """
-    类型: 双向变流器储能端输入输出
+    类型: 输入输出
     """
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 电母线输入")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
     """
-    类型: 电母线输入
+    类型: 输入输出
     """
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 电母线输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
     """
-    类型: 电母线输出
+    类型: 输入输出
+    """
+
+
+class 电解槽ID(设备ID):
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入")
+    """
+    类型: 输入
+    """
+    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
+    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
     """
 
 
@@ -1639,6 +1654,163 @@ class 传输线信息(设备信息):
     """
 
 
+class 电解槽信息(设备信息):
+    StartupCountLimit: Optional[int] = Field(
+        default=None, title="启动次数限制", description="默认为null"
+    )
+    LHV_Hydrogen: float = Field(default=33.3, title="氢气热值", description="单位:  kWh/kg")
+    """
+    单位: kWh/kg
+    """
+
+    RatedInputPower: confloat(ge=0) = Field(
+        title="额定输入功率", description="名称: 额定输入功率\n单位: kW"
+    )
+    """
+    名称: 额定输入功率
+    单位: kW
+    """
+
+    HydrogenGenerationStartupRate: confloat(ge=0) = Field(
+        title="制氢启动功率比值", description="名称: 制氢启动功率比值\n单位: percent"
+    )
+    """
+    名称: 制氢启动功率比值
+    单位: percent
+    """
+
+    @validator("HydrogenGenerationStartupRate")
+    def validate_HydrogenGenerationStartupRate_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "HydrogenGenerationStartupRate"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
+    HydrogenGenerationEfficiency: confloat(ge=0) = Field(
+        title="制氢效率", description="名称: 制氢效率\n单位: percent"
+    )
+    """
+    名称: 制氢效率
+    单位: percent
+    """
+
+    @validator("HydrogenGenerationEfficiency")
+    def validate_HydrogenGenerationEfficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "HydrogenGenerationEfficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
+    DeltaLimit: confloat(ge=0) = Field(
+        title="爬坡率", description="名称: 爬坡率\n单位: percent/s"
+    )
+    """
+    名称: 爬坡率
+    单位: percent/s
+    """
+
+    HeatRecycleEfficiency: confloat(ge=0) = Field(
+        title="热量回收效率", description="名称: 热量回收效率\n单位: percent"
+    )
+    """
+    名称: 热量回收效率
+    单位: percent
+    """
+
+    @validator("HeatRecycleEfficiency")
+    def validate_HeatRecycleEfficiency_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "HeatRecycleEfficiency"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
+    CostPerMachine: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/台"
+    )
+    """
+    名称: 采购成本
+    单位: 万元/台
+    """
+
+    CostPerYearPerMachine: confloat(ge=0) = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(台*年)"
+    )
+    """
+    名称: 固定维护成本
+    单位: 万元/(台*年)
+    """
+
+    VariationalCostPerWork: confloat(ge=0) = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
+    """
+    名称: 可变维护成本
+    单位: 元/kWh
+    """
+
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    """
+    名称: 设计寿命
+    单位: 年
+    """
+
+    BuildCostPerMachine: confloat(ge=0) = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/台"
+    )
+    """
+    名称: 建设费用系数
+    单位: 万元/台
+    """
+
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
+    """
+    名称: 建设费用基数
+    单位: 万元
+    """
+
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
+    """
+    名称: 最大安装台数
+    单位: 台
+    """
+
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
+    """
+    名称: 最小安装台数
+    单位: 台
+    """
+
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    """
+    名称: 安装台数
+    单位: 台
+    """
+
+
 ####################
 # model definition #
 ####################
@@ -1806,12 +1978,20 @@ class ModelWrapper:
         self.clock[key] = val + 1
         return name
 
-    def Constraint(self, *args, **kwargs):
-        expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
-        if expr is None:
-            logger_print("ARGS:", args)
-            logger_print("KWARGS:", kwargs)
-            raise Exception("Not passing expression to method 'Constraint'")
+    def Disjunct(self, expression_disjunct: list):
+        assert isinstance(expression_disjunct, list)
+        name = self.getSpecialName("DJ")
+        DJ = Disjunct()
+        for i, expr in enumerate(expression_disjunct):
+            expr_name = f"expr_{i}"
+            self.checkExpressionPolynomialDegree(expr, f"Disjunct_Expression_{i}")
+            cons = Constraint(expr=expr)
+            DJ.__setattr(expr_name, cons)
+        self.model.__setattr__(name, DJ)
+        return DJ
+
+    @staticmethod
+    def checkExpressionPolynomialDegree(expr, caller):
         deg = getattr(expr, "polynomial_degree", 0)
         if deg:
             deg = expr.polynomial_degree()
@@ -1823,8 +2003,26 @@ class ModelWrapper:
             if deg > 0:
                 # TODO: use regex to simplify expression here.
                 examineSubExprDegree(expr)
-            error_msg = f"[Constraint] Unacceptable polynomial degree for expression."
+            error_msg = f"[{caller}] Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
+
+    def DisjunctiveConstraints(self, expression_disjunct_list: list[list]):
+        assert isinstance(expression_disjunct_list)
+        DJL = []
+        for expression_disjunct in expression_disjunct_list:
+            DJ = self.Disjunct(expression_disjunct)
+            DJL.append(DJ)
+        name = self.getSpecialName("DJV")
+        DJV = Disjunction(expr=DJL)
+        return DJV
+
+    def Constraint(self, *args, **kwargs):
+        expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
+        if expr is None:
+            logger_print("ARGS:", args)
+            logger_print("KWARGS:", kwargs)
+            raise Exception("Not passing expression to method 'Constraint'")
+        self.checkExpressionPolynomialDegree(expr, caller="Constraint")
         name = self.getSpecialName("CON")
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
@@ -1875,19 +2073,7 @@ class ModelWrapper:
             logger_print("ARGS:", args)
             logger_print("KWARGS:", kwargs)
             raise Exception("Not passing expression to method 'Objective'")
-        deg = getattr(expr, "polynomial_degree", 0)
-        if deg:
-            deg = expr.polynomial_degree()
-        if deg != 1:
-            logger_print("EXPR DEG:", deg)
-            expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
-            logger_print("EXPR:", expr_repr)
-            # only if deg > 0 we need further inspection.
-            if deg > 0:
-                # TODO: use regex to simplify expression here.
-                examineSubExprDegree(expr)
-            error_msg = f"[Objective] Unacceptable polynomial degree for expression."
-            raise Exception(error_msg)
+        self.checkExpressionPolynomialDegree(expr, caller="Objective")
         name = self.getSpecialName("OBJ")
         if "initialize" in kwargs.keys():
             del kwargs["initialize"]
@@ -2135,30 +2321,59 @@ class 设备模型:
         var = self.mw.Var(self.getVarName(varName), self.getRange(mrange), **kwargs)
         return var
 
+    def DisjunctiveRangeConstraint(
+        self, var_1, var_2, expression=..., mrange: range = None
+    ):
+        assert expression is not ...
+        for i in self.getRange(mrange):
+            self.mw.DisjunctiveConstraints(expression(var_1[i], var_2[i]))
+
+    def DisjunctiveRangeConstraintMulti(
+        self, *vars, expression=..., mrange: range = None
+    ):
+        assert expression is not ...
+        for i in self.getRange(mrange):
+            self.mw.DisjunctiveConstraints(expression(*[var[i] for var in vars]))
+
     def RangeConstraint(self, var_1, var_2, expression=..., mrange: range = None):
-        assert expression != ...
+        assert expression is not ...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(var_1[i], var_2[i]))
 
-    def RangeConstraintMulti(
-        self, *vars, expression=..., mrange: range = None
-    ):  # keyword argument now.
+    def RangeConstraintMulti(self, *vars, expression=..., mrange: range = None):
         assert expression is not ...
         for i in self.getRange(mrange):
             self.mw.Constraint(expression(*[var[i] for var in vars]))
 
-    def CustomRangeConstraint(
-        self, var_1, var_2, customRange: range = ..., expression=...
+    def CustomDisjunctiveRangeConstraint(
+        self, var_1, var_2, expression=..., customRange: range = ...
     ):
         assert customRange is not ...
+        assert expression is not ...
+        for i in customRange:
+            self.mw.DisjunctiveConstraints(expression(var_1, var_2, i))
+
+    def CustomDisjunctiveRangeConstraintMulti(
+        self, *vars, expression=..., customRange: range = ...
+    ):
+        assert customRange is not ...
+        assert expression is not ...
+        for i in customRange:
+            self.mw.DisjunctiveConstraints(expression(*vars, i))
+
+    def CustomRangeConstraint(
+        self, var_1, var_2, expression=..., customRange: range = ...
+    ):
+        assert customRange is not ...
+        assert expression is not ...
         for i in customRange:
             self.mw.Constraint(expression(var_1, var_2, i))
 
     def CustomRangeConstraintMulti(
-        self, *vars, customRange: range = ..., expression=...
+        self, *vars, expression=..., customRange: range = ...
     ):
-        assert expression is not ...
         assert customRange is not ...
+        assert expression is not ...
         for i in customRange:
             self.mw.Constraint(expression(*vars, i))
 
@@ -2610,7 +2825,7 @@ class 光伏发电模型(设备模型):
             "电接口", within=NonNegativeReals
         )
         """
-        类型: 供电端输出
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -2635,7 +2850,6 @@ class 光伏发电模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
-
         光电转换效率 = self.MaxPower / self.Area  # 1kW/m2光照下能产生的能量 省略除以1 单位: one
         assert 光电转换效率 <= 1, f"光电转换效率数值不正常: {光电转换效率} (应当在0-1之间)\n光电转换效率 = 单块最大功率 / 单块面积"
         总最大功率 = self.MaxPower * self.DeviceCount
@@ -2861,7 +3075,7 @@ class 风力发电模型(设备模型):
             "电接口", within=NonNegativeReals
         )
         """
-        类型: 供电端输出
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -2929,7 +3143,6 @@ class 风力发电模型(设备模型):
             raise Exception(f"未知风机类型：{self.设备信息.machineType}")
 
         # 输出输入功率约束
-
         self.RangeConstraintMulti(
             单台发电功率,
             self.电输出,
@@ -3122,27 +3335,30 @@ class 柴油发电模型(设备模型):
             "电接口", within=NonNegativeReals
         )
         """
-        类型: 供电端输出
+        类型: 输出
         """
 
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
         """
-        类型: 柴油输入
+        类型: 输入
         """
 
         # 设备特有约束（变量）
         self.电输出 = self.电接口
         self.柴油输入 = self.燃料接口
 
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+
         # TODO: define some variables with expression
+
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
 
         self.Nrun = self.变量列表("Nrun", within=NonNegativeIntegers)
         """
         机组开启台数
         """
-        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
         self.RangeConstraint(
             self.Nrun, self.Nrun_indicators.x, expression=lambda x, y: x == y + 0.5
         )
@@ -3380,6 +3596,260 @@ class 柴油发电模型(设备模型):
         return self.总成本年化
 
 
+class 电解槽模型(设备模型):
+    def __init__(
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 电解槽ID, 设备信息: 电解槽信息
+    ):
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        self.设备ID = 设备ID
+        self.设备信息 = 设备信息
+
+        self.LHV_Hydrogen = self.设备信息.toStandard("LHV_Hydrogen")
+        self.StartupCountLimit = self.设备信息.StartupCountLimit
+        self.HasStartupCountLimit = self.StartupCountLimit is not None
+        self.RatedInputPower: float = 设备信息.RatedInputPower
+        """
+        名称: 额定输入功率
+        单位: kW
+        """
+        assert self.RatedInputPower >= 0
+
+        self.HydrogenGenerationStartupRate: float = (
+            设备信息.HydrogenGenerationStartupRate * 0.01
+        )
+        """
+        名称: 制氢启动功率比值
+        单位: one <- percent
+        """
+        assert self.HydrogenGenerationStartupRate >= 0
+
+        self.HydrogenGenerationEfficiency: float = (
+            设备信息.HydrogenGenerationEfficiency * 0.01
+        )
+        """
+        名称: 制氢效率
+        单位: one <- percent
+        """
+        assert self.HydrogenGenerationEfficiency >= 0
+
+        self.DeltaLimit: float = 设备信息.DeltaLimit
+        """
+        名称: 爬坡率
+        单位: percent/s
+        """
+        assert self.DeltaLimit >= 0
+
+        self.HeatRecycleEfficiency: float = 设备信息.HeatRecycleEfficiency * 0.01
+        """
+        名称: 热量回收效率
+        单位: one <- percent
+        """
+        assert self.HeatRecycleEfficiency >= 0
+
+        self.CostPerMachine: float = 设备信息.CostPerMachine
+        """
+        名称: 采购成本
+        单位: 万元/台
+        """
+        assert self.CostPerMachine >= 0
+
+        self.CostPerYearPerMachine: float = 设备信息.CostPerYearPerMachine
+        """
+        名称: 固定维护成本
+        单位: 万元/(台*年)
+        """
+        assert self.CostPerYearPerMachine >= 0
+
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
+        """
+        名称: 可变维护成本
+        单位: 万元 / kWh <- 元/kWh
+        """
+        assert self.VariationalCostPerWork >= 0
+
+        self.Life: float = 设备信息.Life
+        """
+        名称: 设计寿命
+        单位: 年
+        """
+        assert self.Life >= 0
+
+        self.BuildCostPerMachine: float = 设备信息.BuildCostPerMachine
+        """
+        名称: 建设费用系数
+        单位: 万元/台
+        """
+        assert self.BuildCostPerMachine >= 0
+
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
+        """
+        名称: 建设费用基数
+        单位: 万元
+        """
+        assert self.BuildBaseCost >= 0
+
+        if self.计算参数.计算类型 == "设计规划":
+            # BUG: if unbounded, then we get some error.
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
+            """
+            单位： 个
+            """
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            """
+            名称: 最大安装台数
+            单位: 台
+            """
+            assert self.MaxDeviceCount >= 0
+
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            """
+            名称: 最小安装台数
+            单位: 台
+            """
+            assert self.MinDeviceCount >= 0
+
+        if self.计算参数.计算类型 == "仿真模拟":
+            self.DeviceCount: float = 设备信息.DeviceCount
+            """
+            名称: 安装台数
+            单位: 台
+            """
+            assert self.DeviceCount >= 0
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.ports = {}
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonPositiveReals
+        )
+        """
+        类型: 输入
+        """
+
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
+        )
+        """
+        类型: 输出
+        """
+
+        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
+            "制氢接口", within=NonNegativeReals
+        )
+        """
+        类型: 输出
+        """
+
+        # 设备特有约束（变量）
+
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+
+        self.RangeConstraint(
+            self.电接口,
+            self.Nrun_indicators.x,
+            expression=lambda x, y: -(
+                x + self.RatedInputPower * self.HydrogenGenerationStartupRate
+            )
+            - self.EPS
+            == y,
+        )
+
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
+            self.DeviceCount.setlb(self.MinDeviceCount)
+            self.DeviceCount.setub(self.MaxDeviceCount)
+
+    def constraints_register(self):
+        super().constraints_register()
+        # 设备特有约束（非变量）
+
+        # 输出输入功率约束
+
+        self.RangeConstraintMulti(
+            self.电接口, expression=lambda x: -x <= self.DeviceCount * self.RatedInputPower
+        )
+
+        self.DisjunctiveRangeConstraintMulti(
+            self.电接口,
+            expressions=lambda x: [
+                [x == 0],
+                [-x >= self.RatedPower * self.HydrogenGenerationStartupRate],
+            ],
+        )
+
+        self.RangeConstraint(
+            self.电接口,
+            self.制氢接口,
+            expression=lambda x, y: y
+            == -(x * self.HydrogenGenerationEfficiency) / self.LHV_Hydrogen,
+        )
+
+        self.RangeConstraint(
+            self.电接口,
+            self.设备余热接口,
+            expression=lambda x, y: y
+            == -(x * self.HydrogenGenerationEfficiency) * self.HeatRecycleEfficiency,
+        )
+
+        if self.HasStartupCountLimit:
+            # differentiation?
+            启动指示变量 = self.变量列表_带指示变量("启动指示变量")
+            self.mw.Constraint(
+                expr=启动指示变量[self.计算参数.迭代步数 - 1] == self.Nrun_indicators.x_pos[0]
+            )
+            self.CustomRangeConstraintMulti(
+                self.Nrun_indicators.x_pos,
+                启动指示变量.x,
+                expression=lambda x, y, i: (x[i + 1] - x[i]) - 0.5 == y[i],
+                customRange=range(self.计算参数.迭代步数 - 1),
+            )
+            startupCount = self.SumRange(启动指示变量.x_pos)
+            self.mw.Constraint(expr=startupCount < self.StartupCountLimit)
+
+        if self.计算参数.计算步长 == "秒":
+            # TODO: 如果位于启动或者关闭时刻 自动去掉限制
+            deltaLimit = (
+                self.DeviceCount * self.RatedInputPower * self.设备信息.DeltaLimit / 100
+            )
+            self.CustomRangeConstraintMulti(
+                self.电接口,
+                expression=lambda x, i: (x[i + 1] - x[i]) >= deltaLimit,
+                customRange=range(self.计算参数.迭代步数 - 1),
+            )
+            self.CustomRangeConstraintMulti(
+                self.电接口,
+                expression=lambda x, i: (x[i + 1] - x[i]) <= deltaLimit,
+                customRange=range(self.计算参数.迭代步数 - 1),
+            )
+
+        # 计算年化
+        # unit: one
+        Life = self.Life
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
+
+        self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
+        self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
+        self.总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
+
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
+
+        self.总可变维护成本年化 = (
+            ((-self.SumRange(self.电接口)) / self.计算参数.迭代步数)
+            * 每年小时数
+            * self.VariationalCostPerWork
+        )
+        # avg_power * 8760 = annual_work
+
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
+
+        return self.总成本年化
+
+
 class 锂电池模型(设备模型):
     def __init__(
         self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 锂电池ID, 设备信息: 锂电池信息
@@ -3546,7 +4016,7 @@ class 锂电池模型(设备模型):
             "电接口", within=Reals
         )
         """
-        类型: 电储能端输入输出
+        类型: 输入输出
         """
 
         # 设备特有约束（变量）
@@ -3818,18 +4288,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
-        )
-        """
-        类型: 电母线输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=Reals
         )
         """
-        类型: 变压器输出
+        类型: 输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
+        )
+        """
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -3878,7 +4348,6 @@ class 变压器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
-
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
         self.RangeConstraint(
@@ -4039,14 +4508,14 @@ class 变流器模型(设备模型):
             "电输出", within=NonNegativeReals
         )
         """
-        类型: 电母线输出
+        类型: 输出
         """
 
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
-        类型: 变流器输入
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -4063,7 +4532,6 @@ class 变流器模型(设备模型):
         # 设备特有约束（非变量）
 
         # 输出输入功率约束
-
         # TODO: figure out what "PowerParameter" does
         # TODO: fix efficiency issue
         self.RangeConstraint(self.电输入, self.电输出, lambda x, y: x * self.Efficiency == -y)
@@ -4197,18 +4665,18 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
-        )
-        """
-        类型: 双向变流器线路端输入输出
-        """
-
         self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
             "储能端", within=Reals
         )
         """
-        类型: 双向变流器储能端输入输出
+        类型: 输入输出
+        """
+
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
+        )
+        """
+        类型: 输入输出
         """
 
         # 设备特有约束（变量）
@@ -4355,14 +4823,14 @@ class 传输线模型(设备模型):
             "电输入", within=Reals
         )
         """
-        类型: 电母线输入
+        类型: 输入输出
         """
 
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=Reals
         )
         """
-        类型: 电母线输出
+        类型: 输入输出
         """
 
         # 设备特有约束（变量）
@@ -4506,7 +4974,7 @@ class 电负荷模型(设备模型):
             "电接口", within=NonPositiveReals
         )
         """
-        类型: 负荷电输入
+        类型: 输入
         """
 
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
@@ -4618,7 +5086,7 @@ class 柴油模型(设备模型):
             "燃料接口", within=NonNegativeReals
         )
         """
-        类型: 柴油输出
+        类型: 输出
         """
 
         class _Units(BaseModel):
@@ -4804,6 +5272,7 @@ devInstClassMap: Dict[str, 设备模型] = {
     "变流器": 变流器模型,
     "双向变流器": 双向变流器模型,
     "传输线": 传输线模型,
+    "电解槽": 电解槽模型,
 }  # type: ignore
 
 devIDClassMap: Dict[str, 设备ID] = {
@@ -4817,6 +5286,7 @@ devIDClassMap: Dict[str, 设备ID] = {
     "变流器": 变流器ID,
     "双向变流器": 双向变流器ID,
     "传输线": 传输线ID,
+    "电解槽": 电解槽ID,
 }  # type: ignore
 
 devInfoClassMap: Dict[str, BaseModel] = {
@@ -4830,6 +5300,7 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "变流器": 变流器信息,
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
+    "电解槽": 电解槽信息,
 }  # type: ignore
 
 
@@ -5442,6 +5913,11 @@ class 传输线节点(设备节点基类):
     param: 传输线信息 = Field(title="设备信息", description="传输线信息")
 
 
+class 电解槽节点(设备节点基类):
+    subtype: Literal["电解槽", *deviceSubtypeAlias.get("电解槽", [])] = Field(title="节点次类型")
+    param: 电解槽信息 = Field(title="设备信息", description="电解槽信息")
+
+
 class mDict(BaseModel):
     directed: bool = Field(default=False, title="保留字段")
     multigraph: bool = Field(default=False, title="保留字段")
@@ -5472,6 +5948,7 @@ class mDict(BaseModel):
             变流器节点,
             双向变流器节点,
             传输线节点,
+            电解槽节点,
             母线节点,
             连线节点,
         ],

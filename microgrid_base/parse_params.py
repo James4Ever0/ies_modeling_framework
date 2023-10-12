@@ -14,14 +14,15 @@ if __name__ == "__main__":
     from lib_parse_params import main_parser, csv_parser
 
     xlsx_worklist = [
-        ("设备信息库各参数_23_7_24", "基础参数", "device_params_intermediate"),
+        ("设备信息库各参数_23_10_11_from_7_24", "基础参数", "device_params_intermediate"),
+        # ("设备信息库各参数_23_7_24", "基础参数", "device_params_intermediate"),
         (
-            fpath_under_type_utils_resdir("设备接口"),
+            fpath_under_type_utils_resdir("设备接口_10_11"),
             "微电网接口",
             TYPE_UTILS_MICROGRID_PORTS,
         ),
         (
-            fpath_under_type_utils_resdir("设备接口"),
+            fpath_under_type_utils_resdir("设备接口_10_11"),
             "新增设备接口",
             TYPE_UTILS_EXTRA_PORTS,
         ),

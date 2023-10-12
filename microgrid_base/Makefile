@@ -70,7 +70,7 @@ TYPESYS_PLOTS = type_system.png device_connectivity_matrix.png
 
 TYPE_UTILS_RESDIR = type_utils_resources
 TYPE_UTILS_RESOURCE_JSON = ${TYPE_UTILS_RESDIR}/extra_ports.json ${TYPE_UTILS_RESDIR}/microgrid_ports.json
-TYPE_UTILS_EXCEL_INPUT = ${TYPE_UTILS_RESDIR}/设备接口.xlsx
+TYPE_UTILS_EXCEL_INPUT = ${TYPE_UTILS_RESDIR}/设备接口_10_11.xlsx
 
 RELEASE_DIR = microgrid_server_release
 
@@ -219,7 +219,13 @@ topo_check_v2.py ies_optim_legacy.py: topo_check_v2.py.j2 ies_optim_legacy.py.j2
 ${EXPORT_FORMAT_CODE} ${EXPORT_FORMAT_SCHEMA} sim_param_export.xlsx: export_format_validate.py.j2 export_format_units.py.j2 parse_export_format.py jinja_utils.py 设备信息库各参数.xlsx param_base.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} parse_export_format.py
 
-microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
+param_base.py: device_whitelist.py
+
+parse_units_and_names.py: device_whitelist.py
+
+# microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
+# microgrid_jinja_param_base.json: device_params_intermediate.json microgrid_v2_device_port_type_mapping.json parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
+microgrid_jinja_param_base.json: device_params_intermediate.json ${TYPE_UTILS_RESOURCE_JSON} parse_units_and_names.py unit_utils.py ${UNIT_DEFINITIONS}
 	${PYTHON} parse_units_and_names.py
 
 ${MICROGRID_TYPESYS_JSONS} ${TYPESYS_PLOTS}: type_system_v2.py csv_utils.py
@@ -230,7 +236,7 @@ frontend_sim_param_translation.json: frontend_sim_param_translation.js parse_fro
 
 # device_params_intermediate.json microgrid_device_params_intermediate.json: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数.xlsx
 
-device_params_intermediate.json microgrid_device_params_intermediate.json ${TYPE_UTILS_RESOURCE_JSON}: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数_23_7_24.xlsx ${TYPE_UTILS_EXCEL_INPUT}
+device_params_intermediate.json microgrid_device_params_intermediate.json ${TYPE_UTILS_RESOURCE_JSON}: parse_params.py 设备接口-微电网参数.csv 设备信息库各参数_23_10_11_from_7_24.xlsx ${TYPE_UTILS_EXCEL_INPUT}
 	${PYTHON} parse_params.py
 
 constraints.log: parse_optim_constraints.py ies_optim.py

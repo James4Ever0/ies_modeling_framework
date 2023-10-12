@@ -5,6 +5,8 @@ from log_utils import logger_print
 
 device_data_path_base = "device_params_intermediate.json"
 
+from render_type_utils import TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA
+
 microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 
 # microgrid_device_port_path = "microgrid_device_port_type_mapping.json" # shall you update this to v2.
@@ -12,7 +14,9 @@ microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 output_path = "microgrid_jinja_param_base.json"
 
 MAKEFILE = dict(
-    inputs=[device_data_path_base, microgrid_device_port_path],
+    inputs=[device_data_path_base,
+            #  microgrid_device_port_path
+             ],
     outputs=[output_path],
     args=[],
 )
@@ -53,13 +57,21 @@ with open(microgrid_device_port_path, "r") as f:
 
 data = {}
 
-all_microgrid_device_keys = []
+from device_whitelist import device_whitelist
+# device_whitelist = ['柴油', '电负荷', '光伏发电', '风力发电', '柴油发电', '锂电池', '变压器', '变流器', '双向变流器', '传输线']
 
-for k, v in port_dict.items():
-    for k1, v1 in v.items():
-        k0 = f"{k}-{k1}"
-        all_microgrid_device_keys.append(k0)
+all_microgrid_device_keys = [] # replace this with something else.
 
+for port_dict in [TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA]:
+    for k, v in port_dict.items():
+        for k1, v1 in v.items():
+            # if True:
+            if k1 in device_whitelist:
+                k0 = f"{k}-{k1}"
+                device_whitelist.append(k1)
+                all_microgrid_device_keys.append(k0)
+# logger_print(device_whitelist)
+# exit()
 data = {}
 data_is_excel = {}
 
@@ -73,7 +85,8 @@ def none_fallback(e):
 for k, v in device_data.items():
     for k1, v1 in v.items():
         k0 = f"{k}-{k1}"
-        if k0 in all_microgrid_device_keys:
+        # if k1 == '传输线': breakpoint()
+        if k0 in all_microgrid_device_keys: # all_microgrid_device_keys does not have 传输线
             vlist = []
             v_is_excel_list = []
             for v2 in v1:
@@ -141,7 +154,9 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Efficiency": (
         "one",
         {
+            "HydrogenGeneration-": ["制氢效率"],
             "PowerConversion-": ["电电转换效率"],
+            "HeatRecycle-" : ["热量回收效率"],
             "Charge-": ["充能效率"],
             "Discharge-": ["放能效率"],
             "": ["效率"],
@@ -156,19 +171,22 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "Power": (
         "kW",
         {
+            "RatedInput-": ["额定输入功率"],
             "Rated-": ["额定功率", "变压器容量"],
             "UnitRated-": ["组件额定功率"],
             "Max-": ["最大发电功率"],
             "Cutout-": ["切出功率"],
         },
     ),
+    "HydrogenGenerationStartupRate":("percent", {"": ["制氢启动功率比值"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
     "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
+    "PowerConsumptionVariationRate": ("percent", {"": ["用电波动率"]}),
     "DeltaLimit": (
         "one/second",
         {
-            "": [],
+            "": ["爬坡率"],
             "Power-": [
                 "发电爬坡率",
             ],
@@ -192,6 +210,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
     "CostPerYearPerKilowatt": ("万元/(kW*年)", {"": ["固定维护成本"]}),
     "CostPerYearPerCapacity": ("万元/(kWh*年)", {"": ["固定维护成本"]}),
     "VariationalCostPerWork": ("元/kWh", {"": ["可变维护成本"]}),
+    # "VariationalCostPerVolume": ("元/m3", {"": ["可变维护成本"]}),
     "CostPerYearPerKilometer": ("万元/(km*年)", {"": ["维护成本"]}),
     "Life": ("年", {"": ["设计寿命"], "Battery-": ["电池换芯周期"]}),
     "LifetimeCycleCount": ("one", {"": ["等效完全循环次数"]}),
@@ -377,6 +396,8 @@ for key in keys:
     # logger_print(key)
     # breakpoint()
     for subkey in data[key].keys():
+        # missing!
+        # if subkey == '传输线':  breakpoint()
         output_data[key][subkey] = {"设备参数": [], "设计规划": [], "仿真模拟": []}
         val_list = data[key][subkey]
         # logger_print(val_list)
@@ -516,7 +537,7 @@ for key in keys:
                     #         has_exception = False
                     #         break
                     if has_exception:
-                        raise Exception(f"No compatibie unit found for {val_name}")
+                        raise Exception(f"No compatibie unit found for {val_name} (unit: {val_unit}, {key}, {subkey})")
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
                         v_param = getValueParam(uc, val_name)
@@ -545,7 +566,7 @@ for key in keys:
                             new_param = v_param
                         output_data[key][subkey]["设备参数"].append(new_param)
                 else:
-                    raise Exception("Unknown Value:", val)
+                    raise Exception("Unknown Value:", val, key, subkey)
 
 logger_print()
 logger_print(output_data)

@@ -332,7 +332,7 @@ class 分时阶梯电价(BaseModel):
 
 {% set 单向变电器列表 = ['变压器', '变流器']%}
 
-{%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay"]%}
+{%set 设备参数例外列表 = ["PowerDeltaLimit", "RatedWindSpeed", "MaxWindSpeed", "MinWindSpeed", "BatteryDeltaLimit", "BatteryStorageDecay", "DeltaLimit"]%}
 # 8760 hours of data
 # several days of data to compute a year
 
@@ -583,7 +583,7 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
 
     class DefaultUnits:
                 {% for attrName, defaultUnit in 燃料能源相关数据默认单位[class_name].items()%}
-        {{attrName }} = "{{defaultUnit}}"
+        {{attrName}} = "{{defaultUnit}}"
                 {%endfor%}
             {% else%}
                 {% error("未知负荷信息类型:", class_name)%}
@@ -594,8 +594,14 @@ class {{class_name}}信息({{"设备基础信息" if class_name not in NonLoadDe
         {# special variables for non-load device info #}
         {# {% if class_name in ['锂电池']%} #}
     {# needStorageDecayCompensation : bool = Field(default=True, title = "是否允许可变存储衰减补偿", description = "开启后存储衰减补偿将可变，反之存储衰减补偿等于存储衰减") #}
-        {% if class_name in ['传输线'] %}
-    Optimize:bool = Field(default = False, title ="是否优化线径", description="若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值")
+        {% if class_name in ['电解槽'] %}
+    StartupCountLimit: Optional[int] = Field(default = None, title = "启动次数限制", description = "默认为null")
+    LHV_Hydrogen:float = Field(default = 33.3, title = "氢气热值", description = "单位:  kWh/kg")
+    """
+    单位: kWh/kg
+    """
+        {% elif class_name in ['传输线'] %}
+    Optimize: bool = Field(default = False, title ="是否优化线径", description = "若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值")
     U:confloat(gt=0) = Field(title = "传输电压", description = "单位: kW")
     """
     单位: kW
@@ -932,20 +938,27 @@ class ModelWrapper:
         del self.model
         del self.clock
         del self
+
     def getSpecialName(self, key:str):
         val = self.clock.get(key,0)
         name = f"{key}_{val}"
         self.clock[key] = val+1
         return name
-    {% for k in ['Constraint', 'Var','Objective']%}
-    {% set mv = "*args, **kwargs"%}
-    def {{k}}(self, {{ "name:str," if k == "Var" else ""}} {{ mv}}):
-        {% if k !="Var" %}
-        expr = kwargs.pop('expr',args[0] if len(args) >0 else None)
-        if expr is None:
-            logger_print("ARGS:", args)
-            logger_print("KWARGS:", kwargs)
-            raise Exception("Not passing expression to method '{{k}}'")
+    
+    def Disjunct(self, expression_disjunct:list):
+        assert isinstance(expression_disjunct, list)
+        name = self.getSpecialName("DJ")
+        DJ = Disjunct()
+        for i, expr in enumerate(expression_disjunct):
+            expr_name = f"expr_{i}"
+            self.checkExpressionPolynomialDegree(expr, f'Disjunct_Expression_{i}')
+            cons = Constraint(expr = expr)
+            DJ.__setattr(expr_name, cons)
+        self.model.__setattr__(name, DJ)
+        return DJ
+
+    @staticmethod
+    def checkExpressionPolynomialDegree(expr, caller):
         deg = getattr(expr, "polynomial_degree", 0)
         if deg:
             deg = expr.polynomial_degree()
@@ -960,8 +973,29 @@ class ModelWrapper:
                 {# logger_print("_____________ERROR LOG_____________") #}
                 examineSubExprDegree(expr)
                 {# logger_print("_____________ERROR LOG_____________") #}
-            error_msg = f"[{{k}}] Unacceptable polynomial degree for expression."
+            error_msg = f"[{caller}] Unacceptable polynomial degree for expression."
             raise Exception(error_msg)
+
+    def DisjunctiveConstraints(self, expression_disjunct_list:list[list]):
+        assert isinstance(expression_disjunct_list)
+        DJL = []
+        for expression_disjunct in expression_disjunct_list:
+            DJ = self.Disjunct(expression_disjunct)
+            DJL.append(DJ)
+        name = self.getSpecialName("DJV")
+        DJV = Disjunction(expr = DJL)
+        return DJV
+
+    {% for k in ['Constraint', 'Var','Objective']%}
+    {% set mv = "*args, **kwargs"%}
+    def {{k}}(self, {{ "name:str," if k == "Var" else ""}} {{ mv}}):
+        {% if k !="Var" %}
+        expr = kwargs.pop('expr',args[0] if len(args) >0 else None)
+        if expr is None:
+            logger_print("ARGS:", args)
+            logger_print("KWARGS:", kwargs)
+            raise Exception("Not passing expression to method '{{k}}'")
+        self.checkExpressionPolynomialDegree(expr, caller = {{repr(k)}})
         name = self.getSpecialName("{{k[:3].upper()}}")
         {% endif %}
         {% set init_argname = "initialize"%}
@@ -1210,28 +1244,26 @@ class 设备模型:
     def 变量列表(self, varName: str, mrange:range = None, **kwargs):
         var = self.mw.Var(self.getVarName(varName) ,self.getRange(mrange), **kwargs)
         return var
-
-    def RangeConstraint(self, var_1, var_2,  expression=... ,mrange:range = None):
-        assert expression !=...
-        for i in self.getRange(mrange):
-            self.mw.Constraint(expression(var_1[i], var_2[i]))
-
-    def RangeConstraintMulti(self, *vars, expression=..., mrange:range=None): # keyword argument now.
-        assert expression is not ...
-        for i in self.getRange(mrange):
-            self.mw.Constraint(expression(*[var[i] for var in vars]))
-
-    def CustomRangeConstraint(self, var_1, var_2,  customRange:range=..., expression= ...):
+    {% for kr, vr_l in dict(Normal=('mrange:range=None',"self.getRange(mrange)"),Custom = ('customRange:range=...', 'customRange')).items()%}
+        {% set vr = vr_l[0]%}
+        {% set vs = vr_l[1]%}
+        {% for k,v in dict(Disjunctive = 'DisjunctiveConstraints', Normal = 'Constraint').items()%}
+            {% for k0, v0 in dict(Pair = ("var_1, var_2", "var_1[i], var_2[i]", "var_1, var_2, i"), Multi = ('*vars', '*[var[i] for var in vars]', "*vars, i")).items()%}
+                {% set v0_0 = v0[0] %}
+                {% set v0_1 = v0[1] %}
+                {% set v0_2 = v0[2] %}
+    def {{kr if kr =='Custom' else ''}}{{k if k == 'Disjunctive' else ''}}RangeConstraint{{k0 if k0 == 'Multi' else ''}}(self, {{v0_0}}, expression = ..., {{vr}}):
+                {% if kr == 'Custom'%}
         assert customRange is not ...
-        for i in customRange:
-            self.mw.Constraint(expression(var_1, var_2, i))
-    
-    def CustomRangeConstraintMulti(self, *vars, customRange:range=..., expression=...):
+                {% endif%}
         assert expression is not ...
-        assert customRange is not ...
-        for i in customRange:
-            self.mw.Constraint(expression(*vars, i))
-    
+        for i in {{vs}}:
+            self.mw.{{v}}(expression({{v0_1 if kr == 'Normal' else v0_2}}))
+        
+            {% endfor %}
+        {% endfor %}
+    {% endfor%}
+
     def SumRange(self,var_1,  mrange:range=None):
         return {{- sum_reduce('[var_1[i] for i in self.getRange(mrange)]')}}
     
@@ -1275,10 +1307,20 @@ class 设备模型:
     def DisjunctivePair(self, x_var, y_var, x_vals:List[float], y_vals:List[float]):
         assert len(x_vals) == len(y_vals)
         DJL = []
+        
+        x_lb, x_ub = min(x_vals), max(x_vals)
+        y_lb, y_ub = min(y_vals), max(y_vals)
 
         for (x_value, y_value) in zip(x_vals, y_vals):
             disjunct_name = self.getSpecialVarName("DJ")
             DJ = Disjunct()
+
+            x_var.set_lb(x_lb)
+            x_var.set_ub(x_ub)
+            
+            y_var.set_lb(y_lb)
+            y_var.set_ub(y_ub)
+
             DJ.cons_x = Constraint(expr = x_var == x_value)
             DJ.cons_y = Constraint(expr = y_var == y_value)
 {{double_check_setattr("self.mw.model", "disjunct_name", "DJ") | indent(3*4, true)}}
@@ -1511,7 +1553,13 @@ class {{class_name}}模型(设备模型):
         单位：万元/h
         """
         {% endif %}
-        {% if class_name in ['柴油发电'] %}
+        {% if class_name in ['电解槽']%}
+            {% for e in ['LHV_Hydrogen'] %}
+        self.{{e}} = self.设备信息.toStandard({{repr(e)}})
+            {% endfor %}
+        self.StartupCountLimit = self.设备信息.StartupCountLimit
+        self.HasStartupCountLimit = self.StartupCountLimit is not None
+        {% elif class_name in ['柴油发电'] %}
         self.燃料热值:float = 0 # 需要拓扑解析之后进行赋值
             {% for e in ['unitSingleStartupCost', 'averageLoadRate'] %}
         self.{{e}} = self.设备信息.toStandard({{repr(e)}})
@@ -1650,7 +1698,13 @@ class {{class_name}}模型(设备模型):
             self.MinDeviceCount = math.ceil(self.MinInstallArea/self.Area)
             assert self.MinDeviceCount>=0
             assert self.MaxDeviceCount>=self.MinDeviceCount
-        {% elif class_name == "柴油发电" %}
+        {% elif class_name in ["电解槽", "柴油发电"] %}
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+            {% if class_name in ["电解槽"] %}
+
+        self.RangeConstraint(self.电接口, self.Nrun_indicators.x, expression = lambda x,y: -( x + self.RatedInputPower * self.HydrogenGenerationStartupRate) - self.EPS == y)
+
+            {% elif class_name in ["柴油发电"] %}
         
         # TODO: define some variables with expression
 
@@ -1658,12 +1712,12 @@ class {{class_name}}模型(设备模型):
         {# self.电功率中转 = self.变量列表_带指示变量("电功率中转") #}
         {# self.单台发电功率 = self.变量列表("单台发电功率", within=NonNegativeReals)
         self.单台柴油输入 = self.变量列表("单台柴油输入", within=NonPositiveReals) #}
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
 
         self.Nrun = self.变量列表("Nrun", within=NonNegativeIntegers)
         """
         机组开启台数
         """
-        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
         self.RangeConstraint(self.Nrun, self.Nrun_indicators.x, expression = lambda x,y: x == y + 0.5)
         
         self.RangeConstraintMulti(self.Nrun, expression = lambda x: x <= self.DeviceCount)
@@ -1740,6 +1794,7 @@ class {{class_name}}模型(设备模型):
                 expression=lambda x, y: x == y * self.DeviceCount,
             ) 
         #}
+            {% endif%}
         {% elif class_name  == '锂电池' %}
 
         {# self.needStorageDecayCompensation:bool = self.设备信息.needStorageDecayCompensation
@@ -1906,9 +1961,32 @@ class {{class_name}}模型(设备模型):
         #}
         
         # 输出输入功率约束
+        {% if class_name in ['电解槽']%}
 
-        {%if class_name in ['传输线']%}
-{#         
+        self.RangeConstraintMulti(self.电接口, expression = lambda x: -x <= self.DeviceCount * self.RatedInputPower)
+
+        self.DisjunctiveRangeConstraintMulti(self.电接口, expressions = lambda x: [[x == 0], [-x >= self.RatedPower * self.HydrogenGenerationStartupRate]])
+
+        self.RangeConstraint(self.电接口, self.制氢接口, expression = lambda x, y: y == -(x*self.HydrogenGenerationEfficiency)/self.LHV_Hydrogen)
+
+        self.RangeConstraint(self.电接口, self.设备余热接口, expression = lambda x, y: y == -(x * self.HydrogenGenerationEfficiency)* self.HeatRecycleEfficiency)
+
+        if self.HasStartupCountLimit:
+            # differentiation?
+            启动指示变量 = self.变量列表_带指示变量('启动指示变量')
+            self.mw.Constraint(expr = 启动指示变量[self.计算参数.迭代步数 - 1] == self.Nrun_indicators.x_pos[0])
+            self.CustomRangeConstraintMulti(self.Nrun_indicators.x_pos, 启动指示变量.x, expression = lambda x, y, i: (x[i+1] - x[i]) - 0.5 == y[i], customRange = range(self.计算参数.迭代步数 - 1))
+            startupCount = self.SumRange(启动指示变量.x_pos)
+            self.mw.Constraint(expr = startupCount < self.StartupCountLimit)
+
+        if self.计算参数.计算步长 == "秒":
+            # TODO: 如果位于启动或者关闭时刻 自动去掉限制
+            deltaLimit = self.DeviceCount * self.RatedInputPower * self.设备信息.DeltaLimit / 100
+            self.CustomRangeConstraintMulti(self.电接口, expression = lambda x, i: (x[i+1] - x[i]) >= deltaLimit, customRange = range(self.计算参数.迭代步数 - 1))
+            self.CustomRangeConstraintMulti(self.电接口, expression = lambda x, i: (x[i+1] - x[i]) <= deltaLimit, customRange = range(self.计算参数.迭代步数 - 1))
+
+        {% elif class_name in ['传输线'] %}
+{# 
         TotalDecayPerStep = self.Length * self.PowerTransferDecay / {{时间步长参数}}
         self.RangeConstraint(self.电输入_去除损耗.x, self.电输入, lambda x,y: x == y+TotalDecayPerStep )
         self.RangeConstraint(self.电输入_去除损耗.x_neg, self.电输出,lambda x,y: x == y ) #}
@@ -2074,7 +2152,7 @@ class {{class_name}}模型(设备模型):
             raise Exception(f"未知油耗规划算法：{self.设备信息.unitPlanningAlgorithmSelection}") 
         
 
-        {%elif class_name in ['锂电池'] %}
+        {% elif class_name in ['锂电池'] %}
         {# self.RangeConstraintMulti(self.CurrentTotalActualCapacity, expression = lambda x: x <= self.TotalActualCapacity) #}
 
         self.mw.Constraint(self.CurrentTotalCapacity[0] == self.InitCapacityPerUnit * self.DeviceCount)
@@ -2219,18 +2297,18 @@ class {{class_name}}模型(设备模型):
         self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
         {# self.年化率 = ((1+(self.计算参数.年利率/100)) ** Life) / Life #}
         {% if class_name in ['光伏发电'] %}
-            {% set m='总最大功率' %}
+            {% set m = '总最大功率' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
-        {% elif class_name in ['风力发电']+单向变电器列表+ ['双向变流器'] %}
-            {% set m='self.DeviceCount * self.RatedPower' %}
+        {% elif class_name in ['风力发电'] + 单向变电器列表 + ['双向变流器'] %}
+            {% set m = 'self.DeviceCount * self.RatedPower' %}
             {% set vi = 'Kilowatt' %}
             {% set vm = 'Kilowatt' %}
             {% set vb = 'Kilowatt' %}
             {% set vv = 'Work' %}
-        {% elif class_name in ['柴油发电'] %}
+        {% elif class_name in ['柴油发电', '电解槽'] %}
             {% set m='self.DeviceCount' %}
             {% set vi = 'Machine' %}
             {% set vm = 'Machine' %}
@@ -2243,11 +2321,11 @@ class {{class_name}}模型(设备模型):
             {% set vb = 'Capacity' %}
             {% set vv = 'Work' %}
         {% elif class_name in ['传输线'] %}
-            {% set m='self.Length'%}
+            {% set m='self.Length' %}
             {% set vi = 'Kilometer' %}
             {% set vm = 'Kilometer' %}
             {% set vb = 'Kilometer' %}
-        {% else%}
+        {% else %}
             {% error("不支持的设备类型:", class_name) %}
         {% endif %}
 
@@ -2255,12 +2333,14 @@ class {{class_name}}模型(设备模型):
         self.总固定维护成本 = self.CostPerYearPer{{vm}} * ({{ m}})
         self.总建设费用 = self.BuildCostPer{{vb}} * ({{ m}}) + self.BuildBaseCost
 
-        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本 
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
         {# self.总固定成本年化 = (self.总采购成本 + self.总固定维护成本 + self.总建设费用) * self.年化率 #}
 
-        {% if class_name in ['光伏发电','风力发电','柴油发电']%}
-            {% set m1="self.SumRange(self.电输出)"%}
-        {% elif class_name in ['锂电池']%}
+        {% if class_name in ['光伏发电', '风力发电', '柴油发电']%}
+            {% set m1="self.SumRange(self.电输出)" %}
+        {% elif class_name in ['电解槽'] %}
+            {% set m1="-self.SumRange(self.电接口)" %}
+        {% elif class_name in ['锂电池'] %}
             {% set m1="计算范围内总平均放电功率*self.计算参数.迭代步数"%}
             {# {% set m1="计算范围内总平均功率*self.计算参数.迭代步数"%} #}
         {% elif class_name in 单向变电器列表 %}
@@ -2317,9 +2397,9 @@ class {{class_name}}模型(设备模型):
 {% endfor%}
 
 {% for k,clist in special_classes.items() %}
-    {% for class_name in clist%}
+    {% for class_name in clist %}
 class {{class_name}}模型(设备模型):
-{{ init_super_class(class_name)}}
+{{ init_super_class(class_name) }}
 
 {{ port_variable_define(class_name)}}
 

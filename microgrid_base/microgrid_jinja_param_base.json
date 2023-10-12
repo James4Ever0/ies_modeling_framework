@@ -333,6 +333,118 @@
             ]
         }
     },
+    "制氢设备": {
+        "电解槽": {
+            "设备参数": [
+                "生产厂商",
+                "设备型号",
+                [
+                    "RatedInputPower",
+                    "额定输入功率",
+                    "kW",
+                    "kilowatt",
+                    1
+                ],
+                [
+                    "HydrogenGenerationStartupRate",
+                    "制氢启动功率比值",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "HydrogenGenerationEfficiency",
+                    "制氢效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "DeltaLimit",
+                    "爬坡率",
+                    "percent/s",
+                    "one / 年",
+                    315575.99999999994
+                ],
+                [
+                    "HeatRecycleEfficiency",
+                    "热量回收效率",
+                    "percent",
+                    "one",
+                    0.01
+                ],
+                [
+                    "CostPerMachine",
+                    "采购成本",
+                    "万元/台",
+                    "万元 / 台",
+                    1
+                ],
+                [
+                    "CostPerYearPerMachine",
+                    "固定维护成本",
+                    "万元/(台*年)",
+                    "万元 / 台 / 年",
+                    1
+                ],
+                [
+                    "VariationalCostPerWork",
+                    "可变维护成本",
+                    "元/kWh",
+                    "万元 / kWh",
+                    0.0001
+                ],
+                [
+                    "Life",
+                    "设计寿命",
+                    "年",
+                    "年",
+                    1
+                ],
+                [
+                    "BuildCostPerMachine",
+                    "建设费用系数",
+                    "万元/台",
+                    "万元 / 台",
+                    1
+                ],
+                [
+                    "BuildBaseCost",
+                    "建设费用基数",
+                    "万元",
+                    "万元",
+                    1
+                ]
+            ],
+            "设计规划": [
+                [
+                    "MaxDeviceCount",
+                    "最大安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                [
+                    "MinDeviceCount",
+                    "最小安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ],
+            "仿真模拟": [
+                [
+                    "DeviceCount",
+                    "安装台数",
+                    "台",
+                    "台",
+                    1
+                ],
+                "设备选型"
+            ]
+        }
+    },
     "储能设备": {
         "锂电池": {
             "设备参数": [

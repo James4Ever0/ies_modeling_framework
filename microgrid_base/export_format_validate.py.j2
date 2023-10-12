@@ -151,9 +151,11 @@ def ReLU(val):
 {%macro MVLIST(vlist)%}statistics.mean({{VLIST(vlist)}}){% endmacro%}
 {%macro MVLISTPOS(vlist)%}statistics.mean({{VLISTPOS(vlist)}}){% endmacro%}
 {%macro MVLISTNEG(vlist)%}statistics.mean({{VLISTNEG(vlist)}}){% endmacro%}
+{%macro MVLISTINV(vlist)%}statistics.mean({{VLISTINV(vlist)}}){% endmacro%}
 {% macro TP_MVLIST(vlist)%}{{TP(MVLIST(vlist))}}{% endmacro %}
 {% macro TP_MVLISTPOS(vlist)%}{{TP(MVLISTPOS(vlist))}}{% endmacro %}
 {% macro TP_MVLISTNEG(vlist)%}{{TP(MVLISTNEG(vlist))}}{% endmacro%}
+{% macro TP_MVLISTINV(vlist)%}{{TP(MVLISTINV(vlist))}}{% endmacro%}
 {% macro BIDIR_SINGLE_CVT(x,y)%}(safeDiv(sumVarList(model.{{x}}.x_pos),sumVarList(model.{{y}}.x_neg)) * sumVarList(model.{{x}}.b_pos)){%endmacro%}
 {% macro BIDIR_CVT_COP(x,y)%}value({{BIDIR_SINGLE_CVT(x,y)}}+ {{BIDIR_SINGLE_CVT(y,x)}})/model.计算参数.迭代步数{% endmacro%}
 {# {% set EPS = "1e-10"%} #}
@@ -162,6 +164,7 @@ def ReLU(val):
     "柴油消耗量": TP_MVLIST("model.燃料接口"),
     "单向电转换COP": "- safeDiv({},{})".format(MVLIST("model.电输入"), MVLIST("model.电输出")),
     '电收入': TP("-value(model.总成本年化)"),
+    '氢气收入': TP("-value(model.总成本年化)"),
     "柴油消耗费用": TP("value(model.总成本年化)")
 }%}
 {% set CSPL = {} %}
@@ -177,8 +180,12 @@ def ReLU(val):
         CSPL['柴油消耗量'],
     ],
     "电负荷": [
-        ("电负荷", TP("statistics.mean(model.设备信息.EnergyConsumption)")),
+        ("电负荷", TP_MVLISTINV("model.电接口")),
         CSPL['电收入']
+    ],
+    "氢气负荷": [
+        ("氢气负荷", TP_MVLISTINV("model.氢气接口")),
+        CSPL['氢气收入']
     ],
     "光伏发电": [
         CSPL['产电量']
@@ -205,6 +212,11 @@ def ReLU(val):
     ],
     "传输线": [
         ("平均效率_平均COP", commonSimParams['单向电转换COP'])
+    ],
+    "电解槽": [
+        ("电负荷", TP_MVLISTINV("model.电接口")),
+        ("氢气产量", TP_MVLIST("model.制氢接口")),
+        ("产热量", TP_MVLIST("model.设备余热接口"))
     ]
 }%}
 {# 柴油发电等的燃料热值在解析拓扑结构的时候进行确定 #}
@@ -319,7 +331,13 @@ class {{devName}}仿真结果(BaseModel):
         ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ],
     "电负荷":[('耗电功率', VLISTINV('model.电接口'))],
-    "传输线":[('传输功率', VLISTINV('model.电输入'))]
+    "氢气负荷":[('耗氢流量', VLISTINV('model.氢气接口'))],
+    "传输线":[('传输功率', VLISTINV('model.电输入'))],
+    "电解槽":[
+        ('耗电功率', VLISTINV('model.电接口')),
+        ("产氢流量", VLIST('model.制氢接口')),
+        ("产热功率", VLIST('model.设备余热接口')), 
+    ]
 }
 %}
 
@@ -332,8 +350,8 @@ class {{devName}}出力曲线(BaseModel):
     {% do paramDict.pop('放电功率') %}
     {% do paramDict.update(dict(电功率 = paramDict.pop('充电功率'))) %}
     {# {% set paramDict['电功率'] = paramDict.pop('充电功率') %} #}
-{% endif%}
-{{iterParamDict(paramDict, true, devName, false)}}
+{% endif %}
+{{ iterParamDict(paramDict, true, devName, false) }}
 {% set obj = {} %}
 {% do obj.update(dict(时间="list(range(model.计算参数.迭代步数))")) %}
 {% call export_data_with_model(devName, obj, '出力曲线', paramDict) %}

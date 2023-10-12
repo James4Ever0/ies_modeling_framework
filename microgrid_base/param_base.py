@@ -1,4 +1,5 @@
 from log_utils import logger_print
+from render_type_utils import TYPE_UTILS_MICROGRID_PORTS_DATA,TYPE_UTILS_EXTRA_PORTS_DATA
 
 import json
 
@@ -31,11 +32,27 @@ dparam = read_json(dparam_path)
     ("设备", [dev for cat, devs in type_sys["设备锚点类型表"].items() for dev in devs.keys()])
 )
 
-设备接口集合 = {
-    dev_name: set([(port_name, port_type) for port_name, port_type in ports.items()])
-    for cat0, devs in type_sys["设备锚点类型表"].items()
-    for dev_name, ports in devs.items()
-}
+# 设备接口集合 = {
+#     dev_name: set([(port_name, port_type) for port_name, port_type in ports.items()])
+#     for cat0, devs in type_sys["设备锚点类型表"].items()
+#     for dev_name, ports in devs.items()
+# }
+
+设备接口集合 = {}
+
+from device_whitelist import device_whitelist
+
+for data_dict in TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA:
+    for category, device_dict in data_dict.items():
+        for dev_name, device_data in device_dict.items():
+            if dev_name not in device_whitelist: continue
+            port_set = set()
+            for port_name, port_data in device_data['ports'].items():
+                能流方向 = port_data['能流方向']
+                port_type = 能流方向.replace('进', '输入').replace('出','输出')
+                port_set.add((port_name, port_type))
+            设备接口集合[dev_name] = port_set
+
 #########################
 # logger_print(设备接口集合)
 # breakpoint()
