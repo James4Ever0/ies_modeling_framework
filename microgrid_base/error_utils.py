@@ -51,9 +51,9 @@ class ErrorManager:
         self.default_error = None
 
     def format_error(self, clear=True, join: str = "\n"):
+        mylist = self.errors + ([self.default_error] if (self and self.default_error) else [])
         error_msg = join.join(
-            self.errors
-            + ([self.default_error] if (self and self.default_error) else [])
+            [str(e) for e in mylist]
         )
         if clear:
             self.clear()

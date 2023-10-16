@@ -210,24 +210,31 @@ class 拓扑图:
                     else:
                         raise Exception(f"节点 #{n} {node.subtype}连接非法类型节点：", ne_type)
             elif node.type == "设备":
-                assert node.subtype in 设备类型, f"节点 #{node.id} 不存在的设备类型: {node.subtype}"
-                port_name_set = set()
+                try:
+                    assert node.subtype in 设备类型, f"节点 #{node.id} 不存在的设备类型: {node.subtype}"
+                    port_name_set = set()
 
-                for n in neighbors:
-                    ne_data = self.G.nodes[n]
-                    ne_type, ne_subtype = getMainAndSubType(ne_data)
+                    for n in neighbors:
+                        ne_data = self.G.nodes[n]
+                        ne_type, ne_subtype = getMainAndSubType(ne_data)
 
-                    port_name = ne_data["port_name"]
-                    assert ne_type == "锚点", f"节点 #{n} 错误的节点类型: {ne_type}"
+                        port_name = ne_data["port_name"]
+                        assert ne_type == "锚点", f"节点 #{n} 错误的节点类型: {ne_type}"
+                        assert (
+                            len(list(self.G.neighbors(n))) == 2
+                        ), f"节点 #{n} 相邻节点数错误: {len(list(self.G.neighbors(n)))} 相邻节点: {(list(self.G.neighbors(n)))}"
+                        port_name_set.add(port_name)
+                        {# port_set.add((port_name, ne_subtype)) #}
+
                     assert (
-                        len(list(self.G.neighbors(n))) == 2
-                    ), f"节点 #{n} 相邻节点数错误: {len(list(self.G.neighbors(n)))} 相邻节点: {(list(self.G.neighbors(n)))}"
-                    port_name_set.add(port_name)
-                    {# port_set.add((port_name, ne_subtype)) #}
-
-                assert (
-                    port_name_set == 设备接口名称集合[node.subtype]
-                ), f"节点 #{node.id}  PORT SET: {port_name_set} TARGET: {设备接口名称集合[node.subtype]}"
+                        port_name_set == 设备接口名称集合[node.subtype]
+                    ), f"节点 #{node.id}  PORT SET: {port_name_set} TARGET: {设备接口名称集合[node.subtype]}"
+                except Exception as e:
+                    if ies_env.FAILSAFE:
+                        logger_print("Ignoring exception in device type:", node.subtype)
+                        logger_traceback(e)
+                    else:
+                        raise e
             elif node.type == "连接线":
                 {# assert node.subtype in 连接线类型, f"节点 #{node.id} 不合理连接线类型： {node.subtype}" #}
                 assert (

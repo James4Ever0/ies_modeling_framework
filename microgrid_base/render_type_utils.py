@@ -21,9 +21,12 @@ def load_type_utils_json_with_added_suffix(fpath):
 TYPE_UTILS_MICROGRID_PORTS_DATA = load_type_utils_json_with_added_suffix(
     TYPE_UTILS_MICROGRID_PORTS
 )
+
 TYPE_UTILS_EXTRA_PORTS_DATA = load_type_utils_json_with_added_suffix(
     TYPE_UTILS_EXTRA_PORTS
 )
+
+connectivity_check_header_prefixes = ["可选连接", "关联连接", "至少连接"]
 
 __all__ = [
     "TYPE_UTILS_MICROGRID_PORTS_DATA",
@@ -113,6 +116,12 @@ if __name__ == "__main__":
             )
             v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
             v = replace_as_cond_or_etype(v, k, "etype")
+        elif (
+            isinstance(header, str)
+            and header.split("[")[0] in connectivity_check_header_prefixes
+        ):
+            # skipped for now.
+            ...
         else:
             raise Exception("unknown header:", header, "content:", content)
         return k, v

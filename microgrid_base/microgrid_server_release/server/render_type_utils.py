@@ -3,6 +3,7 @@ from jinja_utils import *
 from type_def import *
 from parse_params import TYPE_UTILS_MICROGRID_PORTS, TYPE_UTILS_EXTRA_PORTS
 import json
+from typing import Literal
 
 
 def load_json(filename):
@@ -20,14 +21,20 @@ def load_type_utils_json_with_added_suffix(fpath):
 TYPE_UTILS_MICROGRID_PORTS_DATA = load_type_utils_json_with_added_suffix(
     TYPE_UTILS_MICROGRID_PORTS
 )
+
 TYPE_UTILS_EXTRA_PORTS_DATA = load_type_utils_json_with_added_suffix(
     TYPE_UTILS_EXTRA_PORTS
 )
 
-__all__ = ["TYPE_UTILS_MICROGRID_PORTS_DATA", "TYPE_UTILS_EXTRA_PORTS_DATA", "TYPE_UTILS_MICROGRID_PORTS", "TYPE_UTILS_EXTRA_PORTS"]
+connectivity_check_header_prefixes = ["可选连接", "关联连接", "至少连接"]
 
+__all__ = [
+    "TYPE_UTILS_MICROGRID_PORTS_DATA",
+    "TYPE_UTILS_EXTRA_PORTS_DATA",
+    "TYPE_UTILS_MICROGRID_PORTS",
+    "TYPE_UTILS_EXTRA_PORTS",
+]
 if __name__ == "__main__":
-
     # def parse_leftover(leftover):
     #     segments = leftover.split(";")
     #     ret = []
@@ -36,9 +43,91 @@ if __name__ == "__main__":
     #         if s:
     #             ret.append(s)
     #     return ret
-    
+
+    工况翻译 = dict(进="input", 出="output", 空闲="idle")
+    必有工况转定义 = dict(
+        一直不工作="set(conds) == {'idle'}",
+        **{k: f"{repr(v)} in conds" for k, v in 工况翻译.items()},
+    )
+    make_param_list = lambda e: [e + str(i) for i in range(len(k))]
+    makeRule = (
+        lambda c0, c1: f"{c0} != 'idle'" if c1 is None else f"{c0} == {repr(工况翻译[c1])}"
+    )
+
+    def parse_rule_side(left_or_right: str):
+        left_or_right = left_or_right.strip()
+        comps = left_or_right.split(";")
+        ret = []
+        for c in comps:
+            c = c.strip()
+            if len(c) > 0:
+                cs = c.split()
+                assert len(cs) >= 1, f"invalid rule segment: {c}"
+                assert len(cs) <= 2, f"invalid rule segment: {c}"
+                if len(cs) == 1:
+                    cs += [None]
+                ret.append(tuple(cs))
+        return ret
+
+    def parse_rule_key(content):
+        k = [c0 for c0, _ in content]
+        k = tuple(set(k))
+        return k
+
+    def replace_with_table(content, table):
+        ret = content
+        for k, v in table.items():
+            ret = ret.replace(k, v)
+        return ret
+
+    def replace_as_cond_or_etype(
+        rule_definition: str, rule_key: tuple[str], target: Literal["cond", "etype"]
+    ):
+        translation_table = {k: f"{target}{i}" for i, k in enumerate(rule_key)}
+        ret = replace_with_table(rule_definition, translation_table)
+        return ret
+
+    def parse_rule(rule):
+        _, content = rule_parser(rule)
+        _left, _right = content.split("->")
+        left = parse_rule_side(_left)
+        right = parse_rule_side(_right)
+        k = parse_rule_key(left + right)
+        assert len(left) == 1, f"abnormal rule because of multiple left side: {rule}"
+        v_left = makeRule(*left[0])
+        v_right = ", ".join([makeRule(*r) for r in right])
+        v = f"all([{v_right}]) if {v_left} else True"
+        v = replace_as_cond_or_etype(v, k, "cond")
+        return k, v
+
+    def parse_requirement(requirement):
+        header, _content = rule_parser(requirement)
+        content = parse_rule_side(_content)
+        k = parse_rule_key(content)
+        if header == "互斥":
+            v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
+            v = f"sum([{v}]) <= 1"
+            v = replace_as_cond_or_etype(v, k, "cond")
+        elif header == "冷热互斥":
+            c0s = [c0 for c0, _ in content]
+            c0s = ", ".join(c0s)
+            enforce_heat_or_cold = (
+                lambda heat_or_cold: f'all(["{heat_or_cold}" in it for it in [{c0s}]])'
+            )
+            v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
+            v = replace_as_cond_or_etype(v, k, "etype")
+        elif (
+            isinstance(header, str)
+            and header.split("[")[0] in connectivity_check_header_prefixes
+        ):
+            # skipped for now.
+            ...
+        else:
+            raise Exception("unknown header:", header, "content:", content)
+        return k, v
+
     def rule_parser(rule):
-        rule = rule.replace("：",":").replace("；",";")
+        rule = rule.replace("：", ":").replace("；", ";")
         segments = rule.split(":")
         if len(segments) == 1:
             header = None
@@ -48,12 +137,15 @@ if __name__ == "__main__":
             assert header, "empty header at rule: %s" % rule
             leftover = segments[1]
         else:
-            raise Exception("Invalid segment count: %d\nSegments: %s" % (len(segments), str(segments)))
+            raise Exception(
+                "Invalid segment count: %d\nSegments: %s"
+                % (len(segments), str(segments))
+            )
         content = leftover.strip()
         assert content, "empty content at rule: %s" % rule
         # content = parse_leftover(leftover)
         return header, content
-        
+
     output_path, template_path = code_and_template_path("type_utils")
 
     render_params = {}
@@ -62,19 +154,23 @@ if __name__ == "__main__":
     deviceTypes = []
     energyTypes = set()
 
+    port_verifier_lookup_table = {}
+    conjugate_port_verifier_constructor_lookup_table = {}
+
     def assert_is_nonempty_dict(d):
         assert isinstance(d, dict)
         assert d != {}
 
     能流方向翻译表 = dict(进="input", 出="output")
 
-    def 能流方向翻译(能流方向: str):
+    def 能流方向翻译(能流方向):
         directions = []
-        for 方向 in 能流方向.strip():
-            if 方向 in 能流方向翻译表.keys():
-                directions.append(能流方向翻译表[方向])
-            else:
-                raise Exception("不存在的方向:" + 方向)
+        if 能流方向:
+            for 方向 in 能流方向.strip():
+                if 方向 in 能流方向翻译表.keys():
+                    directions.append(能流方向翻译表[方向])
+                else:
+                    raise Exception("不存在的方向:" + 方向)
         return directions
 
     def portDefToEnergyTypes(portDef: dict):
@@ -82,17 +178,24 @@ if __name__ == "__main__":
         _细分类型 = portDef["细分类型"]
         _基本类型 = portDef["基本类型"]
         candidates = _基本类型 if _细分类型 is None else _细分类型
+        if candidates is None:
+            breakpoint()
         for t in candidates.split("/"):
+            # if isinstance(t, list):
+            #     if set(t) == set(['醇', '乙', '二']): breakpoint()
+            # logger_print('t:', t, type(t))
             t_resolved = 解析基本类型(t)
             eTypes.extend(t_resolved)
+        logger_print(eTypes)
         return eTypes
 
-    for dat, fpath in {
+    for fpath, dat in {
         TYPE_UTILS_MICROGRID_PORTS: TYPE_UTILS_MICROGRID_PORTS_DATA,
         TYPE_UTILS_EXTRA_PORTS: TYPE_UTILS_EXTRA_PORTS_DATA,
     }.items():
         logger_print("Parsing:", fpath)
         # dat = load_json(fpath + ".json")
+        # breakpoint()
         for devType, devDict in dat.items():
             logger_print("parsing devType:", devType)
             assert_is_nonempty_dict(devDict)
@@ -103,19 +206,82 @@ if __name__ == "__main__":
                 deviceTypes.append(devSubType)
                 ports = devDef["ports"]
                 assert_is_nonempty_dict(ports)
-                rules = devDef["rules"]
-                requirements = devDef["requirements"]
-                requiredPortFrontendNameToPortPossibleStates = {
-                    portName: ["idle"] + 能流方向翻译(portDef["能流方向"])
-                    for portName, portDef in ports.items()
-                }
-                requiredPortFrontendNameToEnergyTypes = {
-                    portName: portDefToEnergyTypes(portDef)
-                    for portName, portDef in ports.items()
-                }
+                requiredPortFrontendNameToPortPossibleStates = {}
+                requiredPortFrontendNameToEnergyTypes = {}
+                device_port_verifier_lookup_table = {}
+
+                for portName, portDef in ports.items():
+                    requiredPortFrontendNameToPortPossibleStates[portName] = [
+                        "idle"
+                    ] + 能流方向翻译(portDef["能流方向"])
+                    requiredPortFrontendNameToEnergyTypes[
+                        portName
+                    ] = portDefToEnergyTypes(portDef)
+
+                    cond_segment_list = []
+
+                    必有工况 = portDef["必有工况"]
+                    if 必有工况:
+                        for item in 必有工况.split("/"):
+                            cond_segment = 必有工况转定义[item]
+                            cond_segment_list.append(cond_segment)
+
+                    verifier_definition = " or ".join(
+                        [f"({cond_segment})" for cond_segment in cond_segment_list]
+                    )
+
+                    if verifier_definition:
+                        device_port_verifier_lookup_table[
+                            portName
+                        ] = f"lambda conds: {verifier_definition}"
+
+                if device_port_verifier_lookup_table:
+                    port_verifier_lookup_table[
+                        devSubType
+                    ] = device_port_verifier_lookup_table
+
                 for _, etypes in requiredPortFrontendNameToEnergyTypes.items():
                     for energyType in etypes:
                         energyTypes.add(energyType)
+
+                _conjugate_verifiers = {}
+                rule_list = devDef["rules"]
+                requirement_list = devDef["requirements"]
+                # tuple of port names
+                # "lambda cond0, cond1: ..."
+
+                for rule in rule_list:
+                    k, v = parse_rule(rule)
+                    _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+
+                for requirement in requirement_list:
+                    k, v = parse_requirement(requirement)
+                    _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+
+                conjugate_verifiers = {}
+
+                for k, v in _conjugate_verifiers.items():
+                    lambda_params = ", ".join(
+                        make_param_list("cond") + make_param_list("etype")
+                    )
+                    v = " and ".join([f"({_v})" for _v in v])
+                    v = f"lambda {lambda_params}: {v}"
+                    conjugate_verifiers[k] = v
+
+                if conjugate_verifiers:
+                    for k in conjugate_verifiers.keys():
+                        for e_k in k:
+                            assert (
+                                e_k in ports.keys()
+                            ), f"found nonexistant key {e_k} at device {devSubType}"
+                    conjugate_verifiers_repr = ", ".join(
+                        [f"{repr(k)}: {v}" for k, v in conjugate_verifiers.items()]
+                    )
+                    conjugate_verifiers_repr = f"{{{conjugate_verifiers_repr}}}"
+                    conjugate_verifiers_constructor = f"lambda port_kind_to_port_name: {{tuple([port_kind_to_port_name[it] for it in k]): v for k, v in {conjugate_verifiers_repr}.items()}}"
+                    conjugate_port_verifier_constructor_lookup_table[
+                        devSubType
+                    ] = conjugate_verifiers_constructor
 
                 deviceTypeTriplets.append(
                     (
@@ -129,6 +295,11 @@ if __name__ == "__main__":
 
     render_params["deviceTypes"] = deviceTypes
     render_params["energyTypes"] = list(energyTypes)
+    # breakpoint()
+    render_params["port_verifier_lookup_table"] = port_verifier_lookup_table
+    render_params[
+        "conjugate_port_verifier_constructor_lookup_table"
+    ] = conjugate_port_verifier_constructor_lookup_table
 
     load_render_and_format(
         template_path,

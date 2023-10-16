@@ -116,7 +116,9 @@ class 电负荷仿真结果(BaseModel):
         return 电负荷仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
-            电负荷=safeAbs(((statistics.mean(model.设备信息.EnergyConsumption)) * timeParam)),
+            电负荷=safeAbs(
+                ((statistics.mean([-value(e) for e in model.电接口.values()])) * timeParam)
+            ),
             电收入=safeAbs(((-value(model.总成本年化)) * timeParam)),
         )
 
@@ -532,6 +534,95 @@ class 传输线仿真结果(BaseModel):
         )
 
 
+class 氢负荷仿真结果(BaseModel):
+    元件名称: str
+
+    元件类型: str
+
+    ## UNIQ PARAMS ##
+    氢气消耗量: float
+    """
+    单位: t
+    """
+
+    氢气收入: float
+    """
+    单位: 万元
+    """
+
+    @staticmethod
+    def export(model: 氢负荷模型, timeParam: float):
+        return 氢负荷仿真结果(
+            元件名称=safeAbs(model.设备信息.设备名称),
+            元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
+            氢气消耗量=safeAbs(
+                (
+                    (statistics.mean([-value(e) for e in model.氢气接口.values()]))
+                    * timeParam
+                )
+            ),
+            氢气收入=safeAbs(((-value(model.总成本年化)) * timeParam)),
+        )
+
+
+class 电解槽仿真结果(BaseModel):
+    元件名称: str
+
+    元件类型: str
+
+    设备型号: str
+
+    设备台数: int
+    """
+    单位: one
+    """
+
+    设备维护费用: float
+    """
+    单位: 万元
+    """
+
+    ## UNIQ PARAMS ##
+    产热量: float
+    """
+    单位: kWh
+    """
+
+    电负荷: float
+    """
+    单位: kWh
+    """
+
+    氢气产量: float
+    """
+    单位: t
+    """
+
+    @staticmethod
+    def export(model: 电解槽模型, timeParam: float):
+        return 电解槽仿真结果(
+            元件名称=safeAbs(model.设备信息.设备名称),
+            元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备维护费用=safeAbs(
+                ((value(model.总固定维护成本 + model.总可变维护成本年化)) * ((timeParam / 每年小时数)))
+            ),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            电负荷=safeAbs(
+                ((statistics.mean([-value(e) for e in model.电接口.values()])) * timeParam)
+            ),
+            氢气产量=safeAbs(
+                ((statistics.mean([value(e) for e in model.制氢接口.values()])) * timeParam)
+            ),
+            产热量=safeAbs(
+                (
+                    (statistics.mean([value(e) for e in model.设备余热接口.values()]))
+                    * timeParam
+                )
+            ),
+        )
+
+
 ################
 # 设备出力曲线 #
 ################
@@ -763,4 +854,70 @@ class 传输线出力曲线(BaseModel):
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             传输功率=[-value(e) for e in model.电输入.values()],
+        )
+
+
+class 电解槽出力曲线(BaseModel):
+    元件名称: str
+
+    时间: List[int]
+    """
+    单位: one
+    """
+
+    ## UNIQ PARAMS ##
+    耗电功率: List[float]
+    """
+    单位: kW
+    """
+
+    产氢流量: List[float]
+    """
+    单位: kg/hour <- metric_ton / 年
+    """
+
+    @validator("产氢流量")
+    def standard_unit_to_custom_产氢流量(cls, v):
+        return [e / 8.765999999999998 for e in v]
+
+    产热功率: List[float]
+    """
+    单位: kW
+    """
+
+    @staticmethod
+    def export(model: 电解槽模型, timeParam: float):
+        return 电解槽出力曲线(
+            时间=list(range(model.计算参数.迭代步数)),
+            元件名称=model.设备信息.设备名称,
+            耗电功率=[-value(e) for e in model.电接口.values()],
+            产氢流量=[value(e) for e in model.制氢接口.values()],
+            产热功率=[value(e) for e in model.设备余热接口.values()],
+        )
+
+
+class 氢负荷出力曲线(BaseModel):
+    元件名称: str
+
+    时间: List[int]
+    """
+    单位: one
+    """
+
+    ## UNIQ PARAMS ##
+    耗氢流量: List[float]
+    """
+    单位: kg/hour <- metric_ton / 年
+    """
+
+    @validator("耗氢流量")
+    def standard_unit_to_custom_耗氢流量(cls, v):
+        return [e / 8.765999999999998 for e in v]
+
+    @staticmethod
+    def export(model: 氢负荷模型, timeParam: float):
+        return 氢负荷出力曲线(
+            时间=list(range(model.计算参数.迭代步数)),
+            元件名称=model.设备信息.设备名称,
+            耗氢流量=[-value(e) for e in model.氢气接口.values()],
         )

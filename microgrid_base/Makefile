@@ -323,3 +323,9 @@ test_persistent_solver:
 
 solver_repl:
 	cmd /K
+
+test_topo_check:
+	${PYTHON} test_topo_check.py
+
+microgrid_topo_check:
+	${PYTHON} microgrid_topo_check.py

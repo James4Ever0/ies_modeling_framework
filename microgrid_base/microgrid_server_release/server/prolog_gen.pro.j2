@@ -1,0 +1,93 @@
+:- use_module(library(clpfd)).
+
+{% set state_to_ports = {"input":[], "output":[], "idle": []}%}
+{% set possible_states = ["input", "output", "idle"] %}
+{% for portName, portPossibleStates in portNameToPortPossibleStates.items()%}
+port({{portName}}).
+    {% for state in possible_states%}
+        {% if state in portPossibleStates%}
+            {% do state_to_ports[state].append(portName)%}
+        {% endif%}
+    {% endfor%}
+{% endfor %}
+
+{% for state, portNames in state_to_ports.items()%}
+    {% for portName in portNames%}
+{{state}}_port({{portName}}).
+    {% endfor%}
+
+{% endfor%}
+
+{% for deviceType in deviceTypes %}
+device({{deviceType}}).
+{% endfor %}
+
+device(DEVICE_NAME):- device(DEVICE_TYPE), call(DEVICE_TYPE, DEVICE_NAME).
+
+{% for deviceType, deviceNames in deviceTypeToDeviceNames.items()%}
+    {% for deviceName in deviceNames%}
+{{deviceType}}({{deviceName}}).
+    {% endfor%}
+
+{% endfor%}
+
+{% for deviceName, devicePortNames in deviceNameToPortNames.items()%}
+    {% for devicePortName in devicePortNames%}
+port_mapping({{deviceName}}, {{devicePortName}}).
+    {% endfor%}
+    
+{% endfor%}
+
+{% for energyType in energyTypes%}
+energy({{energyType}}).
+{% endfor%}
+
+{% for energyType, portNames in energyTypeToPortNames.items()%}
+    {% for portName in portNames %}
+{{energyType}}({{portName}}).
+    {% endfor%}
+
+{% endfor%}
+
+list_member(X,[X|_]).
+list_member(X,[_|TAIL]) :- list_member(X, TAIL).
+
+all_satisfy_constraint([], _).
+all_satisfy_constraint([H|T], Constraint) :-
+    call(Constraint, H),
+    all_satisfy_constraint(T, Constraint).
+
+all_with_same_type(PORT_LIST, ENERGY_TYPE) :- energy(ENERGY_TYPE), all_satisfy_constraint(PORT_LIST, ENERGY_TYPE).
+
+port_status(PORT, input) :- input_port(PORT).
+port_status(PORT, output):- output_port(PORT).
+port_status(PORT, idle):- idle_port(PORT).
+
+input_status(STATUS) :- STATUS = input.
+output_status(STATUS) :- STATUS = output.
+idle_status(STATUS) :- STATUS = idle.
+
+apply_list([], [], _).
+apply_list([INP], [RET], FUNC) :- call(FUNC, INP, RET).
+apply_list([INP|INP_TAIL], [RET|RET_TAIL], FUNC) :- apply_list(INP_TAIL, RET_TAIL, FUNC), call(FUNC, INP, RET).
+
+port_status_list(PORT, STATUS) :- apply_list(PORT, STATUS, port_status).
+
+{% for adderName, adderPortNames in adderNameToAdderPortNames.items()%}
+adder({{adderName}}, {{ '[{}]'.format(', '.join(adderPortNames)) }}).
+{% endfor%}
+
+adder_port_status(ADDER, [ENERGY_TYPE|[STATUS_LIST]]) :- 
+    adder(ADDER, PORT_LIST),
+    all_satisfy_constraint(PORT_LIST, port),
+    all_with_same_type(PORT_LIST, ENERGY_TYPE),
+    port_status_list(PORT_LIST, STATUS_LIST),
+    (
+        list_member(STATUS_X, STATUS_LIST), list_member(STATUS_Y, STATUS_LIST),STATUS_X=input, STATUS_Y = output;
+        all_satisfy_constraint(STATUS_LIST, idle_status)
+    ).
+
+adder_port_all_status(ADDER, ALL_STATUS):-
+    findall(STATUS, adder_port_status(ADDER, STATUS), ALL_STATUS).
+
+adder_port_status_list(ADDER_LIST, ADDER_STATUS_LIST) :- apply_list(ADDER_LIST, ADDER_STATUS_LIST, adder_port_status).

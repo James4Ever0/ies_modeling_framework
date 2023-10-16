@@ -220,7 +220,8 @@ class FeasoptMode(IntEnum):
     optimal_minimum_quadratic_sum_relaxation = auto()
 
 
-FEASOPT_TIMELIMIT = 30
+FEASOPT_TIMELIMIT = 240
+# FEASOPT_TIMELIMIT = 30
 CPLEX_SEC_TO_TICK = 290
 from bs4 import BeautifulSoup
 
@@ -283,6 +284,9 @@ def invoke_solver_with_custom_config_and_solution_parser(
     return solved
 
 
+SOLUTION_COUNT = 0
+
+
 def feasopt_script_generator(
     lp_path: str, sol_path: str, mode: FeasoptMode, solutionCount: int
 ):
@@ -291,8 +295,9 @@ def feasopt_script_generator(
         if not ies_env.DETERMINISTIC_FAILSAFE
         else f"dettimelimit {FEASOPT_TIMELIMIT*CPLEX_SEC_TO_TICK}",
         f"feasopt mode {mode}",
-        f"mip limits solutions {solutionCount}",
     ]
+    if solutionCount > 0:
+        cplex_config.append(f"mip limits solutions {solutionCount}")
     if ies_env.DETERMINISTIC_FAILSAFE:
         cplex_config.append(f"randomseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
     script = [
@@ -308,7 +313,7 @@ def feasopt_script_generator(
 from functools import partial
 
 
-def feasopt(mw, mode: FeasoptMode, logfile: str, solutionCount: int = 1):
+def feasopt(mw, mode: FeasoptMode, logfile: str, solutionCount: int = SOLUTION_COUNT):
     solved = invoke_solver_with_custom_config_and_solution_parser(
         mw,
         logfile,
@@ -332,12 +337,19 @@ def feasopt_only(mw, logdir: str):
     return feasopt(mw, FeasoptMode.minimum_sum_relaxation, logfile), logfile
 
 
-def scip_minuc_script_generator(lp_path: str, sol_path: str, solutionCount: int = 1):
+def scip_minuc_script_generator(
+    lp_path: str, sol_path: str, solutionCount: int = SOLUTION_COUNT
+):
     scip_config = [
         f"limits time {FEASOPT_TIMELIMIT}",
-        f"limits solutions {solutionCount}",
-        f"limits maxsol {solutionCount}",
     ]
+    if solutionCount > 0:
+        scip_config.extend(
+            [
+                f"limits solutions {solutionCount}",
+                f"limits maxsol {solutionCount}",
+            ]
+        )
     if ies_env.DETERMINISTIC_FAILSAFE:
         scip_config.append(f"random lpseed {ies_env.ANSWER_TO_THE_UNIVERSE}")
         scip_config.append(f"random permutationseed {ies_env.ANSWER_TO_THE_UNIVERSE}")

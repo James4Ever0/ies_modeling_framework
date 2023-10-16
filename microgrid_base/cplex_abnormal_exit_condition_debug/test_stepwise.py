@@ -57,7 +57,8 @@ solver.solve(model, tee=True)
 print("x:", value(model.x))
 print("y:", value(model.y))
 print("obj:", value(model.obj))
-# print("disj0", value(model.disj0.binary_indicator_var))
+print("disj0 bin_ind", value(model.disj0.binary_indicator_var)) # 1.0
+print("disj0 ind", value(model.disj0.indicator_var)) # True, most likely to be logical
 # print("disj1", value(model.disj1.binary_indicator_var))
 # print("disj2", value(model.disj2.binary_indicator_var))
 # print("decision:", value(model.decision))

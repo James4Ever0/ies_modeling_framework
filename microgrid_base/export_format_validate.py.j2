@@ -183,8 +183,8 @@ def ReLU(val):
         ("电负荷", TP_MVLISTINV("model.电接口")),
         CSPL['电收入']
     ],
-    "氢气负荷": [
-        ("氢气负荷", TP_MVLISTINV("model.氢气接口")),
+    "氢负荷": [
+        ("氢气消耗量", TP_MVLISTINV("model.氢气接口")),
         CSPL['氢气收入']
     ],
     "光伏发电": [
@@ -331,7 +331,7 @@ class {{devName}}仿真结果(BaseModel):
         ('转换功率', 'addListElem({}, {})'.format(VLIST('model.储能端_.x_pos'),VLIST('model.线路端_.x_pos')))
     ],
     "电负荷":[('耗电功率', VLISTINV('model.电接口'))],
-    "氢气负荷":[('耗氢流量', VLISTINV('model.氢气接口'))],
+    "氢负荷":[('耗氢流量', VLISTINV('model.氢气接口'))],
     "传输线":[('传输功率', VLISTINV('model.电输入'))],
     "电解槽":[
         ('耗电功率', VLISTINV('model.电接口')),

@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 device_whitelist = [
     "柴油",
     "电负荷",
@@ -10,5 +12,5 @@ device_whitelist = [
     "双向变流器",
     "传输线",
     "电解槽",
-    # "氢负荷",
+    "氢负荷",
 ]

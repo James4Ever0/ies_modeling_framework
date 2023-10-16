@@ -172,6 +172,8 @@ def solve_model(
 ):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
+    transformDisjunctiveModel(mw.model) # right before solving
+
     solved = False
     with SolverFactory(Solver.cplex) as solver:
         # try:
@@ -219,26 +221,32 @@ def rescue(mw, solver, timestamp, solver_log, results):
     
     # TODO: make this into background tasks, which will not raise exception and stop failsafe routines
     # TODO: prevent solver log get recycled
-    if ies_env.INFEASIBILITY_DIAGNOSTIC:
-        os.mkdir(
-            solver_log_dir_with_timestamp := os.path.join(
-                log_dir, f"infeasibility_diagnostic_{timestamp}"
+    try:
+        if ies_env.INFEASIBILITY_DIAGNOSTIC:
+            os.mkdir(
+                solver_log_dir_with_timestamp := os.path.join(
+                    log_dir, f"infeasibility_diagnostic_{timestamp}"
+                )
             )
-        )
-        shutil.move(
-            solver_log,
-            solver_log_new := os.path.join(
-                solver_log_dir_with_timestamp, SOLVER_LOG_FNAME
-            ),
-        )
+            shutil.move(
+                solver_log,
+                solver_log_new := os.path.join(
+                    solver_log_dir_with_timestamp, SOLVER_LOG_FNAME
+                ),
+            )
 
-        analyzeInfeasibility(
-            mw,
-            solver,
-            solver_log_new,
-            results,
-            solver_log_dir_with_timestamp,
-        )
+            analyzeInfeasibility(
+                mw,
+                solver,
+                solver_log_new,
+                results,
+                solver_log_dir_with_timestamp,
+            )
+    except Exception as e:
+        if ies_env.FAILSAFE:
+            logger_traceback()
+        else:
+            raise e
 
     if ies_env.FAILSAFE:
         failsafe_logdir = os.path.join(log_dir, f"failsafe_{timestamp}")
@@ -277,20 +285,21 @@ def analyzeInfeasibility(
             )
         )
         mDictList = calcParamListToMDictList(
-            mw.inputParam.calcParamList
+            mw.inputParams.calcParamList
         )  # [(devs, adders, graph_data, topo_load.G), ...]
         plotMultipleTopologies(dict(mDictList=mDictList), plot_output_dir)
         analyzeSolverResults(results, em)
 
         lp_filepath = os.path.join(solver_log_dir_with_timestamp, "model.lp")
         # TODO: export input parameters.
+        # BUG: unserializable object 'Graph' found
 
-        input_params_filepath = os.path.join(
-            solver_log_dir_with_timestamp, "input_params.json"
-        )
-        with open(input_params_filepath, "w+") as f:
-            content = json.dumps(mw.inputParams.dict(), ensure_ascii=False, indent=4)
-            f.write(content)
+        # input_params_filepath = os.path.join(
+        #     solver_log_dir_with_timestamp, "input_params.json"
+        # )
+        # with open(input_params_filepath, "w+") as f:
+        #     content = json.dumps(mw.inputParams.dict(), ensure_ascii=False, indent=4)
+        #     f.write(content)
 
         exported_model = ExportedModel(mw.model, lp_filepath)
         export_model_smap = exported_model.smap
@@ -315,7 +324,7 @@ def analyzeInfeasibility(
         em.append("")
         em.append("Solver log saved to: " + solver_log)
         em.append("Model saved to: " + lp_filepath)
-        em.append("Input params saved to: " + input_params_filepath)
+        # em.append("Input params saved to: " + input_params_filepath)
 
         translateFileUsingSymbolMap(lp_filepath, export_model_smap)
 

@@ -209,9 +209,10 @@ def convertSymbolMapToTranslationTable(symbol_map: SymbolMap):
             else:
                 raise Exception(f"Cannot retrieve name from symbol '{obj}'")
         else:
-            raise Exception(
-                f"Numeric symbol name '{numeric_name}' does not have reference to model."
-            )
+            translationTable[numeric_name]=numeric_name
+            # raise Exception(
+            #     f"Numeric symbol name '{numeric_name}' does not have reference to model."
+            # )
     return translationTable
 
 
@@ -663,7 +664,7 @@ def solve_decompose_and_scan(
 
 import random
 
-
+from typing import Union
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
     modelWrapper,
@@ -688,7 +689,8 @@ def checkInfeasibleOrUnboundedModel(
     # phase 0: limit iteration and get premature solutions
     # advanced start might be used along with other solvers.
     # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=mip-starting-from-solution-starts
-    options: List[Tuple[str, float]] = [
+    options: List[Tuple[str, Union[str,float]]] = [
+    # options: List[Tuple[str, float]] = [
         ("mip limits strongit", 1),
         ("mip limits nodes", 2e2),
         ("mip tolerances mipgap", 1),  # mipgap
@@ -707,7 +709,8 @@ def checkInfeasibleOrUnboundedModel(
         ("preprocessing reduce", 0),
         ("randomseed", random.randint(0, 1e10)),
         ("mip strategy presolvenode", -1),
-        ("preprocessing presolve", 0),
+        ("preprocessing presolve", 'y'),
+        # ("preprocessing presolve", 0),
         ("mip polishafter solutions", 1),
         ("mip polishafter time", 5),
         ("barrier limits iteration", 1e3),

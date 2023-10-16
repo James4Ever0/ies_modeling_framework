@@ -54,7 +54,7 @@ import os
 
 def plotMultipleTopologies(data: dict, output_dir: str):
     for i in range(len(data[extract_data_key])):
-        output_path = os.path.join(output_dir, "plot_{i}.html")
+        output_path = os.path.join(output_dir, f"plot_{i}.html")
         plotSingleTopology(data, output_path, i)
 
 

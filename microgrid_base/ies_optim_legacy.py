@@ -14,7 +14,6 @@ from error_utils import ErrorManager
 import numpy as np
 import math
 
-
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
@@ -86,7 +85,7 @@ def 计算年化率(_贴现率, 寿命):
 from functools import lru_cache
 
 
-class 电价转换:
+class 价格转换:
     @staticmethod
     @lru_cache(maxsize=1)
     def getMagnitude():
@@ -96,13 +95,24 @@ class 电价转换:
     @staticmethod
     def convert(value):
         # convert to standard unit
-        magnitude = 电价转换.getMagnitude()
+        magnitude = 价格转换.getMagnitude()
         ret = value * magnitude
         return ret
 
 
-class 常数电价(BaseModel, 电价转换):
-    Price: confloat(gt=0) = Field(title="电价", description="单位: 元/kWh")
+class 常数电价(BaseModel, 价格转换):
+    Price: confloat(gt=0) = Field(title="电价", description="元/kWh")
+
+    def getFee(self, power: float, time_in_day: float) -> float:
+        price = self.Price
+
+        # unit: [currency]/[time]
+        # 万元/h
+        return self.convert(price * power)
+
+
+class 常数氢价(BaseModel, 价格转换):
+    Price: confloat(gt=0) = Field(title="氢价", description="元/kg")
 
     def getFee(self, power: float, time_in_day: float) -> float:
         price = self.Price
@@ -133,7 +143,7 @@ def convertDaysToMonth(day_index: float):
     raise Exception("Invalid day index:", day_index)
 
 
-class 分月电价(BaseModel, 电价转换):
+class 分月电价(BaseModel, 价格转换):
     PriceList: Tuple[
         float,
         float,
@@ -160,7 +170,7 @@ class 分月电价(BaseModel, 电价转换):
         return self.convert(price * power)
 
 
-class 分时电价(BaseModel, 电价转换):
+class 分时电价(BaseModel, 价格转换):
     PriceList: Tuple[
         float,
         float,
@@ -198,7 +208,7 @@ class 分时电价(BaseModel, 电价转换):
         return self.convert(price * power)
 
 
-class 分时分月电价(BaseModel, 电价转换):
+class 分时分月电价(BaseModel, 价格转换):
     PriceStruct: Tuple[
         分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价, 分时电价
     ] = Field(title=f"长度为{每年月数}的分时电价数组", description="单位: 元/kWh")
@@ -354,46 +364,53 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
     类型: 输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
+    """
+    类型: 输出
     """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
     类型: 输入
     """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
 
 
 class 双向变流器ID(设备ID):
-    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 输入输出")
+    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
-    线路端: conint(ge=0) = Field(title="线路端ID", description="接口类型: 输入输出")
+    储能端: conint(ge=0) = Field(title="储能端ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
 
 
 class 传输线ID(设备ID):
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
+    """
+    类型: 输入输出
+    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
+
+
+class 氢负荷ID(设备ID):
+    氢气接口: conint(ge=0) = Field(title="氢气接口ID", description="接口类型: 输入")
     """
-    类型: 输入输出
+    类型: 输入
     """
 
 
@@ -615,16 +632,15 @@ class 电负荷信息(设备基础信息):
     """
     单位: kW
     """
-
     MaxEnergyConsumption: Union[None, confloat(gt=0)] = Field(
-        default=None, title="最大消耗功率", description="单位: kW\n用于典型日下计算变压器容量"
+        default=None, title="最大消耗功率", description="单位: kW"
     )
     """
     单位: kW
     """
 
     PriceModel: Union[常数电价, 阶梯电价, 分时电价, 分时阶梯电价, 分月电价, 分时分月电价] = Field(
-        title="计价模型", description="单位: kWh/元"
+        title="计价模型", description="单位: 元/kWh"
     )
 
 
@@ -1570,9 +1586,9 @@ class 传输线信息(设备信息):
     Optimize: bool = Field(
         default=False, title="是否优化线径", description="若选是，根据电负荷峰值确定传输电功率; 选否，则输入给定传输电功率值"
     )
-    U: confloat(gt=0) = Field(title="传输电压", description="单位: kW")
+    U: confloat(gt=0) = Field(title="传输电压", description="单位: V")
     """
-    单位: kW
+    单位: V
     """
     Rho: confloat(gt=0) = Field(title="传输线电阻率", description="单位: Ω*m")
     """
@@ -1654,11 +1670,58 @@ class 传输线信息(设备信息):
     """
 
 
+class 氢负荷信息(设备基础信息):
+    LoadType: 负荷类型 = Field(
+        default=负荷类型.Normal,
+        title="负荷类型",
+        description=f"可选: {', '.join(负荷类型.__members__.keys())}",
+    )
+
+    # 正数
+    PunishmentRate: confloat(ge=0) = Field(
+        default=0, title="惩罚系数", description="单位: 元/kg"
+    )
+    """
+    单位: 元/kg
+    """
+
+    Pmin: confloat(ge=0) = Field(default=0, title="负荷功率最小值", description="单位: kg/hour")
+    """
+    单位: kg/hour
+    """
+
+    Pmax: confloat(ge=0) = Field(default=0, title="负荷功率最大值", description="单位: kg/hour")
+    """
+    单位: kg/hour
+    """
+
+    @validator("Pmax")
+    def validate_Pmax(cls, v, values):
+        if values.get("LoadType", None) in [
+            负荷类型.Flexible,
+            负荷类型.InterruptableAndFlexible,
+        ]:
+            p_min = values.get("Pmin", 0)
+            assert (
+                v >= p_min
+            ), f"Pmax must be greater than or equal to Pmin\nGiven: Pmax={v}, Pmin={p_min}"
+        return v
+
+    EnergyConsumption: List[confloat(ge=0)] = Field(
+        title="耗能功率表", description="单位: kg/hour"
+    )
+    """
+    单位: kg/hour
+    """
+
+    PriceModel: 常数氢价 = Field(title="计价模型", description="单位: 元/kg")
+
+
 class 电解槽信息(设备信息):
     StartupCountLimit: Optional[int] = Field(
         default=None, title="启动次数限制", description="默认为null"
     )
-    LHV_Hydrogen: float = Field(default=33.3, title="氢气热值", description="单位:  kWh/kg")
+    LHVHydrogen: float = Field(default=33.3, title="氢气热值", description="单位: kWh/kg")
     """
     单位: kWh/kg
     """
@@ -1876,7 +1939,7 @@ class InputParams(SharedParams):
 
 
 class ModelWrapper:
-    inputParam: InputParams
+    inputParams: InputParams
 
     def __init__(self, model: Optional[ConcreteModel] = None, cloned: bool = False):
         self.model = model if model is not None else ConcreteModel()
@@ -1986,7 +2049,7 @@ class ModelWrapper:
             expr_name = f"expr_{i}"
             self.checkExpressionPolynomialDegree(expr, f"Disjunct_Expression_{i}")
             cons = Constraint(expr=expr)
-            DJ.__setattr(expr_name, cons)
+            DJ.__setattr__(expr_name, cons)
         self.model.__setattr__(name, DJ)
         return DJ
 
@@ -1995,6 +2058,8 @@ class ModelWrapper:
         deg = getattr(expr, "polynomial_degree", 0)
         if deg:
             deg = expr.polynomial_degree()
+        if deg is None:  # possibly division found
+            raise Exception("invalid polynomial degree for:", expr.to_string())
         if deg != 1:
             logger_print("EXPR DEG:", deg)
             expr_repr = f"{str(expr) if len(str(expr))<200 else str(expr)[:200]+'...'}"
@@ -2007,14 +2072,15 @@ class ModelWrapper:
             raise Exception(error_msg)
 
     def DisjunctiveConstraints(self, expression_disjunct_list: list[list]):
-        assert isinstance(expression_disjunct_list)
+        assert isinstance(expression_disjunct_list, list)
         DJL = []
         for expression_disjunct in expression_disjunct_list:
             DJ = self.Disjunct(expression_disjunct)
             DJL.append(DJ)
         name = self.getSpecialName("DJV")
         DJV = Disjunction(expr=DJL)
-        return DJV
+        self.model.__setattr__(name, DJV)
+        return DJV, DJL
 
     def Constraint(self, *args, **kwargs):
         expr = kwargs.pop("expr", args[0] if len(args) > 0 else None)
@@ -2325,57 +2391,83 @@ class 设备模型:
         self, var_1, var_2, expression=..., mrange: range = None
     ):
         assert expression is not ...
+        ret_list = []
         for i in self.getRange(mrange):
-            self.mw.DisjunctiveConstraints(expression(var_1[i], var_2[i]))
+            ret_elem = self.mw.DisjunctiveConstraints(expression(var_1[i], var_2[i]))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def DisjunctiveRangeConstraintMulti(
         self, *vars, expression=..., mrange: range = None
     ):
         assert expression is not ...
+        ret_list = []
         for i in self.getRange(mrange):
-            self.mw.DisjunctiveConstraints(expression(*[var[i] for var in vars]))
+            ret_elem = self.mw.DisjunctiveConstraints(
+                expression(*[var[i] for var in vars])
+            )
+            ret_list.append(ret_elem)
+        return ret_list
 
     def RangeConstraint(self, var_1, var_2, expression=..., mrange: range = None):
         assert expression is not ...
+        ret_list = []
         for i in self.getRange(mrange):
-            self.mw.Constraint(expression(var_1[i], var_2[i]))
+            ret_elem = self.mw.Constraint(expression(var_1[i], var_2[i]))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def RangeConstraintMulti(self, *vars, expression=..., mrange: range = None):
         assert expression is not ...
+        ret_list = []
         for i in self.getRange(mrange):
-            self.mw.Constraint(expression(*[var[i] for var in vars]))
+            ret_elem = self.mw.Constraint(expression(*[var[i] for var in vars]))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def CustomDisjunctiveRangeConstraint(
         self, var_1, var_2, expression=..., customRange: range = ...
     ):
         assert customRange is not ...
         assert expression is not ...
+        ret_list = []
         for i in customRange:
-            self.mw.DisjunctiveConstraints(expression(var_1, var_2, i))
+            ret_elem = self.mw.DisjunctiveConstraints(expression(var_1, var_2, i))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def CustomDisjunctiveRangeConstraintMulti(
         self, *vars, expression=..., customRange: range = ...
     ):
         assert customRange is not ...
         assert expression is not ...
+        ret_list = []
         for i in customRange:
-            self.mw.DisjunctiveConstraints(expression(*vars, i))
+            ret_elem = self.mw.DisjunctiveConstraints(expression(*vars, i))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def CustomRangeConstraint(
         self, var_1, var_2, expression=..., customRange: range = ...
     ):
         assert customRange is not ...
         assert expression is not ...
+        ret_list = []
         for i in customRange:
-            self.mw.Constraint(expression(var_1, var_2, i))
+            ret_elem = self.mw.Constraint(expression(var_1, var_2, i))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def CustomRangeConstraintMulti(
         self, *vars, expression=..., customRange: range = ...
     ):
         assert customRange is not ...
         assert expression is not ...
+        ret_list = []
         for i in customRange:
-            self.mw.Constraint(expression(*vars, i))
+            ret_elem = self.mw.Constraint(expression(*vars, i))
+            ret_list.append(ret_elem)
+        return ret_list
 
     def SumRange(self, var_1, mrange: range = None):
         return sum([var_1[i] for i in self.getRange(mrange)])
@@ -2402,6 +2494,7 @@ class 设备模型:
     def 变量列表_带指示变量(
         self, varName: str, exprList: list = None, within=Reals, mrange: range = None
     ) -> POSNEG:
+        # can replace with disjunctions
         if exprList:
             x = exprList
         else:
@@ -2450,9 +2543,19 @@ class 设备模型:
         assert len(x_vals) == len(y_vals)
         DJL = []
 
+        x_lb, x_ub = min(x_vals), max(x_vals)
+        y_lb, y_ub = min(y_vals), max(y_vals)
+
         for x_value, y_value in zip(x_vals, y_vals):
             disjunct_name = self.getSpecialVarName("DJ")
             DJ = Disjunct()
+
+            x_var.setlb(x_lb)
+            x_var.setub(x_ub)
+
+            y_var.setlb(y_lb)
+            y_var.setub(y_ub)
+
             DJ.cons_x = Constraint(expr=x_var == x_value)
             DJ.cons_y = Constraint(expr=y_var == y_value)
             assert (
@@ -2833,8 +2936,8 @@ class 光伏发电模型(设备模型):
 
         if self.计算参数.计算类型 == "设计规划":
             # TODO：标准光照下出力
-            self.MaxDeviceCount = math.floor(self.MaxInstallArea / self.Area)
-            self.MinDeviceCount = math.ceil(self.MinInstallArea / self.Area)
+            self.MaxDeviceCount = math.ceil(self.MaxInstallArea / self.Area)
+            self.MinDeviceCount = math.floor(self.MinInstallArea / self.Area)
             assert self.MinDeviceCount >= 0
             assert self.MaxDeviceCount >= self.MinDeviceCount
 
@@ -3353,8 +3456,6 @@ class 柴油发电模型(设备模型):
 
         # TODO: define some variables with expression
 
-        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
-
         self.Nrun = self.变量列表("Nrun", within=NonNegativeIntegers)
         """
         机组开启台数
@@ -3604,7 +3705,7 @@ class 电解槽模型(设备模型):
         self.设备ID = 设备ID
         self.设备信息 = 设备信息
 
-        self.LHV_Hydrogen = self.设备信息.toStandard("LHV_Hydrogen")
+        self.LHVHydrogen = self.设备信息.toStandard("LHVHydrogen")
         self.StartupCountLimit = self.设备信息.StartupCountLimit
         self.HasStartupCountLimit = self.StartupCountLimit is not None
         self.RatedInputPower: float = 设备信息.RatedInputPower
@@ -3774,9 +3875,9 @@ class 电解槽模型(设备模型):
 
         self.DisjunctiveRangeConstraintMulti(
             self.电接口,
-            expressions=lambda x: [
+            expression=lambda x: [
                 [x == 0],
-                [-x >= self.RatedPower * self.HydrogenGenerationStartupRate],
+                [-x >= self.RatedInputPower * self.HydrogenGenerationStartupRate],
             ],
         )
 
@@ -3784,7 +3885,7 @@ class 电解槽模型(设备模型):
             self.电接口,
             self.制氢接口,
             expression=lambda x, y: y
-            == -(x * self.HydrogenGenerationEfficiency) / self.LHV_Hydrogen,
+            == -(x * self.HydrogenGenerationEfficiency) / self.LHVHydrogen,
         )
 
         self.RangeConstraint(
@@ -4033,8 +4134,8 @@ class 锂电池模型(设备模型):
             self.TotalCapacity = self.DeviceCount * self.RatedCapacity  # type: ignore
 
         assert self.MaxSOC >= self.MinSOC
-        assert self.MaxSOC < 1
-        assert self.MinSOC > 0  # to ensure that battery will not be drained.
+        assert self.MaxSOC <= 1
+        assert self.MinSOC >= 0
 
         self.原电接口 = self.变量列表_带指示变量("原电接口")  # 正 放电 负 充电
 
@@ -4108,13 +4209,8 @@ class 锂电池模型(设备模型):
 
         if self.计算参数.典型日:
             self.mw.Constraint(
-                (
-                    lambda x, y: x[self.计算参数.迭代步数 - 1] * self.计算参数.deltaT
-                    == (
-                        y[self.计算参数.迭代步数 - 1] * (1 - self.计算参数.deltaT * self.sigma)
-                        - y[0]
-                    )
-                )(self.原电接口.x, self.CurrentTotalCapacity)
+                self.CurrentTotalCapacity[self.计算参数.迭代步数 - 1]
+                == self.CurrentTotalCapacity[0]
             )
 
         # 计算年化
@@ -4288,18 +4384,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
-        )
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=Reals
         )
         """
         类型: 输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
+        )
+        """
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -4504,18 +4600,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -4665,15 +4761,15 @@ class 双向变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
-            "储能端", within=Reals
+        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
+            "线路端", within=Reals
         )
         """
         类型: 输入输出
         """
 
-        self.PD[self.设备ID.线路端] = self.ports["线路端"] = self.线路端 = self.变量列表(
-            "线路端", within=Reals
+        self.PD[self.设备ID.储能端] = self.ports["储能端"] = self.储能端 = self.变量列表(
+            "储能端", within=Reals
         )
         """
         类型: 输入输出
@@ -4819,15 +4915,15 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
         )
         """
         类型: 输入输出
         """
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
         )
         """
         类型: 输入输出
@@ -4856,6 +4952,7 @@ class 传输线模型(设备模型):
             expression=lambda x, y: x + y <= 1,
         )
 
+        # TODO: use Disjunction instead of Piecewise
         self.Pwire_Asec_Pr.sort(key=lambda x: x[0])
         self.Pwire_arr = [e[0] for e in self.Pwire_Asec_Pr]
         self.Asec_arr = [e[1] for e in self.Pwire_Asec_Pr]
@@ -4863,32 +4960,57 @@ class 传输线模型(设备模型):
 
         if self.设备信息.Optimize:
             self.Pwire = self.单变量("Pwire", within=NonNegativeReals)
+
             self.RangeConstraintMulti(
                 self.PowerInput_.x_neg,
                 self.PowerOutput_.x_neg,
                 expression=lambda x, y: x + y <= self.Pwire,
             )
+
             self.Asec = self.单变量("Asec", within=NonNegativeReals)
-            self.Piecewise(
-                x_var=[self.Pwire],
-                y_var=[self.Asec],
+            self.Asec_inv = self.单变量("Asec_inv", within=NonNegativeReals)
+
+            self.DisjunctivePair(
+                x_var=self.Pwire,
+                y_var=self.Asec,
                 x_vals=self.Pwire_arr,
                 y_vals=self.Asec_arr,
-                range_list=[0],
-            )[0]
+            )
+            self.DisjunctivePair(
+                x_var=self.Pwire,
+                y_var=self.Asec_inv,
+                x_vals=self.Pwire_arr,
+                y_vals=[1 / e for e in self.Asec_arr],
+            )
+
             self.Pr = self.单变量("Pr", within=NonNegativeReals)
-            self.Piecewise(
-                x_var=[self.Pwire],
-                y_var=[self.Pr],
+
+            self.DisjunctivePair(
+                x_var=self.Pwire,
+                y_var=self.Pr,
                 x_vals=self.Pwire_arr,
                 y_vals=self.Pr_arr,
-                range_list=[0],
-            )[0]
+            )
         else:
             self.Pwire = self.GivenMaxPower
-            self.Asec = np.interp(self.Pwire, self.Pwire_arr, self.Asec_arr)
-            self.Pr = np.interp(self.Pwire, self.Pwire_arr, self.Pr_arr)
-        self.R = (self.Rho * self.Length) / self.Asec
+            ind = -1
+            dis = -1
+            for _ind, val in enumerate(self.Pwire_arr):
+                _dis = val - self.GivenMaxPower
+                if _dis > 0:
+                    if dis < 0 or dis > _dis:
+                        dis = _dis
+                        ind = _ind
+            if ind == -1:
+                raise Exception(
+                    f"No valid Pwire found!\nGivenMaxPower: {self.GivenMaxPower}\nPwire_arr: {self.Pwire_arr}"
+                )
+            else:
+                self.Pwire = self.Pwire_arr[ind]
+                self.Asec = self.Asec_arr[ind]
+                self.Asec_inv = 1 / self.Asec
+                self.Pr = self.Pr_arr[ind]
+        self.R = (self.Rho * self.Length) * self.Asec_inv
         """
         传输线电阻
         """
@@ -4978,6 +5100,11 @@ class 电负荷模型(设备模型):
         """
 
         assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
+        self.Pmin = self.设备信息.toStandard("Pmin")
+        self.Pmax = self.设备信息.toStandard("Pmax")
+        self.PunishmentRate = self.设备信息.toStandard("PunishmentRate")
+        self.EnergyConsumption = self.设备信息.toStandard("EnergyConsumption")
+        # deal with MaxEnergyConsumption & PriceModel separately
 
         if self.设备信息.LoadType == 负荷类型.Punished:
             self.UnsatisfiedEnergyConsumption = self.变量列表(
@@ -4988,13 +5115,13 @@ class 电负荷模型(设备模型):
             self.Interrupted = self.变量列表("Interrupted", within=Boolean)
             # Binary is ok.
 
-        MaxEnergyConsumptionDefault = max(self.设备信息.EnergyConsumption)
+        MaxEnergyConsumptionDefault = max(self.EnergyConsumption)
 
         if self.设备信息.MaxEnergyConsumption is None:
             self.MaxEnergyConsumption = MaxEnergyConsumptionDefault
         else:
             assert self.设备信息.MaxEnergyConsumption >= MaxEnergyConsumptionDefault
-            self.MaxEnergyConsumption = self.设备信息.MaxEnergyConsumption
+            self.MaxEnergyConsumption = self.设备信息.toStandard("MaxEnergyConsumption")
 
         self.IncomeRates = ...
         self.punishRate = 0
@@ -5018,43 +5145,142 @@ class 电负荷模型(设备模型):
         punishmentRates = [0]
 
         if self.设备信息.LoadType == 负荷类型.Normal:
-            self.RangeConstraint(
-                self.电接口, self.设备信息.EnergyConsumption, lambda x, y: x == -y
-            )
+            self.RangeConstraint(self.电接口, self.EnergyConsumption, lambda x, y: x == -y)
         elif self.设备信息.LoadType == 负荷类型.Punished:
             self.RangeConstraintMulti(
                 self.电接口,
                 self.UnsatisfiedEnergyConsumption,
-                self.设备信息.EnergyConsumption,
+                self.EnergyConsumption,
                 expression=lambda x, y, z: x == -(z - y),
             )
             punishmentRates = [
-                v * self.设备信息.PunishmentRate
+                v * self.PunishmentRate
                 for v in self.UnsatisfiedEnergyConsumption.values()
             ]
         elif self.设备信息.LoadType == 负荷类型.Flexible:
-            self.RangeConstraintMulti(
-                self.电接口, expression=lambda x: -x >= self.设备信息.Pmin
-            )
-            self.RangeConstraintMulti(
-                self.电接口, expression=lambda x: -x <= self.设备信息.Pmax
-            )
+            self.RangeConstraintMulti(self.电接口, expression=lambda x: -x >= self.Pmin)
+            self.RangeConstraintMulti(self.电接口, expression=lambda x: -x <= self.Pmax)
         elif self.设备信息.LoadType == 负荷类型.Interruptable:
             self.RangeConstraintMulti(
                 self.电接口,
                 self.Interrupted,
-                expression=lambda x, y: -x == self.设备信息.Pmax * (1 - y),
+                expression=lambda x, y: -x == self.Pmax * (1 - y),
             )
         elif self.设备信息.LoadType == 负荷类型.InterruptableAndFlexible:
             self.RangeConstraintMulti(
                 self.电接口,
                 self.Interrupted,
-                expression=lambda x, y: -x >= self.设备信息.Pmin * (1 - y),
+                expression=lambda x, y: -x >= self.Pmin * (1 - y),
             )
             self.RangeConstraintMulti(
                 self.电接口,
                 self.Interrupted,
-                expression=lambda x, y: -x <= self.设备信息.Pmax * (1 - y),
+                expression=lambda x, y: -x <= self.Pmax * (1 - y),
+            )
+        else:
+            raise Exception("不合理的负荷类型:", self.设备信息.LoadType)
+
+        if self.设备信息.LoadType == 负荷类型.Punished:
+            年化费用 = 0
+            self.punishRate = quicksum_indexed_var(punishmentRates) / self.计算参数.迭代步数
+        else:
+            年化费用 = (quicksum_indexed_var(self.IncomeRates) / self.计算参数.迭代步数) * 每年小时数
+        # 已经是负数了
+
+        self.总成本年化 = self.总可变维护成本年化 = 年化费用
+        return 年化费用
+
+
+class 氢负荷模型(设备模型):
+    def __init__(
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 氢负荷ID, 设备信息: 氢负荷信息
+    ):
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        self.设备ID = 设备ID
+        self.设备信息 = 设备信息
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.ports = {}
+
+        self.PD[self.设备ID.氢气接口] = self.ports["氢气接口"] = self.氢气接口 = self.变量列表(
+            "氢气接口", within=NonPositiveReals
+        )
+        """
+        类型: 输入
+        """
+
+        assert len(self.设备信息.EnergyConsumption) == self.计算参数.迭代步数
+        self.Pmin = self.设备信息.toStandard("Pmin")
+        self.Pmax = self.设备信息.toStandard("Pmax")
+        self.PunishmentRate = self.设备信息.toStandard("PunishmentRate")
+        self.EnergyConsumption = self.设备信息.toStandard("EnergyConsumption")
+        # deal with MaxEnergyConsumption & PriceModel separately
+
+        if self.设备信息.LoadType == 负荷类型.Punished:
+            self.UnsatisfiedEnergyConsumption = self.变量列表(
+                "UnsatisfiedEnergyConsumption", within=NonNegativeReals
+            )
+
+        if 负荷类型.Interruptable in self.设备信息.LoadType:
+            self.Interrupted = self.变量列表("Interrupted", within=Boolean)
+            # Binary is ok.
+
+        self.IncomeRates = ...
+        self.punishRate = 0
+        self.PriceModel = self.设备信息.PriceModel
+
+    def constraints_register(self):
+        super().constraints_register()
+        # TODO: 典型日的分时分月电价取每天同一小时的平均，在电价模型内实现
+        getTimeInDay = (
+            lambda index: index
+            if self.计算参数.计算步长 == "小时"
+            else self.计算参数.分时计价开始时间点
+            + 每天小时数 * convertMonthToDays(self.计算参数.分时计价开始月份)
+            + (index / 每小时秒数)
+        )
+
+        self.IncomeRates = [
+            self.PriceModel.getFee(power, getTimeInDay(index))
+            for index, power in enumerate(self.氢气接口.values())
+        ]  # negative, means income
+        punishmentRates = [0]
+
+        if self.设备信息.LoadType == 负荷类型.Normal:
+            self.RangeConstraint(
+                self.氢气接口, self.EnergyConsumption, lambda x, y: x == -y
+            )
+        elif self.设备信息.LoadType == 负荷类型.Punished:
+            self.RangeConstraintMulti(
+                self.氢气接口,
+                self.UnsatisfiedEnergyConsumption,
+                self.EnergyConsumption,
+                expression=lambda x, y, z: x == -(z - y),
+            )
+            punishmentRates = [
+                v * self.PunishmentRate
+                for v in self.UnsatisfiedEnergyConsumption.values()
+            ]
+        elif self.设备信息.LoadType == 负荷类型.Flexible:
+            self.RangeConstraintMulti(self.氢气接口, expression=lambda x: -x >= self.Pmin)
+            self.RangeConstraintMulti(self.氢气接口, expression=lambda x: -x <= self.Pmax)
+        elif self.设备信息.LoadType == 负荷类型.Interruptable:
+            self.RangeConstraintMulti(
+                self.氢气接口,
+                self.Interrupted,
+                expression=lambda x, y: -x == self.Pmax * (1 - y),
+            )
+        elif self.设备信息.LoadType == 负荷类型.InterruptableAndFlexible:
+            self.RangeConstraintMulti(
+                self.氢气接口,
+                self.Interrupted,
+                expression=lambda x, y: -x >= self.Pmin * (1 - y),
+            )
+            self.RangeConstraintMulti(
+                self.氢气接口,
+                self.Interrupted,
+                expression=lambda x, y: -x <= self.Pmax * (1 - y),
             )
         else:
             raise Exception("不合理的负荷类型:", self.设备信息.LoadType)
@@ -5272,6 +5498,7 @@ devInstClassMap: Dict[str, 设备模型] = {
     "变流器": 变流器模型,
     "双向变流器": 双向变流器模型,
     "传输线": 传输线模型,
+    "氢负荷": 氢负荷模型,
     "电解槽": 电解槽模型,
 }  # type: ignore
 
@@ -5286,6 +5513,7 @@ devIDClassMap: Dict[str, 设备ID] = {
     "变流器": 变流器ID,
     "双向变流器": 双向变流器ID,
     "传输线": 传输线ID,
+    "氢负荷": 氢负荷ID,
     "电解槽": 电解槽ID,
 }  # type: ignore
 
@@ -5300,6 +5528,7 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "变流器": 变流器信息,
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
+    "氢负荷": 氢负荷信息,
     "电解槽": 电解槽信息,
 }  # type: ignore
 
@@ -5913,6 +6142,11 @@ class 传输线节点(设备节点基类):
     param: 传输线信息 = Field(title="设备信息", description="传输线信息")
 
 
+class 氢负荷节点(设备节点基类):
+    subtype: Literal["氢负荷", *deviceSubtypeAlias.get("氢负荷", [])] = Field(title="节点次类型")
+    param: 氢负荷信息 = Field(title="设备信息", description="氢负荷信息")
+
+
 class 电解槽节点(设备节点基类):
     subtype: Literal["电解槽", *deviceSubtypeAlias.get("电解槽", [])] = Field(title="节点次类型")
     param: 电解槽信息 = Field(title="设备信息", description="电解槽信息")
@@ -5948,6 +6182,7 @@ class mDict(BaseModel):
             变流器节点,
             双向变流器节点,
             传输线节点,
+            氢负荷节点,
             电解槽节点,
             母线节点,
             连线节点,
@@ -6066,7 +6301,7 @@ def compute(
                 )
 
                 # TODO: 消纳率约束
-                mw.Constraint(seqsum >= 0)
+                mw.Constraint(seqsum == 0)
 
             with failsafe_suppress_exception():
                 if algoParam.计算类型 == "设计规划":
