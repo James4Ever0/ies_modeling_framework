@@ -365,6 +365,7 @@ class CalcStruct(BaseModel):
     timeParamList: List[Union[float, int]]
     graph_data_list: List
     targetType: str
+    extra_data_list:List
 
 
 def targetTypeAsTargetName(targetType: str):
@@ -390,6 +391,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
     PDList = []
     timeParamList = []
     graph_data_list = []
+    extra_data_list = []
 
     targetType = calcParamList[0][2]["计算目标"]  # graph_data @ elem_0
 
@@ -408,6 +410,8 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         # obj_exprs, devInstDict, PD = compute(
             devs, adders, graph_data, topo_G, mw
         )  # single instance.
+        
+        # TODO: show & plot compensation
 
         compensation_expr = 0 if ies_env.ADDER_ERROR_COMPENSATION == 'none' else extra_data['adder_error_total'][f'{ies_env.ADDER_ERROR_COMPENSATION}_error']
         (
@@ -423,11 +427,12 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         calcTargetLUT["经济"] += (
             financial_obj_expr if 计算类型 == "设计规划" else financial_dyn_obj_expr
         ) * obj_time_param
-        calcTargetLUT['compensation'] +=compensation_expr
+        calcTargetLUT['compensation'] += compensation_expr
 
         devInstDictList.append(devInstDict)
         PDList.append(PD)
         graph_data_list.append(graph_data)
+        extra_data_list.append(extra_data)
 
     ret = CalcStruct(
         calcTargetLUT=calcTargetLUT,
@@ -436,6 +441,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         timeParamList=timeParamList,
         graph_data_list=graph_data_list,
         targetType=targetType,
+        extra_data_list = extra_data_list
     )
     return ret
 
@@ -727,6 +733,8 @@ def solve_model_and_fetch_result(
         obj_expr = ret.calcTargetLUT[calcTarget]
         compensation_expr = ret.calcTargetLUT["compensation"]
         solved = solve_model(mw, obj_expr+compensation_expr)
+        # print("compensation:", value(compensation_expr))
+        # breakpoint()
         result = None
         if solved:
             if rangeDict is not None:

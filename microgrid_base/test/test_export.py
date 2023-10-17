@@ -81,3 +81,19 @@ def test_传输线_export(测试传输线模型):
     for attrName in ["传输线仿真结果", "传输线出力曲线"]:
         if obj := globals().get(attrName, None):
             obj.export(测试传输线模型, timeParam)
+
+
+def test_氢负荷_export(测试氢负荷模型):
+    timeParam = 10
+    测试氢负荷模型.constraints_register()
+    for attrName in ["氢负荷仿真结果", "氢负荷出力曲线"]:
+        if obj := globals().get(attrName, None):
+            obj.export(测试氢负荷模型, timeParam)
+
+
+def test_电解槽_export(测试电解槽模型):
+    timeParam = 10
+    测试电解槽模型.constraints_register()
+    for attrName in ["电解槽仿真结果", "电解槽出力曲线"]:
+        if obj := globals().get(attrName, None):
+            obj.export(测试电解槽模型, timeParam)

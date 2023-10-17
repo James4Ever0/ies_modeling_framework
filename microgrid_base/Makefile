@@ -54,7 +54,8 @@ endif
 
 CONDA = ${CONDA_EXEC} run -n ${CONDA_ENV} --live-stream --no-capture-output
 
-run_in_conda_env = conda run -n $(1) --live-stream --no-capture-output python
+run_in_conda_env = ${CONDA_EXEC} run -n $(1) --live-stream --no-capture-output python
+# run_in_conda_env = conda run -n $(1) --live-stream --no-capture-output python
 
 
 # CONDA = conda run -n rosetta --live-stream --no-capture-output
@@ -144,8 +145,8 @@ main: release
 	${MAIN_EXEC}
 
 .requirements: ${PYTHON_REQUIREMENTS}
-	${GSUDO} ${PYTHON} -m pip install -r requirements.txt
-	${GSUDO} $(call run_in_conda_env,docplex) -m pip install -r requirements_docplex.txt
+	${PYTHON} -m pip install -r requirements.txt
+	$(call run_in_conda_env,docplex) -m pip install -r requirements_docplex.txt
 	touch .requirements
 
 ${LOG_DIRS}:

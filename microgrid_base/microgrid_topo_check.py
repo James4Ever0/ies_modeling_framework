@@ -9,10 +9,12 @@ data_fpath = "./heatpump_code_reference/windspeed_and_illumination_8760.dat"
 windspeed = []  # m/s
 illumination = []  # W/m2 -> kW/m2
 
-NO_BATTERY = True
-# NO_BATTERY = False
-# DEBUG = True
-DEBUG = False
+# NO_BATTERY = True
+NO_BATTERY = False
+NO_ELEC_LOAD=True
+# NO_ELEC_LOAD=False
+DEBUG = True
+# DEBUG = False
 
 with open(data_fpath, "r") as f:
     for line in f.readlines():
@@ -236,25 +238,27 @@ LOAD_H = 氢负荷(
         **devParam,
         设备名称="氢负荷1",
         LoadType=负荷类型.Flexible,
-        Pmin=0,
+        Pmin=100,
         Pmax=1500,
         EnergyConsumption=[1500] * len(a),
         PriceModel=常数氢价(Price=18),
     ).dict(),
 )
 
-LOAD_E = 电负荷(
-    topo,
-    param=电负荷信息(
-        **devParam,
-        设备名称="电负荷1",
-        LoadType=负荷类型.Flexible,
-        Pmin=0,
-        Pmax=500,
-        EnergyConsumption=[500] * len(a),
-        PriceModel=常数电价(Price=1),
-    ).dict(),
-)
+if not NO_ELEC_LOAD:
+
+    LOAD_E = 电负荷(
+        topo,
+        param=电负荷信息(
+            **devParam,
+            设备名称="电负荷1",
+            LoadType=负荷类型.Flexible,
+            Pmin=100,
+            Pmax=500,
+            EnergyConsumption=[400] * len(a), # TODO: fix data retrieval bug
+            PriceModel=常数电价(Price=1),
+        ).dict(),
+    )
 
 if not NO_BATTERY:
     锂电池1 = 锂电池(
@@ -274,7 +278,8 @@ if not NO_BATTERY:
             BuildCostPerCapacity=0.03,
             BuildBaseCost=0,
             InitSOC=50,
-            BatteryStorageDecay=0.5,
+            BatteryStorageDecay=0,
+            # BatteryStorageDecay=0.5,
             BatteryLife=10,
             LifetimeCycleCount=6000,
             # TotalDischargeCapacity=1000,
@@ -282,7 +287,7 @@ if not NO_BATTERY:
             MinSOC=15,
             TotalCapacity=20000,
             MaxTotalCapacity=20000,
-            MinTotalCapacity=0,
+            MinTotalCapacity=1000,
         ).dict(),
     )
 
@@ -292,15 +297,16 @@ if not NO_BATTERY:
             **devParam,
             设备名称="双向变流器1",
             RatedPower=1250,
-            Efficiency=98,
-            CostPerKilowatt=0.014,
+            Efficiency=100,
+            CostPerKilowatt=0,
+            # CostPerKilowatt=0.014,
             CostPerYearPerKilowatt=0,
             VariationalCostPerWork=0,
             Life=20,
             BuildCostPerKilowatt=0,
             BuildBaseCost=0,
             MaxDeviceCount=40,
-            MinDeviceCount=0,
+            MinDeviceCount=10,
             DeviceCount=40,
         ).dict(),
     )
@@ -323,32 +329,32 @@ if not NO_BATTERY:
         BuildCostPerMachine=20,
         BuildBaseCost=0,
         MaxDeviceCount=6,
-        MinDeviceCount=0,
+        MinDeviceCount=1,
         DeviceCount=6,
     ).dict(),
 )
 
-电解槽2 = 电解槽(
-    topo,
-    param=电解槽信息(
-        **devParam,
-        设备名称=f"电解槽2",
-        RatedInputPower=1000,
-        HydrogenGenerationStartupRate=5,
-        HydrogenGenerationEfficiency=60,
-        DeltaLimit=50,
-        HeatRecycleEfficiency=70,
-        CostPerMachine=800,
-        CostPerYearPerMachine=5,
-        VariationalCostPerWork=0.01,
-        Life=15,
-        BuildCostPerMachine=20,
-        BuildBaseCost=0,
-        MaxDeviceCount=6,
-        MinDeviceCount=0,
-        DeviceCount=6,
-    ).dict(),
-)
+# 电解槽2 = 电解槽(
+#     topo,
+#     param=电解槽信息(
+#         **devParam,
+#         设备名称=f"电解槽2",
+#         RatedInputPower=1000,
+#         HydrogenGenerationStartupRate=5,
+#         HydrogenGenerationEfficiency=60,
+#         DeltaLimit=50,
+#         HeatRecycleEfficiency=70,
+#         CostPerMachine=800,
+#         CostPerYearPerMachine=5,
+#         VariationalCostPerWork=0.01,
+#         Life=15,
+#         BuildCostPerMachine=20,
+#         BuildBaseCost=0,
+#         MaxDeviceCount=6,
+#         MinDeviceCount=1,
+#         DeviceCount=6,
+#     ).dict(),
+# )
 传输线1 = 传输线(
     topo,
     param=传输线信息(
@@ -370,6 +376,7 @@ if not NO_BATTERY:
             (16000, 400, 7.4),
             (26000, 600, 12.4),
             (39000, 900, 19.2),
+            (109000, 900, 19.2),
         ],
         PowerTransferDecay=0,
         CostPerKilometer=0,
@@ -385,8 +392,8 @@ if not NO_BATTERY:
 母线1 = 母线(topo, "可连接母线")
 母线2 = 母线(topo, "可连接母线")
 母线3 = 母线(topo, "可连接母线")
-母线4 = 母线(topo, "可连接母线")
-母线5 = 母线(topo, "可连接母线")
+# 母线4 = 母线(topo, "可连接母线")
+# 母线5 = 母线(topo, "可连接母线")
 
 
 def 创建连接线(left, right):
@@ -407,22 +414,35 @@ def 创建连接线(left, right):
 创建连接线(柴油发电1.电接口, 母线3.id)
 创建连接线(变流器3.电输出, 母线3.id)
 创建连接线(变流器4.电输出, 母线3.id)
-
-创建连接线(母线3.id, 传输线1.电输入)
-创建连接线(传输线1.电输入, 母线4.id)
-
+创建连接线(母线3.id, 电解槽1.电接口)
 
 if not NO_BATTERY:
+    # 创建连接线(锂电池1.电接口, 母线3.id)
     创建连接线(锂电池1.电接口, 双向变流器1.储能端)
-    创建连接线(双向变流器1.线路端, 母线4.id)
-创建连接线(母线4.id, 电解槽1.电接口)
-创建连接线(母线4.id, 电解槽2.电接口)
-创建连接线(母线4.id, LOAD_E.电接口)
+    创建连接线(传输线1.电输入, 母线3.id)
+    创建连接线(传输线1.电输出, 双向变流器1.线路端)
+    # 创建连接线(双向变流器1.线路端, 母线3.id)
 
-创建连接线(电解槽1.制氢接口, 母线5.id)
-创建连接线(电解槽2.制氢接口, 母线5.id)
+# 创建连接线(母线3.id, 传输线1.电输入)
+# 创建连接线(传输线1.电输出, 母线4.id)
 
-创建连接线(母线5.id, LOAD_H.氢气接口)
+
+# if not NO_BATTERY:
+#     创建连接线(锂电池1.电接口, 双向变流器1.储能端)
+#     创建连接线(双向变流器1.线路端, 母线4.id)
+
+# 创建连接线(传输线1.电输出, 电解槽1.电接口)
+# # 创建连接线(母线4.id, 电解槽1.电接口)
+# # 创建连接线(母线4.id, 电解槽2.电接口)
+
+# if not NO_ELEC_LOAD:
+#     创建连接线(母线4.id, LOAD_E.电接口)
+
+创建连接线(电解槽1.制氢接口, LOAD_H.氢气接口)
+# 创建连接线(电解槽2.制氢接口, 母线5.id)
+
+# 创建连接线(母线5.id, LOAD_H.氢气接口)
+# 创建连接线(母线5.id, LOAD_H.氢气接口)
 
 # L1 = 母线(graph)
 

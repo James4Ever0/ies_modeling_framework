@@ -3,13 +3,13 @@ from log_utils import logger_print
 import subprocess
 
 from tempfile import TemporaryDirectory
-import black
 
 # from humps import kebabize
 import jinja2
 import shutil
 import os
 if not os.environ.get("NO_PYTHON_TYPECHECK", None) == 'True':
+    import black
     import pyright_utils  # for checking if really installed.
 else:
     pyright_utils = object()

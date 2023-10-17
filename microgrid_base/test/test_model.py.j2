@@ -81,6 +81,7 @@ def test_{{testName}}({{",".join(paramStringList)}}):
     {# model_wrapper.Objective(expr={{objective}}, sense={{sense if sense == 'sense' else repr(sense)}}) #}
     model_wrapper.Objective(expr={{objective}}, sense={{sense}})
     with SolverFactory(Solver.cplex) as solver: # type: ignore
+        TransformationFactory("gdp.bigm").apply_to(model_wrapper.model, bigM=1e8)
         print(">>>SOLVING<<<")
         solver.options["timelimit"] = 5 
         s_results = solver.solve(model_wrapper.model, tee=True)
@@ -458,3 +459,19 @@ from runtime_override_stepwise import iterate_till_keyword, overwrite_func
         breakpoint() 
 #}
         {# assert abs(value(测试锂电池模型.CurrentTotalCapacity[0]+ 500 * (测试锂电池模型.设备信息.MinSOC/100)) - 500 * (测试锂电池模型.设备信息.InitSOC/100)) < EPS #}
+
+{% call parametrizeTestHelper("电解槽", "Device")%}
+    {% call parametrize("_input, h2_output, heat_output")%}
+    [
+        (3000,(3000*0.6)/33300,3000*0.4*0.7),
+        (2000,(2000*0.6)/33300,2000*0.4*0.7)
+    ]
+    {% endcall%}
+{% endcall%}
+    {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电接口, expression=lambda x: x == -_input)
+
+{{ solveModel("{tdf}.总成本年化".format(tdf=SO.TDF))}}
+        for i in range(3):
+            assert abs(-value({{SO.TDF}}.电接口[i]) -_input)< EPS
+            assert abs(value({{SO.TDF}}.制氢接口[i]) -h2_output)< EPS
+            assert abs(value({{SO.TDF}}.设备余热接口[i]) -heat_output)< EPS

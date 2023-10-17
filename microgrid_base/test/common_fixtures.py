@@ -1,6 +1,7 @@
 from pytest import fixture
 import os
-os.environ['SKIP_ARGENV']='True'
+
+os.environ["SKIP_ARGENV"] = "True"
 import sys
 
 sys.path.append("../")
@@ -10,17 +11,15 @@ from pyomo_environ import *
 import typing
 
 if typing.TYPE_CHECKING:
-    from ..ies_optim import *  # workaround for pyright.
+    from ..ies_optim_legacy import *  # workaround for pyright.
     from ..constants import Solver
     from ..solve_model import *
     from ..failsafe_utils import *
 else:
-    from ies_optim import *
+    from ies_optim_legacy import *
     from constants import Solver
     from solve_model import *
     from failsafe_utils import *
-
-
 
 
 @fixture
@@ -323,16 +322,18 @@ def 测试锂电池模型(测试锂电池信息: 锂电池信息, model_wrapper:
 # =================================变压器================================== #
 
 
-@fixture(scope="session", params=[
-    "Directed",
-    "Bidirectional"], ids=["UNIDIRECTIONAL", "BIDIRECTIONAL"])
-def 测试变压器信息(request:Request):
+@fixture(
+    scope="session",
+    params=["Directed", "Bidirectional"],
+    ids=["UNIDIRECTIONAL", "BIDIRECTIONAL"],
+)
+def 测试变压器信息(request: Request):
     val = 变压器信息(
         设备名称="变压器",
         生产厂商="Any",
         设备型号="变压器1",
         Efficiency=90,
-        direction= request.param,
+        direction=request.param,
         RatedPower=10,
         CostPerKilowatt=10,
         CostPerYearPerKilowatt=10,
@@ -468,8 +469,8 @@ def 测试传输线信息():
         U=220,
         Rho=2,
         GivenAveragePower=100,
-        GivenMaxPower = 200,
-        Pwire_Asec_Pr= [[1,3,4]]
+        GivenMaxPower=200,
+        Pwire_Asec_Pr=[[1, 3, 4],[200,3,4], [400,3,4]],
     )
     return val
 
@@ -487,6 +488,82 @@ def 测试传输线ID():
 @fixture
 def 测试传输线模型(测试传输线信息: 传输线信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试传输线ID: 传输线ID):
     val = 传输线模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试传输线ID, 设备信息=测试传输线信息)
+    return val
+
+
+# =================================氢负荷================================== #
+
+
+@fixture
+def 测试氢负荷信息():
+    val = 氢负荷信息(
+        设备名称="氢负荷",
+        LoadType=负荷类型.Normal,
+        # LoadType=负荷类型.Flexible,
+        # Pmin=100,
+        # Pmax=1500,
+        EnergyConsumption=[5] * 每天小时数,
+        PriceModel=常数氢价(Price=18),
+    )
+    return val
+
+
+@fixture
+def 测试氢负荷ID():
+    val = 氢负荷ID(
+        ID=25,
+        氢气接口=26,
+    )
+    return val
+
+
+@fixture
+def 测试氢负荷模型(测试氢负荷信息: 氢负荷信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试氢负荷ID: 氢负荷ID):
+    val = 氢负荷模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试氢负荷ID, 设备信息=测试氢负荷信息)
+    return val
+
+
+# =================================电解槽================================== #
+
+
+@fixture
+def 测试电解槽信息():
+    val = 电解槽信息(
+        设备名称="电解槽",
+        生产厂商="Any",
+        设备型号="电解槽1",
+        RatedInputPower=5000,
+        HydrogenGenerationStartupRate=5,
+        HydrogenGenerationEfficiency=60,
+        DeltaLimit=3.4,
+        HeatRecycleEfficiency=70,
+        CostPerMachine=900,
+        CostPerYearPerMachine=5,
+        VariationalCostPerWork=0.01,
+        Life=15,
+        BuildCostPerMachine=20,
+        BuildBaseCost=0,
+        MaxDeviceCount=1,
+        MinDeviceCount=1,
+        DeviceCount=1,
+    )
+    return val
+
+
+@fixture
+def 测试电解槽ID():
+    val = 电解槽ID(
+        ID=27,
+        制氢接口=28,
+        设备余热接口=29,
+        电接口=30,
+    )
+    return val
+
+
+@fixture
+def 测试电解槽模型(测试电解槽信息: 电解槽信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试电解槽ID: 电解槽ID):
+    val = 电解槽模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试电解槽ID, 设备信息=测试电解槽信息)
     return val
 
 

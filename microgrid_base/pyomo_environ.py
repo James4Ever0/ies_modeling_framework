@@ -10,7 +10,7 @@ def checkDisjunctive(model:ConcreteModel):
     return False
     
 
-def transformDisjunctiveModel(model, bigM = 1e7):
+def transformDisjunctiveModel(model, bigM = 1e8):
     is_disjunctive = checkDisjunctive(model)
     if is_disjunctive: 
         TransformationFactory("gdp.bigm").apply_to(model, bigM=bigM)

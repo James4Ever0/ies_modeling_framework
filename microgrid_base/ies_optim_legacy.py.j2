@@ -15,8 +15,10 @@ import math
 
 {% set loadEnergyConsumptionRateAndPriceModelUnitMapping = {
     "电负荷": ("kW", "元/kWh"),
-    "氢负荷": ("kg/hour", "元/kg")
+    "氢负荷": ("kg", "元/kg")
 }%}
+    {# "氢负荷": ("kg/hour", "元/kg") #}
+
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
@@ -1372,6 +1374,8 @@ class 设备模型:
      pw_constr_type='EQ', unbounded_domain_var=True, warn_domain_coverage=False, preprocessed = False):
         if not preprocessed:
             _x_vals,_y_vals = self.PreprocessPiecewiseValueList(x_vals, y_vals)
+        else:
+            _x_vals,_y_vals = x_vals, y_vals
         
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
@@ -1407,8 +1411,8 @@ class 设备模型:
 
 
     def Piecewise(self, 
-        x_var_list, # x_var
-        y_var_list, # y_var
+        x_var,
+        y_var,
         x_vals: List[float],
         y_vals: List[float],
      range_list:Union[List[int], None]=None, 
@@ -1416,6 +1420,8 @@ class 设备模型:
      pw_constr_type='EQ', unbounded_domain_var=True, warn_domain_coverage=False):
 
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
+        x_var_list = x_var
+        y_var_list = y_var
 
         # BUG: x out of bound, resulting into unsolvable problem.
 
@@ -1707,7 +1713,8 @@ class {{class_name}}模型(设备模型):
             dis = -1
             for _ind, val in enumerate(self.Pwire_arr):
                 _dis = val - self.GivenMaxPower
-                if _dis > 0:
+                if _dis >= 0:
+                {# if _dis > 0: #}
                     if dis <0 or dis > _dis:
                         dis = _dis
                         ind = _ind
@@ -2022,7 +2029,8 @@ class {{class_name}}模型(设备模型):
 
         self.RangeConstraint(self.电接口, self.制氢接口, expression = lambda x, y: y == -(x*self.HydrogenGenerationEfficiency)/self.LHVHydrogen)
 
-        self.RangeConstraint(self.电接口, self.设备余热接口, expression = lambda x, y: y == -(x * self.HydrogenGenerationEfficiency)* self.HeatRecycleEfficiency)
+        self.RangeConstraint(self.电接口, self.设备余热接口, expression = lambda x, y: y == -(x * (1-self.HydrogenGenerationEfficiency))* self.HeatRecycleEfficiency)
+        {# self.RangeConstraint(self.电接口, self.设备余热接口, expression = lambda x, y: y == -(x * self.HydrogenGenerationEfficiency)* self.HeatRecycleEfficiency) #}
 
         启动指示变量 = self.变量列表_带指示变量('启动指示变量')
         self.__setattr__('启动指示变量', 启动指示变量)
@@ -2069,12 +2077,14 @@ class {{class_name}}模型(设备模型):
         self.RangeConstraint(self.线路端_.x , self.线路端, lambda x,y: x==y)
         self.RangeConstraint(self.储能端_.x , self.储能端, lambda x,y: x==y)
 
+        self.DisjunctiveRangeConstraint(self.线路端,self.储能端, expression = lambda x,y: [[x>=0, y<=0, x == -y *self.Efficiency], [x<=0, y>=0, x*self.Efficiency == -y]])
+
         # wrong! negative is input.
         {# self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: x == y*self.Efficiency)
         self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: x == y*self.Efficiency) #}
 
-        self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: y == x *self.Efficiency)
-        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: y == x *self.Efficiency)
+        {# self.RangeConstraint(self.线路端_.x_neg, self.储能端_.x_pos,lambda x,y: y == x *self.Efficiency)
+        self.RangeConstraint(self.储能端_.x_neg, self.线路端_.x_pos,lambda x,y: y == x *self.Efficiency) #}
 
         {% elif class_name in 单向变电器列表 %}
         # TODO: figure out what "PowerParameter" does
@@ -2816,7 +2826,8 @@ class {{planningResultExportClassName}}(BaseModel):
         params['元件名称'] = deviceModel.设备信息.设备名称
         params['型号'] = getattr(deviceModel.设备信息, '设备型号', '')
         {# params['设备型号'] = getattr(deviceModel.设备信息, '设备型号', '') #}
-        params['数量'] = getattr_with_ellipsis_fallback(deviceSimulationResult,'equiCounts', 0) # 不要累加数量！
+        params['数量'] = value(getattr_with_ellipsis_fallback(deviceModel,'DeviceCount', 0))
+        {# params['数量'] = getattr_with_ellipsis_fallback(deviceSimulationResult,'equiCounts', 0) #}
         {# params['数量'] = getattr_with_ellipsis_fallback(deviceModel.设备信息,'equiCounts', 0) # 不要累加数量！ #}
         params['平均效率_平均COP'] = getattr_with_ellipsis_fallback(deviceSimulationResult, 'averageEfficiency', cmath.nan)
         params['设备采购成本'] = value(deviceModel.总采购成本) * (timeParam/每年小时数)
@@ -3067,7 +3078,15 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
                 mw.Constraint(seqsum == positive_error - negative_error)
                 {# mw.Constraint(seqsum == 0) #}
                 {# mw.Constraint(seqsum >=0) #}
-
+            adder_index_error_mapping[adder_index] = adder_error_mapping
+            adder_index_error_sum_mapping[adder_index] = dict(
+{% for t in error_types%}
+                {{t}}_error = adder_current_{{t}}_error,
+{% endfor%}
+            )
+{% for t in error_types%}
+            adder_{{t}}_error_total += adder_current_{{t}}_error
+{% endfor%}
             with failsafe_suppress_exception():
                 if algoParam.计算类型 == '设计规划':
                     cnt = 0
@@ -3085,15 +3104,7 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     {# {{ iterate_input_output_limit("output","MaxEnergyConsumption", "电负荷模型") }} #}
 
                         mw.Constraint(input_limit + output_limit >= 0)
-        adder_index_error_mapping[adder_index] = adder_error_mapping
-        adder_index_error_sum_mapping[adder_index] = dict(
-{% for t in error_types%}
-            {{t}}_error = adder_current_{{t}}_error,
-{% endfor%}
-            )
-{% for t in error_types%}
-        adder_{{t}}_error_total += adder_current_{{t}}_error
-{% endfor%}
+
 
     adder_error_total = dict(
 {% for t in error_types%}
@@ -3103,17 +3114,21 @@ def compute(devs:List[dict], adders:Dict[int,dict], graph_data:dict, G: Graph, m
     {# financial_obj_expr = {{- sum_reduce('[e.constraints_register() for e in devInstDict.values()]') }} #}
     financial_obj_expr = 0
 
+    checkIfIsLoadClassInstance = lambda inst: "负荷" in inst.__class__.__name__ 
+
 
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_obj_expr += e.constraints_register()
+            val = e.constraints_register()
+            financial_obj_expr += (val if not checkIfIsLoadClassInstance(e) else 0)
             financial_obj_expr = addPunishRateToFinancialTarget(financial_obj_expr, devInst)
 
     financial_dyn_obj_expr = 0
 
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_dyn_obj_expr += e.总可变维护成本年化
+            val = e.总可变维护成本年化
+            financial_dyn_obj_expr += (val if not checkIfIsLoadClassInstance(e) else 0)
             financial_dyn_obj_expr = addPunishRateToFinancialTarget(financial_obj_expr, devInst)
 
 

@@ -6,11 +6,11 @@ sys.path.append("../")
 import typing
 
 if typing.TYPE_CHECKING:
-    from ..ies_optim import *  # workaround for pyright.
+    from ..ies_optim_legacy import *  # workaround for pyright.
     from ..constants import Solver
     from ..solve_model import *
 else:
-    from ies_optim import *
+    from ies_optim_legacy import *
     from constants import Solver
     from solve_model import *
 
@@ -344,8 +344,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输出=14,
-        电输入=15,
+        电输入=14,
+        电输出=15,
     )
     return val
 
@@ -424,8 +424,8 @@ def 测试双向变流器信息():
 def 测试双向变流器ID():
     val = 双向变流器ID(
         ID=19,
-        储能端=20,
-        线路端=21,
+        线路端=20,
+        储能端=21,
     )
     return val
 
@@ -479,6 +479,84 @@ def 测试传输线ID():
 @fixture
 def 测试传输线模型(测试传输线信息: 传输线信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试传输线ID: 传输线ID):
     val = 传输线模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试传输线ID, 设备信息=测试传输线信息)
+    return val
+
+
+# =================================氢负荷================================== #
+
+
+@fixture
+def 测试氢负荷信息():
+    val = 氢负荷信息(
+        设备名称="氢负荷",
+        LoadType=None,
+        PunishmentRate=None,
+        Pmin=None,
+        Pmax=None,
+        EnergyConsumption=None,
+        PriceModel=None,
+    )
+    return val
+
+
+@fixture
+def 测试氢负荷ID():
+    val = 氢负荷ID(
+        ID=25,
+        氢气接口=26,
+    )
+    return val
+
+
+@fixture
+def 测试氢负荷模型(测试氢负荷信息: 氢负荷信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试氢负荷ID: 氢负荷ID):
+    val = 氢负荷模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试氢负荷ID, 设备信息=测试氢负荷信息)
+    return val
+
+
+# =================================电解槽================================== #
+
+
+@fixture
+def 测试电解槽信息():
+    val = 电解槽信息(
+        设备名称="电解槽",
+        生产厂商="Any",
+        设备型号="电解槽1",
+        StartupCountLimit=None,
+        LHVHydrogen=None,
+        RatedInputPower=None,
+        HydrogenGenerationStartupRate=None,
+        HydrogenGenerationEfficiency=None,
+        DeltaLimit=None,
+        HeatRecycleEfficiency=None,
+        CostPerMachine=None,
+        CostPerYearPerMachine=None,
+        VariationalCostPerWork=None,
+        Life=None,
+        BuildCostPerMachine=None,
+        BuildBaseCost=None,
+        MaxDeviceCount=None,
+        MinDeviceCount=None,
+        DeviceCount=None,
+    )
+    return val
+
+
+@fixture
+def 测试电解槽ID():
+    val = 电解槽ID(
+        ID=27,
+        设备余热接口=28,
+        制氢接口=29,
+        电接口=30,
+    )
+    return val
+
+
+@fixture
+def 测试电解槽模型(测试电解槽信息: 电解槽信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试电解槽ID: 电解槽ID):
+    val = 电解槽模型(PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试电解槽ID, 设备信息=测试电解槽信息)
     return val
 
 

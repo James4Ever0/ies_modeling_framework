@@ -18,11 +18,11 @@ sys.path.append("../")
 
 import typing
 if typing.TYPE_CHECKING:
-    from ..ies_optim import * # workaround for pyright.
+    from ..ies_optim_legacy import * # workaround for pyright.
     from ..constants import Solver    
     from ..solve_model import *
 else:
-    from ies_optim import *
+    from ies_optim_legacy import *
     from constants import Solver    
     from solve_model import *
 

@@ -801,12 +801,13 @@ class 双向变流器出力曲线(BaseModel):
 
     @staticmethod
     def export(model: 双向变流器模型, timeParam: float):
+        # breakpoint()
         return 双向变流器出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,
             转换功率=addListElem(
                 [value(e) for e in model.储能端_.x_pos.values()],
-                [value(e) for e in model.线路端_.x_pos.values()],
+                [-value(e) for e in model.线路端_.x_pos.values()],
             ),
         )
 
@@ -873,12 +874,12 @@ class 电解槽出力曲线(BaseModel):
 
     产氢流量: List[float]
     """
-    单位: kg/hour <- metric_ton / 年
+    单位: kg <- metric_ton
     """
 
     @validator("产氢流量")
     def standard_unit_to_custom_产氢流量(cls, v):
-        return [e / 8.765999999999998 for e in v]
+        return [e / 0.001 for e in v]
 
     产热功率: List[float]
     """
@@ -907,12 +908,12 @@ class 氢负荷出力曲线(BaseModel):
     ## UNIQ PARAMS ##
     耗氢流量: List[float]
     """
-    单位: kg/hour <- metric_ton / 年
+    单位: kg <- metric_ton
     """
 
     @validator("耗氢流量")
     def standard_unit_to_custom_耗氢流量(cls, v):
-        return [e / 8.765999999999998 for e in v]
+        return [e / 0.001 for e in v]
 
     @staticmethod
     def export(model: 氢负荷模型, timeParam: float):

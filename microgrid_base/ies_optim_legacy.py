@@ -14,6 +14,7 @@ from error_utils import ErrorManager
 import numpy as np
 import math
 
+
 # TODO: use StrEnum (3rd party library) to replace literals in data validation and control flows.
 # TODO: implement unit conversion of device info in another file with separate datamodels (another template) instead of explicit conversion in this template (create that first (skeleton) to suppress type check error)
 # ref: https://pypi.org/project/StrEnum/
@@ -364,24 +365,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
     类型: 输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
+    """
+    类型: 输出
     """
 
 
 class 变流器ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
     电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
     """
     类型: 输入
+    """
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
+    """
+    类型: 输出
     """
 
 
@@ -397,11 +398,11 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
@@ -415,17 +416,17 @@ class 氢负荷ID(设备ID):
 
 
 class 电解槽ID(设备ID):
-    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入")
+    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
     """
-    类型: 输入
+    类型: 输出
     """
     制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
-    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入")
     """
-    类型: 输出
+    类型: 输入
     """
 
 
@@ -1685,14 +1686,14 @@ class 氢负荷信息(设备基础信息):
     单位: 元/kg
     """
 
-    Pmin: confloat(ge=0) = Field(default=0, title="负荷功率最小值", description="单位: kg/hour")
+    Pmin: confloat(ge=0) = Field(default=0, title="负荷功率最小值", description="单位: kg")
     """
-    单位: kg/hour
+    单位: kg
     """
 
-    Pmax: confloat(ge=0) = Field(default=0, title="负荷功率最大值", description="单位: kg/hour")
+    Pmax: confloat(ge=0) = Field(default=0, title="负荷功率最大值", description="单位: kg")
     """
-    单位: kg/hour
+    单位: kg
     """
 
     @validator("Pmax")
@@ -1707,11 +1708,9 @@ class 氢负荷信息(设备基础信息):
             ), f"Pmax must be greater than or equal to Pmin\nGiven: Pmax={v}, Pmin={p_min}"
         return v
 
-    EnergyConsumption: List[confloat(ge=0)] = Field(
-        title="耗能功率表", description="单位: kg/hour"
-    )
+    EnergyConsumption: List[confloat(ge=0)] = Field(title="耗能功率表", description="单位: kg")
     """
-    单位: kg/hour
+    单位: kg
     """
 
     PriceModel: 常数氢价 = Field(title="计价模型", description="单位: 元/kg")
@@ -2604,6 +2603,8 @@ class 设备模型:
     ):
         if not preprocessed:
             _x_vals, _y_vals = self.PreprocessPiecewiseValueList(x_vals, y_vals)
+        else:
+            _x_vals, _y_vals = x_vals, y_vals
 
         piecewise_name = self.getSpecialVarName("PW")
         PW = Piecewise(
@@ -2639,8 +2640,8 @@ class 设备模型:
 
     def Piecewise(
         self,
-        x_var_list,  # x_var
-        y_var_list,  # y_var
+        x_var,
+        y_var,
         x_vals: List[float],
         y_vals: List[float],
         range_list: Union[List[int], None] = None,
@@ -2650,6 +2651,8 @@ class 设备模型:
         warn_domain_coverage=False,
     ):
         # TODO: if performance overhead is significant, shall use "MC" piecewise functions, or stepwise functions.
+        x_var_list = x_var
+        y_var_list = y_var
 
         # BUG: x out of bound, resulting into unsolvable problem.
 
@@ -3821,11 +3824,11 @@ class 电解槽模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
-            "电接口", within=NonPositiveReals
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
         )
         """
-        类型: 输入
+        类型: 输出
         """
 
         self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
@@ -3835,11 +3838,11 @@ class 电解槽模型(设备模型):
         类型: 输出
         """
 
-        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
-            "设备余热接口", within=NonNegativeReals
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonPositiveReals
         )
         """
-        类型: 输出
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -3896,7 +3899,8 @@ class 电解槽模型(设备模型):
             self.电接口,
             self.设备余热接口,
             expression=lambda x, y: y
-            == -(x * self.HydrogenGenerationEfficiency) * self.HeatRecycleEfficiency,
+            == -(x * (1 - self.HydrogenGenerationEfficiency))
+            * self.HeatRecycleEfficiency,
         )
 
         启动指示变量 = self.变量列表_带指示变量("启动指示变量")
@@ -4394,18 +4398,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
-        )
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=Reals
         )
         """
         类型: 输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
+        )
+        """
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -4610,18 +4614,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=NonNegativeReals
-        )
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
             "电输入", within=NonPositiveReals
         )
         """
         类型: 输入
+        """
+
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=NonNegativeReals
+        )
+        """
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -4806,14 +4810,16 @@ class 双向变流器模型(设备模型):
         self.RangeConstraint(self.线路端_.x, self.线路端, lambda x, y: x == y)
         self.RangeConstraint(self.储能端_.x, self.储能端, lambda x, y: x == y)
 
-        # wrong! negative is input.
+        self.DisjunctiveRangeConstraint(
+            self.线路端,
+            self.储能端,
+            expression=lambda x, y: [
+                [x >= 0, y <= 0, x == -y * self.Efficiency],
+                [x <= 0, y >= 0, x * self.Efficiency == -y],
+            ],
+        )
 
-        self.RangeConstraint(
-            self.线路端_.x_neg, self.储能端_.x_pos, lambda x, y: y == x * self.Efficiency
-        )
-        self.RangeConstraint(
-            self.储能端_.x_neg, self.线路端_.x_pos, lambda x, y: y == x * self.Efficiency
-        )
+        # wrong! negative is input.
 
         # 计算年化
         # unit: one
@@ -4925,15 +4931,15 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
         )
         """
         类型: 输入输出
         """
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
         )
         """
         类型: 输入输出
@@ -5007,7 +5013,7 @@ class 传输线模型(设备模型):
             dis = -1
             for _ind, val in enumerate(self.Pwire_arr):
                 _dis = val - self.GivenMaxPower
-                if _dis > 0:
+                if _dis >= 0:
                     if dis < 0 or dis > _dis:
                         dis = _dis
                         ind = _ind
@@ -5780,9 +5786,9 @@ class 规划结果详情(BaseModel):
         params = {}
         params["元件名称"] = deviceModel.设备信息.设备名称
         params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
-        params["数量"] = getattr_with_ellipsis_fallback(
-            deviceSimulationResult, "equiCounts", 0
-        )  # 不要累加数量！
+        params["数量"] = value(
+            getattr_with_ellipsis_fallback(deviceModel, "DeviceCount", 0)
+        )
         params["平均效率_平均COP"] = getattr_with_ellipsis_fallback(
             deviceSimulationResult, "averageEfficiency", cmath.nan
         )
@@ -6363,7 +6369,15 @@ def compute(
                 adder_current_combined_error += combined_error
 
                 mw.Constraint(seqsum == positive_error - negative_error)
-
+            adder_index_error_mapping[adder_index] = adder_error_mapping
+            adder_index_error_sum_mapping[adder_index] = dict(
+                positive_error=adder_current_positive_error,
+                negative_error=adder_current_negative_error,
+                combined_error=adder_current_combined_error,
+            )
+            adder_positive_error_total += adder_current_positive_error
+            adder_negative_error_total += adder_current_negative_error
+            adder_combined_error_total += adder_current_combined_error
             with failsafe_suppress_exception():
                 if algoParam.计算类型 == "设计规划":
                     cnt = 0
@@ -6383,15 +6397,6 @@ def compute(
                         )
 
                         mw.Constraint(input_limit + output_limit >= 0)
-        adder_index_error_mapping[adder_index] = adder_error_mapping
-        adder_index_error_sum_mapping[adder_index] = dict(
-            positive_error=adder_current_positive_error,
-            negative_error=adder_current_negative_error,
-            combined_error=adder_current_combined_error,
-        )
-        adder_positive_error_total += adder_current_positive_error
-        adder_negative_error_total += adder_current_negative_error
-        adder_combined_error_total += adder_current_combined_error
 
     adder_error_total = dict(
         positive_error=adder_positive_error_total,
@@ -6400,9 +6405,12 @@ def compute(
     )
     financial_obj_expr = 0
 
+    checkIfIsLoadClassInstance = lambda inst: "负荷" in inst.__class__.__name__
+
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_obj_expr += e.constraints_register()
+            val = e.constraints_register()
+            financial_obj_expr += val if not checkIfIsLoadClassInstance(e) else 0
             financial_obj_expr = addPunishRateToFinancialTarget(
                 financial_obj_expr, devInst
             )
@@ -6411,7 +6419,8 @@ def compute(
 
     for e in devInstDict.values():
         with failsafe_suppress_exception():
-            financial_dyn_obj_expr += e.总可变维护成本年化
+            val = e.总可变维护成本年化
+            financial_dyn_obj_expr += val if not checkIfIsLoadClassInstance(e) else 0
             financial_dyn_obj_expr = addPunishRateToFinancialTarget(
                 financial_obj_expr, devInst
             )

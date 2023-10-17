@@ -7,7 +7,7 @@ if [ "$1" != "macos" ] ; then
 fi
 
 echo "running under: $1"
-
+export NO_PYTHON_TYPECHECK=True
 bash fastapi_terminate_service.sh
 
 if [ "$1" == "macos" ] ; then
