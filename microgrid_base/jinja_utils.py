@@ -9,7 +9,10 @@ import black
 import jinja2
 import shutil
 import os
-import pyright_utils  # for checking if really installed.
+if not os.environ.get("NO_PYTHON_TYPECHECK", None) == 'True':
+    import pyright_utils  # for checking if really installed.
+else:
+    pyright_utils = object()
 import re
 
 # live share's triple quote issue isn't fixed.

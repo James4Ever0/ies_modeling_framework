@@ -383,6 +383,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
     calcTargetLUT = {
         "经济": 0,
         "环保": 0,
+        "compensation": 0,
     }
 
     devInstDictList = []
@@ -403,9 +404,12 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
             timeParam = 每年小时数 if 计算步长 == "小时" else 秒级仿真小时数  # how many hours?
         # timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
         timeParamList.append(timeParam)
-        obj_exprs, devInstDict, PD = compute(
+        obj_exprs, devInstDict, PD, extra_data = compute(
+        # obj_exprs, devInstDict, PD = compute(
             devs, adders, graph_data, topo_G, mw
         )  # single instance.
+
+        compensation_expr = 0 if ies_env.ADDER_ERROR_COMPENSATION == 'none' else extra_data['adder_error_total'][f'{ies_env.ADDER_ERROR_COMPENSATION}_error']
         (
             financial_obj_expr,
             financial_dyn_obj_expr,
@@ -419,6 +423,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         calcTargetLUT["经济"] += (
             financial_obj_expr if 计算类型 == "设计规划" else financial_dyn_obj_expr
         ) * obj_time_param
+        calcTargetLUT['compensation'] +=compensation_expr
 
         devInstDictList.append(devInstDict)
         PDList.append(PD)
@@ -720,7 +725,8 @@ def solve_model_and_fetch_result(
                 mw.Constraint(expr <= max_const)
 
         obj_expr = ret.calcTargetLUT[calcTarget]
-        solved = solve_model(mw, obj_expr)
+        compensation_expr = ret.calcTargetLUT["compensation"]
+        solved = solve_model(mw, obj_expr+compensation_expr)
         result = None
         if solved:
             if rangeDict is not None:

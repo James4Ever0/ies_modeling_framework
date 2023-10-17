@@ -230,7 +230,7 @@ class 拓扑图:
                         port_name_set == 设备接口名称集合[node.subtype]
                     ), f"节点 #{node.id}  PORT SET: {port_name_set} TARGET: {设备接口名称集合[node.subtype]}"
                 except Exception as e:
-                    if ies_env.FAILSAFE:
+                    if ies_env.FAILSAFE or ies_env.IGNORE_ANCHOR_EXCEPTIONS:
                         logger_print("Ignoring exception in device type:", node.subtype)
                         logger_traceback(e)
                     else:

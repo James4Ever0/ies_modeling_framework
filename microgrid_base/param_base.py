@@ -1,5 +1,8 @@
 from log_utils import logger_print
-from render_type_utils import TYPE_UTILS_MICROGRID_PORTS_DATA,TYPE_UTILS_EXTRA_PORTS_DATA
+from render_type_utils import (
+    TYPE_UTILS_MICROGRID_PORTS_DATA,
+    TYPE_UTILS_EXTRA_PORTS_DATA,
+)
 
 import json
 
@@ -45,11 +48,12 @@ from device_whitelist import device_whitelist
 for data_dict in TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA:
     for category, device_dict in data_dict.items():
         for dev_name, device_data in device_dict.items():
-            if dev_name not in device_whitelist: continue
+            if dev_name not in device_whitelist:
+                continue
             port_set = set()
-            for port_name, port_data in device_data['ports'].items():
-                能流方向 = port_data['能流方向']
-                port_type = 能流方向.replace('进', '输入').replace('出','输出')
+            for port_name, port_data in device_data["ports"].items():
+                能流方向 = port_data["能流方向"]
+                port_type = 能流方向.replace("进", "输入").replace("出", "输出")
                 port_set.add((port_name, port_type))
             设备接口集合[dev_name] = port_set
 

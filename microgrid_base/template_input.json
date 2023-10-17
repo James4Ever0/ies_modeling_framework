@@ -131,8 +131,8 @@
                 "port_name": "电接口",
                 "subtype": "unknown",
                 "device_id": 0,
-                "direction": "输出",
-                "id": 1
+                "id": 1,
+                "direction": "输出"
             },
             {
                 "type": "设备",
@@ -171,8 +171,8 @@
                 "port_name": "电接口",
                 "subtype": "unknown",
                 "device_id": 2,
-                "direction": "输出",
-                "id": 3
+                "id": 3,
+                "direction": "输出"
             },
             {
                 "type": "设备",
@@ -213,8 +213,8 @@
                 "port_name": "燃料接口",
                 "subtype": "unknown",
                 "device_id": 4,
-                "direction": "输出",
-                "id": 5
+                "id": 5,
+                "direction": "输出"
             },
             {
                 "type": "设备",
@@ -273,26 +273,26 @@
                 "port_name": "燃料接口",
                 "subtype": "unknown",
                 "device_id": 6,
-                "direction": "输入",
-                "id": 7
+                "id": 7,
+                "direction": "输入"
             },
             {
                 "type": "锚点",
                 "port_name": "电接口",
                 "subtype": "unknown",
                 "device_id": 6,
-                "direction": "输出",
-                "id": 8
+                "id": 8,
+                "direction": "输出"
             },
             {
                 "type": "设备",
                 "subtype": "变流器",
                 "ports": {
-                    "电输入": {
+                    "电输出": {
                         "subtype": "unknown",
                         "id": 10
                     },
-                    "电输出": {
+                    "电输入": {
                         "subtype": "unknown",
                         "id": 11
                     }
@@ -317,29 +317,29 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "unknown",
-                "device_id": 9,
-                "direction": "输入",
-                "id": 10
-            },
-            {
-                "type": "锚点",
                 "port_name": "电输出",
                 "subtype": "unknown",
                 "device_id": 9,
-                "direction": "输出",
-                "id": 11
+                "id": 10,
+                "direction": "输出"
+            },
+            {
+                "type": "锚点",
+                "port_name": "电输入",
+                "subtype": "unknown",
+                "device_id": 9,
+                "id": 11,
+                "direction": "输入"
             },
             {
                 "type": "设备",
                 "subtype": "变压器",
                 "ports": {
-                    "电输入": {
+                    "电输出": {
                         "subtype": "unknown",
                         "id": 13
                     },
-                    "电输出": {
+                    "电输入": {
                         "subtype": "unknown",
                         "id": 14
                     }
@@ -367,19 +367,19 @@
             },
             {
                 "type": "锚点",
-                "port_name": "电输入",
-                "subtype": "unknown",
-                "device_id": 12,
-                "direction": "输入",
-                "id": 13
-            },
-            {
-                "type": "锚点",
                 "port_name": "电输出",
                 "subtype": "unknown",
                 "device_id": 12,
-                "direction": "输出",
-                "id": 14
+                "id": 13,
+                "direction": "输出"
+            },
+            {
+                "type": "锚点",
+                "port_name": "电输入",
+                "subtype": "unknown",
+                "device_id": 12,
+                "id": 14,
+                "direction": "输入"
             },
             {
                 "type": "设备",
@@ -434,8 +434,8 @@
                 "port_name": "电接口",
                 "subtype": "unknown",
                 "device_id": 15,
-                "direction": "输入",
-                "id": 16
+                "id": 16,
+                "direction": "输入"
             },
             {
                 "type": "设备",
@@ -478,8 +478,8 @@
                 "port_name": "电接口",
                 "subtype": "unknown",
                 "device_id": 17,
-                "direction": "输入输出",
-                "id": 18
+                "id": 18,
+                "direction": "输入输出"
             },
             {
                 "type": "母线",
@@ -515,11 +515,11 @@
                 "type": "设备",
                 "subtype": "双向变流器",
                 "ports": {
-                    "储能端": {
+                    "线路端": {
                         "subtype": "unknown",
                         "id": 23
                     },
-                    "线路端": {
+                    "储能端": {
                         "subtype": "unknown",
                         "id": 24
                     }
@@ -544,19 +544,19 @@
             },
             {
                 "type": "锚点",
-                "port_name": "储能端",
-                "subtype": "unknown",
-                "device_id": 22,
-                "direction": "输入输出",
-                "id": 23
-            },
-            {
-                "type": "锚点",
                 "port_name": "线路端",
                 "subtype": "unknown",
                 "device_id": 22,
-                "direction": "输入输出",
-                "id": 24
+                "id": 23,
+                "direction": "输入输出"
+            },
+            {
+                "type": "锚点",
+                "port_name": "储能端",
+                "subtype": "unknown",
+                "device_id": 22,
+                "id": 24,
+                "direction": "输入输出"
             },
             {
                 "type": "连接线",
@@ -665,11 +665,11 @@
             },
             {
                 "source": 10,
-                "target": 34
+                "target": 28
             },
             {
                 "source": 11,
-                "target": 28
+                "target": 34
             },
             {
                 "source": 12,
@@ -681,11 +681,11 @@
             },
             {
                 "source": 13,
-                "target": 29
+                "target": 30
             },
             {
                 "source": 14,
-                "target": 30
+                "target": 29
             },
             {
                 "source": 15,
@@ -749,11 +749,11 @@
             },
             {
                 "source": 23,
-                "target": 25
+                "target": 27
             },
             {
                 "source": 24,
-                "target": 27
+                "target": 25
             }
         ]
     }

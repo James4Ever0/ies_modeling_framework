@@ -9,6 +9,11 @@ data_fpath = "./heatpump_code_reference/windspeed_and_illumination_8760.dat"
 windspeed = []  # m/s
 illumination = []  # W/m2 -> kW/m2
 
+NO_BATTERY = True
+# NO_BATTERY = False
+# DEBUG = True
+DEBUG = False
+
 with open(data_fpath, "r") as f:
     for line in f.readlines():
         line = line.strip()
@@ -34,9 +39,10 @@ from topo_check import *
 
 # import rich
 
-
-datalen = 24
-# datalen = 8760
+if DEBUG:
+    datalen = 24
+else:
+    datalen = 8760
 ####################
 # build from code. #
 ####################
@@ -62,15 +68,21 @@ a = [100] * datalen  # this is not random.
 # a = abs(np.random.random((datalen,))).tolist()
 
 # algoParam = 计算参数(计算步长="小时", 典型日=False, 计算类型="仿真模拟", 风速=a, 光照=a, 气温=a, 年利率=0.1).dict()
+if DEBUG:
+    extraParams = dict(
+        典型日代表的日期=[1],
+        典型日=True,
+    )
+else:
+    extraParams = dict(
+        典型日=False,
+    )
 algoParam = 计算参数(
     计算目标="经济",
     # 计算目标="经济_环保",
     # 计算目标="环保",
     计算步长="小时",
-    典型日代表的日期=[1],
     # 典型日代表的日期=[1, 2],
-    典型日=True,
-    # 典型日=False,
     计算类型="设计规划",
     # 风速=windspeed,
     # 光照=illumination,
@@ -80,6 +92,7 @@ algoParam = 计算参数(
     贴现率=9,
     # 贴现率=0.1,
     # 年利率=0.1,
+    **extraParams,
 ).dict()
 # topo = 拓扑图()  # with structure?
 topo = 拓扑图(**algoParam)  # with structure?
@@ -242,54 +255,55 @@ LOAD_E = 电负荷(
         PriceModel=常数电价(Price=1),
     ).dict(),
 )
-# 锂电池1 = 锂电池(
-#     topo,
-#     param=锂电池信息(
-#         **devParam,
-#         设备名称="锂电池1",
-#         循环边界条件="日间连接",
-#         RatedCapacity=1000,
-#         CostPerCapacity=0.06,
-#         CostPerYearPerCapacity=0,
-#         VariationalCostPerWork=0.05,
-#         Life=15,
-#         BatteryDeltaLimit=0.5,
-#         ChargeEfficiency=92,
-#         DischargeEfficiency=92,
-#         BuildCostPerCapacity=0.03,
-#         BuildBaseCost=0,
-#         InitSOC=50,
-#         BatteryStorageDecay=0.5,
-#         BatteryLife=10,
-#         LifetimeCycleCount=6000,
-#         # TotalDischargeCapacity=1000,
-#         MaxSOC=100,
-#         MinSOC=15,
-#         TotalCapacity=20000,
-#         MaxTotalCapacity=20000,
-#         MinTotalCapacity=0,
-#     ).dict(),
-# )
 
+if not NO_BATTERY:
+    锂电池1 = 锂电池(
+        topo,
+        param=锂电池信息(
+            **devParam,
+            设备名称="锂电池1",
+            循环边界条件="日间连接",
+            RatedCapacity=1000,
+            CostPerCapacity=0.06,
+            CostPerYearPerCapacity=0,
+            VariationalCostPerWork=0.05,
+            Life=15,
+            BatteryDeltaLimit=0.5,
+            ChargeEfficiency=92,
+            DischargeEfficiency=92,
+            BuildCostPerCapacity=0.03,
+            BuildBaseCost=0,
+            InitSOC=50,
+            BatteryStorageDecay=0.5,
+            BatteryLife=10,
+            LifetimeCycleCount=6000,
+            # TotalDischargeCapacity=1000,
+            MaxSOC=100,
+            MinSOC=15,
+            TotalCapacity=20000,
+            MaxTotalCapacity=20000,
+            MinTotalCapacity=0,
+        ).dict(),
+    )
 
-# 双向变流器1 = 双向变流器(
-#     topo,
-#     param=双向变流器信息(
-#         **devParam,
-#         设备名称="双向变流器1",
-#         RatedPower=1250,
-#         Efficiency=98,
-#         CostPerKilowatt=0.014,
-#         CostPerYearPerKilowatt=0,
-#         VariationalCostPerWork=0,
-#         Life=20,
-#         BuildCostPerKilowatt=0,
-#         BuildBaseCost=0,
-#         MaxDeviceCount=40,
-#         MinDeviceCount=0,
-#         DeviceCount=40,
-#     ).dict(),
-# )
+    双向变流器1 = 双向变流器(
+        topo,
+        param=双向变流器信息(
+            **devParam,
+            设备名称="双向变流器1",
+            RatedPower=1250,
+            Efficiency=98,
+            CostPerKilowatt=0.014,
+            CostPerYearPerKilowatt=0,
+            VariationalCostPerWork=0,
+            Life=20,
+            BuildCostPerKilowatt=0,
+            BuildBaseCost=0,
+            MaxDeviceCount=40,
+            MinDeviceCount=0,
+            DeviceCount=40,
+        ).dict(),
+    )
 
 
 电解槽1 = 电解槽(
@@ -397,8 +411,10 @@ def 创建连接线(left, right):
 创建连接线(母线3.id, 传输线1.电输入)
 创建连接线(传输线1.电输入, 母线4.id)
 
-# 创建连接线(锂电池1.电接口, 双向变流器1.储能端)
-# 创建连接线(双向变流器1.线路端, 母线4.id)
+
+if not NO_BATTERY:
+    创建连接线(锂电池1.电接口, 双向变流器1.储能端)
+    创建连接线(双向变流器1.线路端, 母线4.id)
 创建连接线(母线4.id, 电解槽1.电接口)
 创建连接线(母线4.id, 电解槽2.电接口)
 创建连接线(母线4.id, LOAD_E.电接口)
@@ -431,12 +447,13 @@ import os
 
 mdict = topo.to_json()
 import json
+
 mdictList = [mdict]
 
 # breakpoint()  # error while reloading params
 EFG = EnergyFlowGraph(mDictList=mdictList, residualEquipmentLife=2)  # override default.
 
-with open('microgrid_topo_check_test_input.json', 'w+') as f:
+with open("microgrid_topo_check_test_input.json", "w+") as f:
     json.dump(EFG.dict(), f)
 ret = calculate_energyflow_graph_base(EFG.dict())
 logger_print(ret)

@@ -364,24 +364,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
-    """
-    类型: 输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
     类型: 输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
+    """
+    类型: 输入
     """
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
-    """
-    类型: 输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
     类型: 输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
+    """
+    类型: 输入
     """
 
 
@@ -397,11 +397,11 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
@@ -419,11 +419,11 @@ class 电解槽ID(设备ID):
     """
     类型: 输入
     """
-    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
-    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
+    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
@@ -3453,6 +3453,9 @@ class 柴油发电模型(设备模型):
         self.柴油输入 = self.燃料接口
 
         self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+        self.机组年运行时间 = (
+            quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数
+        ) * 8760
 
         # TODO: define some variables with expression
 
@@ -3480,9 +3483,6 @@ class 柴油发电模型(设备模型):
         self.机组年启动次数 = quicksum_indexed_var(self.Nstart.x_pos) * (
             8760 / self.计算参数.总计算时长
         )
-        self.机组年运行时间 = (
-            quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数
-        ) * 8760
 
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
@@ -3828,15 +3828,15 @@ class 电解槽模型(设备模型):
         类型: 输入
         """
 
-        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
-            "设备余热接口", within=NonNegativeReals
+        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
+            "制氢接口", within=NonNegativeReals
         )
         """
         类型: 输出
         """
 
-        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
-            "制氢接口", within=NonNegativeReals
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
         )
         """
         类型: 输出
@@ -3845,6 +3845,9 @@ class 电解槽模型(设备模型):
         # 设备特有约束（变量）
 
         self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+        self.机组年运行时间 = (
+            quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数
+        ) * 8760
 
         self.RangeConstraint(
             self.电接口,
@@ -3855,6 +3858,7 @@ class 电解槽模型(设备模型):
             - self.EPS
             == y,
         )
+        self.机组年启动次数 = 0
 
         self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
         self.是否购买 = self.POSNEG_是否购买.b_pos
@@ -3895,18 +3899,24 @@ class 电解槽模型(设备模型):
             == -(x * self.HydrogenGenerationEfficiency) * self.HeatRecycleEfficiency,
         )
 
+        启动指示变量 = self.变量列表_带指示变量("启动指示变量")
+        self.__setattr__("启动指示变量", 启动指示变量)
+        self.mw.Constraint(
+            expr=启动指示变量.x[self.计算参数.迭代步数 - 1] == self.Nrun_indicators.x_pos[0]
+        )
+        self.CustomRangeConstraintMulti(
+            self.Nrun_indicators.x_pos,
+            启动指示变量.x,
+            expression=lambda x, y, i: (x[i + 1] - x[i]) - 0.5 == y[i],
+            customRange=range(self.计算参数.迭代步数 - 1),
+        )
+
+        self.机组年启动次数 = quicksum_indexed_var(self.启动指示变量.x_pos) * (
+            8760 / self.计算参数.总计算时长
+        )
+
         if self.HasStartupCountLimit:
             # differentiation?
-            启动指示变量 = self.变量列表_带指示变量("启动指示变量")
-            self.mw.Constraint(
-                expr=启动指示变量[self.计算参数.迭代步数 - 1] == self.Nrun_indicators.x_pos[0]
-            )
-            self.CustomRangeConstraintMulti(
-                self.Nrun_indicators.x_pos,
-                启动指示变量.x,
-                expression=lambda x, y, i: (x[i + 1] - x[i]) - 0.5 == y[i],
-                customRange=range(self.计算参数.迭代步数 - 1),
-            )
             startupCount = self.SumRange(启动指示变量.x_pos)
             self.mw.Constraint(expr=startupCount < self.StartupCountLimit)
 
@@ -4384,18 +4394,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
-        )
-        """
-        类型: 输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=Reals
         )
         """
         类型: 输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
+        )
+        """
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -4600,18 +4610,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -4915,15 +4925,15 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
         )
         """
         类型: 输入输出
         """
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
         )
         """
         类型: 输入输出
@@ -5771,7 +5781,7 @@ class 规划结果详情(BaseModel):
         params["元件名称"] = deviceModel.设备信息.设备名称
         params["型号"] = getattr(deviceModel.设备信息, "设备型号", "")
         params["数量"] = getattr_with_ellipsis_fallback(
-            deviceModel.设备信息, "equiCounts", 0
+            deviceSimulationResult, "equiCounts", 0
         )  # 不要累加数量！
         params["平均效率_平均COP"] = getattr_with_ellipsis_fallback(
             deviceSimulationResult, "averageEfficiency", cmath.nan
@@ -6233,6 +6243,8 @@ def compute(
     PD = {}
     algoParam = 计算参数.parse_obj(graph_data)
 
+    typicalDayIndex = algoParam.典型日ID
+
     devInstDict = {}
 
     for dev in devs:
@@ -6262,7 +6274,24 @@ def compute(
 
             devInstDict.update({devID_int: devInst})
 
+    adder_index_error_mapping = {}
+    adder_error_total = {}
+    adder_index_error_sum_mapping = {}
+
+    # positive for too much input
+    # negative for insufficient input
+    # you may activate both
+
+    adder_positive_error_total = 0
+    adder_negative_error_total = 0
+    adder_combined_error_total = 0
+
     for adder_index, adder in adders.items():
+        adder_error_mapping = {}
+        adder_current_positive_error = 0
+        adder_current_negative_error = 0
+        adder_current_combined_error = 0
+
         with failsafe_suppress_exception():
             input_indexs, output_indexs, io_indexs = (
                 adder["input"],
@@ -6295,13 +6324,45 @@ def compute(
             logger_print(f"IO:{display_var_names(io_indexs)}")
             logger_print("_" * 20)
 
+            adder_index_repr = str(adder_index).replace("_", "-").replace("-", "N")
+
             for j in range(algoParam.迭代步数):
                 seqsum = sum(
                     [PD[i][j] for i in input_indexs + output_indexs + io_indexs]
                 )
 
                 # TODO: 消纳率约束
-                mw.Constraint(seqsum == 0)
+                positive_error = mw.Var(
+                    name=f"TD_{typicalDayIndex}_AD_{adder_index_repr}_PE_{j}",
+                    within=NonNegativeReals,
+                )
+                if not (
+                    "positive" in ies_env.ADDER_ERROR_COMPENSATION
+                    or ies_env.ADDER_ERROR_COMPENSATION == "combined"
+                ):
+                    positive_error.fix(0)
+                negative_error = mw.Var(
+                    name=f"TD_{typicalDayIndex}_AD_{adder_index_repr}_NE_{j}",
+                    within=NonNegativeReals,
+                )
+                if not (
+                    "negative" in ies_env.ADDER_ERROR_COMPENSATION
+                    or ies_env.ADDER_ERROR_COMPENSATION == "combined"
+                ):
+                    negative_error.fix(0)
+
+                combined_error = positive_error + negative_error
+
+                adder_error_mapping[j] = dict(
+                    positive_error=positive_error,
+                    negative_error=negative_error,
+                    combined_error=combined_error,
+                )
+                adder_current_positive_error += positive_error
+                adder_current_negative_error += negative_error
+                adder_current_combined_error += combined_error
+
+                mw.Constraint(seqsum == positive_error - negative_error)
 
             with failsafe_suppress_exception():
                 if algoParam.计算类型 == "设计规划":
@@ -6322,7 +6383,21 @@ def compute(
                         )
 
                         mw.Constraint(input_limit + output_limit >= 0)
+        adder_index_error_mapping[adder_index] = adder_error_mapping
+        adder_index_error_sum_mapping[adder_index] = dict(
+            positive_error=adder_current_positive_error,
+            negative_error=adder_current_negative_error,
+            combined_error=adder_current_combined_error,
+        )
+        adder_positive_error_total += adder_current_positive_error
+        adder_negative_error_total += adder_current_negative_error
+        adder_combined_error_total += adder_current_combined_error
 
+    adder_error_total = dict(
+        positive_error=adder_positive_error_total,
+        negative_error=adder_negative_error_total,
+        combined_error=adder_combined_error_total,
+    )
     financial_obj_expr = 0
 
     for e in devInstDict.values():
@@ -6356,7 +6431,13 @@ def compute(
         financial_dyn_obj_expr,
         environment_obj_expr,
     )
-    return obj_exprs, devInstDict, PD
+    # TODO: return 'adder_index_error_mapping'
+    extra_data = dict(
+        adder_index_error_mapping=adder_index_error_mapping,
+        adder_error_total=adder_error_total,
+        adder_index_error_sum_mapping=adder_index_error_sum_mapping,
+    )
+    return obj_exprs, devInstDict, PD, extra_data
     # always minimize the objective.
 
 

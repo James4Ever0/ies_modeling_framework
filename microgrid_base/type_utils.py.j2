@@ -135,6 +135,7 @@ template_path = "prolog_gen.pro.j2"
 
 template_abs_path = os.path.join(basepath, template_path)
 
+os.environ['NO_PYTHON_TYPECHECK'] = 'True'
 from jinja_utils import load_template_text
 
 with open(template_abs_path, 'r') as f:
@@ -180,7 +181,9 @@ import tempfile
 
 
 banner = lambda title: logger_print(title.center(60, "-"))
-
+{# PROLOG_STACK_LIMIT = 8 #}
+{# PROLOG_STACK_LIMIT = 4 # in GB #}
+PROLOG_STACK_LIMIT = None
 
 def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_name, adderNameToAdderPortNames):
     banner("querying")
@@ -189,9 +192,12 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
         with chdir_context(temp_dir):
             prolog_file_path = "prolog_script.pro"
             prolog_file_path_abs = os.path.join(prolog_file_path)
+            prolog_path_args = []
+            if PROLOG_STACK_LIMIT is not None:
+                prolog_path_args.append(f"--stack_limit={PROLOG_STACK_LIMIT}g")
             with open(prolog_file_path_abs, "w+") as f:
                 f.write(prolog_script_content)
-            with PrologMQI() as mqi:
+            with PrologMQI(prolog_path_args = prolog_path_args) as mqi:
                 with mqi.create_thread() as prolog_thread:
                     topology_status_dict = query_prolog_in_context(
                         topology_status_dict,

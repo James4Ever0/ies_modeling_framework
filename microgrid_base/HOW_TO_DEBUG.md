@@ -6,7 +6,7 @@ You can configure the program in the following ways:
 
 1. Setting environmental variables with corresponding name
 2. Pass configuration as commandline options (the syntax is different, so use `--help` to learn it first)
-3. Write configuration in an dotenv formatted file and pass the path of that file into either as environment variable or commandline option   
+3. Write configuration in an dotenv formatted file and pass the path of that file into either as environment variable or commandline option
 
 ## Debugging Preference
 
@@ -35,3 +35,5 @@ When the model is hard to reduce, and must be analyzed in detail, we can use the
 Feasopt is part of the failsafe protocols. Set `FAILSAFE=True` in configuration to enable it.
 
 More options like `FEASOPT_TIMELIMIT` can be found as constants in file `failsafe_utils.py`.
+
+In case you may want more specific relaxation targets than all constraints, you can tweak the adders, device count bounds and more.
