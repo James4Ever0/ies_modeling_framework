@@ -1,3 +1,4 @@
+# ref: http://www.xavierdupre.fr/app/mlinsights/helpsphinx/notebooks/piecewise_linear_regression.html
 import numpy
 import numpy.random as npr
 import matplotlib.pyplot as plt
