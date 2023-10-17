@@ -1791,6 +1791,21 @@ class {{class_name}}模型(设备模型):
         self.机组年启动次数 = quicksum_indexed_var(self.Nstart.x_pos) * (8760/self.计算参数.总计算时长)
         {# self.机组年运行时间 = (quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数) * 8760 #}
         
+        min_diesel_to_power, min_load = self.DieselToPower_Load[0]
+        max_diesel_to_power, max_load = self.DieselToPower_Load[-1]
+        
+
+        if min_load > self.PowerStartupLimit:
+            if self.PowerStartupLimit not in [e[1] for e in self.DieselToPower_Load]:
+                self.DieselToPower_Load.insert(0, (min_diesel_to_power, self.PowerStartupLimit))
+
+        if min_load>0:
+            self.DieselToPower_Load.insert(0, (min_diesel_to_power,0))
+            {# self.DieselToPower_Load.insert(0, (0,0)) #}
+
+        if max_load <1:
+            self.DieselToPower_Load.append((max_diesel_to_power,1))
+
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(expr = self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit)
         

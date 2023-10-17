@@ -85,6 +85,7 @@ class 柴油仿真结果(BaseModel):
 
     @staticmethod
     def export(model: 柴油模型, timeParam: float):
+        # breakpoint()
         return 柴油仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
@@ -240,6 +241,7 @@ class 柴油发电仿真结果(BaseModel):
 
     @staticmethod
     def export(model: 柴油发电模型, timeParam: float):
+        # breakpoint()
         return 柴油发电仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),

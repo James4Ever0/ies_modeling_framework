@@ -11,10 +11,12 @@ illumination = []  # W/m2 -> kW/m2
 
 # NO_BATTERY = True
 NO_BATTERY = False
-NO_ELEC_LOAD=True
-# NO_ELEC_LOAD=False
-DEBUG = True
-# DEBUG = False
+# NO_ELEC_LOAD=True
+NO_ELEC_LOAD=False
+# NO_RENEWABLE=True
+NO_RENEWABLE=False
+# DEBUG = True
+DEBUG = False
 
 with open(data_fpath, "r") as f:
     for line in f.readlines():
@@ -168,9 +170,9 @@ WT_P1 = 风力发电信息(
 p1 = 柴油发电信息(
     **devParam,
     设备名称="柴油发电1",
-    RatedPower=100,
+    RatedPower=1e4,
     PowerDeltaLimit=0.3,
-    PowerStartupLimit=10,
+    PowerStartupLimit=0.0001,
     CostPerMachine=6,
     CostPerYearPerMachine=0.1,
     VariationalCostPerWork=0.1,
@@ -178,21 +180,21 @@ p1 = 柴油发电信息(
     BuildCostPerMachine=0.2,
     BuildBaseCost=0,
     DieselToPower_Load=[
-        (29, 0.13),
-        (36, 0.145),
-        (43, 0.164),
-        (50, 0.18),
-        (57, 0.19),
-        (64, 0.21),
-        (71, 0.224),
-        (79, 0.238),
-        (86, 0.26),
-        (93, 0.294),
-        (100, 0.365),
+        ( 0.13, 29,),
+        ( 0.145, 36,),
+        ( 0.164, 43,),
+        ( 0.18, 50,),
+        ( 0.19, 57,),
+        ( 0.21, 64,),
+        ( 0.224, 71,),
+        ( 0.238, 79,),
+        ( 0.26, 86,),
+        ( 0.294, 93,),
+        (0.365, 100,),
     ],
-    DeviceCount=10,
-    MaxDeviceCount=10,
-    MinDeviceCount=10,
+    DeviceCount=20,
+    MaxDeviceCount=20,
+    MinDeviceCount=20,
 ).dict()
 # breakpoint()
 
@@ -237,8 +239,10 @@ LOAD_H = 氢负荷(
     param=氢负荷信息(
         **devParam,
         设备名称="氢负荷1",
+        # LoadType=负荷类型.Normal,
         LoadType=负荷类型.Flexible,
-        Pmin=100,
+        Pmin=0,
+        # Pmin=100,
         Pmax=1500,
         EnergyConsumption=[1500] * len(a),
         PriceModel=常数氢价(Price=18),
@@ -317,11 +321,11 @@ if not NO_BATTERY:
     param=电解槽信息(
         **devParam,
         设备名称=f"电解槽1",
-        RatedInputPower=5000,
-        HydrogenGenerationStartupRate=5,
-        HydrogenGenerationEfficiency=60,
+        RatedInputPower=1e5,
+        HydrogenGenerationStartupRate=0.001,
+        HydrogenGenerationEfficiency=100,
         DeltaLimit=3.4,
-        HeatRecycleEfficiency=70,
+        HeatRecycleEfficiency=100,
         CostPerMachine=900,
         CostPerYearPerMachine=5,
         VariationalCostPerWork=0.01,
@@ -329,7 +333,7 @@ if not NO_BATTERY:
         BuildCostPerMachine=20,
         BuildBaseCost=0,
         MaxDeviceCount=6,
-        MinDeviceCount=1,
+        MinDeviceCount=6,
         DeviceCount=6,
     ).dict(),
 )
@@ -388,9 +392,11 @@ if not NO_BATTERY:
     ).dict(),
 )
 
+if not NO_RENEWABLE:
 
-母线1 = 母线(topo, "可连接母线")
-母线2 = 母线(topo, "可连接母线")
+    母线1 = 母线(topo, "可连接母线")
+    母线2 = 母线(topo, "可连接母线")
+
 母线3 = 母线(topo, "可连接母线")
 # 母线4 = 母线(topo, "可连接母线")
 # 母线5 = 母线(topo, "可连接母线")
@@ -399,21 +405,21 @@ if not NO_BATTERY:
 def 创建连接线(left, right):
     连接线(topo, "不可连接母线", left, right)
 
+if not NO_RENEWABLE:
+    创建连接线(风力发电1.电接口, 变流器1.电输入)
+    创建连接线(光伏发电1.电接口, 变流器2.电输入)
 
-创建连接线(风力发电1.电接口, 变流器1.电输入)
-创建连接线(光伏发电1.电接口, 变流器2.电输入)
 
+    创建连接线(变流器1.电输出, 母线1.id)
+    创建连接线(变流器2.电输出, 母线2.id)
 
-创建连接线(变流器1.电输出, 母线1.id)
-创建连接线(变流器2.电输出, 母线2.id)
-
-创建连接线(母线1.id, 变流器3.电输入)
-创建连接线(母线2.id, 变流器4.电输入)
+    创建连接线(母线1.id, 变流器3.电输入)
+    创建连接线(母线2.id, 变流器4.电输入)
 
 创建连接线(柴油1.燃料接口, 柴油发电1.燃料接口)
 创建连接线(柴油发电1.电接口, 母线3.id)
-创建连接线(变流器3.电输出, 母线3.id)
-创建连接线(变流器4.电输出, 母线3.id)
+# 创建连接线(变流器3.电输出, 母线3.id)
+# 创建连接线(变流器4.电输出, 母线3.id)
 创建连接线(母线3.id, 电解槽1.电接口)
 
 if not NO_BATTERY:

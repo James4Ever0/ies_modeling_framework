@@ -365,24 +365,24 @@ class 锂电池ID(设备ID):
 
 
 class 变压器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
-    """
-    类型: 输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
     类型: 输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
+    """
+    类型: 输入
     """
 
 
 class 变流器ID(设备ID):
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
-    """
-    类型: 输入
-    """
     电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输出")
     """
     类型: 输出
+    """
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入")
+    """
+    类型: 输入
     """
 
 
@@ -416,11 +416,11 @@ class 氢负荷ID(设备ID):
 
 
 class 电解槽ID(设备ID):
-    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
-    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
+    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
@@ -3487,6 +3487,22 @@ class 柴油发电模型(设备模型):
             8760 / self.计算参数.总计算时长
         )
 
+        min_diesel_to_power, min_load = self.DieselToPower_Load[0]
+        max_diesel_to_power, max_load = self.DieselToPower_Load[-1]
+
+        if min_load > self.PowerStartupLimit:
+            if self.PowerStartupLimit not in [e[1] for e in self.DieselToPower_Load]:
+                self.DieselToPower_Load.insert(
+                    0, (min_diesel_to_power, self.PowerStartupLimit)
+                )
+
+        if min_load > 0:
+            self.DieselToPower_Load.insert(0, (0, 0))
+
+        if max_load < 1:
+            self.DieselToPower_Load.append((max_diesel_to_power, 1))
+        # breakpoint()
+
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
                 expr=self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit
@@ -3824,15 +3840,15 @@ class 电解槽模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
-            "设备余热接口", within=NonNegativeReals
+        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
+            "制氢接口", within=NonNegativeReals
         )
         """
         类型: 输出
         """
 
-        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
-            "制氢接口", within=NonNegativeReals
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
         )
         """
         类型: 输出
@@ -4398,18 +4414,18 @@ class 变压器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
-        )
-        """
-        类型: 输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=Reals
         )
         """
         类型: 输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
+        )
+        """
+        类型: 输入
         """
 
         # 设备特有约束（变量）
@@ -4614,18 +4630,18 @@ class 变流器模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=NonPositiveReals
-        )
-        """
-        类型: 输入
-        """
-
         self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
             "电输出", within=NonNegativeReals
         )
         """
         类型: 输出
+        """
+
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=NonPositiveReals
+        )
+        """
+        类型: 输入
         """
 
         # 设备特有约束（变量）

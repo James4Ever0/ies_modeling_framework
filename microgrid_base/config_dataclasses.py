@@ -4,6 +4,7 @@ from pydantic import confloat, Field  # , validator, ValidationError
 from config_utils import EnvBaseModel, Union
 from typing import Literal
 
+
 class IESEnv(EnvBaseModel):
     """
     IES algorithm program configurations.
@@ -57,15 +58,29 @@ class IESEnv(EnvBaseModel):
         title="Enable infeasibility diagnostic mode, which will perform various tests to detect and analyze infeasibility, before and after accessing the solver.",
     )
 
-    DYNAMIC_TYPE_VERIFICATION:bool = Field(
-        default = False,
+    DYNAMIC_TYPE_VERIFICATION: bool = Field(
+        default=False,
         # default = True,
-        title = "Enable dynamic type verification on topology."
+        title="Enable dynamic type verification on topology.",
     )
 
-    ADDER_ERROR_COMPENSATION: Literal['none', 'positive', 'negative', 'combined'] = Field(default='none', title="Mode for adder error compensation, 'none' for no compensation, 'positive' for too much input, 'negative' for too little input, and 'combined' for both.")
+    ADDER_ERROR_COMPENSATION: Literal[
+        "none", "positive", "negative", "combined"
+    ] = Field(
+        default="none",
+        title="Mode for adder error compensation, 'none' for no compensation, 'positive' for too much input, 'negative' for too little input, and 'combined' for both.",
+    )
 
-    IGNORE_ANCHOR_EXCEPTIONS: bool = Field(default=True, title="Ignore exceptions raised by anchors in topology checks.")
+    IGNORE_ANCHOR_EXCEPTIONS: bool = Field(
+        default=True, title="Ignore exceptions raised by anchors in topology checks."
+    )
+
+    ADDER_ERROR_WEIGHT: float = Field(
+        default=1e9, 
+        # default=1e20, 
+        # default=1e7, 
+        title="Weight of adder error in objective passed to solver."
+    )
 
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):
@@ -101,7 +116,10 @@ class DockerLauncherConfig(IESEnv):
     UNITTEST: bool = Field(
         default=False, title="Perform unittest before launching the service"
     )
-    FINAL_IMAGE_TAG: str = Field(default = 'latest', title = 'Tag name(setting anything other than "latest" will skip image building and run final image with that tag instead)')
+    FINAL_IMAGE_TAG: str = Field(
+        default="latest",
+        title='Tag name(setting anything other than "latest" will skip image building and run final image with that tag instead)',
+    )
     # FORCE_UPDATE: bool = Field(
     #     default=False,
     #     title="Force updating ultimate docker image even if up-to-date (not older than 7 days).",

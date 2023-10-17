@@ -332,3 +332,6 @@ test_topo_check:
 
 microgrid_topo_check:
 	${PYTHON} microgrid_topo_check.py
+
+diesel_topo_check:
+	${PYTHON} diesel_topo_check.py
