@@ -1,4 +1,3 @@
-:- use_module(library(clpfd)).
 
 port(bat_port1).
 port(generator_port1).

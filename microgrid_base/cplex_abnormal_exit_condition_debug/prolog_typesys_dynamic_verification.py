@@ -150,6 +150,15 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
                     )
     return topology_status_dict
 
+def construct_query_result_iterator(thread, query):
+    thread.query_async(query, find_all=False)
+    while True:
+        it = thread.query_async_result()
+        if it is not None:
+            yield it
+        else:
+            break
+
 
 def query_prolog_in_context(
     topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name
@@ -163,11 +172,18 @@ def query_prolog_in_context(
     print('adder_names: ',adder_names)
     # breakpoint()
     prolog_thread.query(f'["{prolog_file_path}"].')
-    result = prolog_thread.query(
-        f"findall(STATUS, adder_port_status_list([{adder_names}], STATUS), STATUS_LIST)"
-    )
-    print(result)  # list, get first element
-    STATUS_LIST = result[0]["STATUS_LIST"]
+    # result = prolog_thread.query(
+    #     f"findall(STATUS, adder_port_status_list([{adder_names}], STATUS), STATUS_LIST)"
+    # )
+    query = f"adder_port_status_list([{adder_names}], STATUS)"
+    _iterator = construct_query_result_iterator(prolog_thread, query)
+
+    STATUS_LIST = []
+
+    for result in _iterator:
+        STATUS = result[0]["STATUS"]
+        STATUS_LIST.append(STATUS)
+
     for simutaneous_status in STATUS_LIST:
         adder_status_dict = {}
         port_status_dict = {}

@@ -178,12 +178,12 @@ from frozendict import frozendict
 import rich
 import os
 import tempfile
-
+from config import ies_env
 
 banner = lambda title: logger_print(title.center(60, "-"))
 {# PROLOG_STACK_LIMIT = 8 #}
 {# PROLOG_STACK_LIMIT = 4 # in GB #}
-PROLOG_STACK_LIMIT = None
+PROLOG_STACK_LIMIT = ies_env.PROLOG_STACK_LIMIT
 
 def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_name, adderNameToAdderPortNames):
     banner("querying")
@@ -208,7 +208,18 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
                     )
     return topology_status_dict
 
+def construct_query_result_iterator(thread, query):
+    thread.query_async(query, find_all=False)
+    while True:
+        it = thread.query_async_result()
+        if it is not None:
+            yield it
+        else:
+            break
+
 import progressbar
+import hashlib
+
 def query_prolog_in_context(
     topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name, adderNameToAdderPortNames
 ):
@@ -221,12 +232,24 @@ def query_prolog_in_context(
     logger_print('adder_names: ',adder_names)
     # breakpoint()
     prolog_thread.query(f'["{prolog_file_path}"].')
-    result = prolog_thread.query(
-        f"findall(STATUS, adder_port_status_list([{adder_names}], STATUS), STATUS_LIST)"
-    )
+
     {# logger_print(result)  # list, get first element #}
+    logger_print("retrieving result")
+    query = f"adder_port_status_list([{adder_names}], STATUS)"
+    _iterator = construct_query_result_iterator(prolog_thread, query)
+
+    STATUS_LIST = []
+
+    hashset = set()
+
+    for result in progressbar.progressbar(_iterator):
+        STATUS = result[0]["STATUS"]
+        status_hash = hashlib.md5(str(STATUS).encode()).hexdigest()
+        if status_hash not in hashset:
+            hashset.add(status_hash)
+            STATUS_LIST.append(STATUS)
+
     logger_print("parsing result")
-    STATUS_LIST = result[0]["STATUS_LIST"]
     
     for simutaneous_status in progressbar.progressbar(STATUS_LIST):
         adder_status_dict = {}

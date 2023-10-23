@@ -6,7 +6,10 @@ query = 'dog(X)'
 with PrologMQI() as mqi:
     with mqi.create_thread() as prolog_thread:
         prolog_thread.query(f'["{prolog_file_path}"].')
-        obj = prolog_thread.query_async(query, find_all=False)
+
+        # obj = prolog_thread.query(query)
+
+        prolog_thread.query_async(query, find_all=False)
         while True:
             result = prolog_thread.query_async_result()
             if result is None:

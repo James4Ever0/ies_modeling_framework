@@ -12,9 +12,9 @@ illumination = []  # W/m2 -> kW/m2
 # NO_BATTERY = True
 NO_BATTERY = False
 # NO_ELEC_LOAD=True
-NO_ELEC_LOAD=False
+NO_ELEC_LOAD = False
 # NO_RENEWABLE=True
-NO_RENEWABLE=False
+NO_RENEWABLE = False
 # DEBUG = True
 DEBUG = False
 
@@ -180,17 +180,50 @@ p1 = 柴油发电信息(
     BuildCostPerMachine=0.2,
     BuildBaseCost=0,
     DieselToPower_Load=[
-        ( 0.13, 29,),
-        ( 0.145, 36,),
-        ( 0.164, 43,),
-        ( 0.18, 50,),
-        ( 0.19, 57,),
-        ( 0.21, 64,),
-        ( 0.224, 71,),
-        ( 0.238, 79,),
-        ( 0.26, 86,),
-        ( 0.294, 93,),
-        (0.365, 100,),
+        (
+            0.13,
+            29,
+        ),
+        (
+            0.145,
+            36,
+        ),
+        (
+            0.164,
+            43,
+        ),
+        (
+            0.18,
+            50,
+        ),
+        (
+            0.19,
+            57,
+        ),
+        (
+            0.21,
+            64,
+        ),
+        (
+            0.224,
+            71,
+        ),
+        (
+            0.238,
+            79,
+        ),
+        (
+            0.26,
+            86,
+        ),
+        (
+            0.294,
+            93,
+        ),
+        (
+            0.365,
+            100,
+        ),
     ],
     DeviceCount=20,
     MaxDeviceCount=20,
@@ -250,7 +283,6 @@ LOAD_H = 氢负荷(
 )
 
 if not NO_ELEC_LOAD:
-
     LOAD_E = 电负荷(
         topo,
         param=电负荷信息(
@@ -259,7 +291,7 @@ if not NO_ELEC_LOAD:
             LoadType=负荷类型.Flexible,
             Pmin=100,
             Pmax=500,
-            EnergyConsumption=[400] * len(a), # TODO: fix data retrieval bug
+            EnergyConsumption=[400] * len(a),  # TODO: fix data retrieval bug
             PriceModel=常数电价(Price=1),
         ).dict(),
     )
@@ -393,7 +425,6 @@ if not NO_BATTERY:
 )
 
 if not NO_RENEWABLE:
-
     母线1 = 母线(topo, "可连接母线")
     母线2 = 母线(topo, "可连接母线")
 
@@ -405,10 +436,10 @@ if not NO_RENEWABLE:
 def 创建连接线(left, right):
     连接线(topo, "不可连接母线", left, right)
 
+
 if not NO_RENEWABLE:
     创建连接线(风力发电1.电接口, 变流器1.电输入)
     创建连接线(光伏发电1.电接口, 变流器2.电输入)
-
 
     创建连接线(变流器1.电输出, 母线1.id)
     创建连接线(变流器2.电输出, 母线2.id)
@@ -460,6 +491,7 @@ if not NO_BATTERY:
 try:
     topo.check_consistency()
 except Exception as e:
+    # raise e
     pass
 # shall raise error.
 
@@ -479,12 +511,13 @@ mdictList = [mdict]
 # breakpoint()  # error while reloading params
 EFG = EnergyFlowGraph(mDictList=mdictList, residualEquipmentLife=2)  # override default.
 
+json_dump_params = dict(ensure_ascii=False, indent=4)
 with open("microgrid_topo_check_test_input.json", "w+") as f:
-    json.dump(EFG.dict(), f)
+    json.dump(EFG.dict(), f, **json_dump_params)
 ret = calculate_energyflow_graph_base(EFG.dict())
 logger_print(ret)
 
 if ret:
     with open(saved_path := "microgrid_test_output_full.json", "w+") as f:
-        f.write(json.dumps(ret, ensure_ascii=False, indent=4))
+        f.write(json.dumps(ret, **json_dump_params))
     logger_print(f"dumped to: {saved_path}")

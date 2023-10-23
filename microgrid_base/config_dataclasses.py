@@ -2,7 +2,7 @@ from log_utils import logger_print
 
 from pydantic import confloat, Field  # , validator, ValidationError
 from config_utils import EnvBaseModel, Union
-from typing import Literal
+from typing import Literal, Optional
 
 
 class IESEnv(EnvBaseModel):
@@ -81,6 +81,8 @@ class IESEnv(EnvBaseModel):
         # default=1e7, 
         title="Weight of adder error in objective passed to solver."
     )
+
+    PROLOG_STACK_LIMIT:Optional[int] = Field(default=None, title = 'Prolog stack limit in gigabytes.')
 
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):
