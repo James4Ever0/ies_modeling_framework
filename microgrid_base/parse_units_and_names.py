@@ -37,13 +37,14 @@ from unit_utils import (
 EXCEL = "嵌套"
 
 MEASURE = "调度"
-
+TABLE_FORMATS = {
+            "燃油消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
+            "燃气消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
+        }
 
 def get_table_format(k, u):
     try:
-        t = {
-            "燃油消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
-        }
+        t = TABLE_FORMATS
         return t[k][str(u)]  # name, unit
     except:
         raise Exception("No table format for", k, u)
@@ -81,9 +82,10 @@ def none_fallback(e):
         return ""
     return e
 
-
+# breakpoint()
 for k, v in device_data.items():
     for k1, v1 in v.items():
+        k1 = k1.replace('（','(').split("(")[0].strip()
         k0 = f"{k}-{k1}"
         # if k1 == '传输线': breakpoint()
         if k0 in all_microgrid_device_keys: # all_microgrid_device_keys does not have 传输线
@@ -172,15 +174,17 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         "kW",
         {
             "RatedInput-": ["额定输入功率"],
-            "Rated-": ["额定功率", "变压器容量"],
+            "Rated-": ["额定功率","额定发电功率", "变压器容量"],
             "UnitRated-": ["组件额定功率"],
             "Max-": ["最大发电功率"],
             "Cutout-": ["切出功率"],
         },
     ),
+    "Rate": ("one", {"HotWaterToElectricity-":["缸套水热电比"], "HotGasToElectricity-":["烟气热电比"]}),
     "HydrogenGenerationStartupRate":("percent", {"": ["制氢启动功率比值"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
+    "NaturalGasToPower": ("m3/kWh", {"": ["燃气消耗率"]}),
     "StartupLimit": ("percent", {"Power-": ["启动功率百分比"]}),
     "PowerConsumptionVariationRate": ("percent", {"": ["用电波动率"]}),
     "DeltaLimit": (

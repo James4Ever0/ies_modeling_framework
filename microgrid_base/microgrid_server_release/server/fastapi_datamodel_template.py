@@ -73,6 +73,7 @@ class 设备出力曲线(BaseModel):
 class ObjectiveResult(BaseModel):
     financialObjective: float = Field(title="经济目标值")
     environmentalObjective: float = Field(title="环保目标值")
+    adderError: float = Field(title="加法器误差")
 
 
 class 单次计算结果(BaseModel):

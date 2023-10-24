@@ -209,6 +209,7 @@ def solve_model(
             logger_print(results)
 
             if not solved:
+                # translation could be extremely slow for large models. you have been warned.
                 solved = rescue(mw, solver, timestamp, solver_log, results)
         if solved:
             logger_print("OBJ:", value(OBJ))

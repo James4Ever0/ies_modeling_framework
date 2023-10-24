@@ -515,11 +515,11 @@
                 "type": "设备",
                 "subtype": "双向变流器",
                 "ports": {
-                    "储能端": {
+                    "线路端": {
                         "subtype": "unknown",
                         "id": 23
                     },
-                    "线路端": {
+                    "储能端": {
                         "subtype": "unknown",
                         "id": 24
                     }
@@ -544,7 +544,7 @@
             },
             {
                 "type": "锚点",
-                "port_name": "储能端",
+                "port_name": "线路端",
                 "subtype": "unknown",
                 "device_id": 22,
                 "id": 23,
@@ -552,7 +552,7 @@
             },
             {
                 "type": "锚点",
-                "port_name": "线路端",
+                "port_name": "储能端",
                 "subtype": "unknown",
                 "device_id": 22,
                 "id": 24,
@@ -749,11 +749,11 @@
             },
             {
                 "source": 23,
-                "target": 25
+                "target": 27
             },
             {
                 "source": 24,
-                "target": 27
+                "target": 25
             }
         ]
     }

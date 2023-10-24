@@ -85,7 +85,6 @@ class 柴油仿真结果(BaseModel):
 
     @staticmethod
     def export(model: 柴油模型, timeParam: float):
-        # breakpoint()
         return 柴油仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
@@ -241,7 +240,6 @@ class 柴油发电仿真结果(BaseModel):
 
     @staticmethod
     def export(model: 柴油发电模型, timeParam: float):
-        # breakpoint()
         return 柴油发电仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
@@ -567,6 +565,72 @@ class 氢负荷仿真结果(BaseModel):
         )
 
 
+class 燃气发电机仿真结果(BaseModel):
+    元件名称: str
+
+    元件类型: str
+
+    设备型号: str
+
+    设备台数: int
+    """
+    单位: one
+    """
+
+    设备维护费用: float
+    """
+    单位: 万元
+    """
+
+    ## UNIQ PARAMS ##
+    产热量: float
+    """
+    单位: kWh
+    """
+
+    产电量: float
+    """
+    单位: kWh
+    """
+
+    天然气消耗量: float
+    """
+    单位: m3
+    """
+
+    @staticmethod
+    def export(model: 燃气发电机模型, timeParam: float):
+        return 燃气发电机仿真结果(
+            元件名称=safeAbs(model.设备信息.设备名称),
+            元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
+            设备型号=safeAbs(model.设备信息.设备型号),
+            设备维护费用=safeAbs(
+                ((value(model.总固定维护成本 + model.总可变维护成本年化)) * ((timeParam / 每年小时数)))
+            ),
+            设备台数=safeAbs(value(model.DeviceCount)),
+            产电量=safeAbs(
+                ((statistics.mean([value(e) for e in model.电接口.values()])) * timeParam)
+            ),
+            天然气消耗量=safeAbs(
+                ((statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam)
+            ),
+            产热量=safeAbs(
+                (
+                    (
+                        (statistics.mean([value(e) for e in model.高温烟气余热接口.values()]))
+                        * timeParam
+                    )
+                )
+                + (
+                    (
+                        (statistics.mean([value(e) for e in model.缸套水余热接口.values()]))
+                        * timeParam
+                    )
+                )
+            ),
+        )
+
+
 class 电解槽仿真结果(BaseModel):
     元件名称: str
 
@@ -803,7 +867,6 @@ class 双向变流器出力曲线(BaseModel):
 
     @staticmethod
     def export(model: 双向变流器模型, timeParam: float):
-        # breakpoint()
         return 双向变流器出力曲线(
             时间=list(range(model.计算参数.迭代步数)),
             元件名称=model.设备信息.设备名称,

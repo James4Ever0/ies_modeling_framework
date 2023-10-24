@@ -415,12 +415,31 @@ class 氢负荷ID(设备ID):
     """
 
 
-class 电解槽ID(设备ID):
-    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
+class 燃气发电机ID(设备ID):
+    缸套水余热接口: conint(ge=0) = Field(title="缸套水余热接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
+    电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
+    高温烟气余热接口: conint(ge=0) = Field(title="高温烟气余热接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
+    燃料接口: conint(ge=0) = Field(title="燃料接口ID", description="接口类型: 输入")
+    """
+    类型: 输入
+    """
+
+
+class 电解槽ID(设备ID):
     设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
+    制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
@@ -1714,6 +1733,158 @@ class 氢负荷信息(设备基础信息):
     """
 
     PriceModel: 常数氢价 = Field(title="计价模型", description="单位: 元/kg")
+
+
+class 燃气发电机信息(设备信息):
+    unitAnnualOperatingTimeConstraint: bool = Field(
+        default=False, title="机组年运行时间约束", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
+    )
+    maximumAnnualOperatingTimeLimitOfTheUnit: conint(ge=0) = Field(
+        default=0, title="机组年运行时间最高限值", description="单位：小时"
+    )
+    considerUnitStartUpCosts: bool = Field(
+        default=False, title="考虑机组启动费用", description="若选否，变量约束不创建，变量为自由变量，降低计算量"
+    )
+    unitSingleStartupCost: conint(ge=0) = Field(
+        default=0, title="机组单次启动费用", description="单位：元/次"
+    )
+    unitPlanningAlgorithmSelection: 油耗规划算法 = Field(
+        default=油耗规划算法.平均, title="机组规划算法选择", description="平均/最佳"
+    )
+    averageLoadRate: confloat(ge=0, le=100) = Field(
+        default=0, title="平均负载率", description="单位：percent"
+    )
+
+    RatedPower: confloat(ge=0) = Field(title="额定发电功率", description="名称: 额定发电功率\n单位: kW")
+    """
+    名称: 额定发电功率
+    单位: kW
+    """
+
+    HotWaterToElectricityRate: confloat(ge=0) = Field(
+        title="缸套水热电比", description="名称: 缸套水热电比\n单位: one"
+    )
+    """
+    名称: 缸套水热电比
+    单位: one
+    """
+
+    HotGasToElectricityRate: confloat(ge=0) = Field(
+        title="烟气热电比", description="名称: 烟气热电比\n单位: one"
+    )
+    """
+    名称: 烟气热电比
+    单位: one
+    """
+
+    PowerDeltaLimit: confloat(ge=0) = Field(
+        title="发电爬坡率", description="名称: 发电爬坡率\n单位: percent/s"
+    )
+    """
+    名称: 发电爬坡率
+    单位: percent/s
+    """
+
+    PowerStartupLimit: confloat(ge=0) = Field(
+        title="启动功率百分比", description="名称: 启动功率百分比\n单位: percent"
+    )
+    """
+    名称: 启动功率百分比
+    单位: percent
+    """
+
+    @validator("PowerStartupLimit")
+    def validate_PowerStartupLimit_for_percent_warning(cls, value):
+        warning_msg = None
+        field_name = "PowerStartupLimit"
+        if value <= ies_env.PERCENT_WARNING_THRESHOLD:
+            warning_msg = f"Field '{field_name}' (value: {value}; unit: percent) passed to class '{cls.__name__}' is less than or equal to {ies_env.PERCENT_WARNING_THRESHOLD}"
+        if warning_msg is not None:
+            if ies_env.UNIT_WARNING_AS_ERROR:
+                raise Exception(warning_msg)
+            else:
+                logger_print(warning_msg)
+        return value
+
+    CostPerMachine: confloat(ge=0) = Field(
+        title="采购成本", description="名称: 采购成本\n单位: 万元/台"
+    )
+    """
+    名称: 采购成本
+    单位: 万元/台
+    """
+
+    CostPerYearPerMachine: confloat(ge=0) = Field(
+        title="固定维护成本", description="名称: 固定维护成本\n单位: 万元/(台*年)"
+    )
+    """
+    名称: 固定维护成本
+    单位: 万元/(台*年)
+    """
+
+    VariationalCostPerWork: confloat(ge=0) = Field(
+        title="可变维护成本", description="名称: 可变维护成本\n单位: 元/kWh"
+    )
+    """
+    名称: 可变维护成本
+    单位: 元/kWh
+    """
+
+    Life: confloat(ge=0) = Field(title="设计寿命", description="名称: 设计寿命\n单位: 年")
+    """
+    名称: 设计寿命
+    单位: 年
+    """
+
+    BuildCostPerMachine: confloat(ge=0) = Field(
+        title="建设费用系数", description="名称: 建设费用系数\n单位: 万元/台"
+    )
+    """
+    名称: 建设费用系数
+    单位: 万元/台
+    """
+
+    BuildBaseCost: confloat(ge=0) = Field(
+        title="建设费用基数", description="名称: 建设费用基数\n单位: 万元"
+    )
+    """
+    名称: 建设费用基数
+    单位: 万元
+    """
+
+    MaxDeviceCount: confloat(ge=0) = Field(
+        title="最大安装台数", description="名称: 最大安装台数\n单位: 台"
+    )
+    """
+    名称: 最大安装台数
+    单位: 台
+    """
+
+    MinDeviceCount: confloat(ge=0) = Field(
+        title="最小安装台数", description="名称: 最小安装台数\n单位: 台"
+    )
+    """
+    名称: 最小安装台数
+    单位: 台
+    """
+
+    DeviceCount: confloat(ge=0) = Field(title="安装台数", description="名称: 安装台数\n单位: 台")
+    """
+    名称: 安装台数
+    单位: 台
+    """
+
+    NaturalGasToPower_Load: List[Tuple[confloat(gt=0), confloat(ge=0)]] = Field(
+        title="燃气消耗率_负载率",
+        description="NaturalGasToPower: 燃气消耗率\n单位: m3/kWh\nLoad: 负载率\n单位: percent",
+    )
+    """
+    NaturalGasToPower: 燃气消耗率
+    单位: m3/kWh
+
+    Load: 负载率
+    单位: percent
+    """
 
 
 class 电解槽信息(设备信息):
@@ -3487,6 +3658,21 @@ class 柴油发电模型(设备模型):
             8760 / self.计算参数.总计算时长
         )
 
+        min_diesel_to_power, min_load = self.DieselToPower_Load[0]
+        max_diesel_to_power, max_load = self.DieselToPower_Load[-1]
+
+        if min_load > self.PowerStartupLimit:
+            if self.PowerStartupLimit not in [e[1] for e in self.DieselToPower_Load]:
+                self.DieselToPower_Load.insert(
+                    0, (min_diesel_to_power, self.PowerStartupLimit)
+                )
+
+        if min_load > 0:
+            self.DieselToPower_Load.insert(0, (min_diesel_to_power, 0))
+
+        if max_load < 1:
+            self.DieselToPower_Load.append((max_diesel_to_power, 1))
+
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
                 expr=self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit
@@ -3518,6 +3704,443 @@ class 柴油发电模型(设备模型):
 
             for i in range(self.子机组数目):
                 logger_print(f"正在创建第{i+1}个柴油子机组模型")
+                subModelWrapper = self.mw.Block()
+                子机组模型 = 设备模型({}, subModelWrapper, self.计算参数, i)
+                self.子机组列表.append(子机组模型)
+
+                子机组柴油输入 = 子机组模型.变量列表("子机组柴油输入", within=NonPositiveReals)
+                self.子机组柴油输入列表.append(子机组柴油输入)
+
+                子机组电输出 = 子机组模型.变量列表("子机组电输出", within=NonNegativeReals)
+                self.子机组电输出列表.append(子机组电输出)
+
+                子机组是否开启 = 子机组模型.变量列表("子机组是否开启", within=Boolean)
+                self.子机组是否开启列表.append(子机组是否开启)
+
+                子机组是否真的开启 = 子机组模型.变量列表("子机组是否真的开启", within=Boolean)
+                self.子机组是否真的开启列表.append(子机组是否真的开启)
+
+            # define series of submodels
+        else:
+            raise Exception("未知油耗规划算法：", self.设备信息.unitPlanningAlgorithmSelection)
+
+        self.POSNEG_是否购买 = self.单表达式生成指示变量("POSNEG_是否购买", self.DeviceCount - 0.5)
+        self.是否购买 = self.POSNEG_是否购买.b_pos
+
+        if isinstance(self.DeviceCount, Var):  # 设备台数约束
+            self.DeviceCount.setlb(self.MinDeviceCount)
+            self.DeviceCount.setub(self.MaxDeviceCount)
+
+    def constraints_register(self):
+        super().constraints_register()
+        # 设备特有约束（非变量）
+
+        assert self.燃料热值 != 0
+        assert type(self.燃料热值) in [int, float]
+
+        # 输出输入功率约束
+
+        if self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.平均:
+            self.RangeConstraint(
+                self.电输出,
+                self.Nrun_indicators.b_pos,
+                lambda x, y: x >= y * self.RatedPower * self.PowerStartupLimit,
+            )
+            self.RangeConstraint(
+                self.电输出, self.Nrun, lambda x, y: x <= y * self.RatedPower
+            )
+            self.RangeConstraint(
+                self.电输出, self.Nrun, lambda x, y: x >= (y - 1) * self.RatedPower
+            )
+
+            self.RangeConstraint(
+                self.柴油输入,
+                self.电输出,
+                lambda x, y: -x == self.averageDieselConsumptionRate * y,
+            )
+
+        elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
+            子机组购买数目 = 0
+
+            子机组柴油输入求和 = [0] * self.计算参数.迭代步数
+            子机组电输出求和 = [0] * self.计算参数.迭代步数
+            子机组是否真的开启求和 = [0] * self.计算参数.迭代步数
+
+            for i in range(self.子机组数目):
+                logger_print(f"正在为第{i+1}个柴油子机组模型创建约束")
+
+                子机组模型: 设备模型 = self.子机组列表[i]
+
+                子机组柴油输入 = self.子机组柴油输入列表[i]
+                子机组电输出 = self.子机组电输出列表[i]
+                子机组是否开启 = self.子机组是否开启列表[i]
+                子机组是否真的开启 = self.子机组是否真的开启列表[i]
+
+                子机组是否购买 = self.子机组是否购买[i]
+
+                子机组模型.RangeConstraintMulti(
+                    子机组电输出, expression=lambda x: x <= 子机组是否购买 * self.BigM
+                )
+                子机组模型.RangeConstraint(
+                    子机组电输出, 子机组是否开启, expression=lambda x, y: x <= y * self.RatedPower
+                )
+                子机组模型.RangeConstraint(
+                    子机组电输出,
+                    子机组是否开启,
+                    expression=lambda x, y: x
+                    >= y * self.RatedPower * self.PowerStartupLimit,
+                )
+
+                子机组模型.RangeConstraint(
+                    子机组是否开启,
+                    子机组是否真的开启,
+                    expression=lambda x, y: 子机组模型.BinVarMultiplySingle(子机组是否购买, x) == y,
+                )
+
+                if self.计算参数.计算步长 == "秒":
+                    # deltalimit
+                    subModelElectricityPowerDeltaLimit = (
+                        self.RatedPower * self.PowerDeltaLimit / 100
+                    )
+
+                    子机组模型.CustomRangeConstraintMulti(
+                        子机组电输出,
+                        子机组是否真的开启,
+                        customRange=range(self.计算参数.迭代步数),
+                        expression=lambda x, y, i: x[i + 1] - x[i]
+                        >= -subModelElectricityPowerDeltaLimit * y,
+                    )
+                    子机组模型.CustomRangeConstraintMulti(
+                        子机组电输出,
+                        子机组是否真的开启,
+                        customRange=range(self.计算参数.迭代步数),
+                        expression=lambda x, y, i: x[i + 1] - x[i]
+                        <= subModelElectricityPowerDeltaLimit * y,
+                    )
+
+                子机组柴油输入求和 = 子机组模型.TimeSummation(子机组柴油输入求和, 子机组柴油输入)
+                子机组电输出求和 = 子机组模型.TimeSummation(子机组电输出求和, 子机组电输出)
+                子机组是否真的开启求和 = 子机组模型.TimeSummation(子机组是否真的开启求和, 子机组是否真的开启)
+
+                子机组模型.Piecewise(
+                    y_var=子机组柴油输入,
+                    x_var=子机组电输出,
+                    y_vals=[
+                        -x[0] * self.RatedPower * x[1] for x in self.DieselToPower_Load
+                    ],
+                    x_vals=[self.RatedPower * x[1] for x in self.DieselToPower_Load],
+                )
+            子机组购买数目 = quicksum_indexed_var(self.子机组是否购买)
+            self.mw.Constraint(expr=子机组购买数目 == self.DeviceCount)
+            self.RangeConstraint(self.Nrun, 子机组是否真的开启求和, expression=lambda x, y: x == y)
+
+            self.RangeConstraint(self.柴油输入, 子机组柴油输入求和, expression=lambda x, y: x == y)
+            self.RangeConstraint(self.电输出, 子机组电输出求和, expression=lambda x, y: x == y)
+        else:
+            raise Exception(f"未知油耗规划算法：{self.设备信息.unitPlanningAlgorithmSelection}")
+
+        if (
+            self.计算参数.计算步长 == "秒"
+            and self.设备信息.unitPlanningAlgorithmSelection != 油耗规划算法.最佳
+        ):
+            总最大功率 = self.RatedPower * self.DeviceCount
+            最大功率变化 = 总最大功率 * self.PowerDeltaLimit / 100
+            最大下行功率变化生成 = (
+                lambda Nrun_t: Nrun_t * self.RatedPower * self.PowerDeltaLimit / 100
+            )
+            self.CustomRangeConstraintMulti(
+                self.电输出,
+                customRange=range(self.计算参数.迭代步数 - 1),
+                expression=lambda x, i: x[i + 1] - x[i] <= 最大功率变化,
+            )
+            self.CustomRangeConstraintMulti(
+                self.电输出,
+                self.Nrun,
+                customRange=range(self.计算参数.迭代步数 - 1),
+                expression=lambda x, y, i: x[i + 1] - x[i] >= -最大下行功率变化生成(y[i]),
+            )
+
+        # 计算年化
+        # unit: one
+        Life = self.Life
+        self.年化率 = 计算年化率(self.计算参数.贴现率, Life)
+
+        self.总采购成本 = self.CostPerMachine * (self.DeviceCount)
+        self.总固定维护成本 = self.CostPerYearPerMachine * (self.DeviceCount)
+        self.总建设费用 = self.BuildCostPerMachine * (self.DeviceCount) + self.BuildBaseCost
+
+        self.总固定成本年化 = (self.总采购成本 + self.总建设费用) * self.年化率 + self.总固定维护成本
+
+        self.总可变维护成本年化 = (
+            ((self.SumRange(self.电输出)) / self.计算参数.迭代步数)
+            * 每年小时数
+            * self.VariationalCostPerWork
+        )
+        # avg_power * 8760 = annual_work
+        self.总可变维护成本年化 += self.annualUnitStartupCosts
+
+        self.总成本年化 = self.总固定成本年化 + self.总可变维护成本年化
+
+        self.处理最终财务输出(self)
+
+        return self.总成本年化
+
+
+class 燃气发电机模型(设备模型):
+    def __init__(
+        self, PD: dict, mw: ModelWrapper, 计算参数实例: 计算参数, 设备ID: 燃气发电机ID, 设备信息: 燃气发电机信息
+    ):
+        super().__init__(PD=PD, mw=mw, 计算参数实例=计算参数实例, ID=设备ID.ID)
+        self.设备ID = 设备ID
+        self.设备信息 = 设备信息
+
+        self.燃料热值: float = 0  # 需要拓扑解析之后进行赋值
+        self.unitSingleStartupCost = self.设备信息.toStandard("unitSingleStartupCost")
+        self.averageLoadRate = self.设备信息.toStandard("averageLoadRate")
+        self.RatedPower: float = 设备信息.RatedPower
+        """
+        名称: 额定发电功率
+        单位: kW
+        """
+        assert self.RatedPower >= 0
+
+        self.HotWaterToElectricityRate: float = 设备信息.HotWaterToElectricityRate
+        """
+        名称: 缸套水热电比
+        单位: one
+        """
+        assert self.HotWaterToElectricityRate >= 0
+
+        self.HotGasToElectricityRate: float = 设备信息.HotGasToElectricityRate
+        """
+        名称: 烟气热电比
+        单位: one
+        """
+        assert self.HotGasToElectricityRate >= 0
+
+        self.PowerDeltaLimit: float = 设备信息.PowerDeltaLimit
+        """
+        名称: 发电爬坡率
+        单位: percent/s
+        """
+        assert self.PowerDeltaLimit >= 0
+
+        self.PowerStartupLimit: float = 设备信息.PowerStartupLimit * 0.01
+        """
+        名称: 启动功率百分比
+        单位: one <- percent
+        """
+        assert self.PowerStartupLimit >= 0
+
+        self.CostPerMachine: float = 设备信息.CostPerMachine
+        """
+        名称: 采购成本
+        单位: 万元/台
+        """
+        assert self.CostPerMachine >= 0
+
+        self.CostPerYearPerMachine: float = 设备信息.CostPerYearPerMachine
+        """
+        名称: 固定维护成本
+        单位: 万元/(台*年)
+        """
+        assert self.CostPerYearPerMachine >= 0
+
+        self.VariationalCostPerWork: float = 设备信息.VariationalCostPerWork * 0.0001
+        """
+        名称: 可变维护成本
+        单位: 万元 / kWh <- 元/kWh
+        """
+        assert self.VariationalCostPerWork >= 0
+
+        self.Life: float = 设备信息.Life
+        """
+        名称: 设计寿命
+        单位: 年
+        """
+        assert self.Life >= 0
+
+        self.BuildCostPerMachine: float = 设备信息.BuildCostPerMachine
+        """
+        名称: 建设费用系数
+        单位: 万元/台
+        """
+        assert self.BuildCostPerMachine >= 0
+
+        self.BuildBaseCost: float = 设备信息.BuildBaseCost
+        """
+        名称: 建设费用基数
+        单位: 万元
+        """
+        assert self.BuildBaseCost >= 0
+
+        if self.计算参数.计算类型 == "设计规划":
+            # BUG: if unbounded, then we get some error.
+            self.DeviceCount = self.单变量("DeviceCount", within=NonNegativeIntegers)  # type: ignore
+            """
+            单位： 个
+            """
+            self.MaxDeviceCount: float = 设备信息.MaxDeviceCount
+            """
+            名称: 最大安装台数
+            单位: 台
+            """
+            assert self.MaxDeviceCount >= 0
+
+            self.MinDeviceCount: float = 设备信息.MinDeviceCount
+            """
+            名称: 最小安装台数
+            单位: 台
+            """
+            assert self.MinDeviceCount >= 0
+
+        if self.计算参数.计算类型 == "仿真模拟":
+            self.DeviceCount: float = 设备信息.DeviceCount
+            """
+            名称: 安装台数
+            单位: 台
+            """
+            assert self.DeviceCount >= 0
+
+        self.NaturalGasToPower_Load: List[List[float]] = [
+            [v1 * 1, v2 * 0.01] for v1, v2 in 设备信息.NaturalGasToPower_Load
+        ]
+        """
+        NaturalGasToPower: 燃气消耗率
+        单位: m3 / kWh <- m3/kWh
+
+        Load: 负载率
+        单位: one <- percent
+        """
+        self.NaturalGasToPower_Load.sort(key=lambda x: x[1])
+
+        ##### PORT VARIABLE DEFINITION ####
+
+        self.ports = {}
+
+        self.PD[self.设备ID.缸套水余热接口] = self.ports["缸套水余热接口"] = self.缸套水余热接口 = self.变量列表(
+            "缸套水余热接口", within=NonNegativeReals
+        )
+        """
+        类型: 输出
+        """
+
+        self.PD[self.设备ID.电接口] = self.ports["电接口"] = self.电接口 = self.变量列表(
+            "电接口", within=NonNegativeReals
+        )
+        """
+        类型: 输出
+        """
+
+        self.PD[self.设备ID.高温烟气余热接口] = self.ports[
+            "高温烟气余热接口"
+        ] = self.高温烟气余热接口 = self.变量列表("高温烟气余热接口", within=NonNegativeReals)
+        """
+        类型: 输出
+        """
+
+        self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
+            "燃料接口", within=NonPositiveReals
+        )
+        """
+        类型: 输入
+        """
+
+        # 设备特有约束（变量）
+        self.电输出 = self.电接口
+        self.柴油输入 = self.天然气输入 = self.燃料接口
+
+        self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
+        self.机组年运行时间 = (
+            quicksum_indexed_var(self.Nrun_indicators.b_pos) / self.计算参数.迭代步数
+        ) * 8760
+
+        self.DieselToPower_Load = self.NaturalGasToPower_Load
+
+        self.RangeConstraint(
+            self.电输出,
+            self.缸套水余热接口,
+            expression=lambda x, y: x * self.HotWaterToElectricityRate == y,
+        )
+        self.RangeConstraint(
+            self.电输出,
+            self.高温烟气余热接口,
+            expression=lambda x, y: x * self.HotGasToElectricityRate == y,
+        )
+
+        # TODO: define some variables with expression
+
+        self.Nrun = self.变量列表("Nrun", within=NonNegativeIntegers)
+        """
+        机组开启台数
+        """
+        self.RangeConstraint(
+            self.Nrun, self.Nrun_indicators.x, expression=lambda x, y: x == y + 0.5
+        )
+
+        self.RangeConstraintMulti(self.Nrun, expression=lambda x: x <= self.DeviceCount)
+        self.Nstart = self.变量列表_带指示变量("Nstart")
+        """
+        机组开启台数求导
+        """
+        self.mw.Constraint(expr=self.Nstart.x[0] == 0)
+        self.CustomRangeConstraintMulti(
+            self.Nstart.x,
+            self.Nrun,
+            expression=lambda x, y, i: x[i + 1] == y[i + 1] - y[i],
+            customRange=range(self.计算参数.迭代步数 - 1),
+        )
+
+        self.机组年启动次数 = quicksum_indexed_var(self.Nstart.x_pos) * (
+            8760 / self.计算参数.总计算时长
+        )
+
+        min_diesel_to_power, min_load = self.DieselToPower_Load[0]
+        max_diesel_to_power, max_load = self.DieselToPower_Load[-1]
+
+        if min_load > self.PowerStartupLimit:
+            if self.PowerStartupLimit not in [e[1] for e in self.DieselToPower_Load]:
+                self.DieselToPower_Load.insert(
+                    0, (min_diesel_to_power, self.PowerStartupLimit)
+                )
+
+        if min_load > 0:
+            self.DieselToPower_Load.insert(0, (min_diesel_to_power, 0))
+
+        if max_load < 1:
+            self.DieselToPower_Load.append((max_diesel_to_power, 1))
+
+        if self.设备信息.unitAnnualOperatingTimeConstraint:
+            self.mw.Constraint(
+                expr=self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit
+            )
+
+        self.annualUnitStartupCosts = 0
+        if self.设备信息.considerUnitStartUpCosts:
+            self.annualUnitStartupCosts = self.机组年启动次数 * self.unitSingleStartupCost
+
+        if self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.平均:
+            x = self.averageLoadRate
+            xp = [e[1] for e in self.DieselToPower_Load]
+            fp = [e[0] for e in self.DieselToPower_Load]
+            self.averageDieselConsumptionRate = np.interp(x, xp, fp)
+
+        elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
+            self.子机组列表 = []
+            self.子机组柴油输入列表 = []
+            self.子机组电输出列表 = []
+            self.子机组是否开启列表 = []
+            self.子机组是否真的开启列表 = []
+            self.子机组数目 = (
+                self.MaxDeviceCount if self.计算参数.计算类型 == "设计规划" else self.DeviceCount
+            )
+            self.子机组数目 = int(self.子机组数目)
+            self.子机组是否购买 = self.变量列表(
+                "子机组是否购买", mrange=range(self.子机组数目), within=Boolean
+            )
+
+            for i in range(self.子机组数目):
+                logger_print(f"正在创建第{i+1}个燃气子机组模型")
                 subModelWrapper = self.mw.Block()
                 子机组模型 = 设备模型({}, subModelWrapper, self.计算参数, i)
                 self.子机组列表.append(子机组模型)
@@ -3824,15 +4447,15 @@ class 电解槽模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
-            "制氢接口", within=NonNegativeReals
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
         )
         """
         类型: 输出
         """
 
-        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
-            "设备余热接口", within=NonNegativeReals
+        self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
+            "制氢接口", within=NonNegativeReals
         )
         """
         类型: 输出
@@ -5515,6 +6138,7 @@ devInstClassMap: Dict[str, 设备模型] = {
     "双向变流器": 双向变流器模型,
     "传输线": 传输线模型,
     "氢负荷": 氢负荷模型,
+    "燃气发电机": 燃气发电机模型,
     "电解槽": 电解槽模型,
 }  # type: ignore
 
@@ -5530,6 +6154,7 @@ devIDClassMap: Dict[str, 设备ID] = {
     "双向变流器": 双向变流器ID,
     "传输线": 传输线ID,
     "氢负荷": 氢负荷ID,
+    "燃气发电机": 燃气发电机ID,
     "电解槽": 电解槽ID,
 }  # type: ignore
 
@@ -5545,6 +6170,7 @@ devInfoClassMap: Dict[str, BaseModel] = {
     "双向变流器": 双向变流器信息,
     "传输线": 传输线信息,
     "氢负荷": 氢负荷信息,
+    "燃气发电机": 燃气发电机信息,
     "电解槽": 电解槽信息,
 }  # type: ignore
 
@@ -6163,6 +6789,13 @@ class 氢负荷节点(设备节点基类):
     param: 氢负荷信息 = Field(title="设备信息", description="氢负荷信息")
 
 
+class 燃气发电机节点(设备节点基类):
+    subtype: Literal["燃气发电机", *deviceSubtypeAlias.get("燃气发电机", [])] = Field(
+        title="节点次类型"
+    )
+    param: 燃气发电机信息 = Field(title="设备信息", description="燃气发电机信息")
+
+
 class 电解槽节点(设备节点基类):
     subtype: Literal["电解槽", *deviceSubtypeAlias.get("电解槽", [])] = Field(title="节点次类型")
     param: 电解槽信息 = Field(title="设备信息", description="电解槽信息")
@@ -6199,6 +6832,7 @@ class mDict(BaseModel):
             双向变流器节点,
             传输线节点,
             氢负荷节点,
+            燃气发电机节点,
             电解槽节点,
             母线节点,
             连线节点,
@@ -6369,7 +7003,15 @@ def compute(
                 adder_current_combined_error += combined_error
 
                 mw.Constraint(seqsum == positive_error - negative_error)
-
+            adder_index_error_mapping[adder_index] = adder_error_mapping
+            adder_index_error_sum_mapping[adder_index] = dict(
+                positive_error=adder_current_positive_error,
+                negative_error=adder_current_negative_error,
+                combined_error=adder_current_combined_error,
+            )
+            adder_positive_error_total += adder_current_positive_error
+            adder_negative_error_total += adder_current_negative_error
+            adder_combined_error_total += adder_current_combined_error
             with failsafe_suppress_exception():
                 if algoParam.计算类型 == "设计规划":
                     cnt = 0
@@ -6389,15 +7031,6 @@ def compute(
                         )
 
                         mw.Constraint(input_limit + output_limit >= 0)
-        adder_index_error_mapping[adder_index] = adder_error_mapping
-        adder_index_error_sum_mapping[adder_index] = dict(
-            positive_error=adder_current_positive_error,
-            negative_error=adder_current_negative_error,
-            combined_error=adder_current_combined_error,
-        )
-        adder_positive_error_total += adder_current_positive_error
-        adder_negative_error_total += adder_current_negative_error
-        adder_combined_error_total += adder_current_combined_error
 
     adder_error_total = dict(
         positive_error=adder_positive_error_total,
@@ -6406,7 +7039,7 @@ def compute(
     )
     financial_obj_expr = 0
 
-    checkIfIsLoadClassInstance = lambda inst: "负荷" in e.__class__.__name__
+    checkIfIsLoadClassInstance = lambda inst: "负荷" in inst.__class__.__name__
 
     for e in devInstDict.values():
         with failsafe_suppress_exception():

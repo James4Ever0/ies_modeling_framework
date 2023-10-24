@@ -54,7 +54,7 @@ from ies_optim import InputParams, ModelWrapper
 
 import shutil
 
-REQUIRED_BINARIES = [Solver.cplex, 'swipl']
+REQUIRED_BINARIES = [Solver.cplex, "swipl"]
 
 if ies_env.FAILSAFE:
     REQUIRED_BINARIES.append(Solver.ipopt)
@@ -65,8 +65,7 @@ with ErrorManager(default_error="Not all required binaries were found.") as em:
         if shutil.which(b) is None:
             em.append("Binary %s not found in PATH." % b)
 
-EXPORT_FORMAT_FPATH = os.path.join(
-    os.path.dirname(__file__), "export_format.json")
+EXPORT_FORMAT_FPATH = os.path.join(os.path.dirname(__file__), "export_format.json")
 with open(EXPORT_FORMAT_FPATH, "r") as f:
     dt = json.load(f)
     simulationResultColumns = dt["仿真结果"]["ALL"]
@@ -75,7 +74,8 @@ with open(EXPORT_FORMAT_FPATH, "r") as f:
     ]
 
 FRONTEND_SIM_PARAM_TRANS_FPATH = os.path.join(
-    os.path.dirname(__file__), "frontend_sim_param_translation.json")
+    os.path.dirname(__file__), "frontend_sim_param_translation.json"
+)
 
 with open(FRONTEND_SIM_PARAM_TRANS_FPATH, "r") as f:
     FSPT = json.load(f)
@@ -172,7 +172,7 @@ def solve_model(
 ):
     OBJ = mw.Objective(expr=obj_expr, sense=sense)
 
-    transformDisjunctiveModel(mw.model) # right before solving
+    transformDisjunctiveModel(mw.model)  # right before solving
 
     solved = False
     with SolverFactory(Solver.cplex) as solver:
@@ -209,16 +209,19 @@ def solve_model(
             logger_print(results)
 
             if not solved:
+                # translation could be extremely slow for large models. you have been warned.
                 solved = rescue(mw, solver, timestamp, solver_log, results)
         if solved:
             logger_print("OBJ:", value(OBJ))
     return solved
 
+
 from failsafe_utils import solve_failsafe
+
 
 def rescue(mw, solver, timestamp, solver_log, results):
     solved = False
-    
+
     # TODO: make this into background tasks, which will not raise exception and stop failsafe routines
     # TODO: prevent solver log get recycled
     try:
@@ -253,7 +256,6 @@ def rescue(mw, solver, timestamp, solver_log, results):
         os.mkdir(failsafe_logdir)
         solved = solve_failsafe(mw, failsafe_logdir)
     return solved
-
 
 
 import sys
@@ -365,6 +367,7 @@ class CalcStruct(BaseModel):
     timeParamList: List[Union[float, int]]
     graph_data_list: List
     targetType: str
+    extra_data_list: List
 
 
 def targetTypeAsTargetName(targetType: str):
@@ -390,6 +393,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
     PDList = []
     timeParamList = []
     graph_data_list = []
+    extra_data_list = []
 
     targetType = calcParamList[0][2]["计算目标"]  # graph_data @ elem_0
 
@@ -405,13 +409,23 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         # timeParam /= 每年小时数  # TODO: eliminate invalid results due to timeParam
         timeParamList.append(timeParam)
         obj_exprs, devInstDict, PD, extra_data = compute(
-        # obj_exprs, devInstDict, PD = compute(
-            devs, adders, graph_data, topo_G, mw
+            # obj_exprs, devInstDict, PD = compute(
+            devs,
+            adders,
+            graph_data,
+            topo_G,
+            mw,
         )  # single instance.
-        
+
         # TODO: show & plot compensation
 
-        compensation_expr = 0 if ies_env.ADDER_ERROR_COMPENSATION == 'none' else extra_data['adder_error_total'][f'{ies_env.ADDER_ERROR_COMPENSATION}_error']
+        compensation_expr = (
+            0
+            if ies_env.ADDER_ERROR_COMPENSATION == "none"
+            else extra_data["adder_error_total"][
+                f"{ies_env.ADDER_ERROR_COMPENSATION}_error"
+            ]
+        )
         (
             financial_obj_expr,
             financial_dyn_obj_expr,
@@ -425,11 +439,12 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         calcTargetLUT["经济"] += (
             financial_obj_expr if 计算类型 == "设计规划" else financial_dyn_obj_expr
         ) * obj_time_param
-        calcTargetLUT['compensation'] +=compensation_expr
+        calcTargetLUT["compensation"] += compensation_expr
 
         devInstDictList.append(devInstDict)
         PDList.append(PD)
         graph_data_list.append(graph_data)
+        extra_data_list.append(extra_data)
 
     ret = CalcStruct(
         calcTargetLUT=calcTargetLUT,
@@ -438,6 +453,7 @@ def getCalcStruct(mw: ModelWrapper, mCalcParamList: list, 典型日, 计算步�
         timeParamList=timeParamList,
         graph_data_list=graph_data_list,
         targetType=targetType,
+        extra_data_list=extra_data_list,
     )
     return ret
 
@@ -631,6 +647,7 @@ def fetchResult(solved: bool, ret: CalcStruct, 典型日):
             objectiveResult=dict(
                 financialObjective=value(ret.calcTargetLUT["经济"]),
                 environmentalObjective=value(ret.calcTargetLUT["环保"]),
+                adderError=value(ret.calcTargetLUT["compensation"]),
             ),
             planningResultTable=规划结果详情表_格式化,
             planningSummary=规划方案概览.export(
@@ -728,7 +745,13 @@ def solve_model_and_fetch_result(
 
         obj_expr = ret.calcTargetLUT[calcTarget]
         compensation_expr = ret.calcTargetLUT["compensation"]
-        solved = solve_model(mw, obj_expr+compensation_expr)
+        solved = solve_model(
+            mw, obj_expr + compensation_expr * ies_env.ADDER_ERROR_WEIGHT
+        )
+        # solved = solve_model(mw, obj_expr+compensation_expr)
+        # logger_print("compensation:", value(compensation_expr))
+        # compensation_val = value(compensation_expr)
+        # breakpoint()
         result = None
         if solved:
             if rangeDict is not None:

@@ -162,6 +162,7 @@ def ReLU(val):
 {% set commonSimParams = {
     "产电量": TP_MVLIST("model.电接口"),
     "柴油消耗量": TP_MVLIST("model.燃料接口"),
+    "天然气消耗量": TP_MVLIST("model.燃料接口"),
     "单向电转换COP": "- safeDiv({},{})".format(MVLIST("model.电输入"), MVLIST("model.电输出")),
     '电收入': TP("-value(model.总成本年化)"),
     '氢气收入': TP("-value(model.总成本年化)"),
@@ -197,6 +198,11 @@ def ReLU(val):
         CSPL['产电量'],
         CSPL['柴油消耗量'],
         ("平均效率_平均COP","safeDiv({}, model.燃料热值 * ({}))".format(commonSimParams['产电量'],commonSimParams['柴油消耗量']))
+    ],
+    "燃气发电机":[
+        CSPL['产电量'],
+        CSPL['天然气消耗量'],
+        ("产热量", "({}) + ({})".format(TP_MVLIST("model.高温烟气余热接口"), TP_MVLIST("model.缸套水余热接口")))
     ],
     "锂电池":[
         ("平均效率_平均COP", ("safeDiv(ReLU(({}) - ({})) , (-({})))".format(TP_MVLISTPOS("model.电接口"), "model.InitSOC * model.TotalCapacity", TP_MVLISTNEG("model.电接口"))))
@@ -314,6 +320,13 @@ class {{devName}}仿真结果(BaseModel):
     "柴油发电":
     [
         CTSL['发电功率']
+    ],
+    "燃气发电机":
+    [
+        CTSL['发电功率'],
+        ("每小时天然气耗量", VLISTINV('model.燃料接口')),
+        ("缸套水热功率", VLIST('model.缸套水余热接口')),
+        ("烟气热功率", VLIST('model.高温烟气余热接口')),
     ],
     "锂电池":
     [
