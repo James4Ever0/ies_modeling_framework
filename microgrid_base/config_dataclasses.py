@@ -83,6 +83,8 @@ class IESEnv(EnvBaseModel):
     )
 
     PROLOG_STACK_LIMIT:Optional[int] = Field(default=None, title = 'Prolog stack limit in gigabytes.')
+    PROLOG_TABLE_SIZE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog table limit in gigabytes.')
+    PROLOG_SHARED_TABLE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog shared table limit in gigabytes.')
 
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):

@@ -165,3 +165,8 @@ adder_port_all_status(ADDER, ALL_STATUS):-
     findall(STATUS, adder_port_status(ADDER, STATUS), ALL_STATUS).
 
 adder_port_status_list(ADDER_LIST, ADDER_STATUS_LIST) :- apply_list(ADDER_LIST, ADDER_STATUS_LIST, adder_port_status).
+
+% to prove a topology is ok
+% prove every device is ok in which adder combination
+% prove device in relation is ok in which adder combination
+% prove that there exists and only exists one such adder combination

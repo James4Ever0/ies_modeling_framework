@@ -488,11 +488,14 @@ if not NO_BATTERY:
 # conn = 连接线(graph, PV.ports["电接口"], LOAD.ports["电接口"])
 
 # conn_merge = 合并线(L0, L1)  # what do you do?
-try:
-    topo.check_consistency()
-except Exception as e:
-    # raise e
-    pass
+
+# we will do it later.
+# try:
+#     topo.check_consistency()
+# except Exception as e:
+#     # raise e
+#     pass
+
 # shall raise error.
 
 # methods for computing.

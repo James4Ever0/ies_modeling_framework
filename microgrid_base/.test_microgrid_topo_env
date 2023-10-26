@@ -8,6 +8,9 @@ PERCENT_WARNING_THRESHOLD = 1e-10
 # this could take eternal
 # compression might help
 # usually unrealistic for 7+ nodes system
+# won't work out. it is purely in the prolog side. either you optimize logic there or add more ram or abolish this plan
 # DYNAMIC_TYPE_VERIFICATION=True
-# PROLOG_STACK_LIMIT=1
+# PROLOG_STACK_LIMIT=16
+# PROLOG_TABLE_SIZE_LIMIT=16
+# PROLOG_SHARED_TABLE_LIMIT=16
 ADDER_ERROR_COMPENSATION=combined

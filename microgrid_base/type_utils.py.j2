@@ -184,6 +184,8 @@ banner = lambda title: logger_print(title.center(60, "-"))
 {# PROLOG_STACK_LIMIT = 8 #}
 {# PROLOG_STACK_LIMIT = 4 # in GB #}
 PROLOG_STACK_LIMIT = ies_env.PROLOG_STACK_LIMIT
+PROLOG_SHARED_TABLE_LIMIT = ies_env.PROLOG_SHARED_TABLE_LIMIT
+PROLOG_TABLE_SIZE_LIMIT = ies_env.PROLOG_TABLE_SIZE_LIMIT
 
 def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_name, adderNameToAdderPortNames):
     banner("querying")
@@ -194,7 +196,11 @@ def query_result_from_prolog(prolog_script_content: str, adder_index_to_port_nam
             prolog_file_path_abs = os.path.join(prolog_file_path)
             prolog_path_args = []
             if PROLOG_STACK_LIMIT is not None:
-                prolog_path_args.append(f"--stack_limit={PROLOG_STACK_LIMIT}g")
+                prolog_path_args.append(f"--stack-limit={PROLOG_STACK_LIMIT}G")
+            if PROLOG_SHARED_TABLE_LIMIT is not None:
+                prolog_path_args.append(f"--shared-table-space={PROLOG_SHARED_TABLE_LIMIT}G")
+            if PROLOG_TABLE_SIZE_LIMIT is not None:
+                prolog_path_args.append(f"--table-space={PROLOG_TABLE_SIZE_LIMIT}G")
             with open(prolog_file_path_abs, "w+") as f:
                 f.write(prolog_script_content)
             with PrologMQI(prolog_path_args = prolog_path_args) as mqi:
@@ -423,4 +429,7 @@ def execute_prolog_script_and_check_if_can_proceed(
     can_proceed, isomorphic_topo_status = check_if_can_proceed(verified_topology_status_dict)
     return can_proceed, isomorphic_topo_status
 
-
+def weak_type_check():...
+    {# this time we might not need prolog #}
+    {# or could you rewrite the prolog with something else? #}
+    {# or just do everything within prolog #}

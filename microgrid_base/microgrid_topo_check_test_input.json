@@ -26429,11 +26429,11 @@
                     "id": 6,
                     "type": "设备",
                     "ports": {
-                        "燃料接口": {
+                        "电接口": {
                             "subtype": "unknown",
                             "id": 7
                         },
-                        "电接口": {
+                        "燃料接口": {
                             "subtype": "unknown",
                             "id": 8
                         }
@@ -26512,14 +26512,14 @@
                     "subtype": "unknown",
                     "id": 7,
                     "type": "锚点",
-                    "port_name": "燃料接口",
+                    "port_name": "电接口",
                     "device_id": 6
                 },
                 {
                     "subtype": "unknown",
                     "id": 8,
                     "type": "锚点",
-                    "port_name": "电接口",
+                    "port_name": "燃料接口",
                     "device_id": 6
                 },
                 {
@@ -44331,11 +44331,11 @@
                     "id": 27,
                     "type": "设备",
                     "ports": {
-                        "线路端": {
+                        "储能端": {
                             "subtype": "unknown",
                             "id": 28
                         },
-                        "储能端": {
+                        "线路端": {
                             "subtype": "unknown",
                             "id": 29
                         }
@@ -44361,14 +44361,14 @@
                     "subtype": "unknown",
                     "id": 28,
                     "type": "锚点",
-                    "port_name": "线路端",
+                    "port_name": "储能端",
                     "device_id": 27
                 },
                 {
                     "subtype": "unknown",
                     "id": 29,
                     "type": "锚点",
-                    "port_name": "储能端",
+                    "port_name": "线路端",
                     "device_id": 27
                 },
                 {
@@ -44380,11 +44380,11 @@
                             "subtype": "unknown",
                             "id": 31
                         },
-                        "电接口": {
+                        "设备余热接口": {
                             "subtype": "unknown",
                             "id": 32
                         },
-                        "设备余热接口": {
+                        "电接口": {
                             "subtype": "unknown",
                             "id": 33
                         }
@@ -44422,14 +44422,14 @@
                     "subtype": "unknown",
                     "id": 32,
                     "type": "锚点",
-                    "port_name": "电接口",
+                    "port_name": "设备余热接口",
                     "device_id": 30
                 },
                 {
                     "subtype": "unknown",
                     "id": 33,
                     "type": "锚点",
-                    "port_name": "设备余热接口",
+                    "port_name": "电接口",
                     "device_id": 30
                 },
                 {
@@ -44664,11 +44664,11 @@
                 },
                 {
                     "source": 7,
-                    "target": 46
+                    "target": 47
                 },
                 {
                     "source": 8,
-                    "target": 47
+                    "target": 46
                 },
                 {
                     "source": 9,
@@ -44756,11 +44756,11 @@
                 },
                 {
                     "source": 28,
-                    "target": 51
+                    "target": 49
                 },
                 {
                     "source": 29,
-                    "target": 49
+                    "target": 51
                 },
                 {
                     "source": 30,
@@ -44779,7 +44779,7 @@
                     "target": 52
                 },
                 {
-                    "source": 32,
+                    "source": 33,
                     "target": 48
                 },
                 {
