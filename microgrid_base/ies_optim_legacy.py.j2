@@ -1232,6 +1232,24 @@ class 设备模型:
         for i in mrange:
             target[i]+= source[i]
         return target
+    
+    def Interpolate1D(self, marray:list[float], points = 10):
+        d = marray
+        interp_d = []
+        for d_start, d_end in zip(d[:-1], d[1:]):
+            sample = np.linspace(d_start, d_end, points).tolist()
+            interp_d += sample[0 if len(interp_d) == 0 else 1:]
+        return interp_d
+
+    def Interpolate2D(self, marray:list[list[float]], points = 10):
+        dim_count = len(marray[0])
+        dims = [[v[i] for v in marray] for i in range(dim_count)]
+        interp_dims = []
+        for d in dims:
+            interp_d = self.Interpolate1D(d, points = points)
+            interp_dims.append(interp_d)
+        ret = [tuple(it) for it in zip(*interp_dims)]
+        return ret
 
     @staticmethod
     def 处理最终财务输出(mclass: 可购买类):
@@ -1510,8 +1528,8 @@ class 设备模型:
 
             {# divider = 1e+2 #}
 
-            self.mw.Constraint(h<= b_var* self.BigM)
-            self.mw.Constraint(h>= -b_var*self.BigM)
+            self.mw.Constraint(h <= b_var * self.BigM)
+            self.mw.Constraint(h >= -b_var * self.BigM)
             {# self.mw.Constraint(h <= x_var/divider+(1-b_var)*self.BigM)
             self.mw.Constraint(h >= x_var/divider-(1-b_var)*self.BigM) #}
             self.mw.Constraint(h <= _x_var+(1-b_var)*self.BigM)
@@ -1629,10 +1647,10 @@ class {{class_name}}模型(设备模型):
             {% error "[ERROR] invalid branch: {}".format(psc)%}
         {% endif %}
         {%endif%}
-{{expand_unit_conversion(mdigit) | indent(4, true)}}
+{{ expand_unit_conversion(mdigit) | indent(4, true) }}
         {# {{expand_unit_conversion(mdigit) | indent(4, True)}} #}
         {% else %}
-{{expand_unit_conversion(mdigit,设备参数例外列表) }}
+{{ expand_unit_conversion(mdigit,设备参数例外列表) }}
         {% endif %}
         {% endfor %}
         {# {%endwith%} #}
@@ -1660,7 +1678,8 @@ class {{class_name}}模型(设备模型):
             {% if class_name in ["柴油发电"]%}
         self.柴油输入 = self.燃料接口
             {% elif class_name in ['燃气发电机']%}
-        self.柴油输入 = self.天然气输入 = self.燃料接口
+        self.天然气输入 =  self.柴油输入 = self.燃料接口
+        {# self.柴油输入 = self.天然气输入 = self.燃料接口 #}
             {% elif class_name in ['风力发电']%}
         self.单台发电功率 = ...
             {% endif%}
@@ -1811,9 +1830,13 @@ class {{class_name}}模型(设备模型):
         if min_load>0:
             self.DieselToPower_Load.insert(0, (min_diesel_to_power,0))
             {# self.DieselToPower_Load.insert(0, (0,0)) #}
+        {# self.DieselToPower_Load.insert(1, (min_diesel_to_power, self.EPS)) #}
 
         if max_load <1:
             self.DieselToPower_Load.append((max_diesel_to_power,1))
+
+        
+        self.DieselToPower_Load = self.Interpolate2D(self.DieselToPower_Load)
 
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(expr = self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit)
@@ -1828,7 +1851,8 @@ class {{class_name}}模型(设备模型):
             {# xfp = list(sorted(self.设备信息.DieselToPower_Load, key = lambda e: e[1])) #}
             xp = [e[1] for e in self.DieselToPower_Load]
             fp = [e[0] for e in self.DieselToPower_Load]
-            self.averageDieselConsumptionRate = np.interp(x, xp, fp)
+            {{ "self.averageGasConsumptionRate = " if class_name in ["燃气发电机"] else "" }}self.averageDieselConsumptionRate = np.interp(x, xp, fp)
+            
 
         elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
             self.子机组列表 = []
@@ -1982,7 +2006,7 @@ class {{class_name}}模型(设备模型):
         super().constraints_register()
         # 设备特有约束（非变量）
         {# 检验解析时参数是否填写完全 #}
-        {% if class_name in ['柴油发电', '燃气发电机']%}
+        {% if class_name in ['柴油发电', '燃气发电机'] %}
 
         assert self.燃料热值!=0
         assert type(self.燃料热值) in [int,float]

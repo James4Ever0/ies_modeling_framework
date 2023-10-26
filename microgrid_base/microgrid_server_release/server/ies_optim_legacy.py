@@ -398,11 +398,11 @@ class 双向变流器ID(设备ID):
 
 
 class 传输线ID(设备ID):
-    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
+    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
-    电输入: conint(ge=0) = Field(title="电输入ID", description="接口类型: 输入输出")
+    电输出: conint(ge=0) = Field(title="电输出ID", description="接口类型: 输入输出")
     """
     类型: 输入输出
     """
@@ -416,15 +416,15 @@ class 氢负荷ID(设备ID):
 
 
 class 燃气发电机ID(设备ID):
+    高温烟气余热接口: conint(ge=0) = Field(title="高温烟气余热接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
+    """
     缸套水余热接口: conint(ge=0) = Field(title="缸套水余热接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
-    高温烟气余热接口: conint(ge=0) = Field(title="高温烟气余热接口ID", description="接口类型: 输出")
     """
     类型: 输出
     """
@@ -435,10 +435,6 @@ class 燃气发电机ID(设备ID):
 
 
 class 电解槽ID(设备ID):
-    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
-    """
-    类型: 输出
-    """
     制氢接口: conint(ge=0) = Field(title="制氢接口ID", description="接口类型: 输出")
     """
     类型: 输出
@@ -446,6 +442,10 @@ class 电解槽ID(设备ID):
     电接口: conint(ge=0) = Field(title="电接口ID", description="接口类型: 输入")
     """
     类型: 输入
+    """
+    设备余热接口: conint(ge=0) = Field(title="设备余热接口ID", description="接口类型: 输出")
+    """
+    类型: 输出
     """
 
 
@@ -2519,6 +2519,24 @@ class 设备模型:
             target[i] += source[i]
         return target
 
+    def Interpolate1D(self, marray: list[float], points=10):
+        d = marray
+        interp_d = []
+        for d_start, d_end in zip(d[:-1], d[1:]):
+            sample = np.linspace(d_start, d_end, points).tolist()
+            interp_d += sample[0 if len(interp_d) == 0 else 1 :]
+        return interp_d
+
+    def Interpolate2D(self, marray: list[list[float]], points=10):
+        dim_count = len(marray[0])
+        dims = [[v[i] for v in marray] for i in range(dim_count)]
+        interp_dims = []
+        for d in dims:
+            interp_d = self.Interpolate1D(d, points=points)
+            interp_dims.append(interp_d)
+        ret = [tuple(it) for it in zip(*interp_dims)]
+        return ret
+
     @staticmethod
     def 处理最终财务输出(mclass: 可购买类):
         mclass.总采购成本 = mclass.BinVarMultiplySingle(mclass.是否购买, mclass.总采购成本)
@@ -3673,6 +3691,8 @@ class 柴油发电模型(设备模型):
         if max_load < 1:
             self.DieselToPower_Load.append((max_diesel_to_power, 1))
 
+        self.DieselToPower_Load = self.Interpolate2D(self.DieselToPower_Load)
+
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
                 expr=self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit
@@ -4018,6 +4038,13 @@ class 燃气发电机模型(设备模型):
 
         self.ports = {}
 
+        self.PD[self.设备ID.高温烟气余热接口] = self.ports[
+            "高温烟气余热接口"
+        ] = self.高温烟气余热接口 = self.变量列表("高温烟气余热接口", within=NonNegativeReals)
+        """
+        类型: 输出
+        """
+
         self.PD[self.设备ID.缸套水余热接口] = self.ports["缸套水余热接口"] = self.缸套水余热接口 = self.变量列表(
             "缸套水余热接口", within=NonNegativeReals
         )
@@ -4032,13 +4059,6 @@ class 燃气发电机模型(设备模型):
         类型: 输出
         """
 
-        self.PD[self.设备ID.高温烟气余热接口] = self.ports[
-            "高温烟气余热接口"
-        ] = self.高温烟气余热接口 = self.变量列表("高温烟气余热接口", within=NonNegativeReals)
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.燃料接口] = self.ports["燃料接口"] = self.燃料接口 = self.变量列表(
             "燃料接口", within=NonPositiveReals
         )
@@ -4048,7 +4068,7 @@ class 燃气发电机模型(设备模型):
 
         # 设备特有约束（变量）
         self.电输出 = self.电接口
-        self.柴油输入 = self.天然气输入 = self.燃料接口
+        self.天然气输入 = self.柴油输入 = self.燃料接口
 
         self.Nrun_indicators = self.变量列表_带指示变量("Nrun_indicators")
         self.机组年运行时间 = (
@@ -4110,6 +4130,8 @@ class 燃气发电机模型(设备模型):
         if max_load < 1:
             self.DieselToPower_Load.append((max_diesel_to_power, 1))
 
+        self.DieselToPower_Load = self.Interpolate2D(self.DieselToPower_Load)
+
         if self.设备信息.unitAnnualOperatingTimeConstraint:
             self.mw.Constraint(
                 expr=self.机组年运行时间 <= self.设备信息.maximumAnnualOperatingTimeLimitOfTheUnit
@@ -4123,7 +4145,9 @@ class 燃气发电机模型(设备模型):
             x = self.averageLoadRate
             xp = [e[1] for e in self.DieselToPower_Load]
             fp = [e[0] for e in self.DieselToPower_Load]
-            self.averageDieselConsumptionRate = np.interp(x, xp, fp)
+            self.averageGasConsumptionRate = (
+                self.averageDieselConsumptionRate
+            ) = np.interp(x, xp, fp)
 
         elif self.设备信息.unitPlanningAlgorithmSelection == 油耗规划算法.最佳:
             self.子机组列表 = []
@@ -4447,13 +4471,6 @@ class 电解槽模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
-            "设备余热接口", within=NonNegativeReals
-        )
-        """
-        类型: 输出
-        """
-
         self.PD[self.设备ID.制氢接口] = self.ports["制氢接口"] = self.制氢接口 = self.变量列表(
             "制氢接口", within=NonNegativeReals
         )
@@ -4466,6 +4483,13 @@ class 电解槽模型(设备模型):
         )
         """
         类型: 输入
+        """
+
+        self.PD[self.设备ID.设备余热接口] = self.ports["设备余热接口"] = self.设备余热接口 = self.变量列表(
+            "设备余热接口", within=NonNegativeReals
+        )
+        """
+        类型: 输出
         """
 
         # 设备特有约束（变量）
@@ -5554,15 +5578,15 @@ class 传输线模型(设备模型):
 
         self.ports = {}
 
-        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
-            "电输出", within=Reals
+        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
+            "电输入", within=Reals
         )
         """
         类型: 输入输出
         """
 
-        self.PD[self.设备ID.电输入] = self.ports["电输入"] = self.电输入 = self.变量列表(
-            "电输入", within=Reals
+        self.PD[self.设备ID.电输出] = self.ports["电输出"] = self.电输出 = self.变量列表(
+            "电输出", within=Reals
         )
         """
         类型: 输入输出

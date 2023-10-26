@@ -6,7 +6,7 @@ from export_format_validate import *
     {% set testModel = "测试{}模型".format(devName) %}
 def test_{{devName}}_export({{testModel}}):
     timeParam = 10
-    {% if devName == "柴油发电" %}
+    {% if devName in ["燃气发电机", "柴油发电"] %}
     {{testModel}}.燃料热值 = 1
     {% endif %}
     {{testModel}}.constraints_register()

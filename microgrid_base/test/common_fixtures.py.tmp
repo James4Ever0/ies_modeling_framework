@@ -251,8 +251,8 @@ def 测试柴油发电信息():
 def 测试柴油发电ID():
     val = 柴油发电ID(
         ID=8,
-        电接口=9,
-        燃料接口=10,
+        燃料接口=9,
+        电接口=10,
     )
     return val
 
@@ -344,8 +344,8 @@ def 测试变压器信息():
 def 测试变压器ID():
     val = 变压器ID(
         ID=13,
-        电输入=14,
-        电输出=15,
+        电输出=14,
+        电输入=15,
     )
     return val
 
@@ -384,8 +384,8 @@ def 测试变流器信息():
 def 测试变流器ID():
     val = 变流器ID(
         ID=16,
-        电输入=17,
-        电输出=18,
+        电输出=17,
+        电输入=18,
     )
     return val
 
@@ -424,8 +424,8 @@ def 测试双向变流器信息():
 def 测试双向变流器ID():
     val = 双向变流器ID(
         ID=19,
-        线路端=20,
-        储能端=21,
+        储能端=20,
+        线路端=21,
     )
     return val
 
@@ -470,8 +470,8 @@ def 测试传输线信息():
 def 测试传输线ID():
     val = 传输线ID(
         ID=22,
-        电输出=23,
-        电输入=24,
+        电输入=23,
+        电输出=24,
     )
     return val
 
@@ -514,6 +514,62 @@ def 测试氢负荷模型(测试氢负荷信息: 氢负荷信息, model_wrapper:
     return val
 
 
+# ================================燃气发电机================================= #
+
+
+@fixture
+def 测试燃气发电机信息():
+    val = 燃气发电机信息(
+        设备名称="燃气发电机",
+        生产厂商="Any",
+        设备型号="燃气发电机1",
+        unitAnnualOperatingTimeConstraint=None,
+        maximumAnnualOperatingTimeLimitOfTheUnit=None,
+        considerUnitStartUpCosts=None,
+        unitSingleStartupCost=None,
+        unitPlanningAlgorithmSelection=None,
+        averageLoadRate=None,
+        RatedPower=None,
+        HotWaterToElectricityRate=None,
+        HotGasToElectricityRate=None,
+        PowerDeltaLimit=None,
+        PowerStartupLimit=None,
+        CostPerMachine=None,
+        CostPerYearPerMachine=None,
+        VariationalCostPerWork=None,
+        Life=None,
+        BuildCostPerMachine=None,
+        BuildBaseCost=None,
+        MaxDeviceCount=None,
+        MinDeviceCount=None,
+        DeviceCount=None,
+        NaturalGasToPower_Load=None,
+    )
+    return val
+
+
+@fixture
+def 测试燃气发电机ID():
+    val = 燃气发电机ID(
+        ID=27,
+        高温烟气余热接口=28,
+        燃料接口=29,
+        缸套水余热接口=30,
+        电接口=31,
+    )
+    return val
+
+
+@fixture
+def 测试燃气发电机模型(
+    测试燃气发电机信息: 燃气发电机信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试燃气发电机ID: 燃气发电机ID
+):
+    val = 燃气发电机模型(
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试燃气发电机ID, 设备信息=测试燃气发电机信息
+    )
+    return val
+
+
 # =================================电解槽================================== #
 
 
@@ -546,10 +602,10 @@ def 测试电解槽信息():
 @fixture
 def 测试电解槽ID():
     val = 电解槽ID(
-        ID=27,
-        设备余热接口=28,
-        制氢接口=29,
-        电接口=30,
+        ID=32,
+        设备余热接口=33,
+        制氢接口=34,
+        电接口=35,
     )
     return val
 

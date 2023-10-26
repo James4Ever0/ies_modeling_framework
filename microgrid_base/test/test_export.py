@@ -91,6 +91,15 @@ def test_氢负荷_export(测试氢负荷模型):
             obj.export(测试氢负荷模型, timeParam)
 
 
+def test_燃气发电机_export(测试燃气发电机模型):
+    timeParam = 10
+    测试燃气发电机模型.燃料热值 = 1
+    测试燃气发电机模型.constraints_register()
+    for attrName in ["燃气发电机仿真结果", "燃气发电机出力曲线"]:
+        if obj := globals().get(attrName, None):
+            obj.export(测试燃气发电机模型, timeParam)
+
+
 def test_电解槽_export(测试电解槽模型):
     timeParam = 10
     测试电解槽模型.constraints_register()

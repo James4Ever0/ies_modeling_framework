@@ -567,6 +567,67 @@ def 测试电解槽模型(测试电解槽信息: 电解槽信息, model_wrapper:
     return val
 
 
+
+# ================================燃气发电机================================= #
+
+
+@fixture(scope="session", params=["最佳", "平均"], ids=["OPTIM", "AVERAGE"])
+def 测试燃气发电机信息(request:Request):
+    val = 燃气发电机信息(
+        设备名称="燃气发电机",
+        生产厂商="Any",
+        设备型号="燃气发电机1",
+        unitAnnualOperatingTimeConstraint=False,
+        maximumAnnualOperatingTimeLimitOfTheUnit=0,
+        considerUnitStartUpCosts=False,
+        unitSingleStartupCost=0,
+        unitPlanningAlgorithmSelection=request.param,
+        averageLoadRate=50,
+        RatedPower=100,
+        HotWaterToElectricityRate=3,
+        HotGasToElectricityRate=2,
+        PowerDeltaLimit=0,
+        PowerStartupLimit=1,
+        CostPerMachine=1,
+        CostPerYearPerMachine=2,
+        VariationalCostPerWork=3,
+        Life=4,
+        BuildCostPerMachine=5,
+        BuildBaseCost=6,
+        MaxDeviceCount=1,
+        MinDeviceCount=1,
+        DeviceCount=1,
+        NaturalGasToPower_Load=[
+            (2,0),
+            (3,30),
+            (4,100),
+        ],
+    )
+    return val
+
+
+@fixture
+def 测试燃气发电机ID():
+    val = 燃气发电机ID(
+        ID=27,
+        缸套水余热接口=28,
+        电接口=29,
+        高温烟气余热接口=30,
+        燃料接口=31,
+    )
+    return val
+
+
+@fixture
+def 测试燃气发电机模型(
+    测试燃气发电机信息: 燃气发电机信息, model_wrapper: ModelWrapper, 测试计算参数: 计算参数, 测试燃气发电机ID: 燃气发电机ID
+):
+    val = 燃气发电机模型(
+        PD={}, mw=model_wrapper, 计算参数实例=测试计算参数, 设备ID=测试燃气发电机ID, 设备信息=测试燃气发电机信息
+    )
+    return val
+
+
 # =================================计算参数================================= #
 @fixture
 def 测试设备模型(model_wrapper: ModelWrapper, 测试计算参数: 计算参数):

@@ -12,6 +12,7 @@ from pyomo.environ import *
 # render constraints as latex. use sigma notation.
 {# to define some "adaptive" decorators (like `pytest.fixture`) you may want `functools.partial` and recursion. #}
 EPS = 0.02
+SMALL_EPS = EPS*0.075
 
 def check_solver_result(s_results):
     assert s_results, "no solver result."
@@ -244,8 +245,48 @@ import numpy as np
         print("DIESEL:", value({{SO.TDF}}.柴油输入[0]), expected_diesel)
         assert abs(value({{SO.TDF}}.电输出[0]) - expected_val) <= EPS
         {# assert abs(value({{SO.TDF}}.原电输出[0]) - expected_val) <= EPS #}
-        assert abs(value({{SO.TDF}}.柴油输入[0]) - expected_diesel) <= 0.0015
+        {# assert abs(value({{SO.TDF}}.柴油输入[0]) - expected_diesel) <= EPS #}
+        assert abs(value({{SO.TDF}}.柴油输入[0]) - expected_diesel) <= SMALL_EPS
         # breakpoint()
+
+
+{% call parametrizeTestHelper("燃气发电机", "Device", autoRegister=false, autoSense=false) %}
+@pytest.mark.timeout(30)  # pip3 install pytest-timeout
+    {% call parametrize("power_output, expected_val, expected_gas, agcr_expected, expected_gas_optim") %}
+    [
+        (10, 10, -32.85714, 3.285714, -((2*3+3*1)/3)*10),
+        (20, 20, -65.71428, 3.285714, -((2*1+3*2)/3)*20),
+    ]
+    {% endcall %}
+{% endcall %}
+    optim = {{SO.TDF}}.设备信息.unitPlanningAlgorithmSelection == '最佳'
+    if optim:
+        expected_gas = expected_gas_optim
+    expected_hot_water = expected_val * {{SO.TDF}}.设备信息.HotWaterToElectricityRate
+    expected_hot_gas = expected_val * {{SO.TDF}}.设备信息.HotGasToElectricityRate
+    {{SO.TDF}}.燃料热值 = 1
+    {{SO.TDF}}.constraints_register()
+    {{SO.TDF}}.RangeConstraintMulti({{SO.TDF}}.电输出, expression=lambda x: x == power_output)
+    if not optim:
+        assert ({{SO.TDF}}.averageGasConsumptionRate - agcr_expected) < EPS
+    assert {{SO.TDF}}.averageLoadRate == 0.5
+    obj_expr = {{SO.TDF}}.总成本年化
+    print("年化:", obj_expr)
+{{solveModel("obj_expr", sense='minimize')}}
+        {# if optim: breakpoint() #}
+        print("TABLE DS:", {{SO.TDF}}.DieselToPower_Load)
+        print("TABLE NG:", {{SO.TDF}}.NaturalGasToPower_Load)
+        print("ELECTRICITY:", value({{SO.TDF}}.电输出[0]), expected_val)
+        print("GAS:", value({{SO.TDF}}.天然气输入[0]), expected_gas)
+        print("HOT WATER:", value({{SO.TDF}}.缸套水余热接口[0]), expected_hot_water)
+        print("HOT GAS:", value({{SO.TDF}}.高温烟气余热接口[0]), expected_hot_gas)
+        assert abs(value({{SO.TDF}}.电输出[0]) - expected_val) <= EPS
+        try:
+            assert abs(value({{SO.TDF}}.天然气输入[0]) - expected_gas) <= EPS
+            assert abs(value({{SO.TDF}}.缸套水余热接口[0]) - expected_hot_water) <= EPS
+            assert abs(value({{SO.TDF}}.高温烟气余热接口[0]) - expected_hot_gas) <= EPS
+        except:
+            breakpoint()
 
 def test_电价模型():
     {# from ies_optim import 电负荷信息, 分月电价 #}
@@ -309,7 +350,7 @@ def test_电价模型():
         assert abs(value({{SO.TDF}}.电接口[2]) - output*devCount)< EPS
     
 {% call parametrizeTestHelper("风力发电", "Device", autoSense=false, autoRegister=false)%}
-    {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(((50-10)/90)**3)),(100,100 ),(150,100), (200,100), (210, 0)]{% endcall%}
+    {% call parametrize("windspeed, output")%}[(5,0),(10,0),(20,100*((10/90)**3)),(50,100*(((50-10)/90)**3)), (100,100), (150,100), (200,100), (210, 0)]{% endcall%}
 {% endcall%}
     
     windspeed_array = [windspeed]*24

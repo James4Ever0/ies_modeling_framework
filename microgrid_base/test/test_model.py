@@ -12,6 +12,7 @@ from pyomo.environ import *
 
 # render constraints as latex. use sigma notation.
 EPS = 0.02
+SMALL_EPS = EPS * 0.075
 
 
 def check_solver_result(s_results):
@@ -310,8 +311,65 @@ def test_柴油发电(
         print("ELECTRICITY:", value(测试柴油发电模型.电输出[0]), expected_val)
         print("DIESEL:", value(测试柴油发电模型.柴油输入[0]), expected_diesel)
         assert abs(value(测试柴油发电模型.电输出[0]) - expected_val) <= EPS
-        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= 0.0015
+        assert abs(value(测试柴油发电模型.柴油输入[0]) - expected_diesel) <= SMALL_EPS
         # breakpoint()
+
+
+@pytest.mark.timeout(30)  # pip3 install pytest-timeout
+@pytest.mark.parametrize(
+    "power_output, expected_val, expected_gas, agcr_expected, expected_gas_optim",
+    [
+        (10, 10, -32.85714, 3.285714, -((2 * 3 + 3 * 1) / 3) * 10),
+        (20, 20, -65.71428, 3.285714, -((2 * 1 + 3 * 2) / 3) * 20),
+    ],
+)
+def test_燃气发电机(
+    model_wrapper: ModelWrapper,
+    测试燃气发电机模型: 燃气发电机模型,
+    power_output,
+    expected_val,
+    expected_gas,
+    agcr_expected,
+    expected_gas_optim,
+):
+    optim = 测试燃气发电机模型.设备信息.unitPlanningAlgorithmSelection == "最佳"
+    if optim:
+        expected_gas = expected_gas_optim
+    expected_hot_water = expected_val * 测试燃气发电机模型.设备信息.HotWaterToElectricityRate
+    expected_hot_gas = expected_val * 测试燃气发电机模型.设备信息.HotGasToElectricityRate
+    测试燃气发电机模型.燃料热值 = 1
+    测试燃气发电机模型.constraints_register()
+    测试燃气发电机模型.RangeConstraintMulti(
+        测试燃气发电机模型.电输出, expression=lambda x: x == power_output
+    )
+    if not optim:
+        assert (测试燃气发电机模型.averageGasConsumptionRate - agcr_expected) < EPS
+    assert 测试燃气发电机模型.averageLoadRate == 0.5
+    obj_expr = 测试燃气发电机模型.总成本年化
+    print("年化:", obj_expr)
+    model_wrapper.Objective(expr=obj_expr, sense=minimize)
+    with SolverFactory(Solver.cplex) as solver:  # type: ignore
+        TransformationFactory("gdp.bigm").apply_to(model_wrapper.model, bigM=1e8)
+        print(">>>SOLVING<<<")
+        solver.options["timelimit"] = 5
+        s_results = solver.solve(model_wrapper.model, tee=True)
+        print("SOLVER RESULTS?")
+        print(s_results)
+        check_solver_result(s_results)
+
+        print("TABLE DS:", 测试燃气发电机模型.DieselToPower_Load)
+        print("TABLE NG:", 测试燃气发电机模型.NaturalGasToPower_Load)
+        print("ELECTRICITY:", value(测试燃气发电机模型.电输出[0]), expected_val)
+        print("GAS:", value(测试燃气发电机模型.天然气输入[0]), expected_gas)
+        print("HOT WATER:", value(测试燃气发电机模型.缸套水余热接口[0]), expected_hot_water)
+        print("HOT GAS:", value(测试燃气发电机模型.高温烟气余热接口[0]), expected_hot_gas)
+        assert abs(value(测试燃气发电机模型.电输出[0]) - expected_val) <= EPS
+        try:
+            assert abs(value(测试燃气发电机模型.天然气输入[0]) - expected_gas) <= EPS
+            assert abs(value(测试燃气发电机模型.缸套水余热接口[0]) - expected_hot_water) <= EPS
+            assert abs(value(测试燃气发电机模型.高温烟气余热接口[0]) - expected_hot_gas) <= EPS
+        except:
+            breakpoint()
 
 
 def test_电价模型():
