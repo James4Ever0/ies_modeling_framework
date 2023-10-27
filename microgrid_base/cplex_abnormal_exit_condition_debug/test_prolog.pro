@@ -47,7 +47,7 @@ all_satisfy_constraint([H|T], Constraint) :-
 all_with_same_type(PORT_LIST, ENERGY_TYPE) :- energy(ENERGY_TYPE), all_satisfy_constraint(PORT_LIST, ENERGY_TYPE).
 
 port_status(PORT, input) :- input_port(PORT).
-port_status(PORT, output):- output_port(PORT).
+port_status(PORT, output) :- output_port(PORT).
 port_status(PORT, idle):- idle_port(PORT).
 
 input_status(STATUS) :- STATUS = input.

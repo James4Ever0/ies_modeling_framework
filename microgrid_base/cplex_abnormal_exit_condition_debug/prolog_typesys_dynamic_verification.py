@@ -183,6 +183,9 @@ def query_prolog_in_context(
     for result in _iterator:
         STATUS = result[0]["STATUS"]
         STATUS_LIST.append(STATUS)
+    
+    # print('STATUS_LIST: ',STATUS_LIST)
+    # breakpoint()
 
     for simutaneous_status in STATUS_LIST:
         adder_status_dict = {}
