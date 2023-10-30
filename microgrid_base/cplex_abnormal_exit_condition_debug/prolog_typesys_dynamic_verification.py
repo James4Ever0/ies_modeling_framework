@@ -184,7 +184,8 @@ def query_prolog_in_context(
         STATUS = result[0]["STATUS"]
         STATUS_LIST.append(STATUS)
     
-    # print('STATUS_LIST: ',STATUS_LIST)
+    # print('STATUS_LIST: ')
+    # rich.print(STATUS_LIST)
     # breakpoint()
 
     for simutaneous_status in STATUS_LIST:
@@ -208,6 +209,10 @@ def query_prolog_in_context(
             topology_status_dict[key] = set()
         topology_status_dict[key].add(value)
         print("-" * 60)
+    
+    # print(topology_status_dict)
+    # breakpoint()
+
     return topology_status_dict
 
 
