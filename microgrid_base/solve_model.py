@@ -185,6 +185,8 @@ def solve_model(
         solver.options["sifting display"] = 2
         solver.options["mip display"] = 5
         solver.options["barrier display"] = 2
+        if ies_env.THREAD_COUNT:
+            solver.options['threads'] = ies_env.THREAD_COUNT
         # disable this option to prevent OOM.
         # solver.options["read fileencoding"] = "utf-8"
 

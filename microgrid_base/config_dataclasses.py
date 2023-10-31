@@ -3,7 +3,9 @@ from log_utils import logger_print
 from pydantic import confloat, Field  # , validator, ValidationError
 from config_utils import EnvBaseModel, Union
 from typing import Literal, Optional
+import psutil
 
+physical_cpu_core_count = psutil.cpu_count(logical=False)
 
 class IESEnv(EnvBaseModel):
     """
@@ -86,6 +88,7 @@ class IESEnv(EnvBaseModel):
     PROLOG_TABLE_SIZE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog table limit in gigabytes.')
     PROLOG_SHARED_TABLE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog shared table limit in gigabytes.')
 
+    THREAD_COUNT:Optional[int] = Field(default = physical_cpu_core_count, title = f'Thread count for cplex solver, default is available physical cpu core count ({physical_cpu_core_count}).')
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):
     #     mock_test = values.get("MOCK_TEST", None)
