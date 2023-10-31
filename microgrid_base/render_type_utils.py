@@ -5,6 +5,7 @@ from parse_params import TYPE_UTILS_MICROGRID_PORTS, TYPE_UTILS_EXTRA_PORTS
 import json
 from typing import Literal
 
+UNKNOWN = 'unknown'
 
 def load_json(filename):
     with open(filename, "r") as f:
@@ -46,12 +47,15 @@ if __name__ == "__main__":
 
     工况翻译 = dict(进="input", 出="output", 空闲="idle")
     必有工况转定义 = dict(
-        一直不工作="set(conds) == {'idle'}",
-        **{k: f"{repr(v)} in conds" for k, v in 工况翻译.items()},
+        一直不工作=f"set(conds).difference({{'idle', {repr(UNKNOWN)} }}) == set()",
+        **{k: f"{repr(v)} in conds or {repr(UNKNOWN)} in conds" for k, v in 工况翻译.items()},
     )
     make_param_list = lambda e: [e + str(i) for i in range(len(k))]
     makeRule = (
-        lambda c0, c1: f"{c0} != 'idle'" if c1 is None else f"{c0} == {repr(工况翻译[c1])}"
+        lambda c0, c1: f"{c0} not in [{repr(UNKNOWN)}, 'idle']" if c1 is None else f"{c0} in [{repr(UNKNOWN)}, {repr(工况翻译[c1])}]"
+    )
+    makeRuleWithoutUnknown = (
+        lambda c0, c1: f"{c0} not in ['idle']" if c1 is None else f"{c0} in [{repr(工况翻译[c1])}]"
     )
 
     def parse_rule_side(left_or_right: str):
@@ -94,7 +98,8 @@ if __name__ == "__main__":
         right = parse_rule_side(_right)
         k = parse_rule_key(left + right)
         assert len(left) == 1, f"abnormal rule because of multiple left side: {rule}"
-        v_left = makeRule(*left[0])
+        # v_left = makeRule(*left[0])
+        v_left = makeRuleWithoutUnknown(*left[0])
         v_right = ", ".join([makeRule(*r) for r in right])
         v = f"all([{v_right}]) if {v_left} else True"
         v = replace_as_cond_or_etype(v, k, "cond")
@@ -112,7 +117,7 @@ if __name__ == "__main__":
             c0s = [c0 for c0, _ in content]
             c0s = ", ".join(c0s)
             enforce_heat_or_cold = (
-                lambda heat_or_cold: f'all(["{heat_or_cold}" in it for it in [{c0s}]])'
+                lambda heat_or_cold: f'all([{repr(heat_or_cold)} in it or it == {repr(UNKNOWN)} for it in [{c0s}]])'
             )
             v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
             v = replace_as_cond_or_etype(v, k, "etype")

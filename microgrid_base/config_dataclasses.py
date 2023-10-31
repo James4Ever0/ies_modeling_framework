@@ -89,6 +89,8 @@ class IESEnv(EnvBaseModel):
     PROLOG_SHARED_TABLE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog shared table limit in gigabytes.')
 
     THREAD_COUNT:Optional[int] = Field(default = physical_cpu_core_count, title = f'Thread count for cplex solver, default is available physical cpu core count ({physical_cpu_core_count}).')
+
+    USE_PROLOG_CODE: bool = Field(default=False, title = 'Use prolog (slower) instead of python for type checking state enumeration.')
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):
     #     mock_test = values.get("MOCK_TEST", None)

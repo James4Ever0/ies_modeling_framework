@@ -44376,15 +44376,15 @@
                     "id": 30,
                     "type": "设备",
                     "ports": {
-                        "制氢接口": {
+                        "电接口": {
                             "subtype": "unknown",
                             "id": 31
                         },
-                        "设备余热接口": {
+                        "制氢接口": {
                             "subtype": "unknown",
                             "id": 32
                         },
-                        "电接口": {
+                        "设备余热接口": {
                             "subtype": "unknown",
                             "id": 33
                         }
@@ -44415,21 +44415,21 @@
                     "subtype": "unknown",
                     "id": 31,
                     "type": "锚点",
-                    "port_name": "制氢接口",
+                    "port_name": "电接口",
                     "device_id": 30
                 },
                 {
                     "subtype": "unknown",
                     "id": 32,
                     "type": "锚点",
-                    "port_name": "设备余热接口",
+                    "port_name": "制氢接口",
                     "device_id": 30
                 },
                 {
                     "subtype": "unknown",
                     "id": 33,
                     "type": "锚点",
-                    "port_name": "电接口",
+                    "port_name": "设备余热接口",
                     "device_id": 30
                 },
                 {
@@ -44776,11 +44776,11 @@
                 },
                 {
                     "source": 31,
-                    "target": 52
+                    "target": 48
                 },
                 {
-                    "source": 33,
-                    "target": 48
+                    "source": 32,
+                    "target": 52
                 },
                 {
                     "source": 34,

@@ -153,12 +153,15 @@ def dynamic_verify_topo_object(topo):
     render_params, verification_params = convert_topo_to_prolog_render_params_and_verification_params(topo)
 
     adder_index_to_port_name, port_verifiers, conjugate_port_verifiers = verification_params
-
-    prolog_script_content = render_prolog_code(render_params)
-
     adderNameToAdderPortNames = render_params["adderNameToAdderPortNames"]
 
-    can_proceed, isomorphic_topo_status = execute_prolog_script_and_check_if_can_proceed(prolog_script_content, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames)
+    if ies_env.USE_PROLOG_CODE:
+        prolog_script_content = render_prolog_code(render_params)
+
+
+        can_proceed, isomorphic_topo_status = execute_prolog_script_and_check_if_can_proceed(prolog_script_content, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames)
+    else:
+        can_proceed, isomorphic_topo_status = execute_python_code_and_check_if_can_proceed(render_params, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames)
 
     return can_proceed, isomorphic_topo_status
 
@@ -226,37 +229,86 @@ def construct_query_result_iterator(thread, query):
 import progressbar
 import hashlib
 
-def query_prolog_in_context(
-    topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name, adderNameToAdderPortNames
-):
-    adder_name_list = []
-    adder_index_mapping = {}
-    for i, k in enumerate(adder_index_to_port_name.keys()):
-        adder_name_list.append("adder{}".format(str(k).replace('-','_')))
-        adder_index_mapping[i] = k
-    adder_names = ", ".join(adder_name_list)
-    logger_print('adder_names: ',adder_names)
-    # breakpoint()
-    prolog_thread.query(f'["{prolog_file_path}"].')
+import itertools
 
-    {# logger_print(result)  # list, get first element #}
-    logger_print("retrieving result")
-    query = f"adder_port_status_list([{adder_names}], STATUS)"
-    _iterator = construct_query_result_iterator(prolog_thread, query)
+def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames):
+    port_name_to_possible_energy_types = {}
 
-    STATUS_LIST = []
+    for k,vlist in energyTypeToPortNames.items():
+        for v in vlist:
+            if v not in port_name_to_possible_energy_types.keys():
+                port_name_to_possible_energy_types[v] = [k]
+            port_name_to_possible_energy_types[v].append(k)
 
-    hashset = set()
+    adder_name_list = list(adderNameToAdderPortNames.keys())
 
-    for result in progressbar.progressbar(_iterator):
-        STATUS = result[0]["STATUS"]
-        status_hash = hashlib.md5(str(STATUS).encode()).hexdigest()
-        if status_hash not in hashset:
-            hashset.add(status_hash)
-            STATUS_LIST.append(STATUS)
+
+    possible_simutaneous_adder_energy_types = set()
+
+    adder_name_to_possible_adder_energy_types = {}
+
+    for adder_name, _port_name_list in adderNameToAdderPortNames.items():
+        paet = set()
+        for pn in _port_name_list:
+            ets = port_name_to_possible_energy_types[pn]
+            paet.update(ets)
+        adder_name_to_possible_adder_energy_types[adder_name] = paet
+
+    possible_simutaneous_adder_energy_types = []
+
+    possible_simutaneous_adder_energy_types = list(itertools.product(*adder_name_to_possible_adder_energy_types.values()))
+
+    result = []
+
+    # get `possible_adder_energy_types` from prolog?
+    for simutaneous_adder_energy_types in possible_simutaneous_adder_energy_types:
+        simutaneous_state = []
+        # all idle, otherwise at least one input one output
+        aet_to_ps_l = []
+        for adder_index, aet in enumerate(simutaneous_adder_energy_types):
+            sasp = []
+            adder_name = adder_name_list[adder_index]
+            _port_name_list = adderNameToAdderPortNames[adder_name]
+            psl = []
+            for pn in _port_name_list:
+                ppet = port_name_to_possible_energy_types[pn]
+                pps = portNameToPortPossibleStates[pn]
+                if aet in ppet:
+                    ps = pps
+                else:
+                    assert 'idle' in pps
+                    ps = ['idle']
+                psl.append(ps)
+            for elem in itertools.product(*psl):
+                if all([e == 'idle' for e in elem]) or ('input' in elem and 'output' in elem):
+                    sasp.append([aet, elem])
+            aet_to_ps_l.append(sasp)
+            
+        for elem in itertools.product(*aet_to_ps_l):
+            simutaneous_state.append(elem)
+        result.extend(simutaneous_state)
+    return result
+
+{% macro query_result_mixin()%}
+    adder_name_list, adder_index_mapping = query_init(adder_index_to_port_name)
+
+{{caller()}}
 
     logger_print("parsing result")
-    
+    topology_status_dict = parse_status_list(STATUS_LIST, adder_index_mapping, adder_index_to_port_name, adderNameToAdderPortNames)
+
+    logger_print('result parsed')
+    return topology_status_dict
+
+{% endmacro%}
+
+def query_result_from_python(render_params, adder_index_to_port_name, adderNameToAdderPortNames):
+{% call query_result_mixin()%}
+    STATUS_LIST = get_all_combinations(render_params['portNameToPortPossibleStates'], render_params['energyTypeToPortNames'], render_params['adderNameToAdderPortNames'])
+{% endcall%}
+
+def parse_status_list(STATUS_LIST, adder_index_mapping, adder_index_to_port_name, adderNameToAdderPortNames):
+    topology_status_dict = {}
     for simutaneous_status in progressbar.progressbar(STATUS_LIST):
         adder_status_dict = {}
         port_status_dict = {}
@@ -280,8 +332,44 @@ def query_prolog_in_context(
             topology_status_dict[key] = set()
         topology_status_dict[key].add(value)
         {# logger_print("-" * 60) #}
-    logger_print('result parsed')
     return topology_status_dict
+
+def query_prolog_common(adder_name_list, prolog_file_path, prolog_thread):
+    adder_names = ", ".join(adder_name_list)
+    logger_print('adder_names: ',adder_names)
+    prolog_thread.query(f'["{prolog_file_path}"].')
+    logger_print("retrieving result")
+    query = f"adder_port_status_list([{adder_names}], STATUS)"
+    _iterator = construct_query_result_iterator(prolog_thread, query)
+
+    STATUS_LIST = []
+
+    hashset = set()
+
+    for result in progressbar.progressbar(_iterator):
+        STATUS = result[0]["STATUS"]
+        status_hash = hashlib.md5(str(STATUS).encode()).hexdigest()
+        if status_hash not in hashset:
+            hashset.add(status_hash)
+            STATUS_LIST.append(STATUS)
+    return STATUS_LIST
+
+def query_init(adder_index_to_port_name):
+    
+    adder_name_list = []
+    adder_index_mapping = {}
+
+    for i, k in enumerate(adder_index_to_port_name.keys()):
+        adder_name_list.append("adder{}".format(str(k).replace('-','_')))
+        adder_index_mapping[i] = k
+    return adder_name_list, adder_index_mapping
+
+def query_prolog_in_context(
+    topology_status_dict, prolog_file_path, prolog_thread, adder_index_to_port_name, adderNameToAdderPortNames
+):
+{% call query_result_mixin()%}
+    STATUS_LIST = query_prolog_common(adder_name_list, prolog_file_path, prolog_thread)
+{% endcall%}
 
 
 def verify_topology_status_dict(
@@ -321,16 +409,25 @@ def verify_topology_status_dict(
                         conjugate_ports,
                         conjugate_verifier,
                     ) in conjugate_port_verifiers.items():
+                        # if not found, then skip this port or idle?
                         conds = [
-                            topo_status_frame[port_name] for port_name in conjugate_ports
+                            topo_status_frame.get(port_name, 'unknown')
+                            for port_name in conjugate_ports
                         ]
-                        energytypes = [port_name_to_energy_type[port_name] for port_name in conjugate_ports]
+                        energytypes = [
+                            port_name_to_energy_type.get(port_name, 'unknown')
+                            for port_name in conjugate_ports
+                        ]
                         conjugate_verified = conjugate_verifier(*conds, *energytypes)
                         # conjugate_verified = conjugate_verifier(*conds)
                         if not conjugate_verified:
                             em.append(
                                 f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
                             )
+                            em.append("conds: "+repr(conds))
+                            em.append("energy types: "+repr(energytypes))
+                            {# em.append(f"topo status frame: {topo_status_frame}") #}
+                            em.append('-'*60)
                             if _conjugate_verified:
                                 _conjugate_verified = False
                 if _conjugate_verified:
@@ -340,7 +437,8 @@ def verify_topology_status_dict(
                         f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
                     )
         for port_name, verifier in port_verifiers.items():
-            conds = topo_status_frame_flatten[port_name]
+            conds = topo_status_frame_flatten.get(port_name, 'unknown')
+            {# conds = topo_status_frame_flatten[port_name] #}
             verified = verifier(conds)
             port_verified[port_name] = verified
             if not verified:
@@ -412,6 +510,17 @@ def check_if_can_proceed(verified_topology_status_dict):
         logger_print("clear to proceed")
     return can_proceed, isomorphic_topo_status
 
+def check_if_can_proceed_common(topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name):
+    verified_topology_status_dict = verify_topology_status_dict(
+        topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name
+    )
+    can_proceed, isomorphic_topo_status = check_if_can_proceed(verified_topology_status_dict)
+    return can_proceed, isomorphic_topo_status
+
+def execute_python_code_and_check_if_can_proceed(render_params, adder_index_to_port_name, port_verifiers, conjugate_port_verifiers, adderNameToAdderPortNames):
+    topology_status_dict = query_result_from_python(render_params, adder_index_to_port_name, adderNameToAdderPortNames)
+
+    return check_if_can_proceed_common(topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name)
 
 def execute_prolog_script_and_check_if_can_proceed(
     prolog_script_content,
@@ -423,11 +532,7 @@ def execute_prolog_script_and_check_if_can_proceed(
     topology_status_dict = query_result_from_prolog(
         prolog_script_content, adder_index_to_port_name, adderNameToAdderPortNames
     )
-    verified_topology_status_dict = verify_topology_status_dict(
-        topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name
-    )
-    can_proceed, isomorphic_topo_status = check_if_can_proceed(verified_topology_status_dict)
-    return can_proceed, isomorphic_topo_status
+    return check_if_can_proceed_common(topology_status_dict, port_verifiers, conjugate_port_verifiers, adder_index_to_port_name)
 
 def weak_type_check():...
     {# this time we might not need prolog #}

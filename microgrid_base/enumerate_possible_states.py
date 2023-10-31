@@ -1,23 +1,4 @@
-# you can delegate the dynamic topo checking to pypy. might be more efficient.
-# target output: STATUS_LIST
-
-"""
-[
-    [['electricity', ['input', 'output', 'input']]],
-    [['electricity', ['output', 'output', 'input']]],
-    [['electricity', ['idle', 'output', 'input']]],
-    [['electricity', ['output', 'idle', 'input']]],
-    [['electricity', ['input', 'output', 'idle']]],
-    [['electricity', ['idle', 'idle', 'idle']]],
-]
-"""
-
-# objective: use render_params to get the result
-
-########################## IMPLEMENTATION ##########################
-
 import itertools
-
 
 def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames):
     port_name_to_possible_energy_types = {}
@@ -76,33 +57,3 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
             simutaneous_state.append(elem)
         result.extend(simutaneous_state)
     return result
-
-########################## VISUALIZATION ##########################
-
-portNameToPortPossibleStates = {
-    "bat_port1": ["idle", "input", "output"],
-    "generator_port1": [
-        "idle",
-        "input",
-    ],
-    "load_port1": ["idle", "output"],
-}
-
-energyTypeToPortNames = {
-    "electricity": ["bat_port1", "generator_port1", "load_port1"]
-}
-
-deviceNameToPortNames = {
-    "battery1": ["bat_port1"],
-    "generator1": ["generator_port1"],
-    "load1": ["load_port1"],
-}
-
-adderNameToAdderPortNames = {
-    "adder1": ["bat_port1", "generator_port1", "load_port1"]
-}
-
-result = get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames)
-
-import rich
-rich.print(result)
