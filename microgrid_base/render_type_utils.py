@@ -4,8 +4,8 @@ from type_def import *
 from parse_params import TYPE_UTILS_MICROGRID_PORTS, TYPE_UTILS_EXTRA_PORTS
 import json
 from typing import Literal
+from constants import UNKNOWN
 
-UNKNOWN = 'unknown'
 
 def load_json(filename):
     with open(filename, "r") as f:
@@ -26,15 +26,82 @@ TYPE_UTILS_MICROGRID_PORTS_DATA = load_type_utils_json_with_added_suffix(
 TYPE_UTILS_EXTRA_PORTS_DATA = load_type_utils_json_with_added_suffix(
     TYPE_UTILS_EXTRA_PORTS
 )
+# import rich
+# logger_print(TYPE_UTILS_EXTRA_PORTS_DATA)
+# # exit()
+# breakpoint()
+TYPE_UTILS_SPECIAL_PORTS = "<type_utils_special_ports>"
+
+ANY = "/".join(基本类型.__members__.keys())
+
+TYPE_UTILS_SPECIAL_PORTS_DATA = {
+    "特殊元件": {
+        "单向线": {
+            "ports": {
+                "输入接口": {
+                    "info": None,
+                    "细分类型": None,
+                    "基本类型": ANY,
+                    "能流方向": "进",
+                    "必有工况": None,
+                },
+                "输出接口": {
+                    "info": None,
+                    "细分类型": None,
+                    "基本类型": ANY,
+                    "能流方向": "出",
+                    "必有工况": None,
+                },
+            },
+            "rules": ["输入接口 进 -> 输出接口 出", "输出接口 出 -> 输入接口 进"],
+        },
+        "互斥元件": {
+            "ports": {
+                "互斥接口A": {
+                    "info": None,
+                    "细分类型": None,
+                    "基本类型": ANY,
+                    "能流方向": "进出",
+                    "必有工况": None,
+                },
+                "互斥接口B": {
+                    "info": None,
+                    "细分类型": None,
+                    "基本类型": ANY,
+                    "能流方向": "进出",
+                    "必有工况": None,
+                },
+                "外部接口": {
+                    "info": None,
+                    "细分类型": None,
+                    "基本类型": ANY,
+                    "能流方向": "进出",
+                    "必有工况": None,
+                },
+            },
+            "rules": [
+                "互斥接口A 进 -> 互斥接口B 空闲; 外部接口 出",
+                "互斥接口A 出 -> 互斥接口B 空闲; 外部接口 进",
+                "互斥接口B 进 -> 互斥接口A 空闲; 外部接口 出",
+                "互斥接口B 出 -> 互斥接口A 空闲; 外部接口 进",
+                "外部接口 空闲 -> 互斥接口A 空闲; 互斥接口B 空闲",
+            ],
+        },
+    }
+}
 
 connectivity_check_header_prefixes = ["可选连接", "关联连接", "至少连接"]
+# if UNKNOWN then the port must not be connected
 
 __all__ = [
     "TYPE_UTILS_MICROGRID_PORTS_DATA",
     "TYPE_UTILS_EXTRA_PORTS_DATA",
     "TYPE_UTILS_MICROGRID_PORTS",
     "TYPE_UTILS_EXTRA_PORTS",
+    "TYPE_UTILS_SPECIAL_PORTS",
+    "TYPE_UTILS_SPECIAL_PORTS_DATA",
 ]
+
 if __name__ == "__main__":
     # def parse_leftover(leftover):
     #     segments = leftover.split(";")
@@ -47,15 +114,22 @@ if __name__ == "__main__":
 
     工况翻译 = dict(进="input", 出="output", 空闲="idle")
     必有工况转定义 = dict(
-        一直不工作=f"set(conds).difference({{'idle', {repr(UNKNOWN)} }}) == set()",
-        **{k: f"{repr(v)} in conds or {repr(UNKNOWN)} in conds" for k, v in 工况翻译.items()},
+        一直不工作=f"set(conds).difference({{ 'idle', {repr(UNKNOWN)} }}) == set()",
+        **{
+            k: f"{repr(v)} in conds or {repr(UNKNOWN)} in conds"
+            for k, v in 工况翻译.items()
+        },
     )
     make_param_list = lambda e: [e + str(i) for i in range(len(k))]
     makeRule = (
-        lambda c0, c1: f"{c0} not in [{repr(UNKNOWN)}, 'idle']" if c1 is None else f"{c0} in [{repr(UNKNOWN)}, {repr(工况翻译[c1])}]"
+        lambda c0, c1: f"{c0} not in [{repr(UNKNOWN)}, 'idle']"
+        if c1 is None
+        else f"{c0} in [{repr(UNKNOWN)}, {repr(工况翻译[c1])}]"
     )
     makeRuleWithoutUnknown = (
-        lambda c0, c1: f"{c0} not in ['idle']" if c1 is None else f"{c0} in [{repr(工况翻译[c1])}]"
+        lambda c0, c1: f"{c0} not in ['idle']"
+        if c1 is None
+        else f"{c0} in [{repr(工况翻译[c1])}]"
     )
 
     def parse_rule_side(left_or_right: str):
@@ -117,7 +191,7 @@ if __name__ == "__main__":
             c0s = [c0 for c0, _ in content]
             c0s = ", ".join(c0s)
             enforce_heat_or_cold = (
-                lambda heat_or_cold: f'all([{repr(heat_or_cold)} in it or it == {repr(UNKNOWN)} for it in [{c0s}]])'
+                lambda heat_or_cold: f"all([{repr(heat_or_cold)} in it or it == {repr(UNKNOWN)} for it in [{c0s}]])"
             )
             v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
             v = replace_as_cond_or_etype(v, k, "etype")
@@ -126,6 +200,8 @@ if __name__ == "__main__":
             and header.split("[")[0] in connectivity_check_header_prefixes
         ):
             # skipped for now.
+            # use 'and' to join all together
+            # if has optional ports, then do not add connectivity enforcement to all ports
             ...
         else:
             raise Exception("unknown header:", header, "content:", content)
@@ -184,7 +260,8 @@ if __name__ == "__main__":
         _基本类型 = portDef["基本类型"]
         candidates = _基本类型 if _细分类型 is None else _细分类型
         if candidates is None:
-            breakpoint()
+            raise Exception("No candidates")
+            # breakpoint()
         for t in candidates.split("/"):
             # if isinstance(t, list):
             #     if set(t) == set(['醇', '乙', '二']): breakpoint()
@@ -196,7 +273,8 @@ if __name__ == "__main__":
 
     for fpath, dat in {
         TYPE_UTILS_MICROGRID_PORTS: TYPE_UTILS_MICROGRID_PORTS_DATA,
-        TYPE_UTILS_EXTRA_PORTS: TYPE_UTILS_EXTRA_PORTS_DATA,
+        TYPE_UTILS_EXTRA_PORTS: TYPE_UTILS_EXTRA_PORTS_DATA,  # TODO: add synthetic data here.
+        TYPE_UTILS_SPECIAL_PORTS: TYPE_UTILS_SPECIAL_PORTS_DATA,
     }.items():
         logger_print("Parsing:", fpath)
         # dat = load_json(fpath + ".json")

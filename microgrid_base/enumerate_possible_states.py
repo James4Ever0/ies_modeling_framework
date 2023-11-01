@@ -1,3 +1,5 @@
+from log_utils import logger_print
+
 import itertools
 
 def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames):

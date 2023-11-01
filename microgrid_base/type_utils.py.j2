@@ -1,6 +1,7 @@
 from log_utils import logger_print
 from type_def import *
 import os
+from constants import UNKNOWN
 
 """static & dynamic topology type checking"""
 
@@ -242,7 +243,6 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
 
     adder_name_list = list(adderNameToAdderPortNames.keys())
 
-
     possible_simutaneous_adder_energy_types = set()
 
     adder_name_to_possible_adder_energy_types = {}
@@ -250,6 +250,11 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
     for adder_name, _port_name_list in adderNameToAdderPortNames.items():
         paet = set()
         for pn in _port_name_list:
+            {# ets = [et for et in port_name_to_possible_energy_types[pn] if et != UNKNOWN] #}
+            {# if we do that then the energy type will just be undetermined #}
+            {# so we would rather assign all possible energy types to the disjunctive device or the directed line device #}
+            {# and add some exclusive rules for all ports #}
+            {# these devices might not be defined in the excel #}
             ets = port_name_to_possible_energy_types[pn]
             paet.update(ets)
         adder_name_to_possible_adder_energy_types[adder_name] = paet
@@ -411,11 +416,11 @@ def verify_topology_status_dict(
                     ) in conjugate_port_verifiers.items():
                         # if not found, then skip this port or idle?
                         conds = [
-                            topo_status_frame.get(port_name, 'unknown')
+                            topo_status_frame.get(port_name, UNKNOWN)
                             for port_name in conjugate_ports
                         ]
                         energytypes = [
-                            port_name_to_energy_type.get(port_name, 'unknown')
+                            port_name_to_energy_type.get(port_name, UNKNOWN)
                             for port_name in conjugate_ports
                         ]
                         conjugate_verified = conjugate_verifier(*conds, *energytypes)
