@@ -37,3 +37,5 @@ Feasopt is part of the failsafe protocols. Set `FAILSAFE=True` in configuration 
 More options like `FEASOPT_TIMELIMIT` can be found as constants in file `failsafe_utils.py`.
 
 In case you may want more specific relaxation targets than all constraints, you can tweak the adders, device count bounds and more.
+
+One common routine is that first relax all adder constraints and add the sum of all adder errors into target, then locate the error, create isolated models which enforce error must be fulfilled and relax constraints like device count bounds, also we can locate the conflicting code location within the device model.
