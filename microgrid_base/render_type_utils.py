@@ -6,8 +6,14 @@ import json
 from typing import Literal
 from constants import UNKNOWN
 
-可选连接 = "可选连接"
+互斥 = "互斥"
+冷热互斥 = "冷热互斥"
 
+UNKNOWN_REPR = repr(UNKNOWN)
+
+可选连接 = "可选连接"
+关联连接 = "关联连接"
+至少连接 = "至少连接"
 
 class AppendableDict(dict):
     def __init__(self, *args, **kwargs):
@@ -105,7 +111,7 @@ TYPE_UTILS_SPECIAL_PORTS_DATA = {
     }
 }
 
-connectivity_check_header_prefixes = [可选连接, "关联连接", "至少连接"]
+connectivity_check_header_prefixes = [可选连接, 关联连接, 至少连接]
 # if UNKNOWN then the port must not be connected
 
 __all__ = [
@@ -129,17 +135,17 @@ if __name__ == "__main__":
 
     工况翻译 = dict(进="input", 出="output", 空闲="idle")
     必有工况转定义 = dict(
-        一直不工作=f"set(conds).difference({{ 'idle', {repr(UNKNOWN)} }}) == set()",
+        一直不工作=f"set(conds).difference({{ 'idle', {UNKNOWN_REPR} }}) == set()",
         **{
-            k: f"{repr(v)} in conds or {repr(UNKNOWN)} in conds"
+            k: f"{repr(v)} in conds or {UNKNOWN_REPR} in conds"
             for k, v in 工况翻译.items()
         },
     )
     make_param_list = lambda e: [e + str(i) for i in range(len(k))]
     makeRule = (
-        lambda c0, c1: f"{c0} not in [{repr(UNKNOWN)}, 'idle']"
+        lambda c0, c1: f"{c0} not in [{UNKNOWN_REPR}, 'idle']"
         if c1 is None
-        else f"{c0} in [{repr(UNKNOWN)}, {repr(工况翻译[c1])}]"
+        else f"{c0} in [{UNKNOWN_REPR}, {repr(工况翻译[c1])}]"
     )
     makeRuleWithoutUnknown = (
         lambda c0, c1: f"{c0} not in ['idle']"
@@ -203,7 +209,7 @@ if __name__ == "__main__":
         v = "True"
         if remained_et_params != []:
             connectivity_check_rule_content = ", ".join(
-                [f"{pn_et} != {UNKNOWN}" for pn_et in remained_et_params]
+                [f"{pn_et} != {UNKNOWN_REPR}" for pn_et in remained_et_params]
             )
             v = f"all([{connectivity_check_rule_content}])"
         return v
@@ -216,15 +222,16 @@ if __name__ == "__main__":
             None if not isinstance(header, str) else header.split("[")[0]
         )
         exc = Exception("unknown header:", header, "content:", content)
-        if header == "互斥":
-            v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
+        if header == 互斥:
+            v = ", ".join([f"int({makeRuleWithoutUnknown(c0, c1)})" for c0, c1 in content])
+            # v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
             v = f"sum([{v}]) <= 1"
             v = replace_as_cond_or_etype(v, k, "cond")
-        elif header == "冷热互斥":
+        elif header == 冷热互斥:
             c0s = [c0 for c0, _ in content]
             c0s = ", ".join(c0s)
             enforce_heat_or_cold = (
-                lambda heat_or_cold: f"all([{repr(heat_or_cold)} in it or it == {repr(UNKNOWN)} for it in [{c0s}]])"
+                lambda heat_or_cold: f"all([{repr(heat_or_cold)} in it or it == {UNKNOWN_REPR} for it in [{c0s}]])"
             )
             v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
             v = replace_as_cond_or_etype(v, k, "etype")
@@ -238,16 +245,17 @@ if __name__ == "__main__":
             # port_candidates = k
             # skipped for now.
             # use 'and' to join all together
-            et_param = ",".join([f"etype{i}" for i in range(len(port_names))])
+            et_param = ",".join([f"etype{i}" for i in range(len(k))])
+            # et_param = ",".join([f"etype{i}" for i in range(len(port_names))])
             # if has optional ports, then do not add connectivity enforcement to all ports
             if splited_header == 可选连接:  # we need to have the port list later
                 v = generate_optional_connectivity_rule(port_names, k)
                 k = port_names
-            elif splited_header == "关联连接":
-                v = f"sum([int(it != {UNKNOWN}) for it in [{et_param}]]) in [0, {len(k)}]"
-            elif splited_header == "至少连接":  # 获得至少连接的接口数量
+            elif splited_header == 关联连接:
+                v = f"sum([int(it != {UNKNOWN_REPR}) for it in [{et_param}]]) in [0, {len(k)}]"
+            elif splited_header == 至少连接:  # 获得至少连接的接口数量
                 至少连接的接口数量 = int(header.split("[")[-1].strip("]"))
-                v = f"sum([int(it != {UNKNOWN}) for it in [{et_param}]]) >= {至少连接的接口数量}"
+                v = f"sum([int(it != {UNKNOWN_REPR}) for it in [{et_param}]]) >= {至少连接的接口数量}"
             else:
                 raise exc
         else:
