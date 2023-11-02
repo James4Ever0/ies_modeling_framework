@@ -6,6 +6,19 @@ import json
 from typing import Literal
 from constants import UNKNOWN
 
+可选连接 = "可选连接"
+
+
+class AppendableDict(dict):
+    def __init__(self, *args, **kwargs):
+        super(AppendableDict, self).__init__(*args, **kwargs)
+
+    def append(self, key, value):
+        if key in self:
+            self[key].append(value)
+        else:
+            self[key] = [value]
+
 
 def load_json(filename):
     with open(filename, "r") as f:
@@ -54,6 +67,7 @@ TYPE_UTILS_SPECIAL_PORTS_DATA = {
                 },
             },
             "rules": ["输入接口 进 -> 输出接口 出", "输出接口 出 -> 输入接口 进"],
+            "requirements": []
         },
         "互斥元件": {
             "ports": {
@@ -86,11 +100,12 @@ TYPE_UTILS_SPECIAL_PORTS_DATA = {
                 "互斥接口B 出 -> 互斥接口A 空闲; 外部接口 进",
                 "外部接口 空闲 -> 互斥接口A 空闲; 互斥接口B 空闲",
             ],
+            "requirements": []
         },
     }
 }
 
-connectivity_check_header_prefixes = ["可选连接", "关联连接", "至少连接"]
+connectivity_check_header_prefixes = [可选连接, "关联连接", "至少连接"]
 # if UNKNOWN then the port must not be connected
 
 __all__ = [
@@ -179,10 +194,28 @@ if __name__ == "__main__":
         v = replace_as_cond_or_etype(v, k, "cond")
         return k, v
 
-    def parse_requirement(requirement):
+    def generate_optional_connectivity_rule(port_names, optional_port_names):
+        remained_et_params = [
+            f"etype{i}"
+            for i, pn in enumerate(port_names)
+            if pn not in optional_port_names
+        ]
+        v = "True"
+        if remained_et_params != []:
+            connectivity_check_rule_content = ", ".join(
+                [f"{pn_et} != {UNKNOWN}" for pn_et in remained_et_params]
+            )
+            v = f"all([{connectivity_check_rule_content}])"
+        return v
+
+    def parse_requirement(requirement, port_names):
         header, _content = rule_parser(requirement)
         content = parse_rule_side(_content)
         k = parse_rule_key(content)
+        t = splited_header = (
+            None if not isinstance(header, str) else header.split("[")[0]
+        )
+        exc = Exception("unknown header:", header, "content:", content)
         if header == "互斥":
             v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
             v = f"sum([{v}]) <= 1"
@@ -196,16 +229,30 @@ if __name__ == "__main__":
             v = " or ".join([enforce_heat_or_cold(e) for e in ["冷", "热"]])
             v = replace_as_cond_or_etype(v, k, "etype")
         elif (
-            isinstance(header, str)
-            and header.split("[")[0] in connectivity_check_header_prefixes
+            # isinstance(header, str)
+            # and
+            splited_header
+            in connectivity_check_header_prefixes
         ):
+            # port_candidates = [c0 for c0, _ in content]
+            # port_candidates = k
             # skipped for now.
             # use 'and' to join all together
+            et_param = ",".join([f"etype{i}" for i in range(len(port_names))])
             # if has optional ports, then do not add connectivity enforcement to all ports
-            ...
+            if splited_header == 可选连接:  # we need to have the port list later
+                v = generate_optional_connectivity_rule(port_names, k)
+                k = port_names
+            elif splited_header == "关联连接":
+                v = f"sum([int(it != {UNKNOWN}) for it in [{et_param}]]) in [0, {len(k)}]"
+            elif splited_header == "至少连接":  # 获得至少连接的接口数量
+                至少连接的接口数量 = int(header.split("[")[-1].strip("]"))
+                v = f"sum([int(it != {UNKNOWN}) for it in [{et_param}]]) >= {至少连接的接口数量}"
+            else:
+                raise exc
         else:
-            raise Exception("unknown header:", header, "content:", content)
-        return k, v
+            raise exc
+        return k, v, t
 
     def rule_parser(rule):
         rule = rule.replace("：", ":").replace("；", ";")
@@ -327,19 +374,35 @@ if __name__ == "__main__":
                     for energyType in etypes:
                         energyTypes.add(energyType)
 
-                _conjugate_verifiers = {}
+                _conjugate_verifiers = AppendableDict()
+                # _conjugate_verifiers = {}
                 rule_list = devDef["rules"]
                 requirement_list = devDef["requirements"]
+
+                port_names = tuple(ports.keys())
                 # tuple of port names
                 # "lambda cond0, cond1: ..."
 
                 for rule in rule_list:
                     k, v = parse_rule(rule)
-                    _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+                    _conjugate_verifiers.append(k, v)
+                    # _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+
+                has_optional_port_rule = False
 
                 for requirement in requirement_list:
-                    k, v = parse_requirement(requirement)
-                    _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+                    k, v, t = parse_requirement(requirement, port_names)
+                    # k, v, t = parse_requirement(requirement)
+                    if t == 可选连接:
+                        has_optional_port_rule = True
+                        # k = port_names
+                    _conjugate_verifiers.append(k, v)
+                    # _conjugate_verifiers[k] = _conjugate_verifiers.get(k, []) + [v]
+
+                if not has_optional_port_rule:
+                    v = generate_optional_connectivity_rule(port_names, [])
+                    k = port_names
+                    _conjugate_verifiers.append(k, v)
 
                 conjugate_verifiers = {}
 

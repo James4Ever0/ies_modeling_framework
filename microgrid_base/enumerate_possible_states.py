@@ -13,7 +13,6 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
 
     adder_name_list = list(adderNameToAdderPortNames.keys())
 
-
     possible_simutaneous_adder_energy_types = set()
 
     adder_name_to_possible_adder_energy_types = {}
