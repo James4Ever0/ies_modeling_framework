@@ -5,6 +5,25 @@ from constants import UNKNOWN
 
 """static & dynamic topology type checking"""
 
+
+def logFailedRule(passed: bool, banner: str):
+    if not passed:
+        logger_print(f"Rule {banner} failed.")
+    return passed
+
+
+def portNameTransformer(port_name):
+    result = port_name.split("_")
+    result_length = len(result)
+    if result_length == 3:
+        transformed_port_name = f"{result[0]}_{result[2]}"
+    else:
+        raise Exception(
+            f'Failed to parse port name "{port_name}" (mismatched splited size: {result_length})'
+        )
+    return transformed_port_name
+
+
 deviceTypes = [
     "柴油",
     "电负荷",
@@ -16,6 +35,7 @@ deviceTypes = [
     "双向变压器",
     "变流器",
     "双向变流器",
+    "传输线",
     "市政自来水",
     "天然气",
     "电网",
@@ -64,19 +84,19 @@ deviceTypes = [
     "互斥元件",
 ]
 energyTypes = [
-    "天然气",
-    "冰乙二醇",
+    "蒸汽",
+    "冷乙二醇",
     "热乙二醇",
-    "柴油",
-    "氢气",
     "电",
+    "热水",
+    "天然气",
+    "烟气",
+    "冰乙二醇",
     "自来水",
     "冷水",
-    "蒸汽",
+    "柴油",
+    "氢气",
     "导热油",
-    "烟气",
-    "冷乙二醇",
-    "热水",
 ]
 
 deviceTypeToTypeInfo = {
@@ -136,6 +156,13 @@ deviceTypeToTypeInfo = {
             "线路端": ["idle", "input", "output"],
         },
         "requiredPortFrontendNameToEnergyTypes": {"储能端": ["电"], "线路端": ["电"]},
+    },
+    "传输线": {
+        "requiredPortFrontendNameToPortPossibleStates": {
+            "电输入": ["idle", "input", "output"],
+            "电输出": ["idle", "input", "output"],
+        },
+        "requiredPortFrontendNameToEnergyTypes": {"电输入": ["电"], "电输出": ["电"]},
     },
     "市政自来水": {
         "requiredPortFrontendNameToPortPossibleStates": {"水接口": ["idle", "output"]},
@@ -524,8 +551,8 @@ deviceTypeToTypeInfo = {
             "输出接口": ["idle", "input", "output"],
         },
         "requiredPortFrontendNameToEnergyTypes": {
-            "输入接口": ["冷乙二醇", "冰乙二醇", "热乙二醇", "自来水", "冷水", "热水", "导热油"],
-            "输出接口": ["冷乙二醇", "冰乙二醇", "热乙二醇", "自来水", "冷水", "热水", "导热油"],
+            "输入接口": ["冰乙二醇", "热乙二醇", "冷乙二醇", "热水", "自来水", "冷水", "导热油"],
+            "输出接口": ["冰乙二醇", "热乙二醇", "冷乙二醇", "热水", "自来水", "冷水", "导热油"],
         },
     },
     "复合水水换热器": {
@@ -560,30 +587,30 @@ deviceTypeToTypeInfo = {
                 "天然气",
                 "氢气",
                 "电",
+                "热水",
                 "自来水",
                 "冷水",
-                "热水",
                 "蒸汽",
                 "烟气",
                 "导热油",
-                "冷乙二醇",
                 "冰乙二醇",
                 "热乙二醇",
+                "冷乙二醇",
             ],
             "输出接口": [
                 "柴油",
                 "天然气",
                 "氢气",
                 "电",
+                "热水",
                 "自来水",
                 "冷水",
-                "热水",
                 "蒸汽",
                 "烟气",
                 "导热油",
-                "冷乙二醇",
                 "冰乙二醇",
                 "热乙二醇",
+                "冷乙二醇",
             ],
         },
     },
@@ -599,45 +626,45 @@ deviceTypeToTypeInfo = {
                 "天然气",
                 "氢气",
                 "电",
+                "热水",
                 "自来水",
                 "冷水",
-                "热水",
                 "蒸汽",
                 "烟气",
                 "导热油",
-                "冷乙二醇",
                 "冰乙二醇",
                 "热乙二醇",
+                "冷乙二醇",
             ],
             "互斥接口B": [
                 "柴油",
                 "天然气",
                 "氢气",
                 "电",
+                "热水",
                 "自来水",
                 "冷水",
-                "热水",
                 "蒸汽",
                 "烟气",
                 "导热油",
-                "冷乙二醇",
                 "冰乙二醇",
                 "热乙二醇",
+                "冷乙二醇",
             ],
             "外部接口": [
                 "柴油",
                 "天然气",
                 "氢气",
                 "电",
+                "热水",
                 "自来水",
                 "冷水",
-                "热水",
                 "蒸汽",
                 "烟气",
                 "导热油",
-                "冷乙二醇",
                 "冰乙二醇",
                 "热乙二醇",
+                "冷乙二醇",
             ],
         },
     },
@@ -645,223 +672,415 @@ deviceTypeToTypeInfo = {
 
 port_verifier_lookup_table = {
     "电负荷": {
-        "电接口": lambda conds: ("input" in conds or "any" in conds),
+        "电接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 电接口, 电负荷)"
+        ),
     },
     "光伏发电": {
-        "电接口": lambda conds: ("idle" in conds or "any" in conds),
+        "电接口": lambda conds: logFailedRule(
+            "idle" in conds or "any" in conds, "#0 (port, 电接口, 光伏发电)"
+        ),
     },
     "风力发电": {
-        "电接口": lambda conds: ("idle" in conds or "any" in conds),
+        "电接口": lambda conds: logFailedRule(
+            "idle" in conds or "any" in conds, "#0 (port, 电接口, 风力发电)"
+        ),
     },
     "锂电池": {
-        "电接口": lambda conds: ("input" in conds or "any" in conds),
+        "电接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 电接口, 锂电池)"
+        ),
     },
     "冷负荷": {
-        "冷源接口": lambda conds: ("input" in conds or "any" in conds),
+        "冷源接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 冷源接口, 冷负荷)"
+        ),
     },
     "热负荷": {
-        "热源接口": lambda conds: ("input" in conds or "any" in conds),
+        "热源接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 热源接口, 热负荷)"
+        ),
     },
     "蒸汽负荷": {
-        "蒸汽接口": lambda conds: ("input" in conds or "any" in conds),
+        "蒸汽接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 蒸汽接口, 蒸汽负荷)"
+        ),
     },
     "氢负荷": {
-        "氢气接口": lambda conds: ("input" in conds or "any" in conds),
+        "氢气接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 氢气接口, 氢负荷)"
+        ),
     },
     "水蓄能": {
-        "蓄热接口": lambda conds: ("input" in conds or "any" in conds)
-        or (set(conds).difference({"idle", "any"}) == set()),
-        "蓄冷接口": lambda conds: ("input" in conds or "any" in conds)
-        or (set(conds).difference({"idle", "any"}) == set()),
+        "蓄热接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 蓄热接口, 水蓄能)"
+        )
+        or logFailedRule(
+            set(conds).difference({"idle", "any"}) == set(), "#1 (port, 蓄热接口, 水蓄能)"
+        ),
+        "蓄冷接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 蓄冷接口, 水蓄能)"
+        )
+        or logFailedRule(
+            set(conds).difference({"idle", "any"}) == set(), "#1 (port, 蓄冷接口, 水蓄能)"
+        ),
     },
     "蓄冰槽": {
-        "蓄冰接口": lambda conds: ("input" in conds or "any" in conds)
-        or (set(conds).difference({"idle", "any"}) == set()),
+        "蓄冰接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 蓄冰接口, 蓄冰槽)"
+        )
+        or logFailedRule(
+            set(conds).difference({"idle", "any"}) == set(), "#1 (port, 蓄冰接口, 蓄冰槽)"
+        ),
     },
     "储氢罐": {
-        "储氢接口": lambda conds: ("input" in conds or "any" in conds)
-        or (set(conds).difference({"idle", "any"}) == set()),
+        "储氢接口": lambda conds: logFailedRule(
+            "input" in conds or "any" in conds, "#0 (port, 储氢接口, 储氢罐)"
+        )
+        or logFailedRule(
+            set(conds).difference({"idle", "any"}) == set(), "#1 (port, 储氢接口, 储氢罐)"
+        ),
     },
 }
 
 conjugate_port_verifier_constructor_lookup_table = {
     "柴油": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("燃料接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("燃料接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (燃料接口), 柴油)",
+            )
+        }.items()
     },
     "电负荷": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("电接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("电接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (电接口), 电负荷)",
+            )
+        }.items()
     },
     "光伏发电": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("电接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("电接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (电接口), 光伏发电)",
+            )
+        }.items()
     },
     "风力发电": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("电接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("电接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (电接口), 风力发电)",
+            )
+        }.items()
     },
     "柴油发电": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
-            ),
-            ("燃料接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
-            ),
+            ("燃料接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (燃料接口, 电接口), 柴油发电)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#1 (conjugate, (燃料接口, 电接口), 柴油发电)",
+            )
         }.items()
     },
     "锂电池": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("电接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("电接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (电接口), 锂电池)",
+            )
+        }.items()
     },
     "变压器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (电输出, 电输入), 变压器)",
             ),
-            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电输入, 电输出), 变压器)",
             ),
         }.items()
     },
     "双向变压器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电输出, 电输入), 双向变压器)",
             )
-            and (all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True)
-            and (sum([int(cond1 in ["input"]), int(cond0 in ["input"])]) <= 1),
-            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            and logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#1 (conjugate, (电输出, 电输入), 双向变压器)",
+            )
+            and logFailedRule(
+                sum([int(cond1 in ["input"]), int(cond0 in ["input"])]) <= 1,
+                "#2 (conjugate, (电输出, 电输入), 双向变压器)",
+            ),
+            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电输入, 电输出), 双向变压器)",
             ),
         }.items()
     },
     "变流器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (电输出, 电输入), 变流器)",
             ),
-            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电输入, 电输出), 变流器)",
             ),
         }.items()
     },
     "双向变流器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("储能端", "线路端"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("储能端", "线路端"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (储能端, 线路端), 双向变流器)",
             )
-            and (all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True)
-            and (sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1)
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#1 (conjugate, (储能端, 线路端), 双向变流器)",
+            )
+            and logFailedRule(
+                sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1,
+                "#2 (conjugate, (储能端, 线路端), 双向变流器)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#3 (conjugate, (储能端, 线路端), 双向变流器)",
+            )
+        }.items()
+    },
+    "传输线": lambda port_kind_to_port_name: {
+        tuple([port_kind_to_port_name[it] for it in k]): v
+        for k, v in {
+            ("电输出", "电输入"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电输出, 电输入), 传输线)",
+            )
+            and logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#1 (conjugate, (电输出, 电输入), 传输线)",
+            )
+            and logFailedRule(
+                sum([int(cond1 in ["input"]), int(cond0 in ["input"])]) <= 1,
+                "#2 (conjugate, (电输出, 电输入), 传输线)",
+            ),
+            ("电输入", "电输出"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电输入, 电输出), 传输线)",
+            ),
         }.items()
     },
     "市政自来水": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("水接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("水接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (水接口), 市政自来水)",
+            )
+        }.items()
     },
     "天然气": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("燃料接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("燃料接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (燃料接口), 天然气)",
+            )
+        }.items()
     },
     "电网": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("电接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("电接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (电接口), 电网)",
+            )
+        }.items()
     },
     "氢气": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("氢气接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("氢气接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (氢气接口), 氢气)",
+            )
+        }.items()
     },
     "冷负荷": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("冷源接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("冷源接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (冷源接口), 冷负荷)",
+            )
+        }.items()
     },
     "热负荷": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("热源接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("热源接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (热源接口), 热负荷)",
+            )
+        }.items()
     },
     "蒸汽负荷": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("蒸汽接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("蒸汽接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (蒸汽接口), 蒸汽负荷)",
+            )
+        }.items()
     },
     "氢负荷": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("氢气接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("氢气接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (氢气接口), 氢负荷)",
+            )
+        }.items()
     },
     "燃气发电机": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "缸套水余热接口",
-                "电接口",
-                "燃料接口",
                 "高温烟气余热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "缸套水余热接口",
+                "燃料接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 all(
                     [
                         cond2 in ["any", "input"],
-                        cond3 in ["any", "output"],
+                        cond0 in ["any", "output"],
+                        cond1 in ["any", "output"],
+                    ]
+                )
+                if cond3 in ["output"]
+                else True,
+                "#0 (conjugate, (高温烟气余热接口, 缸套水余热接口, 燃料接口, 电接口), 燃气发电机)",
+            ),
+            (
+                "缸套水余热接口",
+                "高温烟气余热接口",
+                "电接口",
+                "燃料接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
+                all(
+                    [
+                        cond3 in ["any", "input"],
+                        cond2 in ["any", "output"],
                         cond0 in ["any", "output"],
                     ]
                 )
                 if cond1 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (缸套水余热接口, 高温烟气余热接口, 电接口, 燃料接口), 燃气发电机)",
             ),
             (
-                "电接口",
-                "燃料接口",
                 "高温烟气余热接口",
                 "缸套水余热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all(
-                    [
-                        cond1 in ["any", "input"],
-                        cond0 in ["any", "output"],
-                        cond3 in ["any", "output"],
-                    ]
-                )
-                if cond2 in ["output"]
-                else True
-            ),
-            (
-                "缸套水余热接口",
-                "燃料接口",
                 "电接口",
-                "高温烟气余热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "燃料接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 all(
                     [
-                        cond1 in ["any", "input"],
+                        cond3 in ["any", "input"],
                         cond2 in ["any", "output"],
-                        cond3 in ["any", "output"],
+                        cond0 in ["any", "output"],
                     ]
                 )
-                if cond0 in ["output"]
-                else True
+                if cond1 in ["output"]
+                else True,
+                "#0 (conjugate, (高温烟气余热接口, 缸套水余热接口, 电接口, 燃料接口), 燃气发电机)",
             ),
             (
                 "燃料接口",
                 "电接口",
                 "高温烟气余热接口",
                 "缸套水余热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all([etype0 != "any", etype1 != "any"])
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (燃料接口, 电接口, 高温烟气余热接口, 缸套水余热接口), 燃气发电机)",
             ),
         }.items()
     },
     "蒸汽轮机": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (蒸汽接口, 电接口), 蒸汽轮机)",
             )
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#1 (conjugate, (蒸汽接口, 电接口), 蒸汽轮机)",
+            )
         }.items()
     },
     "氢燃料电池": lambda port_kind_to_port_name: {
@@ -869,103 +1088,146 @@ conjugate_port_verifier_constructor_lookup_table = {
         for k, v in {
             (
                 "氢气接口",
-                "设备余热接口",
                 "电接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 in ["any", "input"], cond1 in ["any", "output"]])
-                if cond2 in ["output"]
-                else True
-            )
-            and (
+                "设备余热接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond0 in ["any", "input"], cond2 in ["any", "output"]])
                 if cond1 in ["output"]
-                else True
-            ),
-            (
-                "氢气接口",
-                "电接口",
-                "设备余热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any"])
-            ),
+                else True,
+                "#0 (conjugate, (氢气接口, 电接口, 设备余热接口), 氢燃料电池)",
+            )
+            and logFailedRule(
+                all([cond0 in ["any", "input"], cond1 in ["any", "output"]])
+                if cond2 in ["output"]
+                else True,
+                "#1 (conjugate, (氢气接口, 电接口, 设备余热接口), 氢燃料电池)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#2 (conjugate, (氢气接口, 电接口, 设备余热接口), 氢燃料电池)",
+            )
         }.items()
     },
     "平板太阳能": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("热接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("热接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (热接口), 平板太阳能)",
+            )
+        }.items()
     },
     "槽式太阳能": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("热接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("热接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (热接口), 槽式太阳能)",
+            )
+        }.items()
     },
     "余热热水锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("烟气接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
-            )
-            and (all([etype0 != "any", etype1 != "any"]))
+            ("制热接口", "烟气接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (制热接口, 烟气接口), 余热热水锅炉)",
+            ),
+            ("烟气接口", "制热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (烟气接口, 制热接口), 余热热水锅炉)",
+            ),
         }.items()
     },
     "余热蒸汽锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("蒸汽接口", "烟气接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("蒸汽接口", "烟气接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (蒸汽接口, 烟气接口), 余热蒸汽锅炉)",
             ),
-            ("烟气接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            ("烟气接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (烟气接口, 蒸汽接口), 余热蒸汽锅炉)",
             ),
         }.items()
     },
     "浅层地热井": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "热源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (热源接口, 电接口), 浅层地热井)",
             ),
-            ("电接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("冷源接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (冷源接口, 电接口), 浅层地热井)",
             ),
-            ("热源接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 in ["output"]), int(cond0 in ["output"])]) <= 1
+            ("冷源接口", "热源接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond0 in ["output"]), int(cond1 in ["output"])]) <= 1,
+                "#0 (conjugate, (冷源接口, 热源接口), 浅层地热井)",
             ),
             (
                 "电接口",
                 "冷源接口",
                 "热源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口), 浅层地热井)",
             ),
         }.items()
     },
     "中深层地热井": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "热源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
-            )
-            and (all([etype0 != "any", etype1 != "any"]))
+            ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (热源接口, 电接口), 中深层地热井)",
+            ),
+            ("电接口", "热源接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电接口, 热源接口), 中深层地热井)",
+            ),
         }.items()
     },
     "地表水源": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("冷源接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (冷源接口, 电接口), 地表水源)",
             ),
-            ("电接口", "热源接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("热源接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (热源接口, 电接口), 地表水源)",
             ),
-            ("热源接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 in ["output"]), int(cond0 in ["output"])]) <= 1
+            ("冷源接口", "热源接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond0 in ["output"]), int(cond1 in ["output"])]) <= 1,
+                "#0 (conjugate, (冷源接口, 热源接口), 地表水源)",
             ),
             (
                 "电接口",
                 "冷源接口",
                 "热源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口), 地表水源)",
             ),
         }.items()
     },
@@ -974,80 +1236,96 @@ conjugate_port_verifier_constructor_lookup_table = {
         for k, v in {
             (
                 "水接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
-                if cond2 in ["output"]
-                else True
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond1 in ["output"]
+                else True,
+                "#0 (conjugate, (水接口, 冷源接口, 电接口), 水冷冷却塔)",
             ),
             (
                 "电接口",
                 "水接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (电接口, 水接口, 冷源接口), 水冷冷却塔)",
             ),
         }.items()
     },
     "余热热源": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("热源接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("热源接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (热源接口), 余热热源)",
+            )
+        }.items()
     },
     "浅层双源四工况热泵": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+                "电接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 浅层双源四工况热泵)",
             ),
             (
                 "蓄冷接口",
                 "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
                 if cond0 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (蓄冷接口, 电接口, 冷源接口), 浅层双源四工况热泵)",
+            ),
+            (
+                "制热接口",
+                "热源接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond0 in ["output"]
+                else True,
+                "#0 (conjugate, (制热接口, 热源接口, 电接口), 浅层双源四工况热泵)",
             ),
             (
                 "电接口",
                 "热源接口",
-                "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+                "蓄热接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
                 if cond2 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (电接口, 热源接口, 蓄热接口), 浅层双源四工况热泵)",
             ),
             (
-                "蓄热接口",
-                "电接口",
-                "热源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "蓄冷接口",
-                "制冷接口",
-                "蓄热接口",
                 "制热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "蓄冷接口",
+                "蓄热接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 sum(
                     [
-                        int(cond1 in ["output"]),
                         int(cond3 in ["output"]),
                         int(cond0 in ["output"]),
+                        int(cond1 in ["output"]),
                         int(cond2 in ["output"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (制热接口, 蓄冷接口, 蓄热接口, 制冷接口), 浅层双源四工况热泵)",
             ),
             (
                 "电接口",
@@ -1057,8 +1335,10 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "蓄冷接口",
                 "制热接口",
                 "蓄热接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, cond6, etype0, etype1, etype2, etype3, etype4, etype5, etype6: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, cond6, etype0, etype1, etype2, etype3, etype4, etype5, etype6: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [
                         etype0 != "any",
                         etype1 != "any",
@@ -1066,7 +1346,8 @@ conjugate_port_verifier_constructor_lookup_table = {
                         etype3 != "any",
                         etype5 != "any",
                     ]
-                )
+                ),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口, 制冷接口, 蓄冷接口, 制热接口, 蓄热接口), 浅层双源四工况热泵)",
             ),
         }.items()
     },
@@ -1074,56 +1355,61 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+                "电接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 中深层双源四工况热泵)",
             ),
             (
                 "蓄冷接口",
                 "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
                 if cond0 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (蓄冷接口, 电接口, 冷源接口), 中深层双源四工况热泵)",
+            ),
+            (
+                "制热接口",
+                "热源接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond0 in ["output"]
+                else True,
+                "#0 (conjugate, (制热接口, 热源接口, 电接口), 中深层双源四工况热泵)",
             ),
             (
                 "电接口",
                 "热源接口",
-                "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+                "蓄热接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
                 if cond2 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (电接口, 热源接口, 蓄热接口), 中深层双源四工况热泵)",
             ),
             (
-                "蓄热接口",
-                "电接口",
-                "热源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "蓄冷接口",
-                "制冷接口",
-                "蓄热接口",
                 "制热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "蓄冷接口",
+                "蓄热接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 sum(
                     [
-                        int(cond1 in ["output"]),
                         int(cond3 in ["output"]),
                         int(cond0 in ["output"]),
+                        int(cond1 in ["output"]),
                         int(cond2 in ["output"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (制热接口, 蓄冷接口, 蓄热接口, 制冷接口), 中深层双源四工况热泵)",
             ),
             (
                 "电接口",
@@ -1133,13 +1419,17 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "蓄冷接口",
                 "制热接口",
                 "蓄热接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, cond6, etype0, etype1, etype2, etype3, etype4, etype5, etype6: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, cond6, etype0, etype1, etype2, etype3, etype4, etype5, etype6: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [etype0 != "any", etype2 != "any", etype3 != "any", etype5 != "any"]
-                )
+                ),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口, 制冷接口, 蓄冷接口, 制热接口, 蓄热接口), 中深层双源四工况热泵)",
             ),
-            ("制冷接口", "冷源接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(it != "any") for it in [etype0, etype1]]) in [0, 2]
+            ("冷源接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(it != "any") for it in [etype0, etype1]]) in [0, 2],
+                "#0 (conjugate, (冷源接口, 制冷接口), 中深层双源四工况热泵)",
             ),
         }.items()
     },
@@ -1147,45 +1437,49 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
+                "冷源接口",
+                "电接口",
                 "制冷接口",
-                "电接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "制冰接口",
-                "电接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "电接口",
-                "热源接口",
-                "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
                 if cond2 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 浅层双源三工况热泵)",
             ),
             (
+                "冷源接口",
+                "电接口",
                 "制冰接口",
-                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冰接口), 浅层双源三工况热泵)",
+            ),
+            (
                 "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+                "热源接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond0 in ["output"]
+                else True,
+                "#0 (conjugate, (制热接口, 热源接口, 电接口), 浅层双源三工况热泵)",
+            ),
+            (
+                "制热接口",
+                "制冷接口",
+                "制冰接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 sum(
                     [
                         int(cond1 in ["output"]),
-                        int(cond2 in ["output"]),
                         int(cond0 in ["output"]),
+                        int(cond2 in ["output"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (制热接口, 制冷接口, 制冰接口), 浅层双源三工况热泵)",
             ),
             (
                 "电接口",
@@ -1194,8 +1488,10 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "制冷接口",
                 "制冰接口",
                 "制热接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, etype0, etype1, etype2, etype3, etype4, etype5: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, etype0, etype1, etype2, etype3, etype4, etype5: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [
                         etype0 != "any",
                         etype1 != "any",
@@ -1204,7 +1500,8 @@ conjugate_port_verifier_constructor_lookup_table = {
                         etype4 != "any",
                         etype5 != "any",
                     ]
-                )
+                ),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口, 制冷接口, 制冰接口, 制热接口), 浅层双源三工况热泵)",
             ),
         }.items()
     },
@@ -1212,45 +1509,49 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
+                "冷源接口",
+                "电接口",
                 "制冷接口",
-                "电接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "制冰接口",
-                "电接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
-                "电接口",
-                "热源接口",
-                "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
                 if cond2 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 中深层双源三工况热泵)",
             ),
             (
+                "冷源接口",
+                "电接口",
                 "制冰接口",
-                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冰接口), 中深层双源三工况热泵)",
+            ),
+            (
                 "制热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+                "热源接口",
+                "电接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond0 in ["output"]
+                else True,
+                "#0 (conjugate, (制热接口, 热源接口, 电接口), 中深层双源三工况热泵)",
+            ),
+            (
+                "制热接口",
+                "制冷接口",
+                "制冰接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 sum(
                     [
                         int(cond1 in ["output"]),
-                        int(cond2 in ["output"]),
                         int(cond0 in ["output"]),
+                        int(cond2 in ["output"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (制热接口, 制冷接口, 制冰接口), 中深层双源三工况热泵)",
             ),
             (
                 "电接口",
@@ -1259,8 +1560,10 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "制冷接口",
                 "制冰接口",
                 "制热接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, etype0, etype1, etype2, etype3, etype4, etype5: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, cond4, cond5, etype0, etype1, etype2, etype3, etype4, etype5: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [
                         etype0 != "any",
                         etype1 != "any",
@@ -1269,7 +1572,8 @@ conjugate_port_verifier_constructor_lookup_table = {
                         etype4 != "any",
                         etype5 != "any",
                     ]
-                )
+                ),
+                "#0 (conjugate, (电接口, 冷源接口, 热源接口, 制冷接口, 制冰接口, 制热接口), 中深层双源三工况热泵)",
             ),
         }.items()
     },
@@ -1277,33 +1581,39 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+                "电接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 水冷螺杆机)",
             ),
             (
                 "蓄冷接口",
                 "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
                 if cond0 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (蓄冷接口, 电接口, 冷源接口), 水冷螺杆机)",
             ),
-            ("蓄冷接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 in ["output"]), int(cond0 in ["output"])]) <= 1
+            ("蓄冷接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond1 in ["output"]), int(cond0 in ["output"])]) <= 1,
+                "#0 (conjugate, (蓄冷接口, 制冷接口), 水冷螺杆机)",
             ),
             (
                 "电接口",
                 "冷源接口",
                 "制冷接口",
                 "蓄冷接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (电接口, 冷源接口, 制冷接口, 蓄冷接口), 水冷螺杆机)",
             ),
         }.items()
     },
@@ -1311,77 +1621,94 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+                "电接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冷接口), 双工况水冷螺杆机组)",
             ),
             (
-                "制冰接口",
-                "电接口",
                 "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+                "电接口",
+                "制冰接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (冷源接口, 电接口, 制冰接口), 双工况水冷螺杆机组)",
             ),
-            ("制冰接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 in ["output"]), int(cond0 in ["output"])]) <= 1
+            ("制冷接口", "制冰接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond0 in ["output"]), int(cond1 in ["output"])]) <= 1,
+                "#0 (conjugate, (制冷接口, 制冰接口), 双工况水冷螺杆机组)",
             ),
             (
                 "电接口",
                 "冷源接口",
                 "制冷接口",
                 "制冰接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [etype0 != "any", etype1 != "any", etype2 != "any", etype3 != "any"]
-                )
+                ),
+                "#0 (conjugate, (电接口, 冷源接口, 制冷接口, 制冰接口), 双工况水冷螺杆机组)",
             ),
         }.items()
     },
     "吸收式燃气热泵": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
-            )
-            and (all([etype0 != "any", etype1 != "any"]))
+            ("制热接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (制热接口, 燃料接口), 吸收式燃气热泵)",
+            ),
+            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (燃料接口, 制热接口), 吸收式燃气热泵)",
+            ),
         }.items()
     },
     "空气源热泵": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("制冷接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("电接口", "制冷接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电接口, 制冷接口), 空气源热泵)",
             ),
-            ("蓄冷接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("蓄冷接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (蓄冷接口, 电接口), 空气源热泵)",
             ),
-            ("电接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("制热接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (制热接口, 电接口), 空气源热泵)",
             ),
-            ("蓄热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("电接口", "蓄热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电接口, 蓄热接口), 空气源热泵)",
             ),
             (
-                "蓄冷接口",
-                "制冷接口",
-                "蓄热接口",
                 "制热接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "蓄冷接口",
+                "蓄热接口",
+                "制冷接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 sum(
                     [
-                        int(cond1 in ["output"]),
                         int(cond3 in ["output"]),
                         int(cond0 in ["output"]),
+                        int(cond1 in ["output"]),
                         int(cond2 in ["output"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (制热接口, 蓄冷接口, 蓄热接口, 制冷接口), 空气源热泵)",
             ),
             (
                 "电接口",
@@ -1389,8 +1716,11 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "蓄冷接口",
                 "制热接口",
                 "蓄热接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, etype0, etype1, etype2, etype3, etype4: (
-                all([etype0 != "any", etype1 != "any", etype3 != "any"])
+            ): lambda cond0, cond1, cond2, cond3, cond4, etype0, etype1, etype2, etype3, etype4: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype3 != "any"]),
+                "#0 (conjugate, (电接口, 制冷接口, 蓄冷接口, 制热接口, 蓄热接口), 空气源热泵)",
             ),
         }.items()
     },
@@ -1398,206 +1728,282 @@ conjugate_port_verifier_constructor_lookup_table = {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "蒸汽接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
                 "蒸汽接口",
                 "冷源接口",
                 "制冷接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
-            ),
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (蒸汽接口, 冷源接口, 制冷接口), 蒸汽溴化锂)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#1 (conjugate, (蒸汽接口, 冷源接口, 制冷接口), 蒸汽溴化锂)",
+            )
         }.items()
     },
     "热水溴化锂": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "制冷接口",
-                "热水接口",
-                "冷源接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            ),
-            (
                 "热水接口",
                 "冷源接口",
                 "制冷接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
-            ),
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#0 (conjugate, (热水接口, 冷源接口, 制冷接口), 热水溴化锂)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#1 (conjugate, (热水接口, 冷源接口, 制冷接口), 热水溴化锂)",
+            )
         }.items()
     },
     "电热水锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("电接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
-            )
-            and (all([etype0 != "any", etype1 != "any"]))
+            ("制热接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (制热接口, 电接口), 电热水锅炉)",
+            ),
+            ("电接口", "制热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电接口, 制热接口), 电热水锅炉)",
+            ),
         }.items()
     },
     "电蒸汽锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("蒸汽接口", "电接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (蒸汽接口, 电接口), 电蒸汽锅炉)",
             ),
-            ("电接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            ("电接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电接口, 蒸汽接口), 电蒸汽锅炉)",
             ),
         }.items()
     },
     "天然气热水锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
-            )
-            and (all([etype0 != "any", etype1 != "any"]))
+            ("制热接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (制热接口, 燃料接口), 天然气热水锅炉)",
+            ),
+            ("燃料接口", "制热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (燃料接口, 制热接口), 天然气热水锅炉)",
+            ),
         }.items()
     },
     "天然气蒸汽锅炉": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("蒸汽接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("蒸汽接口", "燃料接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (蒸汽接口, 燃料接口), 天然气蒸汽锅炉)",
             ),
-            ("燃料接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            ("燃料接口", "蒸汽接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (燃料接口, 蒸汽接口), 天然气蒸汽锅炉)",
             ),
         }.items()
     },
     "电解槽": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("设备余热接口", "电接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("电接口", "设备余热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电接口, 设备余热接口), 电解槽)",
             ),
-            ("电接口", "制氢接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("电接口", "制氢接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (电接口, 制氢接口), 电解槽)",
             ),
             (
                 "电接口",
                 "制氢接口",
                 "设备余热接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any"])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (电接口, 制氢接口, 设备余热接口), 电解槽)",
             ),
         }.items()
     },
     "水蓄能": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("蓄冷接口", "蓄热接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond1 not in ["idle"]), int(cond0 not in ["idle"])]) <= 1
+            ("蓄冷接口", "蓄热接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond1 not in ["idle"]), int(cond0 not in ["idle"])]) <= 1,
+                "#0 (conjugate, (蓄冷接口, 蓄热接口), 水蓄能)",
             )
-            and (sum([int(it != "any") for it in [etype0, etype1]]) >= 1),
-            ("蓄热接口", "蓄冷接口"): lambda cond0, cond1, etype0, etype1: (
-                all([etype0 != "any", etype1 != "any"])
+            and logFailedRule(
+                sum([int(it != "any") for it in [etype0, etype1]]) >= 1,
+                "#1 (conjugate, (蓄冷接口, 蓄热接口), 水蓄能)",
+            ),
+            ("蓄热接口", "蓄冷接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#0 (conjugate, (蓄热接口, 蓄冷接口), 水蓄能)",
             ),
         }.items()
     },
     "蓄冰槽": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("蓄冰接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("蓄冰接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (蓄冰接口), 蓄冰槽)",
+            )
+        }.items()
     },
     "储氢罐": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
-        for k, v in {("储氢接口",): lambda cond0, etype0: (all([etype0 != "any"]))}.items()
+        for k, v in {
+            ("储氢接口",): lambda cond0, etype0: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any"]),
+                "#0 (conjugate, (储氢接口), 储氢罐)",
+            )
+        }.items()
     },
     "输水管道": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
                 "输入接口",
+                "电接口",
+                "输出接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond0 in ["output"]
+                else True,
+                "#0 (conjugate, (输入接口, 电接口, 输出接口), 输水管道)",
+            )
+            and logFailedRule(
+                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#1 (conjugate, (输入接口, 电接口, 输出接口), 输水管道)",
+            ),
+            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1,
+                "#0 (conjugate, (输入接口, 输出接口), 输水管道)",
+            )
+            and logFailedRule(
+                all(["冷" in it or it == "any" for it in [etype0, etype1]])
+                or all(["热" in it or it == "any" for it in [etype0, etype1]]),
+                "#1 (conjugate, (输入接口, 输出接口), 输水管道)",
+            ),
+            (
+                "输入接口",
                 "输出接口",
                 "电接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond1 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
-            )
-            and (
-                all([cond0 in ["any", "input"], cond2 in ["any", "input"]])
-                if cond1 in ["output"]
-                else True
-            )
-            and (all([etype0 != "any", etype1 != "any", etype2 != "any"])),
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1
-            )
-            and (
-                all(["冷" in it or it == "any" for it in [etype0, etype1]])
-                or all(["热" in it or it == "any" for it in [etype0, etype1]])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (输入接口, 输出接口, 电接口), 输水管道)",
             ),
         }.items()
     },
     "蒸汽管道": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (输入接口, 输出接口), 蒸汽管道)",
             )
-            and (all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True)
-            and (sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1)
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#1 (conjugate, (输入接口, 输出接口), 蒸汽管道)",
+            )
+            and logFailedRule(
+                sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1,
+                "#2 (conjugate, (输入接口, 输出接口), 蒸汽管道)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#3 (conjugate, (输入接口, 输出接口), 蒸汽管道)",
+            )
         }.items()
     },
     "复合输水管道": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
             (
-                "冷输出接口",
                 "电接口",
                 "冷输入接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
-                if cond2 in ["output"]
-                else True
+                "冷输出接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond2 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond1 in ["output"]
+                else True,
+                "#0 (conjugate, (电接口, 冷输入接口, 冷输出接口), 复合输水管道)",
             )
-            and (
-                all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
-                if cond0 in ["output"]
-                else True
+            and logFailedRule(
+                all([cond1 in ["any", "input"], cond0 in ["any", "input"]])
+                if cond2 in ["output"]
+                else True,
+                "#1 (conjugate, (电接口, 冷输入接口, 冷输出接口), 复合输水管道)",
             ),
             (
                 "热输出接口",
                 "电接口",
                 "热输入接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
                 all([cond0 in ["any", "input"], cond1 in ["any", "input"]])
                 if cond2 in ["output"]
-                else True
+                else True,
+                "#0 (conjugate, (热输出接口, 电接口, 热输入接口), 复合输水管道)",
             )
-            and (
+            and logFailedRule(
                 all([cond2 in ["any", "input"], cond1 in ["any", "input"]])
                 if cond0 in ["output"]
-                else True
+                else True,
+                "#1 (conjugate, (热输出接口, 电接口, 热输入接口), 复合输水管道)",
             ),
             (
-                "冷输出接口",
                 "热输出接口",
                 "冷输入接口",
                 "热输入接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "冷输出接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 sum(
                     [
+                        int(cond1 in ["input"]),
                         int(cond2 in ["input"]),
                         int(cond3 in ["input"]),
                         int(cond0 in ["input"]),
-                        int(cond1 in ["input"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (热输出接口, 冷输入接口, 热输入接口, 冷输出接口), 复合输水管道)",
             ),
             (
                 "冷输入接口",
@@ -1605,8 +2011,10 @@ conjugate_port_verifier_constructor_lookup_table = {
                 "冷输出接口",
                 "热输出接口",
                 "电接口",
-            ): lambda cond0, cond1, cond2, cond3, cond4, etype0, etype1, etype2, etype3, etype4: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, cond4, etype0, etype1, etype2, etype3, etype4: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [
                         etype0 != "any",
                         etype1 != "any",
@@ -1614,81 +2022,122 @@ conjugate_port_verifier_constructor_lookup_table = {
                         etype3 != "any",
                         etype4 != "any",
                     ]
-                )
+                ),
+                "#0 (conjugate, (冷输入接口, 热输入接口, 冷输出接口, 热输出接口, 电接口), 复合输水管道)",
             ),
         }.items()
     },
     "水水换热器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True
+            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (输入接口, 输出接口), 水水换热器)",
             )
-            and (all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True)
-            and (sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1)
-            and (
+            and logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#1 (conjugate, (输入接口, 输出接口), 水水换热器)",
+            )
+            and logFailedRule(
+                sum([int(cond0 in ["input"]), int(cond1 in ["input"])]) <= 1,
+                "#2 (conjugate, (输入接口, 输出接口), 水水换热器)",
+            )
+            and logFailedRule(
                 all(["冷" in it or it == "any" for it in [etype0, etype1]])
-                or all(["热" in it or it == "any" for it in [etype0, etype1]])
+                or all(["热" in it or it == "any" for it in [etype0, etype1]]),
+                "#3 (conjugate, (输入接口, 输出接口), 水水换热器)",
             )
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#4 (conjugate, (输入接口, 输出接口), 水水换热器)",
+            )
         }.items()
     },
     "复合水水换热器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("冷输出接口", "冷输入接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("冷输入接口", "冷输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#0 (conjugate, (冷输入接口, 冷输出接口), 复合水水换热器)",
             )
-            and (all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True),
-            ("热输出接口", "热输入接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            and logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#1 (conjugate, (冷输入接口, 冷输出接口), 复合水水换热器)",
+            ),
+            ("热输出接口", "热输入接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (热输出接口, 热输入接口), 复合水水换热器)",
             )
-            and (all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True),
+            and logFailedRule(
+                all([cond1 in ["any", "input"]]) if cond0 in ["output"] else True,
+                "#1 (conjugate, (热输出接口, 热输入接口), 复合水水换热器)",
+            ),
             (
-                "冷输出接口",
                 "热输出接口",
                 "冷输入接口",
                 "热输入接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
+                "冷输出接口",
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
                 sum(
                     [
+                        int(cond1 in ["input"]),
                         int(cond2 in ["input"]),
                         int(cond3 in ["input"]),
                         int(cond0 in ["input"]),
-                        int(cond1 in ["input"]),
                     ]
                 )
-                <= 1
+                <= 1,
+                "#0 (conjugate, (热输出接口, 冷输入接口, 热输入接口, 冷输出接口), 复合水水换热器)",
             ),
             (
                 "冷输入接口",
                 "热输入接口",
                 "冷输出接口",
                 "热输出接口",
-            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: (
-                all(
+            ): lambda cond0, cond1, cond2, cond3, etype0, etype1, etype2, etype3: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all(
                     [etype0 != "any", etype1 != "any", etype2 != "any", etype3 != "any"]
-                )
+                ),
+                "#0 (conjugate, (冷输入接口, 热输入接口, 冷输出接口, 热输出接口), 复合水水换热器)",
             ),
         }.items()
     },
     "气水换热器": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True
+            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#0 (conjugate, (输入接口, 输出接口), 气水换热器)",
             )
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#1 (conjugate, (输入接口, 输出接口), 气水换热器)",
+            )
         }.items()
     },
     "单向线": lambda port_kind_to_port_name: {
         tuple([port_kind_to_port_name[it] for it in k]): v
         for k, v in {
-            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: (
-                all([cond1 in ["any", "output"]]) if cond0 in ["input"] else True
+            ("输入接口", "输出接口"): lambda cond0, cond1, etype0, etype1: logFailedRule(
+                all([cond1 in ["any", "output"]]) if cond0 in ["input"] else True,
+                "#0 (conjugate, (输入接口, 输出接口), 单向线)",
             )
-            and (all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True)
-            and (all([etype0 != "any", etype1 != "any"]))
+            and logFailedRule(
+                all([cond0 in ["any", "input"]]) if cond1 in ["output"] else True,
+                "#1 (conjugate, (输入接口, 输出接口), 单向线)",
+            )
+            and logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any"]),
+                "#2 (conjugate, (输入接口, 输出接口), 单向线)",
+            )
         }.items()
     },
     "互斥元件": lambda port_kind_to_port_name: {
@@ -1696,39 +2145,47 @@ conjugate_port_verifier_constructor_lookup_table = {
         for k, v in {
             (
                 "互斥接口B",
-                "外部接口",
                 "互斥接口A",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([cond0 in ["any", "idle"], cond1 in ["any", "output"]])
-                if cond2 in ["input"]
-                else True
+                "外部接口",
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                all([cond0 in ["any", "idle"], cond2 in ["any", "output"]])
+                if cond1 in ["input"]
+                else True,
+                "#0 (conjugate, (互斥接口B, 互斥接口A, 外部接口), 互斥元件)",
             )
-            and (
-                all([cond0 in ["any", "idle"], cond1 in ["any", "input"]])
-                if cond2 in ["output"]
-                else True
+            and logFailedRule(
+                all([cond0 in ["any", "idle"], cond2 in ["any", "input"]])
+                if cond1 in ["output"]
+                else True,
+                "#1 (conjugate, (互斥接口B, 互斥接口A, 外部接口), 互斥元件)",
             )
-            and (
-                all([cond2 in ["any", "idle"], cond1 in ["any", "output"]])
+            and logFailedRule(
+                all([cond1 in ["any", "idle"], cond2 in ["any", "output"]])
                 if cond0 in ["input"]
-                else True
+                else True,
+                "#2 (conjugate, (互斥接口B, 互斥接口A, 外部接口), 互斥元件)",
             )
-            and (
-                all([cond2 in ["any", "idle"], cond1 in ["any", "input"]])
+            and logFailedRule(
+                all([cond1 in ["any", "idle"], cond2 in ["any", "input"]])
                 if cond0 in ["output"]
-                else True
+                else True,
+                "#3 (conjugate, (互斥接口B, 互斥接口A, 外部接口), 互斥元件)",
             )
-            and (
-                all([cond2 in ["any", "idle"], cond0 in ["any", "idle"]])
-                if cond1 in ["idle"]
-                else True
+            and logFailedRule(
+                all([cond1 in ["any", "idle"], cond0 in ["any", "idle"]])
+                if cond2 in ["idle"]
+                else True,
+                "#4 (conjugate, (互斥接口B, 互斥接口A, 外部接口), 互斥元件)",
             ),
             (
                 "互斥接口A",
                 "互斥接口B",
                 "外部接口",
-            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: (
-                all([etype0 != "any", etype1 != "any", etype2 != "any"])
+            ): lambda cond0, cond1, cond2, etype0, etype1, etype2: logFailedRule(
+                True
+                if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION
+                else all([etype0 != "any", etype1 != "any", etype2 != "any"]),
+                "#0 (conjugate, (互斥接口A, 互斥接口B, 外部接口), 互斥元件)",
             ),
         }.items()
     },
@@ -2162,6 +2619,10 @@ def verify_topology_status_dict(
     banner("verifying")
 
     verified_topology_status_dict = {}
+
+    cached_conjugate_verifiers = {}
+    cached_port_verifiers = {}
+
     for topo_status_index, (adder_status, topo_status) in enumerate(
         topology_status_dict.items()
     ):
@@ -2183,6 +2644,7 @@ def verify_topology_status_dict(
                 if port_name not in topo_status_frame_flatten.keys():
                     topo_status_frame_flatten[port_name] = set()
                 _conjugate_verified = True
+                cached_quit = False
                 with ErrorManager(suppress_error=True) as em:
                     for (
                         conjugate_ports,
@@ -2197,29 +2659,56 @@ def verify_topology_status_dict(
                             port_name_to_energy_type.get(port_name, UNKNOWN)
                             for port_name in conjugate_ports
                         ]
-                        conjugate_verified = conjugate_verifier(*conds, *energytypes)
+                        cache_key = (
+                            tuple([portNameTransformer(cp) for cp in conjugate_ports]),
+                            tuple(conds),
+                            tuple(energytypes),
+                        )
+                        cached = False
+                        if cache_key in cached_conjugate_verifiers.keys():
+                            cached = True
+                            conjugate_verified = cached_conjugate_verifiers[cache_key]
+                        else:
+                            conjugate_verified = conjugate_verifier(
+                                *conds, *energytypes
+                            )
+                            cached_conjugate_verifiers[cache_key] = conjugate_verified
                         # conjugate_verified = conjugate_verifier(*conds)
                         if not conjugate_verified:
-                            em.append(
-                                f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
-                            )
-                            em.append("conds: " + repr(conds))
-                            em.append("energy types: " + repr(energytypes))
-                            em.append("-" * 60)
+                            if not cached:
+                                em.append("-" * 60)
+                                em.append(
+                                    f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index} (calculated)"
+                                )
+                                em.append("conds: " + repr(conds))
+                                em.append("energy types: " + repr(energytypes))
+                            if not cached_quit:
+                                cached_quit = True
                             if _conjugate_verified:
                                 _conjugate_verified = False
+                                break  # to save processing power
                 if _conjugate_verified:
                     topo_status_frame_flatten[port_name].add(port_status)
                 else:
-                    logger_print(
-                        f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
-                    )
+                    if not cached_quit:
+                        logger_print(
+                            f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
+                        )
         for port_name, verifier in port_verifiers.items():
-            conds = topo_status_frame_flatten.get(port_name, "unknown")
-            verified = verifier(conds)
+            conds = topo_status_frame_flatten.get(port_name, [UNKNOWN])
+            cached = False
+            cache_key = (portNameTransformer(port_name), tuple(conds))
+            if cache_key in cached_port_verifiers.keys():
+                verified = cached_port_verifiers[cache_key]
+                cached = True
+            else:
+                verified = verifier(conds)
+                cached_port_verifiers[cache_key] = verified
             port_verified[port_name] = verified
             if not verified:
-                logger_print(f"verifier failed for port '{port_name}'")
+                logger_print(
+                    f"verifier failed for port '{port_name}', conds: {repr(conds)} (calculated)"
+                )
 
         all_ports_verified = all(port_verified.values())
         all_conjugate_ports_verified = all(conjugate_port_verified.values())
@@ -2243,7 +2732,7 @@ def verify_topology_status_dict(
         banner(f"processed topo status #{topo_status_index}")
 
     banner("verified topo status")
-    logger_print(verified_topology_status_dict)
+    # if you want verbosity...
     return verified_topology_status_dict
 
 

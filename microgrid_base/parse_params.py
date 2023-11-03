@@ -1,4 +1,5 @@
 from log_utils import logger_print
+
 # FLAGS = {"XLSX": False, "CSV": True}
 import os
 
@@ -7,6 +8,8 @@ fpath_under_type_utils_resdir = lambda fpath: os.path.join(type_utils_resdir, fp
 
 TYPE_UTILS_MICROGRID_PORTS = fpath_under_type_utils_resdir("microgrid_ports")
 TYPE_UTILS_EXTRA_PORTS = fpath_under_type_utils_resdir("extra_ports")
+
+port_type_def_excel_name = "设备接口_11_3"
 
 if __name__ == "__main__":
     FLAGS = {"XLSX": True, "CSV": True}
@@ -17,13 +20,13 @@ if __name__ == "__main__":
         ("设备信息库各参数_23_10_11_from_7_24", "基础参数", "device_params_intermediate"),
         # ("设备信息库各参数_23_7_24", "基础参数", "device_params_intermediate"),
         (
-            fpath_under_type_utils_resdir("设备接口_10_12"),
+            fpath_under_type_utils_resdir(port_type_def_excel_name),
             # fpath_under_type_utils_resdir("设备接口_10_11"),
             "微电网接口",
             TYPE_UTILS_MICROGRID_PORTS,
         ),
         (
-            fpath_under_type_utils_resdir("设备接口_10_12"),
+            fpath_under_type_utils_resdir(port_type_def_excel_name),
             # fpath_under_type_utils_resdir("设备接口_10_11"),
             "新增设备接口",
             TYPE_UTILS_EXTRA_PORTS,
@@ -50,9 +53,10 @@ if __name__ == "__main__":
             type_utils_parser = False
             if filepath.startswith(type_utils_resdir):
                 type_utils_parser = True
-            main_parser(f"{filepath}.xlsx", sheet_name, f"{output_path}.json",type_utils_parser)
+            main_parser(
+                f"{filepath}.xlsx", sheet_name, f"{output_path}.json", type_utils_parser
+            )
             logger_print("____")
-
 
     if FLAGS["CSV"]:
         for filepath, output_path in csv_worklist:

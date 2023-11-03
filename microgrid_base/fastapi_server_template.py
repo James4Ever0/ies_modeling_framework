@@ -38,6 +38,7 @@ def logger_print(*args):  # override this.
 
 
 from config import *
+
 # import os
 
 # MOCK = ies_env.STATIC_MOCK
@@ -271,7 +272,8 @@ import uuid
     response_model=CalculationAsyncSubmitResult,
 )
 def calculate_async(
-    graph: EnergyFlowGraph if not (ies_env.FAILSAFE or ies_env.STATIC_MOCK) else dict, background_task: BackgroundTasks
+    graph: EnergyFlowGraph if not (ies_env.FAILSAFE or ies_env.STATIC_MOCK) else dict,
+    background_task: BackgroundTasks,
 ) -> CalculationAsyncSubmitResult:
     # use celery
     calculation_id = None
@@ -299,7 +301,8 @@ def calculate_async(
         if submit_result is not "success":
             submit_result = "success"
     return CalculationAsyncSubmitResult(
-        calculation_id=calculation_id, submit_result='success',
+        calculation_id=calculation_id,
+        submit_result="success",
     )
 
 
@@ -339,6 +342,7 @@ def get_calculation_state(calculation_id: str) -> CalculationStateResult:
 
 from log_utils import logger_traceback
 
+
 @remove_stale_tasks_decorator
 @app.get(
     "/get_calculation_result_async",
@@ -358,7 +362,10 @@ def get_calculation_result_async(calculation_id: str):
             if calculation_result is None:
                 if calculation_state == "FAILURE":
                     if ies_env.FAILSAFE:
-                        calculation_result, calculation_state = getStaticCalculationResultAndState()
+                        (
+                            calculation_result,
+                            calculation_state,
+                        ) = getStaticCalculationResultAndState()
                     else:
                         error_log = error_log_dict.get(calculation_id, None)
                         if error_log:
@@ -369,7 +376,10 @@ def get_calculation_result_async(calculation_id: str):
                 calculation_result = CalculationResult.parse_obj(calculation_result)
         except Exception as exc:
             if ies_env.FAILSAFE:
-                calculation_result, calculation_state = getStaticCalculationResultAndState()
+                (
+                    calculation_result,
+                    calculation_state,
+                ) = getStaticCalculationResultAndState()
                 logger_traceback()
             else:
                 raise exc
@@ -390,11 +400,11 @@ def get_calculation_result_async(calculation_id: str):
     #         plotList.sort(lambda x: x[0])
     #         calculation_result.paretoCurve = ParetoCurve(x=[e[0] for e in plotList],x_label='经济', y=[e[1] for e in plotList], y_label='环保')
 
-
     return CalculationAsyncResult(
         calculation_state=calculation_state,
         calculation_result=calculation_result,
     )
+
 
 def getStaticCalculationResultAndState():
     calculation_result = mock_calculation_result.copy()
@@ -433,8 +443,8 @@ def revoke_calculation(calculation_id: str):
             calculation_state = "NOT_CREATED"
 
     if ies_env.FAILSAFE:
-        if revoke_result is not 'success':
-            revoke_result = 'success'
+        if revoke_result is not "success":
+            revoke_result = "success"
         if calculation_state is not "REVOKED":
             calculation_state = "REVOKED"
     return RevokeResult(

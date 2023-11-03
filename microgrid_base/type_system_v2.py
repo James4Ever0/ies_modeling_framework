@@ -259,7 +259,7 @@ Unconnectable = Prefix("不可连接")
 
 
 # handle io to adder stuff.
-for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
+for io, wire_name, supertype in triplets_with_supertype(io_to_wire, length=2):
     start = IO(io)
     end = Connectable(wire_name)
     created = Unconnectable(IO(wire_name))
@@ -617,7 +617,6 @@ import matplotlib.pyplot as plt
 
 
 def plot_graph(G, figure_path: str, width=20, height=30, plot_only=False):
-
     plt.figure(figsize=(width, height))
 
     draw_options = {

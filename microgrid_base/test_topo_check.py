@@ -1,5 +1,6 @@
 import os
-os.environ['SKIP_ARGENV'] = 'True'
+
+os.environ["SKIP_ARGENV"] = "True"
 os.environ["DOTENV"] = ".test_topo_env"
 from log_utils import logger_print
 

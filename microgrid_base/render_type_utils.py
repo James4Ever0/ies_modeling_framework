@@ -15,6 +15,7 @@ UNKNOWN_REPR = repr(UNKNOWN)
 关联连接 = "关联连接"
 至少连接 = "至少连接"
 
+
 class AppendableDict(dict):
     def __init__(self, *args, **kwargs):
         super(AppendableDict, self).__init__(*args, **kwargs)
@@ -73,7 +74,7 @@ TYPE_UTILS_SPECIAL_PORTS_DATA = {
                 },
             },
             "rules": ["输入接口 进 -> 输出接口 出", "输出接口 出 -> 输入接口 进"],
-            "requirements": []
+            "requirements": [],
         },
         "互斥元件": {
             "ports": {
@@ -106,7 +107,7 @@ TYPE_UTILS_SPECIAL_PORTS_DATA = {
                 "互斥接口B 出 -> 互斥接口A 空闲; 外部接口 进",
                 "外部接口 空闲 -> 互斥接口A 空闲; 互斥接口B 空闲",
             ],
-            "requirements": []
+            "requirements": [],
         },
     }
 }
@@ -137,8 +138,7 @@ if __name__ == "__main__":
     必有工况转定义 = dict(
         一直不工作=f"set(conds).difference({{ 'idle', {UNKNOWN_REPR} }}) == set()",
         **{
-            k: f"{repr(v)} in conds or {UNKNOWN_REPR} in conds"
-            for k, v in 工况翻译.items()
+            k: f"{repr(v)} in conds or {UNKNOWN_REPR} in conds" for k, v in 工况翻译.items()
         },
     )
     make_param_list = lambda e: [e + str(i) for i in range(len(k))]
@@ -211,7 +211,8 @@ if __name__ == "__main__":
             connectivity_check_rule_content = ", ".join(
                 [f"{pn_et} != {UNKNOWN_REPR}" for pn_et in remained_et_params]
             )
-            v = f"all([{connectivity_check_rule_content}])"
+            v = f"True if ies_env.UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION else all([{connectivity_check_rule_content}])"
+            # v = f"all([{connectivity_check_rule_content}])"
         return v
 
     def parse_requirement(requirement, port_names):
@@ -223,7 +224,9 @@ if __name__ == "__main__":
         )
         exc = Exception("unknown header:", header, "content:", content)
         if header == 互斥:
-            v = ", ".join([f"int({makeRuleWithoutUnknown(c0, c1)})" for c0, c1 in content])
+            v = ", ".join(
+                [f"int({makeRuleWithoutUnknown(c0, c1)})" for c0, c1 in content]
+            )
             # v = ", ".join([f"int({makeRule(c0, c1)})" for c0, c1 in content])
             v = f"sum([{v}]) <= 1"
             v = replace_as_cond_or_etype(v, k, "cond")
@@ -365,7 +368,11 @@ if __name__ == "__main__":
                             cond_segment_list.append(cond_segment)
 
                     verifier_definition = " or ".join(
-                        [f"({cond_segment})" for cond_segment in cond_segment_list]
+                        [
+                            f"logFailedRule({cond_segment}, '#{_i} (port, {portName}, {devSubType})')"
+                            for _i, cond_segment in enumerate(cond_segment_list)
+                        ]
+                        # [f"({cond_segment})" for cond_segment in cond_segment_list]
                     )
 
                     if verifier_definition:
@@ -418,7 +425,13 @@ if __name__ == "__main__":
                     lambda_params = ", ".join(
                         make_param_list("cond") + make_param_list("etype")
                     )
-                    v = " and ".join([f"({_v})" for _v in v])
+                    v = " and ".join(
+                        [
+                            f"logFailedRule({_v}, '#{_i} (conjugate, ({', '.join(k)}), {devSubType})')"
+                            for _i, _v in enumerate(v)
+                        ]
+                    )
+                    # v = " and ".join([f"({_v})" for _v in v])
                     v = f"lambda {lambda_params}: {v}"
                     conjugate_verifiers[k] = v
 

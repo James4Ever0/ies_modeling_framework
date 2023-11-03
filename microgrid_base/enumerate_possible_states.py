@@ -2,10 +2,13 @@ from log_utils import logger_print
 
 import itertools
 
-def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames):
+
+def get_all_combinations(
+    portNameToPortPossibleStates, energyTypeToPortNames, adderNameToAdderPortNames
+):
     port_name_to_possible_energy_types = {}
 
-    for k,vlist in energyTypeToPortNames.items():
+    for k, vlist in energyTypeToPortNames.items():
         for v in vlist:
             if v not in port_name_to_possible_energy_types.keys():
                 port_name_to_possible_energy_types[v] = [k]
@@ -26,7 +29,9 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
 
     possible_simutaneous_adder_energy_types = []
 
-    possible_simutaneous_adder_energy_types = list(itertools.product(*adder_name_to_possible_adder_energy_types.values()))
+    possible_simutaneous_adder_energy_types = list(
+        itertools.product(*adder_name_to_possible_adder_energy_types.values())
+    )
 
     result = []
 
@@ -46,14 +51,16 @@ def get_all_combinations(portNameToPortPossibleStates, energyTypeToPortNames, ad
                 if aet in ppet:
                     ps = pps
                 else:
-                    assert 'idle' in pps
-                    ps = ['idle']
+                    assert "idle" in pps
+                    ps = ["idle"]
                 psl.append(ps)
             for elem in itertools.product(*psl):
-                if all([e == 'idle' for e in elem]) or ('input' in elem and 'output' in elem):
+                if all([e == "idle" for e in elem]) or (
+                    "input" in elem and "output" in elem
+                ):
                     sasp.append([aet, elem])
             aet_to_ps_l.append(sasp)
-            
+
         for elem in itertools.product(*aet_to_ps_l):
             simutaneous_state.append(elem)
         result.extend(simutaneous_state)

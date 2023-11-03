@@ -12,6 +12,7 @@ from log_utils import logger_print
 # output: multiple diagnostics
 # from pyomo.environ import *
 from pyomo_environ import *
+
 # from ies_optim import ModelWrapper
 from contextlib import contextmanager
 
@@ -43,10 +44,12 @@ IOUTerminationConditions = [
 
 from enum import auto
 from strenum import StrEnum
+
+
 class SolvedTestMode(StrEnum):
-    values_exist = auto() # does not work well with cplex.
+    values_exist = auto()  # does not work well with cplex.
     values_exist_and_inbound = auto()
-    values_exist_and_satisfy_constraint = auto() # default.
+    values_exist_and_satisfy_constraint = auto()  # default.
 
 
 def get_unassigned_attrname(obj):
@@ -66,7 +69,8 @@ def assign_attr_to_obj_with_random_name(obj, value):
 
 @contextmanager
 def modelSolvedTestContext(
-    model: ConcreteModel, testMode: SolvedTestMode = SolvedTestMode.values_exist_and_satisfy_constraint
+    model: ConcreteModel,
+    testMode: SolvedTestMode = SolvedTestMode.values_exist_and_satisfy_constraint,
 ):
     """
     Context manager that checks that the model is solved, by means of micro challenges.
@@ -101,7 +105,7 @@ def modelSolvedTestContext(
             if testMode != SolvedTestMode.values_exist:
                 solved = var_value >= lb and var_value <= ub
             else:
-                solved=True
+                solved = True
         return solved
 
     try:
@@ -137,6 +141,7 @@ class CheckSolverReturnValResult(BaseModel):
 #         return keyword_counts
 
 #     return word_counter
+
 
 # deprecated!
 def checkIfSolverHasSolvedModel(solver_result) -> CheckSolverReturnValResult:
@@ -209,7 +214,7 @@ def convertSymbolMapToTranslationTable(symbol_map: SymbolMap):
             else:
                 raise Exception(f"Cannot retrieve name from symbol '{obj}'")
         else:
-            translationTable[numeric_name]=numeric_name
+            translationTable[numeric_name] = numeric_name
             # raise Exception(
             #     f"Numeric symbol name '{numeric_name}' does not have reference to model."
             # )
@@ -231,7 +236,9 @@ class ExportedModel:
         """
         Translate exported names back to the original name.
         """
-        self.reverse_translation_table = {v:k for k, v in self.translation_table.items()}
+        self.reverse_translation_table = {
+            v: k for k, v in self.translation_table.items()
+        }
         """
         Translate original names to exported names.
         """
@@ -665,6 +672,8 @@ def solve_decompose_and_scan(
 import random
 
 from typing import Union
+
+
 # TODO: put "obj" & "obj_expr" into modelWrapper.
 def checkInfeasibleOrUnboundedModel(
     modelWrapper,
@@ -689,8 +698,8 @@ def checkInfeasibleOrUnboundedModel(
     # phase 0: limit iteration and get premature solutions
     # advanced start might be used along with other solvers.
     # ref: https://www.ibm.com/docs/en/icos/12.9.0?topic=mip-starting-from-solution-starts
-    options: List[Tuple[str, Union[str,float]]] = [
-    # options: List[Tuple[str, float]] = [
+    options: List[Tuple[str, Union[str, float]]] = [
+        # options: List[Tuple[str, float]] = [
         ("mip limits strongit", 1),
         ("mip limits nodes", 2e2),
         ("mip tolerances mipgap", 1),  # mipgap
@@ -709,7 +718,7 @@ def checkInfeasibleOrUnboundedModel(
         ("preprocessing reduce", 0),
         ("randomseed", random.randint(0, 1e10)),
         ("mip strategy presolvenode", -1),
-        ("preprocessing presolve", 'y'),
+        ("preprocessing presolve", "y"),
         # ("preprocessing presolve", 0),
         ("mip polishafter solutions", 1),
         ("mip polishafter time", 5),

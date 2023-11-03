@@ -2,8 +2,28 @@ from log_utils import logger_print
 from type_def import *
 import os
 from constants import UNKNOWN
+{# import parse #}
 
 """static & dynamic topology type checking"""
+
+def logFailedRule(passed:bool, banner:str):
+    if not passed:
+        logger_print(f"Rule {banner} failed.")
+    return passed
+
+{# PORT_NAME_FORMAT = "{deviceSubtype}_{deviceIndex}_{portName}" #}
+
+def portNameTransformer(port_name):
+    result = port_name.split("_")
+    {# result = parse.parse(PORT_NAME_FORMAT, port_name) #}
+    result_length = len(result)
+    if result_length == 3:
+        transformed_port_name = f"{result[0]}_{result[2]}"
+        {# transformed_port_name = f"{result['deviceSubtype']}_{result['portName']}" #}
+    else:
+        raise Exception(f'Failed to parse port name "{port_name}" (mismatched splited size: {result_length})')
+        {# raise Exception(f'Failed to parse port name "{port_name}" with format "{PORT_NAME_FORMAT}"') #}
+    return transformed_port_name
 
 deviceTypes = {{deviceTypes}}
 energyTypes = {{energyTypes}}
@@ -388,6 +408,10 @@ def verify_topology_status_dict(
     banner("verifying")
 
     verified_topology_status_dict = {}
+
+    cached_conjugate_verifiers = {}
+    cached_port_verifiers = {}
+
     for topo_status_index, (adder_status, topo_status) in enumerate(
         topology_status_dict.items()
     ):
@@ -409,6 +433,7 @@ def verify_topology_status_dict(
                 if port_name not in topo_status_frame_flatten.keys():
                     topo_status_frame_flatten[port_name] = set()
                 _conjugate_verified = True
+                cached_quit = False
                 with ErrorManager(suppress_error=True) as em:
                     for (
                         conjugate_ports,
@@ -423,31 +448,52 @@ def verify_topology_status_dict(
                             port_name_to_energy_type.get(port_name, UNKNOWN)
                             for port_name in conjugate_ports
                         ]
-                        conjugate_verified = conjugate_verifier(*conds, *energytypes)
+                        cache_key = (tuple([portNameTransformer(cp) for cp in conjugate_ports]), tuple(conds), tuple(energytypes))
+                        {# cache_key = (tuple(conjugate_ports), tuple(conds), tuple(energytypes)) #}
+                        cached = False
+                        if cache_key in cached_conjugate_verifiers.keys():
+                            cached = True
+                            conjugate_verified = cached_conjugate_verifiers[cache_key]
+                        else:
+                            conjugate_verified = conjugate_verifier(*conds, *energytypes)
+                            cached_conjugate_verifiers[cache_key] = conjugate_verified
                         # conjugate_verified = conjugate_verifier(*conds)
                         if not conjugate_verified:
-                            em.append(
-                                f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index}"
-                            )
-                            em.append("conds: "+repr(conds))
-                            em.append("energy types: "+repr(energytypes))
-                            {# em.append(f"topo status frame: {topo_status_frame}") #}
-                            em.append('-'*60)
+                            if not cached:
+                                em.append('-'*60)
+                                em.append(
+                                    f"conjugate verification failed for conjugate ports '{conjugate_ports}' at topo status frame #{topo_status_frame_index} (calculated)"
+                                )
+                                em.append("conds: "+repr(conds))
+                                em.append("energy types: "+repr(energytypes))
+                                {# em.append(f"topo status frame: {topo_status_frame}") #}
+                            if not cached_quit:
+                                cached_quit = True
                             if _conjugate_verified:
                                 _conjugate_verified = False
+                                break # to save processing power
                 if _conjugate_verified:
                     topo_status_frame_flatten[port_name].add(port_status)
                 else:
-                    logger_print(
+                    if not cached_quit:
+                        logger_print(
                         f"skipping topo status frame #{topo_status_frame_index} due to failed conjugate ports verification"
                     )
         for port_name, verifier in port_verifiers.items():
-            conds = topo_status_frame_flatten.get(port_name, 'unknown')
+            conds = topo_status_frame_flatten.get(port_name, [UNKNOWN])
             {# conds = topo_status_frame_flatten[port_name] #}
-            verified = verifier(conds)
+            cached = False
+            cache_key = (portNameTransformer(port_name), tuple(conds))
+            {# cache_key = (port_name, tuple(conds)) #}
+            if cache_key in cached_port_verifiers.keys():
+                verified = cached_port_verifiers[cache_key]
+                cached = True
+            else:
+                verified = verifier(conds)
+                cached_port_verifiers[cache_key] = verified
             port_verified[port_name] = verified
             if not verified:
-                logger_print(f"verifier failed for port '{port_name}'")
+                logger_print(f"verifier failed for port '{port_name}', conds: {repr(conds)} (calculated)")
 
         all_ports_verified = all(port_verified.values())
         all_conjugate_ports_verified = all(conjugate_port_verified.values())
@@ -469,7 +515,8 @@ def verify_topology_status_dict(
         banner(f"processed topo status #{topo_status_index}")
 
     banner("verified topo status")
-    logger_print(verified_topology_status_dict)
+    # if you want verbosity...
+    {# logger_print(verified_topology_status_dict) #}
     return verified_topology_status_dict
 
 

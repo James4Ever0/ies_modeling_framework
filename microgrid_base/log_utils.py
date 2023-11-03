@@ -4,21 +4,25 @@ To use 'managed' loggers, you must import 'logger' from this file and pass it to
 
 import sys  # recommend: 3.11.2
 import os
+
 # TODO: top-level exception hook (sys.excepthook)
 # TODO: configure file handlers for celery logging
 # TODO: find a tool or make some script to take input from stdin and log & filter output
 
 from rich.pretty import pretty_repr
 
-DOCKER_IMAGE_TAG = 'DOCKER_IMAGE_TAG'
+DOCKER_IMAGE_TAG = "DOCKER_IMAGE_TAG"
+
 
 def get_docker_image_tag():
-    tag = os.environ.get(DOCKER_IMAGE_TAG, '').strip()
+    tag = os.environ.get(DOCKER_IMAGE_TAG, "").strip()
     if tag:
         return tag
-    return 'unknown'
+    return "unknown"
+
 
 current_docker_image_tag_hint = f"(image: {get_docker_image_tag()})"
+
 
 def pretty(obj):
     return pretty_repr(obj)
@@ -41,8 +45,6 @@ if sys.version_info < MIN_PY_VERSION:
     import inspect
     from exceptional_print import exprint
 
-
-
     def get_caller_info(level: int = 2):
         assert level >= 2, f"level {level} less than 2"
         caller_frame = inspect.currentframe().f_back
@@ -59,7 +61,7 @@ if sys.version_info < MIN_PY_VERSION:
         # exlogger_print(caller_info.center(60, "+"))
         # exlogger_print(*args, *[f"{k}:\t{v}" for k, v in kwargs.items()], sep=os.linesep)
         return caller_info
-    
+
     CALLER_INFO_IMPLEMENT = "%(callerInfo)s"
     # FORMAT_PREFIX = f"%(asctime)s <%(name)s:%(levelname)s> {current_docker_image_tag_hint} %(callerInfo)s\n"
 
@@ -220,7 +222,7 @@ logger.addHandler(myHandler)  # BUG: make sure long logs are unaffected in file.
 logger.addHandler(stdout_handler)
 
 
-def logger_print(*args, logger=logger, stacklevel = 2):
+def logger_print(*args, logger=logger, stacklevel=2):
     if len(args) != 0:
         format_string = "\n\n".join(["%s"] * len(args))
         # python 3.8+ required!
@@ -237,7 +239,7 @@ def logger_print(*args, logger=logger, stacklevel = 2):
             **(
                 {"stacklevel": stacklevel}
                 if not SHOW_PYTHON_VERSION_WARNING
-                else {"extra": {"callerInfo": get_caller_info(level = stacklevel)}}
+                else {"extra": {"callerInfo": get_caller_info(level=stacklevel)}}
             ),
         )  # it is been called elsewhere.
         # logger.debug(
@@ -264,13 +266,14 @@ logger_print(
 
 
 def logger_excepthook(exc_type, exc_value, tb):
-    
     with pretty_format_excinfo_context(exc_type, exc_value, tb) as formatted:
         formatted_exc = ["<TOPLEVEL EXCEPTION>", formatted]
         logger_print(*formatted_exc)
     better_exceptions.excepthook(exc_type, exc_value, tb)
 
+
 from contextlib import contextmanager
+
 
 @contextmanager
 def pretty_format_excinfo_context(exc_type, exc_value, tb):
@@ -281,9 +284,10 @@ def pretty_format_excinfo_context(exc_type, exc_value, tb):
     finally:
         better_exceptions.SUPPORTS_COLOR = True
 
-def logger_traceback(*args, stacklevel = 3):
+
+def logger_traceback(*args, stacklevel=3):
     with pretty_format_excinfo_context(*sys.exc_info()) as formatted:
-        logger_print(*args, formatted, stacklevel = stacklevel)
+        logger_print(*args, formatted, stacklevel=stacklevel)
 
 
 sys.excepthook = logger_excepthook

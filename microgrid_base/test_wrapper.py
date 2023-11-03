@@ -2,12 +2,15 @@ from log_utils import logger_print
 
 from ies_optim import ModelWrapperContext
 from celery.app.task import Task
-Task.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls) # type: ignore[attr-defined]
+
+Task.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls)  # type: ignore[attr-defined]
+
 
 def func():
     def func2():
         with ModelWrapperContext(...) as m:
             raise Exception("error")
+
     func2()
 
 
@@ -26,9 +29,11 @@ app = Celery(
     # backend=f"redis://:{redis_password}@localhost:6379",
 )
 
+
 @app.task(store_errors_even_if_ignored=True)
 def mfunc():
     func()
+
 
 app.conf.update(task_track_started=True)
 app.conf.update(worker_send_task_events=True)

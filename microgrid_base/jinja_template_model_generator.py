@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     render_params = dict(
         设备库=设备库,
-        设备接口集合=设备接口集合, # if you want more device models, you have to change here, maybe.
+        设备接口集合=设备接口集合,  # if you want more device models, you have to change here, maybe.
         # but at least you can pass the topology check now, even if with extra non-existant models.
         frontend_translation_table=frontend_translation_table,
         planningExportFormatList=planningExportFormatList,

@@ -4,4 +4,3 @@ from log_utils import logger_print
 # not for running
 
 # extract the load-consumption rate tablet processing from diesel generator
-

@@ -38,8 +38,10 @@ TransformationFactory('gdp.bigm').apply_to(m, bigM = 1e7)
 
 solver = SolverFactory('cplex')
 # solver = SolverFactory('ipopt')
+# no such option.
+# results = solver.solve(model, profile_memory=True)
 results = solver.solve(model)
-
+# solver.print_profile()
 # Print the results
 for i in range(1,5):
     print(f"x{i} =", value(getattr(model,f"x{i}"), exception=False))

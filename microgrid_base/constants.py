@@ -1,7 +1,7 @@
 from log_utils import logger_print
 
 # UNKNOWN = 'unconnected'
-UNKNOWN = 'any'
+UNKNOWN = "any"
 
 每小时秒数 = 3600
 每天小时数 = 24
@@ -13,6 +13,7 @@ UNKNOWN = 'any'
 
 from enum import auto
 from strenum import StrEnum
+
 
 class Solver(StrEnum):
     cplex = auto()

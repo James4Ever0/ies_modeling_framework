@@ -49,7 +49,9 @@ solution = solver.solve(m, tee=True)
 log_infeasible_constraints(m, log_expression=True, log_variables=True)
 logger_print()
 logger_print("SOLVER STATUS?", solution.solver.status)
-logger_print("TERMINATION CONDITION?", solution.solver.termination_condition)  # infeasible.
+logger_print(
+    "TERMINATION CONDITION?", solution.solver.termination_condition
+)  # infeasible.
 
 # logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 logger_print(value(m.z))

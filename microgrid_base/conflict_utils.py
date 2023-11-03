@@ -1,9 +1,13 @@
 import sys
 
-assert sys.version_info >= (3, 6) and sys.version_info < (3, 7),  f"Python version mismatch!\nExpected: >= 3.6, < 3.7\nActual: {sys.version.split()[0]}"
+assert sys.version_info >= (3, 6) and sys.version_info < (
+    3,
+    7,
+), f"Python version mismatch!\nExpected: >= 3.6, < 3.7\nActual: {sys.version.split()[0]}"
 
 # import argparse
 from argparse_utils import conflictRefinerManager
+
 # would you like not to modify print statements here?
 # cause we might not have anything to do with logging in "docplex" environment
 from docplex.mp.model import Model
@@ -11,6 +15,7 @@ from docplex.mp.model_reader import ModelReader
 import threading
 import time
 import cplex
+
 
 def kill_cplex_after_duration(duration: int):
     def run():
@@ -32,11 +37,13 @@ def kill_cplex_after_duration(duration: int):
 
     thread = threading.Thread(target=run, daemon=True)
     thread.start()
+
+
 from docplex.mp.conflict_refiner import ConflictRefiner, ConflictRefinerResult
 import traceback
 
-            
-def check_conflict(model, maxtime:float) -> bool:
+
+def check_conflict(model, maxtime: float) -> bool:
     has_conflict = False
     output_table = None
     try:
@@ -69,13 +76,21 @@ def check_conflict(model, maxtime:float) -> bool:
         has_conflict = True
         output_table = None
     return has_conflict, output_table
+
+
 from shared_datamodels import ConflictRefinerParams
+
 
 # def conflict_refiner(model_path: str, output: str, config: str, timeout: float):
 @conflictRefinerManager.answer
 def conflict_refiner(params: ConflictRefinerParams):
-# def conflict_refiner(params):
-    model_path, output, config, timeout = params.model_path, params.output, params.config, params.timeout
+    # def conflict_refiner(params):
+    model_path, output, config, timeout = (
+        params.model_path,
+        params.output,
+        params.config,
+        params.timeout,
+    )
     assert timeout > 0, f"invalid timeout: {timeout}"
     mdl: Model = ModelReader.read(model_path, model_name="InfeasibelLP")
     print("model loaded successfully from: %s" % model_path)
@@ -84,7 +99,7 @@ def conflict_refiner(params: ConflictRefinerParams):
         if output_table is not None:
             output_table.to_csv(output)
         else:
-            print('no conflict was found.')
+            print("no conflict was found.")
     elif config == "cplex":
         # 获取cplex.Cplex()类对象
         c = mdl.cplex
@@ -103,6 +118,7 @@ def conflict_refiner(params: ConflictRefinerParams):
         print("conflict written to:", output)
     else:
         raise Exception("unknown config: %s" % config)
+
 
 if __name__ == "__main__":
     conflict_refiner()

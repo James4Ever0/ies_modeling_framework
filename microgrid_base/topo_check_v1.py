@@ -382,7 +382,7 @@ class 拓扑图:
         kwargs = G.graph
         topo = 拓扑图(**kwargs)
         topo.G = G
-        if not ies_env.FAILSAFE: # TODO: separate merging process from checking
+        if not ies_env.FAILSAFE:  # TODO: separate merging process from checking
             topo.check_consistency()
         return topo
 

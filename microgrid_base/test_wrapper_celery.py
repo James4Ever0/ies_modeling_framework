@@ -16,4 +16,3 @@ while True:
     logger_print("STATUS?", task.status)
     # logger_print(dir(task), type(task))
     logger_print(task.__dict__)
-    

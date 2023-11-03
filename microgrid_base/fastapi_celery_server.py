@@ -1,6 +1,11 @@
 from log_utils import logger_print
 
-from log_utils import makeRotatingFileHandler, celery_log_filename, timezone_str, logger_traceback
+from log_utils import (
+    makeRotatingFileHandler,
+    celery_log_filename,
+    timezone_str,
+    logger_traceback,
+)
 
 from celery import Celery
 from passwords import redis_password
@@ -69,6 +74,7 @@ from mock_utils import generate_fake_output_data, EnergyFlowGraph
 
 from mock_utils import mock_output_data
 
+
 @app.task()
 # @app.task(bind=True)  # parse it elsewhere.
 def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
@@ -88,6 +94,7 @@ def calculate_energyflow_graph(energyflow_graph: dict) -> Union[None, dict]:
             else:
                 raise exc
     return ret
+
 
 def generate_fake_data_based_on_input(energyflow_graph):
     input_data = EnergyFlowGraph.parse_obj(energyflow_graph)

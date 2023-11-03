@@ -1,7 +1,7 @@
 from log_utils import logger_print
 
 import numpy
-import scipy # for KNN
+import scipy  # for KNN
 from pydantic import BaseModel, validator, Field
 
 load_format = {"workday": [0, 1, 2, 3, 4], "hoilday": [5, 6]}

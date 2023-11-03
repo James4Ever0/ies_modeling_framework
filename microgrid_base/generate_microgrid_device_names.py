@@ -9,7 +9,7 @@ from log_utils import logger_print
 
 import json
 
-with open(path, 'r') as f:
+with open(path, "r") as f:
     data = json.load(f)
 
 import rich

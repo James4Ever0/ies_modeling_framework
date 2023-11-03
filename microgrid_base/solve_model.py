@@ -186,7 +186,7 @@ def solve_model(
         solver.options["mip display"] = 5
         solver.options["barrier display"] = 2
         if ies_env.THREAD_COUNT:
-            solver.options['threads'] = ies_env.THREAD_COUNT
+            solver.options["threads"] = ies_env.THREAD_COUNT
         # disable this option to prevent OOM.
         # solver.options["read fileencoding"] = "utf-8"
 
@@ -643,7 +643,7 @@ def fetchResult(solved: bool, ret: CalcStruct, 典型日):
                 }
                 elem["plot_list"].append(subElem)
             出力曲线列表.append(elem)
-        return dict(
+        return dict( # TODO: locate and log the error around the problematic adders, and connected devices
             performanceDataList=出力曲线列表,
             simulationResultTable=仿真结果表_格式化,
             objectiveResult=dict(

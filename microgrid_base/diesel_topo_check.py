@@ -94,19 +94,52 @@ p1 = 柴油发电信息(
     BuildCostPerMachine=0.2,
     BuildBaseCost=0,
     DieselToPower_Load=[
-        ( 0.13, 29,),
-        ( 0.145, 36,),
-        ( 0.164, 43,),
-        ( 0.18, 50,),
-        ( 0.19, 57,),
-        ( 0.21, 64,),
-        ( 0.224, 71,),
-        ( 0.238, 79,),
-        ( 0.26, 86,),
-        ( 0.294, 93,),
-        (0.365, 100,),
+        (
+            0.13,
+            29,
+        ),
+        (
+            0.145,
+            36,
+        ),
+        (
+            0.164,
+            43,
+        ),
+        (
+            0.18,
+            50,
+        ),
+        (
+            0.19,
+            57,
+        ),
+        (
+            0.21,
+            64,
+        ),
+        (
+            0.224,
+            71,
+        ),
+        (
+            0.238,
+            79,
+        ),
+        (
+            0.26,
+            86,
+        ),
+        (
+            0.294,
+            93,
+        ),
+        (
+            0.365,
+            100,
+        ),
     ],
-    DeviceCount=(c:=3),
+    DeviceCount=(c := 3),
     # DeviceCount=10,
     MaxDeviceCount=c,
     MinDeviceCount=c,
@@ -128,7 +161,7 @@ LOAD_E = 电负荷(
         # LoadType=负荷类型.Flexible,
         # Pmin=100,
         # Pmax=500,
-        EnergyConsumption=[(100*math.sin(i)+300)*0.3 for i in range(len(a))],
+        EnergyConsumption=[(100 * math.sin(i) + 300) * 0.3 for i in range(len(a))],
         # EnergyConsumption=[400] * len(a),  # TODO: fix data retrieval bug
         PriceModel=常数电价(Price=1),
     ).dict(),

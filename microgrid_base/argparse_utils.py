@@ -30,6 +30,7 @@ import typing
 
 # TODO: use [pydantic-argparse](https://pypi.org/project/pydantic-argparse/)
 
+
 # @beartype
 # class ExternalFunctionManager:
 class ArgumentTransformer(Generic[T]):
@@ -52,7 +53,7 @@ class ArgumentTransformer(Generic[T]):
                 help_info = []
                 field_lower = field.lower()
                 args = {"required": field in self.required}
-                pydantic_type = prop.pop("type", 'unknown')
+                pydantic_type = prop.pop("type", "unknown")
                 pytype = pydantic_type_to_pytype.get(pydantic_type, None)
                 annotated_type = self.annotations.get(field)
                 # annotated_type = self.dataModel.__annotations__.get(field)  # .__name__?

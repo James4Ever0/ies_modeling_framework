@@ -142,6 +142,7 @@ class VarInfo(BaseModel):
     def has_violation(self):
         return self.violation.has_violation()
 
+
 class ConstraintInfo(BaseModel):
     constraintName: str
     variables: List[VarInfo]
@@ -347,6 +348,7 @@ class PiecewiseInfo(PiecewiseBaseInfo):
             [v != 0 for v in [self.output_violation, self.input_domain_violation]]
         )
 
+
 class MagicList(list):
     def append(self, value):
         if value is not None:
@@ -375,7 +377,9 @@ class ModelInfo:
         for obj in self.__dict__.values():
             obj.clear()
 
+
 from rich.pretty import pretty_repr
+
 
 class ModelScanner:
     def __init__(self, model: ConcreteModel, tol=1e-6, violation_only=True):
@@ -460,7 +464,7 @@ class ModelScanner:
         self.variable()
         self.piecewise()
         return self.modelInfo
-    
+
     def report(self):
         self.all()
         report_lines = []

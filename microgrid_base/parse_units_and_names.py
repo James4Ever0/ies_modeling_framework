@@ -5,7 +5,10 @@ from log_utils import logger_print
 
 device_data_path_base = "device_params_intermediate.json"
 
-from render_type_utils import TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA
+from render_type_utils import (
+    TYPE_UTILS_MICROGRID_PORTS_DATA,
+    TYPE_UTILS_EXTRA_PORTS_DATA,
+)
 
 microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 
@@ -14,9 +17,10 @@ microgrid_device_port_path = "microgrid_v2_device_port_type_mapping.json"
 output_path = "microgrid_jinja_param_base.json"
 
 MAKEFILE = dict(
-    inputs=[device_data_path_base,
-            #  microgrid_device_port_path
-             ],
+    inputs=[
+        device_data_path_base,
+        #  microgrid_device_port_path
+    ],
     outputs=[output_path],
     args=[],
 )
@@ -38,9 +42,10 @@ EXCEL = "嵌套"
 
 MEASURE = "调度"
 TABLE_FORMATS = {
-            "燃油消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
-            "燃气消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
-        }
+    "燃油消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
+    "燃气消耗率": {str(ureg.Unit("m3 / kWh")): ("负载率", "%")},
+}
+
 
 def get_table_format(k, u):
     try:
@@ -59,9 +64,10 @@ with open(microgrid_device_port_path, "r") as f:
 data = {}
 
 from device_whitelist import device_whitelist
+
 # device_whitelist = ['柴油', '电负荷', '光伏发电', '风力发电', '柴油发电', '锂电池', '变压器', '变流器', '双向变流器', '传输线']
 
-all_microgrid_device_keys = [] # replace this with something else.
+all_microgrid_device_keys = []  # replace this with something else.
 
 for port_dict in [TYPE_UTILS_MICROGRID_PORTS_DATA, TYPE_UTILS_EXTRA_PORTS_DATA]:
     for k, v in port_dict.items():
@@ -82,13 +88,16 @@ def none_fallback(e):
         return ""
     return e
 
+
 # breakpoint()
 for k, v in device_data.items():
     for k1, v1 in v.items():
-        k1 = k1.replace('（','(').split("(")[0].strip()
+        k1 = k1.replace("（", "(").split("(")[0].strip()
         k0 = f"{k}-{k1}"
         # if k1 == '传输线': breakpoint()
-        if k0 in all_microgrid_device_keys: # all_microgrid_device_keys does not have 传输线
+        if (
+            k0 in all_microgrid_device_keys
+        ):  # all_microgrid_device_keys does not have 传输线
             vlist = []
             v_is_excel_list = []
             for v2 in v1:
@@ -158,7 +167,7 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         {
             "HydrogenGeneration-": ["制氢效率"],
             "PowerConversion-": ["电电转换效率"],
-            "HeatRecycle-" : ["热量回收效率"],
+            "HeatRecycle-": ["热量回收效率"],
             "Charge-": ["充能效率"],
             "Discharge-": ["放能效率"],
             "": ["效率"],
@@ -174,14 +183,17 @@ BASE_TRANSLATION_TABLE_WITH_BASE_UNIT = {
         "kW",
         {
             "RatedInput-": ["额定输入功率"],
-            "Rated-": ["额定功率","额定发电功率", "变压器容量"],
+            "Rated-": ["额定功率", "额定发电功率", "变压器容量"],
             "UnitRated-": ["组件额定功率"],
             "Max-": ["最大发电功率"],
             "Cutout-": ["切出功率"],
         },
     ),
-    "Rate": ("one", {"HotWaterToElectricity-":["缸套水热电比"], "HotGasToElectricity-":["烟气热电比"]}),
-    "HydrogenGenerationStartupRate":("percent", {"": ["制氢启动功率比值"]}),
+    "Rate": (
+        "one",
+        {"HotWaterToElectricity-": ["缸套水热电比"], "HotGasToElectricity-": ["烟气热电比"]},
+    ),
+    "HydrogenGenerationStartupRate": ("percent", {"": ["制氢启动功率比值"]}),
     "WindSpeed": ("m/s", {"Rated-": ["额定风速"], "Min-": ["切入风速"], "Max-": ["切出风速"]}),
     "DieselToPower": ("L/kWh", {"": ["燃油消耗率"]}),
     "NaturalGasToPower": ("m3/kWh", {"": ["燃气消耗率"]}),
@@ -541,7 +553,9 @@ for key in keys:
                     #         has_exception = False
                     #         break
                     if has_exception:
-                        raise Exception(f"No compatibie unit found for {val_name} (unit: {val_unit}, {key}, {subkey})")
+                        raise Exception(
+                            f"No compatibie unit found for {val_name} (unit: {val_unit}, {key}, {subkey})"
+                        )
                         # raise Exception(f"No compatibie unit found for {val_unit}")
                     else:
                         v_param = getValueParam(uc, val_name)

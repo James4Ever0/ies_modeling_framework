@@ -8,7 +8,8 @@ from tempfile import TemporaryDirectory
 import jinja2
 import shutil
 import os
-if not os.environ.get("NO_PYTHON_TYPECHECK", None) == 'True':
+
+if not os.environ.get("NO_PYTHON_TYPECHECK", None) == "True":
     import black
     import pyright_utils  # for checking if really installed.
 else:

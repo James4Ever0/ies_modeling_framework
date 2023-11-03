@@ -111,6 +111,8 @@ Ts = TypeVarTuple("Ts")
 
 def mymul(a: T1, b: T2) -> Union[T1, T2]:
     return a * b  # type: ignore
+
+
 from typing_extensions import TypeAlias, Self, assert_never
 
 
@@ -129,6 +131,7 @@ class mybase(Generic[T3], mproto):
         # if not isinstance(other, mproto): assert_never(other)
         val = mymul(getattr(self, "val", self), getattr(other, "val", other))
         return val
+
     # def __mul__(self: Self, other: T2) -> Union[Self, T2]:
     #     assert_type(other, mybase)
     #     return self * other
@@ -177,7 +180,6 @@ class MyMeta(type):
         return s.__new__(cls, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
-
         s = super(MyMeta, cls)
         logger_print(s)
         logger_print()
@@ -197,6 +199,7 @@ class MyMeta(type):
         logger_print()
         # return cls( *args, **kwds)
         return type.__call__(cls, *args, **kwds)
+
 
 # class MyKlass(object):
 #     __metaclass__ = MyMeta
@@ -231,5 +234,6 @@ logger_print(mk2.init_var)
 # logger_print(MyMeta.init_var)
 
 from string import Template
+
 t = Template("$arr value $arr2").substitute(arr=["a", "b"], arr2=["c", "d"])
 logger_print(t)

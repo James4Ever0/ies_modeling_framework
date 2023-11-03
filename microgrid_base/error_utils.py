@@ -5,6 +5,7 @@ from typing import Union
 import traceback
 import sys
 
+
 # @beartype
 class ErrorManager:
     """
@@ -13,19 +14,19 @@ class ErrorManager:
     Can be used in `with` statements to automate such management, which behavior can be configured by setting `suppress_error` and `suppress_exception` arguments.
 
     Args:
-    
+
     suppress_error:bool: If suppressed, don't raise exception if having error messages
     suppress_exception:bool: If suppressed, don't suppress exception raised by program
     default_error:str: The default error message to display if any error occurs during execution
 
     """
+
     def __init__(
         self,
         suppress_error: bool = False,
         suppress_exception: bool = False,
         default_error: Union[str, None] = None,
     ):
-
         self.errors = []
         self.suppress_error = suppress_error
         self.suppress_exception = suppress_exception
@@ -51,10 +52,10 @@ class ErrorManager:
         self.default_error = None
 
     def format_error(self, clear=True, join: str = "\n"):
-        mylist = self.errors + ([self.default_error] if (self and self.default_error) else [])
-        error_msg = join.join(
-            [str(e) for e in mylist]
+        mylist = self.errors + (
+            [self.default_error] if (self and self.default_error) else []
         )
+        error_msg = join.join([str(e) for e in mylist])
         if clear:
             self.clear()
         return error_msg
@@ -79,7 +80,7 @@ class ErrorManager:
             self.raise_if_any()
         else:
             self.print_if_any()
-        
+
         if self.has_exception:
             traceback_exc = traceback.format_exc()
             logger_print(traceback_exc)
@@ -102,5 +103,5 @@ if __name__ == "__main__":
     # test this!
     with ErrorManager() as em:
         # raise Exception("before append")
-        em.append('abc')
+        em.append("abc")
         raise Exception("after append")

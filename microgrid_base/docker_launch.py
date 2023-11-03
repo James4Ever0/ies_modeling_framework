@@ -11,6 +11,8 @@ import datetime
 
 LATEST = "latest"
 DOCKER = "docker"
+
+
 def docker_exec(cmd):
     logger_print("executing docker command: {}".format(cmd))
     os.system(f"{DOCKER} {cmd}")
@@ -198,6 +200,7 @@ if rel_curdir != "microgrid_base":
         f"sed -i 's/jubilant-adventure2\\/microgrid_base/{rel_pardir}\\/init/g' {dockerfile_patch_path} {dockerfile_update_path}",
     )
 
+
 # client = docker.DockerClient(
 #     base_url="//./pipe/docker_engine" if os.name == "nt" else "unix://var/run/docker.sock"
 # )
@@ -206,10 +209,10 @@ def build_image(image_tag, dockerfile_path, context_path):
     # if not RELEASE_ENV:
     #     os.environ['ADDITIONAL_SUFFIX'] ='/microgrid_server_release' # copy files from release, don't straight from curdir because it is huge.
     # env_additional_suffix = '' if RELEASE_ENV else 'env ADDITIONAL_SUFFIX=/microgrid_server_release' # copy files from release, don't straight from curdir because it is huge.
-    ADDITIONAL_SUFFIX_ARGS = '../' if RELEASE_ENV else "microgrid_server_release"
-    docker_buildargs = f'--build-arg ADDITIONAL_SUFFIX_ARGS=/{ADDITIONAL_SUFFIX_ARGS}' # copy files from release, don't straight from curdir because it is huge.
+    ADDITIONAL_SUFFIX_ARGS = "../" if RELEASE_ENV else "microgrid_server_release"
+    docker_buildargs = f"--build-arg ADDITIONAL_SUFFIX_ARGS=/{ADDITIONAL_SUFFIX_ARGS}"  # copy files from release, don't straight from curdir because it is huge.
     command = f"{DOCKER} build -t {image_tag} -f {dockerfile_path} --progress plain {docker_buildargs} {context_path}"
-    logger_print('build command:', command)
+    logger_print("build command:", command)
     # command = f"{env_additional_suffix} {DOCKER} build -t {image_tag} -f {dockerfile_path} --progress plain {context_path}"
     # logger_print(command)
     exit_code = os.system(command)
@@ -223,7 +226,9 @@ update_image_basename = "microgrid_update"
 generate_image_with_tag = (
     lambda basename, verinfo: f"{basename}:v{'.'.join([str(i) for i in verinfo])}"
 )
-generate_update_image_with_tag =lambda verinfo: generate_image_with_tag(update_image_basename,verinfo)
+generate_update_image_with_tag = lambda verinfo: generate_image_with_tag(
+    update_image_basename, verinfo
+)
 init_verinfo = number_to_version(1)
 update_image_first_ver_tag = generate_update_image_with_tag(init_verinfo)
 update_image_tag = f"{update_image_basename}:latest"
@@ -234,7 +239,6 @@ image_tag = f"microgrid_server:{LATEST}"
 remote_image_tag = f"agile4im/microgrid_server:{LATEST}"
 intermediate_image_tag = "microgrid_init"
 context_path = "../../"
-
 
 
 image_storage_dir = "images"
@@ -339,7 +343,11 @@ if final_image_tag not in image_tags:
 # load the exported image.
 # run the command to launch server within image from here.
 # host_path = "./microgrid_server_release"
-log_path = os.path.join(os.path.expanduser("~"), "logs_container") if RELEASE_ENV else "./logs_container"
+log_path = (
+    os.path.join(os.path.expanduser("~"), "logs_container")
+    if RELEASE_ENV
+    else "./logs_container"
+)
 if os.path.isdir(log_path):
     logger_print(f"skipping creating logger directory: {log_path}")
 elif not os.path.exists(log_path):
@@ -347,16 +355,18 @@ elif not os.path.exists(log_path):
 else:
     raise Exception(f"{log_path} exists but is not a directory.")
 # if RELEASE_ENV:
-    # host_path = "../." + host_path
+# host_path = "../." + host_path
 # host_mount_path = os.path.abspath(host_path)
 # don't need this workaround when using docker-py.
 
-def refine_nt_abspath_for_docker_mount(path:str):
+
+def refine_nt_abspath_for_docker_mount(path: str):
     if os.name == "nt":
         disk_symbol, pathspec = path.split(":")
         pathspec = pathspec.replace("\\", "/")
         path = f"//{disk_symbol.lower()}{pathspec}"
     return path
+
 
 host_log_path = os.path.abspath(log_path)
 # host_log_path = refine_nt_abspath_for_docker_mount(host_log_path)
@@ -364,14 +374,19 @@ host_log_path = os.path.abspath(log_path)
 killAndPruneAllContainers()
 
 
-def find_latest_verinfo_of_image_with_latest_image_tags(image_basename:str):
+def find_latest_verinfo_of_image_with_latest_image_tags(image_basename: str):
     image_tags = list_image_tags()
     return find_latest_verinfo_of_image(image_tags, image_basename)
 
-def find_latest_image_tag_with_latest_verinfo_of_image_and_latest_image_tags(image_basename:str):
+
+def find_latest_image_tag_with_latest_verinfo_of_image_and_latest_image_tags(
+    image_basename: str,
+):
     verinfo = find_latest_verinfo_of_image_with_latest_image_tags(image_basename)
-    if verinfo is None: return None
+    if verinfo is None:
+        return None
     return generate_image_with_tag(image_basename, verinfo)
+
 
 def find_latest_verinfo_of_image(image_tags: list[str], image_basename: str):
     latest_verinfo = None
@@ -459,7 +474,9 @@ elif update_image_tag in image_tags:
         # image_tags.append(update_image_first_ver_tag)
     logger_print("performing recursive update of final image")
     # old_verinfo = find_latest_verinfo_of_update_image(image_tags)
-    old_verinfo = find_latest_verinfo_of_image_with_latest_image_tags(update_image_basename)
+    old_verinfo = find_latest_verinfo_of_image_with_latest_image_tags(
+        update_image_basename
+    )
 
     if old_verinfo > init_verinfo:
         out_of_date = check_if_latest_builttime_of_image_is_out_of_date(
@@ -494,7 +511,11 @@ else:
         context_path,
     )
 
-latest_update_image = find_latest_image_tag_with_latest_verinfo_of_image_and_latest_image_tags(update_image_basename)
+latest_update_image = (
+    find_latest_image_tag_with_latest_verinfo_of_image_and_latest_image_tags(
+        update_image_basename
+    )
+)
 # build_image(update_image_tag, dockerfile_update_path, context_path)
 
 # BUG: error while creating mount source path
@@ -529,13 +550,13 @@ try:
         # we need to monitor this.
         tty=True,
         ports={f"{(server_port:=9870)}/tcp": server_port},
-        volumes = { # if using volumes, you need to copy the contents of the volume to outside to view it.
+        volumes={  # if using volumes, you need to copy the contents of the volume to outside to view it.
             # docker run --rm \
             #   --mount source=myvolume,target=/mnt \
             #   -v /backup:/backup \
             #   alpine cp -r /mnt /backup
-        host_log_path: {"bind": "/root/microgrid/server/logs", 'mode':'rw'}
-        # "microgrid_logs": {"bind": "/root/microgrid/server/logs", 'mode':'rw'}
+            host_log_path: {"bind": "/root/microgrid/server/logs", "mode": "rw"}
+            # "microgrid_logs": {"bind": "/root/microgrid/server/logs", 'mode':'rw'}
         }
         # volumes={
         #     host_mount_path: {"bind": (mount_path := "/root/microgrid"), "mode": "rw"}

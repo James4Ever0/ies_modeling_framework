@@ -103,7 +103,10 @@ class ArgumentEnv(DotEnvBaseModel):
 
 
 class ShellEnv(DotEnvBaseModel):
-    SKIP_ARGENV: bool = Field(default=False, title="Skip parsing arguments from commandline arguments")
+    SKIP_ARGENV: bool = Field(
+        default=False, title="Skip parsing arguments from commandline arguments"
+    )
+
     @classmethod
     def load(cls):
         pks = getBaseModelPropertyKeys(cls)
@@ -220,17 +223,17 @@ class EnvManager:
         cls.dotEnv: DotEnv
         cls.argumentEnv: ArgumentEnv
 
-        if os.environ.get('SKIP_SHELLENV', None) is None:
+        if os.environ.get("SKIP_SHELLENV", None) is None:
             shellEnvInst = cls.shellEnv.load()
             params = shellEnvInst.dict()
         else:
             params = {}
 
-        if params == {} or not params.get('SKIP_ARGENV'):
+        if params == {} or not params.get("SKIP_ARGENV"):
             argumentEnvInst = cls.argumentEnv.load()
         else:
             argumentEnvInst = None
-    
+
         if params == {}:
             params.update(argumentEnvInst)
         elif argumentEnvInst is not None:

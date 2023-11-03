@@ -8,9 +8,11 @@
 #                 break
 import sys
 from sympy import sympify
+
 # import sympy
 from progressbar import progressbar
 from log_utils import logger_print
+
 try:
     from typing import Literal
 except:
@@ -66,7 +68,8 @@ class RecursionContext(ContextManager):
         sys.setrecursionlimit(self.sys_recursion_limit)
         return None
 
-def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
+
+def getExprStrParsedToExprList(data: str, approach: Literal[1, 2] = 1):
     """
     Parses a string representing an expression and returns a list of simplified subexpressions.
 
@@ -117,7 +120,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         # breakpoint()
         for e0, e2 in summation:
             suffix = f"_SUM_OF_{e0.count('+')+1}"
-            data = data.replace(e0, e2+suffix)
+            data = data.replace(e0, e2 + suffix)
 
         # logger_print(data)
         expr_repr = data
@@ -138,13 +141,13 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         expr_list = []
         with RecursionContext() as RC:
             for subexpr in subexpr_strs:
-                #logger_print()
+                # logger_print()
                 sympify_expr = sympify(subexpr)
                 sympify_expr = sympify_expr.simplify()
                 _p = Poly(sympify_expr)
                 fs = _p.free_symbols
                 logger_print(f"FS: {fs}")
-                #logger_print()
+                # logger_print()
                 for s in fs:
                     sname = str(s)
                     if sname in EIPMAP_REV.keys():
@@ -180,7 +183,7 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
 
         codeLines = []
         # codeLines.append("import sympy")
-        for word in words: # do not use progressbar in here!
+        for word in words:  # do not use progressbar in here!
             try:
                 float(word)
             except:
@@ -189,26 +192,28 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
         # exec(code)
         # codeLines.append(f"sympy_expr = {data}")
         for line in codeLines:
-            logger_print("EXCECUTING: ", line[:200] + ("" if len(line) < 200 else "..."))
+            logger_print(
+                "EXCECUTING: ", line[:200] + ("" if len(line) < 200 else "...")
+            )
             exec(line)
         logger_print("GETTING EXPR")
         with RecursionContext() as RC:
             sympy_expr = eval(data)
             logger_print("SIMPLIFYING EXPR")
             sympy_expr = sympy_expr.simplify()
-            #logger_print()
+            # logger_print()
             logger_print(sympy_expr)
         #####################APPROACH 2#####################
-        
+
         logger_print("FINAL EXPR:")
         logger_print(sympy_expr)
         terms = sympy_expr.as_terms()
         termlist = []
-        
+
         for t in terms:
             term = t[0]
             termlist.append(term)
-            
+
         endtime = time.time()
         logger_print("APP2_TIME:", endtime - starting_time)
         # APP2_TIME: 12.695726156234741
@@ -220,4 +225,3 @@ def getExprStrParsedToExprList(data:str, approach: Literal[1, 2] = 1):
 
 if __name__ == "__main__":
     data = open("test_data.log", "r").read()  # entry: for test
-    

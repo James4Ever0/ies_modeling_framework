@@ -26429,11 +26429,11 @@
                     "id": 6,
                     "type": "设备",
                     "ports": {
-                        "电接口": {
+                        "燃料接口": {
                             "subtype": "unknown",
                             "id": 7
                         },
-                        "燃料接口": {
+                        "电接口": {
                             "subtype": "unknown",
                             "id": 8
                         }
@@ -26512,14 +26512,14 @@
                     "subtype": "unknown",
                     "id": 7,
                     "type": "锚点",
-                    "port_name": "电接口",
+                    "port_name": "燃料接口",
                     "device_id": 6
                 },
                 {
                     "subtype": "unknown",
                     "id": 8,
                     "type": "锚点",
-                    "port_name": "燃料接口",
+                    "port_name": "电接口",
                     "device_id": 6
                 },
                 {
@@ -44376,11 +44376,11 @@
                     "id": 30,
                     "type": "设备",
                     "ports": {
-                        "电接口": {
+                        "制氢接口": {
                             "subtype": "unknown",
                             "id": 31
                         },
-                        "制氢接口": {
+                        "电接口": {
                             "subtype": "unknown",
                             "id": 32
                         },
@@ -44415,14 +44415,14 @@
                     "subtype": "unknown",
                     "id": 31,
                     "type": "锚点",
-                    "port_name": "电接口",
+                    "port_name": "制氢接口",
                     "device_id": 30
                 },
                 {
                     "subtype": "unknown",
                     "id": 32,
                     "type": "锚点",
-                    "port_name": "制氢接口",
+                    "port_name": "电接口",
                     "device_id": 30
                 },
                 {
@@ -44664,11 +44664,11 @@
                 },
                 {
                     "source": 7,
-                    "target": 47
+                    "target": 46
                 },
                 {
                     "source": 8,
-                    "target": 46
+                    "target": 47
                 },
                 {
                     "source": 9,
@@ -44776,11 +44776,11 @@
                 },
                 {
                     "source": 31,
-                    "target": 48
+                    "target": 52
                 },
                 {
                     "source": 32,
-                    "target": 52
+                    "target": 48
                 },
                 {
                     "source": 34,

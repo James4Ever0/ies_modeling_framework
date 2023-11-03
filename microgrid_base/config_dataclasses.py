@@ -7,6 +7,7 @@ import psutil
 
 physical_cpu_core_count = psutil.cpu_count(logical=False)
 
+
 class IESEnv(EnvBaseModel):
     """
     IES algorithm program configurations.
@@ -78,19 +79,37 @@ class IESEnv(EnvBaseModel):
     )
 
     ADDER_ERROR_WEIGHT: float = Field(
-        default=1e9, 
-        # default=1e20, 
-        # default=1e7, 
-        title="Weight of adder error in objective passed to solver."
+        default=1e9,
+        # default=1e20,
+        # default=1e7,
+        title="Weight of adder error in objective passed to solver.",
     )
 
-    PROLOG_STACK_LIMIT:Optional[int] = Field(default=None, title = 'Prolog stack limit in gigabytes.')
-    PROLOG_TABLE_SIZE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog table limit in gigabytes.')
-    PROLOG_SHARED_TABLE_LIMIT:Optional[int] = Field(default=None, title = 'Prolog shared table limit in gigabytes.')
+    PROLOG_STACK_LIMIT: Optional[int] = Field(
+        default=None, title="Prolog stack limit in gigabytes."
+    )
+    PROLOG_TABLE_SIZE_LIMIT: Optional[int] = Field(
+        default=None, title="Prolog table limit in gigabytes."
+    )
+    PROLOG_SHARED_TABLE_LIMIT: Optional[int] = Field(
+        default=None, title="Prolog shared table limit in gigabytes."
+    )
 
-    THREAD_COUNT:Optional[int] = Field(default = physical_cpu_core_count, title = f'Thread count for cplex solver, default is available physical cpu core count ({physical_cpu_core_count}).')
+    THREAD_COUNT: Optional[int] = Field(
+        default=physical_cpu_core_count,
+        title=f"Thread count for cplex solver, default is available physical cpu core count ({physical_cpu_core_count}).",
+    )
 
-    USE_PROLOG_CODE: bool = Field(default=False, title = 'Use prolog (slower) instead of python for type checking state enumeration.')
+    USE_PROLOG_CODE: bool = Field(
+        default=False,
+        title="Use prolog (slower) instead of python for type checking state enumeration.",
+    )
+
+    UNCHECK_CONNECTIVITY_IN_DYNAMIC_TYPE_VERIFICATION: bool = Field(
+        default=True,
+        # default=False,
+        title="If set to True, then connectivity checks will be skipped in dynamic type verification.",
+    )
     # @validator("MOCKGEN")
     # def validate_mockgen(cls, values, v):
     #     mock_test = values.get("MOCK_TEST", None)

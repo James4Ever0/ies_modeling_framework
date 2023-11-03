@@ -3,6 +3,7 @@ from log_utils import logger_print
 # from log_utils import logger_print
 
 import pyomo
+
 # import pyomo.core.base.block as block
 
 # block._BlockData2 = block._BlockData
@@ -27,6 +28,7 @@ def strict_setter(self, val):
 
 def strict_getter(self):
     return False
+
 
 import pyomo.core.expr.relational_expr
 

@@ -112,7 +112,9 @@ def triplets_with_supertype(triplet_map, length=3):
                 logger_print("ERROR!")
                 logger_print()
                 logger_print(triplet_map)
-                raise Exception(f"Error when unpacking triplet map with length {length}.", )
+                raise Exception(
+                    f"Error when unpacking triplet map with length {length}.",
+                )
             yield (*triplet, supertype)
 
 
@@ -161,7 +163,7 @@ def Unconnectable(wire_name):
     return f"不可连接{wire_name}"
 
 
-for (io, wire_name, supertype) in triplets_with_supertype(io_to_wire, length=2):
+for io, wire_name, supertype in triplets_with_supertype(io_to_wire, length=2):
     start = IO(io)
     end = Connectable(wire_name)
     created = Unconnectable(wire_name)
@@ -260,6 +262,7 @@ import json
 csv_path = "设备接口-离网型微电网.csv"
 
 from csv_utils import fix_csv_and_return_dataframe
+
 port_df = fix_csv_and_return_dataframe(csv_path)
 # lines = []
 # line_sep_count_list = []
@@ -371,8 +374,10 @@ for index, row in port_df.iterrows():
                 raise Exception(
                     "No port type definition for:", (mycat, mydevice, content)
                 )
+
+
 def print_with_banner(content, hyphen_saved_name, prefix):
-    banner = hyphen_saved_name.strip().replace("_"," ").upper().strip()
+    banner = hyphen_saved_name.strip().replace("_", " ").upper().strip()
     logger_print(f"=========[{banner}]=========")
     logger_print(content)
     filepath = f"{prefix}_{hyphen_saved_name.strip()}.json"
@@ -380,17 +385,25 @@ def print_with_banner(content, hyphen_saved_name, prefix):
     with open(filepath, "w+") as f:
         str_content = json.dumps(content, indent=4, ensure_ascii=False)
         f.write(str_content)
-    
+
+
 # logger_print("=========[DEVICE PORT TYPE MAPPING]=========")
-print_with_banner(device_port_dict, 'device_port_type_mapping', "microgrid")
+print_with_banner(device_port_dict, "device_port_type_mapping", "microgrid")
 # logger_print("=========[CONNECTIVITY MATRIX]=========")
-types_connectivity_matrix_for_json= {"{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()}
-print_with_banner(types_connectivity_matrix_for_json, "connectivity_matrix","microgrid") # must convert this one.
+types_connectivity_matrix_for_json = {
+    "{}_{}".format(*list(k)): v for k, v in types_connectivity_matrix.items()
+}
+print_with_banner(
+    types_connectivity_matrix_for_json, "connectivity_matrix", "microgrid"
+)  # must convert this one.
 # logger_print("=========[DEVICE PORT TYPES]=========")
 # print_with_banner(types,'device_port_types',"microgrid")
 # logger_print("=========[ALL TYPES STRUCTURED]=========")
-all_types_structured = {"设备":{k: list(v) for k,v in types.items()},"连接线":{k:list(v) for k,v in wire_types.items()}}
-print_with_banner(all_types_structured,"all_types_structured","microgrid")
+all_types_structured = {
+    "设备": {k: list(v) for k, v in types.items()},
+    "连接线": {k: list(v) for k, v in wire_types.items()},
+}
+print_with_banner(all_types_structured, "all_types_structured", "microgrid")
 
 mtypes = set([e for k, v in types.items() for e in v])
 
@@ -414,18 +427,21 @@ all_types = mtypes.union(set([e for k, v in wire_types.items() for e in v]))
 # for node_name in all_types:
 #     G.add_node(node_name)
 import copy
+
+
 def alter_type_name(type_name):
     logger_print("ALTER TYPE NAME:", type_name)
     if type_name.startswith("不可连接"):
         if type_name.endswith("]"):
             type_name = type_name[:-4]
-        result = copy.copy(type_name)+f"[{get_uniq_hash()}]"
+        result = copy.copy(type_name) + f"[{get_uniq_hash()}]"
         # breakpoint()
     else:
         result = type_name
     # logger_print("RESULT?", result)
     # breakpoint()
     return result
+
 
 for fzset, wire_name in types_connectivity_matrix.items():
     # logger_print(fzset, wire_name)
@@ -458,10 +474,7 @@ matplotlib.rcParams["font.sans-serif"] = ["Songti SC"]
 import matplotlib.pyplot as plt
 
 
-def plot_graph(G, figure_path: str, 
-    width = 10,
-    height = 20, plot_only=False):
-
+def plot_graph(G, figure_path: str, width=10, height=20, plot_only=False):
     plt.figure(figsize=(width, height))
 
     draw_options = {
@@ -482,7 +495,7 @@ def plot_graph(G, figure_path: str,
 
 
 figure_path = "type_system.png"
-plot_graph(G, figure_path,plot_only=PLOT_ONLY)
+plot_graph(G, figure_path, plot_only=PLOT_ONLY)
 
 G1 = networkx.Graph()
 
@@ -507,11 +520,11 @@ for fzset, wire_name in types_connectivity_matrix.items():
                 mend = de
             else:
                 mend = de_port
-                
+
             mstart = alter_type_name(mstart)
             mend = alter_type_name(mend)
             wire_name = alter_type_name(wire_name)
-            
+
             G1.add_edge(mstart, wire_name)
             G1.add_edge(mend, wire_name)
 

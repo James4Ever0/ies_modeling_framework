@@ -1,10 +1,12 @@
 from log_utils import logger_print
 
 import os
-os.environ['http_proxy'] = ""
-os.environ['https_proxy'] = ""
-os.environ['all_proxy'] = ""
+
+os.environ["http_proxy"] = ""
+os.environ["https_proxy"] = ""
+os.environ["all_proxy"] = ""
 import json
+
 parsing = False
 # parsing = True
 
