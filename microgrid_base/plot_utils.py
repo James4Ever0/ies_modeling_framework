@@ -1,7 +1,7 @@
 from pyecharts.charts import Graph
 from pyecharts.options import InitOpts
 
-from json import load
+import json
 from log_utils import logger_print
 
 extract_data_key = "mDictList"
@@ -61,5 +61,5 @@ def plotMultipleTopologies(data: dict, output_dir: str):
 def plotMultipleTopologiesFromFile(input_path: str, output_dir: str):
     logger_print(f"plotting topologies from file '{input_path}'")
     with open(input_path, "r") as f:
-        data = load(f.read())
+        data = json.loads(f.read())
     plotMultipleTopologies(data, output_dir)

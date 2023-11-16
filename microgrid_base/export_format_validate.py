@@ -88,7 +88,7 @@ class 柴油仿真结果(BaseModel):
         return 柴油仿真结果(
             元件名称=safeAbs(model.设备信息.设备名称),
             元件类型=safeAbs(model.设备信息.__class__.__name__.strip("信息")),
-            柴油消耗费用=safeAbs(((value(model.总成本年化)) * timeParam)),
+            柴油消耗费用=safeAbs(value(model.总成本年化)),
             柴油消耗量=safeAbs(
                 ((statistics.mean([value(e) for e in model.燃料接口.values()])) * timeParam)
             ),
@@ -119,7 +119,7 @@ class 电负荷仿真结果(BaseModel):
             电负荷=safeAbs(
                 ((statistics.mean([-value(e) for e in model.电接口.values()])) * timeParam)
             ),
-            电收入=safeAbs(((-value(model.总成本年化)) * timeParam)),
+            电收入=safeAbs(-value(model.总成本年化)),
         )
 
 
@@ -561,7 +561,7 @@ class 氢负荷仿真结果(BaseModel):
                     * timeParam
                 )
             ),
-            氢气收入=safeAbs(((-value(model.总成本年化)) * timeParam)),
+            氢气收入=safeAbs(-value(model.总成本年化)),
         )
 
 

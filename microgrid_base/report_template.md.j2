@@ -1,0 +1,35 @@
+# 计算报告
+
+## 系统图
+
+{% for i, topo_graph in enumerate(topo_graph_list) %}
+### 拓扑图{{i}}
+
+<iframe src='{{topo_graph}}'></iframe>
+
+{% endfor %}
+
+## 结果可视化
+
+{% for i, data_dict in enumerate(data_dict_list) %}
+### 结果{{i}}
+
+    {% for k, v in data_dict.items() %}
+#### {{k}}
+
+{{v}}
+    {% endfor %}
+
+{% endfor %}
+
+## 输入数据
+
+```json
+{{input_data}}
+```
+
+## 输出数据
+
+```json
+{{output_data}}
+```
