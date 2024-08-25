@@ -1,5 +1,7 @@
 # IES modeling
 
+![IES logo](./ies_logo.png)
+
 ## linearization of nonlinear multivariate functions
 
 no matter how we try to linearize nonlinear functions, we need to know the input ranges.
