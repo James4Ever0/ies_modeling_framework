@@ -1,6 +1,6 @@
 # IES modeling
 
-![IES logo](./ies_logo.png)
+![IES logo](./IES_logo.png)
 
 ## linearization of nonlinear multivariate functions
 
