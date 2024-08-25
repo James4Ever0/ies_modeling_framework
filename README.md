@@ -1,4 +1,4 @@
-# IES modeling framework
+<h1 align="center">IES modeling framework</h1>
 
 ![IES logo](./IES_logo.png)
 
