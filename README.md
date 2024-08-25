@@ -1,6 +1,8 @@
 <h1 align="center">IES modeling framework</h1>
 
-![IES logo](./IES_logo.png)
+<p align="center">
+<img alt="IES logo" src="./IES_logo.png">
+</p>
 
 ## linearization of nonlinear multivariate functions
 
