@@ -4,6 +4,9 @@
 <img alt="IES logo" src="./IES_logo.png">
 </p>
 
+<!-- TODO: refactor the code -->
+<!-- not from ui to code, but from code to ui -->
+
 ## linearization of nonlinear multivariate functions
 
 no matter how we try to linearize nonlinear functions, we need to know the input ranges.
